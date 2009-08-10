@@ -37,8 +37,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         #self.model.select()
 
         self.tableView.setModel(self.model)
-        self.tableView.setSelectionMode(QTableView.SingleSelection)
-        self.tableView.setSelectionBehavior(QTableView.SelectRows)
+        self.tableView.setSelectionMode(QTableView.ContiguousSelection)
+        #self.tableView.setSelectionBehavior(QTableView.SelectRows)
         #self.tableView.setItemDelegate(QSqlRelationalDelegate(self))
 
         self.model.reset()
