@@ -16,8 +16,10 @@ from PyQt4 import QtCore, QtGui, Qt
 from PyQt4.Qt import *
 from PyQt4.QtSql import *
 import ui_meta
-import model
-import ma_data_table
+import ma_data_table_model
+from ma_data_table_model import *
+import ma_dataset
+from ma_dataset import *
 
 class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     
@@ -28,39 +30,32 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         #
         super(MetaForm, self).__init__(parent)
         self.setupUi(self)
-        self.model = QSqlRelationalTableModel(self)
+        data_model = gen_some_data()
         
+        self.model = DatasetModel(dataset=data_model)
         
-        self.model.setTable("test")
-        self.model.select()
+        #self.model.select()
 
         self.tableView.setModel(self.model)
         self.tableView.setSelectionMode(QTableView.SingleSelection)
         self.tableView.setSelectionBehavior(QTableView.SelectRows)
-        self.tableView.setItemDelegate(QSqlRelationalDelegate(self))
+        #self.tableView.setItemDelegate(QSqlRelationalDelegate(self))
 
+        self.model.reset()
         #self.model = QSqlTableModel(self)
-        self.model.select()
+        #self.model.select()
         query = QSqlQuery()
 
 
 
-def init_tables():
-    query = QSqlQuery()
-    query.exec_("""CREATE TABLE test (
-                            id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                            name VARCHAR(40),
-                            tx_events INTEGER,
-                            tx_N INTEGER,
-                            ctrl_events INTEGER,
-                            ctrl_N INTEGER)""")
-    QSqlDatabase.database().commit()
-    
-def add_some_data():
-    #QSqlDatabase.database().transaction()
-    query = QSqlQuery()
-    query.exec_("INSERT INTO test (id, name, tx_events, tx_N, ctrl_events, ctrl_N) VALUES (null, 'arg', 10 , 10, 10, 10)")
-    QSqlDatabase.database().commit()
+def gen_some_data():
+    dataset = Dataset()
+    studies = [Study(i, name=study, year=y) for i, study, y in zip(range(3), ["trik", "wallace", "lau"], [1984, 1990, 2000])]
+    raw_data = [[10, 100, 15, 100], [20, 200, 25, 200], [30, 300, 35, 300]]
+    dataset.studies = studies
+    for study,data in zip(dataset.studies, raw_data):
+        study.raw_data = data
+    return dataset
     
 welcome_str = "** welcome to OpenMeta; version %s **" % .01
 print "".join(["*" for x in range(len(welcome_str))])
@@ -68,11 +63,6 @@ print welcome_str
 print "".join(["*" for x in range(len(welcome_str))])
 
 app = QtGui.QApplication(sys.argv)
-db = QSqlDatabase.addDatabase("QSQLITE")
-db.setDatabaseName(":memory:")
-db.open()
-init_tables()
-add_some_data()
 meta = MetaForm()
 meta.show()
 sys.exit(app.exec_())

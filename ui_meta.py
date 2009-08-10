@@ -8,7 +8,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
-import ma_data_table
+import ma_data_table_view
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -31,7 +31,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2 = QtGui.QHBoxLayout(self.dataTab)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         #self.tableView = QtGui.QTableView(self.dataTab)
-        self.tableView = ma_data_table.MADataTable(self.dataTab)
+        self.tableView = ma_data_table_view.MADataTable(self.dataTab)
         self.tableView.setObjectName("tableView")
         self.horizontalLayout_2.addWidget(self.tableView)
         self.tabWidget.addTab(self.dataTab, "")
