@@ -4,7 +4,7 @@
 ##
 ##  Byron C. Wallace
 ##  Tufts Medical Center
-##  MetaAnalyst 2
+##  OpenMetaanalyst
 ##
 ##  Container form for UI
 ##  
@@ -15,6 +15,7 @@ import pdb
 from PyQt4 import QtCore, QtGui, Qt
 from PyQt4.Qt import *
 from PyQt4.QtSql import *
+import nose # for unit tests
 import ui_meta
 import ma_data_table_model
 from ma_data_table_model import *
@@ -30,47 +31,87 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         #
         super(MetaForm, self).__init__(parent)
         self.setupUi(self)
-        data_model = gen_some_data()
-        
+        # toy data for now
+        data_model = _gen_some_data()
         self.model = DatasetModel(dataset=data_model)
-        
-        #self.model.select()
-
         self.tableView.setModel(self.model)
         self.tableView.setSelectionMode(QTableView.ContiguousSelection)
-        #self.tableView.setSelectionBehavior(QTableView.SelectRows)
-        #self.tableView.setItemDelegate(QSqlRelationalDelegate(self))
-
         self.model.reset()
-        #self.model = QSqlTableModel(self)
-        #self.model.select()
-        query = QSqlQuery()
 
 
+################################################################
+#  Unit tests! Use nose 
+#           [http://somethingaboutorange.com/mrl/projects/nose] or just
+#           > easy_install nose
+#
+#   e.g., while in this directory:
+#           > nosetests meta_form
+#
+################################################################
 
-def gen_some_data():
+def _gen_some_data():
+    ''' For testing purposes. Generates a toy dataset.'''
     dataset = Dataset()
-    studies = [Study(i, name=study, year=y) for i, study, y in zip(range(3), ["trik", "wallace", "lau"], [1984, 1990, 2000])]
-    raw_data = [[10, 100, 15, 100], [20, 200, 25, 200], [30, 300, 35, 300]]
+    studies = [Study(i, name=study, year=y) for i, study, y in zip(range(3), 
+                        ["trik", "wallace", "lau"], [1984, 1990, 2000])]
+    raw_data = [[10, 100, 15, 100], [20, 200, 25, 200], 
+                                [30, 300, 35, 300]]
     dataset.studies = studies
     for study,data in zip(dataset.studies, raw_data):
         study.raw_data = data
     return dataset
     
-welcome_str = "** welcome to OpenMeta; version %s **" % .01
-print "".join(["*" for x in range(len(welcome_str))])
-print welcome_str
-print "".join(["*" for x in range(len(welcome_str))])
-
-app = QtGui.QApplication(sys.argv)
-meta = MetaForm()
-meta.show()
-sys.exit(app.exec_())
-
-'''
-if __name__ == "__main__":
+def _setup_app():
     app = QtGui.QApplication(sys.argv)
-    meta = Ui_MainWindow
+    meta = MetaForm()
+    meta.tableView.setSelectionMode(QTableView.ContiguousSelection)
+    meta.show()
+    return (meta, app)
+    
+
+def _tear_down_app(app):
+    sys.exit(app.exec_())
+    
+def copy_paste_test():       
+    meta, app = _setup_app()
+    
+    # generate some faux data, set up the 
+    # tableview model
+    data_model = _gen_some_data()
+    test_model = DatasetModel(dataset=data_model)
+    meta.tableView.setModel(test_model)
+    
+    upper_left_index = meta.tableView.model().createIndex(0, 0)
+    lower_right_index = meta.tableView.model().createIndex(1, 1)
+    copied = meta.tableView.copy_contents_in_range(upper_left_index, lower_right_index, 
+                                                                                    to_clipboard=False)
+
+    tester = "trik\t1984\nwallace\t1990"
+    assert(copied == tester)
+
+    # now ascertain that we can paste it. first, copy (the same string) to the clipboard
+    copied = meta.tableView.copy_contents_in_range(upper_left_index, lower_right_index, 
+                                                                                to_clipboard=True)
+    upper_left_index = meta.tableView.model().createIndex(1, 0)
+ 
+    # originally, the second row is wallace
+    assert(str(meta.tableView.model().data(upper_left_index).toString()) == "wallace")
+    meta.tableView.paste_from_clipboard(upper_left_index)
+    # now, the 2nd row (index:1) should contain trik
+    assert(str(meta.tableView.model().data(upper_left_index).toString()) == "trik")
+
+
+#
+# to launch:
+#   >python meta_form.py to 
+#
+if __name__ == "__main__":
+    welcome_str = "** welcome to OpenMeta; version %s **" % .01
+    print "".join(["*" for x in range(len(welcome_str))])
+    print welcome_str
+    print "".join(["*" for x in range(len(welcome_str))])
+    
+    app = QtGui.QApplication(sys.argv)
+    meta = MetaForm()
     meta.show()
     sys.exit(app.exec_())
-'''
