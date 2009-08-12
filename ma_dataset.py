@@ -9,19 +9,18 @@
 ##
 #############################################################################
 
+ # enumeration of data types
+BINARY, CONTINUOUS, DIAGNOSTIC, OTHER = range(4)
 
+# enumeration of meta-analytic types
+VANILLA, NETWORK = range(2)
+    
 class Dataset:
     
-    # enumeration of data types
-    BINARY, CONTINUOUS, DIAGNOSTIC, OTHER = range(4)
-    
-    # enumeration of meta-analytic types
-    VANILLA, NETWORK = range(2)
     def __len__(self):
         return len(self.studies)
         
-    def __init__(self, title=None, summary=None, data_type = BINARY,
-                        two_group = True):
+    def __init__(self, title=None, summary=None):
         self.title = title
         self.summary = summary
         self.studies = []
@@ -29,8 +28,7 @@ class Dataset:
         self.num_follow_ups = 0
         self.num_treatments = 0
         self.notes = ""
-        self.data_type = data_type
-        self.two_group = two_group
+        self.current_ma_unit = None
 
     def num_studies(self):
         return len(self.studies)
@@ -51,11 +49,17 @@ class Study:
     
         
 class MetaAnalyticUnit:
-    def __init__(self):
+    '''
+    This class is the unit of analysis. It corresponds to a single
+    time period for a particular outcome for a dataset. 
+    '''
+    def __init__(self, name, data_type, is_two_group, raw_data = [], 
+                    time=None):
         self.name = ""
-        self.type = None
+        self.type = data_type
         self.effect_sizes = {}
         self.raw_data = []
+        self.time = time
         self.links = []
         
 class Link:

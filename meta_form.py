@@ -32,12 +32,13 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         super(MetaForm, self).__init__(parent)
         self.setupUi(self)
         # toy data for now
-        data_model = _gen_some_data()
+        # data_model = _gen_some_data()
+        data_model = Dataset()
         self.model = DatasetModel(dataset=data_model)
         self.tableView.setModel(self.model)
         self.tableView.setSelectionMode(QTableView.ContiguousSelection)
         self.model.reset()
-
+    
 
 ################################################################
 #  Unit tests! Use nose 
