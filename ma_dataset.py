@@ -28,7 +28,7 @@ class Dataset:
         self.num_follow_ups = 0
         self.num_treatments = 0
         self.notes = ""
-        self.current_ma_unit = None
+        self.ma_units = None
 
     def num_studies(self):
         return len(self.studies)
@@ -62,6 +62,7 @@ class MetaAnalyticUnit:
         self.time = time
         self.links = []
         
+    
 class Link:
     pass
     
