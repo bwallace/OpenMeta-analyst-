@@ -32,10 +32,12 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         super(MetaForm, self).__init__(parent)
         self.setupUi(self)
         # toy data for now
-        # data_model = _gen_some_data()
-        data_model = Dataset()
+        data_model = _gen_some_data()
+        #data_model = Dataset()
         self.model = DatasetModel(dataset=data_model)
+        self.model.set_current_ma_unit("death")
         self.tableView.setModel(self.model)
+        QObject.connect(self.tableView.model(), SIGNAL("cellContentChanged(QModelIndex, QVariant, QVariant)"), self.tableView.cell_content_changed)
         self.tableView.setSelectionMode(QTableView.ContiguousSelection)
         self.model.reset()
     
@@ -58,8 +60,10 @@ def _gen_some_data():
     raw_data = [[10, 100, 15, 100], [20, 200, 25, 200], 
                                 [30, 300, 35, 300]]
     dataset.studies = studies
+    
     for study,data in zip(dataset.studies, raw_data):
-        study.raw_data = data
+        study.add_ma_unit("death", MetaAnalyticUnit(BINARY, True, raw_data=data))
+       
     return dataset
     
 def _setup_app():
@@ -81,7 +85,7 @@ def copy_paste_test():
     data_model = _gen_some_data()
     test_model = DatasetModel(dataset=data_model)
     meta.tableView.setModel(test_model)
-    
+
     upper_left_index = meta.tableView.model().createIndex(0, 0)
     lower_right_index = meta.tableView.model().createIndex(1, 1)
     copied = meta.tableView.copy_contents_in_range(upper_left_index, lower_right_index, 

@@ -4,8 +4,7 @@
 ##  Tufts Medical Center
 ##  OpenMeta[analyst]
 ##  
-##
-## Custom dataset class. This is a container for study data. 
+## Custom dataset module. 
 ##
 #############################################################################
 
@@ -30,9 +29,16 @@ class Dataset:
         self.notes = ""
         self.ma_units = None
 
+    def add_study(self, study):
+        self.studies.append(study)
+        
+    def remove_study(self, id):
+        self.studies = [study for study in self.studies if study.id != id]
+        
     def num_studies(self):
         return len(self.studies)
     
+        
 class Study:
     '''
     This class represents a study. It basically holds a 
@@ -45,7 +51,10 @@ class Study:
         self.name = name
         self.N = None
         self.notes = ""
-        self.ma_units = []
+        self.ma_units = {}
+    
+    def add_ma_unit(self, name, unit):
+        self.ma_units[name] = unit
     
         
 class MetaAnalyticUnit:
@@ -53,15 +62,15 @@ class MetaAnalyticUnit:
     This class is the unit of analysis. It corresponds to a single
     time period for a particular outcome for a dataset. 
     '''
-    def __init__(self, name, data_type, is_two_group, raw_data = [], 
-                    time=None):
-        self.name = ""
+    def __init__(self, data_type, is_two_group, raw_data = [], 
+                    time=None, links = []):
         self.type = data_type
         self.effect_sizes = {}
-        self.raw_data = []
+        self.raw_data = raw_data
         self.time = time
-        self.links = []
+        self.links = links
         
+            
     
 class Link:
     pass
