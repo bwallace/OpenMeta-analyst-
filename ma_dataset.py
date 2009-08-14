@@ -37,7 +37,27 @@ class Dataset:
         
     def num_studies(self):
         return len(self.studies)
+            
+    def cmp_studies(self, compare_by="name"):
+        if compare_by == "name":
+            return lambda study_a, study_b : self._cmp_wrapper(study_a.name, study_b.name)
+        elif compare_by == "year":
+            return lambda study_a, study_b : self._cmp_wrapper(study_a.year, study_b.year)
     
+    def _cmp_wrapper(self, study_a_val, study_b_val):
+        '''
+        Wraps the default compare method to assert that "" (i.e., empty studies)
+        are greater than non-empties
+        '''
+        if study_a_val == "":
+            return 1
+        elif study_b_val == "":
+            return 1
+        else:
+            return cmp(study_a_val, study_b_val)
+        
+
+        
         
 class Study:
     '''
@@ -55,7 +75,7 @@ class Study:
     
     def add_ma_unit(self, name, unit):
         self.ma_units[name] = unit
-    
+
         
 class MetaAnalyticUnit:
     '''
