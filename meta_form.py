@@ -14,13 +14,14 @@ import sys
 import pdb
 from PyQt4 import QtCore, QtGui, Qt
 from PyQt4.Qt import *
-from PyQt4.QtSql import *
 import nose # for unit tests
 import ui_meta
 import ma_data_table_model
 from ma_data_table_model import *
 import ma_dataset
 from ma_dataset import *
+import meta_form
+import new_outcome_form
 
 class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     
@@ -35,13 +36,35 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         data_model = _gen_some_data()
         #data_model = Dataset()
         self.model = DatasetModel(dataset=data_model)
-        self.model.set_current_ma_unit("death")
+        self.model.set_current_outcome("death")
+        self.model.set_current_time_point(0)
         self.tableView.setModel(self.model)
+        
+        # the nav_lbl text corresponds to the currently selected
+        # 'dimension', e.g., outcome or treatment. New points
+        # can then be added tot his dimension, or it can be travelled
+        # along using the horizontal nav arrows (the vertical arrows
+        # navigate along the *dimensions*)
+        self.nav_lbl.text = "outcome"
+        
+        
+        # What do do about the undo stack? As of now, it 
+        # basically sits on the ma_table_view -- should there be
+        # a shared undo stack? Should the main window (this)
+        # have its own?
         QObject.connect(self.tableView.model(), SIGNAL("cellContentChanged(QModelIndex, QVariant, QVariant)"), self.tableView.cell_content_changed)
+        QObject.connect(self.nav_add_btn, SIGNAL("pressed()"), self.add_new)
         self.tableView.setSelectionMode(QTableView.ContiguousSelection)
         self.model.reset()
     
+    def add_new(self):
+        cur_dimension = self.nav_lbl.text
+        if cur_dimension == "outcome":
+            form =  new_outcome_form.AddNewOutcomeForm(self) 
 
+            if form.exec_():
+                print "hazah!"
+                
 ################################################################
 #  Unit tests! Use nose 
 #           [http://somethingaboutorange.com/mrl/projects/nose] or just
@@ -62,7 +85,7 @@ def _gen_some_data():
     dataset.studies = studies
     
     for study,data in zip(dataset.studies, raw_data):
-        study.add_ma_unit("death", MetaAnalyticUnit(BINARY, True, raw_data=data))
+        study.add_ma_unit("death", MetaAnalyticUnit(BINARY, True, raw_data=data), 0)
        
     return dataset
     
@@ -106,9 +129,23 @@ def copy_paste_test():
     assert(str(meta.tableView.model().data(upper_left_index).toString()) == "trik")
 
 
+def paste_from_excel_test():
+    meta, app = _setup_app()
+    
+    #set up the tableview model with a blank model
+    test_model = DatasetModel()
+    meta.tableView.setModel(test_model)
+    
+    copied_str = """a	1993
+b	1785
+"""
+    
+
+
+
 #
 # to launch:
-#   >python meta_form.py to 
+#   >python meta_form.py
 #
 if __name__ == "__main__":
     welcome_str = "** welcome to OpenMeta; version %s **" % .01

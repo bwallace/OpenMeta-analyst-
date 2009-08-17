@@ -73,8 +73,10 @@ class Study:
         self.notes = ""
         self.ma_units = {}
     
-    def add_ma_unit(self, name, unit):
-        self.ma_units[name] = unit
+    def add_ma_unit(self, outcome_name, unit, time):
+        if not outcome_name in self.ma_units:
+            self.ma_units[outcome_name] = {}
+        self.ma_units[outcome_name][time]  = unit
 
         
 class MetaAnalyticUnit:
@@ -87,7 +89,7 @@ class MetaAnalyticUnit:
         self.type = data_type
         self.effect_sizes = {}
         self.raw_data = raw_data
-        self.time = time
+        self.time = time or 0
         self.links = links
         
             
