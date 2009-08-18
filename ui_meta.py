@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'meta.ui'
 #
-# Created: Wed Aug 12 16:18:16 2009
+# Created: Tue Aug 18 12:26:52 2009
 #      by: PyQt4 UI code generator 4.4.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -42,7 +42,6 @@ class Ui_MainWindow(object):
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setContentsMargins(-1, -1, -1, 0)
         self.verticalLayout.setObjectName("verticalLayout")
-        #self.tableView = QtGui.QTableView(self.nav_frame)
         self.tableView = ma_data_table_view.MADataTable(self.nav_frame)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -113,6 +112,35 @@ class Ui_MainWindow(object):
         self.nav_add_btn.setIconSize(QtCore.QSize(64, 64))
         self.nav_add_btn.setAutoRaise(True)
         self.nav_add_btn.setObjectName("nav_add_btn")
+        self.widget = QtGui.QWidget(self.frame)
+        self.widget.setGeometry(QtCore.QRect(200, 10, 281, 46))
+        self.widget.setObjectName("widget")
+        self.gridLayout = QtGui.QGridLayout(self.widget)
+        self.gridLayout.setObjectName("gridLayout")
+        self.label = QtGui.QLabel(self.widget)
+        font = QtGui.QFont()
+        font.setPointSize(11)
+        self.label.setFont(font)
+        self.label.setObjectName("label")
+        self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
+        self.cur_outcome_lbl = QtGui.QLabel(self.widget)
+        font = QtGui.QFont()
+        font.setPointSize(11)
+        self.cur_outcome_lbl.setFont(font)
+        self.cur_outcome_lbl.setObjectName("cur_outcome_lbl")
+        self.gridLayout.addWidget(self.cur_outcome_lbl, 0, 1, 1, 1)
+        self.label_3 = QtGui.QLabel(self.widget)
+        font = QtGui.QFont()
+        font.setPointSize(11)
+        self.label_3.setFont(font)
+        self.label_3.setObjectName("label_3")
+        self.gridLayout.addWidget(self.label_3, 1, 0, 1, 1)
+        self.cur_time_lbl = QtGui.QLabel(self.widget)
+        font = QtGui.QFont()
+        font.setPointSize(11)
+        self.cur_time_lbl.setFont(font)
+        self.cur_time_lbl.setObjectName("cur_time_lbl")
+        self.gridLayout.addWidget(self.cur_time_lbl, 1, 1, 1, 1)
         self.verticalLayout.addWidget(self.frame)
         self.verticalLayout_2.addLayout(self.verticalLayout)
         self.horizontalLayout.addWidget(self.nav_frame)
@@ -121,6 +149,9 @@ class Ui_MainWindow(object):
         self.menubar.setGeometry(QtCore.QRect(0, 0, 985, 21))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtGui.QMenu(self.menubar)
+        font = QtGui.QFont()
+        font.setFamily("Verdana")
+        self.menuFile.setFont(font)
         self.menuFile.setObjectName("menuFile")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
@@ -133,7 +164,9 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "OpenMeta[analyst]", None, QtGui.QApplication.UnicodeUTF8))
-        self.nav_lbl.setText(QtGui.QApplication.translate("MainWindow", "Outcome", None, QtGui.QApplication.UnicodeUTF8))
+        self.nav_lbl.setText(QtGui.QApplication.translate("MainWindow", "outcome", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setText(QtGui.QApplication.translate("MainWindow", "current outcome:", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_3.setText(QtGui.QApplication.translate("MainWindow", "current time:", None, QtGui.QApplication.UnicodeUTF8))
         self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "File", None, QtGui.QApplication.UnicodeUTF8))
 
 import icons_rc

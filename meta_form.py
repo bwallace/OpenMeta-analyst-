@@ -36,7 +36,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         data_model = _gen_some_data()
         #data_model = Dataset()
         self.model = DatasetModel(dataset=data_model)
-        self.model.set_current_outcome("death")
+        self.display_outcome("death")
         self.model.set_current_time_point(0)
         self.tableView.setModel(self.model)
         
@@ -63,8 +63,21 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             form =  new_outcome_form.AddNewOutcomeForm(self) 
 
             if form.exec_():
-                print "hazah!"
+                # then the user clicked ok and has added a new outcome.
+                # here we want to add the outcome to the dataset, and then
+                # display it
+                name = form.outcome_name_le.text()
+                type = str(form.datatype_cbo_box.currentText())
+                self.model.add_new_outcome(name, type)
+                self.display_outcome(name)
                 
+                
+    def display_outcome(self, outcome_name):
+        self.model.set_current_outcome(outcome_name)        
+        self.model.set_current_time_point(0)
+        self.cur_outcome_lbl.setText(outcome_name)
+        self.model.reset()
+        
 ################################################################
 #  Unit tests! Use nose 
 #           [http://somethingaboutorange.com/mrl/projects/nose] or just
@@ -83,9 +96,9 @@ def _gen_some_data():
     raw_data = [[10, 100, 15, 100], [20, 200, 25, 200], 
                                 [30, 300, 35, 300]]
     dataset.studies = studies
-    
+    outcome = Outcome("death", BINARY)
     for study,data in zip(dataset.studies, raw_data):
-        study.add_ma_unit("death", MetaAnalyticUnit(BINARY, True, raw_data=data), 0)
+        study.add_ma_unit(MetaAnalyticUnit(outcome, True, raw_data=data), 0)
        
     return dataset
     
@@ -96,7 +109,6 @@ def _setup_app():
     meta.show()
     return (meta, app)
     
-
 def _tear_down_app(app):
     sys.exit(app.exec_())
     
