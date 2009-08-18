@@ -47,21 +47,22 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # navigate along the *dimensions*)
         self.nav_lbl.text = "outcome"
         
-        
-        # What do do about the undo stack? As of now, it 
-        # basically sits on the ma_table_view -- should there be
-        # a shared undo stack? Should the main window (this)
-        # have its own?
-        QObject.connect(self.tableView.model(), SIGNAL("cellContentChanged(QModelIndex, QVariant, QVariant)"), self.tableView.cell_content_changed)
-        QObject.connect(self.nav_add_btn, SIGNAL("pressed()"), self.add_new)
+        self._setup_connections()
         self.tableView.setSelectionMode(QTableView.ContiguousSelection)
         self.model.reset()
     
+    def _setup_connections(self):
+        QObject.connect(self.tableView.model(), SIGNAL("cellContentChanged(QModelIndex, QVariant, QVariant)"), 
+                                                                                    self.tableView.cell_content_changed)
+        QObject.connect(self.nav_add_btn, SIGNAL("pressed()"), self.add_new)
+        QObject.connect(self.nav_right_btn, SIGNAL("pressed()"), self.next)
+        QObject.connect(self.nav_left_btn, SIGNAL("pressed()"), self.previous)
+        
     def add_new(self):
         cur_dimension = self.nav_lbl.text
         if cur_dimension == "outcome":
             form =  new_outcome_form.AddNewOutcomeForm(self) 
-
+            form.outcome_name_le.setFocus()
             if form.exec_():
                 # then the user clicked ok and has added a new outcome.
                 # here we want to add the outcome to the dataset, and then
@@ -72,10 +73,22 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 self.display_outcome(name)
                 
                 
+    def next(self):
+        cur_dimension = self.nav_lbl.text
+        if cur_dimension == "outcome":
+            next_outcome = self.model.get_next_outcome_name()
+            self.display_outcome(next_outcome)
+            
+    def previous(self):
+        cur_dimension = self.nav_lbl.text
+        if cur_dimension == "outcome":
+            next_outcome = self.model.get_prev_outcome_name()
+            self.display_outcome(next_outcome)     
+        
     def display_outcome(self, outcome_name):
         self.model.set_current_outcome(outcome_name)        
         self.model.set_current_time_point(0)
-        self.cur_outcome_lbl.setText(outcome_name)
+        self.cur_outcome_lbl.setText(u"<font color='Blue'>%s</font>" % outcome_name)
         self.model.reset()
         
 ################################################################

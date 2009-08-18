@@ -29,8 +29,12 @@ class Dataset:
         self.num_follow_ups = 0
         self.num_treatments = 0
         self.notes = ""
-        self.outcomes_to_ma_units = None
 
+    def get_outcome_names(self):
+        if len(self) == 0:
+            return []
+        return sorted(self.studies[0].outcomes_to_ma_units.keys())
+        
     def add_study(self, study):
         self.studies.append(study)
         

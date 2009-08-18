@@ -50,7 +50,7 @@
        <enum>QFrame::StyledPanel</enum>
       </property>
       <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
+       <enum>QFrame::Plain</enum>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <property name="spacing">
@@ -281,10 +281,10 @@
            <widget class="QWidget" name="">
             <property name="geometry">
              <rect>
-              <x>200</x>
-              <y>10</y>
-              <width>281</width>
-              <height>46</height>
+              <x>190</x>
+              <y>0</y>
+              <width>251</width>
+              <height>61</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout">
@@ -292,11 +292,14 @@
               <widget class="QLabel" name="label">
                <property name="font">
                 <font>
-                 <pointsize>11</pointsize>
+                 <pointsize>9</pointsize>
                 </font>
                </property>
                <property name="text">
                 <string>current outcome:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                </property>
               </widget>
              </item>
@@ -304,7 +307,7 @@
               <widget class="QLabel" name="cur_outcome_lbl">
                <property name="font">
                 <font>
-                 <pointsize>11</pointsize>
+                 <pointsize>9</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -316,11 +319,14 @@
               <widget class="QLabel" name="label_3">
                <property name="font">
                 <font>
-                 <pointsize>11</pointsize>
+                 <pointsize>9</pointsize>
                 </font>
                </property>
                <property name="text">
-                <string>current time:</string>
+                <string>current follow-up:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                </property>
               </widget>
              </item>
@@ -328,7 +334,7 @@
               <widget class="QLabel" name="cur_time_lbl">
                <property name="font">
                 <font>
-                 <pointsize>11</pointsize>
+                 <pointsize>9</pointsize>
                 </font>
                </property>
                <property name="text">

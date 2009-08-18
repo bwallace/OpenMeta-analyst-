@@ -2,13 +2,13 @@
 
 # Form implementation generated from reading ui file 'meta.ui'
 #
-# Created: Tue Aug 18 12:26:52 2009
+# Created: Tue Aug 18 14:07:57 2009
 #      by: PyQt4 UI code generator 4.4.3
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
-import ma_data_table_view
+import ma_data_table_view 
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -32,7 +32,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.nav_frame = QtGui.QFrame(self.centralwidget)
         self.nav_frame.setFrameShape(QtGui.QFrame.StyledPanel)
-        self.nav_frame.setFrameShadow(QtGui.QFrame.Raised)
+        self.nav_frame.setFrameShadow(QtGui.QFrame.Plain)
         self.nav_frame.setObjectName("nav_frame")
         self.verticalLayout_2 = QtGui.QVBoxLayout(self.nav_frame)
         self.verticalLayout_2.setSpacing(1)
@@ -113,31 +113,33 @@ class Ui_MainWindow(object):
         self.nav_add_btn.setAutoRaise(True)
         self.nav_add_btn.setObjectName("nav_add_btn")
         self.widget = QtGui.QWidget(self.frame)
-        self.widget.setGeometry(QtCore.QRect(200, 10, 281, 46))
+        self.widget.setGeometry(QtCore.QRect(190, 0, 251, 61))
         self.widget.setObjectName("widget")
         self.gridLayout = QtGui.QGridLayout(self.widget)
         self.gridLayout.setObjectName("gridLayout")
         self.label = QtGui.QLabel(self.widget)
         font = QtGui.QFont()
-        font.setPointSize(11)
+        font.setPointSize(9)
         self.label.setFont(font)
+        self.label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label.setObjectName("label")
         self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
         self.cur_outcome_lbl = QtGui.QLabel(self.widget)
         font = QtGui.QFont()
-        font.setPointSize(11)
+        font.setPointSize(9)
         self.cur_outcome_lbl.setFont(font)
         self.cur_outcome_lbl.setObjectName("cur_outcome_lbl")
         self.gridLayout.addWidget(self.cur_outcome_lbl, 0, 1, 1, 1)
         self.label_3 = QtGui.QLabel(self.widget)
         font = QtGui.QFont()
-        font.setPointSize(11)
+        font.setPointSize(9)
         self.label_3.setFont(font)
+        self.label_3.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_3.setObjectName("label_3")
         self.gridLayout.addWidget(self.label_3, 1, 0, 1, 1)
         self.cur_time_lbl = QtGui.QLabel(self.widget)
         font = QtGui.QFont()
-        font.setPointSize(11)
+        font.setPointSize(9)
         self.cur_time_lbl.setFont(font)
         self.cur_time_lbl.setObjectName("cur_time_lbl")
         self.gridLayout.addWidget(self.cur_time_lbl, 1, 1, 1, 1)
@@ -166,7 +168,7 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "OpenMeta[analyst]", None, QtGui.QApplication.UnicodeUTF8))
         self.nav_lbl.setText(QtGui.QApplication.translate("MainWindow", "outcome", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("MainWindow", "current outcome:", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_3.setText(QtGui.QApplication.translate("MainWindow", "current time:", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_3.setText(QtGui.QApplication.translate("MainWindow", "current follow-up:", None, QtGui.QApplication.UnicodeUTF8))
         self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "File", None, QtGui.QApplication.UnicodeUTF8))
 
 import icons_rc
