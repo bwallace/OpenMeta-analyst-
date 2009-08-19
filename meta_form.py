@@ -106,12 +106,14 @@ def _gen_some_data():
     dataset = Dataset()
     studies = [Study(i, name=study, year=y) for i, study, y in zip(range(3), 
                         ["trik", "wallace", "lau"], [1984, 1990, 2000])]
-    raw_data = [[10, 100, 15, 100], [20, 200, 25, 200], 
-                                [30, 300, 35, 300]]
+    raw_data = [
+                                [ [10, 100] , [15, 100] ], [ [20, 200] , [25, 200] ], 
+                                [ [30, 300] , [35, 300] ]
+                      ]
     dataset.studies = studies
     outcome = Outcome("death", BINARY)
     for study,data in zip(dataset.studies, raw_data):
-        study.add_ma_unit(MetaAnalyticUnit(outcome, True, raw_data=data), 0)
+        study.add_ma_unit(MetaAnalyticUnit(outcome, raw_data=data), 0)
        
     return dataset
     

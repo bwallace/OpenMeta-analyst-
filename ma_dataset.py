@@ -1,11 +1,19 @@
 #############################################################################
-##
-##  Byron C. Wallace
-##  Tufts Medical Center
-##  OpenMeta[analyst]
-##  
-##  Dataset module; a roll your own back end.
-##
+#
+#  Byron C. Wallace
+#  Tufts Medical Center
+#  OpenMeta[analyst]
+#  
+#  Dataset module; a roll your own back end. This is a model for manipulating
+#  datasets. Note that *no QT lives here*, i.e., it is divorced from the UI entirely.
+#
+#  The structure is as follows: A Dataset object holds a list of Study objects. 
+#  These Study objects in turn contain a dictionary, mapping outcome names
+#  to another dictionary, which maps follow ups (time points) to MA_Unit
+#  objects. Finally, these MA_Unit objects in turn map treatment names
+#  - or groups (e.g., 'control', 'aspirin') - to raw data. Further, at the MA_Unit level,
+#  metrics (e.g., "OR") map to dictionaries containing that metric as computed for
+# the pairwise combinations of the groups/treatments (e.g., OR->"AvB"=x)
 #############################################################################
 
  # enumeration of data types
@@ -66,23 +74,6 @@ class Dataset:
         else:
             return cmp(study_a_val, study_b_val)
         
-            
-class MetaAnalyticUnit:
-    '''
-    This class is the unit of analysis. It corresponds to a single
-    time period for a particular outcome for a dataset. 
-    '''
-    def __init__(self, outcome, is_two_group=True, raw_data = [], 
-                    time=None):
-        self.outcome = outcome
-        self.effect_sizes = {}
-        self.raw_data = raw_data
-        self.time = time or 0
-        
-    def type(self):
-        return self.outcome.data_type
-        
-                
 class Study:
     '''
     This class represents a study. It basically holds a 
@@ -96,22 +87,86 @@ class Study:
         self.N = None
         self.notes = ""
         # this dictionary maps outcome names to dictionaries
-        # of mapping time points to MetaAnalyticUnit objects
-        self.outcomes_to_ma_units = {}
+        # which in turn map follow up ids to MetaAnalyticUnit 
+        # objects.
+        self.outcomes_to_follow_ups = {}
     
+        
     def add_outcome(self, outcome):
         ''' Adds a new, blank outcome '''
-        if outcome in self.outcomes_to_ma_units:
+        if outcome in self.outcomes_to_follow_ups:
             raise Exception, "Study already contains an outcome named %s" % outcome.name
-        self.outcomes_to_ma_units[outcome.name] = {}
-        self.outcomes_to_ma_units[outcome.name][0] = MetaAnalyticUnit(outcome)
+        self.outcomes_to_follow_ups[outcome.name] = {}
+        self.outcomes_to_follow_ups[outcome.name][0] = MetaAnalyticUnit(outcome)
             
         
     def add_ma_unit(self, unit, time):
-        if not unit.outcome in self.outcomes_to_ma_units:
-            self.outcomes_to_ma_units[unit.outcome.name] = {}
-        self.outcomes_to_ma_units[unit.outcome.name][time]  = unit
+        if not unit.outcome in self.outcomes_to_follow_ups:
+            self.outcomes_to_follow_ups[unit.outcome.name] = {}
+        self.outcomes_to_follow_ups[unit.outcome.name][time] = unit
         
+class MetaAnalyticUnit:
+    '''
+    This class is the unit of analysis. It corresponds to a single
+    time period for a particular outcome for a dataset. 
+    '''
+    def __init__(self, outcome, raw_data = [ [], [] ]):
+        '''
+        Instantiate a new MetaAnalyticUnit, which is specific to a 
+        given study/outcome pair. 
+        
+        @params:
+        ===
+        outcome -- Outcome object, this tells us what sort of data type
+                            we have
+        raw_data -- If provided, it is assumed to be a nested list, where
+                            the first sublist is the raw data (num_events, num_total) 
+                            for the treated group and the second corresponds to the
+                            control group (if applicable)
+        '''
+        self.outcome = outcome
+        # effects_dict maps effect names -- e.g., OR, RR --
+        # to dictionaries which in turn map pairwise 
+        # TreatmentGroup ids to effect scalars.
+        self.tx_groups = {}
+        # add the two default groups: treatment and control
+        for i, group in enumerate(["treated", "control"]):
+            self.add_group(group)
+            self.tx_groups[group].raw_data = raw_data[i]
+            
+        self.effects_dict = {}
+        if self.outcome == BINARY:
+            for effect in ["OR", "RR", "RD"]:
+                self.effects_dict[effect] = {}
+
+        
+    def type(self):
+        return self.outcome.data_type
+        
+    def add_group(self, name, raw_data=[]):
+        if len(self.tx_groups.keys()) == 0:
+            id = 0
+        else:
+            id = max([group.id for group in self.tx_groups.values()]) + 1
+        self.tx_groups[name] = TreatmentGroup(id, name, raw_data)
+        
+    def get_raw_data_for_group(self, group_name):
+        return self.tx_groups[group_name].raw_data
+        
+    def get_raw_data_for_groups(self, groups):
+        raw_data = []
+        for group in groups:
+            raw_data.extend(self.get_raw_data_for_group(group))
+        return raw_data
+            
+    
+class TreatmentGroup:
+    def __init__(self, id, name, raw_data=[]):
+        self.id = id
+        self.name = name
+        self.raw_data = raw_data
+    
+            
 class Outcome:
     ''' Holds a few fields that define outcomes. '''
     def __init__(self, name, data_type, links=None):
