@@ -33,17 +33,30 @@ class Dataset:
         self.title = title
         self.summary = summary
         self.studies = []
+
+        
         self.num_outcomes = 0
         self.num_follow_ups = 0
         self.num_treatments = 0
+
         self.notes = ""
 
     def get_outcome_names(self):
         if len(self) == 0:
             return []
-        return sorted(self.studies[0].outcomes_to_ma_units.keys())
+        return sorted(self.studies[0].outcomes_to_follow_ups.keys())
         
     def add_study(self, study):
+        # instead, allow empty outcomes/follow-ups, but handle
+        # this at the point of execution
+        '''
+        if len(self.studies) > 0:
+            # if there are pre-existing studies, we
+            # want to add all of the existing outcomes
+            # for these studies to the study being added
+            for outcome in self.studies[0].outcomes:
+                study.add_outcome(outcome)
+        '''    
         self.studies.append(study)
         
     def remove_study(self, id):
@@ -52,6 +65,14 @@ class Dataset:
     def num_studies(self):
         return len(self.studies)
             
+    def get_outcome_type(self, outcome_name):
+        if len(self.studies) == 0:
+            return None
+        outcome = self.studies[0].get_outcome(outcome_name)
+        if outcome is None: 
+            return None
+        return outcome.data_type
+        
     def add_outcome(self, outcome):
         for study in self.studies:
             study.add_outcome(outcome)
@@ -90,19 +111,27 @@ class Study:
         # which in turn map follow up ids to MetaAnalyticUnit 
         # objects.
         self.outcomes_to_follow_ups = {}
-    
+        # also maintain a list of the known outcome objects
+        self.outcomes = []
         
     def add_outcome(self, outcome):
         ''' Adds a new, blank outcome '''
-        if outcome in self.outcomes_to_follow_ups:
+        if outcome.name in self.outcomes_to_follow_ups.keys():
             raise Exception, "Study already contains an outcome named %s" % outcome.name
         self.outcomes_to_follow_ups[outcome.name] = {}
         self.outcomes_to_follow_ups[outcome.name][0] = MetaAnalyticUnit(outcome)
-            
+        self.outcomes.append(outcome)
         
+    def get_outcome(self, outcome_name):
+        for outcome in self.outcomes:
+            if outcome.name == outcome_name:
+                return outcome
+                
     def add_ma_unit(self, unit, time):
         if not unit.outcome in self.outcomes_to_follow_ups:
-            self.outcomes_to_follow_ups[unit.outcome.name] = {}
+            #self.outcomes_to_follow_ups[unit.outcome.name] = {}
+            self.add_outcome(unit.outcome)
+            
         self.outcomes_to_follow_ups[unit.outcome.name][time] = unit
         
 class MetaAnalyticUnit:

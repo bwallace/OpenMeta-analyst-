@@ -30,14 +30,22 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # We follow the advice given by Mark Summerfield in his Python QT book: Namely, we
         # use multiple inheritence to gain access to the ui. 
         #
+        
         super(MetaForm, self).__init__(parent)
         self.setupUi(self)
-        # toy data for now
-        data_model = _gen_some_data()
-        #data_model = Dataset()
-        self.model = DatasetModel(dataset=data_model)
-        self.display_outcome("death")
-        self.model.set_current_time_point(0)
+        
+        # this is just for debugging purposes; if a 
+        # switch is passed in, display fake data
+        if len(sys.argv)>1 and sys.argv[-1]=="--toy-data":
+            # toy data for now
+            data_model = _gen_some_data()
+            self.model = DatasetModel(dataset=data_model)
+            self.display_outcome("death")
+            self.model.set_current_time_point(0)
+        else:
+            data_model = Dataset()
+            self.model = DatasetModel(dataset=data_model)
+
         self.tableView.setModel(self.model)
         
         # the nav_lbl text corresponds to the currently selected
@@ -45,8 +53,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # can then be added tot his dimension, or it can be travelled
         # along using the horizontal nav arrows (the vertical arrows
         # navigate along the *dimensions*)
-        self.nav_lbl.text = "outcome"
-        
+        self.dimensions =["outcome", "follow-up", "group"]
+        self.cur_dimension_index = 0
+        self.cur_dimension = "outcome"
+        self.update_dimension()
         self._setup_connections()
         self.tableView.setSelectionMode(QTableView.ContiguousSelection)
         self.model.reset()
@@ -57,10 +67,11 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         QObject.connect(self.nav_add_btn, SIGNAL("pressed()"), self.add_new)
         QObject.connect(self.nav_right_btn, SIGNAL("pressed()"), self.next)
         QObject.connect(self.nav_left_btn, SIGNAL("pressed()"), self.previous)
+        QObject.connect(self.nav_up_btn, SIGNAL("pressed()"), self.next_dimension)
+        QObject.connect(self.nav_down_btn, SIGNAL("pressed()"), self.previous_dimension)
         
     def add_new(self):
-        cur_dimension = self.nav_lbl.text
-        if cur_dimension == "outcome":
+        if self.cur_dimension == "outcome":
             form =  new_outcome_form.AddNewOutcomeForm(self) 
             form.outcome_name_le.setFocus()
             if form.exec_():
@@ -74,21 +85,39 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 
                 
     def next(self):
-        cur_dimension = self.nav_lbl.text
-        if cur_dimension == "outcome":
+        if self.cur_dimension == "outcome":
             next_outcome = self.model.get_next_outcome_name()
             self.display_outcome(next_outcome)
             
     def previous(self):
-        cur_dimension = self.nav_lbl.text
-        if cur_dimension == "outcome":
+        if self.cur_dimension == "outcome":
             next_outcome = self.model.get_prev_outcome_name()
             self.display_outcome(next_outcome)     
+        
+    def next_dimension(self):
+        if self.cur_dimension_index == len(self.dimensions)-1:
+            self.cur_dimension_index = 0
+        else:
+            self.cur_dimension_index+=1
+        self.update_dimension()
+
+    def previous_dimension(self):
+        if self.cur_dimension_index == 0:
+            self.cur_dimension_index = len(self.dimensions)-1
+        else:
+            self.cur_dimension_index-=1 
+        self.update_dimension()
+
+    def update_dimension(self):
+        self.cur_dimension = self.dimensions[self.cur_dimension_index]
+        self.nav_lbl.setText(self.cur_dimension)
+    
         
     def display_outcome(self, outcome_name):
         self.model.set_current_outcome(outcome_name)        
         self.model.set_current_time_point(0)
         self.cur_outcome_lbl.setText(u"<font color='Blue'>%s</font>" % outcome_name)
+        self.cur_time_lbl.setText(u"<font color='Blue'>%s</font>" % self.model.current_time_point)
         self.model.reset()
         
 ################################################################
@@ -114,7 +143,7 @@ def _gen_some_data():
     outcome = Outcome("death", BINARY)
     for study,data in zip(dataset.studies, raw_data):
         study.add_ma_unit(MetaAnalyticUnit(outcome, raw_data=data), 0)
-       
+    
     return dataset
     
 def _setup_app():

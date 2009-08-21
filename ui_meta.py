@@ -2,13 +2,13 @@
 
 # Form implementation generated from reading ui file 'meta.ui'
 #
-# Created: Tue Aug 18 14:07:57 2009
+# Created: Fri Aug 21 14:32:01 2009
 #      by: PyQt4 UI code generator 4.4.3
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
-import ma_data_table_view 
+import ma_data_table_view
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -113,7 +113,7 @@ class Ui_MainWindow(object):
         self.nav_add_btn.setAutoRaise(True)
         self.nav_add_btn.setObjectName("nav_add_btn")
         self.widget = QtGui.QWidget(self.frame)
-        self.widget.setGeometry(QtCore.QRect(190, 0, 251, 61))
+        self.widget.setGeometry(QtCore.QRect(190, 0, 171, 61))
         self.widget.setObjectName("widget")
         self.gridLayout = QtGui.QGridLayout(self.widget)
         self.gridLayout.setObjectName("gridLayout")
@@ -167,8 +167,8 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "OpenMeta[analyst]", None, QtGui.QApplication.UnicodeUTF8))
         self.nav_lbl.setText(QtGui.QApplication.translate("MainWindow", "outcome", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("MainWindow", "current outcome:", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_3.setText(QtGui.QApplication.translate("MainWindow", "current follow-up:", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setText(QtGui.QApplication.translate("MainWindow", "outcome:", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_3.setText(QtGui.QApplication.translate("MainWindow", "follow-up:", None, QtGui.QApplication.UnicodeUTF8))
         self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "File", None, QtGui.QApplication.UnicodeUTF8))
 
 import icons_rc

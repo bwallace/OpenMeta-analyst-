@@ -283,7 +283,7 @@
              <rect>
               <x>190</x>
               <y>0</y>
-              <width>251</width>
+              <width>171</width>
               <height>61</height>
              </rect>
             </property>
@@ -296,7 +296,7 @@
                 </font>
                </property>
                <property name="text">
-                <string>current outcome:</string>
+                <string>outcome:</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -323,7 +323,7 @@
                 </font>
                </property>
                <property name="text">
-                <string>current follow-up:</string>
+                <string>follow-up:</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
