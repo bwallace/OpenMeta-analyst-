@@ -110,7 +110,7 @@ class MetaAnalyticUnit:
     This class is the unit of analysis. It corresponds to a single
     time period for a particular outcome for a dataset. 
     '''
-    def __init__(self, outcome, raw_data = [ [], [] ]):
+    def __init__(self, outcome, raw_data = [ [], [] ], group_names = ["treated", "control"]):
         '''
         Instantiate a new MetaAnalyticUnit, which is specific to a 
         given study/outcome pair. 
@@ -130,7 +130,7 @@ class MetaAnalyticUnit:
         # TreatmentGroup ids to effect scalars.
         self.tx_groups = {}
         # add the two default groups: treatment and control
-        for i, group in enumerate(["treated", "control"]):
+        for i, group in enumerate(group_names):
             self.add_group(group)
             self.tx_groups[group].raw_data = raw_data[i]
             

@@ -4,7 +4,7 @@
 ##
 ##  Byron C. Wallace
 ##  Tufts Medical Center
-##  OpenMetaanalyst
+##  OpenMeta[analyst]
 ##
 ##  Container form for UI
 ##  
