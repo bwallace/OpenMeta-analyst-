@@ -64,6 +64,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     def _setup_connections(self):
         QObject.connect(self.tableView.model(), SIGNAL("cellContentChanged(QModelIndex, QVariant, QVariant)"), 
                                                                                     self.tableView.cell_content_changed)
+        QObject.connect(self.tableView.model(), SIGNAL("outcomeChanged()"), 
+                                                                                    self.tableView.displayed_ma_changed)
+        QObject.connect(self.tableView.model(), SIGNAL("followUpChanged()"), 
+                                                                                    self.tableView.displayed_ma_changed)
         QObject.connect(self.nav_add_btn, SIGNAL("pressed()"), self.add_new)
         QObject.connect(self.nav_right_btn, SIGNAL("pressed()"), self.next)
         QObject.connect(self.nav_left_btn, SIGNAL("pressed()"), self.previous)
@@ -88,6 +92,9 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         if self.cur_dimension == "outcome":
             next_outcome = self.model.get_next_outcome_name()
             self.display_outcome(next_outcome)
+            
+        if self.cur_dimension in ["outcome, folow-up"]:
+            self.update_undo_stack()
             
     def previous(self):
         if self.cur_dimension == "outcome":
