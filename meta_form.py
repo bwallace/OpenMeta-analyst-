@@ -191,19 +191,37 @@ def copy_paste_test():
     # now, the 2nd row (index:1) should contain trik
     assert(str(meta.tableView.model().data(upper_left_index).toString()) == "trik")
 
-
+def undo_redo_test():
+    meta, app = _setup_app()
+    test_model = DatasetModel()
+    meta.tableView.setModel(test_model)
+    assert(True)
+    
 def paste_from_excel_test():
     meta, app = _setup_app()
     
     #set up the tableview model with a blank model
     test_model = DatasetModel()
     meta.tableView.setModel(test_model)
-    
+    upper_left_index = meta.tableView.model().createIndex(0, 0)
+    # copied from an Excel spreadsheet
     copied_str = """a	1993
 b	1785
 """
+    clipboard = QApplication.clipboard()
+    clipboard.setText(QString(copied_str))
+    meta.tableView.paste_from_clipboard(upper_left_index)
     
-
+    #
+    # now make sure the content is there
+    content = [["a", "1993"], ["b", "1785"]]
+    for row in range(len(content)):
+        for col in range(len(content[row])):
+            cur_index = meta.tableView.model().createIndex(row, col)
+            cur_val = str(meta.tableView.model().data(cur_index).toString())
+            should_be = content[row][col]
+            print "cur val is %s; it should be %s" % (cur_val, should_be)
+            assert(cur_val == should_be)
 
 
 #
