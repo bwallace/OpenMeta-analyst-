@@ -154,13 +154,21 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         print "loading %s..." % file_path
         
         data_model = pickle.load(open(file_path, 'r'))
-        print "number of studies: %s" % data_model.num_studies()
+
+        # this is questionable; we explicitly remove the last study, because
+        # there is *always* a blank study appended to the current dataset.
+        # thus when the dataset was dumped (via pickle) it included this study,
+        # but the model will append *another* blank study to the dataset
+        # when it is opened. this was the easiest way to resolve this issue.
+        data_model.studies = data_model.studies[:-1]
         self.model = DatasetModel(dataset=data_model)
         
         state_dict = pickle.load(open(file_path + ".state"))
         self.model.set_state(state_dict)
         print state_dict
         self.tableView.setModel(self.model)
+        self.cur_outcome_lbl.setText(u"<font color='Blue'>%s</font>" % self.model.current_outcome)
+        self.cur_time_lbl.setText(u"<font color='Blue'>%s</font>" % self.model.current_time_point)
         print "success"
         
         
