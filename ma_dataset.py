@@ -34,12 +34,14 @@ class Dataset:
         self.summary = summary
         self.studies = []
 
-        
         self.num_outcomes = 0
         self.num_follow_ups = 0
         self.num_treatments = 0
 
         self.notes = ""
+        
+        # @TODO
+        self.covariates = []
 
     def get_outcome_names(self):
         if len(self) == 0:
@@ -49,14 +51,6 @@ class Dataset:
     def add_study(self, study):
         # instead, allow empty outcomes/follow-ups, but handle
         # this at the point of execution
-        '''
-        if len(self.studies) > 0:
-            # if there are pre-existing studies, we
-            # want to add all of the existing outcomes
-            # for these studies to the study being added
-            for outcome in self.studies[0].outcomes:
-                study.add_outcome(outcome)
-        '''    
         self.studies.append(study)
         
     def remove_study(self, id):

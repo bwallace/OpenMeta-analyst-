@@ -12,6 +12,7 @@
 
 import sys
 import pdb
+import pickle
 from PyQt4 import QtCore, QtGui, Qt
 from PyQt4.Qt import *
 import nose # for unit tests
@@ -22,6 +23,7 @@ import ma_dataset
 from ma_dataset import *
 import meta_form
 import new_outcome_form
+
 
 class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     
@@ -60,7 +62,18 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self._setup_connections()
         self.tableView.setSelectionMode(QTableView.ContiguousSelection)
         self.model.reset()
+        self.out_path = None
     
+        
+    def keyPressEvent(self, event):
+        if (event.modifiers() & QtCore.Qt.ControlModifier):
+            if event.key() == QtCore.Qt.Key_S:
+                # ctrl + s = save
+                self.save()
+            elif event.key() == QtCore.Qt.Key_O:
+                # ctrl + o = save
+                self.open()
+                
     def _setup_connections(self):
         QObject.connect(self.tableView.model(), SIGNAL("cellContentChanged(QModelIndex, QVariant, QVariant)"), 
                                                                                     self.tableView.cell_content_changed)
@@ -102,6 +115,13 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.display_outcome(next_outcome)     
         
     def next_dimension(self):
+        '''
+        In keeping with the dimensions metaphor, wherein the various 
+        components that can comprise a dataset are 'dimensions' (e.g.,
+        outcomes), this function iterates over the dimensions. So if you call
+        this method, then 'next()', the next method will step forward in the
+        dimension made active here.
+        '''
         if self.cur_dimension_index == len(self.dimensions)-1:
             self.cur_dimension_index = 0
         else:
@@ -127,6 +147,51 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.cur_time_lbl.setText(u"<font color='Blue'>%s</font>" % self.model.current_time_point)
         self.model.reset()
         
+
+    def open(self):
+        file_path = unicode(QFileDialog.getOpenFileName(self, "OpenMeta[analyst] - Open File", 
+                                                                                        ".", "open meta files (*.oma)"))
+        print "loading %s..." % file_path
+        
+        data_model = pickle.load(open(file_path, 'r'))
+        print "number of studies: %s" % data_model.num_studies()
+        self.model = DatasetModel(dataset=data_model)
+        
+        state_dict = pickle.load(open(file_path + ".state"))
+        self.model.set_state(state_dict)
+        print state_dict
+        self.tableView.setModel(self.model)
+        print "success"
+        
+        
+        
+    def save(self):
+        if self.out_path is None:
+            out_f = "."
+            out_f = unicode(QFileDialog.getSaveFileName(self, "OpenMeta[analyst] - Save File",
+                                                                                    out_f, "open meta files: (.oma)"))
+            if out_f is None:
+                return
+            else:
+                self.out_path = out_f
+        try:
+            f = open(self.out_path, 'w')
+            pickle.dump(self.model.dataset, f)
+            f.close()
+            # also write out the 'state', which contains things
+            # pertaining to the view
+            d = self.model.get_stateful_dict()
+            f = open(self.out_path + ".state", 'w')
+            pickle.dump(d, f)
+            f.close()
+            
+        except Exception, e:
+            # @TODO handle this elegantly?
+            print e
+            raise Exception, "whoops. exception thrown attempting to save."
+        
+            
+            
 ################################################################
 #  Unit tests! Use nose 
 #           [http://somethingaboutorange.com/mrl/projects/nose] or just
