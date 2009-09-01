@@ -321,8 +321,8 @@ class CommandPaste(QUndoCommand):
         self.ma_data_table_view.paste_contents(self.upper_left_coord, self.old_content)
         if self.added_study is not None:
             self.ma_data_table_view.model().remove_study(self.added_study)
-        print "!! %s" % len(self.old_studies)
         self.ma_data_table_view.model().dataset.studies = self.old_studies
+        self.ma_data_table_view.model().reset()
         
             
 class CommandSort(QUndoCommand):

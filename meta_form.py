@@ -179,25 +179,25 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             out_f = "."
             out_f = unicode(QFileDialog.getSaveFileName(self, "OpenMeta[analyst] - Save File",
                                                                                     out_f, "open meta files: (.oma)"))
-            if out_f is None:
-                return
+            if out_f == "" or out_f == None:
+                return None
             else:
                 self.out_path = out_f
-        try:
-            f = open(self.out_path, 'w')
-            pickle.dump(self.model.dataset, f)
-            f.close()
-            # also write out the 'state', which contains things
-            # pertaining to the view
-            d = self.model.get_stateful_dict()
-            f = open(self.out_path + ".state", 'w')
-            pickle.dump(d, f)
-            f.close()
-            
-        except Exception, e:
-            # @TODO handle this elegantly?
-            print e
-            raise Exception, "whoops. exception thrown attempting to save."
+            try:
+                f = open(self.out_path, 'w')
+                pickle.dump(self.model.dataset, f)
+                f.close()
+                # also write out the 'state', which contains things
+                # pertaining to the view
+                d = self.model.get_stateful_dict()
+                f = open(self.out_path + ".state", 'w')
+                pickle.dump(d, f)
+                f.close()
+                
+            except Exception, e:
+                # @TODO handle this elegantly?
+                print e
+                raise Exception, "whoops. exception thrown attempting to save."
         
             
             
