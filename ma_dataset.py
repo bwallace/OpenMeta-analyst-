@@ -60,12 +60,17 @@ class Dataset:
         return len(self.studies)
             
     def get_outcome_type(self, outcome_name):
-        if len(self.studies) == 0:
-            return None
-        outcome = self.studies[0].get_outcome(outcome_name)
+        outcome = self.get_outcome_obj(outcome_name)
         if outcome is None: 
             return None
         return outcome.data_type
+        
+    def get_outcome_obj(self, outcome_name):
+        for study in self.studies:
+            outcome_obj = study.get_outcome(outcome_name)
+            if outcome_obj is not None:
+                return outcome_obj
+        return None
         
     def add_outcome(self, outcome):
         for study in self.studies:
@@ -116,10 +121,14 @@ class Study:
         self.outcomes_to_follow_ups[outcome.name][0] = MetaAnalyticUnit(outcome)
         self.outcomes.append(outcome)
         
+    def add_outcome_at_follow_up(self, outcome, follow_up):
+        self.outcomes_to_follow_ups[outcome.name][follow_up] = MetaAnalyticUnit(outcome)
+        
     def get_outcome(self, outcome_name):
         for outcome in self.outcomes:
             if outcome.name == outcome_name:
                 return outcome
+        return None
                 
     def add_ma_unit(self, unit, time):
         if not unit.outcome in self.outcomes_to_follow_ups:
@@ -161,11 +170,19 @@ class MetaAnalyticUnit:
             self.tx_groups[group].raw_data = raw_data[i]
             
         self.effects_dict = {}
-        if self.outcome == BINARY:
+        if self.outcome.data_type == BINARY:
             for effect in ["OR", "RR", "RD"]:
-                self.effects_dict[effect] = {}
+                self.effects_dict[effect] = {"est":None, "lower":None,
+                                                             "upper":None, "variance":None}
 
+         
+    def set_effect(self, effect, value):
+        self.effects_dict[effect]["est"] = value
         
+    def get_effect(self, effect):
+        print self.effects_dict[effect]["est"]
+        return self.effects_dict[effect]["est"]
+    
     def type(self):
         return self.outcome.data_type
         

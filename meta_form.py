@@ -24,6 +24,7 @@ from ma_dataset import *
 import meta_form
 import new_outcome_form
 
+VERSION = .002
 
 class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     
@@ -302,7 +303,7 @@ b	1785
 #   >python meta_form.py
 #
 if __name__ == "__main__":
-    welcome_str = "** welcome to OpenMeta; version %s **" % .01
+    welcome_str = "** welcome to OpenMeta; version %s **" % VERSION
     print "".join(["*" for x in range(len(welcome_str))])
     print welcome_str
     print "".join(["*" for x in range(len(welcome_str))])
