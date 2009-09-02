@@ -180,7 +180,6 @@ class MetaAnalyticUnit:
         self.effects_dict[effect]["est"] = value
         
     def get_effect(self, effect):
-        print self.effects_dict[effect]["est"]
         return self.effects_dict[effect]["est"]
     
     def type(self):

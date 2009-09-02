@@ -212,7 +212,6 @@ class DatasetModel(QAbstractTableModel):
         
     
     def rowCount(self, index=QModelIndex()):
-        print "row count: %s" % self.dataset.num_studies()
         return self.dataset.num_studies()
     
     def columnCount(self, index=QModelIndex()):
@@ -259,7 +258,10 @@ class DatasetModel(QAbstractTableModel):
     def sort_studies(self, col, reverse):
         if col == self.NAME:
             self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by="name"), reverse=reverse)
-            self.reset()
+        elif col == self.YEAR:
+            self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by="year"), reverse=reverse)
+        self.reset()
+        
         
     def order_studies(self, ids):
         ''' Shuffles studies vector to the order specified by ids'''

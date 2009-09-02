@@ -24,6 +24,7 @@ from ma_dataset import *
 import meta_form
 import new_outcome_form
 
+
 VERSION = .002
 
 class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):

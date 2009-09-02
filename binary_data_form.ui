@@ -10,19 +10,19 @@
     <x>0</x>
     <y>0</y>
     <width>385</width>
-    <height>345</height>
+    <height>355</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>385</width>
-    <height>345</height>
+    <height>350</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>385</width>
-    <height>345</height>
+    <height>380</height>
    </size>
   </property>
   <property name="font">
@@ -418,28 +418,18 @@
      </item>
     </layout>
    </item>
-   <item row="7" column="0">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
-   </item>
    <item row="6" column="0">
     <widget class="QGroupBox" name="effect_grp_box">
      <property name="minimumSize">
       <size>
        <width>360</width>
-       <height>41</height>
+       <height>50</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
        <width>411</width>
-       <height>41</height>
+       <height>50</height>
       </size>
      </property>
      <property name="title">
@@ -449,9 +439,9 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>10</y>
-        <width>361</width>
-        <height>21</height>
+        <y>6</y>
+        <width>351</width>
+        <height>41</height>
        </rect>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -460,6 +450,18 @@
        </property>
        <item>
         <widget class="QLabel" name="label_12">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>20</height>
+          </size>
+         </property>
          <property name="font">
           <font>
            <family>Verdana</family>
@@ -478,7 +480,7 @@
          <property name="minimumSize">
           <size>
            <width>45</width>
-           <height>19</height>
+           <height>22</height>
           </size>
          </property>
          <property name="maximumSize">
@@ -500,6 +502,12 @@
        </item>
        <item>
         <widget class="QLabel" name="label_13">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>20</height>
+          </size>
+         </property>
          <property name="font">
           <font>
            <family>Verdana</family>
@@ -518,7 +526,7 @@
          <property name="minimumSize">
           <size>
            <width>45</width>
-           <height>19</height>
+           <height>22</height>
           </size>
          </property>
          <property name="maximumSize">
@@ -540,6 +548,12 @@
        </item>
        <item>
         <widget class="QLabel" name="label_14">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>20</height>
+          </size>
+         </property>
          <property name="font">
           <font>
            <family>Verdana</family>
@@ -558,7 +572,7 @@
          <property name="minimumSize">
           <size>
            <width>45</width>
-           <height>19</height>
+           <height>22</height>
           </size>
          </property>
          <property name="maximumSize">
@@ -580,6 +594,12 @@
        </item>
        <item>
         <widget class="QLabel" name="label_15">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>20</height>
+          </size>
+         </property>
          <property name="font">
           <font>
            <family>Verdana</family>
@@ -598,7 +618,7 @@
          <property name="minimumSize">
           <size>
            <width>45</width>
-           <height>19</height>
+           <height>22</height>
           </size>
          </property>
          <property name="maximumSize">
@@ -620,6 +640,16 @@
        </item>
       </layout>
      </widget>
+    </widget>
+   </item>
+   <item row="7" column="0">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
     </widget>
    </item>
   </layout>

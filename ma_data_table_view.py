@@ -5,7 +5,7 @@
 ##  OpenMeta(analyst)
 ##  
 ##
-## Custom QTableView, implements copy/paste and undo/redo.
+## Custom QTableView, implements copy/paste and undo/redo. 
 ##
 #############################################################################
 
@@ -13,6 +13,8 @@
 from PyQt4 import QtCore, QtGui
 from PyQt4.Qt import *
 import pdb
+
+import binary_data_form
 
 class MADataTable(QtGui.QTableView):
     
@@ -22,8 +24,14 @@ class MADataTable(QtGui.QTableView):
         # undo stack
         self.undo_stack_dict = {None:QUndoStack(self)}
         self.undoStack = self.undo_stack_dict[None]
+        
         header = self.horizontalHeader()
         self.connect(header, SIGNAL("sectionClicked(int)"), self.header_clicked)
+        
+        vert_header = self.verticalHeader()
+        self.connect(vert_header, SIGNAL("sectionClicked(int)"), self.row_header_clicked)
+        
+        #self.connect(self, SIGNAL("clicked(const QModelIndex)"), self.doubleClicked)
         self.reverse_column_sorts = {0: False, 1: False}
         self.setAlternatingRowColors(True)
         
@@ -49,7 +57,14 @@ class MADataTable(QtGui.QTableView):
                 # ctrl + v = paste
                 self.paste_from_clipboard(upper_left_index)
         
-                        
+        
+    def row_header_clicked(self, row):
+        form =  binary_data_form.BinaryDataForm2(self) 
+        if form.exec_():
+            pass
+            
+        
+        
     def rowMoved(self, row, oldIndex, newIndex):
         pass
         
@@ -72,7 +87,6 @@ class MADataTable(QtGui.QTableView):
         self.model().update_outcome_if_possible(index.row())
         
     def header_clicked(self, column):
-        #self.model().sort_studies(column, self.reverse_column_sorts[column])
         sort_command = CommandSort(self.model(), column, self.reverse_column_sorts[column])
         self.undoStack.push(sort_command)
         self.reverse_column_sorts[column] = not self.reverse_column_sorts[column]
@@ -87,8 +101,6 @@ class MADataTable(QtGui.QTableView):
         lower_col = upper_left_index.column() + len(new_content[0])
         print "lower row: %s, lower col: %s" % (lower_row, lower_col)
         num_studies_pre_paste = len(self.model().dataset)
-        print num_studies_pre_paste
-        print "$$"
         studies_pre_paste = list(self.model().dataset.studies)
         lower_right_index = self.model().createIndex(lower_row-1, lower_col-1)
         old_content = self._str_to_matrix(self.copy_contents_in_range(upper_left_index, lower_right_index, to_clipboard=False))
@@ -317,7 +329,6 @@ class CommandPaste(QUndoCommand):
         self.ma_data_table_view.model().study_auto_added = None
         
     def undo(self):
-        print self.old_content
         self.ma_data_table_view.paste_contents(self.upper_left_coord, self.old_content)
         if self.added_study is not None:
             self.ma_data_table_view.model().remove_study(self.added_study)
