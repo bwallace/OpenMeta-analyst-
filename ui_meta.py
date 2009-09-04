@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'meta.ui'
 #
-# Created: Fri Aug 21 15:14:28 2009
+# Created: Wed Sep 02 11:55:32 2009
 #      by: PyQt4 UI code generator 4.4.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -112,30 +112,30 @@ class Ui_MainWindow(object):
         self.nav_add_btn.setIconSize(QtCore.QSize(64, 64))
         self.nav_add_btn.setAutoRaise(True)
         self.nav_add_btn.setObjectName("nav_add_btn")
-        self.widget = QtGui.QWidget(self.frame)
-        self.widget.setGeometry(QtCore.QRect(190, 0, 171, 61))
-        self.widget.setObjectName("widget")
-        self.gridLayout = QtGui.QGridLayout(self.widget)
+        self.layoutWidget = QtGui.QWidget(self.frame)
+        self.layoutWidget.setGeometry(QtCore.QRect(190, 0, 171, 61))
+        self.layoutWidget.setObjectName("layoutWidget")
+        self.gridLayout = QtGui.QGridLayout(self.layoutWidget)
         self.gridLayout.setObjectName("gridLayout")
-        self.label = QtGui.QLabel(self.widget)
+        self.label = QtGui.QLabel(self.layoutWidget)
         font = QtGui.QFont()
         font.setPointSize(9)
         self.label.setFont(font)
         self.label.setObjectName("label")
         self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
-        self.cur_outcome_lbl = QtGui.QLabel(self.widget)
+        self.cur_outcome_lbl = QtGui.QLabel(self.layoutWidget)
         font = QtGui.QFont()
         font.setPointSize(9)
         self.cur_outcome_lbl.setFont(font)
         self.cur_outcome_lbl.setObjectName("cur_outcome_lbl")
         self.gridLayout.addWidget(self.cur_outcome_lbl, 0, 1, 1, 1)
-        self.label_3 = QtGui.QLabel(self.widget)
+        self.label_3 = QtGui.QLabel(self.layoutWidget)
         font = QtGui.QFont()
         font.setPointSize(9)
         self.label_3.setFont(font)
         self.label_3.setObjectName("label_3")
         self.gridLayout.addWidget(self.label_3, 1, 0, 1, 1)
-        self.cur_time_lbl = QtGui.QLabel(self.widget)
+        self.cur_time_lbl = QtGui.QLabel(self.layoutWidget)
         font = QtGui.QFont()
         font.setPointSize(9)
         self.cur_time_lbl.setFont(font)
@@ -157,6 +157,15 @@ class Ui_MainWindow(object):
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
+        self.actionSave = QtGui.QAction(MainWindow)
+        self.actionSave.setObjectName("actionSave")
+        self.actionOpen = QtGui.QAction(MainWindow)
+        self.actionOpen.setObjectName("actionOpen")
+        self.actionQuit = QtGui.QAction(MainWindow)
+        self.actionQuit.setObjectName("actionQuit")
+        self.menuFile.addAction(self.actionSave)
+        self.menuFile.addAction(self.actionOpen)
+        self.menuFile.addAction(self.actionQuit)
         self.menubar.addAction(self.menuFile.menuAction())
 
         self.retranslateUi(MainWindow)
@@ -167,5 +176,8 @@ class Ui_MainWindow(object):
         self.label.setText(QtGui.QApplication.translate("MainWindow", "outcome:", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setText(QtGui.QApplication.translate("MainWindow", "follow-up:", None, QtGui.QApplication.UnicodeUTF8))
         self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "File", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSave.setText(QtGui.QApplication.translate("MainWindow", "save", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionOpen.setText(QtGui.QApplication.translate("MainWindow", "open...", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionQuit.setText(QtGui.QApplication.translate("MainWindow", "quit", None, QtGui.QApplication.UnicodeUTF8))
 
 import icons_rc

@@ -76,21 +76,24 @@ class Dataset:
         for study in self.studies:
             study.add_outcome(outcome)
     
-    def cmp_studies(self, compare_by="name"):
+    def cmp_studies(self, compare_by="name", reverse=True):
         if compare_by == "name":
-            return lambda study_a, study_b : self._cmp_wrapper(study_a.name, study_b.name)
+            return lambda study_a, study_b : self._cmp_wrapper(study_a.name, study_b.name, reverse)
         elif compare_by == "year":
-            return lambda study_a, study_b : self._cmp_wrapper(study_a.year, study_b.year)
+            return lambda study_a, study_b : self._cmp_wrapper(study_a.year, study_b.year, reverse)
     
-    def _cmp_wrapper(self, study_a_val, study_b_val):
+    def _cmp_wrapper(self, study_a_val, study_b_val, reverse):
         '''
         Wraps the default compare method to assert that "" (i.e., empty studies)
         are greater than non-empties
         '''
-        if study_a_val == "":
-            return 1
-        elif study_b_val == "":
-            return 1
+        flip_sign = -1 if reverse else 1
+        empty_vals = ("", None) # these indicate an empty row/cell
+        
+        if  study_a_val in empty_vals: 
+            return flip_sign*1
+        elif study_b_val in empty_vals:
+            return flip_sign*-1
         else:
             return cmp(study_a_val, study_b_val)
         

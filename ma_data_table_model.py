@@ -257,9 +257,9 @@ class DatasetModel(QAbstractTableModel):
         
     def sort_studies(self, col, reverse):
         if col == self.NAME:
-            self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by="name"), reverse=reverse)
+            self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by="name", reverse=reverse), reverse=reverse)
         elif col == self.YEAR:
-            self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by="year"), reverse=reverse)
+            self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by="year", reverse=reverse), reverse=reverse)
         self.reset()
         
         

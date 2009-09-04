@@ -33,6 +33,10 @@
   <property name="windowTitle">
    <string>add new outcome</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="images/icons.qrc">
+    <normaloff>:/images/meta.png</normaloff>:/images/meta.png</iconset>
+  </property>
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
@@ -54,7 +58,7 @@
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
    </property>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -114,7 +118,9 @@
    </layout>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="images/icons.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>

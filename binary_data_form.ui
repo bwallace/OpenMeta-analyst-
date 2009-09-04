@@ -36,6 +36,10 @@
   <property name="windowTitle">
    <string>Enter Binary Data</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="images/icons.qrc">
+    <normaloff>:/images/meta.png</normaloff>:/images/meta.png</iconset>
+  </property>
   <layout class="QFormLayout" name="formLayout">
    <property name="fieldGrowthPolicy">
     <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
@@ -44,13 +48,31 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QLabel" name="label">
+       <property name="minimumSize">
+        <size>
+         <width>42</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>42</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="font">
         <font>
          <family>Verdana</family>
         </font>
        </property>
        <property name="text">
-        <string>author</string>
+        <string>name</string>
        </property>
       </widget>
      </item>
@@ -58,13 +80,13 @@
       <widget class="QTextEdit" name="author_txt_box">
        <property name="minimumSize">
         <size>
-         <width>218</width>
+         <width>215</width>
          <height>21</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>218</width>
+         <width>215</width>
          <height>21</height>
         </size>
        </property>
@@ -654,7 +676,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="images/icons.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>
