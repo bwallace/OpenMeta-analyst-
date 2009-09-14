@@ -209,6 +209,8 @@ class TreatmentGroup:
     def __init__(self, id, name, raw_data=[]):
         self.id = id
         self.name = name
+        # raw data should probably be a dictionary,
+        # not a tuple
         self.raw_data = raw_data
     
             

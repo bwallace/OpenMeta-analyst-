@@ -18,15 +18,18 @@ except:
     raise Exception, "rpy2 not properly installed!"
 
 try:
+    print "\nloading R libraries..."
     ro.r("library(metafor)")
 except:
     raise Exception, "metafor (R) package not installed.\nPlease install this package and then re-start OpenMeta."
     
 try:
     # @TODO integrate into metafor (openmeta.R) package(s)
-    # this is a bit hacky.
-    ro.r("setwd(%s)" % os.getcwd())
-    ro.r("source(data_transform.R)")
+    # this is extremely kludgey and will likely break on other platforms
+    cur_dir =  os.getcwd().replace("\\", "//")
+    print cur_dir
+    ro.r("setwd('%s')" % cur_dir)
+    ro.r("source('data_transform.R')")
 except:
     raise Exception, "whoops, data_transform.R script unavailable."
     

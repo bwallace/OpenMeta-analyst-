@@ -344,7 +344,10 @@ class DatasetModel(QAbstractTableModel):
                             get_raw_data_for_groups(self.current_txs)
         return not "" in raw_data
                             
-       
+    def try_to_update_outcomes(self):
+        for study_index in range(len(self.dataset.studies)):
+            self.update_outcome_if_possible(study_index)
+    
     def update_outcome_if_possible(self, study_index):
         ''' 
         Checks the parametric study to ascertain if enough raw data has been
@@ -352,7 +355,7 @@ class DatasetModel(QAbstractTableModel):
         displayed.
         '''
         if self.raw_data_is_complete_for_study(study_index):
-            e1, n1, e2, n2 = self.get_current_ma_unit_for_study(study_index).get_raw_data_for_groups(self.current_txs)
+            e1, n1, e2, n2 = self.get_cur_raw_data_for_study(study_index)
             effect = meta_py_r.effect_for_study(e1, n1, e2, n2)
             ma_unit = self.get_current_ma_unit_for_study(study_index)
             # now set the effect size!
@@ -360,6 +363,9 @@ class DatasetModel(QAbstractTableModel):
             print "effect size"
             print round(effect)
             
+    def get_cur_raw_data_for_study(self, study_index):
+        return self.get_current_ma_unit_for_study(study_index).get_raw_data_for_groups(self.current_txs)
+        
     def get_current_ma_unit_for_study(self, study_index):
         ''' 
         Returns the MetaAnalytic unit for the study @ study_index. If no such Unit exists, 

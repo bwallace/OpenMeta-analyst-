@@ -59,16 +59,23 @@ class MADataTable(QtGui.QTableView):
         
         
     def row_header_clicked(self, row):
-        form =  binary_data_form.BinaryDataForm2(self) 
+        #
+        # TODO: 1) we're assuming here that we're dealing with binary
+        #               data, and only handling that case.  2) raw_data
+        #               is currently a list/tuple. really this should be a dictionary
+        #               (or a custom type, which might be the most flexible option
+        #               since it could know what type of raw data it is). A list relies 
+        #               on magic indices and is less flexible.
+        #
+        raw_data = self.model().get_cur_raw_data_for_study(row) 
+        form =  binary_data_form.BinaryDataForm2(self, raw_data = raw_data)
+        
         if form.exec_():
             pass
             
-        
-        
     def rowMoved(self, row, oldIndex, newIndex):
         pass
         
-
     def displayed_ma_changed(self):
         cur_outcome = self.model().current_outcome
         cur_follow_up = self.model().current_time_point
