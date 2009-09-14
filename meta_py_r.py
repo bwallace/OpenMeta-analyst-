@@ -9,6 +9,7 @@
 #############################################################################
 
 import math
+import os
 
 try:
     import rpy2
@@ -19,8 +20,15 @@ except:
 try:
     ro.r("library(metafor)")
 except:
-    raise Exception, "metafor package not installed!"
+    raise Exception, "metafor (R) package not installed.\nPlease install this package and then re-start OpenMeta."
     
+try:
+    # @TODO integrate into metafor (openmeta.R) package(s)
+    # this is a bit hacky.
+    ro.r("setwd(%s)" % os.getcwd())
+    ro.r("source(data_transform.R)")
+except:
+    raise Exception, "whoops, data_transform.R script unavailable."
     
 def effect_for_study(e1, n1, e2, n2, metric="OR"):
     '''

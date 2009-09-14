@@ -262,7 +262,6 @@ class DatasetModel(QAbstractTableModel):
             self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by="year", reverse=reverse), reverse=reverse)
         self.reset()
         
-        
     def order_studies(self, ids):
         ''' Shuffles studies vector to the order specified by ids'''
         ordered_studies = []
@@ -274,7 +273,6 @@ class DatasetModel(QAbstractTableModel):
         self.dataset.studies = ordered_studies
         self.reset()
     
-        
     def set_current_outcome(self, outcome_name):
         self.current_outcome = outcome_name
         self.emit(SIGNAL("outcomeChanged()"))
@@ -362,8 +360,6 @@ class DatasetModel(QAbstractTableModel):
             print "effect size"
             print round(effect)
             
-            
-             
     def get_current_ma_unit_for_study(self, study_index):
         ''' 
         Returns the MetaAnalytic unit for the study @ study_index. If no such Unit exists, 

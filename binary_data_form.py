@@ -11,4 +11,5 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         super(BinaryDataForm2, self).__init__(parent)
         self.setupUi(self)
         
+    
 
