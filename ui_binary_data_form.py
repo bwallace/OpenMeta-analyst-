@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'binary_data_form.ui'
 #
-# Created: Tue Sep 15 10:40:23 2009
+# Created: Tue Sep 15 17:08:13 2009
 #      by: PyQt4 UI code generator 4.4.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -159,16 +159,18 @@ class Ui_BinaryDataForm(object):
         self.effect_cbo_box.setObjectName("effect_cbo_box")
         self.horizontalLayout_3.addWidget(self.effect_cbo_box)
         self.formLayout.setLayout(3, QtGui.QFormLayout.LabelRole, self.horizontalLayout_3)
-        self.verticalLayout_2 = QtGui.QVBoxLayout()
-        self.verticalLayout_2.setContentsMargins(36, 3, -1, -1)
-        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.horizontalLayout = QtGui.QHBoxLayout()
+        self.horizontalLayout.setContentsMargins(36, 3, -1, -1)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        spacerItem2 = QtGui.QSpacerItem(160, 20, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem2)
         self.buttonBox = QtGui.QDialogButtonBox(BinaryDataForm)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
         self.buttonBox.setCenterButtons(False)
         self.buttonBox.setObjectName("buttonBox")
-        self.verticalLayout_2.addWidget(self.buttonBox)
-        self.formLayout.setLayout(7, QtGui.QFormLayout.LabelRole, self.verticalLayout_2)
+        self.horizontalLayout.addWidget(self.buttonBox)
+        self.formLayout.setLayout(7, QtGui.QFormLayout.LabelRole, self.horizontalLayout)
         self.effect_grp_box = QtGui.QGroupBox(BinaryDataForm)
         self.effect_grp_box.setMinimumSize(QtCore.QSize(360, 50))
         self.effect_grp_box.setMaximumSize(QtCore.QSize(360, 50))
