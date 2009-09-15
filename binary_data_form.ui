@@ -10,19 +10,19 @@
     <x>0</x>
     <y>0</y>
     <width>385</width>
-    <height>330</height>
+    <height>310</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>385</width>
-    <height>330</height>
+    <height>310</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>385</width>
-    <height>330</height>
+    <height>310</height>
    </size>
   </property>
   <property name="font">
@@ -46,6 +46,12 @@
    </property>
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout">
+     <property name="bottomMargin">
+      <number>9</number>
+     </property>
+     <property name="verticalSpacing">
+      <number>4</number>
+     </property>
      <item row="0" column="1">
       <widget class="QLabel" name="label_5">
        <property name="font">
@@ -108,18 +114,56 @@
        </property>
       </widget>
      </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="font">
+        <font>
+         <family>Verdana</family>
+        </font>
+       </property>
+       <property name="text">
+        <string>group 2</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_9">
+       <property name="font">
+        <font>
+         <family>Verdana</family>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>total</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
      <item row="1" column="1" rowspan="3" colspan="3">
       <widget class="QTableWidget" name="raw_data_table">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
          <width>305</width>
-         <height>89</height>
+         <height>93</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
          <width>305</width>
-         <height>89</height>
+         <height>84</height>
         </size>
        </property>
        <property name="font">
@@ -129,6 +173,9 @@
        </property>
        <property name="frameShadow">
         <enum>QFrame::Plain</enum>
+       </property>
+       <property name="lineWidth">
+        <number>1</number>
        </property>
        <property name="verticalScrollBarPolicy">
         <enum>Qt::ScrollBarAlwaysOff</enum>
@@ -169,38 +216,6 @@
        <column/>
        <column/>
        <column/>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_4">
-       <property name="font">
-        <font>
-         <family>Verdana</family>
-        </font>
-       </property>
-       <property name="text">
-        <string>group 2</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_9">
-       <property name="font">
-        <font>
-         <family>Verdana</family>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>total</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
       </widget>
      </item>
     </layout>
@@ -304,7 +319,7 @@
      <property name="sizeHint" stdset="0">
       <size>
        <width>20</width>
-       <height>40</height>
+       <height>12</height>
       </size>
      </property>
     </spacer>
@@ -344,7 +359,30 @@
      </item>
     </layout>
    </item>
-   <item row="5" column="0">
+   <item row="7" column="0" colspan="2">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <property name="leftMargin">
+      <number>36</number>
+     </property>
+     <property name="topMargin">
+      <number>3</number>
+     </property>
+     <item>
+      <widget class="QDialogButtonBox" name="buttonBox">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+       </property>
+       <property name="centerButtons">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="5" column="0" colspan="2">
     <widget class="QGroupBox" name="effect_grp_box">
      <property name="minimumSize">
       <size>
@@ -354,25 +392,25 @@
      </property>
      <property name="maximumSize">
       <size>
-       <width>411</width>
+       <width>360</width>
        <height>50</height>
       </size>
      </property>
      <property name="title">
       <string/>
      </property>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>6</y>
-        <width>351</width>
-        <height>41</height>
+        <y>0</y>
+        <width>361</width>
+        <height>51</height>
        </rect>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_4">
        <property name="spacing">
-        <number>2</number>
+        <number>5</number>
        </property>
        <item>
         <widget class="QLabel" name="label_12">
@@ -412,7 +450,7 @@
          <property name="maximumSize">
           <size>
            <width>45</width>
-           <height>19</height>
+           <height>22</height>
           </size>
          </property>
          <property name="font">
@@ -458,7 +496,7 @@
          <property name="maximumSize">
           <size>
            <width>45</width>
-           <height>19</height>
+           <height>22</height>
           </size>
          </property>
          <property name="font">
@@ -504,7 +542,7 @@
          <property name="maximumSize">
           <size>
            <width>45</width>
-           <height>19</height>
+           <height>22</height>
           </size>
          </property>
          <property name="font">
@@ -550,7 +588,7 @@
          <property name="maximumSize">
           <size>
            <width>45</width>
-           <height>19</height>
+           <height>22</height>
           </size>
          </property>
          <property name="font">
@@ -566,16 +604,6 @@
        </item>
       </layout>
      </widget>
-    </widget>
-   </item>
-   <item row="6" column="0">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
     </widget>
    </item>
   </layout>

@@ -14,8 +14,11 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self._populate_raw_data_table()
     
     def _populate_raw_data_table(self):
-        # @TODO update to work with dictionary
-        # or struct raw data rather than list
+        #
+        # @TODO this method will need to be updated. It is to rigid
+        # as is. For one, we'll need to update it to work with a dictionary
+        # or struct raw data rather than a list
+        #
         col = 0
         print self.raw_data
         for i in range(4):
@@ -29,11 +32,12 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                 col += 1
             self.raw_data_table.setItem(row, col, item)
             
-            
-        # the raw data is of the form g_n / g_N
-        # where g_N is the *total* and g_n is the
-        # event count. thus no event = g_N - g_n.
+        # now compute the numbers with no events, if possible.
+        # 
+        # the raw data is of the form g_n / g_N where g_N is the *total* 
+        # and g_n is the event count. thus no event = g_N - g_n.
         e1, n1, e2, n2 = [int(x) if x != "" else None for x in self.raw_data]
+        no_events1, no_events2 = None, None
         if e1 is not None and n1 is not None:
             no_events1 = n1 - e1
             self.raw_data_table.setItem(0, 1, \
@@ -45,6 +49,20 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                                                         QTableWidgetItem(str(no_events2)))
             
 
+        # total the totals (if possible)
+        if n1 is not None and n2 is not None:
+            self.raw_data_table.setItem(2, 2, \
+                                                        QTableWidgetItem(str(n1 + n2)))
+
+        # and the totals of *no* events
+        if no_events1 is not None and no_events2 is not None:
+            self.raw_data_table.setItem(2, 1, \
+                                                        QTableWidgetItem(str(no_events1 + no_events2)))
                     
+        # and now compute the sum of events
+        if e1 is not None and e2 is not None:
+            no_events_total = e1 + e2
+            self.raw_data_table.setItem(2, 0, \
+                                                        QTableWidgetItem(str(no_events_total)))
                 
 
