@@ -90,12 +90,15 @@ class DatasetModel(QAbstractTableModel):
                 else:
                     return QVariant("")
             elif column in self.OUTCOMES:
-                if column == self.OUTCOMES[0]:
-                    effect_val = self.get_current_ma_unit_for_study(index.row()).\
-                                                get_effect(self.current_effect)
-                    if effect_val is None:
-                        return QVariant("")
-                    return QVariant(round(effect_val, self.NUM_DIGITS))
+                # either the point estimate, or the lower/upper
+                # confidence interval
+                outcome_index = column - self.OUTCOMES[0]
+                est_and_ci = self.get_current_ma_unit_for_study(index.row()).\
+                                                get_effect_and_ci(self.current_effect)
+                outcome_val = est_and_ci[outcome_index]  
+                if outcome_val is None:
+                    return QVariant("")
+                return QVariant(round(outcome_val, self.NUM_DIGITS))
             
         elif role == Qt.TextAlignmentRole:
             return QVariant(int(Qt.AlignLeft|Qt.AlignVCenter))
@@ -115,6 +118,7 @@ class DatasetModel(QAbstractTableModel):
         
         For more, see: http://doc.trolltech.com/4.5/qabstracttablemodel.html
         '''
+        print "\w00t"
         if index.isValid() and 0 <= index.row() < len(self.dataset):
             column = index.column()
             old_val = self.data(index)
@@ -144,7 +148,11 @@ class DatasetModel(QAbstractTableModel):
                 adjusted_index = column-adjust_by
                 val = value.toDouble()[0] if value.toDouble()[1] else ""
                 ma_unit.tx_groups[group_name].raw_data[adjusted_index] = val
+                # If a raw data column value is being edit, attempt to
+                # update the corresponding outcome (if data permits)
+                self.update_outcome_if_possible(index.row())
             elif column in self.OUTCOMES:
+                # @TODO what to do if the entered estimate contradicts the raw data?
                 if column == self.OUTCOMES[0]:
                     ma_unit = self.get_current_ma_unit_for_study(index.row())
                     # the user can also explicitly set the effect size
@@ -354,14 +362,14 @@ class DatasetModel(QAbstractTableModel):
         entered to compute the outcome. If so, the outcome is computed and
         displayed.
         '''
+        est, lower, upper = None, None, None
         if self.raw_data_is_complete_for_study(study_index):
             e1, n1, e2, n2 = self.get_cur_raw_data_for_study(study_index)
-            effect = meta_py_r.effect_for_study(e1, n1, e2, n2)
-            ma_unit = self.get_current_ma_unit_for_study(study_index)
-            # now set the effect size!
-            ma_unit.set_effect(self.current_effect, effect)
-            print "effect size"
-            print round(effect)
+            est, lower, upper = meta_py_r.effect_for_study(e1, n1, e2, n2)
+        ma_unit = self.get_current_ma_unit_for_study(study_index)
+        # now set the effect size & CIs
+        ma_unit.set_effect_and_ci(self.current_effect, est, lower, upper)
+        
             
     def get_cur_raw_data_for_study(self, study_index):
         return self.get_current_ma_unit_for_study(study_index).get_raw_data_for_groups(self.current_txs)

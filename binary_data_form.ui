@@ -10,19 +10,19 @@
     <x>0</x>
     <y>0</y>
     <width>385</width>
-    <height>310</height>
+    <height>305</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>385</width>
-    <height>310</height>
+    <height>305</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>385</width>
-    <height>310</height>
+    <height>305</height>
    </size>
   </property>
   <property name="font">
@@ -361,6 +361,9 @@
    </item>
    <item row="7" column="0" colspan="2">
     <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="spacing">
+      <number>6</number>
+     </property>
      <property name="leftMargin">
       <number>36</number>
      </property>

@@ -46,6 +46,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.model = DatasetModel(dataset=data_model)
             self.display_outcome("death")
             self.model.set_current_time_point(0)
+            self.model.try_to_update_outcomes()
         else:
             data_model = Dataset()
             self.model = DatasetModel(dataset=data_model)
@@ -77,6 +78,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 self.open()
                 
     def _setup_connections(self):
+        ''' Signals & slots '''
         QObject.connect(self.tableView.model(), SIGNAL("cellContentChanged(QModelIndex, QVariant, QVariant)"), 
                                                                                     self.tableView.cell_content_changed)
         QObject.connect(self.tableView.model(), SIGNAL("outcomeChanged()"), 

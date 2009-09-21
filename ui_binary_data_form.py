@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'binary_data_form.ui'
 #
-# Created: Tue Sep 15 17:08:13 2009
+# Created: Tue Sep 15 17:09:41 2009
 #      by: PyQt4 UI code generator 4.4.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -13,9 +13,9 @@ class Ui_BinaryDataForm(object):
     def setupUi(self, BinaryDataForm):
         BinaryDataForm.setObjectName("BinaryDataForm")
         BinaryDataForm.setWindowModality(QtCore.Qt.ApplicationModal)
-        BinaryDataForm.resize(385, 310)
-        BinaryDataForm.setMinimumSize(QtCore.QSize(385, 310))
-        BinaryDataForm.setMaximumSize(QtCore.QSize(385, 310))
+        BinaryDataForm.resize(385, 305)
+        BinaryDataForm.setMinimumSize(QtCore.QSize(385, 305))
+        BinaryDataForm.setMaximumSize(QtCore.QSize(385, 305))
         font = QtGui.QFont()
         font.setFamily("Verdana")
         BinaryDataForm.setFont(font)
@@ -160,6 +160,7 @@ class Ui_BinaryDataForm(object):
         self.horizontalLayout_3.addWidget(self.effect_cbo_box)
         self.formLayout.setLayout(3, QtGui.QFormLayout.LabelRole, self.horizontalLayout_3)
         self.horizontalLayout = QtGui.QHBoxLayout()
+        self.horizontalLayout.setSpacing(6)
         self.horizontalLayout.setContentsMargins(36, 3, -1, -1)
         self.horizontalLayout.setObjectName("horizontalLayout")
         spacerItem2 = QtGui.QSpacerItem(160, 20, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Minimum)

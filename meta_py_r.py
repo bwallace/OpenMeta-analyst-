@@ -11,6 +11,7 @@
 import math
 import os
 
+
 try:
     import rpy2
     from rpy2 import robjects as ro
@@ -33,11 +34,13 @@ try:
 except:
     raise Exception, "whoops, data_transform.R script unavailable."
     
-def effect_for_study(e1, n1, e2, n2, metric="OR"):
+def effect_for_study(e1, n1, e2, n2, metric="OR", conf_level=.975):
     '''
     Computes a point estimate, lower & upper bound for 
     the parametric 2x2 table data.
-
+    
+    @TODO add support for non-normal (e.g., T) distributions
+    
     @params
     ===
     e1 -- events in group 1
@@ -45,10 +48,20 @@ def effect_for_study(e1, n1, e2, n2, metric="OR"):
     e2 -- events in group 2
     n2 -- size of group 2
     '''
+    print metric
     r_str = "escalc(measure='%s', ai=c(%s), n1i=c(%s), ci=c(%s), n2i=c(%s))" %\
                     (metric, e1, n1, e2, n2)
-    effect = ro.r(r_str)
     
-    # the escalc function computes the log-odds ration and
-    # the variance. for now let's just return the variance.
-    return math.exp(effect[0][0])
+    effect = ro.r(r_str)
+    lg_point_est = effect[0][0]
+    v = math.sqrt(effect[1][0])
+    
+    # scalar for computing confidence interval
+    r_str = "qnorm(%s)" % conf_level
+    scalar = ro.r(r_str)[0]    
+    
+    lower, upper = (math.exp(lg_point_est-scalar*v), math.exp(lg_point_est+scalar*v))
+    point_est, lower, upper = [math.exp(lg_point_est), lower, upper]
+    print "%s, %s, %s" % (lower, point_est, upper)
+    
+    return (point_est, lower, upper)

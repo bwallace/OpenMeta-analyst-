@@ -91,7 +91,6 @@ class MADataTable(QtGui.QTableView):
     def cell_content_changed(self, index, old_val, new_val):
         cell_edit = CommandCellEdit(self, index, old_val, new_val)
         self.undoStack.push(cell_edit)
-        self.model().update_outcome_if_possible(index.row())
         
     def header_clicked(self, column):
         sort_command = CommandSort(self.model(), column, self.reverse_column_sorts[column])

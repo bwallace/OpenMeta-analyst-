@@ -182,9 +182,18 @@ class MetaAnalyticUnit:
     def set_effect(self, effect, value):
         self.effects_dict[effect]["est"] = value
         
+    def set_effect_and_ci(self, effect, est, lower, upper):
+        self.set_effect(effect, est)
+        self.effects_dict[effect]["lower"] = lower
+        self.effects_dict[effect]["upper"] = upper
+        
     def get_effect(self, effect):
         return self.effects_dict[effect]["est"]
     
+    def get_effect_and_ci(self, effect):
+        return (self.effects_dict[effect]["est"], self.effects_dict[effect]["lower"], \
+                    self.effects_dict[effect]["upper"])
+                
     def type(self):
         return self.outcome.data_type
         
