@@ -26,6 +26,7 @@ import new_outcome_form
 
 
 VERSION = .002
+NUM_DIGITS = 4
 
 class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     

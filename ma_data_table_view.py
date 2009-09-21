@@ -60,15 +60,13 @@ class MADataTable(QtGui.QTableView):
         
     def row_header_clicked(self, row):
         #
-        # TODO: 1) we're assuming here that we're dealing with binary
-        #               data, and only handling that case.  2) raw_data
-        #               is currently a list/tuple. really this should be a dictionary
-        #               (or a custom type, which might be the most flexible option
-        #               since it could know what type of raw data it is). A list relies 
-        #               on magic indices and is less flexible.
+        # TODO: we're assuming here that we're dealing with binary
+        #               data, and only handling that case. 
         #
-        raw_data = self.model().get_cur_raw_data_for_study(row) 
-        form =  binary_data_form.BinaryDataForm2(self, raw_data = raw_data)
+        ma_unit = self.model().get_current_ma_unit_for_study(row)
+        cur_txs = self.model().current_txs
+        cur_effect = self.model().current_effect
+        form =  binary_data_form.BinaryDataForm2(ma_unit, cur_txs, cur_effect, parent=self)
         
         if form.exec_():
             pass

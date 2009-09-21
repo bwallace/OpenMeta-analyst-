@@ -1,24 +1,42 @@
 from PyQt4.Qt import *
 from PyQt4 import QtGui
+import meta_py_r
 
 import ui_binary_data_form
 from ui_binary_data_form import Ui_BinaryDataForm
 
+# @TODO this should be an *application global*. It is now a
+# global here and in the data_table_view class. (However
+# here we show four digits; there it is 3. We want different
+# levels of granularity).
+NUM_DIGITS = 4 
+
 class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
     
-    def __init__(self, parent=None, raw_data=None):
-        #QtGui.QFormLayout.addLayout = add_layout_fix
+    def __init__(self, ma_unit, cur_txs, cur_effect, parent=None):
         super(BinaryDataForm2, self).__init__(parent)
         self.setupUi(self)
-        self.raw_data = raw_data
+        self.ma_unit = ma_unit
+        self.raw_data = self.ma_unit.get_raw_data_for_groups(cur_txs)
+        self.cur_groups = cur_txs
+        self.cur_effect = cur_effect
         self._populate_raw_data_table()
+        self._populate_effect_data()
     
+    def _populate_effect_data(self):
+        q_effects = sorted([QString(effect_str) for effect_str in self.ma_unit.effects_dict.keys()])
+        self.effect_cbo_box.addItems(q_effects)
+        self.effect_cbo_box.setCurrentIndex(q_effects.index(QString(self.cur_effect)))
+        effect_dict = self.ma_unit.effects_dict[self.cur_effect]
+        for s, txt_box in zip(['est', 'lower', 'upper'], [self.effect_txt_box, self.low_txt_box, self.high_txt_box]):
+            if effect_dict[s] is not None:
+                txt_box.setText(QString("%s" % round(effect_dict[s], NUM_DIGITS)))
+            else:
+                txt_box.setText(QString(""))
+
+        
     def _populate_raw_data_table(self):
-        #
-        # @TODO this method will need to be updated. It is to rigid
-        # as is. For one, we'll need to update it to work with a dictionary
-        # or struct raw data rather than a list
-        #
+        ''' Generates the 2x2 table with whatever parametric data was provided '''
         col = 0
         print self.raw_data
         for i in range(4):
