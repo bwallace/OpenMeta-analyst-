@@ -1,3 +1,14 @@
+#################################################################
+#
+#  Byron C. Wallace
+#  Tufts Medical Center
+#  OpenMeta[analyst]
+#  ---
+#  Binary data form module; for flexible entry of dichotomous
+#  outcome data
+################################################################
+
+
 from PyQt4.Qt import *
 from PyQt4 import QtGui
 import meta_py_r
@@ -16,13 +27,19 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
     def __init__(self, ma_unit, cur_txs, cur_effect, parent=None):
         super(BinaryDataForm2, self).__init__(parent)
         self.setupUi(self)
+        self._setup_signals_and_slots()
         self.ma_unit = ma_unit
         self.raw_data = self.ma_unit.get_raw_data_for_groups(cur_txs)
         self.cur_groups = cur_txs
         self.cur_effect = cur_effect
-        self._populate_raw_data_table()
+        self._update_raw_data()
+        self._update_data_table()
         self._populate_effect_data()
     
+    def _setup_signals_and_slots(self):
+        QObject.connect(self.raw_data_table, SIGNAL("cellChanged (int, int)"), 
+                                                                                self._cell_changed)
+                                                                                 
     def _populate_effect_data(self):
         q_effects = sorted([QString(effect_str) for effect_str in self.ma_unit.effects_dict.keys()])
         self.effect_cbo_box.addItems(q_effects)
@@ -34,14 +51,13 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             else:
                 txt_box.setText(QString(""))
 
-        
-    def _populate_raw_data_table(self):
+
+    def _update_raw_data(self):
         ''' Generates the 2x2 table with whatever parametric data was provided '''
+        self.raw_data_table.blockSignals(True)
         col = 0
-        print self.raw_data
         for i in range(4):
             item = QTableWidgetItem(str(self.raw_data[i]))
-            #print "row: %s, col+offset: %s, item: %s" % (row, col, self.raw_data[row+col])
             row = 0 if i < 2 else 1
             col = i
             if row == 1:
@@ -49,19 +65,75 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             if col in (1,3):
                 col += 1
             self.raw_data_table.setItem(row, col, item)
+        self.raw_data_table.blockSignals(False)
+        
+    def _cell_changed(self, row, col):
+        if row < 2:
+            # the offset is for indexing the data
+            # in the raw_data vector, which is one
+            # dimensional (i.e., stretched 1X4) rather
+            # than square (2x2)
+            offset = 2 if row == 1 else 0
+            if col in (0,2):
+                # then raw data was changed.
+                #
+                # note that the 2x2 table is setup differently than the 
+                # main data entry screen; the columns that correspond
+                # to the raw data as entered in the main sheet and kept 
+                # in MA units are 0 and 2 in the 2x2 table; namely,
+                # the number of events and total N.
+                adjusted_col = 1 if col==2 else 0
+                index = offset + adjusted_col
+                self.raw_data[offset+adjusted_col] = int(self.raw_data_table.item(row, col).text())
+                self._update_data_table()
+            else:
+                # then column 1, i.e., "no event" has been edited. 
+                no_events = int(self.raw_data_table.item(row, col).text())
+                index = offset+1
+                print "setting %s to %s" % (index, self.raw_data[offset] + no_events)
+                self.raw_data[index] = self.raw_data[offset] + no_events
+                self._update_raw_data()
+                self._update_data_table()
+            self.check_for_consistencies()
             
+    def check_for_consistencies(self):
+        self.check_that_rows_sum()
+    
+    def check_that_rows_sum(self):
+        for row in range(2):
+            if self._row_is_populated(row):
+                row_sum = 0
+                for col in range(2):
+                    row_sum += int(self.raw_data_table.item(row, col).text())
+                if not row_sum == int(self.raw_data_table.item(row, 2).text()):
+                    print "inconsistent!"
+                    
+                
+    def _row_is_populated(self, row):
+        return not "" in [self.raw_data_table.item(row, col).text() for col in range(2)]
+        
+    def _update_data_table(self):        
+        self.raw_data_table.blockSignals(True)
         # now compute the numbers with no events, if possible.
         # 
         # the raw data is of the form g_n / g_N where g_N is the *total* 
         # and g_n is the event count. thus no event = g_N - g_n.
         e1, n1, e2, n2 = [int(x) if x != "" else None for x in self.raw_data]
+        print "updating raw data with:\n e1 = %s, n1 = %s, e2 = %s, n2 = %s" % \
+                                            (e1, n1, e2, n2)
         no_events1, no_events2 = None, None
-        if e1 is not None and n1 is not None:
+        
+        #
+        # @TODO this should probably be refactored.. kind of smells.
+        #
+        
+        # also, instead of checking if None, check if None or "" (either way it's considered 'empty')
+        if e1 is not None and n1 is not None and self.raw_data_table.item(0, 1) is None:
             no_events1 = n1 - e1
             self.raw_data_table.setItem(0, 1, \
                                                         QTableWidgetItem(str(no_events1)))
                                                  
-        if e2 is not None and n2 is not None:
+        if e2 is not None and n2 is not None and self.raw_data_table.item(1, 1) is None:
             no_events2 = n2 - e2
             self.raw_data_table.setItem(1, 1, \
                                                         QTableWidgetItem(str(no_events2)))
@@ -83,4 +155,4 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             self.raw_data_table.setItem(2, 0, \
                                                         QTableWidgetItem(str(no_events_total)))
                 
-
+        self.raw_data_table.blockSignals(False)

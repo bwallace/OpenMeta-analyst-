@@ -169,7 +169,7 @@ class MADataTable(QtGui.QTableView):
         # (note: this is consistent with Excel's approach.)
         #self.setSortingEnabled(False)
         self.model().blockSignals(True)
-        #print "source content"
+    
         for src_row in range(len(source_content)):
             # do we need to append a row?
             cur_row_count = self.model().rowCount()

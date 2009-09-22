@@ -1,13 +1,13 @@
-#############################################################################
+#################################################################
 #
 #  Byron C. Wallace
 #  Tufts Medical Center
 #  OpenMeta[analyst]
-#  
+#  ---
 #  Proxy class, interfaces between the underlying representation (in ma_dataset.py)
 #  and the DataTableView UI. Basically deals with keeping track of which outcomes/
 #  follow-ups/treatments are being viewed. 
-#############################################################################
+################################################################
 
 import PyQt4
 from PyQt4 import *
