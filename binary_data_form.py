@@ -84,16 +84,22 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                 # the number of events and total N.
                 adjusted_col = 1 if col==2 else 0
                 index = offset + adjusted_col
-                self.raw_data[offset+adjusted_col] = int(self.raw_data_table.item(row, col).text())
-                self._update_data_table()
+                self.raw_data[offset+adjusted_col] = self._get_int(row, col)
+                if col == 0 and not self._is_empty(row, 1):
+                    print "ok!"
+                    print "ne: %s, N: %s" % (self._get_int(row, 0), self._get_int(row, 1))
+                    print self._get_int(row, 0) + self._get_int(row, 1)
+                    # if the event count has been changed, and the number of
+                    # no events has been given, we need to update the total
+                    self.raw_data[offset+1] = self._get_int(row, 0) + self._get_int(row, 1)
             else:
                 # then column 1, i.e., "no event" has been edited. 
                 no_events = int(self.raw_data_table.item(row, col).text())
                 index = offset+1
                 print "setting %s to %s" % (index, self.raw_data[offset] + no_events)
                 self.raw_data[index] = self.raw_data[offset] + no_events
-                self._update_raw_data()
-                self._update_data_table()
+            self._update_raw_data()
+            self._update_data_table()
             self.check_for_consistencies()
             
     def check_for_consistencies(self):
@@ -104,8 +110,8 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             if self._row_is_populated(row):
                 row_sum = 0
                 for col in range(2):
-                    row_sum += int(self.raw_data_table.item(row, col).text())
-                if not row_sum == int(self.raw_data_table.item(row, 2).text()):
+                    row_sum += self._get_int(row, col)
+                if not row_sum == self._get_int(row, 2):
                     print "inconsistent!"
                     
                 
@@ -128,12 +134,12 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         #
         
         # also, instead of checking if None, check if None or "" (either way it's considered 'empty')
-        if e1 is not None and n1 is not None and self.raw_data_table.item(0, 1) is None:
+        if e1 is not None and n1 is not None and self._is_empty(0, 1):
             no_events1 = n1 - e1
             self.raw_data_table.setItem(0, 1, \
                                                         QTableWidgetItem(str(no_events1)))
                                                  
-        if e2 is not None and n2 is not None and self.raw_data_table.item(1, 1) is None:
+        if e2 is not None and n2 is not None and self._is_empty(1, 1):
             no_events2 = n2 - e2
             self.raw_data_table.setItem(1, 1, \
                                                         QTableWidgetItem(str(no_events2)))
@@ -156,3 +162,10 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                                                         QTableWidgetItem(str(no_events_total)))
                 
         self.raw_data_table.blockSignals(False)
+        
+    def _is_empty(self, i, j):
+        val = self.raw_data_table.item(i,j)
+        return val is None or val.text() == ""
+        
+    def _get_int(self, i, j):
+        return int(self.raw_data_table.item(i, j).text())
