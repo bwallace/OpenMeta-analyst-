@@ -34,6 +34,26 @@ try:
 except:
     raise Exception, "whoops, data_transform.R script unavailable."
     
+    
+def impute_two_by_two(bin_data_dict):
+    print "imputing 2x2 table via R..."
+    print bin_data_dict
+    
+    # rpy2 doesn't know how to handle None types.
+    # we can just remove them from the dictionary.
+    for param, val in bin_data_dict.items():
+        if val is None:
+            bin_data_dict.pop(param)
+    
+    dataf = ro.r['data.frame'](**bin_data_dict)
+    two_by_two = ro.r('impute.bin.data(bin.data=%s)' % dataf.r_repr())
+    print two_by_two
+    
+def none_to_null(x):
+    if x is None:
+        return ro.r['as.null']()
+    return x
+    
 def effect_for_study(e1, n1, e2, n2, metric="OR", conf_level=.975):
     '''
     Computes a point estimate, lower & upper bound for 

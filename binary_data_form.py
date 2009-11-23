@@ -86,7 +86,6 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                 index = offset + adjusted_col
                 self.raw_data[offset+adjusted_col] = self._get_int(row, col)
                 if col == 0 and not self._is_empty(row, 1):
-                    print "ok!"
                     print "ne: %s, N: %s" % (self._get_int(row, 0), self._get_int(row, 1))
                     print self._get_int(row, 0) + self._get_int(row, 1)
                     # if the event count has been changed, and the number of
@@ -94,29 +93,52 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                     self.raw_data[offset+1] = self._get_int(row, 0) + self._get_int(row, 1)
             else:
                 # then column 1, i.e., "no event" has been edited. 
-                no_events = int(self.raw_data_table.item(row, col).text())
+                no_events = self._get_int(row, col)
                 index = offset+1
                 print "setting %s to %s" % (index, self.raw_data[offset] + no_events)
                 self.raw_data[index] = self.raw_data[offset] + no_events
             self._update_raw_data()
             self._update_data_table()
-            self.check_for_consistencies()
-            
+        self.check_for_consistencies()
+        
+        # @TODO refactor
+        d = self._build_dict()
+        meta_py_r.impute_two_by_two(d)
+        
+    def _build_dict(self):
+        d =  dict(zip(["control.n.outcome", "control.N", "tx.n.outcome", "tx.N"], self.raw_data))
+        print "\n!%s" % self.ma_unit.effects_dict[self.cur_effect]
+        d["estimate"] = self.ma_unit.effects_dict[self.cur_effect]['est']
+        print d["estimate"] == ""
+        print d["estimate"] is None
+        return d
+        
     def check_for_consistencies(self):
         self.check_that_rows_sum()
     
     def check_that_rows_sum(self):
-        for row in range(2):
+        for row in range(3):
             if self._row_is_populated(row):
                 row_sum = 0
                 for col in range(2):
                     row_sum += self._get_int(row, col)
                 if not row_sum == self._get_int(row, 2):
-                    print "inconsistent!"
+                    self._color_row(row)
                     
-                
+    def check_that_cols_sum(self):
+        # @TODO
+        pass
+        
+    def _color_row(self, row):
+        self.raw_data_table.blockSignals(True)
+        error_color = QColor("red")
+        for col in range(3):
+            print "setting row: %s, col: %s" % (row, col)
+            self.raw_data_table.item(row, col).setTextColor(error_color)
+        self.raw_data_table.blockSignals(False)
+        
     def _row_is_populated(self, row):
-        return not "" in [self.raw_data_table.item(row, col).text() for col in range(2)]
+        return not True in [self._is_empty(row, col) for col in range(2)]
         
     def _update_data_table(self):        
         self.raw_data_table.blockSignals(True)
@@ -168,4 +190,6 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         return val is None or val.text() == ""
         
     def _get_int(self, i, j):
-        return int(self.raw_data_table.item(i, j).text())
+        if not self._is_empty(i,j):
+            return int(self.raw_data_table.item(i, j).text())
+            

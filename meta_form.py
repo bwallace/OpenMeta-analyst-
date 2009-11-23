@@ -16,14 +16,22 @@ import pickle
 from PyQt4 import QtCore, QtGui, Qt
 from PyQt4.Qt import *
 import nose # for unit tests
+
+#
+# hand-rolled modules
+#
 import ui_meta
 import ma_data_table_model
 from ma_data_table_model import *
 import ma_dataset
 from ma_dataset import *
+
+#
+# additional forms
+#
 import meta_form
 import new_outcome_form
-
+import results_window
 
 VERSION = .002
 NUM_DIGITS = 4
@@ -35,7 +43,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # We follow the advice given by Mark Summerfield in his Python QT book: Namely, we
         # use multiple inheritence to gain access to the ui. 
         #
-        
         super(MetaForm, self).__init__(parent)
         self.setupUi(self)
         
@@ -77,6 +84,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             elif event.key() == QtCore.Qt.Key_O:
                 # ctrl + o = save
                 self.open()
+            elif event.key() == QtCore.Qt.Key_A:
+                self.analysis()
                 
     def _setup_connections(self):
         ''' Signals & slots '''
@@ -91,6 +100,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         QObject.connect(self.nav_left_btn, SIGNAL("pressed()"), self.previous)
         QObject.connect(self.nav_up_btn, SIGNAL("pressed()"), self.next_dimension)
         QObject.connect(self.nav_down_btn, SIGNAL("pressed()"), self.previous_dimension)
+        
+    def analysis(self):
+        form = results_window.ResultsWindow(self)
+        form.show()
         
     def add_new(self):
         if self.cur_dimension == "outcome":

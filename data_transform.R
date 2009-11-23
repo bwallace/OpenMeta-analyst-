@@ -11,7 +11,7 @@ impute.bin.data <- function(bin.data){
     # treated events, treated total, control events, and control total, respectively
     a<-NULL; b<-NULL; c<-NULL; d<-NULL;
     
-	if (is.null(bin.data$ratio.type)){
+	if (is.null(bin.data$estimate)){
 	    # these are the trivial cases; everything was given in nearly the form we want
 	    if (isnt.null(bin.data$control.n.outcome) & isnt.null(bin.data$control.n.no.outcome) & 
 	        isnt.null(bin.data$tx.n.outcome) & isnt.null(bin.data$tx.n.no.outcome)) {
@@ -36,9 +36,8 @@ impute.bin.data <- function(bin.data){
 	    }           
 	}
     else{
-        # here no ratio was given; we need to back-calculate
         if (isnt.null(bin.data$estimate) & isnt.null(bin.data$l_ci) & isnt.null(bin.data$u_ci) &
-            isnt.null(bin.data$control.n.outcome) & isnt.null(tx.n.outcome)){
+            isnt.null(bin.data$control.n.outcome) & isnt.null(bin.data$tx.n.outcome)){
                 a <- (bin.data$control.n.outcome + bin.data$tx.n.outcome)/2.0
                 b <- log(bin.data$estimate) 
                 c <- sqrt(a) * (ln(bin.data$u_ci) - b)/1.96 # TODO parameterize

@@ -118,7 +118,6 @@ class DatasetModel(QAbstractTableModel):
         
         For more, see: http://doc.trolltech.com/4.5/qabstracttablemodel.html
         '''
-        print "\w00t"
         if index.isValid() and 0 <= index.row() < len(self.dataset):
             column = index.column()
             old_val = self.data(index)
