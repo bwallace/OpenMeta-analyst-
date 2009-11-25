@@ -1,0 +1,15 @@
+BC1 -> control.n.outcome // Number with outcome (control)
+BC2	-> control.n.no.outcome // Number without outcome (control)
+BC3 -> control.p.outcome	//Percent with outcome (control)
+BC4	-> control.N // Total (control)
+BT1 -> tx.n.outcome //	Number with outcome (tx)
+BT2 -> tx.n.no.outcome //	Number without outcome (tx)
+BT3 -> tx.p.outcome //	Percent with outcome (tx)
+BT4 -> tx.N	Total (tx)
+B1->ratio //	Odds ratio/risk ratio
+B2	Estimate
+B3	Lower CL
+B4	Upper CL
+B5	Log estimate
+B6	Log SE
+B7	P-value

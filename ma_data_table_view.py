@@ -1,13 +1,12 @@
-#############################################################################
-##
-##  Byron C. Wallace
-##  Tufts Medical Center
-##  OpenMeta(analyst)
-##  
-##
-## Custom QTableView, implements copy/paste and undo/redo. 
-##
-#############################################################################
+###############################################################
+#  Byron C. Wallace
+#  Tufts Medical Center
+#  OpenMeta(analyst)
+#  
+#
+# Custom QTableView, implements copy/paste and undo/redo. 
+#
+################################################################
 
 
 from PyQt4 import QtCore, QtGui

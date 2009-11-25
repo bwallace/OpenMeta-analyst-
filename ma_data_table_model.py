@@ -6,7 +6,8 @@
 #  ---
 #  Proxy class, interfaces between the underlying representation (in ma_dataset.py)
 #  and the DataTableView UI. Basically deals with keeping track of which outcomes/
-#  follow-ups/treatments are being viewed. 
+#  follow-ups/treatments are being viewed. See Summerfield's chapters on M-V-C
+# in "Rapid GUI Programming with Python and QT" for an overview of the architecture.
 ################################################################
 
 import PyQt4
@@ -344,11 +345,13 @@ class DatasetModel(QAbstractTableModel):
 
         self.reset()
 
+        
     def raw_data_is_complete_for_study(self, study_index):
         if self.current_outcome is None or self.current_time_point is None:
             return False
-        raw_data = self.get_current_ma_unit_for_study(study_index).\
-                            get_raw_data_for_groups(self.current_txs)
+        #raw_data = self.get_current_ma_unit_for_study(study_index).\
+        #                    get_raw_data_for_groups(self.current_txs)
+        raw_data = self.get_cur_raw_data_for_study(study_index)
         return not "" in raw_data
                             
     def try_to_update_outcomes(self):
@@ -370,6 +373,13 @@ class DatasetModel(QAbstractTableModel):
         ma_unit.set_effect_and_ci(self.current_effect, est, lower, upper)
         
             
+    def get_cur_raw_data(self):
+        raw_data = []
+        for study_index in range(len(self.dataset.studies)):
+            raw_data.append(self.get_cur_raw_data_for_study(study_index))
+        # we lop off the last entry because it is always a blank line
+        return raw_data[:-1]
+        
     def get_cur_raw_data_for_study(self, study_index):
         return self.get_current_ma_unit_for_study(study_index).get_raw_data_for_groups(self.current_txs)
         

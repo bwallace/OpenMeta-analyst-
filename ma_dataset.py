@@ -1,4 +1,4 @@
-#############################################################################
+#########################################################################
 #
 #  Byron C. Wallace
 #  Tufts Medical Center
@@ -14,7 +14,8 @@
 #  - or groups (e.g., 'control', 'aspirin') - to raw data. Further, at the MA_Unit level,
 #  metrics (e.g., "OR") map to dictionaries containing that metric as computed for
 # the pairwise combinations of the groups/treatments (e.g., OR->"AvB"=x)
-#############################################################################
+#
+###########################################################################
 
  # enumeration of data types
 BINARY, CONTINUOUS, DIAGNOSTIC, OTHER = range(4)

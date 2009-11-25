@@ -3,7 +3,7 @@
 # OpenMeta[Analyst]                                             #
 # ----                                                                       #
 # binary_methods.r                                                # 
-# Adapter module; wraps methods that perform   #
+# Facade module; wraps methods that perform    #
 # analysis on binary data in a coherent interface.  #
 ####################################
 

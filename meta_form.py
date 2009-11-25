@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 
-#############################################################################
-##
-##  Byron C. Wallace
-##  Tufts Medical Center
-##  OpenMeta[analyst]
-##
-##  Container form for UI
-##  
-#############################################################################
+################################################################
+#
+#  Byron C. Wallace
+#  Tufts Medical Center
+#  OpenMeta[analyst]
+#
+#  Container form for UI. Handles user interaction.
+#  
+#################################################################
 
 import sys
 import pdb
@@ -25,6 +25,7 @@ import ma_data_table_model
 from ma_data_table_model import *
 import ma_dataset
 from ma_dataset import *
+import meta_py_r
 
 #
 # additional forms
@@ -100,6 +101,14 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         QObject.connect(self.nav_left_btn, SIGNAL("pressed()"), self.previous)
         QObject.connect(self.nav_up_btn, SIGNAL("pressed()"), self.next_dimension)
         QObject.connect(self.nav_down_btn, SIGNAL("pressed()"), self.previous_dimension)
+        
+        QObject.connect(self.action_save, SIGNAL("triggered()"), self.save)
+        QObject.connect(self.action_open, SIGNAL("triggered()"), self.open)
+        QObject.connect(self.action_quit, SIGNAL("triggered()"), self.quit)
+        QObject.connect(self.action_go, SIGNAL("triggered()"), self.go)
+        
+    def go(self):
+        meta_py_r.ma_dataset_to_simple_binary_robj(self.model)
         
     def analysis(self):
         form = results_window.ResultsWindow(self)
@@ -190,6 +199,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         print "success"
         
         
+    def quit(self):
+        QApplication.quit()
         
     def save(self):
         if self.out_path is None:
@@ -218,7 +229,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         
             
             
-################################################################
+########################################################
 #  Unit tests! Use nose 
 #           [http://somethingaboutorange.com/mrl/projects/nose] or just
 #           > easy_install nose
@@ -226,8 +237,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 #   e.g., while in this directory:
 #           > nosetests meta_form
 #
-################################################################
-
+########################################################
 def _gen_some_data():
     ''' For testing purposes. Generates a toy dataset.'''
     dataset = Dataset()

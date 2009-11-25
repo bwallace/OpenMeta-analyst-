@@ -346,7 +346,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menubar" >
+  <widget class="QMenuBar" name="menu_bar" >
    <property name="geometry" >
     <rect>
      <x>0</x>
@@ -355,7 +355,7 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuFile" >
+   <widget class="QMenu" name="menu_file" >
     <property name="font" >
      <font>
       <family>Verdana</family>
@@ -364,36 +364,36 @@
     <property name="title" >
      <string>File</string>
     </property>
-    <addaction name="actionSave" />
-    <addaction name="actionOpen" />
-    <addaction name="actionQuit" />
+    <addaction name="action_save" />
+    <addaction name="action_open" />
+    <addaction name="action_quit" />
    </widget>
    <widget class="QMenu" name="menuAnalysis" >
     <property name="title" >
      <string>Analysis</string>
     </property>
-    <addaction name="actionGo" />
+    <addaction name="action_go" />
    </widget>
-   <addaction name="menuFile" />
+   <addaction name="menu_file" />
    <addaction name="menuAnalysis" />
   </widget>
   <widget class="QStatusBar" name="statusbar" />
-  <action name="actionSave" >
+  <action name="action_save" >
    <property name="text" >
     <string>save</string>
    </property>
   </action>
-  <action name="actionOpen" >
+  <action name="action_open" >
    <property name="text" >
     <string>open...</string>
    </property>
   </action>
-  <action name="actionQuit" >
+  <action name="action_quit" >
    <property name="text" >
     <string>quit</string>
    </property>
   </action>
-  <action name="actionGo" >
+  <action name="action_go" >
    <property name="text" >
     <string>Go</string>
    </property>
