@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ma_specs.ui'
 #
-# Created: Thu Dec 03 14:41:53 2009
+# Created: Thu Dec 03 17:04:01 2009
 #      by: PyQt4 UI code generator 4.4.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -60,6 +60,5 @@ class Ui_Dialog(object):
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(QtGui.QApplication.translate("Dialog", "Method & Parameters", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("Dialog", "analysis method:", None, QtGui.QApplication.UnicodeUTF8))
-        self.parameter_grp_box.setTitle(QtGui.QApplication.translate("Dialog", "(method name)", None, QtGui.QApplication.UnicodeUTF8))
 
 import icons_rc

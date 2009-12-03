@@ -79,7 +79,7 @@
       </font>
      </property>
      <property name="title" >
-      <string>(method name)</string>
+      <string/>
      </property>
     </widget>
    </item>

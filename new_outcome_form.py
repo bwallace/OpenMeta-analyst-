@@ -9,6 +9,7 @@ class AddNewOutcomeForm(QDialog, ui_new_outcome.Ui_Dialog):
         super(AddNewOutcomeForm, self).__init__(parent)
         self.setupUi(self)
         self._populate_combo_box()
+
         
     def _populate_combo_box(self):
         for name, id in zip([QString(s) for s in ["Binary", "Continuous", "Diagnostic", "Other"]],

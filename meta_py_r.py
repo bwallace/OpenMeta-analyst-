@@ -60,7 +60,7 @@ def none_to_null(x):
     
 def get_params(method_name):
     param_list = ro.r("%s.parameters()" % method_name)
-    return param_list
+    return _rlist_to_pydict(param_list)
 
 def get_available_methods(for_data_type=None):
     '''

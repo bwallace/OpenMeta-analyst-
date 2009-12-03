@@ -41,7 +41,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.setupUi(self)
         self.data_type = "binary"
         self.populate_cbo_box()
-
+ 
     
     def populate_cbo_box(self):
         available_methods = meta_py_r.get_available_methods(self.data_type)
@@ -49,9 +49,15 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         for method in available_methods:
             self.method_cbo_box.addItem(method)
         self.setup_params("binary.rmh")
+        self.parameter_grp_box.setTitle("binary.rmh")
+        layout = QGridLayout()
+        lbl = QLabel("hi", self.parameter_grp_box)
+        layout.addWidget(lbl)
+        lbl2 = QLabel("there", self.parameter_grp_box)
+        layout.addWidget(lbl2)
+        self.parameter_grp_box.setLayout(layout)
+
         
     def setup_params(self, method_name):
         params = meta_py_r.get_params(method_name)
-        print params
-        print list(params)
-        return list(params)
+        
