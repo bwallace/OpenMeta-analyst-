@@ -40,24 +40,31 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         super(MA_Specs, self).__init__(parent)
         self.setupUi(self)
         self.data_type = "binary"
+        self.current_method = None
+        self.current_params = None
         self.populate_cbo_box()
- 
+        self.ui_for_params()
     
     def populate_cbo_box(self):
         available_methods = meta_py_r.get_available_methods(self.data_type)
         print "\n\navailable binary methods: %s" % ", ".join(available_methods)
         for method in available_methods:
             self.method_cbo_box.addItem(method)
-        self.setup_params("binary.rmh")
-        self.parameter_grp_box.setTitle("binary.rmh")
+        self.current_method = self.method_cbo_box.currentText()
+        self.setup_params()
+        self.parameter_grp_box.setTitle(self.current_method)
+        
+
+    def ui_for_params(self):
         layout = QGridLayout()
-        lbl = QLabel("hi", self.parameter_grp_box)
+        
+        lbl = QLabel(self.current_params.keys()[0], self.parameter_grp_box)
         layout.addWidget(lbl)
-        lbl2 = QLabel("there", self.parameter_grp_box)
+        lbl2 = QLabel(self.current_params.keys()[1], self.parameter_grp_box)
         layout.addWidget(lbl2)
         self.parameter_grp_box.setLayout(layout)
-
         
-    def setup_params(self, method_name):
-        params = meta_py_r.get_params(method_name)
+        
+    def setup_params(self):
+        self.current_params = meta_py_r.get_params(self.current_method)
         
