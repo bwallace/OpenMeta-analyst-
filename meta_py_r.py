@@ -58,8 +58,18 @@ def none_to_null(x):
         return ro.r['as.null']()
     return x
     
+def get_available_methods(self, for_data_type=None):
+    '''
+    Returns a list of methods available in OpenMeta for the particular data_type (if one is given).
+    Excludes "*.parameters" methods
+    '''
+    method_list = ro.r("lsf.str('package:openmetar')")
+    all_methods = [method for method in method_list if not method.endswith(".parameters")]
+    if for_data_type is not None:
+        all_methods = [method for method in all_methods if method.startswith(for_data_type)]
+    return all_methods
     
-def ma_dataset_to_simple_binary_robj(table_model):
+def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
     '''
     This converts a DatasetModel to a OpenMetaData (OMData) R object. We use type DatasetModel
     rather than a DataSet model directly to access the current variables. By 'simple'
@@ -73,7 +83,6 @@ def ma_dataset_to_simple_binary_robj(table_model):
     '''
     raw_data = table_model.get_cur_raw_data()
 
-
     g1_events = _get_col(raw_data, 0)
     g1O1_str = ", ".join(_to_strs(g1_events))
     g1_totals = _get_col(raw_data, 1)
@@ -86,10 +95,18 @@ def ma_dataset_to_simple_binary_robj(table_model):
     g2O2 = [(total_i-event_i) for total_i, event_i in zip(g2_totals, g2_events)]
     g2O2_str = ", ".join(_to_strs(g2O2))
     
-    r_str = ("new('BinaryData'), g101=c(%s), g102=c(%s), g201=c(%s), g202=c(%s))"\
-                    % (g1O1_str, g1O2_str, g2O1_str, g2O2_str))
-    print r_str 
-    return ro.r(r_str)
+    r_str = "%s <- new('BinaryData', g1O1=c(%s), g1O2=c(%s), g2O1=c(%s), g2O2=c(%s))"\
+                    % (var_name, g1O1_str, g1O2_str, g2O1_str, g2O2_str)
+    print "executing: %s" % r_str 
+    ro.r(r_str)
+    print "ok."
+    return r_str
+ 
+def run_binary_ma(params, bin_data_name="tmp_obj"):
+    param_df = ro.r['data.frame'](**params)
+  #  result = ro.r("binary.rmh(%s, %s)" % (bin_data_name, param_df.r_repr()))
+    result = ro.r("binary.rmh(%s)" % bin_data_name)
+    return result
     
 def _get_c_str_for_col(m, i):
     return ", ".join(self._get_col(m, i))

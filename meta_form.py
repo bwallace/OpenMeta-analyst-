@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 
-################################################################
-#
-#  Byron C. Wallace
-#  Tufts Medical Center
-#  OpenMeta[analyst]
-#
-#  Container form for UI. Handles user interaction.
-#  
-#################################################################
+#######################################
+#                                                                                   #
+#                           Byron C. Wallace                              #
+#  Tufts Medical Center                                                 #
+#  OpenMeta[analyst]                                                    #
+#                                                                                   #
+#  Container form for UI. Handles user interaction.      #
+#                                                                                   #
+#######################################
 
 import sys
 import pdb
@@ -30,9 +30,9 @@ import meta_py_r
 #
 # additional forms
 #
-import meta_form
 import new_outcome_form
 import results_window
+import ma_specs
 
 VERSION = .002
 NUM_DIGITS = 4
@@ -107,10 +107,19 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         QObject.connect(self.action_quit, SIGNAL("triggered()"), self.quit)
         QObject.connect(self.action_go, SIGNAL("triggered()"), self.go)
         
+        
+
     def go(self):
+        form =  ma_specs.MA_Specs(self) 
+        form.show()
         meta_py_r.ma_dataset_to_simple_binary_robj(self.model)
+        result = meta_py_r.run_binary_ma({})
+        print result
         
     def analysis(self):
+        # @TODO the results window stays in front of the
+        # main form ui, even if the latter is clicked. How
+        # to fix this?
         form = results_window.ResultsWindow(self)
         form.show()
         

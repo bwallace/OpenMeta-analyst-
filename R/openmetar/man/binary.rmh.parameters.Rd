@@ -1,6 +1,6 @@
-\name{binary.rmh}
+\name{binary.rmh.parameters}
 \Rdversion{1.1}
-\alias{binary.rmh}
+\alias{binary.rmh.parameters}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 %%  ~~function to do ... ~~
@@ -9,17 +9,9 @@
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-binary.rmh(binaryData, params)
+binary.rmh.parameters()
 }
 %- maybe also 'usage' for other objects documented here.
-\arguments{
-  \item{binaryData}{
-%%     ~~Describe \code{binaryData} here~~
-}
-  \item{params}{
-%%     ~~Describe \code{params} here~~
-}
-}
 \details{
 %%  ~~ If necessary, more details than the description above ~~
 }
@@ -51,18 +43,11 @@ binary.rmh(binaryData, params)
 ##--	or do  help(data=index)  for the standard data sets.
 
 ## The function is currently defined as
-function (binaryData, params) 
+function () 
 {
-    if (!("BinaryData" \%in\% class(binaryData))) 
-        stop("Binary data expected.")
-    print(binaryData@g1O1)
-    res <- rma.uni(measure = "OR", ai = binaryData@g1O1, bi = binaryData@g1O2, 
-        ci = binaryData@g2O1, di = binaryData@g2O2)
-    getwd()
-    pdf("forest.pdf")
-    forest.rma(res)
-    dev.off()
-    res
+    params <- data.frame(rm.method = c("ENUM", "HE", "DL", "SJ", 
+        "ML", "REML", "EB"), conf.level = c("FLOAT"), digits = c("FLOAT"))
+    params
   }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

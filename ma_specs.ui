@@ -1,35 +1,61 @@
 <ui version="4.0" >
  <class>Dialog</class>
  <widget class="QDialog" name="Dialog" >
+  <property name="windowModality" >
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry" >
    <rect>
     <x>0</x>
     <y>0</y>
     <width>471</width>
-    <height>469</height>
+    <height>421</height>
    </rect>
   </property>
+  <property name="font" >
+   <font>
+    <family>Verdana</family>
+   </font>
+  </property>
   <property name="windowTitle" >
-   <string>Dialog</string>
+   <string>Method &amp; Parameters</string>
+  </property>
+  <property name="windowIcon" >
+   <iconset resource="images/icons.qrc" >
+    <normaloff>:/images/meta.png</normaloff>:/images/meta.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout" >
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout" >
      <item>
       <widget class="QLabel" name="label" >
+       <property name="minimumSize" >
+        <size>
+         <width>100</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="maximumSize" >
         <size>
-         <width>90</width>
+         <width>150</width>
          <height>16777215</height>
         </size>
+       </property>
+       <property name="font" >
+        <font>
+         <family>Verdana</family>
+        </font>
        </property>
        <property name="text" >
         <string>analysis method:</string>
        </property>
+       <property name="alignment" >
+        <set>Qt::AlignCenter</set>
+       </property>
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="comboBox" />
+      <widget class="QComboBox" name="method_cbo_box" />
      </item>
     </layout>
    </item>
@@ -44,7 +70,7 @@
      <property name="minimumSize" >
       <size>
        <width>0</width>
-       <height>400</height>
+       <height>200</height>
       </size>
      </property>
      <property name="font" >
@@ -57,8 +83,17 @@
      </property>
     </widget>
    </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox" >
+     <property name="standardButtons" >
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="images/icons.qrc" />
+ </resources>
  <connections/>
 </ui>
