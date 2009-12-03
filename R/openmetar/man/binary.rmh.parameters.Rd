@@ -45,9 +45,9 @@ binary.rmh.parameters()
 ## The function is currently defined as
 function () 
 {
-    params <- data.frame(rm.method = c("ENUM", "HE", "DL", "SJ", 
-        "ML", "REML", "EB"), conf.level = c("FLOAT"), digits = c("FLOAT"))
-    params
+    rm_method_ls <- c("HE", "DL", "SJ", "ML", "REML", "EB")
+    params <- list(rm.methods = rm_method_ls, conf.level = "float", 
+        digits = "float")
   }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

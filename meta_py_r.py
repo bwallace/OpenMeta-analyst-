@@ -58,7 +58,11 @@ def none_to_null(x):
         return ro.r['as.null']()
     return x
     
-def get_available_methods(self, for_data_type=None):
+def get_params(method_name):
+    param_list = ro.r("%s.parameters()" % method_name)
+    return param_list
+
+def get_available_methods(for_data_type=None):
     '''
     Returns a list of methods available in OpenMeta for the particular data_type (if one is given).
     Excludes "*.parameters" methods
@@ -107,6 +111,17 @@ def run_binary_ma(params, bin_data_name="tmp_obj"):
   #  result = ro.r("binary.rmh(%s, %s)" % (bin_data_name, param_df.r_repr()))
     result = ro.r("binary.rmh(%s)" % bin_data_name)
     return result
+    
+def _rlist_to_pydict(r_ls):
+    d = {}
+    names = r_ls.names
+    for name, val in zip(names, r_ls):
+        cur_x = list(val)
+        if len(cur_x) == 1:
+            d[name] = cur_x[0]
+        else:
+            d[name] = cur_x
+    return d
     
 def _get_c_str_for_col(m, i):
     return ", ".join(self._get_col(m, i))

@@ -33,6 +33,9 @@ binary.rmh <- function(binaryData, params){
 
 
 binary.rmh.parameters <- function(){
-    params <- data.frame(rm.method=c("ENUM", "HE", "DL", "SJ", "ML", "REML", "EB"), conf.level=c("FLOAT"), digits=c("FLOAT"))
-    params
+    #params <- data.frame(rm.method=c("ENUM", "HE", "DL", "SJ", "ML", "REML", "EB"), conf.level="FLOAT", digits="FLOAT")
+    rm_method_ls <- c("HE", "DL", "SJ", "ML", "REML", "EB")
+    #rm_method_ls <- list("ENUM", rm_method_ls)
+
+    params <- list("rm.methods"=rm_method_ls, "conf.level"="float", "digits"="float")
 }
