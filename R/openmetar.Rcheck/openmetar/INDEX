@@ -1,0 +1,7 @@
+AnalysisSpecification-class
+                        Class "AnalysisSpecification" ~~~
+BinaryData-class        Class "BinaryData" ~~~
+OMData-class            Class "OMData" ~~~
+binaryrmh               
+openmetar-package       What the package does (short line) ~~ package
+                        title ~~

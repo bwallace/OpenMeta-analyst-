@@ -1,0 +1,31 @@
+
+*** 'hhc.exe' not found: not building CHM help
+
+* Installing *source* package 'openmetar' ...
+** R
+** preparing package for lazy loading
+Loading 'metafor' package. Type: help(metafor)
+for an overview and introduction to the package.
+** help
+*** installing help indices
+ >>> Building/Updating help pages for package 'openmetar'
+     Formats: text html latex example 
+  AnalysisSpecification-class       text    html    latex   example
+     missing link(s):  ~~fun~~ CLASSNAME-class
+  BinaryData-class                  text    html    latex   example
+     missing link(s):  ~~fun~~ CLASSNAME-class
+  OMData-class                      text    html    latex   example
+     missing link(s):  ~~fun~~ CLASSNAME-class
+Note: removing empty section \value in file 'binaryrmh.Rd'
+Note: removing empty section \author in file 'binaryrmh.Rd'
+Note: removing empty section \details in file 'binaryrmh.Rd'
+Note: removing empty section \description in file 'binaryrmh.Rd'
+Note: removing empty section \note in file 'binaryrmh.Rd'
+Note: removing empty section \references in file 'binaryrmh.Rd'
+Note: removing empty section \title in file 'binaryrmh.Rd'
+Note: removing empty section \seealso in file 'binaryrmh.Rd'
+  binaryrmh                         text    html    latex   example
+  openmetar-package                 text    html    latex   example
+** building package indices ...
+** MD5 sums
+* DONE (openmetar)

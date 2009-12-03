@@ -19,3 +19,19 @@ setClass("BinaryData",
                representation(g1O1="numeric", g1O2="numeric", g2O1="numeric",g2O2="numeric",
                g1Name="character", g2Name="character"), 
                contains="OMData")
+               
+              
+               
+               
+               
+               
+               
+               
+               
+# 
+#
+# The specificiation class contains parameters, etc., for the method to be run
+#
+setClass("AnalysisSpecification", 
+                representation(parameters="data.frame"))
+                

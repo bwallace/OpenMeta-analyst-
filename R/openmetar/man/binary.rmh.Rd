@@ -50,7 +50,7 @@ binary.rmh(binaryData)
 ## The function is currently defined as
 function (binaryData) 
 {
-    if ("BinaryData" \%in\% class(binaryData)) 
+    if (!("BinaryData" \%in\% class(binaryData))) 
         stop("Binary data expected.")
     res <- rma.mh(binaryData@g1O1, binaryData@g1O2, binaryData@g2O1, 
         binaryData@g2O2)

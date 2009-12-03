@@ -1,0 +1,66 @@
+* using log directory 'C:/dev/OpenMeta/R/openmetar.Rcheck'
+* using R version 2.9.2 (2009-08-24)
+* using session charset: ISO8859-1
+* checking for file 'openmetar/DESCRIPTION' ... OK
+* checking extension type ... Package
+* this is package 'openmetar' version '1.0'
+* checking package dependencies ... OK
+* checking if this is a source package ... OK
+* checking for .dll and .exe files ... OK
+* checking whether package 'openmetar' can be installed ... WARNING
+Found the following significant warnings:
+       missing link(s):  ~~fun~~ CLASSNAME-class
+       missing link(s):  ~~fun~~ CLASSNAME-class
+       missing link(s):  ~~fun~~ CLASSNAME-class
+See 'C:/dev/OpenMeta/R/openmetar.Rcheck/00install.out' for details.
+* checking package directory ... OK
+* checking for portable file names ... OK
+* checking DESCRIPTION meta-information ... OK
+* checking top-level files ... OK
+* checking index information ... OK
+* checking package subdirectories ... OK
+* checking R files for non-ASCII characters ... OK
+* checking R files for syntax errors ... OK
+* checking whether the package can be loaded ... OK
+* checking whether the package can be loaded with stated dependencies ... OK
+* checking for unstated dependencies in R code ... OK
+* checking S3 generic/method consistency ... OK
+* checking replacement functions ... OK
+* checking foreign function calls ... OK
+* checking R code for possible problems ... NOTE
+binaryrmh: no visible global function definition for 'rma.mh'
+binaryrmh: no visible global function definition for 'forest.rma'
+* checking Rd files ... ERROR
+Rd files with likely Rd problems:
+Unaccounted top-level text in file 'AnalysisSpecification-class.Rd':
+Following section 'note':
+"\n\n ~Make other sections like Warning with \\section{Warning }{....} ~\n\n"
+
+Unaccounted top-level text in file 'BinaryData-class.Rd':
+Following section 'note':
+"\n\n ~Make other sections like Warning with \\section{Warning }{....} ~\n\n"
+
+Unaccounted top-level text in file 'OMData-class.Rd':
+Following section 'note':
+"\n\n ~Make other sections like Warning with \\section{Warning }{....} ~\n\n"
+
+Unaccounted top-level text in file 'openmetar-package.Rd':
+Following section 'references':
+"\n~~ Optionally other standard keywords, one per line, from file KEYWORDS in the R documentation directory ~~\n"
+
+Rd files with missing or empty '\title':
+  binaryrmh.Rd
+
+Rd files without 'description':
+  binaryrmh.Rd
+Rd files without 'title':
+  binaryrmh.Rd
+These entries are required in an Rd file.
+
+Rd files with non-standard keywords:
+  binaryrmh.Rd: ~kwd1 ~kwd2
+Each '\keyword' entry should specify one of the standard keywords (as
+listed in file 'KEYWORDS' in the R documentation directory).
+
+See the chapter 'Writing R documentation files' in manual 'Writing R
+Extensions'.
