@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ma_specs.ui'
 #
-# Created: Thu Dec 03 17:04:01 2009
+# Created: Tue Dec 08 11:02:48 2009
 #      by: PyQt4 UI code generator 4.4.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -13,7 +13,7 @@ class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.setWindowModality(QtCore.Qt.ApplicationModal)
-        Dialog.resize(471, 421)
+        Dialog.resize(400, 421)
         font = QtGui.QFont()
         font.setFamily("Verdana")
         Dialog.setFont(font)

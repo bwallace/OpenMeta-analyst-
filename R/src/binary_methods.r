@@ -37,5 +37,5 @@ binary.rmh.parameters <- function(){
     rm_method_ls <- c("HE", "DL", "SJ", "ML", "REML", "EB")
     #rm_method_ls <- list("ENUM", rm_method_ls)
 
-    params <- list("rm.methods"=rm_method_ls, "conf.level"="float", "digits"="float")
+    params <- list("rm.method"=rm_method_ls, "conf.level"="FLOAT", "digits"="FLOAT")
 }

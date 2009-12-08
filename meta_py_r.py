@@ -68,6 +68,10 @@ def get_available_methods(for_data_type=None):
     Excludes "*.parameters" methods
     '''
     method_list = ro.r("lsf.str('package:openmetar')")
+    # by convention, the methods available for a data type (e.g., binary)
+    # start with the name of the data type. furthermore, the parameters
+    # for those methods are returned by a method with a name
+    # ending in ".parameters"
     all_methods = [method for method in method_list if not method.endswith(".parameters")]
     if for_data_type is not None:
         all_methods = [method for method in all_methods if method.startswith(for_data_type)]
