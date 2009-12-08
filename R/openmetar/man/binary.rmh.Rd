@@ -55,14 +55,17 @@ function (binaryData, params)
 {
     if (!("BinaryData" \%in\% class(binaryData))) 
         stop("Binary data expected.")
-    print(binaryData@g1O1)
-    res <- rma.uni(measure = "OR", ai = binaryData@g1O1, bi = binaryData@g1O2, 
-        ci = binaryData@g2O1, di = binaryData@g2O2)
+    res <- rma.uni(measure = params$measure, ai = binaryData@g1O1, 
+        bi = binaryData@g1O2, ci = binaryData@g2O1, di = binaryData@g2O2)
     getwd()
-    pdf("forest.pdf")
+    forest_path <- "./r_tmp/forest.png"
+    png(forest_path)
     forest.rma(res)
     dev.off()
-    res
+    images <- c(forest_path)
+    text <- c(res)
+    results <- list(images = images, text = text)
+    results
   }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

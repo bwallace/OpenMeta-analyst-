@@ -310,6 +310,10 @@ class DatasetModel(QAbstractTableModel):
             # continuous
             return 6
             
+    def get_current_outcome_type(self):
+        ''' Returns the type of the currently displayed (or 'active') outcome (e.g., binary).  '''
+        return self.dataset.get_outcome_type(self.current_outcome, get_string=True)
+        
     def get_stateful_dict(self):
         '''
         This captures the state of the model view; things like the current outcome 

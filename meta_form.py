@@ -110,11 +110,11 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         
 
     def go(self):
-        form =  ma_specs.MA_Specs(self) 
+        form =  ma_specs.MA_Specs(self.model, parent=self) 
         form.show()
-        meta_py_r.ma_dataset_to_simple_binary_robj(self.model)
-        result = meta_py_r.run_binary_ma({})
-        print result
+        #meta_py_r.ma_dataset_to_simple_binary_robj(self.model)
+        #result = meta_py_r.run_binary_ma({})
+        #print result
         
     def analysis(self):
         # @TODO the results window stays in front of the

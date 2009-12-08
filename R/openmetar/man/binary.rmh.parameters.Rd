@@ -45,9 +45,13 @@ binary.rmh.parameters()
 ## The function is currently defined as
 function () 
 {
+    binary_metrics <- c("OR", "RR", "RD")
     rm_method_ls <- c("HE", "DL", "SJ", "ML", "REML", "EB")
-    params <- list(rm.methods = rm_method_ls, conf.level = "float", 
-        digits = "float")
+    params <- list(rm.method = rm_method_ls, measure = binary_metrics, 
+        conf.level = "float", digits = "float")
+    defaults <- list(rm.method = "REML", measure = "OR", conf.level = 0.95, 
+        digits = 3)
+    parameters <- list(parameters = params, defaults = defaults)
   }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

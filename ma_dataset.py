@@ -17,10 +17,12 @@
 #
 ###########################################################################
 
- # enumeration of data types
+ # enumeration of data types and dictionaries mapping both ways
 BINARY, CONTINUOUS, DIAGNOSTIC, OTHER = range(4)
 STR_TO_TYPE_DICT = {u"binary":BINARY, u"continuous":CONTINUOUS, 
                                     u"diagnostic":DIAGNOSTIC, u"OTHER":OTHER}
+TYPE_TO_STR_DICT = {BINARY:u"binary", CONTINUOUS:u"continuous", 
+                                    DIAGNOSTIC:u"diagnostic", OTHER:u"OTHER"}
                                     
 # enumeration of meta-analytic types
 VANILLA, NETWORK = range(2)
@@ -60,11 +62,11 @@ class Dataset:
     def num_studies(self):
         return len(self.studies)
             
-    def get_outcome_type(self, outcome_name):
+    def get_outcome_type(self, outcome_name, get_string=False):
         outcome = self.get_outcome_obj(outcome_name)
         if outcome is None: 
             return None
-        return outcome.data_type
+        return outcome.data_type if not get_string else TYPE_TO_STR_DICT[outcome.data_type]
         
     def get_outcome_obj(self, outcome_name):
         for study in self.studies:

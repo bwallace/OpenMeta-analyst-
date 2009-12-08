@@ -38,6 +38,13 @@ try:
 except:
     raise Exception, "whoops, data_transform.R script unavailable."
     
+try:
+    if not ro.r("file.exists('./.r_tmp')")[0]:
+        print("creating tmp R directory...")
+        ro.r("dir.create('./r_tmp')")
+        print("success -- temporary results will be written to ./r_tmp")
+except:
+    raise Exception, "unable to create temporary directory for results! make sure you have sufficient permissions."
     
 def impute_two_by_two(bin_data_dict):
     print "imputing 2x2 table via R..."
@@ -60,7 +67,8 @@ def none_to_null(x):
     
 def get_params(method_name):
     param_list = ro.r("%s.parameters()" % method_name)
-    return _rlist_to_pydict(param_list)
+    return (_rlist_to_pydict(param_list[0]), _rlist_to_pydict(param_list[1]))
+    
 
 def get_available_methods(for_data_type=None):
     '''
@@ -111,9 +119,10 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
     return r_str
  
 def run_binary_ma(params, bin_data_name="tmp_obj"):
-    param_df = ro.r['data.frame'](**params)
-  #  result = ro.r("binary.rmh(%s, %s)" % (bin_data_name, param_df.r_repr()))
-    result = ro.r("binary.rmh(%s)" % bin_data_name)
+    params_df = ro.r['data.frame'](**params)
+    print "\n\n"
+    print params
+    result = ro.r("binary.rmh(%s, %s)" % (bin_data_name, params_df.r_repr()))
     return result
     
 def _rlist_to_pydict(r_ls):

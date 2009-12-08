@@ -9,33 +9,41 @@
 
 library(metafor)
 
+
 binary.rmh <- function(binaryData, params){
     
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binaryData))) stop("Binary data expected.")
     
-    print(binaryData@g1O1)
-    
     # call out to the metafor package
-    res<-rma.uni(measure="OR", ai=binaryData@g1O1, bi=binaryData@g1O2, 
+    res<-rma.uni(measure=params$measure, ai=binaryData@g1O1, bi=binaryData@g1O2, 
                                 ci=binaryData@g2O1, di=binaryData@g2O2)
     
     #
     # generate forest plot (should we do this here?)
     #
     getwd()
-    pdf("forest.pdf")
+    #pdf("./r_tmp/forest.pdf")
+    forest_path <- "./r_tmp/forest.png"
+    png(forest_path)
     forest.rma(res)
     dev.off()
     
-    res
+    images <- c(forest_path)
+    text <- c(res)
+    results <- list("images"=images, "text"=text)
+    results
 }
 
 
 binary.rmh.parameters <- function(){
-    #params <- data.frame(rm.method=c("ENUM", "HE", "DL", "SJ", "ML", "REML", "EB"), conf.level="FLOAT", digits="FLOAT")
+    # parameters
+    binary_metrics <- c("OR", "RR", "RD")
     rm_method_ls <- c("HE", "DL", "SJ", "ML", "REML", "EB")
-    #rm_method_ls <- list("ENUM", rm_method_ls)
-
-    params <- list("rm.method"=rm_method_ls, "conf.level"="FLOAT", "digits"="FLOAT")
+    params <- list("rm.method"=rm_method_ls, "measure"=binary_metrics, "conf.level"="float", "digits"="float")
+    
+    # default values
+    defaults <- list("rm.method"="REML", "measure"="OR", "conf.level"=.95, "digits"=3)
+    
+    parameters <- list("parameters"=params, "defaults"=defaults)
 }
