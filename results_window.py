@@ -73,7 +73,8 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
             qt_item = self.add_title(title)
 
             # now the text
-            self.create_text_item(str(text), self.position())
+            text_item_rect = self.create_text_item(str(text), self.position())
+            self.items_to_coords[qt_item] =  text_item_rect
 
 
     def add_title(self, title):
@@ -91,13 +92,6 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         self.scene.setSceneRect(0, 0, PageSize[0], self.y_coord+padding)
         return qt_item
 
-    def x(self, a, b):
-        print "x"
-        print a
-
-    def yo(self):
-        print self.nav_tree.selectedItems()
-
     def item_clicked(self, item, column):
         print self.items_to_coords[item]
         #self.graphics_view.centerOn(self.x_coord, self.items_to_coords[item])
@@ -110,7 +104,7 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         self.y_coord +=txt_item.boundingRect().size().height()
         self.scene.setSceneRect(0, 0, max(PageSize[0], txt_item.boundingRect().size().width()), self.y_coord+padding)
         txt_item.setPos(position)
-
+        return txt_item.boundingRect()
 
 
     def create_pixmap_item(self, pixmap, position, matrix=QMatrix()):
