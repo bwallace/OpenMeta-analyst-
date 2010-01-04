@@ -26,11 +26,8 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
         QObject.connect(self.nav_tree, SIGNAL("itemClicked(QTreeWidgetItem*, int)"),
                                        self.item_clicked)
-        QObject.connect(self.nav_tree, SIGNAL("itemSelectionChanged()"),
-                                       self.yo)
 
 
-        #QObject.connect(self.nav_tree, SIGNAL("currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)"), self.x)
         self.nav_tree.setHeaderLabels(["results"])
         self.nav_tree.setItemsExpandable(True)
 
@@ -43,12 +40,13 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         self.images = results["images"]
         print self.images
         self.items_to_coords = {}
-
         self.texts = results["texts"]
-
 
         self.add_text()
         self.add_images()
+        # scroll to top
+        self.graphics_view.ensureVisible(QRectF(0,0,0,0))
+
 
     def add_images(self):
         for title, image in self.images.items():
@@ -99,7 +97,10 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
     def create_text_item(self, text, position):
         txt_item = QGraphicsTextItem(QString(text))
-        #txt_item.setText(
+
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
+        txt_item.setTextInteractionFlags(Qt.TextEditable)
         self.scene.addItem(txt_item)
         self.y_coord +=txt_item.boundingRect().size().height()
         self.scene.setSceneRect(0, 0, max(PageSize[0], txt_item.boundingRect().size().width()), self.y_coord+padding)

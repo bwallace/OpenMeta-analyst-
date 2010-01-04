@@ -1,17 +1,19 @@
 #######################################
-#                                                                                   #
-#                           Byron C. Wallace                              #
-#  Tufts Medical Center                                                 #
-#  OpenMeta[analyst]                                                    #
-#                                                                                   #
-#  This is the code for the ui dialog that handles          #
-#  the method selection and algorithm specifications  #
-#                                                                                   #
+#                                     #
+#  Byron C. Wallace                   #
+#  Tufts Medical Center               #
+#  OpenMeta[analyst]                  #
+#                                     #
+#  This is the code for the ui dialog #
+#  that handles the method selection  #
+#  and algorithm specifications       #
+#                                     #
 #######################################
 
 
 from PyQt4 import QtCore, QtGui, Qt
 from PyQt4.Qt import *
+import pdb
 
 import ui_ma_specs
 import meta_py_r
@@ -36,15 +38,15 @@ hmmm note the go_data object which is created and then used directly...
 # datatable model?
 
 class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
-    
+
     def __init__(self, model, parent=None):
         super(MA_Specs, self).__init__(parent)
         self.setupUi(self)
         self.model = model
-        
+
         QObject.connect(self.buttonBox, SIGNAL("accepted()"), self.run_ma)
         QObject.connect(self.buttonBox, SIGNAL("rejected()"), self.cancel)
-        
+
         self.data_type = self.model.get_current_outcome_type()
         print "data type: %s" % self.data_type
         self.current_method = None
@@ -52,22 +54,26 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.current_defaults = None
         self.current_param_vals = {}
         self.populate_cbo_box()
+        # now we set up a UI for the parameters
+        # required for the current method
         self.ui_for_params()
-        
-    
+
+
     def cancel(self):
-        print "cancel"
+        print "(cancel)"
         self.reject()
-        
+
     def run_ma(self):
         # note that this call creates a tmp object in R called
         # tmp_obj
         meta_py_r.ma_dataset_to_simple_binary_robj(self.model)
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
+
         result = meta_py_r.run_binary_ma(self.current_param_vals)
-        #print result
         self.parent().analysis(result)
         self.accept()
-        
+
     def populate_cbo_box(self):
         available_methods = meta_py_r.get_available_methods(self.data_type)
         print "\n\navailable %s methods: %s" % (self.data_type, ", ".join(available_methods))
@@ -76,30 +82,30 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.current_method = self.method_cbo_box.currentText()
         self.setup_params()
         self.parameter_grp_box.setTitle(self.current_method)
-        
+
 
     def ui_for_params(self):
         layout = QGridLayout()
         cur_grid_row = 0
-        
+
         # we want to add the parameters in groups, for example,
-        # we add combo boxes (which will be lists of values) together, 
+        # we add combo boxes (which will be lists of values) together,
         # followed by numerical inputs. thus we create an ordered list
-        # of functions to check if the argument is the corresponding 
+        # of functions to check if the argument is the corresponding
         # type (float, list); if it is, we add it otherwise we pass. this isn't
         # the most efficient way to do things, but the number of parameters
         # is going to be relatively tiny anyway
         ordered_types = [lambda x: isinstance(x, list), \
                                     lambda x: isinstance(x, str) and x.lower()=="float"]
-                                    
+
         for is_right_type in ordered_types:
             for key, val in self.current_params.items():
                 if is_right_type(val):
                     self.add_param(layout, cur_grid_row, key, val)
                     cur_grid_row+=1
-        
+
         self.parameter_grp_box.setLayout(layout)
-        
+
     def add_param(self, layout, cur_grid_row, name, value):
         print "adding param. name: %s, value: %s" % (name, value)
         if isinstance(value, list):
@@ -113,38 +119,58 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             # throw exception here
 
     def add_enum(self, layout, cur_grid_row, name, values):
+        '''
+        Adds an enumeration to the UI, with the name and possible
+        values as specified per the parameters.
+        '''
         self.add_label(layout, cur_grid_row, name)
         cbo_box = QComboBox()
         for value in values:
             cbo_box.addItem(value)
-        
+
         if self.current_defaults.has_key(name):
             cbo_box.setCurrentIndex(cbo_box.findText(self.current_defaults[name]))
             self.current_param_vals[name] = self.current_defaults[name]
-            
+
+        QObject.connect(cbo_box, QtCore.SIGNAL("currentIndexChanged(QString)"),
+                                 self.set_param_f(name))
+
         layout.addWidget(cbo_box, cur_grid_row, 1)
-    
+
+
+    def set_param_f(self, name):
+        '''
+        Returns a function f(x) such that f(x) will set the key
+        name in the parameters dictionary to the value x.
+        '''
+        def set_param(x):
+            self.current_param_vals[name] = str(x)
+
+        return set_param
+        #return 5#(lambda x: self.current_param_valus[name] = x)
+
+
+
     def add_float_box(self, layout, cur_grid_row, name):
         self.add_label(layout, cur_grid_row, name)
         # now add the float input line edit
         finput = QLineEdit()
-        
+
         # if a default value has been specified, use it
         if self.current_defaults.has_key(name):
             finput.setText(str(self.current_defaults[name]))
             self.current_param_vals[name] = self.current_defaults[name]
-        
+
         finput.setMaximumWidth(50)
         layout.addWidget(finput, cur_grid_row, 1)
-    
+
     def add_label(self, layout, cur_grid_row, name):
         lbl = QLabel(name, self.parameter_grp_box)
         layout.addWidget(lbl, cur_grid_row, 0)
-       
+
     def setup_params(self):
         self.current_params, self.current_defaults = meta_py_r.get_params(self.current_method)
         #for param in self.current_params.keys():
         #    if self.current_defaults.has_key(param):
-                
+
         print self.current_defaults
-        

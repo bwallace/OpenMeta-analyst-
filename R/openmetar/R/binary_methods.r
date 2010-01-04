@@ -16,7 +16,8 @@ binary.rmh <- function(binaryData, params){
     
     # call out to the metafor package
     res<-rma.uni(measure=params$measure, ai=binaryData@g1O1, bi=binaryData@g1O2, 
-                                ci=binaryData@g2O1, di=binaryData@g2O2)
+                                ci=binaryData@g2O1, di=binaryData@g2O2, slab=binaryData@studyNames,
+                                method=params$rm.method)
     
     #
     # generate forest plot 
@@ -35,8 +36,7 @@ binary.rmh <- function(binaryData, params){
     # of each. 
     #     
     images <- c("forest plot"=forest_path)
-    #texts <- c("summary"=res)
-    
+
     results <- list("images"=images, "summary"=res)
     results
 }

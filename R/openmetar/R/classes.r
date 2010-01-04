@@ -4,6 +4,8 @@
 # ----                                                                        #
 # classes.r                                                              # 
 # contains class definitions for OpenMeta.            #
+#                                                                             #    
+# (note that classes in R are basically structs)        #
 ####################################
 
 #

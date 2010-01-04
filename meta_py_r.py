@@ -77,8 +77,8 @@ def get_params(method_name):
 
 def get_available_methods(for_data_type=None):
     '''
-    Returns a list of methods available in OpenMeta for the particular data_type (if one is given).
-    Excludes "*.parameters" methods
+    Returns a list of methods available in OpenMeta for the particular data_type
+    (if one is given). Excludes "*.parameters" methods
     '''
     method_list = ro.r("lsf.str('package:openmetar')")
     # by convention, the methods available for a data type (e.g., binary)
@@ -98,34 +98,48 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
     the currently selected, as indicated by the model object) data object.
 
      @TODO
-        - we don't want to force the data object to be populated with 2x2 data as we currently do
-            i.e., need to be able to pass just effect sizes
-        - implement methods for more advanced conversions, i.e., for multiple outcome datasets
+        - we don't want to force the data object to be populated with 2x2 data as we
+            currently do i.e., need to be able to pass just effect sizes
+        - implement methods for more advanced conversions, i.e., for multiple outcome
+            datasets (althought this will be implemented in some other method)
     '''
     raw_data = table_model.get_cur_raw_data()
 
     g1_events = _get_col(raw_data, 0)
+    g1_events.reverse()
     g1O1_str = ", ".join(_to_strs(g1_events))
     g1_totals = _get_col(raw_data, 1)
+    g1_totals.reverse()
     g1O2 = [(total_i-event_i) for total_i, event_i in zip(g1_totals, g1_events)]
     g1O2_str = ", ".join(_to_strs(g1O2))
 
     g2_events = _get_col(raw_data, 2)
+    g2_events.reverse()
     g2O1_str = ", ".join(_to_strs(g2_events))
     g2_totals = _get_col(raw_data, 3)
+    g2_totals.reverse()
     g2O2 = [(total_i-event_i) for total_i, event_i in zip(g2_totals, g2_events)]
     g2O2_str = ", ".join(_to_strs(g2O2))
 
-    r_str = "%s <- new('BinaryData', g1O1=c(%s), g1O2=c(%s), g2O1=c(%s), g2O2=c(%s))"\
-                    % (var_name, g1O1_str, g1O2_str, g2O1_str, g2O2_str)
+    studies = list(table_model.dataset.studies[:-1])
+    studies.reverse()
+    study_names = ", ".join(["'" + study.name + "'" for study in studies])
+
+    r_str = "%s <- new('BinaryData', g1O1=c(%s), g1O2=c(%s), g2O1=c(%s), g2O2=c(%s), studyNames=c(%s))" \
+                    % (var_name, g1O1_str, g1O2_str, g2O1_str, g2O2_str, study_names)
+
     print "executing: %s" % r_str
+
+
     ro.r(r_str)
     print "ok."
     return r_str
 
 def run_binary_ma(params, bin_data_name="tmp_obj"):
     params_df = ro.r['data.frame'](**params)
-    result = ro.r("binary.rmh(%s, %s)" % (bin_data_name, params_df.r_repr()))
+    r_str = "binary.rmh(%s, %s)" % (bin_data_name, params_df.r_repr())
+
+    result = ro.r(r_str)
 
     res_d =  _rls_to_pyd(result)
     #res_d = _rlist_to_pydict(re
@@ -133,21 +147,15 @@ def run_binary_ma(params, bin_data_name="tmp_obj"):
     #return res_d
     text_d = {}
 
-
     for text_n, text in zip(list(result.getnames())[1:], list(result)[1:]):
         text_d[text_n]=text
 
-    #pyqtRemoveInputHook()
-    #pdb.set_trace()
-
     return {"images":_rls_to_pyd(result[0]), "texts":text_d}
-    #return result
-    #pdb.set_trace()
+
 
 def _rls_to_pyd(r_ls):
     # base case is that the type is a native python type, rather
     # than an Rvector
-    #pdb.set_trace()
     d = {}
 
     for name, val in zip(r_ls.getnames(), r_ls):
