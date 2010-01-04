@@ -9,17 +9,8 @@
 
 library(metafor)
 
-#
-# @TODO this should be moved to 
-#
-if (!(file.exists("./r_tmp"))){
-    print("creating tmp R directory...")
-    dir.create("./r_tmp")
-    print("success -- temporary results will be written to ./r_tmp")
-}
 
 binary.rmh <- function(binaryData, params){
-    
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binaryData))) stop("Binary data expected.")
     
@@ -28,18 +19,25 @@ binary.rmh <- function(binaryData, params){
                                 ci=binaryData@g2O1, di=binaryData@g2O2)
     
     #
-    # generate forest plot (should we do this here?)
+    # generate forest plot 
     #
     getwd()
-    #pdf("./r_tmp/forest.pdf")
     forest_path <- "./r_tmp/forest.png"
     png(forest_path)
     forest.rma(res)
     dev.off()
+
+    #
+    # Now we package the results in a dictionary (technically, a named 
+    # vector). In particular, there are two fields that must be returned; 
+    # a dictionary of images (mapping titles to image paths) and a list of texts
+    # (mapping titles to pretty-printed text). In this case we have only one 
+    # of each. 
+    #     
+    images <- c("forest plot"=forest_path)
+    #texts <- c("summary"=res)
     
-    images <- c(forest_path)
-    text <- c(res)
-    results <- list("images"=images, "text"=text)
+    results <- list("images"=images, "summary"=res)
     results
 }
 
@@ -55,3 +53,5 @@ binary.rmh.parameters <- function(){
     
     parameters <- list("parameters"=params, "defaults"=defaults)
 }
+
+

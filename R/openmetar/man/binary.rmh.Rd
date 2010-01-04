@@ -62,9 +62,8 @@ function (binaryData, params)
     png(forest_path)
     forest.rma(res)
     dev.off()
-    images <- c(forest_path)
-    text <- c(res)
-    results <- list(images = images, text = text)
+    images <- c(`forest plot` = forest_path)
+    results <- list(images = images, summary = res)
     results
   }
 }

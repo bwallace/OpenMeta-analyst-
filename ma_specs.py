@@ -53,17 +53,20 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.current_param_vals = {}
         self.populate_cbo_box()
         self.ui_for_params()
+        
     
     def cancel(self):
         print "cancel"
-        self.accept()
+        self.reject()
         
     def run_ma(self):
         # note that this call creates a tmp object in R called
         # tmp_obj
         meta_py_r.ma_dataset_to_simple_binary_robj(self.model)
         result = meta_py_r.run_binary_ma(self.current_param_vals)
-        print result
+        #print result
+        self.parent().analysis(result)
+        self.accept()
         
     def populate_cbo_box(self):
         available_methods = meta_py_r.get_available_methods(self.data_type)
