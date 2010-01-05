@@ -21,9 +21,10 @@ binary.fixed <- function(binaryData, params){
 
     # call out to the metafor package
     res<-rma.mh(ai=binaryData@g1O1, bi=binaryData@g1O2, 
-                                ci=binaryData@g2O1, di=binaryData@g2O2, slab=binaryData@studyNames)
-                                #measure=params$measure, level=params$level, digits=params$digits)
-                                
+                                ci=binaryData@g2O1, di=binaryData@g2O2, slab=binaryData@studyNames,
+                                measure=params$measure, level=params$conf.level)#, digits=params$digits)
+    
+                                              
     #
     # generate forest plot 
     #
@@ -51,7 +52,7 @@ binary.fixed.parameters <- function(){
     params <- list("measure"=binary_metrics, "conf.level"="float", "digits"="float")
     
     # default values
-    defaults <- list("measure"="OR", "conf.level"=.95, "digits"=3)
+    defaults <- list("measure"="OR", "conf.level"=95, "digits"=3)
     
     parameters <- list("parameters"=params, "defaults"=defaults)
 }
@@ -102,7 +103,7 @@ binary.rmh.parameters <- function(){
     params <- list("rm.method"=rm_method_ls, "measure"=binary_metrics, "conf.level"="float", "digits"="float")
     
     # default values
-    defaults <- list("rm.method"="REML", "measure"="OR", "conf.level"=.95, "digits"=3)
+    defaults <- list("rm.method"="REML", "measure"="OR", "conf.level"=95, "digits"=3)
     
     parameters <- list("parameters"=params, "defaults"=defaults)
 }

@@ -96,17 +96,12 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
     def clear_param_ui(self):
         for widget in self.current_widgets:
             widget.deleteLater()
-            #pyqtRemoveInputHook()
-            #pdb.set_trace()
             widget = None
-
-
 
     def ui_for_params(self):
         if self.parameter_grp_box.layout() is None:
            layout = QGridLayout()
            self.parameter_grp_box.setLayout(layout)
-
 
         cur_grid_row = 0
 
@@ -160,17 +155,6 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.current_widgets.append(cbo_box)
         layout.addWidget(cbo_box, cur_grid_row, 1)
 
-
-    def set_param_f(self, name):
-        '''
-        Returns a function f(x) such that f(x) will set the key
-        name in the parameters dictionary to the value x.
-        '''
-        def set_param(x):
-            self.current_param_vals[name] = str(x)
-
-        return set_param
-
     def add_float_box(self, layout, cur_grid_row, name):
         self.add_label(layout, cur_grid_row, name)
         # now add the float input line edit
@@ -182,8 +166,22 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             self.current_param_vals[name] = self.current_defaults[name]
 
         finput.setMaximumWidth(50)
+        QObject.connect(finput, QtCore.SIGNAL("textChanged(QString)"),
+                                 self.set_param_f(name, to_type=float))
         self.current_widgets.append(finput)
         layout.addWidget(finput, cur_grid_row, 1)
+
+    def set_param_f(self, name, to_type=str):
+        '''
+        Returns a function f(x) such that f(x) will set the key
+        name in the parameters dictionary to the value x.
+        '''
+        def set_param(x):
+            self.current_param_vals[name] = to_type(x)
+            print self.current_param_vals
+
+        return set_param
+
 
     def add_label(self, layout, cur_grid_row, name):
         lbl = QLabel(name, self.parameter_grp_box)

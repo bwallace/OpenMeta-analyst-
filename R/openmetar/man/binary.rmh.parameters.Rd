@@ -49,7 +49,7 @@ function ()
     rm_method_ls <- c("HE", "DL", "SJ", "ML", "REML", "EB")
     params <- list(rm.method = rm_method_ls, measure = binary_metrics, 
         conf.level = "float", digits = "float")
-    defaults <- list(rm.method = "REML", measure = "OR", conf.level = 0.95, 
+    defaults <- list(rm.method = "REML", measure = "OR", conf.level = 95, 
         digits = 3)
     parameters <- list(parameters = params, defaults = defaults)
   }

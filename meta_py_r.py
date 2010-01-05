@@ -126,9 +126,6 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
     print studies
     study_names = ", ".join(["'" + study.name + "'" for study in studies])
 
-    pyqtRemoveInputHook()
-    pdb.set_trace()
-
     r_str = "%s <- new('BinaryData', g1O1=c(%s), g1O2=c(%s), g2O1=c(%s), g2O2=c(%s), studyNames=c(%s))" \
                     % (var_name, g1O1_str, g1O2_str, g2O1_str, g2O2_str, study_names)
 
@@ -143,7 +140,7 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
 def run_binary_ma(function_name, params, bin_data_name="tmp_obj"):
     params_df = ro.r['data.frame'](**params)
     r_str = "%s(%s, %s)" % (function_name, bin_data_name, params_df.r_repr())
-
+    print "executing: %s" % r_str
     result = ro.r(r_str)
 
     #return res_d
