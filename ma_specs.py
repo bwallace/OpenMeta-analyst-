@@ -70,8 +70,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         # note that this call creates a tmp object in R called
         # tmp_obj
         meta_py_r.ma_dataset_to_simple_binary_robj(self.model)
-
-        result = meta_py_r.run_binary_ma(self.current_param_vals)
+        result = meta_py_r.run_binary_ma(self.current_method, self.current_param_vals)
         self.parent().analysis(result)
         self.accept()
 
