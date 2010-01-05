@@ -135,6 +135,7 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
     print "ok."
     return r_str
 
+
 def run_binary_ma(params, bin_data_name="tmp_obj"):
     params_df = ro.r['data.frame'](**params)
     r_str = "binary.rmh(%s, %s)" % (bin_data_name, params_df.r_repr())

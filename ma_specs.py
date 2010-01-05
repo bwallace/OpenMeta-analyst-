@@ -14,6 +14,7 @@
 from PyQt4 import QtCore, QtGui, Qt
 from PyQt4.Qt import *
 import pdb
+import sip
 
 import ui_ma_specs
 import meta_py_r
@@ -46,9 +47,12 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
         QObject.connect(self.buttonBox, SIGNAL("accepted()"), self.run_ma)
         QObject.connect(self.buttonBox, SIGNAL("rejected()"), self.cancel)
+        QObject.connect(self.method_cbo_box, SIGNAL("currentIndexChanged(QString)"),
+                                             self.method_changed)
 
         self.data_type = self.model.get_current_outcome_type()
         print "data type: %s" % self.data_type
+        self.current_widgets = []
         self.current_method = None
         self.current_params = None
         self.current_defaults = None
@@ -56,8 +60,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.populate_cbo_box()
         # now we set up a UI for the parameters
         # required for the current method
-        self.ui_for_params()
-
+        #self.ui_for_params()
 
     def cancel(self):
         print "(cancel)"
@@ -67,12 +70,19 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         # note that this call creates a tmp object in R called
         # tmp_obj
         meta_py_r.ma_dataset_to_simple_binary_robj(self.model)
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
 
         result = meta_py_r.run_binary_ma(self.current_param_vals)
         self.parent().analysis(result)
         self.accept()
+
+    def method_changed(self):
+        self.clear_param_ui()
+        self.current_widgets= []
+        self.current_method = self.method_cbo_box.currentText()
+        self.setup_params()
+        self.parameter_grp_box.setTitle(self.current_method)
+        self.ui_for_params()
+
 
     def populate_cbo_box(self):
         available_methods = meta_py_r.get_available_methods(self.data_type)
@@ -84,8 +94,21 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.parameter_grp_box.setTitle(self.current_method)
 
 
+    def clear_param_ui(self):
+        for widget in self.current_widgets:
+            widget.deleteLater()
+            #pyqtRemoveInputHook()
+            #pdb.set_trace()
+            widget = None
+
+
+
     def ui_for_params(self):
-        layout = QGridLayout()
+        if self.parameter_grp_box.layout() is None:
+           layout = QGridLayout()
+           self.parameter_grp_box.setLayout(layout)
+
+
         cur_grid_row = 0
 
         # we want to add the parameters in groups, for example,
@@ -101,10 +124,10 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         for is_right_type in ordered_types:
             for key, val in self.current_params.items():
                 if is_right_type(val):
-                    self.add_param(layout, cur_grid_row, key, val)
+                    self.add_param(self.parameter_grp_box.layout(), cur_grid_row, key, val)
                     cur_grid_row+=1
 
-        self.parameter_grp_box.setLayout(layout)
+
 
     def add_param(self, layout, cur_grid_row, name, value):
         print "adding param. name: %s, value: %s" % (name, value)
@@ -135,6 +158,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         QObject.connect(cbo_box, QtCore.SIGNAL("currentIndexChanged(QString)"),
                                  self.set_param_f(name))
 
+        self.current_widgets.append(cbo_box)
         layout.addWidget(cbo_box, cur_grid_row, 1)
 
 
@@ -147,9 +171,6 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             self.current_param_vals[name] = str(x)
 
         return set_param
-        #return 5#(lambda x: self.current_param_valus[name] = x)
-
-
 
     def add_float_box(self, layout, cur_grid_row, name):
         self.add_label(layout, cur_grid_row, name)
@@ -162,10 +183,12 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             self.current_param_vals[name] = self.current_defaults[name]
 
         finput.setMaximumWidth(50)
+        self.current_widgets.append(finput)
         layout.addWidget(finput, cur_grid_row, 1)
 
     def add_label(self, layout, cur_grid_row, name):
         lbl = QLabel(name, self.parameter_grp_box)
+        self.current_widgets.append(lbl)
         layout.addWidget(lbl, cur_grid_row, 0)
 
     def setup_params(self):
