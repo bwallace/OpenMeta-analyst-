@@ -69,6 +69,10 @@ def none_to_null(x):
         return ro.r['as.null']()
     return x
 
+def evaluate_in_r(r_str):
+    res = ro.r(r_str)
+    return str(res)
+
 def get_params(method_name):
     param_list = ro.r("%s.parameters()" % method_name)
     return (_rlist_to_pydict(param_list[0]), _rlist_to_pydict(param_list[1]))
@@ -189,20 +193,9 @@ def _rlist_to_pydict(r_ls):
     # need to fix this; recursively build dictionary!!!!
     d = {}
     names = r_ls.getnames()
-    print "NAMES"
-    print names
-    print type(list(names))
-    print "R_LS TYPE: "
-    print type(r_ls)
     for name, val in zip(names, r_ls):
-        print "\n\nx:"
-        print "NAMES!!!"
-
         if isinstance(val, rpy2.robjects.RVector) and not str(val.getnames())=="NULL":
             d[name] = _rlist_to_pydict(val)
-        #print type(val.getnames())
-        #if len(list(val.getnames())) > 0:
-        #    d[name] = _rlist_to_pydict(val)
         cur_x = list(val)
         if len(cur_x) == 1:
             print "CUR X (1)"

@@ -8,6 +8,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
+import ma_text_edit
 
 class Ui_ResultsWindow(object):
     def setupUi(self, ResultsWindow):
@@ -35,7 +36,8 @@ class Ui_ResultsWindow(object):
         self.graphics_view.setObjectName("graphics_view")
         self.horizontalLayout.addWidget(self.graphics_view)
         self.verticalLayout.addLayout(self.horizontalLayout)
-        self.psuedo_console = QtGui.QTextEdit(self.centralwidget)
+        #self.psuedo_console = QtGui.QTextEdit(self.centralwidget)
+        self.psuedo_console = ma_text_edit.MATextEdit(self.centralwidget)
         self.psuedo_console.setMaximumSize(QtCore.QSize(16777215, 40))
         font = QtGui.QFont()
         font.setFamily("Terminal")

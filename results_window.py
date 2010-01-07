@@ -3,6 +3,7 @@ from PyQt4.Qt import *
 import pdb
 
 import ui_results_window
+import meta_py_r
 
 
 PageSize = (612, 792)
@@ -23,10 +24,14 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         self.printer = QPrinter(QPrinter.HighResolution)
         self.printer.setPageSize(QPrinter.Letter)
 
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
+        #self.psuedo_console.installEventFilter(self)
 
         QObject.connect(self.nav_tree, SIGNAL("itemClicked(QTreeWidgetItem*, int)"),
                                        self.item_clicked)
-
+        QObject.connect(self.psuedo_console, SIGNAL("returnPressed"),
+                                       self.process_console_input)
 
         self.nav_tree.setHeaderLabels(["results"])
         self.nav_tree.setItemsExpandable(True)
@@ -98,8 +103,7 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
     def create_text_item(self, text, position):
         txt_item = QGraphicsTextItem(QString(text))
 
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
+
         txt_item.setTextInteractionFlags(Qt.TextEditable)
         self.scene.addItem(txt_item)
         self.y_coord +=txt_item.boundingRect().size().height()
@@ -107,6 +111,17 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         txt_item.setPos(position)
         return txt_item.boundingRect()
 
+
+    def process_console_input(self):
+        old_text = str(self.psuedo_console.toPlainText())
+        res = meta_py_r.evaluate_in_r(self.current_line())
+        #self.psuedo_console.setPlainText(QString(old_text + res))
+        self.psuedo_console.append(QString(res))
+        pyqtRemoveInputHook()
+        pdb.set_trace()
+
+    def current_line(self):
+        return str(self.psuedo_console.toPlainText().replace(">>", "")).strip()
 
     def create_pixmap_item(self, pixmap, position, matrix=QMatrix()):
         item = QGraphicsPixmapItem(pixmap)
@@ -124,3 +139,4 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
     def position(self):
         point = QPoint(self.x_coord, self.y_coord)
         return self.graphics_view.mapToScene(point)
+

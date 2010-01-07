@@ -10,11 +10,10 @@
 library(metafor)
 
 
+
 ######################
 #       binary fixed effects        #
 ######################
-
-
 binary.fixed <- function(binaryData, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binaryData))) stop("Binary data expected.")  
@@ -56,7 +55,6 @@ binary.fixed.parameters <- function(){
     
     parameters <- list("parameters"=params, "defaults"=defaults)
 }
-
 
 ######################
 #       binary random effects    #
