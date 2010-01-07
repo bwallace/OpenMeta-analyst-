@@ -182,7 +182,6 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
         return set_param
 
-
     def add_label(self, layout, cur_grid_row, name):
         lbl = QLabel(name, self.parameter_grp_box)
         self.current_widgets.append(lbl)
@@ -190,7 +189,4 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
     def setup_params(self):
         self.current_params, self.current_defaults = meta_py_r.get_params(self.current_method)
-        #for param in self.current_params.keys():
-        #    if self.current_defaults.has_key(param):
-
         print self.current_defaults

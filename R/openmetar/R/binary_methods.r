@@ -22,7 +22,7 @@ binary.fixed <- function(binaryData, params){
     # call out to the metafor package
     res<-rma.mh(ai=binaryData@g1O1, bi=binaryData@g1O2, 
                                 ci=binaryData@g2O1, di=binaryData@g2O2, slab=binaryData@studyNames,
-                                measure=params$measure, level=params$conf.level)#, digits=params$digits)
+                                measure=params$measure, level=params$conf.level, digits=params$digits)
     
                                               
     #
@@ -30,7 +30,7 @@ binary.fixed <- function(binaryData, params){
     #
     forest_path <- "./r_tmp/forest.png"
     png(forest_path)
-    forest.rma(res)
+    forest.rma(res, digits=params$digits)
     dev.off()
 
     #
@@ -67,11 +67,9 @@ binary.rmh <- function(binaryData, params){
     
     # call out to the metafor package
     res<-rma.uni(ai=binaryData@g1O1, bi=binaryData@g1O2, 
-                                ci=binaryData@g2O1, di=binaryData@g2O2, 
-                                slab=binaryData@studyNames,
-                                method=params$rm.method, 
-                                measure=params$measure)#, level=params$level, 
-                                #digits=params$digits)
+                                ci=binaryData@g2O1, di=binaryData@g2O2, slab=binaryData@studyNames,
+                                method=params$rm.method, measure=params$measure,
+                                digits=params$digits)
     
     #
     # generate forest plot 
@@ -79,7 +77,7 @@ binary.rmh <- function(binaryData, params){
     getwd()
     forest_path <- "./r_tmp/forest.png"
     png(forest_path)
-    forest.rma(res)
+    forest.rma(res, digits=params$digits)
     dev.off()
 
     #

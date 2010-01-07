@@ -16,7 +16,7 @@ More about what it does (maybe more than one line)
 Package: \tab openmetar\cr
 Type: \tab Package\cr
 Version: \tab 1.0\cr
-Date: \tab 2010-01-05\cr
+Date: \tab 2010-01-07\cr
 License: \tab What license is it under?\cr
 LazyLoad: \tab yes\cr
 Depends: \tab methods\cr

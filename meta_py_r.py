@@ -72,8 +72,6 @@ def none_to_null(x):
 def get_params(method_name):
     param_list = ro.r("%s.parameters()" % method_name)
     return (_rlist_to_pydict(param_list[0]), _rlist_to_pydict(param_list[1]))
-    #return (_rls_to_pyd(param_list[0]), _rls_to_pyd(param_list[1]))
-
 
 def get_available_methods(for_data_type=None):
     '''
@@ -183,7 +181,6 @@ def _rls_to_pyd(r_ls):
         except Exception,  inst:
             print inst
             pyqtRemoveInputHook()
-            print "whoops!"
             pdb.set_trace()
 
     return d

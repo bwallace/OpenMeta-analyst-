@@ -57,11 +57,12 @@ function (binaryData, params)
         stop("Binary data expected.")
     res <- rma.uni(ai = binaryData@g1O1, bi = binaryData@g1O2, 
         ci = binaryData@g2O1, di = binaryData@g2O2, slab = binaryData@studyNames, 
-        method = params$rm.method, measure = params$measure)
+        method = params$rm.method, measure = params$measure, 
+        digits = params$digits)
     getwd()
     forest_path <- "./r_tmp/forest.png"
     png(forest_path)
-    forest.rma(res)
+    forest.rma(res, digits = params$digits)
     dev.off()
     images <- c(`forest plot` = forest_path)
     results <- list(images = images, summary = res)
