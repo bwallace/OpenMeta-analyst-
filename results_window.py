@@ -102,8 +102,6 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
     def create_text_item(self, text, position):
         txt_item = QGraphicsTextItem(QString(text))
-
-
         txt_item.setTextInteractionFlags(Qt.TextEditable)
         self.scene.addItem(txt_item)
         self.y_coord +=txt_item.boundingRect().size().height()
@@ -113,15 +111,18 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
 
     def process_console_input(self):
-        old_text = str(self.psuedo_console.toPlainText())
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
         res = meta_py_r.evaluate_in_r(self.current_line())
         #self.psuedo_console.setPlainText(QString(old_text + res))
+        # echo the result
         self.psuedo_console.append(QString(res))
-        pyqtRemoveInputHook()
-        pdb.set_trace()
+        self.psuedo_console.append(">> ")
+
 
     def current_line(self):
-        return str(self.psuedo_console.toPlainText().replace(">>", "")).strip()
+        last_line = self.psuedo_console.toPlainText().split("\n")[-1]
+        return str(last_line.replace(">>", "")).strip()
 
     def create_pixmap_item(self, pixmap, position, matrix=QMatrix()):
         item = QGraphicsPixmapItem(pixmap)
