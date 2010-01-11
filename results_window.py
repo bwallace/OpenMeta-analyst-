@@ -24,10 +24,6 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         self.printer = QPrinter(QPrinter.HighResolution)
         self.printer.setPageSize(QPrinter.Letter)
 
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
-        #self.psuedo_console.installEventFilter(self)
-
         QObject.connect(self.nav_tree, SIGNAL("itemClicked(QTreeWidgetItem*, int)"),
                                        self.item_clicked)
         QObject.connect(self.psuedo_console, SIGNAL("returnPressed"),
@@ -44,6 +40,9 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
         self.images = results["images"]
         print self.images
+        self.image_var_names = results["image_var_names"]
+        self.set_psuedo_console_text()
+
         self.items_to_coords = {}
         self.texts = results["texts"]
 
@@ -51,6 +50,15 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         self.add_images()
         # scroll to top
         self.graphics_view.ensureVisible(QRectF(0,0,0,0))
+
+
+    def set_psuedo_console_text(self):
+        text = ["\t\tOpenMeta(analyst)",
+               "This is a pipe to the R console. The image names are as follows:"]
+        for image_var_name in self.image_var_names.values():
+            text.append(image_var_name)
+        self.psuedo_console.setPlainText(QString("\n".join(text)))
+        self.psuedo_console.append(">> ")
 
 
     def add_images(self):
@@ -111,8 +119,6 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
 
     def process_console_input(self):
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
         res = meta_py_r.evaluate_in_r(self.current_line())
         #self.psuedo_console.setPlainText(QString(old_text + res))
         # echo the result

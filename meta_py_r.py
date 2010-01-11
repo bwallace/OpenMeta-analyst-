@@ -139,19 +139,27 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
     return r_str
 
 
-def run_binary_ma(function_name, params, bin_data_name="tmp_obj"):
+def run_binary_ma(function_name, params, res_name = "result", bin_data_name="tmp_obj"):
+
     params_df = ro.r['data.frame'](**params)
-    r_str = "%s(%s, %s)" % (function_name, bin_data_name, params_df.r_repr())
+    r_str = "%s<-%s(%s, %s)" % (res_name, function_name, bin_data_name, params_df.r_repr())
     print "executing: %s" % r_str
-    result = ro.r(r_str)
+    ro.r(r_str)
+    result = ro.r("%s" % res_name)
 
-    #return res_d
+    # parse out text field(s). note that "plot names" is 'reserved', i.e., it's
+    # a special field which is assumed to contain the plot variable names
+    # in R (for graphics manipulation).
     text_d = {}
-
+    image_var_name_d = None
     for text_n, text in zip(list(result.getnames())[1:], list(result)[1:]):
-        text_d[text_n]=text
+        if not text_n == "plot_names":
+           text_d[text_n]=text
+        else:
+           image_var_name_d = _rls_to_pyd(text)
 
-    return {"images":_rls_to_pyd(result[0]), "texts":text_d}
+    return {"images":_rls_to_pyd(result[0]), "image_var_names":image_var_name_d,
+                                              "texts":text_d}
 
 
 def _rls_to_pyd(r_ls):
