@@ -374,8 +374,14 @@
     </property>
     <addaction name="action_go" />
    </widget>
+   <widget class="QMenu" name="menuDataset" >
+    <property name="title" >
+     <string>Dataset</string>
+    </property>
+   </widget>
    <addaction name="menu_file" />
    <addaction name="menuAnalysis" />
+   <addaction name="menuDataset" />
   </widget>
   <widget class="QStatusBar" name="statusbar" />
   <action name="action_save" >

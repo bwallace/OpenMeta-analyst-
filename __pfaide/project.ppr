@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<settings>
+  <ignored_files>
+    <Count>0</Count>
+  </ignored_files>
+  <tasks>
+    <Item0>
+      <DisplayName>run_ma</DisplayName>
+      <Executable>(Python 2.5 debugger)</Executable>
+      <Module>C:\dev\OpenMeta\meta_form.py</Module>
+      <Parameters>--toy-data</Parameters>
+      <WorkingDir/>
+      <CaptureOutput>TRUE</CaptureOutput>
+      <Flags>
+        <tfUseForDebugging>FALSE</tfUseForDebugging>
+        <tfUseForExecuting>FALSE</tfUseForExecuting>
+      </Flags>
+    </Item0>
+    <Count>1</Count>
+  </tasks>
+</settings>

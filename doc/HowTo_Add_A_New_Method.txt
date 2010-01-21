@@ -1,0 +1,17 @@
+-----------------------------------
+|   OpenMeta[analyst]  |
+|   1/4/10                    |
+|   Byron C Wallace      |
+-----------------------------------
+
+In this document I'll demonstrate how to implement a new method in the OpenMeta framework. In particular, I walk through an implemention of binary fixed effects analysis. In fact, we merely wrap this method as it is already provided by the Metafor package, but this is sufficient for showing how the interface works. (The only difference is that the actual number crunching is done elsewhere).
+
+Overview
+---
+OpenMeta uses 'introspection' to figure out which methods are available for which data types. This is accomplished by adhereing to simple, specific method naming conventions. To enumerate the methods available for pooling type binary data, the program asks R for the names of all the functions contained within the "binary_methods.r" module that do not end in ".parameter". As you may have gathered, every method is assumed to have an associated ".parameters" method. For example, if you were to implement "my.great.binary.method", you would need also to write a function "my.great.binary.method.parameters". The latter provides information about what arguments are required for the method. 
+
+In general, every method must accept exactly two parameters: a Data object and a list of parameters. The former is an S4 R object. Each specific data type, e.g., binary data, is represented by a subclass of the MAData superclass. All classes are defined in the "classes.r" file. The parameters argument is a named vector containing exactly those values that are specified by the "*.parameters" routine.
+
+Implementing Binary Fixed Meta-Analysis
+---
+

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<history>
+  <loaded_documents>
+    <count>13</count>
+    <item1>C:\dev\OpenMeta\meta_form.py</item1>
+    <item2>C:\dev\OpenMeta\ui_meta.py</item2>
+    <item3>C:\dev\OpenMeta\ma_specs.py</item3>
+    <item4>C:\dev\OpenMeta\ma_data_table_view.py</item4>
+    <item5>C:\dev\OpenMeta\ui_ma_specs.py</item5>
+    <item6>C:\dev\OpenMeta\results_window.py</item6>
+    <item7>C:\dev\OpenMeta\ma_text_edit.py</item7>
+    <item8>C:\dev\OpenMeta\ui_results_window.py</item8>
+    <item9>C:\dev\OpenMeta\meta_py_r.py</item9>
+    <item10>C:\dev\OpenMeta\R\src\binary_methods.r</item10>
+    <item11>C:\dev\OpenMeta\ma_data_table_model.py</item11>
+    <item12>C:\dev\OpenMeta\ui_binary_data_form.py</item12>
+  </loaded_documents>
+  <breakpoints>
+    <count>0</count>
+  </breakpoints>
+</history>

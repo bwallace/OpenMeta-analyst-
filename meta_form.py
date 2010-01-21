@@ -22,7 +22,8 @@ import nose # for unit tests
 # hand-rolled modules
 #
 import ui_meta
-import ma_data_table_model
+from ma_data_table_view import StudyDelegate
+import ma_data_table_view
 from ma_data_table_model import *
 import ma_dataset
 from ma_dataset import *
@@ -62,6 +63,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.model = DatasetModel(dataset=data_model)
 
         self.tableView.setModel(self.model)
+        # attach a delegate for editing
+        self.tableView.setItemDelegate(StudyDelegate(self))
 
         # the nav_lbl text corresponds to the currently selected
         # 'dimension', e.g., outcome or treatment. New points
