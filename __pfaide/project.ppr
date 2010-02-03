@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <settings>
-  <ignored_files>
-    <Count>0</Count>
-  </ignored_files>
   <tasks>
     <Item0>
       <DisplayName>run_ma</DisplayName>

@@ -52,11 +52,13 @@ class DatasetModel(QAbstractTableModel):
         # column indices; these are a core component of this class,
         # as these indices are what maps the UI to the model. They
         # are also variable, contingent on the type data being displayed,
-        # the number of covariates, etc. Thus it is extremely important
+        # the number of covariates, etc. Thus it is extremely important that
         # these are set and maintained correctly
-        self.NAME, self.YEAR = range(2)
-        self.RAW_DATA = [col+2 for col in range(4)]
-        self.OUTCOMES = [6, 7, 8]
+        self.INCLUDE_STUDY = 0
+        self.NAME, self.YEAR = [col+1 for col in range(2)]
+        self.RAW_DATA = [col+3 for col in range(4)]
+        self.OUTCOMES = [7, 8, 9]
+
         # @TODO presumably the COVARIATES will contain the column
         # indices and the currently_displayed... will contain the names
         # of the covariates being displayed in said columns, in order
@@ -65,7 +67,7 @@ class DatasetModel(QAbstractTableModel):
 
         # @TODO
         self.LABELS = None
-        self.headers = ["study name", "year"]
+        self.headers = ["include", "study name", "year"]
 
         self.NUM_DIGITS = 3
         self.study_auto_added = None
@@ -76,7 +78,9 @@ class DatasetModel(QAbstractTableModel):
         study = self.dataset.studies[index.row()]
         column = index.column()
         if role == Qt.DisplayRole:
-            if column == self.NAME:
+            if column == self.INCLUDE_STUDY:
+                return QVariant("")
+            elif column == self.NAME:
                 return QVariant(study.name)
             elif column == self.YEAR:
                 if study.year == 0:
@@ -84,7 +88,7 @@ class DatasetModel(QAbstractTableModel):
                 else:
                     return QVariant(study.year)
             elif column in self.RAW_DATA:
-                adjusted_index = column - 2
+                adjusted_index = column - 3
                 if self.current_outcome in study.outcomes_to_follow_ups:
                     cur_raw_data = self.get_current_ma_unit_for_study(index.row()).\
                                                         get_raw_data_for_groups(self.current_txs)
@@ -107,6 +111,10 @@ class DatasetModel(QAbstractTableModel):
 
         elif role == Qt.TextAlignmentRole:
             return QVariant(int(Qt.AlignLeft|Qt.AlignVCenter))
+        elif role == Qt.CheckStateRole:
+            if column == self.INCLUDE_STUDY:
+               checked_state = Qt.Checked if index.row() < self.rowCount()-1 else Qt.Unchecked
+               return QVariant(checked_state)
         elif role == Qt.BackgroundColorRole:
             if column in self.OUTCOMES:
                 return QVariant(QColor(Qt.yellow))
@@ -140,7 +148,8 @@ class DatasetModel(QAbstractTableModel):
                 else:
                     study.year = value.toInt()[0]
             elif column in self.RAW_DATA:
-                adjust_by = 2 # study name, year columns
+                # @TODO make module-level constant?
+                adjust_by = 3 # include, study name, year columns
                 ma_unit = self.get_current_ma_unit_for_study(index.row())
                 group_name = self.current_txs[0]
                 if column in self.RAW_DATA[2:]:
@@ -186,7 +195,9 @@ class DatasetModel(QAbstractTableModel):
         if role != Qt.DisplayRole:
             return QVariant()
         if orientation == Qt.Horizontal:
-            if section == self.NAME:
+            if section == self.INCLUDE_STUDY:
+                return QVariant(self.headers[self.INCLUDE_STUDY])
+            elif section == self.NAME:
                 return QVariant(self.headers[self.NAME])
             elif section == self.YEAR:
                 return QVariant(self.headers[self.YEAR])
@@ -219,6 +230,9 @@ class DatasetModel(QAbstractTableModel):
     def flags(self, index):
         if not index.isValid():
             return Qt.ItemIsEnabled
+        elif index.column() == self.INCLUDE_STUDY:
+             return Qt.ItemFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled |
+                            Qt.ItemIsUserCheckable | Qt.ItemIsSelectable)
         return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
                             Qt.ItemIsEditable)
 
@@ -234,7 +248,7 @@ class DatasetModel(QAbstractTableModel):
         Calculate how many columns to display; this is contingent on the data type,
         amongst other things (e.g., number of covariates).
         '''
-        num_cols = 2 # we always show study name and year
+        num_cols = 3 # we always show study name and year (and include studies)
         if self.current_outcome is None:
             return num_cols
         else:
@@ -323,7 +337,8 @@ class DatasetModel(QAbstractTableModel):
         This captures the state of the model view; things like the current outcome
         and column indices that are on the QT side of the data table model.
 
-        @TODO we're going to need to handle covariates here eventually
+        @TODO we're going to need to handle covariates (and possibly other information) 
+        here eventually
         '''
         d = {}
 

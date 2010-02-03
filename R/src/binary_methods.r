@@ -87,8 +87,9 @@ binary.rmh <- function(binaryData, params){
     # of each. 
     #     
     images <- c("forest plot"=forest_path)
-
-    results <- list("images"=images, "summary"=res)
+    plot_names <- c("forest plot"="forest_plot")
+    
+    results <- list("images"=images, "summary"=res, "plot_names"=plot_names)
     results
 }
 

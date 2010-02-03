@@ -106,7 +106,7 @@ class Study:
     list of of meta-analytic units, on which analyses can
     be performed, and some meta-data (e.g., study name)
     '''
-    def __init__(self, id, name="", year=None):
+    def __init__(self, id, name="", year=None, include=True):
         self.id = id
         self.year = year
         self.name = name
@@ -118,6 +118,9 @@ class Study:
         self.outcomes_to_follow_ups = {}
         # also maintain a list of the known outcome objects
         self.outcomes = []
+        # whether or not this study will be included in any
+        # conducted analyses
+        self.include = include
         
     def add_outcome(self, outcome):
         ''' Adds a new, blank outcome '''
