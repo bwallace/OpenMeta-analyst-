@@ -151,7 +151,8 @@ class MetaAnalyticUnit:
     This class is the unit of analysis. It corresponds to a single
     time period for a particular outcome for a dataset. 
     '''
-    def __init__(self, outcome, raw_data = None, group_names = ["treated", "control"]):
+    # was group_names = ["treated", "control"]
+    def __init__(self, outcome, raw_data = None, group_names = ["tx A", "tx B"]):
         '''
         Instantiate a new MetaAnalyticUnit, which is specific to a 
         given study/outcome pair. 

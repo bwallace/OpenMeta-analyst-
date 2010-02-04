@@ -107,6 +107,8 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
     '''
     raw_data = table_model.get_cur_raw_data()
 
+    # first we pull the data we need out
+    # @TODO this should be made more concise
     g1_events = _get_col(raw_data, 0)
     g1_events.reverse()
     g1O1_str = ", ".join(_to_strs(g1_events))
@@ -123,11 +125,16 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
     g2O2 = [(total_i-event_i) for total_i, event_i in zip(g2_totals, g2_events)]
     g2O2_str = ", ".join(_to_strs(g2O2))
 
-    studies = list(table_model.dataset.studies[:-1])
+    studies = table_model.get_studies()
+    # the list is pulled out in reverse order from the model, so we,
+    # er, reverse it.
     studies.reverse()
-    print studies
     study_names = ", ".join(["'" + study.name + "'" for study in studies])
 
+    # actually creating a new object on the R side seems the path of least resistance here.
+    # the alternative would be to try and create a representation of the R object on the 
+    # python side, but this would require more work and I'm not sure what the benefits
+    # would be
     r_str = "%s <- new('BinaryData', g1O1=c(%s), g1O2=c(%s), g2O1=c(%s), g2O2=c(%s), studyNames=c(%s))" \
                     % (var_name, g1O1_str, g1O2_str, g2O1_str, g2O2_str, study_names)
 

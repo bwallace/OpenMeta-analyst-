@@ -44,7 +44,7 @@ class DatasetModel(QAbstractTableModel):
         # i.e., outcome and time period, are being viewed
         self.current_outcome = None
         self.current_time_point = 0
-        self.current_txs = ["treated", "control"]
+        self.current_txs = ["tx A", "tx B"]
         # @TODO parameterize; make variable
         self.current_effect = "OR"
 
@@ -78,9 +78,7 @@ class DatasetModel(QAbstractTableModel):
         study = self.dataset.studies[index.row()]
         column = index.column()
         if role == Qt.DisplayRole:
-            if column == self.INCLUDE_STUDY:
-                return QVariant("")
-            elif column == self.NAME:
+            if column == self.NAME:
                 return QVariant(study.name)
             elif column == self.YEAR:
                 if study.year == 0:
@@ -401,13 +399,23 @@ class DatasetModel(QAbstractTableModel):
         ma_unit.set_effect_and_ci(self.current_effect, est, lower, upper)
 
 
-    def get_cur_raw_data(self):
+    def get_cur_raw_data(self, only_if_included=True):
         raw_data = []
         for study_index in range(len(self.dataset.studies)):
-            raw_data.append(self.get_cur_raw_data_for_study(study_index))
-        # we lop off the last entry because it is always a blank line
+            if not only_if_included or self.dataset.studies[study_index].include:
+                raw_data.append(self.get_cur_raw_data_for_study(study_index))
+        # we lop off the last entry because it is always a blank line/study
         return raw_data[:-1]
 
+
+    def get_studies(self, only_if_included=True):
+        included_studies = []
+        for study in self.dataset.studies:
+            if not only_if_included or study.include:
+                included_studies.append(study)
+        # we lop off the last entry because it is always a blank line/study
+        return list(included_studies[:-1])      
+        
     def get_cur_raw_data_for_study(self, study_index):
         return self.get_current_ma_unit_for_study(study_index).get_raw_data_for_groups(self.current_txs)
 

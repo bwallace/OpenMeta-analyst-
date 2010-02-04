@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 
-#######################################
-#                                     #
-#  Byron C. Wallace                   #
-#  Tufts Medical Center               #
-#  OpenMeta[analyst]                  #
-#                                     #
-#  Container form for UI. Handles     #
-#  user interaction.                  #
-#                                     #
-#######################################
+###########################
+#                                           
+#  Byron C. Wallace                   
+#  Tufts Medical Center               
+#  OpenMeta[analyst]                  
+#                                     
+#  Container form for UI. Handles     
+#  user interaction.                  
+#                                     
+###########################
 
 import sys
 import pdb
