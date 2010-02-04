@@ -112,8 +112,11 @@ class DatasetModel(QAbstractTableModel):
         elif role == Qt.TextAlignmentRole:
             return QVariant(int(Qt.AlignLeft|Qt.AlignVCenter))
         elif role == Qt.CheckStateRole:
+            # this is where we deal with the inclusion/exclusion of studies
             if column == self.INCLUDE_STUDY:
-               checked_state = Qt.Checked if index.row() < self.rowCount()-1 else Qt.Unchecked
+               checked_state = Qt.Unchecked
+               if index.row() < self.rowCount()-1 and study.include:
+                   checked_state = Qt.Checked
                return QVariant(checked_state)
         elif role == Qt.BackgroundColorRole:
             if column in self.OUTCOMES:
@@ -134,8 +137,8 @@ class DatasetModel(QAbstractTableModel):
         if index.isValid() and 0 <= index.row() < len(self.dataset):
             column = index.column()
             old_val = self.data(index)
+            study = self.dataset.studies[index.row()]
             if column in (self.NAME, self.YEAR):
-                study = self.dataset.studies[index.row()]
                 if column == self.NAME:
                     study.name = unicode(value.toString().toUtf8(), encoding="utf8")
                     if study.name != "" and index.row() == self.rowCount()-1:
@@ -171,8 +174,10 @@ class DatasetModel(QAbstractTableModel):
                     # the user can also explicitly set the effect size
                     if value.toDouble()[1]:
                         ma_unit.set_effect(self.current_effect, value.toDouble()[0])
-
-
+            elif column == self.INCLUDE_STUDY:
+                study.include = value.toBool()
+                        
+            
             self.emit(SIGNAL("dataChanged(QModelIndex, QModelIndex)"), index, index)
 
             # tell the view that an entry in the table has changed, and what the old
