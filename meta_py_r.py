@@ -92,6 +92,11 @@ def get_available_methods(for_data_type=None):
         all_methods = [method for method in all_methods if method.startswith(for_data_type)]
     return all_methods
 
+
+def ma_dataset_to_binary_robj(table_model, var_name):
+    pass
+    
+    
 def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
     '''
     This converts a DatasetModel to a OpenMetaData (OMData) R object. We use type DatasetModel

@@ -30,10 +30,10 @@ class MADataTable(QtGui.QTableView):
         vert_header = self.verticalHeader()
         self.connect(vert_header, SIGNAL("sectionClicked(int)"), self.row_header_clicked)
 
-        #self.connect(self, SIGNAL("clicked(const QModelIndex)"), self.doubleClicked)
         self.reverse_column_sorts = {0: False, 1: False}
         self.setAlternatingRowColors(True)
-
+        
+        
     def keyPressEvent(self, event):
         # undo/redo
         if (event.modifiers() & QtCore.Qt.ControlModifier):
@@ -55,8 +55,8 @@ class MADataTable(QtGui.QTableView):
             elif event.key() == QtCore.Qt.Key_V:
                 # ctrl + v = paste
                 self.paste_from_clipboard(upper_left_index)
-
-
+        
+        
     def row_header_clicked(self, row):
         #
         # TODO: we're assuming here that we're dealing with binary
@@ -66,7 +66,7 @@ class MADataTable(QtGui.QTableView):
         cur_txs = self.model().current_txs
         cur_effect = self.model().current_effect
         form =  binary_data_form.BinaryDataForm2(ma_unit, cur_txs, cur_effect, parent=self)
-
+        
         if form.exec_():
             pass
 
@@ -90,9 +90,11 @@ class MADataTable(QtGui.QTableView):
         self.undoStack.push(cell_edit)
 
     def header_clicked(self, column):
-        sort_command = CommandSort(self.model(), column, self.reverse_column_sorts[column])
-        self.undoStack.push(sort_command)
-        self.reverse_column_sorts[column] = not self.reverse_column_sorts[column]
+        can_sort_by = [self.model().NAME, self.model().YEAR]
+        if column in can_sort_by:
+            sort_command = CommandSort(self.model(), column, self.reverse_column_sorts[column])
+            self.undoStack.push(sort_command)
+            self.reverse_column_sorts[column] = not self.reverse_column_sorts[column]
 
     def paste_from_clipboard(self, upper_left_index):
         ''' pastes the data in the clipboard starting at the currently selected cell.'''

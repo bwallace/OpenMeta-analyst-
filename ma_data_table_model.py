@@ -263,6 +263,7 @@ class DatasetModel(QAbstractTableModel):
         return [study.id for study in self.dataset.studies]
 
     def add_new_outcome(self, name, data_type):
+        self.dataset.get_group_names()
         data_type = STR_TO_TYPE_DICT[data_type.lower()]
         self.dataset.add_outcome(Outcome(name, data_type))
 
@@ -435,6 +436,13 @@ class DatasetModel(QAbstractTableModel):
 
         return self.dataset.studies[study_index].outcomes_to_follow_ups[self.current_outcome][self.current_time_point]
 
+    def get_ma_unit(self, study_index, outcome, time_point):
+        try:
+            return self.dataset.studies[study_index].outcomes_to_follow_ups[outcome][time_point]
+        except:
+            raise Exception, "whoops -- you're attempting to access raw data for a study, outcome \
+                                        or time point that doesn't exist."
+        
     def max_raw_data_cols_for_current_unit(self):
         '''
         Returns the length of the biggest raw data list for the parametric ma_unit. e.g.,

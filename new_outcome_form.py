@@ -1,5 +1,5 @@
-
 from PyQt4.Qt import *
+
 
 import ui_new_outcome
 

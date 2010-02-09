@@ -35,6 +35,7 @@ import meta_py_r
 import new_outcome_form
 import results_window
 import ma_specs
+import edit_dialog
 
 VERSION = .002
 NUM_DIGITS = 4
@@ -78,6 +79,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self._setup_connections()
         self.tableView.setSelectionMode(QTableView.ContiguousSelection)
         self.model.reset()
+        self.tableView.resizeColumnsToContents()
         self.out_path = None
 
 
@@ -110,8 +112,9 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         QObject.connect(self.action_open, SIGNAL("triggered()"), self.open)
         QObject.connect(self.action_quit, SIGNAL("triggered()"), self.quit)
         QObject.connect(self.action_go, SIGNAL("triggered()"), self.go)
-
-
+        
+        QObject.connect(self.action_edit, SIGNAL("triggered()"), self.edit_dataset)
+        
 
     def go(self):
         # the spec form gets *this* form as a parameter.
@@ -119,10 +122,11 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # module when specifications have been provided.
         form =  ma_specs.MA_Specs(self.model, parent=self)
         form.show()
-        #meta_py_r.ma_dataset_to_simple_binary_robj(self.model)
-        #result = meta_py_r.run_binary_ma({})
-        #print result
 
+    def edit_dataset(self):
+        edit_window =  edit_dialog.EditDialog(self.model, parent=self)
+        edit_window.show()
+        
     def analysis(self, results):
         form = results_window.ResultsWindow(results, parent=self)
         form.show()
@@ -139,15 +143,16 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 type = str(form.datatype_cbo_box.currentText())
                 self.model.add_new_outcome(name, type)
                 self.display_outcome(name)
-
+                
 
     def next(self):
         if self.cur_dimension == "outcome":
             next_outcome = self.model.get_next_outcome_name()
             self.display_outcome(next_outcome)
-
+        
         if self.cur_dimension in ["outcome, folow-up"]:
             self.update_undo_stack()
+            
 
     def previous(self):
         if self.cur_dimension == "outcome":
@@ -186,7 +191,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.cur_outcome_lbl.setText(u"<font color='Blue'>%s</font>" % outcome_name)
         self.cur_time_lbl.setText(u"<font color='Blue'>%s</font>" % self.model.current_time_point)
         self.model.reset()
-
+        self.tableView.resizeColumnsToContents()
 
     def open(self):
         file_path = unicode(QFileDialog.getOpenFileName(self, "OpenMeta[analyst] - Open File",

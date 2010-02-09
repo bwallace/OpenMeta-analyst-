@@ -378,6 +378,7 @@
     <property name="title" >
      <string>Dataset</string>
     </property>
+    <addaction name="action_edit" />
    </widget>
    <addaction name="menu_file" />
    <addaction name="menuAnalysis" />
@@ -401,7 +402,12 @@
   </action>
   <action name="action_go" >
    <property name="text" >
-    <string>Go</string>
+    <string>meta-analyze...</string>
+   </property>
+  </action>
+  <action name="action_edit" >
+   <property name="text" >
+    <string>edit...</string>
    </property>
   </action>
  </widget>

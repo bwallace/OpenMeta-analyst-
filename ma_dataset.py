@@ -51,6 +51,16 @@ class Dataset:
             return []
         return sorted(self.studies[0].outcomes_to_follow_ups.keys())
         
+    def get_group_names(self):
+        if len(self.studies) == 0:
+            return []
+        all_group_names = []
+        study = self.studies[0]
+        for outcome in study.outcomes_to_follow_ups.keys():
+            all_group_names.extend(self.outcomes_to_follow_ups[outcome][0].get_group_names())
+
+        return all_group_names
+        
     def add_study(self, study):
         # instead, allow empty outcomes/follow-ups, but handle
         # this at the point of execution
@@ -99,6 +109,7 @@ class Dataset:
             return flip_sign*-1
         else:
             return cmp(study_a_val, study_b_val)
+
         
 class Study:
     '''
@@ -127,6 +138,7 @@ class Study:
         if outcome.name in self.outcomes_to_follow_ups.keys():
             raise Exception, "Study already contains an outcome named %s" % outcome.name
         self.outcomes_to_follow_ups[outcome.name] = {}
+        #group_names = list(set([outcome.group_name]))
         self.outcomes_to_follow_ups[outcome.name][0] = MetaAnalyticUnit(outcome)
         self.outcomes.append(outcome)
         
@@ -141,17 +153,17 @@ class Study:
                 
     def add_ma_unit(self, unit, time):
         if not unit.outcome in self.outcomes_to_follow_ups:
-            #self.outcomes_to_follow_ups[unit.outcome.name] = {}
             self.add_outcome(unit.outcome)
             
         self.outcomes_to_follow_ups[unit.outcome.name][time] = unit
+        
         
 class MetaAnalyticUnit:
     '''
     This class is the unit of analysis. It corresponds to a single
     time period for a particular outcome for a dataset. 
     '''
-    # was group_names = ["treated", "control"]
+ 
     def __init__(self, outcome, raw_data = None, group_names = ["tx A", "tx B"]):
         '''
         Instantiate a new MetaAnalyticUnit, which is specific to a 
@@ -167,8 +179,7 @@ class MetaAnalyticUnit:
                             control group (if applicable)
         '''
         self.outcome = outcome
-        # effects_dict maps effect names -- e.g., OR, RR --
-        # to dictionaries which in turn map pairwise 
+
         # TreatmentGroup ids to effect scalars.
         self.tx_groups = {}
         
@@ -179,6 +190,8 @@ class MetaAnalyticUnit:
             self.add_group(group)
             self.tx_groups[group].raw_data = raw_data[i]
             
+        # effects_dict maps effect names -- e.g., OR, RR --
+        # to dictionaries which in turn map pairwise 
         self.effects_dict = {}
         if self.outcome.data_type == BINARY:
             for effect in ["OR", "RR", "RD"]:
@@ -219,6 +232,9 @@ class MetaAnalyticUnit:
         for group in groups:
             raw_data.extend(self.get_raw_data_for_group(group))
         return raw_data
+        
+    def get_group_names(self):
+        return [group.name for group in self.tx_groups]
             
     
 class TreatmentGroup:
