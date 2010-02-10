@@ -1,7 +1,7 @@
 from PyQt4.Qt import *
 import ui_new_group
 
-# TODO should probalby just merge into a single module along with
+# TODO should probably just merge into a single module along with
 # the AddNewOutcome dialog...
 class AddNewGroupForm(QDialog, ui_new_group.Ui_new_group_dialog):
     

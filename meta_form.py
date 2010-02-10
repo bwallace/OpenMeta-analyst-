@@ -150,6 +150,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             form.group_name_le.setFocus()        
             if form.exec_():
                 new_group_name = form.group_name_le.text()
+                self.model.add_new_group(new_group_name)
                 print new_group_name
 
     def next(self):

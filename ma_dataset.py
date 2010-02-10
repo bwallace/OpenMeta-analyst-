@@ -16,6 +16,8 @@
 # the pairwise combinations of the groups/treatments (e.g., OR->"AvB"=x)
 #
 ###########################################################################
+import pdb
+from PyQt4.QtCore import pyqtRemoveInputHook
 
  # enumeration of data types and dictionaries mapping both ways
 BINARY, CONTINUOUS, DIAGNOSTIC, OTHER = range(4)
@@ -28,7 +30,6 @@ TYPE_TO_STR_DICT = {BINARY:u"binary", CONTINUOUS:u"continuous",
 VANILLA, NETWORK = range(2)
     
 class Dataset:
-    
     def __len__(self):
         return len(self.studies)
         
@@ -59,7 +60,7 @@ class Dataset:
         for outcome in study.outcomes_to_follow_ups.keys():
             all_group_names.extend(study.outcomes_to_follow_ups[outcome][0].get_group_names())
 
-        return all_group_names
+        return list(set(all_group_names))
         
     def add_study(self, study):
         # instead, allow empty outcomes/follow-ups, but handle
@@ -88,6 +89,23 @@ class Dataset:
     def add_outcome(self, outcome):
         for study in self.studies:
             study.add_outcome(outcome)
+    
+    def add_group(self, group_name):
+        for study in self.studies:
+            for outcome_name in study.outcomes_to_follow_ups.keys():
+                cur_outcome = study.outcomes_to_follow_ups[outcome_name]
+                for ma_unit in cur_outcome.values():
+                    ma_unit.add_group(group_name)
+        print "added group: %s. cur groups: %s" % (group_name, self.get_group_names())
+        
+    def get_group_names(self):
+        group_names = []
+        for study in self.studies:
+            for outcome_name in study.outcomes_to_follow_ups.keys():
+                cur_outcome = study.outcomes_to_follow_ups[outcome_name]
+                for ma_unit in cur_outcome.values():
+                    group_names.extend(ma_unit.get_group_names())
+        return list(set(group_names))
     
     def cmp_studies(self, compare_by="name", reverse=True):
         if compare_by == "name":
@@ -164,7 +182,7 @@ class MetaAnalyticUnit:
     time period for a particular outcome for a dataset. 
     '''
  
-    def __init__(self, outcome, raw_data = None, group_names = ["tx A", "tx B"]):
+    def __init__(self, outcome, raw_data = None, group_names = None):
         '''
         Instantiate a new MetaAnalyticUnit, which is specific to a 
         given study/outcome pair. 
@@ -178,6 +196,10 @@ class MetaAnalyticUnit:
                             for the treated group and the second corresponds to the
                             control group (if applicable)
         '''
+        
+        if group_names is None:
+            group_names = ["tx A", "tx B"]
+            
         self.outcome = outcome
 
         # TreatmentGroup ids to effect scalars.

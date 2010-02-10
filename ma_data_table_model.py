@@ -263,10 +263,12 @@ class DatasetModel(QAbstractTableModel):
         return [study.id for study in self.dataset.studies]
 
     def add_new_outcome(self, name, data_type):
-        self.dataset.get_group_names()
         data_type = STR_TO_TYPE_DICT[data_type.lower()]
         self.dataset.add_outcome(Outcome(name, data_type))
 
+    def add_new_group(self, name):
+        self.dataset.add_group(str(name))
+        
     def remove_study(self, id):
         self.dataset.studies.pop(id)
         self.reset()
