@@ -57,7 +57,7 @@ class Dataset:
         all_group_names = []
         study = self.studies[0]
         for outcome in study.outcomes_to_follow_ups.keys():
-            all_group_names.extend(self.outcomes_to_follow_ups[outcome][0].get_group_names())
+            all_group_names.extend(study.outcomes_to_follow_ups[outcome][0].get_group_names())
 
         return all_group_names
         
@@ -234,7 +234,7 @@ class MetaAnalyticUnit:
         return raw_data
         
     def get_group_names(self):
-        return [group.name for group in self.tx_groups]
+        return self.tx_groups.keys()
             
     
 class TreatmentGroup:

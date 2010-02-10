@@ -33,6 +33,7 @@ import meta_py_r
 # additional forms
 #
 import new_outcome_form
+import new_group_form
 import results_window
 import ma_specs
 import edit_dialog
@@ -124,7 +125,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         form.show()
 
     def edit_dataset(self):
-        edit_window =  edit_dialog.EditDialog(self.model, parent=self)
+        edit_window =  edit_dialog.EditDialog(self.model.dataset, parent=self)
         edit_window.show()
         
     def analysis(self, results):
@@ -139,11 +140,17 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 # then the user clicked ok and has added a new outcome.
                 # here we want to add the outcome to the dataset, and then
                 # display it
-                name = form.outcome_name_le.text()
+                new_outcome_name = form.outcome_name_le.text()
                 type = str(form.datatype_cbo_box.currentText())
-                self.model.add_new_outcome(name, type)
-                self.display_outcome(name)
-                
+                self.model.add_new_outcome(new_outcome_name, type)
+                self.display_outcome(new_outcome_name)
+        elif self.cur_dimension == "group":
+            print "::adding new group::"
+            form = new_group_form.AddNewGroupForm(self)
+            form.group_name_le.setFocus()        
+            if form.exec_():
+                new_group_name = form.group_name_le.text()
+                print new_group_name
 
     def next(self):
         if self.cur_dimension == "outcome":

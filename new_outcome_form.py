@@ -1,6 +1,4 @@
 from PyQt4.Qt import *
-
-
 import ui_new_outcome
 
 class AddNewOutcomeForm(QDialog, ui_new_outcome.Ui_Dialog):
