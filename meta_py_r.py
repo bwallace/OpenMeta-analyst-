@@ -209,6 +209,8 @@ def _rls_to_pyd(r_ls):
 
     return d
 
+
+# TODO clean up
 def _rlist_to_pydict(r_ls):
     # need to fix this; recursively build dictionary!!!!
     d = {}

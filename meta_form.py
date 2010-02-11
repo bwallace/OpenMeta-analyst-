@@ -38,7 +38,7 @@ import results_window
 import ma_specs
 import edit_dialog
 
-VERSION = .002
+VERSION = .003
 NUM_DIGITS = 4
 
 class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
@@ -151,7 +151,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             if form.exec_():
                 new_group_name = form.group_name_le.text()
                 self.model.add_new_group(new_group_name)
-
+                
                 print new_group_name
 
     def next(self):
@@ -160,7 +160,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.display_outcome(next_outcome)
         elif self.cur_dimension == "group":
             self.model.next_groups()
-            self.model.reset()
+            self.model.try_to_update_outcomes()
+            #self.model.reset()
             self.tableView.resizeColumnsToContents()
             #pyqtRemoveInputHook()
             #pdb.set_trace()
@@ -168,7 +169,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         if self.cur_dimension in ["outcome, folow-up"]:
             self.update_undo_stack()
             
-
     def previous(self):
         if self.cur_dimension == "outcome":
             next_outcome = self.model.get_prev_outcome_name()
