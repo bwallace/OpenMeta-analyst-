@@ -87,8 +87,12 @@ class Dataset:
         return None
         
     def add_outcome(self, outcome):
+        cur_group_names = self.get_group_names()
+        if len(cur_group_names) == 0:
+            cur_group_names = None
+            
         for study in self.studies:
-            study.add_outcome(outcome)
+            study.add_outcome(outcome, group_names=cur_group_names)
     
     def add_group(self, group_name):
         for study in self.studies:
@@ -151,13 +155,13 @@ class Study:
         # conducted analyses
         self.include = include
         
-    def add_outcome(self, outcome):
+    def add_outcome(self, outcome, group_names=None):
         ''' Adds a new, blank outcome '''
         if outcome.name in self.outcomes_to_follow_ups.keys():
             raise Exception, "Study already contains an outcome named %s" % outcome.name
         self.outcomes_to_follow_ups[outcome.name] = {}
         #group_names = list(set([outcome.group_name]))
-        self.outcomes_to_follow_ups[outcome.name][0] = MetaAnalyticUnit(outcome)
+        self.outcomes_to_follow_ups[outcome.name][0] = MetaAnalyticUnit(outcome, group_names=group_names)
         self.outcomes.append(outcome)
         
     def add_outcome_at_follow_up(self, outcome, follow_up):
