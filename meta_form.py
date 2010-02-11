@@ -151,13 +151,20 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             if form.exec_():
                 new_group_name = form.group_name_le.text()
                 self.model.add_new_group(new_group_name)
+
                 print new_group_name
 
     def next(self):
         if self.cur_dimension == "outcome":
             next_outcome = self.model.get_next_outcome_name()
             self.display_outcome(next_outcome)
-        
+        elif self.cur_dimension == "group":
+            self.model.next_groups()
+            self.model.reset()
+            self.tableView.resizeColumnsToContents()
+            #pyqtRemoveInputHook()
+            #pdb.set_trace()
+            
         if self.cur_dimension in ["outcome, folow-up"]:
             self.update_undo_stack()
             
@@ -191,7 +198,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     def update_dimension(self):
         self.cur_dimension = self.dimensions[self.cur_dimension_index]
         self.nav_lbl.setText(self.cur_dimension)
-
 
     def display_outcome(self, outcome_name):
         self.model.set_current_outcome(outcome_name)

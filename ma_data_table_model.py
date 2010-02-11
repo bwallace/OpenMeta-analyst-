@@ -44,7 +44,16 @@ class DatasetModel(QAbstractTableModel):
         # i.e., outcome and time period, are being viewed
         self.current_outcome = None
         self.current_time_point = 0
-        self.current_txs = ["tx A", "tx B"]
+        
+        # we also track which groups are being viewed
+        self.tx_index_a = 0
+        self.tx_index_b = 1
+
+        group_names = self.dataset.get_group_names()
+        if len(group_names) > 1:
+            self.current_txs = [group_names[self.tx_index_a], group_names[self.tx_index_b]]
+        else:
+            self.current_txs = ["tx A", "tx B"]
         # @TODO parameterize; make variable
         self.current_effect = "OR"
 
@@ -287,6 +296,22 @@ class DatasetModel(QAbstractTableModel):
                                                         else outcomes[cur_index-1]
         return prev_outcome
 
+    def next_groups(self):
+        group_names = self.dataset.get_group_names()
+        if self.tx_index_b < len(group_names)-1:
+            self.tx_index_b += 1
+        else:
+            # bump the a index
+            if self.tx_index_a < len(group_names)-1:
+                self.tx_index_a += 1
+            else:
+                self.tx_index_a = 0
+            self.tx_index_b = 0
+        
+        self.current_txs = [group_names[self.tx_index_a], group_names[self.tx_index_b]]
+        
+        
+
     def sort_studies(self, col, reverse):
         if col == self.NAME:
             self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by="name", reverse=reverse), reverse=reverse)
@@ -409,7 +434,6 @@ class DatasetModel(QAbstractTableModel):
                 raw_data.append(self.get_cur_raw_data_for_study(study_index))
         # we lop off the last entry because it is always a blank line/study
         return raw_data[:-1]
-
 
     def get_studies(self, only_if_included=True):
         included_studies = []

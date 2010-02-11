@@ -205,8 +205,8 @@ class MetaAnalyticUnit:
         # TreatmentGroup ids to effect scalars.
         self.tx_groups = {}
         
-        raw_data_length = 2 if outcome.data_type is BINARY else 3
-        raw_data = raw_data or [["" for n in range(raw_data_length)] for group in group_names]
+        self.raw_data_length = 2 if outcome.data_type is BINARY else 3
+        raw_data = raw_data or [["" for n in range(self.raw_data_length)] for group in group_names]
         # add the two default groups: treatment and control
         for i, group in enumerate(group_names):
             self.add_group(group)
@@ -239,11 +239,13 @@ class MetaAnalyticUnit:
     def type(self):
         return self.outcome.data_type
         
-    def add_group(self, name, raw_data=[]):
+    def add_group(self, name, raw_data=None):
         if len(self.tx_groups.keys()) == 0:
             id = 0
         else:
             id = max([group.id for group in self.tx_groups.values()]) + 1
+        if raw_data is None:
+            raw_data = ["" for x in range(self.raw_data_length)]
         self.tx_groups[name] = TreatmentGroup(id, name, raw_data)
         
     def get_raw_data_for_group(self, group_name):
@@ -260,12 +262,10 @@ class MetaAnalyticUnit:
             
     
 class TreatmentGroup:
-    def __init__(self, id, name, raw_data=[]):
+    def __init__(self, id, name, raw_data):
         self.id = id
         self.name = name
-        # raw data should probably be a dictionary,
-        # not a tuple
-        self.raw_data = raw_data
+        self.raw_data = raw_data    
     
             
 class Outcome:
