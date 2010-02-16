@@ -111,6 +111,30 @@ class Dataset:
                     group_names.extend(ma_unit.get_group_names())
         return list(set(group_names))
     
+    def get_network(self, outcome, time_point):
+        adjacency_list = []
+        for study in self.studies:
+            ma_unit = study.outcomes_to_follow_ups[outcome][time_point]
+            group_names = ma_unit.get_group_names()
+            for g1 in group_names:
+                for g2 in [group for group in group_names if group != g1]:        
+                    if self.ma_unit_has_edge_between_groups(ma_unit, [g1, g2]) and\
+                     not (g1, g2) in adjacency_list and not (g2, g1) in adjacency_list:
+                        adjacency_list.append((g1,g2)) 
+
+        return adjacency_list 
+        
+    def ma_unit_has_edge_between_groups(self, ma_unit, groups):
+        # TODO this will need to be updated; right now
+        # we return false if any of the groups in the unit don't
+        # contain raw_data; but really we need also to check
+        # for effect sizes, which may have been entered
+        # independently
+        for group in groups:
+            if "" in ma_unit.tx_groups[group].raw_data:
+                return False
+        return True
+        
     def cmp_studies(self, compare_by="name", reverse=True):
         if compare_by == "name":
             return lambda study_a, study_b : self._cmp_wrapper(study_a.name, study_b.name, reverse)
@@ -178,12 +202,13 @@ class Study:
             self.add_outcome(unit.outcome)
             
         self.outcomes_to_follow_ups[unit.outcome.name][time] = unit
-        
+
         
 class MetaAnalyticUnit:
     '''
     This class is the unit of analysis. It corresponds to a single
-    time period for a particular outcome for a dataset. 
+    time period for a particular outcome for a dataset. Note that
+    it (may) contain multiple groups!
     '''
  
     def __init__(self, outcome, raw_data = None, group_names = None):
@@ -211,7 +236,8 @@ class MetaAnalyticUnit:
         
         self.raw_data_length = 2 if outcome.data_type is BINARY else 3
         raw_data = raw_data or [["" for n in range(self.raw_data_length)] for group in group_names]
-        # add the two default groups: treatment and control
+        # add the two default groups: treatment and control; note that the raw data
+        # is held at the *group* level
         for i, group in enumerate(group_names):
             self.add_group(group)
             self.tx_groups[group].raw_data = raw_data[i]
@@ -219,6 +245,9 @@ class MetaAnalyticUnit:
         # effects_dict maps effect names -- e.g., OR, RR --
         # to dictionaries which in turn map pairwise 
         self.effects_dict = {}
+        # TODO this needs another level; effect sizes that are entered directly
+        # must correspond to a particular pair of tx groups, moreover the 
+        # order matters i.e., the effect for tx a v. tx b is different than the reverse
         if self.outcome.data_type == BINARY:
             for effect in ["OR", "RR", "RD"]:
                 self.effects_dict[effect] = {"est":None, "lower":None,

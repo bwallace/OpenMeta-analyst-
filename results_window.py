@@ -125,7 +125,6 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         self.psuedo_console.append(QString(res))
         self.psuedo_console.append(">> ")
 
-
     def current_line(self):
         last_line = self.psuedo_console.toPlainText().split("\n")[-1]
         return str(last_line.replace(">>", "")).strip()
@@ -139,7 +138,6 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         item.setMatrix(matrix)
         self.scene.clearSelection()
         self.scene.addItem(item)
-        #item.setSelected(True)
         self.scene.setSceneRect(0, 0, PageSize[0], self.y_coord+padding)
         return item.boundingRect().size()
 

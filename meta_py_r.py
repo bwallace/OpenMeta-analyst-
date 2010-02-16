@@ -32,6 +32,8 @@ try:
 except:
     raise Exception, "metafor (R) package not installed.\nPlease install this package and then re-start OpenMeta."
 
+ro.r("library(igraph)")
+
 try:
     # @TODO integrate into openmetar package
     # this is extremely kludgey and will likely break on other platforms
@@ -96,6 +98,24 @@ def get_available_methods(for_data_type=None):
 def ma_dataset_to_binary_robj(table_model, var_name):
     pass
     
+    
+def draw_network(edge_list, network_path = '"./r_tmp/network.png"'):
+    '''
+    This draws the parametric network specified by edge_list.
+    The latter is assumed to be in form:
+        ["tx a", "tx b", "tx b", "tx c" .... "tx z']
+    Where two adjacent entires in the list are connected.
+    Note that we (lazily) make all calls to R here rather than
+    implementing a method on the R side that takes a graph/
+    edge list. We may want to change this eventually.
+    '''
+    edge_str = ", ".join(["'%s'" % x for x in edge_list])
+    ro.r("el <- matrix(c(%s), nc=2, byrow=TRUE)" % edge_str)
+    ro.r("g <- graph.edgelist(el, directed=FALSE)")
+    ro.r("png(%s)" % network_path)
+    ro.r("plot(g, vertex.label=V(g)$name, vertex.size=25, edge.width = .1, edge.arrow.size=.01)")
+    ro.r("dev.off()")
+    return "r_tmp/network.png"
     
 def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
     '''
