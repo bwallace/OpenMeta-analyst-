@@ -109,13 +109,18 @@ class Dataset:
                     ma_unit.add_group(group_name)
         print "added group: %s. cur groups: %s" % (group_name, self.get_group_names())
         
-    def add_follow_up(self, follow_up_name):
+    def add_follow_up_to_outcome(self, outcome, follow_up_name):
         cur_group_names = self.get_group_names()
         if len(cur_group_names) == 0:
             cur_group_names = None
         
+        prev_index = max(self.outcome_names_to_follow_ups[outcome.name].keys())
+        next_index = prev_index + 1
+
+        self.outcome_names_to_follow_ups[outcome.name][next_index] = follow_up_name
+        
         for study in self.studies:
-            study.add_follow_up(follow_up_name, group_names = cur_group_names)
+            study.add_follow_up_to_outcome(outcome, follow_up_name, group_names = cur_group_names)
         
     def get_group_names(self):
         group_names = []
@@ -195,7 +200,7 @@ class Study:
         self.include = include
         
     def add_outcome(self, outcome, follow_up_name="baseline", group_names=None):
-        ''' Adds a new, blank outcome '''
+        ''' Adds a new, blank outcome (i.e., no raw data) '''
         if outcome.name in self.outcomes_to_follow_ups.keys():
             raise Exception, "Study already contains an outcome named %s" % outcome.name
         self.outcomes_to_follow_ups[outcome.name] = {}

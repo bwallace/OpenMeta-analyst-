@@ -96,7 +96,6 @@ class DatasetModel(QAbstractTableModel):
                     return QVariant(study.year)
             elif column in self.RAW_DATA:
                 adjusted_index = column - 3
-
                 if self.current_outcome in study.outcomes_to_follow_ups:
                     cur_raw_data = self.get_current_ma_unit_for_study(index.row()).\
                                                         get_raw_data_for_groups(self.current_txs)
@@ -279,6 +278,10 @@ class DatasetModel(QAbstractTableModel):
     def add_new_group(self, name):
         self.dataset.add_group(str(name))
         
+    def add_follow_up_to_current_outcome(self, follow_up_name):
+        cur_outcome = self.dataset.get_outcome_obj(self.current_outcome)
+        self.dataset.add_follow_up_to_outcome(cur_outcome, follow_up_name)
+        
     def remove_study(self, id):
         self.dataset.studies.pop(id)
         self.reset()
@@ -296,6 +299,18 @@ class DatasetModel(QAbstractTableModel):
         prev_outcome = outcomes[-1] if cur_index == 0 \
                                                         else outcomes[cur_index-1]
         return prev_outcome
+
+    def get_next_follow_up_name(self):
+        if self.current_time_point == max(self.dataset.outcome_names_to_follow_ups[self.current_outcome].keys()):
+            self.current_time_point = 0
+        else:
+            # WARNING if we delete a time point things might get screwed up here
+            # as we're actually using the MAX when we insert new follow ups
+            # TODO change this to look for the next greatest time point rather than
+            # assuming the current + 1 exists
+            self.current_time_point += 1
+        return self.get_current_follow_up_name()
+        
 
     def next_groups(self):
         group_names = self.dataset.get_group_names()

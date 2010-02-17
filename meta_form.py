@@ -161,7 +161,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             form.follow_up_name_le.setFocus()
             if form.exec_():
                 follow_up_lbl = form.follow_up_name_le.text()
-                self.model.add_new_follow_up(new_outcome_name)
+                self.model.add_follow_up_to_current_outcome(follow_up_lbl)
                 print "ok. added new follow-up: %s" % follow_up_lbl
                 
 
@@ -174,6 +174,9 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.model.try_to_update_outcomes()
             #self.model.reset()
             self.tableView.resizeColumnsToContents()
+        elif self.cur_dimension == "follow-up":
+            next_follow_up = self.model.get_next_follow_up_name()
+            self.display_follow_up(next_follow_up)
             
         if self.cur_dimension in ["outcome, follow-up"]:
             self.update_undo_stack()
@@ -216,6 +219,11 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.model.reset()
         self.tableView.resizeColumnsToContents()
 
+    def display_follow_up(self, follow_up_name):
+        self.cur_time_lbl.setText(u"<font color='Blue'>%s</font>" % self.model.get_current_follow_up_name())
+        self.model.reset()
+        self.tableView.resizeColumnsToContents()
+        
     def open(self):
         file_path = unicode(QFileDialog.getOpenFileName(self, "OpenMeta[analyst] - Open File",
                                                                                         ".", "open meta files (*.oma)"))
@@ -291,7 +299,7 @@ def _gen_some_data():
 
     outcome = Outcome("death", BINARY)
     dataset.add_outcome(outcome)
-    dataset.add_follow_up("baseline")
+    #dataset.add_follow_up_to_outcome(outcome.name, "baseline")
     
     # self.get_current_ma_unit_for_study(index.row()).get_raw_data_for_groups(self.current_txs)
     for study in studies:
@@ -299,8 +307,6 @@ def _gen_some_data():
     for study,data in zip(dataset.studies, raw_data):
         study.add_ma_unit(MetaAnalyticUnit(outcome, raw_data=data), "baseline")
     
-    #pyqtRemoveInputHook()
-    #pdb.set_trace()
     return dataset
 
 def _setup_app():
