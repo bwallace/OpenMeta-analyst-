@@ -37,6 +37,7 @@ import new_group_form
 import results_window
 import ma_specs
 import edit_dialog
+import network_view
 
 VERSION = .003
 NUM_DIGITS = 4
@@ -115,7 +116,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         QObject.connect(self.action_go, SIGNAL("triggered()"), self.go)
         
         QObject.connect(self.action_edit, SIGNAL("triggered()"), self.edit_dataset)
-        
+        QObject.connect(self.action_view_network, SIGNAL("triggered()"), self.view_network)
 
     def go(self):
         # the spec form gets *this* form as a parameter.
@@ -127,6 +128,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     def edit_dataset(self):
         edit_window =  edit_dialog.EditDialog(self.model.dataset, parent=self)
         edit_window.show()
+        
+    def view_network(self):
+        view_window =  network_view.ViewDialog(self.model.dataset, parent=self)
+        view_window.show()
         
     def analysis(self, results):
         form = results_window.ResultsWindow(results, parent=self)

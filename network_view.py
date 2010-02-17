@@ -1,18 +1,16 @@
 from PyQt4.Qt import *
-import ui_edit_dialog
+import ui_network_view
 import edit_list_models
 import meta_py_r
 import pdb
 
 PageSize = (500, 300)
 
-class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
+class ViewDialog(QDialog, ui_network_view.Ui_network_view_dialog):
 
     def __init__(self, dataset, parent=None):
-        super(EditDialog, self).__init__(parent)
+        super(ViewDialog, self).__init__(parent)
         self.setupUi(self)
-        self.groups_model = edit_list_models.TXGroupModel(dataset = dataset)
-        self.group_list.setModel(self.groups_model)
         
         self.dataset = dataset
         self.x_coord = 5

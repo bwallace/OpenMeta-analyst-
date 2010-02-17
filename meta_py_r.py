@@ -113,7 +113,7 @@ def draw_network(edge_list, network_path = '"./r_tmp/network.png"'):
     ro.r("el <- matrix(c(%s), nc=2, byrow=TRUE)" % edge_str)
     ro.r("g <- graph.edgelist(el, directed=FALSE)")
     ro.r("png(%s)" % network_path)
-    ro.r("plot(g, vertex.label=V(g)$name, vertex.size=25, edge.width = .1, edge.arrow.size=.01)")
+    ro.r("plot(g, vertex.label=V(g)$name, layout=layout.circle, vertex.size=25, asp=.3, margin=-.05)")
     ro.r("dev.off()")
     return "r_tmp/network.png"
     

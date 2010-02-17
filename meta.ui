@@ -379,6 +379,7 @@
      <string>Dataset</string>
     </property>
     <addaction name="action_edit" />
+    <addaction name="action_view_network" />
    </widget>
    <addaction name="menu_file" />
    <addaction name="menuAnalysis" />
@@ -408,6 +409,11 @@
   <action name="action_edit" >
    <property name="text" >
     <string>edit...</string>
+   </property>
+  </action>
+  <action name="action_view_network" >
+   <property name="text" >
+    <string>view network...</string>
    </property>
   </action>
  </widget>

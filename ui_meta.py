@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'meta.ui'
 #
-# Created: Tue Feb 09 15:35:49 2010
+# Created: Wed Feb 17 10:08:25 2010
 #      by: PyQt4 UI code generator 4.4.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -41,6 +41,7 @@ class Ui_MainWindow(object):
         self.verticalLayout = QtGui.QVBoxLayout()
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setContentsMargins(-1, -1, -1, 0)
+        self.verticalLayout.setObjectName("verticalLayout")
         self.tableView = ma_data_table_view.MADataTable(self.nav_frame)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -170,11 +171,14 @@ class Ui_MainWindow(object):
         self.action_go.setObjectName("action_go")
         self.action_edit = QtGui.QAction(MainWindow)
         self.action_edit.setObjectName("action_edit")
+        self.action_view_network = QtGui.QAction(MainWindow)
+        self.action_view_network.setObjectName("action_view_network")
         self.menu_file.addAction(self.action_save)
         self.menu_file.addAction(self.action_open)
         self.menu_file.addAction(self.action_quit)
         self.menuAnalysis.addAction(self.action_go)
         self.menuDataset.addAction(self.action_edit)
+        self.menuDataset.addAction(self.action_view_network)
         self.menu_bar.addAction(self.menu_file.menuAction())
         self.menu_bar.addAction(self.menuAnalysis.menuAction())
         self.menu_bar.addAction(self.menuDataset.menuAction())
@@ -194,5 +198,6 @@ class Ui_MainWindow(object):
         self.action_quit.setText(QtGui.QApplication.translate("MainWindow", "quit", None, QtGui.QApplication.UnicodeUTF8))
         self.action_go.setText(QtGui.QApplication.translate("MainWindow", "meta-analyze...", None, QtGui.QApplication.UnicodeUTF8))
         self.action_edit.setText(QtGui.QApplication.translate("MainWindow", "edit...", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_view_network.setText(QtGui.QApplication.translate("MainWindow", "view network...", None, QtGui.QApplication.UnicodeUTF8))
 
 import icons_rc

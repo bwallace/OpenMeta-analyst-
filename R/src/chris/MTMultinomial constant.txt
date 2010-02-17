@@ -1,0 +1,60 @@
+# n_study studies [1]
+# n_outcomes that are mutually exclusive [2]
+# n_treats treatments [3]   For now set n_treats = 2
+# Control treatment is ref
+# Reference outcome is first
+
+model 
+{
+    for (i in 1:narms) {
+        R[i,1:ncats] ~ dmulti(P[i,],n[i])
+        n[i] <- sum(R[i,])
+        for (k in 1:(ncats-1)) {
+          logit(P[i,k+1]) <- Theta[i,k]
+          Theta[i,k] <- Eta[study[i],k] + Delta[i,k] * (1 - equals(treat[i],base.treat[i]))      
+          Delta[i,k] <- Mu.delta[i,k] + Xi[i,k]
+          Mu.delta[i,k] <- d[treat[i],k] - d[base.treat[i],k]
+        }
+        Xi[i,1:(ncats-1)] ~ dmnorm(m.xi[],Prec[base.treat[i],treat[i],,])                      #m.xi defined in data
+        P[i,1] <-( 1 - sum(P[i,2:ncats]))
+        allcovs[i] <- x[i]
+   }
+
+   for (i in 1:nstudies) {Eta[i,1:(ncats-1)] ~ dmnorm(MEta[],R4[,])}   #MEta and R4 defined in data
+
+   for (k in 1:(ncats-1)) { 
+       d[ref,k] <- 0
+  }
+   for (j in 1:(ref-1)) {
+       d[j,1:(ncats-1)] ~ dmnorm(Md[],R2[,])             #md and R2 defined in data
+   }
+   for (j in (ref+1):ntreats) {
+        d[j,1:(ncats-1)] ~ dmnorm(Md[],R2[,])
+   }
+   
+   for (j in 1:(ntreats-1)) {
+       for (k in 1:(ncats-1)) {
+             Prec[j,j,k,k] <- 1
+             Tau[j,j,k,k] <- 1
+             for (l in 1:(k-1)) {
+                   Prec[j,j,k,l] <- 0
+                   Tau[j,j,k,l] <- 1
+             }
+              for (l in k+1:(ncats-1)) {
+                   Prec[j,j,k,l] <- 0
+                   Tau[j,j,k,l] <- 1
+             }
+       }
+       for (k in (j+1):ntreats) {
+           Prec[j,k,1:(ncats-1),1:(ncats-1)] ~ dwish(R1[,], 3)   #R1 defined in data 
+           Tau[j,k, 1:(ncats-1),1:(ncats-1)] <- inverse(Prec[j,k,,])
+       }
+   }
+                                        
+#   odds.ratio <- exp(d)
+#   pred.LOR ~ dmnorm(d, Prec)
+}
+
+
+# Need to add covariates in R
+# Missing data

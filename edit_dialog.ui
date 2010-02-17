@@ -15,7 +15,7 @@
    </font>
   </property>
   <property name="windowTitle" >
-   <string>Edit</string>
+   <string>Dataset</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout" >
    <item>
@@ -26,7 +26,7 @@
       </font>
      </property>
      <property name="currentIndex" >
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="arms_tab" >
       <attribute name="title" >
