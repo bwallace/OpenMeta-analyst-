@@ -23,7 +23,7 @@ class ViewDialog(QDialog, ui_network_view.Ui_network_view_dialog):
         #pdb.set_trace()
         
     def graph_network(self):
-        edges = self.dataset.get_network("death", 0)
+        edges = self.dataset.get_network("death", "baseline")
         # get_network returns a list of tuples, wherein
         # each tuple is an edge with group names representing
         # nodes, e.g., [("tx a", "tx b"), ("tx b", "tx c")]. however the igraph

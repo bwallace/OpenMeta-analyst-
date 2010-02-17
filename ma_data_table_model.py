@@ -96,6 +96,7 @@ class DatasetModel(QAbstractTableModel):
                     return QVariant(study.year)
             elif column in self.RAW_DATA:
                 adjusted_index = column - 3
+
                 if self.current_outcome in study.outcomes_to_follow_ups:
                     cur_raw_data = self.get_current_ma_unit_for_study(index.row()).\
                                                         get_raw_data_for_groups(self.current_txs)
@@ -340,6 +341,9 @@ class DatasetModel(QAbstractTableModel):
         self.emit(SIGNAL("followUpChanged()"))
         self.reset()
 
+    def get_current_follow_up_name(self):
+        return self.dataset.outcome_names_to_follow_ups[self.current_outcome][self.current_time_point]
+        
     def max_study_id(self):
         if len(self.dataset.studies) == 0:
             return -1
@@ -403,8 +407,7 @@ class DatasetModel(QAbstractTableModel):
     def raw_data_is_complete_for_study(self, study_index):
         if self.current_outcome is None or self.current_time_point is None:
             return False
-        #raw_data = self.get_current_ma_unit_for_study(study_index).\
-        #                    get_raw_data_for_groups(self.current_txs)
+
         raw_data = self.get_cur_raw_data_for_study(study_index)
         return not "" in raw_data
 
@@ -455,16 +458,18 @@ class DatasetModel(QAbstractTableModel):
          '''
         if not self.current_outcome in self.dataset.studies[study_index].outcomes_to_follow_ups:
             self.dataset.studies[study_index].add_outcome(self.dataset.get_outcome_obj(self.current_outcome))
-        # we must also make sure the time point exists
-        if not self.current_time_point in self.dataset.studies[study_index].outcomes_to_follow_ups[self.current_outcome]:
+        
+        # we must also make sure the time point exists. note that we use the *name* rather than the 
+        # index of the current time/follow up
+        if not self.get_current_follow_up_name() in self.dataset.studies[study_index].outcomes_to_follow_ups[self.current_outcome]:
             self.dataset.studies[study_index].add_outcome_at_follow_up(
-                                self.dataset.get_outcome(self.current_outcome), self.current_time_point)
+                                self.dataset.get_outcome_obj(self.current_outcome), self.get_current_follow_up_name())
 
-        return self.dataset.studies[study_index].outcomes_to_follow_ups[self.current_outcome][self.current_time_point]
+        return self.dataset.studies[study_index].outcomes_to_follow_ups[self.current_outcome][self.get_current_follow_up_name()]
 
-    def get_ma_unit(self, study_index, outcome, time_point):
+    def get_ma_unit(self, study_index, outcome, follow_up):
         try:
-            return self.dataset.studies[study_index].outcomes_to_follow_ups[outcome][time_point]
+            return self.dataset.studies[study_index].outcomes_to_follow_ups[outcome][follow_up]
         except:
             raise Exception, "whoops -- you're attempting to access raw data for a study, outcome \
                                         or time point that doesn't exist."

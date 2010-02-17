@@ -149,19 +149,20 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 self.model.add_new_outcome(new_outcome_name, type)
                 self.display_outcome(new_outcome_name)
         elif self.cur_dimension == "group":
-            print "adding new group:"
             form = add_new_dialogs.AddNewGroupForm(self)
             form.group_name_le.setFocus()        
             if form.exec_():
                 new_group_name = form.group_name_le.text()
                 self.model.add_new_group(new_group_name)
-                print new_group_name
+                print "ok. added new group: %s" % new_group_name
         else:
             # then the dimension is follow-up
             form = add_new_dialogs.AddNewFollowUpForm(self)
             form.follow_up_name_le.setFocus()
             if form.exec_():
-                print form.follow_up_name_le.text()
+                follow_up_lbl = form.follow_up_name_le.text()
+                self.model.add_new_follow_up(new_outcome_name)
+                print "ok. added new follow-up: %s" % follow_up_lbl
                 
 
     def next(self):
@@ -173,10 +174,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.model.try_to_update_outcomes()
             #self.model.reset()
             self.tableView.resizeColumnsToContents()
-            #pyqtRemoveInputHook()
-            #pdb.set_trace()
             
-        if self.cur_dimension in ["outcome, folow-up"]:
+        if self.cur_dimension in ["outcome, follow-up"]:
             self.update_undo_stack()
             
     def previous(self):
@@ -213,7 +212,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.model.set_current_outcome(outcome_name)
         self.model.set_current_time_point(0)
         self.cur_outcome_lbl.setText(u"<font color='Blue'>%s</font>" % outcome_name)
-        self.cur_time_lbl.setText(u"<font color='Blue'>%s</font>" % self.model.current_time_point)
+        self.cur_time_lbl.setText(u"<font color='Blue'>%s</font>" % self.model.get_current_follow_up_name())#self.model.current_time_point)
         self.model.reset()
         self.tableView.resizeColumnsToContents()
 
@@ -289,11 +288,19 @@ def _gen_some_data():
                                 [ [10, 100] , [15, 100] ], [ [20, 200] , [25, 200] ],
                                 [ [30, 300] , [35, 300] ]
                       ]
-    dataset.studies = studies
-    outcome = Outcome("death", BINARY)
-    for study,data in zip(dataset.studies, raw_data):
-        study.add_ma_unit(MetaAnalyticUnit(outcome, raw_data=data), 0)
 
+    outcome = Outcome("death", BINARY)
+    dataset.add_outcome(outcome)
+    dataset.add_follow_up("baseline")
+    
+    # self.get_current_ma_unit_for_study(index.row()).get_raw_data_for_groups(self.current_txs)
+    for study in studies:
+        dataset.add_study(study)
+    for study,data in zip(dataset.studies, raw_data):
+        study.add_ma_unit(MetaAnalyticUnit(outcome, raw_data=data), "baseline")
+    
+    #pyqtRemoveInputHook()
+    #pdb.set_trace()
     return dataset
 
 def _setup_app():

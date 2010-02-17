@@ -19,6 +19,8 @@
 import pdb
 from PyQt4.QtCore import pyqtRemoveInputHook
 
+import two_way_dict
+
  # enumeration of data types and dictionaries mapping both ways
 BINARY, CONTINUOUS, DIAGNOSTIC, OTHER = range(4)
 STR_TO_TYPE_DICT = {u"binary":BINARY, u"continuous":CONTINUOUS, 
@@ -40,6 +42,7 @@ class Dataset:
 
         self.num_outcomes = 0
         self.num_follow_ups = 0
+        self.outcome_names_to_follow_ups = {}
         self.num_treatments = 0
 
         self.notes = ""
@@ -58,7 +61,8 @@ class Dataset:
         all_group_names = []
         study = self.studies[0]
         for outcome in study.outcomes_to_follow_ups.keys():
-            all_group_names.extend(study.outcomes_to_follow_ups[outcome][0].get_group_names())
+            a_follow_up = self.outcome_names_to_follow_ups[outcome].values()[0]
+            all_group_names.extend(study.outcomes_to_follow_ups[outcome][a_follow_up].get_group_names())
 
         return list(set(all_group_names))
         
@@ -90,9 +94,12 @@ class Dataset:
         cur_group_names = self.get_group_names()
         if len(cur_group_names) == 0:
             cur_group_names = None
-            
+        
+        follow_up = "baseline"
+        self.outcome_names_to_follow_ups[outcome.name] = two_way_dict.TwoWayDict()
+        self.outcome_names_to_follow_ups[outcome.name][0] = "baseline"
         for study in self.studies:
-            study.add_outcome(outcome, group_names=cur_group_names)
+            study.add_outcome(outcome, follow_up, group_names=cur_group_names)
     
     def add_group(self, group_name):
         for study in self.studies:
@@ -101,6 +108,14 @@ class Dataset:
                 for ma_unit in cur_outcome.values():
                     ma_unit.add_group(group_name)
         print "added group: %s. cur groups: %s" % (group_name, self.get_group_names())
+        
+    def add_follow_up(self, follow_up_name):
+        cur_group_names = self.get_group_names()
+        if len(cur_group_names) == 0:
+            cur_group_names = None
+        
+        for study in self.studies:
+            study.add_follow_up(follow_up_name, group_names = cur_group_names)
         
     def get_group_names(self):
         group_names = []
@@ -179,13 +194,13 @@ class Study:
         # conducted analyses
         self.include = include
         
-    def add_outcome(self, outcome, group_names=None):
+    def add_outcome(self, outcome, follow_up_name="baseline", group_names=None):
         ''' Adds a new, blank outcome '''
         if outcome.name in self.outcomes_to_follow_ups.keys():
             raise Exception, "Study already contains an outcome named %s" % outcome.name
         self.outcomes_to_follow_ups[outcome.name] = {}
-        #group_names = list(set([outcome.group_name]))
-        self.outcomes_to_follow_ups[outcome.name][0] = MetaAnalyticUnit(outcome, group_names=group_names)
+        self.outcomes_to_follow_ups[outcome.name][follow_up_name] = \
+                        MetaAnalyticUnit(outcome, group_names=group_names)
         self.outcomes.append(outcome)
         
     def add_outcome_at_follow_up(self, outcome, follow_up):
@@ -196,12 +211,16 @@ class Study:
             if outcome.name == outcome_name:
                 return outcome
         return None
-                
-    def add_ma_unit(self, unit, time):
+           
+    def add_follow_up_to_outcome(self, outcome, follow_up_name, group_names=None):
+        self.outcomes_to_follow_ups[outcome.name][follow_up_name] = \
+                        MetaAnalyticUnit(outcome, group_names=group_names)
+        
+    def add_ma_unit(self, unit, follow_up):
         if not unit.outcome in self.outcomes_to_follow_ups:
-            self.add_outcome(unit.outcome)
-            
-        self.outcomes_to_follow_ups[unit.outcome.name][time] = unit
+            self.add_outcome(unit.outcome, follow_up)
+
+        self.outcomes_to_follow_ups[unit.outcome.name][follow_up] = unit
 
         
 class MetaAnalyticUnit:

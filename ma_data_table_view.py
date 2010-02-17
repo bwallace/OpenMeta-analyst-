@@ -168,7 +168,6 @@ class MADataTable(QtGui.QTableView):
 
         # temporarily disable sorting to prevent automatic sorting of pasted data.
         # (note: this is consistent with Excel's approach.)
-        #self.setSortingEnabled(False)
         self.model().blockSignals(True)
 
         for src_row in range(len(source_content)):
