@@ -32,8 +32,7 @@ import meta_py_r
 #
 # additional forms
 #
-import new_outcome_form
-import new_group_form
+import add_new_dialogs
 import results_window
 import ma_specs
 import edit_dialog
@@ -139,7 +138,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
     def add_new(self):
         if self.cur_dimension == "outcome":
-            form =  new_outcome_form.AddNewOutcomeForm(self)
+            form =  add_new_dialogs.AddNewOutcomeForm(self)
             form.outcome_name_le.setFocus()
             if form.exec_():
                 # then the user clicked ok and has added a new outcome.
@@ -150,14 +149,20 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 self.model.add_new_outcome(new_outcome_name, type)
                 self.display_outcome(new_outcome_name)
         elif self.cur_dimension == "group":
-            print "::adding new group::"
-            form = new_group_form.AddNewGroupForm(self)
+            print "adding new group:"
+            form = add_new_dialogs.AddNewGroupForm(self)
             form.group_name_le.setFocus()        
             if form.exec_():
                 new_group_name = form.group_name_le.text()
                 self.model.add_new_group(new_group_name)
-                
                 print new_group_name
+        else:
+            # then the dimension is follow-up
+            form = add_new_dialogs.AddNewFollowUpForm(self)
+            form.follow_up_name_le.setFocus()
+            if form.exec_():
+                print form.follow_up_name_le.text()
+                
 
     def next(self):
         if self.cur_dimension == "outcome":
