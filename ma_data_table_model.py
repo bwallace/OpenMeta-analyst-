@@ -54,6 +54,8 @@ class DatasetModel(QAbstractTableModel):
             self.current_txs = [group_names[self.tx_index_a], group_names[self.tx_index_b]]
         else:
             self.current_txs = ["tx A", "tx B"]
+        self.previous_txs = self.current_txs
+            
         # @TODO parameterize; make variable
         self.current_effect = "OR"
 
@@ -300,19 +302,49 @@ class DatasetModel(QAbstractTableModel):
                                                         else outcomes[cur_index-1]
         return prev_outcome
 
-    def get_next_follow_up_name(self):
+    def get_next_follow_up(self):
+        t_point = self.current_time_point
         if self.current_time_point == max(self.dataset.outcome_names_to_follow_ups[self.current_outcome].keys()):
-            self.current_time_point = 0
+            t_point = 0
         else:
             # WARNING if we delete a time point things might get screwed up here
             # as we're actually using the MAX when we insert new follow ups
             # TODO change this to look for the next greatest time point rather than
             # assuming the current + 1 exists
-            self.current_time_point += 1
-        return self.get_current_follow_up_name()
+            t_point += 1
+        return (t_point, self.get_follow_up_name_for_t_point(t_point))
         
+    def get_previous_follow_up(self):
+        t_point = self.current_time_point
+        if self.current_time_point == min(self.dataset.outcome_names_to_follow_ups[self.current_outcome].keys()):
+            t_point = max(self.dataset.outcome_names_to_follow_ups[self.current_outcome].keys())
+        else:
+            # WARNING if we delete a time point things might get screwed up here
+            # as we're actually using the MAX when we insert new follow ups
+            # TODO change this to look for the next greatest time point rather than
+            # assuming the current + 1 exists
+            t_point -= 1
+        return (t_point, self.get_follow_up_name_for_t_point(t_point))
+        
+    def set_current_time_point(self, time_point):
+        self.current_time_point = time_point
+        self.emit(SIGNAL("followUpChanged()"))
+        self.reset()
 
+    def get_current_follow_up_name(self):
+        return self.dataset.outcome_names_to_follow_ups[self.current_outcome][self.current_time_point]
+        
+    def get_follow_up_name_for_t_point(self, t_point):
+        return self.dataset.outcome_names_to_follow_ups[self.current_outcome][t_point]
+        
+    def get_current_groups(self):
+        return self.current_txs
+        
+    def get_previous_groups(self):
+        return self.previous_txs
+        
     def next_groups(self):
+        ''' Returns a tuple with the next two group names (we just iterate round-robin) '''
         group_names = self.dataset.get_group_names()
         if self.tx_index_b < len(group_names)-1:
             self.tx_index_b += 1
@@ -324,9 +356,12 @@ class DatasetModel(QAbstractTableModel):
                 self.tx_index_a = 0
             self.tx_index_b = 0
         
-        self.current_txs = [group_names[self.tx_index_a], group_names[self.tx_index_b]]
+        next_txs = [group_names[self.tx_index_a], group_names[self.tx_index_b]]
+        return next_txs
         
-        
+    def set_groups(self, group_names):
+        self.previous_txs = self.current_txs
+        self.current_txs = group_names
 
     def sort_studies(self, col, reverse):
         if col == self.NAME:
@@ -350,14 +385,6 @@ class DatasetModel(QAbstractTableModel):
         self.current_outcome = outcome_name
         self.emit(SIGNAL("outcomeChanged()"))
         self.reset()
-
-    def set_current_time_point(self, time_point):
-        self.current_time_point = time_point
-        self.emit(SIGNAL("followUpChanged()"))
-        self.reset()
-
-    def get_current_follow_up_name(self):
-        return self.dataset.outcome_names_to_follow_ups[self.current_outcome][self.current_time_point]
         
     def max_study_id(self):
         if len(self.dataset.studies) == 0:

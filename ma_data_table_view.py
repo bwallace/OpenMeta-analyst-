@@ -22,7 +22,8 @@ class MADataTable(QtGui.QTableView):
         # None maps to the special, no outcome/no follow up
         # undo stack
         self.undo_stack_dict = {None:QUndoStack(self)}
-        self.undoStack = self.undo_stack_dict[None]
+        # self.undoStack = self.undo_stack_dict[None]
+        self.undoStack = QUndoStack(self)
 
         header = self.horizontalHeader()
         self.connect(header, SIGNAL("sectionClicked(int)"), self.header_clicked)
@@ -76,7 +77,7 @@ class MADataTable(QtGui.QTableView):
     def displayed_ma_changed(self):
         cur_outcome = self.model().current_outcome
         cur_follow_up = self.model().current_time_point
-
+        '''
         if not cur_outcome in self.undo_stack_dict:
             self.undo_stack_dict [cur_outcome] = {}
 
@@ -84,6 +85,7 @@ class MADataTable(QtGui.QTableView):
             self.undo_stack_dict[cur_outcome][cur_follow_up] = QUndoStack(self)
 
         self.undoStack = self.undo_stack_dict[cur_outcome][cur_follow_up]
+        '''
 
     def cell_content_changed(self, index, old_val, new_val):
         cell_edit = CommandCellEdit(self, index, old_val, new_val)
@@ -311,7 +313,7 @@ class CommandCellEdit(QUndoCommand):
     def _get_index(self):
         return self.ma_data_table_view.model().createIndex(self.row, self.col)
 
-
+    
 class CommandPaste(QUndoCommand):
     '''
     We again make use of QT's undo/redo framework. this implementation handles the paste action;

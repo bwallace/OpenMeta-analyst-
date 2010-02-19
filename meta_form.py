@@ -45,8 +45,9 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
     def __init__(self, parent=None):
         #
-        # We follow the advice given by Mark Summerfield in his Python QT book: Namely, we
-        # use multiple inheritence to gain access to the ui.
+        # We follow the advice given by Mark Summerfield in his Python QT book: 
+        # Namely, we use multiple inheritence to gain access to the ui. We take
+        # this approach throughout OpenMeta.
         #
         super(MetaForm, self).__init__(parent)
         self.setupUi(self)
@@ -164,27 +165,50 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 self.model.add_follow_up_to_current_outcome(follow_up_lbl)
                 print "ok. added new follow-up: %s" % follow_up_lbl
                 
-
     def next(self):
+        # probably you should disable next for the current dimension
+        # if there is only one point (e.g., outcome). otherwise you end
+        # up enqueueing a bunch of pointless undo/redos.
+        redo_f, undo_f = None, None
         if self.cur_dimension == "outcome":
+            old_outcome = self.model.current_outcome
             next_outcome = self.model.get_next_outcome_name()
-            self.display_outcome(next_outcome)
+            redo_f = lambda: self.display_outcome(next_outcome)
+            undo_f = lambda: self.display_outcome(old_outcome)
         elif self.cur_dimension == "group":
-            self.model.next_groups()
-            self.model.try_to_update_outcomes()
-            #self.model.reset()
-            self.tableView.resizeColumnsToContents()
+            previous_groups = self.model.get_current_groups()
+            new_groups = self.model.next_groups()
+            redo_f = lambda: self.display_groups(new_groups)
+            undo_f = lambda: self.display_groups(previous_groups)
         elif self.cur_dimension == "follow-up":
-            next_follow_up = self.model.get_next_follow_up_name()
-            self.display_follow_up(next_follow_up)
+            old_follow_up_t_point = self.model.current_time_point
+            next_follow_up_t_point = self.model.get_next_follow_up()[0]
+            redo_f = lambda: self.display_follow_up(next_follow_up_t_point) 
+            undo_f = lambda: self.display_follow_up(old_follow_up_t_point)
             
-        if self.cur_dimension in ["outcome, follow-up"]:
-            self.update_undo_stack()
+        next_command = CommandNext(redo_f, undo_f)
+        self.tableView.undoStack.push(next_command)
+
             
     def previous(self):
+        redo_f, undo_f = None, None
         if self.cur_dimension == "outcome":
+            old_outcome = self.model.current_outcome
             next_outcome = self.model.get_prev_outcome_name()
-            self.display_outcome(next_outcome)
+            redo_f = lambda: self.display_outcome(next_outcome)
+            undo_f = lambda: self.display_outcome(old_outcome)
+        elif self.cur_dimension == "group":
+            cur_groups = self.model.get_current_groups()
+            prev_groups = self.model.get_previous_groups()
+            redo_f = lambda: self.display_groups(prev_groups)
+            undo_f = lambda: self.display_groups(cur_groups)
+        elif self.cur_dimension == "follow-up":
+            old_t_point, old_follow_up_name = self.model.get_current_follow_up()
+            next_t_point, next_follow_up_name = self.model.get_previous_follow_up()
+            redo_f = lambda x: self.set_current_time_point(next_t_point) 
+            undo_f = lambda x: self.set_current_time_point(old_t_point)
+        prev_command = CommandNext(redo_f, undo_f)
+        self.tableView.undoStack.push(prev_command)
 
     def next_dimension(self):
         '''
@@ -211,15 +235,24 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.cur_dimension = self.dimensions[self.cur_dimension_index]
         self.nav_lbl.setText(self.cur_dimension)
 
+    def display_groups(self, groups):
+        print "displaying groups: %s" % groups
+        self.model.set_groups(groups)
+        self.model.try_to_update_outcomes()
+        self.tableView.resizeColumnsToContents()
+        
     def display_outcome(self, outcome_name):
+        print "displaying outcome: %s" % outcome_name
         self.model.set_current_outcome(outcome_name)
         self.model.set_current_time_point(0)
         self.cur_outcome_lbl.setText(u"<font color='Blue'>%s</font>" % outcome_name)
-        self.cur_time_lbl.setText(u"<font color='Blue'>%s</font>" % self.model.get_current_follow_up_name())#self.model.current_time_point)
+        self.cur_time_lbl.setText(u"<font color='Blue'>%s</font>" % self.model.get_current_follow_up_name())
         self.model.reset()
         self.tableView.resizeColumnsToContents()
 
-    def display_follow_up(self, follow_up_name):
+    def display_follow_up(self, time_point):
+        print "follow up"
+        self.model.current_time_point = time_point
         self.cur_time_lbl.setText(u"<font color='Blue'>%s</font>" % self.model.get_current_follow_up_name())
         self.model.reset()
         self.tableView.resizeColumnsToContents()
@@ -277,6 +310,21 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 raise Exception, "whoops. exception thrown attempting to save."
 
 
+class CommandNext(QUndoCommand):
+    '''
+   This is an undo command for user navigation
+    '''
+    def __init__(self, redo_f, undo_f, description="command:: next dimension"):
+        super(CommandNext, self).__init__(description)
+        self.redo_f = redo_f
+        self.undo_f = undo_f
+        
+    def redo(self):
+        self.redo_f()
+        
+    def undo(self):
+        self.undo_f()
+        
 
 ########################################################
 #  Unit tests! Use nose
@@ -378,6 +426,7 @@ b	1785
             should_be = content[row][col]
             print "cur val is %s; it should be %s" % (cur_val, should_be)
             assert(cur_val == should_be)
+
 
 
 #
