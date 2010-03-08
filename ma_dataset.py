@@ -109,6 +109,14 @@ class Dataset:
                     ma_unit.add_group(group_name)
         print "added group: %s. cur groups: %s" % (group_name, self.get_group_names())
         
+    def remove_group(self, group_name):
+        for study in self.studies:
+            for outcome_name in study.outcomes_to_follow_ups.keys():
+                cur_outcome = study.outcomes_to_follow_ups[outcome_name]
+                for ma_unit in cur_outcome.values():
+                    ma_unit.remove_group(group_name)
+        print "removed group: %s. cur groups: %s" % (group_name, self.get_group_names())
+        
     def add_follow_up_to_outcome(self, outcome, follow_up_name):
         cur_group_names = self.get_group_names()
         if len(cur_group_names) == 0:
@@ -132,17 +140,19 @@ class Dataset:
         return list(set(group_names))
     
     def get_network(self, outcome, time_point):
-        adjacency_list = []
+        node_list = [] # list of all nodes
+        adjacency_list = [] # list of edges
         for study in self.studies:
             ma_unit = study.outcomes_to_follow_ups[outcome][time_point]
             group_names = ma_unit.get_group_names()
             for g1 in group_names:
+                node_list.append(g1)
                 for g2 in [group for group in group_names if group != g1]:        
                     if self.ma_unit_has_edge_between_groups(ma_unit, [g1, g2]) and\
                      not (g1, g2) in adjacency_list and not (g2, g1) in adjacency_list:
                         adjacency_list.append((g1,g2)) 
 
-        return adjacency_list 
+        return (list(set(node_list)), adjacency_list)
         
     def ma_unit_has_edge_between_groups(self, ma_unit, groups):
         # TODO this will need to be updated; right now
@@ -304,6 +314,9 @@ class MetaAnalyticUnit:
         if raw_data is None:
             raw_data = ["" for x in range(self.raw_data_length)]
         self.tx_groups[name] = TreatmentGroup(id, name, raw_data)
+        
+    def remove_group(self, name):
+        self.tx_groups.pop(name)
         
     def get_raw_data_for_group(self, group_name):
         return self.tx_groups[group_name].raw_data

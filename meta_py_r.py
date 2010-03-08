@@ -99,7 +99,7 @@ def ma_dataset_to_binary_robj(table_model, var_name):
     pass
     
     
-def draw_network(edge_list, network_path = '"./r_tmp/network.png"'):
+def draw_network(edge_list, unconnected_vertices, network_path = '"./r_tmp/network.png"'):
     '''
     This draws the parametric network specified by edge_list.
     The latter is assumed to be in form:
@@ -109,9 +109,15 @@ def draw_network(edge_list, network_path = '"./r_tmp/network.png"'):
     implementing a method on the R side that takes a graph/
     edge list. We may want to change this eventually.
     '''
-    edge_str = ", ".join(["'%s'" % x for x in edge_list])
+    edge_str = ", ".join([" '%s' " % x for x in edge_list])
+    print "el <- matrix(c(%s), nc=2, byrow=TRUE)" % edge_str
     ro.r("el <- matrix(c(%s), nc=2, byrow=TRUE)" % edge_str)
     ro.r("g <- graph.edgelist(el, directed=FALSE)")
+    if len(unconnected_vertices) > 0:
+        print unconnected_vertices
+        vertices_str = ", ".join([" '%s' " % x for x in unconnected_vertices])
+        print "g <- add.vertices(g, %s, name=c(%s))" % (len(unconnected_vertices), vertices_str)
+        ro.r("g <- add.vertices(g, %s, name=c(%s))" % (len(unconnected_vertices), vertices_str))
     ro.r("png(%s)" % network_path)
     ro.r("plot(g, vertex.label=V(g)$name, layout=layout.circle, vertex.size=25, asp=.3, margin=-.05)")
     ro.r("dev.off()")

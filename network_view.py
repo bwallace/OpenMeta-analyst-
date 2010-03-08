@@ -23,16 +23,25 @@ class ViewDialog(QDialog, ui_network_view.Ui_network_view_dialog):
         #pdb.set_trace()
         
     def graph_network(self):
-        edges = self.dataset.get_network("death", "baseline")
+        nodes, edges = self.dataset.get_network("death", "baseline")
         # get_network returns a list of tuples, wherein
         # each tuple is an edge with group names representing
         # nodes, e.g., [("tx a", "tx b"), ("tx b", "tx c")]. however the igraph
         # library wants a flat list, e.g., ["tx_a", "tx_b", "tx_b", "tx_c"]
         # thus we flatten out the list here
+        print "\n nodes:"
+        print nodes
         flattened_edges = []
         for edge in edges:
             flattened_edges.extend(edge)
-        img_path = meta_py_r.draw_network(flattened_edges)
+
+        # now add nodes that have no connections
+        unconnected_vertices = []
+        for node in nodes:
+            if node not in flattened_edges:
+                unconnected_vertices.append(node)
+        
+        img_path = meta_py_r.draw_network(flattened_edges, unconnected_vertices)
         print img_path
         # now add the image to the display
         pixmap = QPixmap(img_path)

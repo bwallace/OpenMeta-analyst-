@@ -145,7 +145,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 # then the user clicked ok and has added a new outcome.
                 # here we want to add the outcome to the dataset, and then
                 # display it
-                new_outcome_name = form.outcome_name_le.text()
+                new_outcome_name = unicode(form.outcome_name_le.text().toUtf8(), "utf-8")
                 type = str(form.datatype_cbo_box.currentText())
                 self.model.add_new_outcome(new_outcome_name, type)
                 self.display_outcome(new_outcome_name)
@@ -164,6 +164,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 follow_up_lbl = form.follow_up_name_le.text()
                 self.model.add_follow_up_to_current_outcome(follow_up_lbl)
                 print "ok. added new follow-up: %s" % follow_up_lbl
+        
                 
     def next(self):
         # probably you should disable next for the current dimension
@@ -186,7 +187,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             redo_f = lambda: self.display_follow_up(next_follow_up_t_point) 
             undo_f = lambda: self.display_follow_up(old_follow_up_t_point)
             
-        next_command = CommandNext(redo_f, undo_f)
+        next_command = CommandGenericDo(redo_f, undo_f)
         self.tableView.undoStack.push(next_command)
 
             
@@ -207,7 +208,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             next_t_point, next_follow_up_name = self.model.get_previous_follow_up()
             redo_f = lambda x: self.set_current_time_point(next_t_point) 
             undo_f = lambda x: self.set_current_time_point(old_t_point)
-        prev_command = CommandNext(redo_f, undo_f)
+        prev_command = CommandGenericDo(redo_f, undo_f)
         self.tableView.undoStack.push(prev_command)
 
     def next_dimension(self):
@@ -239,6 +240,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         print "displaying groups: %s" % groups
         self.model.set_groups(groups)
         self.model.try_to_update_outcomes()
+        self.model.reset()
         self.tableView.resizeColumnsToContents()
         
     def display_outcome(self, outcome_name):
@@ -310,6 +312,21 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 raise Exception, "whoops. exception thrown attempting to save."
 
 
+class CommandGenericDo(QUndoCommand):
+    '''
+   This is a generic undo/redo command that takes 
+    '''
+    def __init__(self, redo_f, undo_f, description=""):
+        super(CommandGenericDo, self).__init__(description)
+        self.redo_f = redo_f
+        self.undo_f = undo_f
+        
+    def redo(self):
+        self.redo_f()
+        
+    def undo(self):
+        self.undo_f()
+    
 class CommandNext(QUndoCommand):
     '''
    This is an undo command for user navigation
