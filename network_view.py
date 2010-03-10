@@ -13,29 +13,51 @@ class ViewDialog(QDialog, ui_network_view.Ui_network_view_dialog):
         self.setupUi(self)
         
         self.dataset = dataset
+        self.cur_outcome = "death"
+        self.cur_follow_up = "baseline"
+        
+        self.populate_cbo_boxes()
+        self.setup_signals()
+        
         self.x_coord = 5
         self.y_coord = 5
         self.scene = QGraphicsScene(self)
         self.scene.setSceneRect(0, 0, PageSize[0], PageSize[1])
         self.network_viewer.setScene(self.scene)
-        self.graph_network()
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
+        self.graph_network(self.cur_outcome, self.cur_follow_up)
+    
+    def setup_signals(self):
+        QObject.connect(self.outcome_cbo_box, SIGNAL("currentIndexChanged(QString)"),
+                                                            self.outcome_changed)
+        QObject.connect(self.follow_up_cbo_box, SIGNAL("currentIndexChanged(QString)"),
+                                                            self.follow_up_changed)
         
-    def graph_network(self):
-        nodes, edges = self.dataset.get_network("death", "baseline")
+    def outcome_changed(self, new_outcome):
+        self.cur_outcome = str(new_outcome)
+        self.graph_network(self.cur_outcome, self.cur_follow_up)
+        
+    def follow_up_changed(self, new_follow_up):
+        self.cur_follow_up = str(new_follow_up)
+        self.graph_network(self.cur_outcome, self.cur_follow_up)
+        
+    def populate_cbo_boxes(self):
+        self.outcome_cbo_box.addItems(self.dataset.get_outcome_names())
+        self.follow_up_cbo_box.addItems(self.dataset.get_follow_up_names())
+        
+    def graph_network(self, outcome, follow_up):
+        nodes, edges = self.dataset.get_network(outcome, follow_up)
         # get_network returns a list of tuples, wherein
         # each tuple is an edge with group names representing
         # nodes, e.g., [("tx a", "tx b"), ("tx b", "tx c")]. however the igraph
         # library wants a flat list, e.g., ["tx_a", "tx_b", "tx_b", "tx_c"]
         # thus we flatten out the list here
-        print "\n nodes:"
-        print nodes
+
         flattened_edges = []
         for edge in edges:
             flattened_edges.extend(edge)
 
-        # now add nodes that have no connections
+        # now add nodes that have no connections; these won't be
+        # included in the edgelist, as they don't belong to edges
         unconnected_vertices = []
         for node in nodes:
             if node not in flattened_edges:

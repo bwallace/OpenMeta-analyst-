@@ -53,6 +53,7 @@ class Dataset:
     def get_outcome_names(self):
         if len(self) == 0:
             return []
+        
         return sorted(self.studies[0].outcomes_to_follow_ups.keys())
         
     def get_group_names(self):
@@ -138,7 +139,16 @@ class Dataset:
                 for ma_unit in cur_outcome.values():
                     group_names.extend(ma_unit.get_group_names())
         return list(set(group_names))
-    
+
+    def get_follow_up_names(self):
+        follow_up_names = []
+        for study in self.studies:
+            for follow_up_d in study.outcomes_to_follow_ups.values():
+                # follow_up_d is a dictionary mapping follow up names to
+                # MA units
+                follow_up_names.extend(follow_up_d.keys())
+        return list(set(follow_up_names))
+        
     def get_network(self, outcome, time_point):
         node_list = [] # list of all nodes
         adjacency_list = [] # list of edges
@@ -319,7 +329,11 @@ class MetaAnalyticUnit:
         self.tx_groups.pop(name)
         
     def get_raw_data_for_group(self, group_name):
-        return self.tx_groups[group_name].raw_data
+        try:
+            return self.tx_groups[group_name].raw_data
+        except:
+            pyqtRemoveInputHook()
+            pdb.set_trace()
         
     def get_raw_data_for_groups(self, groups):
         raw_data = []

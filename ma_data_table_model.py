@@ -153,6 +153,10 @@ class DatasetModel(QAbstractTableModel):
                     if study.name != "" and index.row() == self.rowCount()-1:
                         # if the last study was just edited, append a
                         # new, blank study
+                        # TODO bug: if a new tx group is added, and then a new study
+                        # is added, the program throws up because the study doesn't have
+                        # the new outcome in its meta-analytic unit object -- need to check
+                        # for this at runtime as we do with follow-up and outcome
                         new_study = Study(self.max_study_id()+1)
                         self.dataset.add_study(new_study)
                         self.study_auto_added = new_study.id
@@ -496,8 +500,9 @@ class DatasetModel(QAbstractTableModel):
         Returns the MetaAnalytic unit for the study @ study_index. If no such Unit exists,
         it will be added. Thus when a new study is added to a dataset, there is no need
         to initially populate this study with empty MetaAnalytic units reflecting the known
-        outcomes and time points, as they will be added 'on-demand' here.
+        outcomes, time points & tx groups, as they will be added 'on-demand' here.
          '''
+         # first check to see that the current outcome is contained in this study
         if not self.current_outcome in self.dataset.studies[study_index].outcomes_to_follow_ups:
             self.dataset.studies[study_index].add_outcome(self.dataset.get_outcome_obj(self.current_outcome))
         
@@ -506,8 +511,15 @@ class DatasetModel(QAbstractTableModel):
         if not self.get_current_follow_up_name() in self.dataset.studies[study_index].outcomes_to_follow_ups[self.current_outcome]:
             self.dataset.studies[study_index].add_outcome_at_follow_up(
                                 self.dataset.get_outcome_obj(self.current_outcome), self.get_current_follow_up_name())
+        
+        # finally, make sure the studies contain the currently selected tx groups; if not, add them
+        ma_unit = self.dataset.studies[study_index].outcomes_to_follow_ups[self.current_outcome][self.get_current_follow_up_name()]
+        for tx_group in self.current_txs:
+            if not tx_group in ma_unit.get_group_names():
+                ma_unit.add_group(tx_group)
+        
+        return ma_unit
 
-        return self.dataset.studies[study_index].outcomes_to_follow_ups[self.current_outcome][self.get_current_follow_up_name()]
 
     def get_ma_unit(self, study_index, outcome, follow_up):
         try:

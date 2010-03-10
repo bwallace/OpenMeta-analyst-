@@ -30,7 +30,7 @@ try:
     ro.r("library(openmetar)")
     print "openmetaR package succesfully loaded"
 except:
-    raise Exception, "metafor (R) package not installed.\nPlease install this package and then re-start OpenMeta."
+    raise Exception, "Either the metafor or openmetar R package is not installed.\nPlease install these packages and then re-start OpenMeta."
 
 ro.r("library(igraph)")
 
@@ -50,7 +50,7 @@ try:
         ro.r("dir.create('./r_tmp')")
         print("success -- temporary results will be written to ./r_tmp")
 except:
-    raise Exception, "unable to create temporary directory for results! make sure you have sufficient permissions."
+    raise Exception, "unable to create temporary directory for R results! make sure you have sufficient permissions."
 
 def impute_two_by_two(bin_data_dict):
     print "imputing 2x2 table via R..."
@@ -109,10 +109,14 @@ def draw_network(edge_list, unconnected_vertices, network_path = '"./r_tmp/netwo
     implementing a method on the R side that takes a graph/
     edge list. We may want to change this eventually.
     '''
-    edge_str = ", ".join([" '%s' " % x for x in edge_list])
-    print "el <- matrix(c(%s), nc=2, byrow=TRUE)" % edge_str
-    ro.r("el <- matrix(c(%s), nc=2, byrow=TRUE)" % edge_str)
-    ro.r("g <- graph.edgelist(el, directed=FALSE)")
+    if len(edge_list) > 0:
+        edge_str = ", ".join([" '%s' " % x for x in edge_list])
+        print "el <- matrix(c(%s), nc=2, byrow=TRUE)" % edge_str
+        ro.r("el <- matrix(c(%s), nc=2, byrow=TRUE)" % edge_str)
+        ro.r("g <- graph.edgelist(el, directed=FALSE)")
+    else:
+        ro.r("g <- graph.empty()") 
+    
     if len(unconnected_vertices) > 0:
         print unconnected_vertices
         vertices_str = ", ".join([" '%s' " % x for x in unconnected_vertices])
