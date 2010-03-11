@@ -393,18 +393,20 @@ def copy_paste_test():
     test_model = DatasetModel(dataset=data_model)
     meta.tableView.setModel(test_model)
 
-    upper_left_index = meta.tableView.model().createIndex(0, 0)
-    lower_right_index = meta.tableView.model().createIndex(1, 1)
+    upper_left_index = meta.tableView.model().createIndex(0, 1)
+    lower_right_index = meta.tableView.model().createIndex(1, 2)
     copied = meta.tableView.copy_contents_in_range(upper_left_index, lower_right_index,
                                                                                     to_clipboard=False)
 
     tester = "trik\t1984\nwallace\t1990"
-    assert(copied == tester)
 
+    assert(copied == tester)
+    print "ok.. copied correctly"
+    
     # now ascertain that we can paste it. first, copy (the same string) to the clipboard
     copied = meta.tableView.copy_contents_in_range(upper_left_index, lower_right_index,
                                                                                 to_clipboard=True)
-    upper_left_index = meta.tableView.model().createIndex(1, 0)
+    upper_left_index = meta.tableView.model().createIndex(1, 1)
 
     # originally, the second row is wallace
     assert(str(meta.tableView.model().data(upper_left_index).toString()) == "wallace")
@@ -424,7 +426,7 @@ def paste_from_excel_test():
     #set up the tableview model with a blank model
     test_model = DatasetModel()
     meta.tableView.setModel(test_model)
-    upper_left_index = meta.tableView.model().createIndex(0, 0)
+    upper_left_index = meta.tableView.model().createIndex(0, 1)
     # copied from an Excel spreadsheet
     copied_str = """a	1993
 b	1785
@@ -438,7 +440,9 @@ b	1785
     content = [["a", "1993"], ["b", "1785"]]
     for row in range(len(content)):
         for col in range(len(content[row])):
-            cur_index = meta.tableView.model().createIndex(row, col)
+            # the plus one offsets the first column, which is the include/
+            # exclude checkbox
+            cur_index = meta.tableView.model().createIndex(row, col+1)
             cur_val = str(meta.tableView.model().data(cur_index).toString())
             should_be = content[row][col]
             print "cur val is %s; it should be %s" % (cur_val, should_be)
