@@ -102,6 +102,11 @@ class Dataset:
         for study in self.studies:
             study.add_outcome(outcome, follow_up, group_names=cur_group_names)
     
+    def remove_outcome(self, outcome_name):
+        self.outcome_names_to_follow_ups.pop(outcome_name)
+        for study in self.studies:
+            study.remove_outcome(outcome_name)
+   
     def add_group(self, group_name):
         for study in self.studies:
             for outcome_name in study.outcomes_to_follow_ups.keys():
@@ -227,6 +232,13 @@ class Study:
         self.outcomes_to_follow_ups[outcome.name][follow_up_name] = \
                         MetaAnalyticUnit(outcome, group_names=group_names)
         self.outcomes.append(outcome)
+        
+    def remove_outcome(self, outcome_name):
+        self.outcomes_to_follow_ups.pop(outcome_name)
+        for outcome in self.outcomes:
+            if outcome.name == outcome_name:
+                self.outcomes.remove(outcome)
+   
         
     def add_outcome_at_follow_up(self, outcome, follow_up):
         self.outcomes_to_follow_ups[outcome.name][follow_up] = MetaAnalyticUnit(outcome)

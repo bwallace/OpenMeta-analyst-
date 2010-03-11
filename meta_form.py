@@ -138,6 +138,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         form.show()
 
     def add_new(self):
+        redo_f, undo_f = None, None
         if self.cur_dimension == "outcome":
             form =  add_new_dialogs.AddNewOutcomeForm(self)
             form.outcome_name_le.setFocus()
@@ -146,9 +147,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 # here we want to add the outcome to the dataset, and then
                 # display it
                 new_outcome_name = unicode(form.outcome_name_le.text().toUtf8(), "utf-8")
-                type = str(form.datatype_cbo_box.currentText())
-                self.model.add_new_outcome(new_outcome_name, type)
-                self.display_outcome(new_outcome_name)
+                new_outcome_type = str(form.datatype_cbo_box.currentText())
+                redo_f = lambda: self._add_new_outcome(new_outcome_name, new_outcome_type)
+                prev_outcome = str(self.model.current_outcome)
+                undo_f = lambda: self._undo_add_new_outcome(new_outcome_name, prev_outcome)
         elif self.cur_dimension == "group":
             form = add_new_dialogs.AddNewGroupForm(self)
             form.group_name_le.setFocus()        
@@ -165,7 +167,19 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 self.model.add_follow_up_to_current_outcome(follow_up_lbl)
                 print "ok. added new follow-up: %s" % follow_up_lbl
         
+        next_command = CommandGenericDo(redo_f, undo_f)
+        self.tableView.undoStack.push(next_command)
                 
+    def _undo_add_new_outcome(self, added_outcome, previously_displayed_outcome):
+        print "removing added outcome: %s" % added_outcome
+        self.model.remove_outcome(added_outcome)
+        print "trying to display: %s" % previously_displayed_outcome
+        self.display_outcome(previously_displayed_outcome)
+    
+    def _add_new_outcome(self, outcome_name, outcome_type):
+        self.model.add_new_outcome(outcome_name, outcome_type)
+        self.display_outcome(outcome_name)
+        
     def next(self):
         # probably you should disable next for the current dimension
         # if there is only one point (e.g., outcome). otherwise you end
@@ -314,7 +328,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
 class CommandGenericDo(QUndoCommand):
     '''
-   This is a generic undo/redo command that takes 
+   This is a generic undo/redo command that takes two unevaluated lambdas --
+   thunks, if you will -- one for doing and one for undoing.
     '''
     def __init__(self, redo_f, undo_f, description=""):
         super(CommandGenericDo, self).__init__(description)
@@ -418,6 +433,7 @@ def undo_redo_test():
     meta, app = _setup_app()
     test_model = DatasetModel()
     meta.tableView.setModel(test_model)
+    #meta
     assert(True)
 
 def paste_from_excel_test():

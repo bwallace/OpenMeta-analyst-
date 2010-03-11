@@ -281,6 +281,9 @@ class DatasetModel(QAbstractTableModel):
         data_type = STR_TO_TYPE_DICT[data_type.lower()]
         self.dataset.add_outcome(Outcome(name, data_type))
 
+    def remove_outcome(self, outcome_name):
+        self.dataset.remove_outcome(outcome_name)
+        
     def add_new_group(self, name):
         self.dataset.add_group(str(name))
         
