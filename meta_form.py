@@ -155,9 +155,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             form = add_new_dialogs.AddNewGroupForm(self)
             form.group_name_le.setFocus()        
             if form.exec_():
-                new_group_name = form.group_name_le.text()
-                self.model.add_new_group(new_group_name)
-                print "ok. added new group: %s" % new_group_name
+                new_group_name = unicode(form.group_name_le.text().toUtf8(), "utf-8")
+                cur_groups = list(self.model.get_current_groups())
+                redo_f = lambda: self._add_new_group(new_group_name)
+                undo_f = lambda: self._undo_add_new_group(new_group_name, cur_groups)
         else:
             # then the dimension is follow-up
             form = add_new_dialogs.AddNewFollowUpForm(self)
@@ -167,9 +168,29 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 self.model.add_follow_up_to_current_outcome(follow_up_lbl)
                 print "ok. added new follow-up: %s" % follow_up_lbl
         
-        next_command = CommandGenericDo(redo_f, undo_f)
-        self.tableView.undoStack.push(next_command)
+        if redo_f is not None:
+            next_command = CommandGenericDo(redo_f, undo_f)
+            self.tableView.undoStack.push(next_command)
                 
+    def _add_new_group(self, new_group_name):
+        self.model.add_new_group(new_group_name)
+        print "\nok. added new group: %s" % new_group_name
+        cur_groups = list(self.model.get_current_groups())
+        cur_groups[1] = new_group_name
+        cur_groups = self.model.get_current_groups()
+        self.model.set_current_groups(cur_groups)
+        # @TODO probably need to tell the table model we changed 
+        # the group being displayed...
+        self.display_groups(cur_groups)
+        
+    def _undo_add_new_group(self, added_group, previously_displayed_groups):
+        self.model.remove_group(added_group)
+        print "\nremoved group %s" % added_group
+        print "attempting to display groups: %s" % previously_displayed_groups
+        self.model.set_current_groups(previously_displayed_groups)
+        self.display_groups(previously_displayed_groups)
+        
+        
     def _undo_add_new_outcome(self, added_outcome, previously_displayed_outcome):
         print "removing added outcome: %s" % added_outcome
         self.model.remove_outcome(added_outcome)
@@ -252,7 +273,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
     def display_groups(self, groups):
         print "displaying groups: %s" % groups
-        self.model.set_groups(groups)
+        self.model.set_current_groups(groups)
         self.model.try_to_update_outcomes()
         self.model.reset()
         self.tableView.resizeColumnsToContents()

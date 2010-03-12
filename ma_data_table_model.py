@@ -285,8 +285,12 @@ class DatasetModel(QAbstractTableModel):
         self.dataset.remove_outcome(outcome_name)
         
     def add_new_group(self, name):
+        # @TODO handle unicode?
         self.dataset.add_group(str(name))
         
+    def remove_group(self, group_name):
+        self.dataset.remove_group(group_name)
+    
     def add_follow_up_to_current_outcome(self, follow_up_name):
         cur_outcome = self.dataset.get_outcome_obj(self.current_outcome)
         self.dataset.add_follow_up_to_outcome(cur_outcome, follow_up_name)
@@ -353,6 +357,7 @@ class DatasetModel(QAbstractTableModel):
     def next_groups(self):
         ''' Returns a tuple with the next two group names (we just iterate round-robin) '''
         group_names = self.dataset.get_group_names()
+        print "\ngroup names: %s" % group_names
         if self.tx_index_b < len(group_names)-1:
             self.tx_index_b += 1
         else:
@@ -364,11 +369,17 @@ class DatasetModel(QAbstractTableModel):
             self.tx_index_b = 0
         
         next_txs = [group_names[self.tx_index_a], group_names[self.tx_index_b]]
+        print "new tx group indices a, b: %s, %s" % (self.tx_index_a, self.tx_index_b)
         return next_txs
         
-    def set_groups(self, group_names):
+    def set_current_groups(self, group_names):
+        print "\n\nthese are the previous"
+        print self.current_txs
         self.previous_txs = self.current_txs
         self.current_txs = group_names
+        self.tx_index_a = self.dataset.get_group_names().index(group_names[0])
+        self.tx_index_b = self.dataset.get_group_names().index(group_names[1])
+        print "\ncurrent tx group index a, b: %s, %s" % (self.tx_index_a, self.tx_index_b)
 
     def sort_studies(self, col, reverse):
         if col == self.NAME:
