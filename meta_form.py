@@ -164,10 +164,14 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             form = add_new_dialogs.AddNewFollowUpForm(self)
             form.follow_up_name_le.setFocus()
             if form.exec_():
-                follow_up_lbl = form.follow_up_name_le.text()
-                self.model.add_follow_up_to_current_outcome(follow_up_lbl)
-                print "ok. added new follow-up: %s" % follow_up_lbl
-        
+                follow_up_lbl = unicode(form.follow_up_name_le.text().toUtf8(), "utf-8")
+                redo_f = lambda: self._add_new_follow_up_for_cur_outcome(follow_up_lbl)
+                previous_follow_up = self.model.get_current_follow_up_name()
+                undo_f = lambda: self._undo_add_follow_up_for_cur_outcome(\
+                                                    previous_follow_up, follow_up_lbl)
+                #undo_f = lambda: self.model.remove_follow_up_from_outcome(follow_up_lbl, \
+                #                                                                            str(self.model.current_outcome))
+                
         if redo_f is not None:
             next_command = CommandGenericDo(redo_f, undo_f)
             self.tableView.undoStack.push(next_command)
@@ -189,8 +193,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         print "attempting to display groups: %s" % previously_displayed_groups
         self.model.set_current_groups(previously_displayed_groups)
         self.display_groups(previously_displayed_groups)
-        
-        
+    
     def _undo_add_new_outcome(self, added_outcome, previously_displayed_outcome):
         print "removing added outcome: %s" % added_outcome
         self.model.remove_outcome(added_outcome)
@@ -200,6 +203,15 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     def _add_new_outcome(self, outcome_name, outcome_type):
         self.model.add_new_outcome(outcome_name, outcome_type)
         self.display_outcome(outcome_name)
+        
+    def _add_new_follow_up_for_cur_outcome(self, follow_up_lbl):
+        self.model.add_follow_up_to_current_outcome(follow_up_lbl)
+        self.display_follow_up(self.model.get_t_point_for_follow_up_name(follow_up_lbl))
+        
+    def _undo_add_follow_up_for_cur_outcome(self, prev_follow_up, follow_up_to_del):
+        self.model.remove_follow_up_from_outcome(follow_up_to_del, \
+                                                                                str(self.model.current_outcome))
+        self.display_follow_up(self.model.get_t_point_for_follow_up_name(prev_follow_up))
         
     def next(self):
         # probably you should disable next for the current dimension
@@ -239,10 +251,12 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             redo_f = lambda: self.display_groups(prev_groups)
             undo_f = lambda: self.display_groups(cur_groups)
         elif self.cur_dimension == "follow-up":
-            old_t_point, old_follow_up_name = self.model.get_current_follow_up()
+            old_t_point = self.model.current_time_point
+            old_follow_up_name = self.model.get_current_follow_up_name()
             next_t_point, next_follow_up_name = self.model.get_previous_follow_up()
-            redo_f = lambda x: self.set_current_time_point(next_t_point) 
-            undo_f = lambda x: self.set_current_time_point(old_t_point)
+            print "\nold time point: %s; next time point: %s" % (old_t_point, next_t_point)
+            redo_f = lambda: self.model.set_current_time_point(next_t_point) 
+            undo_f = lambda: self.model.set_current_time_point(old_t_point)
         prev_command = CommandGenericDo(redo_f, undo_f)
         self.tableView.undoStack.push(prev_command)
 

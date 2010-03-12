@@ -136,6 +136,12 @@ class Dataset:
         for study in self.studies:
             study.add_follow_up_to_outcome(outcome, follow_up_name, group_names = cur_group_names)
         
+    def remove_follow_up_from_outcome(self, follow_up_name, outcome_name):
+        time_point = self.outcome_names_to_follow_ups[outcome_name].get_key(follow_up_name)
+        self.outcome_names_to_follow_ups[outcome_name].pop(time_point)
+        for study in self.studies:
+            study.remove_follow_up_from_outcome(outcome_name, follow_up_name)
+        
     def get_group_names(self):
         group_names = []
         for study in self.studies:
@@ -239,7 +245,6 @@ class Study:
             if outcome.name == outcome_name:
                 self.outcomes.remove(outcome)
    
-        
     def add_outcome_at_follow_up(self, outcome, follow_up):
         self.outcomes_to_follow_ups[outcome.name][follow_up] = MetaAnalyticUnit(outcome)
         
@@ -252,6 +257,13 @@ class Study:
     def add_follow_up_to_outcome(self, outcome, follow_up_name, group_names=None):
         self.outcomes_to_follow_ups[outcome.name][follow_up_name] = \
                         MetaAnalyticUnit(outcome, group_names=group_names)
+        
+    def remove_follow_up_from_outcome(self, outcome, follow_up_name):
+        outcome_name = outcome
+        if isinstance(outcome, Outcome):
+            outcome_name = outcome.name
+
+        self.outcomes_to_follow_ups[outcome_name].pop(follow_up_name)
         
     def add_ma_unit(self, unit, follow_up):
         if not unit.outcome in self.outcomes_to_follow_ups:

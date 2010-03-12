@@ -295,6 +295,9 @@ class DatasetModel(QAbstractTableModel):
         cur_outcome = self.dataset.get_outcome_obj(self.current_outcome)
         self.dataset.add_follow_up_to_outcome(cur_outcome, follow_up_name)
         
+    def remove_follow_up_from_outcome(self, follow_up_name, outcome_name):
+        self.dataset.remove_follow_up_from_outcome(follow_up_name, outcome_name)
+        
     def remove_study(self, id):
         self.dataset.studies.pop(id)
         self.reset()
@@ -314,6 +317,8 @@ class DatasetModel(QAbstractTableModel):
         return prev_outcome
 
     def get_next_follow_up(self):
+        print "\nfollow ups for outcome:"
+        print self.dataset.outcome_names_to_follow_ups[self.current_outcome]
         t_point = self.current_time_point
         if self.current_time_point == max(self.dataset.outcome_names_to_follow_ups[self.current_outcome].keys()):
             t_point = 0
@@ -323,7 +328,9 @@ class DatasetModel(QAbstractTableModel):
             # TODO change this to look for the next greatest time point rather than
             # assuming the current + 1 exists
             t_point += 1
-        return (t_point, self.get_follow_up_name_for_t_point(t_point))
+        follow_up_name = self.get_follow_up_name_for_t_point(t_point)
+        print "\nt_point; name: %s, %s" % (t_point, follow_up_name)
+        return (t_point, follow_up_name)
         
     def get_previous_follow_up(self):
         t_point = self.current_time_point
@@ -347,6 +354,9 @@ class DatasetModel(QAbstractTableModel):
         
     def get_follow_up_name_for_t_point(self, t_point):
         return self.dataset.outcome_names_to_follow_ups[self.current_outcome][t_point]
+        
+    def get_t_point_for_follow_up_name(self, follow_up):
+        return self.dataset.outcome_names_to_follow_ups[self.current_outcome].get_key(follow_up)
         
     def get_current_groups(self):
         return self.current_txs
@@ -373,8 +383,6 @@ class DatasetModel(QAbstractTableModel):
         return next_txs
         
     def set_current_groups(self, group_names):
-        print "\n\nthese are the previous"
-        print self.current_txs
         self.previous_txs = self.current_txs
         self.current_txs = group_names
         self.tx_index_a = self.dataset.get_group_names().index(group_names[0])
