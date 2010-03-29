@@ -56,19 +56,18 @@ class DatasetModel(QAbstractTableModel):
             self.current_txs = ["tx A", "tx B"]
         self.previous_txs = self.current_txs
             
-        # @TODO parameterize; make variable
-        self.current_effect = "OR"
-
         #
         # column indices; these are a core component of this class,
-        # as these indices are what maps the UI to the model. They
-        # are also variable, contingent on the type data being displayed,
-        # the number of covariates, etc. Thus it is extremely important that
-        # these are set and maintained correctly
+        # as these indices are what maps the UI to the model. The following
+        # columns are constant across datatypes, but some (e.g., the 
+        # columns corresponding to raw data) are variable. see the
+        # update_column_indices method for more.
         self.INCLUDE_STUDY = 0
         self.NAME, self.YEAR = [col+1 for col in range(2)]
-        self.RAW_DATA = [col+3 for col in range(4)]
-        self.OUTCOMES = [7, 8, 9]
+        self.update_column_indices()
+           
+        # @TODO parameterize; make variable
+        self.current_effect = "OR"
 
         # @TODO presumably the COVARIATES will contain the column
         # indices and the currently_displayed... will contain the names
@@ -83,6 +82,28 @@ class DatasetModel(QAbstractTableModel):
         self.NUM_DIGITS = 3
         self.study_auto_added = None
 
+    def update_column_indices(self):
+        # Here we update variable column indices, contingent on 
+        # the type data being displayed, the number of covariates, etc. 
+        # It is extremely important that these are updated as necessary
+        # fromthe view side of things
+        current_data_type = self.get_current_outcome_type()
+        # offset corresonds to the first three columns, which 
+        # are include study, name, and year.
+        offset = 3
+        if current_data_type == "binary":
+            self.RAW_DATA = [col+offset for col in range(4)]
+            self.OUTCOMES = [7, 8, 9]
+        elif current_data_type == "continuous":
+            self.RAW_DATA = [col+offset for col in range(6)]
+            self.OUTCOMES = [9, 10, 11] 
+        else:
+            # diagnostic
+            # TODO what to do about 'other'?
+            self.RAW_DATA = [col+offset for col in range(4)]
+            # sensitivity & specificity? 
+            self.OUTCOMES = [7, 8]
+            
     def data(self, index, role=Qt.DisplayRole):
         if not index.isValid() or not (0 <= index.row() < len(self.dataset)):
             return QVariant()
@@ -213,6 +234,7 @@ class DatasetModel(QAbstractTableModel):
         if role != Qt.DisplayRole:
             return QVariant()
         if orientation == Qt.Horizontal:
+            outcome_type = self.dataset.get_outcome_type(self.current_outcome)
             if section == self.INCLUDE_STUDY:
                 return QVariant(self.headers[self.INCLUDE_STUDY])
             elif section == self.NAME:
@@ -221,26 +243,47 @@ class DatasetModel(QAbstractTableModel):
                 return QVariant(self.headers[self.YEAR])
             # note: we're assuming here that raw data
             # always shows only two tx groups at once.
-            elif section in self.RAW_DATA[:2]:
-                # i.e., the first group
-                if section == self.RAW_DATA[0]:
-                    return QVariant(self.current_txs[0] + " n")
-                else:
-                    return QVariant(self.current_txs[0] + " N")
-            elif section in self.RAW_DATA[2:]:
-                # second group
-                if section == self.RAW_DATA[2]:
-                    return QVariant(self.current_txs[1] + " n")
-                else:
-                    return QVariant(self.current_txs[1] + " N")
+            # assumes binary two group
+            elif section in self.RAW_DATA:
+                # switch on the outcome type 
+                current_tx = self.current_txs[0] # i.e., the first group
+                if outcome_type== BINARY:
+                    if section in self.RAW_DATA[2:]:
+                        current_tx = self.current_txs[1]
+                        
+                    if section in (self.RAW_DATA[0], self.RAW_DATA[2]):
+                        return QVariant(current_tx + " n")
+                    else:
+                        return QVariant(current_tx + " N")
+                elif outcome_type == CONTINUOUS:
+                    # continuous data
+                    if section in self.RAW_DATA[3:]:
+                        current_tx = self.current_txs[1]
+                    if section in (self.RAW_DATA[0], self.RAW_DATA[3]):
+                        return QVariant(current_tx + " N")
+                    elif section in (self.RAW_DATA[1], self.RAW_DATA[4]):
+                        return QVariant(current_tx + " mean")
+                    else:
+                        return QVariant(current_tx + " SD")
             elif section in self.OUTCOMES:
-                if section == self.OUTCOMES[0]:
-                    # effect size
-                    return QVariant(self.current_effect)
-                elif section == self.OUTCOMES[1]:
-                    return QVariant("lower")
-                else:
-                    return QVariant("upper")
+                if outcome_type == BINARY:
+                    # effect size, lower CI, upper CI
+                    if section == self.OUTCOMES[0]:
+                        return QVariant(self.current_effect)
+                    elif section == self.OUTCOMES[1]:
+                        return QVariant("lower")
+                    else:
+                        return QVariant("upper")
+                elif outcome_type == CONTINUOUS:
+                    if section == self.OUTCOMES[0]:
+                        return QVariant(self.current_effect)
+                    elif section == self.OUTCOMES[1]:
+                        return QVariant("SE")
+                    elif section == self.OUTCOMES[2]:
+                        return QVariant("lower")
+                    else:
+                        return QVariant("upper")
+                        
 
         return QVariant(int(section+1))
 
@@ -409,9 +452,19 @@ class DatasetModel(QAbstractTableModel):
 
     def set_current_outcome(self, outcome_name):
         self.current_outcome = outcome_name
+        self.update_column_indices()
+        self.update_cur_tx_effect()
         self.emit(SIGNAL("outcomeChanged()"))
         self.reset()
         
+    def update_cur_tx_effect(self):
+        outcome_type = self.dataset.get_outcome_type(self.current_outcome)
+        if outcome_type == BINARY:
+            self.current_effect = "OR"
+        elif outcome_type == CONTINUOUS:
+            self.current_effect = "HG"
+        
+            
     def max_study_id(self):
         if len(self.dataset.studies) == 0:
             return -1
@@ -421,6 +474,8 @@ class DatasetModel(QAbstractTableModel):
         '''
         Returns the number of columns needed to display the raw data
         given the current data type (binary, etc.)
+        
+        Note again that outcome names are necessarily unique!
         '''
         data_type = self.dataset.get_outcome_type(self.current_outcome)
         if data_type is None:

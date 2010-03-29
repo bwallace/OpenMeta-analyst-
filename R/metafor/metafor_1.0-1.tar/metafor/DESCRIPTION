@@ -1,0 +1,17 @@
+Package: metafor
+Version: 1.0-1
+Date: 2010-02-01
+Title: Meta-Analysis Package for R
+Author: Wolfgang Viechtbauer <wvb@wvbauer.com>
+Maintainer: Wolfgang Viechtbauer <wvb@wvbauer.com>
+Depends: R (>= 2.9.0), stats
+Description: The metafor package consists of a collection of functions
+        for conducting meta-analyses in R. Fixed- and random-effects
+        models (with and without moderators) can be fitted via the
+        general linear (mixed-effects) model. For 2x2 table data, the
+        Mantel-Haenszel and Peto's method are also implemented.
+License: GPL (>= 2)
+URL: http://www.wvbauer.com/
+Packaged: 2010-02-01 16:01:46 UTC; wolfgang
+Repository: CRAN
+Date/Publication: 2010-02-02 10:08:39

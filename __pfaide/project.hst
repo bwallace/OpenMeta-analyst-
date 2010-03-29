@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <history>
   <loaded_documents>
-    <count>7</count>
-    <item0>c:\dev\openmeta\binary_data_form.py</item0>
-    <item1>c:\dev\openmeta\ma_data_table_view.py</item1>
-    <item2>c:\dev\openmeta\meta_form.py</item2>
-    <item3>c:\dev\openmeta\meta_py_r.py</item3>
-    <item4>c:\dev\openmeta\ui_meta.py</item4>
-    <item5>c:\dev\openmeta\ma_data_table_model.py</item5>
-    <item6>c:\dev\openmeta\ui_results_window.py</item6>
+    <count>1</count>
   </loaded_documents>
   <breakpoints>
     <count>0</count>

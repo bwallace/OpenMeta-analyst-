@@ -169,9 +169,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 previous_follow_up = self.model.get_current_follow_up_name()
                 undo_f = lambda: self._undo_add_follow_up_for_cur_outcome(\
                                                     previous_follow_up, follow_up_lbl)
-                #undo_f = lambda: self.model.remove_follow_up_from_outcome(follow_up_lbl, \
-                #                                                                            str(self.model.current_outcome))
-                
+
         if redo_f is not None:
             next_command = CommandGenericDo(redo_f, undo_f)
             self.tableView.undoStack.push(next_command)
@@ -180,8 +178,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.model.add_new_group(new_group_name)
         print "\nok. added new group: %s" % new_group_name
         cur_groups = list(self.model.get_current_groups())
+        cur_groups = list(self.model.get_current_groups())
         cur_groups[1] = new_group_name
-        cur_groups = self.model.get_current_groups()
         self.model.set_current_groups(cur_groups)
         # @TODO probably need to tell the table model we changed 
         # the group being displayed...
@@ -411,14 +409,14 @@ def _gen_some_data():
                                 [ [10, 100] , [15, 100] ], [ [20, 200] , [25, 200] ],
                                 [ [30, 300] , [35, 300] ]
                       ]
-
+  
     outcome = Outcome("death", BINARY)
     dataset.add_outcome(outcome)
-    #dataset.add_follow_up_to_outcome(outcome.name, "baseline")
     
     # self.get_current_ma_unit_for_study(index.row()).get_raw_data_for_groups(self.current_txs)
     for study in studies:
         dataset.add_study(study)
+    
     for study,data in zip(dataset.studies, raw_data):
         study.add_ma_unit(MetaAnalyticUnit(outcome, raw_data=data), "baseline")
     
@@ -464,13 +462,18 @@ def copy_paste_test():
     # now, the 2nd row (index:1) should contain trik
     assert(str(meta.tableView.model().data(upper_left_index).toString()) == "trik")
 
-def undo_redo_test():
-    meta, app = _setup_app()
-    test_model = DatasetModel()
-    meta.tableView.setModel(test_model)
-    #meta
-    assert(True)
 
+def test_add_new_outcome():
+    meta, app = _setup_app()
+    data_model = _gen_some_data()
+    test_model = DatasetModel(dataset=data_model)
+    meta.tableView.setModel(test_model)
+    new_outcome_name = u"test outcome"
+    new_outcome_type = "binary"
+    meta._add_new_outcome(new_outcome_name, new_outcome_type)
+    print meta.model.dataset.get_outcome_names()
+    assert(False)
+    
 def paste_from_excel_test():
     meta, app = _setup_app()
 

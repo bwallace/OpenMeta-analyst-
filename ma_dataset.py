@@ -310,7 +310,7 @@ class MetaAnalyticUnit:
             self.add_group(group)
             self.tx_groups[group].raw_data = raw_data[i]
             
-        # effects_dict maps effect names -- e.g., OR, RR --
+        # effects_dict maps effect names -- e.g., OR, RR, MD --
         # to dictionaries which in turn map pairwise 
         self.effects_dict = {}
         # TODO this needs another level; effect sizes that are entered directly
@@ -319,9 +319,13 @@ class MetaAnalyticUnit:
         if self.outcome.data_type == BINARY:
             for effect in ["OR", "RR", "RD"]:
                 self.effects_dict[effect] = {"est":None, "lower":None,
-                                                             "upper":None, "variance":None}
-
-         
+                                                         "upper":None, "variance":None}
+        elif self.outcome.data_type == CONTINUOUS:
+            # mean difference, hedge's G, cohen's D, glass delta
+            for effect in ["MD", "HG", "CD", "GD"]:
+                self.effects_dict[effect] = {"est":None, "lower":None,
+                                                         "upper":None, "SE":None}
+                
     def set_effect(self, effect, value):
         self.effects_dict[effect]["est"] = value
         
