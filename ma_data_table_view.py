@@ -14,6 +14,7 @@ from PyQt4.Qt import *
 import pdb
 
 import binary_data_form
+import continuous_data_form
 
 class MADataTable(QtGui.QTableView):
 
@@ -59,16 +60,18 @@ class MADataTable(QtGui.QTableView):
         
         
     def row_header_clicked(self, row):
-        #
-        # TODO: we're assuming here that we're dealing with binary
-        #               data, and only handling that case.
-        #
+        # dispatch on the data type
+        form = None
         ma_unit = self.model().get_current_ma_unit_for_study(row)
         cur_txs = self.model().current_txs
         cur_effect = self.model().current_effect
-        form =  binary_data_form.BinaryDataForm2(ma_unit, cur_txs, cur_effect, parent=self)
-        
+        data_type = self.model().get_current_outcome_type()
+        if data_type == "binary":
+            form =  binary_data_form.BinaryDataForm2(ma_unit, cur_txs, cur_effect, parent=self)
+        elif data_type == "continuous":
+            form = continuous_data_form.ContinuousDataForm(ma_unit, cur_txs, cur_effect, parent=self)
         if form.exec_():
+            # update the model here?
             pass
 
     def rowMoved(self, row, oldIndex, newIndex):
@@ -77,15 +80,6 @@ class MADataTable(QtGui.QTableView):
     def displayed_ma_changed(self):
         cur_outcome = self.model().current_outcome
         cur_follow_up = self.model().current_time_point
-        '''
-        if not cur_outcome in self.undo_stack_dict:
-            self.undo_stack_dict [cur_outcome] = {}
-
-        if not cur_follow_up in self.undo_stack_dict[cur_outcome]:
-            self.undo_stack_dict[cur_outcome][cur_follow_up] = QUndoStack(self)
-
-        self.undoStack = self.undo_stack_dict[cur_outcome][cur_follow_up]
-        '''
 
     def cell_content_changed(self, index, old_val, new_val):
         cell_edit = CommandCellEdit(self, index, old_val, new_val)

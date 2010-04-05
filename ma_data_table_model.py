@@ -105,6 +105,11 @@ class DatasetModel(QAbstractTableModel):
             self.OUTCOMES = [7, 8]
             
     def data(self, index, role=Qt.DisplayRole):
+        '''
+        Implements the required QTTableModel data method. There is a lot of switching on 
+        role/index/datatype here, but this seems consistent with the QT paradigm (see 
+        Summerfield's book)
+        '''
         if not index.isValid() or not (0 <= index.row() < len(self.dataset)):
             return QVariant()
         study = self.dataset.studies[index.row()]
@@ -186,15 +191,19 @@ class DatasetModel(QAbstractTableModel):
                     study.year = value.toInt()[0]
             elif column in self.RAW_DATA:
                 # @TODO make module-level constant?
-                adjust_by = 3 # include, study name, year columns
+                adjust_by = 3 # include study, study name, year columns
                 ma_unit = self.get_current_ma_unit_for_study(index.row())
                 group_name = self.current_txs[0]
-                if column in self.RAW_DATA[2:]:
-                    # @TODO this (the 2) is assuming binary data!
-                    # second group
-                    adjust_by += 2 # @TODO again, assuming binary here
-                    group_name = self.current_txs[1]
-
+                current_data_type = self.dataset.get_outcome_type(self.current_outcome)
+                if current_data_type == BINARY:
+                    if column in self.RAW_DATA[2:]:
+                        adjust_by += 2 
+                        group_name = self.current_txs[1]
+                elif current_data_type == CONTINUOUS:
+                    if column in self.RAW_DATA[3:]:
+                        adjust_by += 3
+                        group_name = self.current_txs[1]
+                        
                 adjusted_index = column-adjust_by
                 val = value.toDouble()[0] if value.toDouble()[1] else ""
                 ma_unit.tx_groups[group_name].raw_data[adjusted_index] = val
@@ -202,16 +211,22 @@ class DatasetModel(QAbstractTableModel):
                 # update the corresponding outcome (if data permits)
                 self.update_outcome_if_possible(index.row())
             elif column in self.OUTCOMES:
+                # the user can also explicitly set the effect size / CIs
                 # @TODO what to do if the entered estimate contradicts the raw data?
-                if column == self.OUTCOMES[0]:
+                double_val, converted_ok = value.toDouble()
+                if converted_ok:
                     ma_unit = self.get_current_ma_unit_for_study(index.row())
-                    # the user can also explicitly set the effect size
-                    if value.toDouble()[1]:
-                        ma_unit.set_effect(self.current_effect, value.toDouble()[0])
+                    if column == self.OUTCOMES[0]:
+                        ma_unit.set_effect(self.current_effect, double_val)
+                    elif column == self.OUTCOMES[1]:
+                        # lower
+                        ma_unit.set_lower(self.current_effect, double_val)
+                    else:
+                        # upper
+                        ma_unit.set_upper(self.current_effect, double_val)
             elif column == self.INCLUDE_STUDY:
                 study.include = value.toBool()
                         
-            
             self.emit(SIGNAL("dataChanged(QModelIndex, QModelIndex)"), index, index)
 
             # tell the view that an entry in the table has changed, and what the old
@@ -241,9 +256,8 @@ class DatasetModel(QAbstractTableModel):
                 return QVariant(self.headers[self.NAME])
             elif section == self.YEAR:
                 return QVariant(self.headers[self.YEAR])
-            # note: we're assuming here that raw data
+            # note that we're assuming here that raw data
             # always shows only two tx groups at once.
-            # assumes binary two group
             elif section in self.RAW_DATA:
                 # switch on the outcome type 
                 current_tx = self.current_txs[0] # i.e., the first group
@@ -500,18 +514,14 @@ class DatasetModel(QAbstractTableModel):
         '''
         d = {}
 
-        #
         # column indices
-        #
         d["NAME"] = self.NAME
         d["YEAR"] = self.YEAR
         d["RAW_DATA"] = self.RAW_DATA
         d["OUTCOMES"] = self.OUTCOMES
         d["HEADERS"] = self.headers
 
-        #
         # currently displayed outcome, etc
-        #
         d["current_outcome"] = self.current_outcome
         d["current_time_point"] = self.current_time_point
         d["current_txs"] = self.current_txs
@@ -525,7 +535,6 @@ class DatasetModel(QAbstractTableModel):
             exec("self.%s = val" % key)
 
         self.reset()
-
 
     def raw_data_is_complete_for_study(self, study_index):
         if self.current_outcome is None or self.current_time_point is None:
@@ -552,7 +561,6 @@ class DatasetModel(QAbstractTableModel):
         # now set the effect size & CIs
         ma_unit.set_effect_and_ci(self.current_effect, est, lower, upper)
 
-
     def get_cur_raw_data(self, only_if_included=True):
         raw_data = []
         for study_index in range(len(self.dataset.studies)):
@@ -561,6 +569,39 @@ class DatasetModel(QAbstractTableModel):
         # we lop off the last entry because it is always a blank line/study
         return raw_data[:-1]
 
+    def included_studies_have_raw_data(self):
+        ''' 
+        True iff all included studies have all raw data (e.g., 2x2 for binary) for the currently
+        selected outcome and tx groups.
+        '''
+        # the -1 is again accounting for the last (empty) appended study
+        for study_index in range(len(self.dataset.studies)-1):
+            if self.dataset.studies[study_index].include:
+                if not self.raw_data_is_complete_for_study(study_index):
+                    return False
+        return True
+
+
+    def study_has_point_est(self, study_index):
+        cur_ma_unit = self.get_current_ma_unit_for_study(study_index)
+        for x in ("est", "lower", "upper"):
+            if cur_ma_unit.effects_dict[self.current_effect][x] is None:
+                print "study %s does not have a point estimate" % study_index
+                return False
+        return "ok -- has all point estimates"
+        return True
+        
+    def included_studies_have_point_estimates(self):
+        ''' 
+        True iff all included studies have all point estiamtes (and CIs) for the
+        selected outcome and tx groups.
+        '''
+        for study_index in range(len(self.dataset.studies)-1):
+            if self.dataset.studies[study_index].include:
+                if not self.study_has_point_est(study_index):
+                    return False
+        return True    
+        
     def get_studies(self, only_if_included=True):
         included_studies = []
         for study in self.dataset.studies:

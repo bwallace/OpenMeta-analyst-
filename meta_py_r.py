@@ -129,8 +129,11 @@ def draw_network(edge_list, unconnected_vertices, network_path = '"./r_tmp/netwo
     
 def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
     '''
-    This converts a DatasetModel to a OpenMetaData (OMData) R object. We use type DatasetModel
-    rather than a DataSet model directly to access the current variables. By 'simple'
+    This converts a DatasetModel to an OpenMetaData (OMData) R object. We use type DatasetModel
+    rather than a DataSet model directly to access the current variables. Furthermore, this allows
+    us to check which studies (if any) were excluded by the user.
+    
+    By 'simple'
     we mean that this method returns a single outcome single follow-up (defined as the
     the currently selected, as indicated by the model object) data object.
 
@@ -140,47 +143,55 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
         - implement methods for more advanced conversions, i.e., for multiple outcome
             datasets (althought this will be implemented in some other method)
     '''
-    raw_data = table_model.get_cur_raw_data()
-
-    # first we pull the data we need out
-    # @TODO this should be made more concise
-    g1_events = _get_col(raw_data, 0)
-    g1_events.reverse()
-    g1O1_str = ", ".join(_to_strs(g1_events))
-    g1_totals = _get_col(raw_data, 1)
-    g1_totals.reverse()
-    g1O2 = [(total_i-event_i) for total_i, event_i in zip(g1_totals, g1_events)]
-    g1O2_str = ", ".join(_to_strs(g1O2))
-
-    g2_events = _get_col(raw_data, 2)
-    g2_events.reverse()
-    g2O1_str = ", ".join(_to_strs(g2_events))
-    g2_totals = _get_col(raw_data, 3)
-    g2_totals.reverse()
-    g2O2 = [(total_i-event_i) for total_i, event_i in zip(g2_totals, g2_events)]
-    g2O2_str = ", ".join(_to_strs(g2O2))
-
-    studies = table_model.get_studies()
-    # the list is pulled out in reverse order from the model, so we,
-    # er, reverse it.
-    studies.reverse()
-    study_names = ", ".join(["'" + study.name + "'" for study in studies])
-
-    # actually creating a new object on the R side seems the path of least resistance here.
-    # the alternative would be to try and create a representation of the R object on the 
-    # python side, but this would require more work and I'm not sure what the benefits
-    # would be
-    r_str = "%s <- new('BinaryData', g1O1=c(%s), g1O2=c(%s), g2O1=c(%s), g2O2=c(%s), studyNames=c(%s))" \
-                    % (var_name, g1O1_str, g1O2_str, g2O1_str, g2O2_str, study_names)
-
-    print "executing: %s" % r_str
-
-
+    # first try and construct an object with raw data
+    if table_model.included_studies_have_raw_data():
+        print "ok; raw data has been entered for all included studies"
+        raw_data = table_model.get_cur_raw_data()
+    
+        # first we pull the data we need out
+        # @TODO this should be made more concise
+        g1_events = _get_col(raw_data, 0)
+        # the list is pulled out in reverse order from the model, so we,
+        # er, reverse it.
+        g1_events.reverse()
+        g1O1_str = ", ".join(_to_strs(g1_events))
+        g1_totals = _get_col(raw_data, 1)
+        g1_totals.reverse()
+        g1O2 = [(total_i-event_i) for total_i, event_i in zip(g1_totals, g1_events)]
+        g1O2_str = ", ".join(_to_strs(g1O2))
+    
+        g2_events = _get_col(raw_data, 2)
+        g2_events.reverse()
+        g2O1_str = ", ".join(_to_strs(g2_events))
+        g2_totals = _get_col(raw_data, 3)
+        g2_totals.reverse()
+        g2O2 = [(total_i-event_i) for total_i, event_i in zip(g2_totals, g2_events)]
+        g2O2_str = ", ".join(_to_strs(g2O2))
+    
+        studies = table_model.get_studies()
+        studies.reverse()
+        study_names = ", ".join(["'" + study.name + "'" for study in studies])
+    
+        # actually creating a new object on the R side seems the path of least resistance here.
+        # the alternative would be to try and create a representation of the R object on the 
+        # python side, but this would require more work and I'm not sure what the benefits
+        # would be
+        r_str = "%s <- new('BinaryData', g1O1=c(%s), g1O2=c(%s), g2O1=c(%s), g2O2=c(%s), studyNames=c(%s))" \
+                        % (var_name, g1O1_str, g1O2_str, g2O1_str, g2O2_str, study_names)
+    
+        print "executing: %s" % r_str
+    elif table_model.included_studies_have_point_estimates():
+        print "huzzah!"
+    else:
+        print "there is neither sufficient raw data nor entered effects/CIs. I cannot run an analysis."
+        
     ro.r(r_str)
     print "ok."
     return r_str
 
-
+def _all_studies_have_raw_data(studies):
+    pass
+    
 def run_binary_ma(function_name, params, res_name = "result", bin_data_name="tmp_obj"):
 
     params_df = ro.r['data.frame'](**params)

@@ -334,6 +334,12 @@ class MetaAnalyticUnit:
         self.effects_dict[effect]["lower"] = lower
         self.effects_dict[effect]["upper"] = upper
         
+    def set_lower(self, effect, lower):
+        self.effects_dict[effect]["lower"] = lower
+        
+    def set_upper(self, effect, upper):
+        self.effects_dict[effect]["upper"] = upper
+        
     def get_effect(self, effect):
         return self.effects_dict[effect]["est"]
     
