@@ -21,6 +21,7 @@ from ui_continuous_data_form import Ui_ContinuousDataForm
 # here we show four digits; there it is 3. We want different
 # levels of granularity).
 NUM_DIGITS = 4 
+default_col_width = 65
 
 class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm):
         def __init__(self, ma_unit, cur_txs, cur_effect, parent=None):
@@ -31,6 +32,14 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             self.raw_data = self.ma_unit.get_raw_data_for_groups(cur_txs)
             self.cur_groups = cur_txs
             self.cur_effect = cur_effect
+            for table in (self.g1_std_table, self.pre_table, self.post_table):
+                #table.resizeColumnsToContents()
+                self._set_col_widths(table)
+            
             #self._update_raw_data()
             #self._update_data_table()
             #self._populate_effect_data()
+        
+        def _set_col_widths(self, table):
+            for column in range(table.columnCount()):
+                table.setColumnWidth(column, default_col_width)
