@@ -19,17 +19,27 @@ binary.fixed <- function(binaryData, params){
     if (!("BinaryData" %in% class(binaryData))) stop("Binary data expected.")  
 
     # call out to the metafor package
-    res<<-rma.mh(ai=binaryData@g1O1, bi=binaryData@g1O2, 
+    if (params$method == "InvVar"){
+        res<<-rma.uni(yi=binaryData@y, sei=binaryData@SE, slab=binaryData@studyNames,
+                                level=params$conf.level, digits=params$digits, method="FE")
+    } else if (params$method == "MH") {
+        res<<-rma.mh(ai=binaryData@g1O1, bi=binaryData@g1O2, 
                                 ci=binaryData@g2O1, di=binaryData@g2O2, slab=binaryData@studyNames,
-                                measure=params$measure, level=params$conf.level, digits=params$digits)
-    
+                                measure=params$measure, level=params$conf.level, digits=params$digits)        
+    } else {
+       # peto
+        res<<-rma.mh(ai=binaryData@g1O1, bi=binaryData@g1O2, 
+                                ci=binaryData@g2O1, di=binaryData@g2O2, slab=binaryData@studyNames,
+                                level=params$conf.level, digits=params$digits)              
+    }
+     
                                               
     #
     # generate forest plot 
     #
     forest_path <- "./r_tmp/forest.png"
     png(forest_path)
-    forest_plot<<-forest.rma(res, digits=params$digits)
+    forest_plot<-forest.rma(res, digits=params$digits)
     dev.off()
 
     #
@@ -49,10 +59,15 @@ binary.fixed <- function(binaryData, params){
 binary.fixed.parameters <- function(){
     # parameters
     binary_metrics <- c("OR", "RR", "RD")
-    params <- list("measure"=binary_metrics, "conf.level"="float", "digits"="float")
+    fixed_method_ls <- c("MH", "Peto", "InvVar")
+    
+    params <- list("measure"=binary_metrics, "conf.level"="float", "digits"="float", "method"=fixed_method_ls)
     
     # default values
-    defaults <- list("measure"="OR", "conf.level"=95, "digits"=3)
+    defaults <- list("measure"="OR", "conf.level"=95, "digits"=3, "method"="InvVar")
+    
+    # constraints
+    
     
     parameters <- list("parameters"=params, "defaults"=defaults)
 }
@@ -60,15 +75,23 @@ binary.fixed.parameters <- function(){
 ######################
 #       binary random effects    #
 ######################
-binary.rmh <- function(binaryData, params){
+binary.random <- function(binaryData, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binaryData))) stop("Binary data expected.")
     
     # call out to the metafor package
-    res<-rma.uni(ai=binaryData@g1O1, bi=binaryData@g1O2, 
-                                ci=binaryData@g2O1, di=binaryData@g2O2, slab=binaryData@studyNames,
-                                method=params$rm.method, measure=params$measure,
-                                digits=params$digits)
+    if (length(binaryData@g1O1) > 0) {
+        res<-rma.uni(ai=binaryData@g1O1, bi=binaryData@g1O2, 
+                                    ci=binaryData@g2O1, di=binaryData@g2O2, slab=binaryData@studyNames,
+                                    method=params$rm.method, measure=params$measure,
+                                    digits=params$digits)
+    }
+    else{
+       res<-rma.uni(yi=binaryData@y, sei=binaryData@SE, 
+                                    slab=binaryData@studyNames,
+                                    method=params$rm.method, 
+                                    digits=params$digits)
+    }
     
     #
     # generate forest plot 
@@ -94,14 +117,14 @@ binary.rmh <- function(binaryData, params){
 }
 
 
-binary.rmh.parameters <- function(){
+binary.random.parameters <- function(){
     # parameters
     binary_metrics <- c("OR", "RR", "RD")
     rm_method_ls <- c("HE", "DL", "SJ", "ML", "REML", "EB")
     params <- list("rm.method"=rm_method_ls, "measure"=binary_metrics, "conf.level"="float", "digits"="float")
     
     # default values
-    defaults <- list("rm.method"="REML", "measure"="OR", "conf.level"=95, "digits"=3)
+    defaults <- list("rm.method"="DL", "measure"="OR", "conf.level"=95, "digits"=3)
     
     parameters <- list("parameters"=params, "defaults"=defaults)
 }
