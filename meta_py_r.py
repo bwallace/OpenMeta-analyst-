@@ -70,7 +70,17 @@ def evaluate_in_r(r_str):
 
 def get_params(method_name):
     param_list = ro.r("%s.parameters()" % method_name)
-    return (_rlist_to_pydict(param_list[0]), _rlist_to_pydict(param_list[1]))
+    # note that we're assuming that the last entry of param_list, as provided
+    # by the corresponding R routine, is the order to display the variables
+    param_d = {}
+    for name, r_obj in zip(param_list.getnames(), param_list):    
+        param_d[name] = r_obj
+
+    order_vars = None
+    if param_d.has_key("var_order"):
+        order_vars = list(param_d["var_order"])
+    
+    return (_rlist_to_pydict(param_d['parameters']), _rlist_to_pydict(param_d['defaults']), order_vars)
 
 def get_available_methods(for_data_type=None, data_obj_name=None):
     '''
@@ -283,16 +293,9 @@ def _rlist_to_pydict(r_ls):
             d[name] = _rlist_to_pydict(val)
         cur_x = list(val)
         if len(cur_x) == 1:
-            print "CUR X (1)"
-            print cur_x
-            print type(cur_x)
             d[name] = cur_x[0]
         else:
             d[name] = cur_x
-            print "CUR X"
-            print cur_x
-            print type(cur_x)
-            print "\n"
     return d
 
 def _get_c_str_for_col(m, i):

@@ -56,6 +56,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.current_method = None
         self.current_params = None
         self.current_defaults = None
+        self.var_order = None
         self.current_param_vals = {}
         self.populate_cbo_box()
         # now we set up a UI for the parameters
@@ -101,30 +102,39 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             widget.deleteLater()
             widget = None
 
+
     def ui_for_params(self):
         if self.parameter_grp_box.layout() is None:
            layout = QGridLayout()
            self.parameter_grp_box.setLayout(layout)
 
         cur_grid_row = 0
-
-        # we want to add the parameters in groups, for example,
-        # we add combo boxes (which will be lists of values) together,
-        # followed by numerical inputs. thus we create an ordered list
-        # of functions to check if the argument is the corresponding
-        # type (float, list); if it is, we add it otherwise we pass. this isn't
-        # the most efficient way to do things, but the number of parameters
-        # is going to be relatively tiny anyway
-        ordered_types = [lambda x: isinstance(x, list), \
-                                    lambda x: isinstance(x, str) and x.lower()=="float"]
-
-        for is_right_type in ordered_types:
-            for key, val in self.current_params.items():
-                if is_right_type(val):
-                    self.add_param(self.parameter_grp_box.layout(), cur_grid_row, key, val)
-                    cur_grid_row+=1
-
-
+        
+        if self.var_order is not None:
+            for var_name in self.var_order:
+                val = self.current_params[var_name]
+                self.add_param(self.parameter_grp_box.layout(), cur_grid_row, var_name, val)
+                cur_grid_row+=1
+        else:
+            # no ordering was provided; let's try and do something
+            # sane with respect to the order in which parameters
+            # are displayed.
+            #
+            # we want to add the parameters in groups, for example,
+            # we add combo boxes (which will be lists of values) together,
+            # followed by numerical inputs. thus we create an ordered list
+            # of functions to check if the argument is the corresponding
+            # type (float, list); if it is, we add it otherwise we pass. this isn't
+            # the most efficient way to do things, but the number of parameters
+            # is going to be relatively tiny anyway
+            ordered_types = [lambda x: isinstance(x, list), \
+                                        lambda x: isinstance(x, str) and x.lower()=="float"]
+    
+            for is_right_type in ordered_types:
+                for key, val in self.current_params.items():
+                    if is_right_type(val):
+                        self.add_param(self.parameter_grp_box.layout(), cur_grid_row, key, val)
+                        cur_grid_row+=1
 
     def add_param(self, layout, cur_grid_row, name, value):
         print "adding param. name: %s, value: %s" % (name, value)
@@ -191,6 +201,5 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         layout.addWidget(lbl, cur_grid_row, 0)
 
     def setup_params(self):
-        self.current_params, self.current_defaults = meta_py_r.get_params(self.current_method)
-        pyqtRemoveInputHook()
+        self.current_params, self.current_defaults, self.var_order = meta_py_r.get_params(self.current_method)
         print self.current_defaults
