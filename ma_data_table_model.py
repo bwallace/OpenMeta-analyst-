@@ -568,7 +568,7 @@ class DatasetModel(QAbstractTableModel):
                 raw_data.append(self.get_cur_raw_data_for_study(study_index))
         # we lop off the last entry because it is always a blank line/study
         return raw_data[:-1]
-
+                
     def included_studies_have_raw_data(self):
         ''' 
         True iff all included studies have all raw data (e.g., 2x2 for binary) for the currently
@@ -590,6 +590,26 @@ class DatasetModel(QAbstractTableModel):
                 return False
         return "ok -- has all point estimates"
         return True
+        
+    def cur_point_est_and_SE_for_study(self, study_index):
+        cur_ma_unit = self.get_current_ma_unit_for_study(study_index)
+        est = cur_ma_unit.effects_dict[self.current_effect]["est"] 
+        lower, upper = cur_ma_unit.effects_dict[self.current_effect]["lower"], \
+                                cur_ma_unit.effects_dict[self.current_effect]["upper"]
+        
+        ## TODO make application global!
+        mult = 1.96 
+        se = (upper-est) /mult
+        return (est, se)
+        
+    def get_cur_ests_and_SEs(self, only_if_included=True):
+        ests, SEs = [], []
+        for study_index in range(len(self.dataset.studies)-1):
+            if not only_if_included or self.dataset.studies[study_index].include:
+                est, SE = self.cur_point_est_and_SE_for_study(study_index)
+                ests.append(est)
+                SEs.append(SE)
+        return (ests, SEs)
         
     def included_studies_have_point_estimates(self):
         ''' 

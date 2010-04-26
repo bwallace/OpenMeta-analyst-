@@ -84,7 +84,10 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
 
     def populate_cbo_box(self):
-        available_methods = meta_py_r.get_available_methods(self.data_type)
+        # this is to pass to the R side to check feasibility of the methods over the current data
+        tmp_obj_name = "tmp_obj" 
+        meta_py_r.ma_dataset_to_simple_binary_robj(self.model, var_name=tmp_obj_name)
+        available_methods = meta_py_r.get_available_methods(for_data_type=self.data_type, data_obj_name=tmp_obj_name)
         print "\n\navailable %s methods: %s" % (self.data_type, ", ".join(available_methods))
         for method in available_methods:
             self.method_cbo_box.addItem(method)
@@ -189,4 +192,5 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
     def setup_params(self):
         self.current_params, self.current_defaults = meta_py_r.get_params(self.current_method)
+        pyqtRemoveInputHook()
         print self.current_defaults

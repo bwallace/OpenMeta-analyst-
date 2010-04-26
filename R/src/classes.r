@@ -19,15 +19,9 @@ setClass("OMData", representation(studyNames="character", notes="character", yea
 #
 setClass("BinaryData", 
                representation(g1O1="numeric", g1O2="numeric", g2O1="numeric",g2O2="numeric",
+               y="numeric", SE="numeric",
                g1Name="character", g2Name="character"), 
                contains="OMData")
-               
-              
-               
-               
-               
-               
-               
                
                
 # 

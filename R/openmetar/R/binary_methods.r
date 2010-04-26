@@ -11,25 +11,25 @@ library(metafor)
 
 
 
-######################
-#       binary fixed effects        #
-######################
-binary.fixed <- function(binaryData, params){
+###################################
+#       binary fixed effects -- inverse variance        #
+###################################
+binary.fixed.inv.var <- function(binaryData, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binaryData))) stop("Binary data expected.")  
 
     # call out to the metafor package
-    res<<-rma.mh(ai=binaryData@g1O1, bi=binaryData@g1O2, 
-                                ci=binaryData@g2O1, di=binaryData@g2O2, slab=binaryData@studyNames,
-                                measure=params$measure, level=params$conf.level, digits=params$digits)
-    
+    res<<-rma.uni(yi=binaryData@y, sei=binaryData@SE, slab=binaryData@studyNames,
+                            level=params$conf.level, digits=params$digits, method="FE", add=params$adjust,
+                            to=params$to)
+     
                                               
     #
     # generate forest plot 
     #
     forest_path <- "./r_tmp/forest.png"
     png(forest_path)
-    forest_plot<<-forest.rma(res, digits=params$digits)
+    forest_plot<-forest.rma(res, digits=params$digits)
     dev.off()
 
     #
@@ -46,29 +46,109 @@ binary.fixed <- function(binaryData, params){
     results
 }
 
-binary.fixed.parameters <- function(){
+                                
+binary.fixed.inv.var.parameters <- function(){
     # parameters
     binary_metrics <- c("OR", "RR", "RD")
-    params <- list("measure"=binary_metrics, "conf.level"="float", "digits"="float")
+    apply_adjustment_to = c("only0", "all")
+    
+    params <- list("measure"=binary_metrics, "conf.level"="float", "digits"="float", 
+                            "adjust"="float", "to"=apply_adjustment_to)
     
     # default values
-    defaults <- list("measure"="OR", "conf.level"=95, "digits"=3)
+    defaults <- list("measure"="OR", "conf.level"=95, "digits"=3, "adjust"=.5)
+    
+    # constraints
+    
     
     parameters <- list("parameters"=params, "defaults"=defaults)
 }
 
+binary.fixed.inv.var.is.feasible <- function(binaryData){
+    TRUE
+}
+
+
+###################################
+#       binary fixed effects -- mantel haenszel        #
+###################################
+binary.fixed.mh <- function(binaryData, params){
+    # assert that the argument is the correct type
+    if (!("BinaryData" %in% class(binaryData))) stop("Binary data expected.")  
+
+    res<<-rma.mh(ai=binaryData@g1O1, bi=binaryData@g1O2, 
+                            ci=binaryData@g2O1, di=binaryData@g2O2, slab=binaryData@studyNames,
+                            level=params$conf.level, digits=params$digits)              
+                                              
+    #
+    # generate forest plot 
+    #
+    forest_path <- "./r_tmp/forest.png"
+    png(forest_path)
+    forest_plot<-forest.rma(res, digits=params$digits)
+    dev.off()
+
+    #
+    # Now we package the results in a dictionary (technically, a named 
+    # vector). In particular, there are two fields that must be returned; 
+    # a dictionary of images (mapping titles to image paths) and a list of texts
+    # (mapping titles to pretty-printed text). In this case we have only one 
+    # of each. 
+    #     
+    images <- c("forest plot"=forest_path)
+    plot_names <- c("forest plot"="forest_plot")
+    
+    results <- list("images"=images, "summary"=res, "plot_names"=plot_names)
+    results
+}
+
+                                
+binary.fixed.mh.parameters <- function(){
+    # parameters
+    binary_metrics <- c("OR", "RR", "RD")
+    apply_adjustment_to = c("only0", "all")
+    
+    params <- list("measure"=binary_metrics, "conf.level"="float", "digits"="float",
+                            "adjust"="float", "to"=apply_adjustment_to)
+    
+    # default values
+    defaults <- list("measure"="OR", "conf.level"=95, "digits"=3, "adjust"=.5)
+    
+    # constraints
+    parameters <- list("parameters"=params, "defaults"=defaults)
+}
+
+binary.fixed.mh.is.feasible <- function(binaryData){
+    # only feasible if we have raw (2x2) data for all studies
+    length(binaryData@g1O1)==length(binaryData@g1O2) &&
+    length(binaryData@g1O2)==length(binaryData@g2O1) &&
+    length(binaryData@g2O1)==length(binaryData@g2O2) &&
+         length(binaryData@g1O1) > 0
+}
+
+
+ 
+
 ######################
 #       binary random effects    #
 ######################
-binary.rmh <- function(binaryData, params){
+binary.random <- function(binaryData, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binaryData))) stop("Binary data expected.")
     
     # call out to the metafor package
-    res<-rma.uni(ai=binaryData@g1O1, bi=binaryData@g1O2, 
-                                ci=binaryData@g2O1, di=binaryData@g2O2, slab=binaryData@studyNames,
-                                method=params$rm.method, measure=params$measure,
-                                digits=params$digits)
+    if (length(binaryData@g1O1) > 0) {
+        res<-rma.uni(ai=binaryData@g1O1, bi=binaryData@g1O2, 
+                                    ci=binaryData@g2O1, di=binaryData@g2O2, slab=binaryData@studyNames,
+                                    method=params$rm.method, measure=params$measure,
+                                    level=params$conf.level, digits=params$digits)
+    }
+    else{
+       res<-rma.uni(yi=binaryData@y, sei=binaryData@SE, 
+                                    slab=binaryData@studyNames,
+                                    method=params$rm.method, level=params$conf.level,
+                                    digits=params$digits)
+    }
     
     #
     # generate forest plot 
@@ -94,16 +174,19 @@ binary.rmh <- function(binaryData, params){
 }
 
 
-binary.rmh.parameters <- function(){
+binary.random.parameters <- function(){
     # parameters
     binary_metrics <- c("OR", "RR", "RD")
     rm_method_ls <- c("HE", "DL", "SJ", "ML", "REML", "EB")
     params <- list("rm.method"=rm_method_ls, "measure"=binary_metrics, "conf.level"="float", "digits"="float")
     
     # default values
-    defaults <- list("rm.method"="REML", "measure"="OR", "conf.level"=95, "digits"=3)
+    defaults <- list("rm.method"="DL", "measure"="OR", "conf.level"=95, "digits"=3)
     
     parameters <- list("parameters"=params, "defaults"=defaults)
 }
+
+
+
 
 
