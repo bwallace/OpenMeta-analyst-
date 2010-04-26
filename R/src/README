@@ -1,0 +1,39 @@
+Byron Wallace
+Tufts Medical Center
+OpenMeta[Analyst]
+
+How to Build
+Note: You can use the build_package.r module for this task.
+---
+Assume your code lives in the following files:
+
+f1.r
+f2.r
+...
+fN.r
+
+In R, build a list of strings point to these source files:
+
+>flist <- c("[dir path]/f1.r"), ... , "[dir path]/fN.r")
+
+Now create a package skeleton as follows. From within R:
+
+>package.skeleton(name="OpenMetaR"), path="R", code_files=flist)
+
+This will generate a new sub-dir ("OpenMetaR")) under "R". In the "R" dir, at a console:
+
+> R CMD check OpenMetaR
+
+If this is OK:
+
+> R CMD build OpenMetaR
+
+And this will generate OpenMetaR.tar.gz. Now use:
+
+>R CMD INSTALL OpenMetaR_xx.tar.gz
+
+Now, within R:
+
+>library(openmetar)
+
+voila
