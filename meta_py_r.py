@@ -170,8 +170,25 @@ def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj"):
         Ns2_str = _get_str(raw_data, 3)
         means2_str = _get_str(raw_data, 4)
         SDs2_str = _get_str(raw_data, 5)
+        
+        r_str = "%s <- new('ContinuousData', \
+                                     N1=c(%s), mean1=c(%s), se1=c(%s), \
+                                     N2=c(%s), mean2=c(%s), se2=c(%s), \
+                                     y=c(%s), SE=c(%s), studyNames=c(%s))" \
+                        % (var_name, Ns1_str, means1_str, SDs1_str, \
+                            Ns2_str, means2_str, SDs2_str, \
+                            ests_str, SEs_str, study_names)
+        
     else:
-        print "NO RAW DATA"
+        print "no raw data... using effects"
+        r_str = "%s <- new('ContinuousData', \
+                                     y=c(%s), SE=c(%s), studyNames=c(%s))" \
+                        % (var_name, ests_str, SEs_str, study_names)
+    
+    print "executing: %s" % r_str
+    ro.r(r_str)
+    print "ok."
+    return r_str
     
     
 def _get_str(M, col_index, reverse=True):
@@ -257,6 +274,26 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
     print "ok."
     return r_str
 
+def run_continuous_ma(function_name, params, res_name = "result", cont_data_name = "tmp_obj"):
+    params_df = ro.r['data.frame'](**params)
+    r_str = "%s<-%s(%s, %s)" % (res_name, function_name, cont_data_name, params_df.r_repr())
+    print "\n\n(run_continuous_ma): executing:\n %s\n" % r_str
+    ro.r(r_str)
+    result = ro.r("%s" % res_name)
+
+    # parse out text field(s). note that "plot names" is 'reserved', i.e., it's
+    # a special field which is assumed to contain the plot variable names
+    # in R (for graphics manipulation).
+    text_d = {}
+    image_var_name_d = None
+    for text_n, text in zip(list(result.getnames())[1:], list(result)[1:]):
+        if not text_n == "plot_names":
+           text_d[text_n]=text
+        else:
+           image_var_name_d = _rls_to_pyd(text)
+
+    return {"images":_rls_to_pyd(result[0]), "image_var_names":image_var_name_d,
+                                              "texts":text_d}    
     
 def run_binary_ma(function_name, params, res_name = "result", bin_data_name="tmp_obj"):
     params_df = ro.r['data.frame'](**params)
