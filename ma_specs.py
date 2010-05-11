@@ -83,7 +83,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         if self.data_type == "binary":
             meta_py_r.ma_dataset_to_simple_binary_robj(self.model, var_name=tmp_obj_name)
         elif self.data_type == "continuous":
-            meta_py_r.ma_dataset_to_simple_continuous_obj(self.model, var_name=tmp_obj_name)
+            meta_py_r.ma_dataset_to_simple_continuous_robj(self.model, var_name=tmp_obj_name)
             
         available_methods = meta_py_r.get_available_methods(for_data_type=self.data_type, data_obj_name=tmp_obj_name)
         print "\n\navailable %s methods: %s" % (self.data_type, ", ".join(available_methods))

@@ -75,8 +75,6 @@ impute.bin.data <- function(bin.data){
 
 
 # see end for an example code
-
-
 find.my.cells <- function(cell.counts, logor, var, 
 					row1sum, row2sum, col1sum, col2sum) {
 	
@@ -101,8 +99,6 @@ find.my.cells <- function(cell.counts, logor, var,
 	res <- eq1 + eq2 + eq3 + eq4 + eq5 + eq6
 	return(1000*res)
 }
-
-
 
 row.total.eq <- function(cell.counts, row, total=NA) {
 	res <- cell.counts[(row-1)*2+1] + cell.counts[(row-1)*2+2]

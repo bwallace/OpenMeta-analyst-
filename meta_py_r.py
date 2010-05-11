@@ -144,7 +144,7 @@ def draw_network(edge_list, unconnected_vertices, network_path = '"./r_tmp/netwo
     ro.r("dev.off()")
     return "r_tmp/network.png"
     
-def ma_dataset_to_simple_continuous_obj(table_model, var_name="tmp_obj"):
+def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj"):
     r_str = None
     
     # grab the study names. note: the list is pulled out in reverse order from the 
@@ -153,12 +153,32 @@ def ma_dataset_to_simple_continuous_obj(table_model, var_name="tmp_obj"):
     studies.reverse()
     study_names = ", ".join(["'" + study.name + "'" for study in studies])
         
+    ests, SEs = table_model.get_cur_ests_and_SEs()
+    ests_str = ", ".join(_to_strs(ests))
+    SEs_str = ", ".join(_to_strs(SEs))
+    
     # first try and construct an object with raw data
     if table_model.included_studies_have_raw_data():
-        print "OK"
+        print "we have raw data... parsing"
+        pyqtRemoveInputHook()
+        pdb.set_trace()
+            
+        raw_data = table_model.get_cur_raw_data()
+        Ns1_str = _get_str(raw_data, 0)
+        means1_str = _get_str(raw_data, 1)
+        SDs1_str = _get_str(raw_data, 2)
+        Ns2_str = _get_str(raw_data, 3)
+        means2_str = _get_str(raw_data, 4)
+        SDs2_str = _get_str(raw_data, 5)
     else:
         print "NO RAW DATA"
     
+    
+def _get_str(M, col_index, reverse=True):
+    x = _get_col(M, col_index)
+    if reverse:
+        x.reverse()
+    return ", ".join(_to_strs(x))
     
     
 def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
@@ -181,6 +201,10 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
     studies = table_model.get_studies()
     studies.reverse()
     study_names = ", ".join(["'" + study.name + "'" for study in studies])
+        
+    ests, SEs = table_model.get_cur_ests_and_SEs()
+    ests_str = ", ".join(_to_strs(ests))
+    SEs_str = ", ".join(_to_strs(SEs))
         
     # first try and construct an object with raw data
     if table_model.included_studies_have_raw_data():
@@ -221,13 +245,7 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
         
     elif table_model.included_studies_have_point_estimates():
         print "not sufficient raw data, but studies have point estimates..."
-        ests, SEs = table_model.get_cur_ests_and_SEs()
-        ests_str = ", ".join(_to_strs(ests))
-        SEs_str = ", ".join(_to_strs(SEs))
-        
-        print "\n\n"
-        print SEs_str
-        
+
         r_str = "%s <- new('BinaryData', y=c(%s), SE=c(%s), studyNames=c(%s))" \
                             % (var_name, ests_str, SEs_str, study_names)
                             

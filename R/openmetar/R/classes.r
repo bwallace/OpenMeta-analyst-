@@ -14,11 +14,22 @@
 #
 setClass("OMData", representation(studyNames="character", notes="character", years="integer"))
 
-#
+####
 # BinaryData type
 #
 setClass("BinaryData", 
                representation(g1O1="numeric", g1O2="numeric", g2O1="numeric",g2O2="numeric",
+               y="numeric", SE="numeric",
+               g1Name="character", g2Name="character"), 
+               contains="OMData")
+        
+
+####
+# ContinuousData type
+#       
+setClass("ContinuousData", 
+               representation(N1="numeric", mean1="numeric", se1="numeric",
+               N2="numeric", mean2="numeric", se2="numeric",
                y="numeric", SE="numeric",
                g1Name="character", g2Name="character"), 
                contains="OMData")

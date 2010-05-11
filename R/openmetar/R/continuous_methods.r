@@ -19,9 +19,7 @@ continuous.random <- function(contData, params){
     # call out to the metafor package
     if (length(contData@mean1) > 0) {
         res<-rma.uni(n1i=contData@N1, n2i=contData@N2, 
-                                    m1i=contData@mean1, m2i=contData@mean2,
-                                    sd1i=contData@sd1, sd2i=contData@sd2,
-                                    slab=contData@studyNames,
+                                    m1i=contData@mean1, m2i=contData@mean2, slab=contData@studyNames,
                                     method=params$rm.method, measure=params$measure,
                                     level=params$conf.level, digits=params$digits)
     }

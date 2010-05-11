@@ -321,8 +321,10 @@ class MetaAnalyticUnit:
                 self.effects_dict[effect] = {"est":None, "lower":None,
                                                          "upper":None, "variance":None}
         elif self.outcome.data_type == CONTINUOUS:
-            # mean difference, hedge's G, cohen's D, glass delta
-            for effect in ["MD", "HG", "CD", "GD"]:
+            # mean difference and standardized mean difference
+            # @TODO hedge's G, cohen's D, glass delta; WV doesn't
+            # implement these
+            for effect in ["MD", "SMD"]:
                 self.effects_dict[effect] = {"est":None, "lower":None,
                                                          "upper":None, "SE":None}
                 

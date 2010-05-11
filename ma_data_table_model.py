@@ -97,10 +97,10 @@ class DatasetModel(QAbstractTableModel):
             self.OUTCOMES = [7, 8, 9]
         elif current_data_type == "continuous":
             self.RAW_DATA = [col+offset for col in range(6)]
-            self.OUTCOMES = [9, 10, 11] 
+            self.OUTCOMES = [9, 10, 11, 12] 
         else:
             # diagnostic
-            # TODO what to do about 'other'?
+            # @TODO what to do about 'other'?
             self.RAW_DATA = [col+offset for col in range(4)]
             # sensitivity & specificity? 
             self.OUTCOMES = [7, 8]
@@ -293,13 +293,10 @@ class DatasetModel(QAbstractTableModel):
                     if section == self.OUTCOMES[0]:
                         return QVariant(self.current_effect)
                     elif section == self.OUTCOMES[1]:
-                        return QVariant("SE")
-                    elif section == self.OUTCOMES[2]:
                         return QVariant("lower")
                     else:
                         return QVariant("upper")
                         
-
         return QVariant(int(section+1))
 
 
@@ -479,7 +476,6 @@ class DatasetModel(QAbstractTableModel):
         elif outcome_type == CONTINUOUS:
             self.current_effect = "MD"
         
-            
     def max_study_id(self):
         if len(self.dataset.studies) == 0:
             return -1
@@ -564,8 +560,7 @@ class DatasetModel(QAbstractTableModel):
             elif data_type == CONTINUOUS:
                 n1, m1, se1, n2, m2, se2 = self.get_cur_raw_data_for_study(study_index)
                 est, lower, upper = meta_py_r.continuous_effect_for_study(n1, m1, se1, n2, m2, se2)
-                #pyqtRemoveInputHook()
-                #pdb.set_trace()
+
         ma_unit = self.get_current_ma_unit_for_study(study_index)
         # now set the effect size & CIs
         ma_unit.set_effect_and_ci(self.current_effect, est, lower, upper)
