@@ -46,7 +46,7 @@ except:
     raise Exception, "unable to create temporary directory for R results! make sure you have sufficient permissions."
 
 def impute_two_by_two(bin_data_dict):
-    print "imputing 2x2 table via R..."
+    print "computing 2x2 table via R..."
     print bin_data_dict
 
     # rpy2 doesn't know how to handle None types.

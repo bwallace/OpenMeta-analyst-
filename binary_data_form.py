@@ -39,19 +39,28 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
     def _setup_signals_and_slots(self):
         QObject.connect(self.raw_data_table, SIGNAL("cellChanged (int, int)"), 
                                                                                 self._cell_changed)
+        QObject.connect(self.effect_cbo_box, SIGNAL("currentIndexChanged(QString)"),
+                                                                                self.effect_changed)                                                            
                                                                                  
     def _populate_effect_data(self):
         q_effects = sorted([QString(effect_str) for effect_str in self.ma_unit.effects_dict.keys()])
         self.effect_cbo_box.addItems(q_effects)
         self.effect_cbo_box.setCurrentIndex(q_effects.index(QString(self.cur_effect)))
+        # populate fields with current effect data
+        self.set_current_effect()
+
+    def set_current_effect(self):
         effect_dict = self.ma_unit.effects_dict[self.cur_effect]
         for s, txt_box in zip(['est', 'lower', 'upper'], [self.effect_txt_box, self.low_txt_box, self.high_txt_box]):
             if effect_dict[s] is not None:
                 txt_box.setText(QString("%s" % round(effect_dict[s], NUM_DIGITS)))
             else:
                 txt_box.setText(QString(""))
-
-
+        
+    def effect_changed(self):
+        self.cur_effect = unicode(self.effect_cbo_box.currentText().toUtf8(), "utf-8")
+        self.set_current_effect()
+        
     def _update_raw_data(self):
         ''' Generates the 2x2 table with whatever parametric data was provided '''
         self.raw_data_table.blockSignals(True)

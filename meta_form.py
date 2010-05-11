@@ -147,6 +147,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 # here we want to add the outcome to the dataset, and then
                 # display it
                 new_outcome_name = unicode(form.outcome_name_le.text().toUtf8(), "utf-8")
+                # the outcome type is one of the enumerated types; we don't worry about
+                # unicode encoding
                 new_outcome_type = str(form.datatype_cbo_box.currentText())
                 redo_f = lambda: self._add_new_outcome(new_outcome_name, new_outcome_type)
                 prev_outcome = str(self.model.current_outcome)

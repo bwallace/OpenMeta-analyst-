@@ -56,17 +56,16 @@ binary.fixed.inv.var.parameters <- function(){
                             "adjust"="float", "to"=apply_adjustment_to)
     
     # default values
-    defaults <- list("measure"="OR", "conf.level"=95, "digits"=3, "adjust"=.5)
+    defaults <- list("measure"="OR", "conf.level"=95, "digits"=3, "adjust"=.5, "to"="only0")
     
-    # constraints
+    var_order = c("measure", "conf.level", "digits", "adjust", "to")
     
-    
-    parameters <- list("parameters"=params, "defaults"=defaults)
+    parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
 }
 
-binary.fixed.inv.var.is.feasible <- function(binaryData){
-    TRUE
-}
+#binary.fixed.inv.var.is.feasible <- function(binaryData){
+#    TRUE
+#}
 
 
 ###################################
@@ -112,10 +111,12 @@ binary.fixed.mh.parameters <- function(){
                             "adjust"="float", "to"=apply_adjustment_to)
     
     # default values
-    defaults <- list("measure"="OR", "conf.level"=95, "digits"=3, "adjust"=.5)
+    defaults <- list("measure"="OR", "conf.level"=95, "digits"=3, "adjust"=.5, "to"="only0")
+    
+    var_order = c("measure", "conf.level", "digits", "adjust", "to")
     
     # constraints
-    parameters <- list("parameters"=params, "defaults"=defaults)
+    parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
 }
 
 binary.fixed.mh.is.feasible <- function(binaryData){
@@ -126,6 +127,62 @@ binary.fixed.mh.is.feasible <- function(binaryData){
          length(binaryData@g1O1) > 0
 }
 
+#############################
+#       binary fixed effects -- Peto             #
+#############################
+binary.fixed.peto <- function(binaryData, params){
+    # assert that the argument is the correct type
+    if (!("BinaryData" %in% class(binaryData))) stop("Binary data expected.")  
+
+    res<<-rma.peto(ai=binaryData@g1O1, bi=binaryData@g1O2, 
+                            ci=binaryData@g2O1, di=binaryData@g2O2, slab=binaryData@studyNames,
+                            level=params$conf.level, digits=params$digits)              
+                                              
+    #
+    # generate forest plot 
+    #
+    forest_path <- "./r_tmp/forest.png"
+    png(forest_path)
+    forest_plot<-forest.rma(res, digits=params$digits)
+    dev.off()
+
+    #
+    # Now we package the results in a dictionary (technically, a named 
+    # vector). In particular, there are two fields that must be returned; 
+    # a dictionary of images (mapping titles to image paths) and a list of texts
+    # (mapping titles to pretty-printed text). In this case we have only one 
+    # of each. 
+    #     
+    images <- c("forest plot"=forest_path)
+    plot_names <- c("forest plot"="forest_plot")
+    
+    results <- list("images"=images, "summary"=res, "plot_names"=plot_names)
+    results
+}
+
+                                
+binary.fixed.peto.parameters <- function(){
+    # parameters
+    apply_adjustment_to = c("only0", "all")
+    
+    params <- list( "conf.level"="float", "digits"="float",
+                            "adjust"="float", "to"=apply_adjustment_to)
+    
+    # default values
+    defaults <- list("conf.level"=95, "digits"=3, "adjust"=.5)
+    
+    var_order = c("conf.level", "digits", "adjust", "to")
+    
+    parameters <- list("parameters"=params, "defaults"=defaults,  "var_order"=var_order)
+}
+
+binary.fixed.peto.is.feasible <- function(binaryData){
+    # only feasible if we have raw (2x2) data for all studies
+    length(binaryData@g1O1)==length(binaryData@g1O2) &&
+    length(binaryData@g1O2)==length(binaryData@g2O1) &&
+    length(binaryData@g2O1)==length(binaryData@g2O2) &&
+         length(binaryData@g1O1) > 0
+}
 
  
 
@@ -183,7 +240,8 @@ binary.random.parameters <- function(){
     # default values
     defaults <- list("rm.method"="DL", "measure"="OR", "conf.level"=95, "digits"=3)
     
-    parameters <- list("parameters"=params, "defaults"=defaults)
+    var_order <- c("rm.method", "measure", "conf.level", "digits")
+    parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
 }
 
 
