@@ -15,6 +15,7 @@ import PyQt4
 from PyQt4 import *
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from PyQt4.QtCore import pyqtRemoveInputHook
 import pdb
 
 # home-grown
@@ -476,7 +477,7 @@ class DatasetModel(QAbstractTableModel):
         if outcome_type == BINARY:
             self.current_effect = "OR"
         elif outcome_type == CONTINUOUS:
-            self.current_effect = "HG"
+            self.current_effect = "MD"
         
             
     def max_study_id(self):
@@ -500,9 +501,9 @@ class DatasetModel(QAbstractTableModel):
             # continuous
             return 6
 
-    def get_current_outcome_type(self):
+    def get_current_outcome_type(self, get_str=True):
         ''' Returns the type of the currently displayed (or 'active') outcome (e.g., binary).  '''
-        return self.dataset.get_outcome_type(self.current_outcome, get_string=True)
+        return self.dataset.get_outcome_type(self.current_outcome, get_string=get_str)
 
     def get_stateful_dict(self):
         '''
@@ -554,9 +555,17 @@ class DatasetModel(QAbstractTableModel):
         displayed.
         '''
         est, lower, upper = None, None, None
+        
+        data_type = self.get_current_outcome_type(get_str=False)  
         if self.raw_data_is_complete_for_study(study_index):
-            e1, n1, e2, n2 = self.get_cur_raw_data_for_study(study_index)
-            est, lower, upper = meta_py_r.effect_for_study(e1, n1, e2, n2)
+            if data_type == BINARY:
+                e1, n1, e2, n2 = self.get_cur_raw_data_for_study(study_index)
+                est, lower, upper = meta_py_r.effect_for_study(e1, n1, e2, n2)
+            elif data_type == CONTINUOUS:
+                n1, m1, se1, n2, m2, se2 = self.get_cur_raw_data_for_study(study_index)
+                est, lower, upper = meta_py_r.continuous_effect_for_study(n1, m1, se1, n2, m2, se2)
+                #pyqtRemoveInputHook()
+                #pdb.set_trace()
         ma_unit = self.get_current_ma_unit_for_study(study_index)
         # now set the effect size & CIs
         ma_unit.set_effect_and_ci(self.current_effect, est, lower, upper)
@@ -571,7 +580,7 @@ class DatasetModel(QAbstractTableModel):
                 
     def included_studies_have_raw_data(self):
         ''' 
-        True iff all included studies have all raw data (e.g., 2x2 for binary) for the currently
+        True iff all _included_ studies have all raw data (e.g., 2x2 for binary) for the currently
         selected outcome and tx groups.
         '''
         # the -1 is again accounting for the last (empty) appended study

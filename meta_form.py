@@ -345,6 +345,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             else:
                 self.out_path = out_f
             try:
+                print "trying to write data out to: %s" % self.out_path
                 f = open(self.out_path, 'w')
                 pickle.dump(self.model.dataset, f)
                 f.close()
@@ -354,7 +355,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 f = open(self.out_path + ".state", 'w')
                 pickle.dump(d, f)
                 f.close()
-
             except Exception, e:
                 # @TODO handle this elegantly?
                 print e

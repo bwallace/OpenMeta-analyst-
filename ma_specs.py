@@ -33,6 +33,8 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                                              self.method_changed)
 
         self.data_type = self.model.get_current_outcome_type()
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
         print "data type: %s" % self.data_type
         self.current_widgets = []
         self.current_method = None
@@ -50,10 +52,17 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.reject()
 
     def run_ma(self):
-        # note that this call creates a tmp object in R called
-        # tmp_obj
-        meta_py_r.ma_dataset_to_simple_binary_robj(self.model)
-        result = meta_py_r.run_binary_ma(self.current_method, self.current_param_vals)
+        result = None
+        # dispatch on type; build an R object, then run the analysis
+        if self.data_type == "binary":
+            # note that this call creates a tmp object in R called
+            # tmp_obj (though you can pass in whatever var name
+            # you'd like)
+            meta_py_r.ma_dataset_to_simple_binary_robj(self.model)
+            result = meta_py_r.run_binary_ma(self.current_method, self.current_param_vals)
+        elif self.data_type == "continuous":
+            meta_py_r.ma_dataset_to_simple_continuous_robj(self.model)
+            result = meta_py_r.run_continuous_ma(self.current_method, self.current_param_vals)
         self.parent().analysis(result)
         self.accept()
 
@@ -65,11 +74,17 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.parameter_grp_box.setTitle(self.current_method)
         self.ui_for_params()
 
-
     def populate_cbo_box(self):
-        # this is to pass to the R side to check feasibility of the methods over the current data
+        # we first build an R object with the current data. this is to pass off         
+        # to the R side to check the feasibility of the methods over the current data.
+        # i.e., we do not display methods that cannot be performed over the 
+        # current data.
         tmp_obj_name = "tmp_obj" 
-        meta_py_r.ma_dataset_to_simple_binary_robj(self.model, var_name=tmp_obj_name)
+        if self.data_type == "binary":
+            meta_py_r.ma_dataset_to_simple_binary_robj(self.model, var_name=tmp_obj_name)
+        elif self.data_type == "continuous":
+            meta_py_r.ma_dataset_to_simple_continuous_obj(self.model, var_name=tmp_obj_name)
+            
         available_methods = meta_py_r.get_available_methods(for_data_type=self.data_type, data_obj_name=tmp_obj_name)
         print "\n\navailable %s methods: %s" % (self.data_type, ", ".join(available_methods))
         for method in available_methods:

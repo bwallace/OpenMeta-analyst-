@@ -351,8 +351,6 @@ class CommandSort(QUndoCommand):
     def undo(self):
         self.model.order_studies(self.previous_order)
 
-
-
 class StudyDelegate(QItemDelegate):
 
       def __init__(self, parent=None):

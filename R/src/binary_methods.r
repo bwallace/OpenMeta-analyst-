@@ -10,7 +10,6 @@
 library(metafor)
 
 
-
 ###################################
 #       binary fixed effects -- inverse variance        #
 ###################################
@@ -63,9 +62,6 @@ binary.fixed.inv.var.parameters <- function(){
     parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
 }
 
-#binary.fixed.inv.var.is.feasible <- function(binaryData){
-#    TRUE
-#}
 
 
 ###################################

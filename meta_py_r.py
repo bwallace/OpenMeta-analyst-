@@ -144,6 +144,23 @@ def draw_network(edge_list, unconnected_vertices, network_path = '"./r_tmp/netwo
     ro.r("dev.off()")
     return "r_tmp/network.png"
     
+def ma_dataset_to_simple_continuous_obj(table_model, var_name="tmp_obj"):
+    r_str = None
+    
+    # grab the study names. note: the list is pulled out in reverse order from the 
+    # model, so we, er, reverse it.
+    studies = table_model.get_studies()
+    studies.reverse()
+    study_names = ", ".join(["'" + study.name + "'" for study in studies])
+        
+    # first try and construct an object with raw data
+    if table_model.included_studies_have_raw_data():
+        print "OK"
+    else:
+        print "NO RAW DATA"
+    
+    
+    
 def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
     '''
     This converts a DatasetModel to an OpenMetaData (OMData) R object. We use type DatasetModel
@@ -216,14 +233,12 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
                             
     else:
         print "there is neither sufficient raw data nor entered effects/CIs. I cannot run an analysis."
-        
+        # @TODO complain to the user here
     print "executing: %s" % r_str
     ro.r(r_str)
     print "ok."
     return r_str
 
-def _all_studies_have_raw_data(studies):
-    pass
     
 def run_binary_ma(function_name, params, res_name = "result", bin_data_name="tmp_obj"):
     params_df = ro.r['data.frame'](**params)
@@ -310,10 +325,29 @@ def _get_col(m, i):
         col_vals.append(x[i])
     return col_vals
 
+def continuous_effect_for_study(n1, m1, sd1, n2, m2, sd2, metric="MD", conf_level=.975):
+    r_str = "escalc('%s', n1i=c(%s), n2i=c(%s), m1i=c(%s), m2i=c(%s), sd1i=c(%s), sd2i=c(%s))" %\
+                        (metric, n1, n2, m1, m2, sd1, sd2)
+    
+    effect = ro.r(r_str)
+    # the first 0 indexes into the study; the second, into the point estimate
+    # (the escalc method is general and thus expects an array of studies)
+    point_est = effect[0][0]
+    sd = math.sqrt(effect[1][0])
+    
+    ####
+    # @TODO the following ought to be refactored, as it's repeated
+    # (albeit on a different scale) below
+    #
+    r_str =  "qnorm(%s)" % conf_level
+    mult = ro.r(r_str)[0]
+    lower, upper = (point_est-mult*sd, point_est+mult*sd)
+    return (point_est, lower, upper)
+    
 def effect_for_study(e1, n1, e2, n2, metric="OR", conf_level=.975):
     '''
     Computes a point estimate, lower & upper bound for
-    the parametric 2x2 table data.
+    the parametric 2x2 *binary* table data.
 
     @TODO add support for non-normal (e.g., T) distributions
 
@@ -325,21 +359,25 @@ def effect_for_study(e1, n1, e2, n2, metric="OR", conf_level=.975):
     n2 -- size of group 2
     '''
     print metric
+    # notice that we're using WV's escalc routine here
     r_str = "escalc(measure='%s', ai=c(%s), n1i=c(%s), ci=c(%s), n2i=c(%s))" %\
                     (metric, e1, n1, e2, n2)
 
     effect = ro.r(r_str)
     lg_point_est = effect[0][0]
-    v = math.sqrt(effect[1][0])
+    sd = math.sqrt(effect[1][0])
 
     # scalar for computing confidence interval
     r_str = "qnorm(%s)" % conf_level
-    scalar = ro.r(r_str)[0]
+    mult = ro.r(r_str)[0]
 
-    lower, upper = (math.exp(lg_point_est-scalar*v), math.exp(lg_point_est+scalar*v))
+    # note that we're currently returning point estimate on the raw scale 
+    lower, upper = (math.exp(lg_point_est-mult*sd), math.exp(lg_point_est+mult*sd))
     point_est, lower, upper = [math.exp(lg_point_est), lower, upper]
     print "%s, %s, %s" % (lower, point_est, upper)
 
     return (point_est, lower, upper)
 
 
+    
+    
