@@ -59,6 +59,16 @@ def impute_two_by_two(bin_data_dict):
     two_by_two = ro.r('impute.bin.data(bin.data=%s)' % dataf.r_repr())
     print two_by_two
 
+def impute_cont_data(cont_data_dict):
+    print "computing continuous data via R..."
+    # rpy2 doesn't know how to handle None types.
+    # we can just remove them from the dictionary.
+    r_str = []
+    for param, val in cont_data_dict.items():
+        r_str.append("%s=%s" % (param, val))
+    #two_by_two = ro.r('impute.bin.data(bin.data=%s)' % dataf.r_repr())
+    #print two_by_two
+    
 def none_to_null(x):
     if x is None:
         return ro.r['as.null']()
@@ -160,8 +170,6 @@ def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj"):
     # first try and construct an object with raw data
     if table_model.included_studies_have_raw_data():
         print "we have raw data... parsing"
-        pyqtRemoveInputHook()
-        pdb.set_trace()
             
         raw_data = table_model.get_cur_raw_data()
         Ns1_str = _get_str(raw_data, 0)
