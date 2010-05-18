@@ -5,19 +5,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>510</width>
-    <height>382</height>
+    <width>670</width>
+    <height>418</height>
    </rect>
   </property>
   <property name="minimumSize" >
    <size>
-    <width>510</width>
+    <width>670</width>
     <height>0</height>
    </size>
   </property>
   <property name="maximumSize" >
    <size>
-    <width>510</width>
+    <width>670</width>
     <height>452</height>
    </size>
   </property>
@@ -36,8 +36,8 @@
   <widget class="QDialogButtonBox" name="buttonBox" >
    <property name="geometry" >
     <rect>
-     <x>320</x>
-     <y>340</y>
+     <x>470</x>
+     <y>380</y>
      <width>181</width>
      <height>32</height>
     </rect>
@@ -52,16 +52,16 @@
   <widget class="QGroupBox" name="grp_box_pre_post" >
    <property name="geometry" >
     <rect>
-     <x>10</x>
+     <x>20</x>
      <y>110</y>
-     <width>491</width>
-     <height>221</height>
+     <width>631</width>
+     <height>261</height>
     </rect>
    </property>
    <property name="title" >
     <string>pre / post</string>
    </property>
-   <widget class="QLabel" name="label_8" >
+   <widget class="QLabel" name="grp_1_lbl" >
     <property name="geometry" >
      <rect>
       <x>10</x>
@@ -72,7 +72,7 @@
     </property>
     <property name="font" >
      <font>
-      <pointsize>8</pointsize>
+      <pointsize>7</pointsize>
       <weight>75</weight>
       <italic>true</italic>
       <bold>true</bold>
@@ -82,48 +82,52 @@
      <enum>Qt::LeftToRight</enum>
     </property>
     <property name="text" >
-     <string>pre</string>
+     <string>group 1</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_9" >
+   <widget class="QLabel" name="grp_2_lbl" >
     <property name="geometry" >
      <rect>
       <x>10</x>
       <y>160</y>
-      <width>46</width>
+      <width>51</width>
       <height>21</height>
      </rect>
     </property>
     <property name="font" >
      <font>
-      <pointsize>8</pointsize>
+      <pointsize>7</pointsize>
       <weight>75</weight>
       <italic>true</italic>
       <bold>true</bold>
      </font>
     </property>
     <property name="text" >
-     <string>post</string>
+     <string>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Verdana'; font-size:8pt; font-weight:600; font-style:italic;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" font-size:7pt;">group 2&lt;/span>&lt;/p>&lt;/body>&lt;/html></string>
     </property>
    </widget>
-   <widget class="QTableWidget" name="pre_table" >
+   <widget class="QTableWidget" name="g1_pre_post_table" >
     <property name="geometry" >
      <rect>
-      <x>40</x>
+      <x>70</x>
       <y>21</y>
-      <width>440</width>
+      <width>550</width>
       <height>81</height>
      </rect>
     </property>
     <property name="minimumSize" >
      <size>
-      <width>440</width>
+      <width>550</width>
       <height>0</height>
      </size>
     </property>
     <property name="maximumSize" >
      <size>
-      <width>440</width>
+      <width>550</width>
       <height>16777215</height>
      </size>
     </property>
@@ -157,67 +161,77 @@
      <number>2</number>
     </property>
     <property name="columnCount" >
-     <number>6</number>
+     <number>8</number>
     </property>
     <row>
      <property name="text" >
-      <string>group 1</string>
+      <string>pre</string>
      </property>
     </row>
     <row>
      <property name="text" >
-      <string>group 2</string>
+      <string>post</string>
      </property>
     </row>
     <column>
      <property name="text" >
-      <string>n (pre)</string>
+      <string>n</string>
      </property>
     </column>
     <column>
      <property name="text" >
-      <string>mean (pre)</string>
+      <string>mean</string>
      </property>
     </column>
     <column>
      <property name="text" >
-      <string>sd (pre)</string>
+      <string>sd</string>
      </property>
     </column>
     <column>
      <property name="text" >
-      <string>se (pre)</string>
+      <string>se</string>
      </property>
     </column>
     <column>
      <property name="text" >
-      <string>var (pre)</string>
+      <string>var</string>
      </property>
     </column>
     <column>
      <property name="text" >
-      <string>p-val (pre)</string>
+      <string>p-val</string>
+     </property>
+    </column>
+    <column>
+     <property name="text" >
+      <string>low</string>
+     </property>
+    </column>
+    <column>
+     <property name="text" >
+      <string>high</string>
      </property>
     </column>
    </widget>
-   <widget class="QTableWidget" name="post_table" >
+   <widget class="QTableWidget" name="g2_pre_post_table" >
     <property name="geometry" >
      <rect>
-      <x>40</x>
+      <x>70</x>
       <y>120</y>
-      <width>440</width>
+      <width>550</width>
       <height>81</height>
      </rect>
     </property>
     <property name="minimumSize" >
      <size>
-      <width>440</width>
+      <width>550</width>
       <height>0</height>
      </size>
     </property>
     <property name="maximumSize" >
      <size>
-      <width>440</width>
+      <width>550</width>
       <height>16777215</height>
      </size>
     </property>
@@ -243,56 +257,92 @@
      <number>2</number>
     </property>
     <property name="columnCount" >
-     <number>6</number>
+     <number>8</number>
     </property>
     <row>
      <property name="text" >
-      <string>group 1</string>
+      <string>pre</string>
      </property>
     </row>
     <row>
      <property name="text" >
-      <string>group 2</string>
+      <string>post</string>
      </property>
     </row>
     <column>
      <property name="text" >
-      <string>n (post)</string>
+      <string>n</string>
      </property>
     </column>
     <column>
      <property name="text" >
-      <string>mean (post)</string>
+      <string>mean</string>
      </property>
     </column>
     <column>
      <property name="text" >
-      <string>sd (post)</string>
+      <string>sd</string>
      </property>
     </column>
     <column>
      <property name="text" >
-      <string>se (post)</string>
+      <string>se</string>
      </property>
     </column>
     <column>
      <property name="text" >
-      <string>var (post)</string>
+      <string>var</string>
      </property>
     </column>
     <column>
      <property name="text" >
-      <string>p-val (post)</string>
+      <string>p-val</string>
+     </property>
+    </column>
+    <column>
+     <property name="text" >
+      <string>low</string>
+     </property>
+    </column>
+    <column>
+     <property name="text" >
+      <string>high</string>
      </property>
     </column>
    </widget>
+   <widget class="QLabel" name="label" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>230</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>correlation:</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit" >
+    <property name="geometry" >
+     <rect>
+      <x>80</x>
+      <y>230</y>
+      <width>41</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>0.0</string>
+    </property>
+   </widget>
   </widget>
-  <widget class="QTableWidget" name="g1_std_table" >
+  <widget class="QTableWidget" name="simple_table" >
    <property name="geometry" >
     <rect>
-     <x>30</x>
+     <x>70</x>
      <y>20</y>
-     <width>440</width>
+     <width>550</width>
      <height>80</height>
     </rect>
    </property>
@@ -304,13 +354,13 @@
    </property>
    <property name="minimumSize" >
     <size>
-     <width>440</width>
+     <width>550</width>
      <height>80</height>
     </size>
    </property>
    <property name="maximumSize" >
     <size>
-     <width>440</width>
+     <width>550</width>
      <height>80</height>
     </size>
    </property>
@@ -341,7 +391,7 @@
     <number>2</number>
    </property>
    <property name="columnCount" >
-    <number>6</number>
+    <number>8</number>
    </property>
    <row>
     <property name="text" >
@@ -381,6 +431,16 @@
    <column>
     <property name="text" >
      <string>p-val</string>
+    </property>
+   </column>
+   <column>
+    <property name="text" >
+     <string>low</string>
+    </property>
+   </column>
+   <column>
+    <property name="text" >
+     <string>high</string>
     </property>
    </column>
   </widget>
