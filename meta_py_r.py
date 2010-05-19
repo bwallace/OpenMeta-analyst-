@@ -63,9 +63,10 @@ def impute_cont_data(cont_data_dict):
     print "computing continuous data via R..."
     # rpy2 doesn't know how to handle None types.
     # we can just remove them from the dictionary.
-    r_str = []
+    r_str = ["fillin.cont.1spell("]
     for param, val in cont_data_dict.items():
         r_str.append("%s=%s" % (param, val))
+        
     #two_by_two = ro.r('impute.bin.data(bin.data=%s)' % dataf.r_repr())
     #print two_by_two
     

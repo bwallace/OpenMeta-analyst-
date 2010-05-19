@@ -1,12 +1,3 @@
-##############################################
-#
-#  Byron C. Wallace
-#  Tufts Medical Center
-#  OpenMeta[analyst]
-#  ---
-#  Binary data form module; for flexible entry of dichotomous
-#  outcome data
-###############################################
 ##################################################
 #
 #  Byron C. Wallace
