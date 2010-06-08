@@ -65,10 +65,17 @@ def impute_cont_data(cont_data_dict):
     # we can just remove them from the dictionary.
     r_str = ["fillin.cont.1spell("]
     for param, val in cont_data_dict.items():
-        r_str.append("%s=%s" % (param, val))
+        r_str.append("%s=%s," % (param, val))
         
+    # drop the last comma
+    r_str = "".join(r_str)
+    r_str = r_str[:-1]
     #two_by_two = ro.r('impute.bin.data(bin.data=%s)' % dataf.r_repr())
-    #print two_by_two
+    r_str += ")"
+    
+    print "attempting to execute: %s" % r_str
+    c_data = ro.r(r_str)
+    return _rls_to_pyd(c_data)
     
 def none_to_null(x):
     if x is None:

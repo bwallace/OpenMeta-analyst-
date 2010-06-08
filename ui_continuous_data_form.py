@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'continuous_data_form.ui'
 #
-# Created: Thu May 13 11:14:05 2010
-#      by: PyQt4 UI code generator 4.4.3
+# Created: Mon Jun 07 14:40:42 2010
+#      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -129,7 +129,7 @@ class Ui_ContinuousDataForm(object):
         self.lineEdit.setGeometry(QtCore.QRect(80, 230, 41, 16))
         self.lineEdit.setObjectName("lineEdit")
         self.simple_table = QtGui.QTableWidget(ContinuousDataForm)
-        self.simple_table.setGeometry(QtCore.QRect(70, 20, 550, 80))
+        self.simple_table.setGeometry(QtCore.QRect(60, 10, 550, 80))
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -215,7 +215,7 @@ class Ui_ContinuousDataForm(object):
         self.simple_table.horizontalHeaderItem(2).setText(QtGui.QApplication.translate("ContinuousDataForm", "sd", None, QtGui.QApplication.UnicodeUTF8))
         self.simple_table.horizontalHeaderItem(3).setText(QtGui.QApplication.translate("ContinuousDataForm", "se", None, QtGui.QApplication.UnicodeUTF8))
         self.simple_table.horizontalHeaderItem(4).setText(QtGui.QApplication.translate("ContinuousDataForm", "var", None, QtGui.QApplication.UnicodeUTF8))
-        self.simple_table.horizontalHeaderItem(5).setText(QtGui.QApplication.translate("ContinuousDataForm", "p-val", None, QtGui.QApplication.UnicodeUTF8))
+        self.simple_table.horizontalHeaderItem(5).setText(QtGui.QApplication.translate("ContinuousDataForm", "pval", None, QtGui.QApplication.UnicodeUTF8))
         self.simple_table.horizontalHeaderItem(6).setText(QtGui.QApplication.translate("ContinuousDataForm", "low", None, QtGui.QApplication.UnicodeUTF8))
         self.simple_table.horizontalHeaderItem(7).setText(QtGui.QApplication.translate("ContinuousDataForm", "high", None, QtGui.QApplication.UnicodeUTF8))
 

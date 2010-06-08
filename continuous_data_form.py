@@ -28,7 +28,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
     def __init__(self, ma_unit, cur_txs, cur_effect, parent=None):
         super(ContinuousDataForm, self).__init__(parent)
         self.setupUi(self)
-        #self._setup_signals_and_slots()
+        self._setup_signals_and_slots()
         self.ma_unit = ma_unit
         self.raw_data = self.ma_unit.get_raw_data_for_groups(cur_txs)
         self.cur_groups = cur_txs
@@ -48,19 +48,25 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         #self._update_data_table()
         #self._populate_effect_data()
     
+    def _setup_signals_and_slots(self):
+        QObject.connect(self.simple_table, SIGNAL("cellChanged (int, int)"), 
+                                                                                self._impute_data)
+                                                                                
+        
+        
     def _set_col_widths(self, table):
         for column in range(table.columnCount()):
             table.setColumnWidth(column, default_col_width)
                 
     def _update_raw_data(self):
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
         self.simple_table.blockSignals(True)
         for row_index, group_name in enumerate(self.cur_groups):
             grp_raw_data = self.ma_unit.tx_groups[group_name].raw_data
             for col in range(len(grp_raw_data)):
                 val = QTableWidgetItem(str(grp_raw_data[col]))
                 self.simple_table.setItem(row_index, col, val)
+        
+        self._impute_data()
         self.simple_table.blockSignals(False)
         
     def _impute_data(self):
@@ -79,7 +85,17 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             
             # now pass off what we have for this study to the
             # imputation routine
-            computed_vals = meta_py_r.impute_cont_data(cur_dict)
+            computed_vals = meta_py_r.impute_cont_data(cur_dict)["output"]
+            # and then iterate over the columns again, 
+            # populating the table with any available
+            # computed fields
+            self.simple_table.blockSignals(True)
+            for var_index, var_name in enumerate(var_names):
+                # TODO note the hard-coded number of digits here
+                self.simple_table.setItem(row_index, var_index, QTableWidgetItem(QString(str(computed_vals[var_name])[:5])))
+            self.simple_table.blockSignals(True)
+            #pyqtRemoveInputHook()
+            #pdb.set_trace()
                 
     def get_column_header_strs(self):
         return [str(h_item.text()) for h_item in \
@@ -87,7 +103,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                                     range(self.simple_table.columnCount())]]
             
     def _is_empty(self, i, j):
-        val = self.raw_data_table.item(i,j)
+        val = self.simple_table.item(i,j)
         return val is None or val.text() == ""
         
     def _get_float(self, i, j):
