@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'continuous_data_form.ui'
 #
-# Created: Mon Jun 07 14:40:42 2010
+# Created: Tue Jun 08 13:06:15 2010
 #      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -125,9 +125,9 @@ class Ui_ContinuousDataForm(object):
         self.label = QtGui.QLabel(self.grp_box_pre_post)
         self.label.setGeometry(QtCore.QRect(10, 230, 71, 16))
         self.label.setObjectName("label")
-        self.lineEdit = QtGui.QLineEdit(self.grp_box_pre_post)
-        self.lineEdit.setGeometry(QtCore.QRect(80, 230, 41, 16))
-        self.lineEdit.setObjectName("lineEdit")
+        self.correlation_edit = QtGui.QLineEdit(self.grp_box_pre_post)
+        self.correlation_edit.setGeometry(QtCore.QRect(80, 230, 41, 16))
+        self.correlation_edit.setObjectName("correlation_edit")
         self.simple_table = QtGui.QTableWidget(ContinuousDataForm)
         self.simple_table.setGeometry(QtCore.QRect(60, 10, 550, 80))
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
@@ -171,6 +171,22 @@ class Ui_ContinuousDataForm(object):
         self.simple_table.setHorizontalHeaderItem(6, item)
         item = QtGui.QTableWidgetItem()
         self.simple_table.setHorizontalHeaderItem(7, item)
+        self.label_2 = QtGui.QLabel(ContinuousDataForm)
+        self.label_2.setGeometry(QtCore.QRect(20, 390, 16, 16))
+        font = QtGui.QFont()
+        font.setFamily("Verdana")
+        font.setPointSize(10)
+        font.setWeight(50)
+        font.setItalic(False)
+        font.setBold(False)
+        self.label_2.setFont(font)
+        self.label_2.setObjectName("label_2")
+        self.alpha_edit = QtGui.QLineEdit(ContinuousDataForm)
+        self.alpha_edit.setGeometry(QtCore.QRect(40, 390, 31, 16))
+        self.alpha_edit.setObjectName("alpha_edit")
+        self.ci_label = QtGui.QLabel(ContinuousDataForm)
+        self.ci_label.setGeometry(QtCore.QRect(80, 390, 251, 16))
+        self.ci_label.setObjectName("ci_label")
 
         self.retranslateUi(ContinuousDataForm)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL("accepted()"), ContinuousDataForm.accept)
@@ -193,7 +209,7 @@ class Ui_ContinuousDataForm(object):
         self.g1_pre_post_table.horizontalHeaderItem(2).setText(QtGui.QApplication.translate("ContinuousDataForm", "sd", None, QtGui.QApplication.UnicodeUTF8))
         self.g1_pre_post_table.horizontalHeaderItem(3).setText(QtGui.QApplication.translate("ContinuousDataForm", "se", None, QtGui.QApplication.UnicodeUTF8))
         self.g1_pre_post_table.horizontalHeaderItem(4).setText(QtGui.QApplication.translate("ContinuousDataForm", "var", None, QtGui.QApplication.UnicodeUTF8))
-        self.g1_pre_post_table.horizontalHeaderItem(5).setText(QtGui.QApplication.translate("ContinuousDataForm", "p-val", None, QtGui.QApplication.UnicodeUTF8))
+        self.g1_pre_post_table.horizontalHeaderItem(5).setText(QtGui.QApplication.translate("ContinuousDataForm", "pval", None, QtGui.QApplication.UnicodeUTF8))
         self.g1_pre_post_table.horizontalHeaderItem(6).setText(QtGui.QApplication.translate("ContinuousDataForm", "low", None, QtGui.QApplication.UnicodeUTF8))
         self.g1_pre_post_table.horizontalHeaderItem(7).setText(QtGui.QApplication.translate("ContinuousDataForm", "high", None, QtGui.QApplication.UnicodeUTF8))
         self.g2_pre_post_table.verticalHeaderItem(0).setText(QtGui.QApplication.translate("ContinuousDataForm", "pre", None, QtGui.QApplication.UnicodeUTF8))
@@ -203,11 +219,11 @@ class Ui_ContinuousDataForm(object):
         self.g2_pre_post_table.horizontalHeaderItem(2).setText(QtGui.QApplication.translate("ContinuousDataForm", "sd", None, QtGui.QApplication.UnicodeUTF8))
         self.g2_pre_post_table.horizontalHeaderItem(3).setText(QtGui.QApplication.translate("ContinuousDataForm", "se", None, QtGui.QApplication.UnicodeUTF8))
         self.g2_pre_post_table.horizontalHeaderItem(4).setText(QtGui.QApplication.translate("ContinuousDataForm", "var", None, QtGui.QApplication.UnicodeUTF8))
-        self.g2_pre_post_table.horizontalHeaderItem(5).setText(QtGui.QApplication.translate("ContinuousDataForm", "p-val", None, QtGui.QApplication.UnicodeUTF8))
+        self.g2_pre_post_table.horizontalHeaderItem(5).setText(QtGui.QApplication.translate("ContinuousDataForm", "pval", None, QtGui.QApplication.UnicodeUTF8))
         self.g2_pre_post_table.horizontalHeaderItem(6).setText(QtGui.QApplication.translate("ContinuousDataForm", "low", None, QtGui.QApplication.UnicodeUTF8))
         self.g2_pre_post_table.horizontalHeaderItem(7).setText(QtGui.QApplication.translate("ContinuousDataForm", "high", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("ContinuousDataForm", "correlation:", None, QtGui.QApplication.UnicodeUTF8))
-        self.lineEdit.setText(QtGui.QApplication.translate("ContinuousDataForm", "0.0", None, QtGui.QApplication.UnicodeUTF8))
+        self.correlation_edit.setText(QtGui.QApplication.translate("ContinuousDataForm", "0.0", None, QtGui.QApplication.UnicodeUTF8))
         self.simple_table.verticalHeaderItem(0).setText(QtGui.QApplication.translate("ContinuousDataForm", "group 1", None, QtGui.QApplication.UnicodeUTF8))
         self.simple_table.verticalHeaderItem(1).setText(QtGui.QApplication.translate("ContinuousDataForm", "group 2", None, QtGui.QApplication.UnicodeUTF8))
         self.simple_table.horizontalHeaderItem(0).setText(QtGui.QApplication.translate("ContinuousDataForm", "n", None, QtGui.QApplication.UnicodeUTF8))
@@ -218,5 +234,8 @@ class Ui_ContinuousDataForm(object):
         self.simple_table.horizontalHeaderItem(5).setText(QtGui.QApplication.translate("ContinuousDataForm", "pval", None, QtGui.QApplication.UnicodeUTF8))
         self.simple_table.horizontalHeaderItem(6).setText(QtGui.QApplication.translate("ContinuousDataForm", "low", None, QtGui.QApplication.UnicodeUTF8))
         self.simple_table.horizontalHeaderItem(7).setText(QtGui.QApplication.translate("ContinuousDataForm", "high", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_2.setText(QtGui.QApplication.translate("ContinuousDataForm", "α:", None, QtGui.QApplication.UnicodeUTF8))
+        self.alpha_edit.setText(QtGui.QApplication.translate("ContinuousDataForm", ".05", None, QtGui.QApplication.UnicodeUTF8))
+        self.ci_label.setText(QtGui.QApplication.translate("ContinuousDataForm", "(95% confidence interval)", None, QtGui.QApplication.UnicodeUTF8))
 
 import icons_rc

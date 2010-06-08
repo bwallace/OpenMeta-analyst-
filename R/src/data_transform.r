@@ -5,12 +5,8 @@ isnt.null <- function(x){
 
 
 ##############
-#
 # Binary data calculation
-#
 ##############
-
-
 impute.bin.data <- function(bin.data){
     # this function imputes binary data (i.e., 2x2 tables) from the fields
     # available in the bin.data data frame parameter.
@@ -295,7 +291,7 @@ fillin.cont.1spell <- function(n=NA, mean=NA, sd=NA, se=NA, var=NA,
     # If not calculate it from the CI
 
     if(is.na(mean)) {
-        mean = try((high-low)/2, silent = TRUE)
+        mean = try((high+low)/2, silent = TRUE)
     }
 
     # if mean is still missing, abort 
@@ -411,14 +407,24 @@ fillin.cont.AminusB <- function(
     succeeded <- TRUE  
     comment <- ""
     res <- list(succeeded= succeeded)
-
+    
+    #######
+    # anything that's returned needs to be initialized to NA here
+    #
+    n.diff <- NA
+    mean.diff <- NA
+    sd.diff <- NA
+    se.diff <- NA
+    var.diff <- NA
+    low.diff <- NA
+    high.diff <- NA
+    pval.diff <-NA
+    
     z <- abs(qnorm(alpha/2))
 
     input.vector.A <- c(n.A, mean.A, sd.A, se.A, var.A, low.A, high.A, pval.A) 
     input.vector.B <- c(n.B, mean.B, sd.B, se.B, var.B, low.B, high.B, pval.B)
     input.pattern <- list(A=!(is.na(input.vector.A)), B=!(is.na(input.vector.B)))
-
-
 
     fillin.A <- fillin.cont.1spell(n.A, mean.A, sd.A, se.A, var.A, low.A, high.A, pval.A, alpha=alpha)
     comment <-paste(comment, paste("A", fillin.A$comment, sep=":"), sep="|")
@@ -439,20 +445,21 @@ fillin.cont.AminusB <- function(
         pval.diff  <- 2*pnorm(-abs(mean.diff/se.diff))
 
         # these are not of real interest
-        n.diff  <- try(fillin.A$output["n"] + fillin.B$output["n"], silent=TRUE)
+        n.diff  <- try(min(fillin.A$output["n"], fillin.B$output["n"]), silent=TRUE)
         sd.diff <- try(var.diff * (n.diff - 1) , silent=TRUE)
     } 
     else {
         succeeded <- FALSE 
     }
 
-
     output.vector <- c(n.diff, mean.diff, sd.diff, se.diff, var.diff, 
                       low.diff, high.diff, pval.diff)
     output.names <- c("n", "mean", "sd", "se", "var", "low", "high", "pval")
     names(output.vector) <- output.names
-
+    #names(fillin.A) <- output.names
+    #names(fillin.B) <- output.names
     res<- list(succeeded=succeeded, input.pattern=input.pattern, output=output.vector, 
+                      pre=fillin.A$output, post=fillin.B$output,
                       comment=comment, correlation=correlation)
 
     return(res)

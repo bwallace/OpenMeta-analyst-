@@ -201,7 +201,7 @@ p, li { white-space: pre-wrap; }
     </column>
     <column>
      <property name="text">
-      <string>p-val</string>
+      <string>pval</string>
      </property>
     </column>
     <column>
@@ -297,7 +297,7 @@ p, li { white-space: pre-wrap; }
     </column>
     <column>
      <property name="text">
-      <string>p-val</string>
+      <string>pval</string>
      </property>
     </column>
     <column>
@@ -324,7 +324,7 @@ p, li { white-space: pre-wrap; }
      <string>correlation:</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEdit">
+   <widget class="QLineEdit" name="correlation_edit">
     <property name="geometry">
      <rect>
       <x>80</x>
@@ -444,6 +444,54 @@ p, li { white-space: pre-wrap; }
      <string>high</string>
     </property>
    </column>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>390</y>
+     <width>16</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Verdana</family>
+     <pointsize>10</pointsize>
+     <weight>50</weight>
+     <italic>false</italic>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>α:</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="alpha_edit">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>390</y>
+     <width>31</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>.05</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="ci_label">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>390</y>
+     <width>251</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>(95% confidence interval)</string>
+   </property>
   </widget>
  </widget>
  <resources>

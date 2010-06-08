@@ -59,20 +59,38 @@ def impute_two_by_two(bin_data_dict):
     two_by_two = ro.r('impute.bin.data(bin.data=%s)' % dataf.r_repr())
     print two_by_two
 
-def impute_cont_data(cont_data_dict):
+def impute_cont_data(cont_data_dict, alpha):
     print "computing continuous data via R..."
-    # rpy2 doesn't know how to handle None types.
-    # we can just remove them from the dictionary.
+    
+    # first check that we have some data;
+    # if not, there's no sense in trying to
+    # impute anything
+    if len(cont_data_dict.items()) == 0:
+        return {"succeeded":False}
+    
     r_str = ["fillin.cont.1spell("]
     for param, val in cont_data_dict.items():
         r_str.append("%s=%s," % (param, val))
         
-    # drop the last comma
     r_str = "".join(r_str)
-    r_str = r_str[:-1]
-    #two_by_two = ro.r('impute.bin.data(bin.data=%s)' % dataf.r_repr())
-    r_str += ")"
+
+    # append alpha argument (for CI level); close function call (parens)
+    r_str += "alpha=%s)" % alpha
     
+    print "attempting to execute: %s" % r_str
+    c_data = ro.r(r_str)
+    return _rls_to_pyd(c_data)
+    
+def impute_pre_post_cont_data(cont_data_dict, correlation, alpha):
+    if len(cont_data_dict.items()) == 0:
+        return {"succeeded":False}
+        
+    r_str  = ["fillin.cont.AminusB("]
+    for param, val in cont_data_dict.items():
+        r_str.append("%s=%s," % (param, val))
+    
+    r_str = "".join(r_str)
+    r_str += "correlation=%s, alpha=%s)" % (correlation, alpha)
     print "attempting to execute: %s" % r_str
     c_data = ro.r(r_str)
     return _rls_to_pyd(c_data)
