@@ -2,17 +2,21 @@
 
 # Form implementation generated from reading ui file 'results_window.ui'
 #
-# Created: Wed May 19 17:12:54 2010
+# Created: Thu Jun 10 12:26:44 2010
 #      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
+import qconsole
 
 class Ui_ResultsWindow(object):
     def setupUi(self, ResultsWindow):
         ResultsWindow.setObjectName("ResultsWindow")
         ResultsWindow.resize(832, 544)
+        font = QtGui.QFont()
+        font.setFamily("Verdana")
+        ResultsWindow.setFont(font)
         self.centralwidget = QtGui.QWidget(ResultsWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtGui.QVBoxLayout(self.centralwidget)
@@ -39,7 +43,8 @@ class Ui_ResultsWindow(object):
         self.graphics_view = QtGui.QGraphicsView(self.frame)
         self.graphics_view.setObjectName("graphics_view")
         self.gridLayout.addWidget(self.graphics_view, 0, 1, 1, 1)
-        self.psuedo_console = QtGui.QTextEdit(self.splitter)
+        #self.psuedo_console = QtGui.QTextEdit(self.splitter)
+        self.psuedo_console = qconsole.QConsole(self.splitter)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -71,7 +76,7 @@ class Ui_ResultsWindow(object):
         QtCore.QMetaObject.connectSlotsByName(ResultsWindow)
 
     def retranslateUi(self, ResultsWindow):
-        ResultsWindow.setWindowTitle(QtGui.QApplication.translate("ResultsWindow", "MainWindow", None, QtGui.QApplication.UnicodeUTF8))
+        ResultsWindow.setWindowTitle(QtGui.QApplication.translate("ResultsWindow", "results / analysis", None, QtGui.QApplication.UnicodeUTF8))
         self.psuedo_console.setHtml(QtGui.QApplication.translate("ResultsWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"

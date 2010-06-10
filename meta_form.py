@@ -198,6 +198,9 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         print "removing added outcome: %s" % added_outcome
         self.model.remove_outcome(added_outcome)
         print "trying to display: %s" % previously_displayed_outcome
+        ##
+        # TODO if previous outcome was None, this throws up
+        # (see Issue 4: http://github.com/bwallace/OpenMeta-analyst-/issues#issue/4)
         self.display_outcome(previously_displayed_outcome)
     
     def _add_new_outcome(self, outcome_name, outcome_type):

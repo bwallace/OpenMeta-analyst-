@@ -26,9 +26,20 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
         QObject.connect(self.nav_tree, SIGNAL("itemClicked(QTreeWidgetItem*, int)"),
                                        self.item_clicked)
-        QObject.connect(self.psuedo_console, SIGNAL("returnPressed"),
+                         
+        self.psuedo_console.blockSignals(False)              
+        #QObject.connect(self.psuedo_console, SIGNAL("returnPressed(void)"),
+        #                               self.process_console_input)
+        #QObject.connect(self.psuedo_console, SIGNAL("textChanged()"),
+         #                              self.process_console_input)
+        QObject.connect(self.psuedo_console, SIGNAL("returnPressed()"),
                                        self.process_console_input)
-
+        QObject.connect(self.psuedo_console, SIGNAL("upArrowPressed()"),
+                                       self.f)
+        QObject.connect(self.psuedo_console, SIGNAL("downArrowPressed()"),
+                                       self.f)
+                                       
+                                       
         self.nav_tree.setHeaderLabels(["results"])
         self.nav_tree.setItemsExpandable(True)
         self.x_coord = 5
@@ -42,7 +53,6 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         print self.images
         self.image_var_names = results["image_var_names"]
         self.set_psuedo_console_text()
-
         self.items_to_coords = {}
         self.texts = results["texts"]
 
@@ -52,6 +62,11 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         self.graphics_view.ensureVisible(QRectF(0,0,0,0))
 
 
+    def f(self):
+        print "!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        print self.current_line()
+        print "\r" in self.current_line()
+        
     def set_psuedo_console_text(self):
         text = ["\t\tOpenMeta(analyst)",
                "This is a pipe to the R console. The image names are as follows:"]
