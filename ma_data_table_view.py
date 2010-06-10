@@ -8,10 +8,11 @@
 #
 #####################################################
 
+import pdb
+import copy
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.Qt import *
-import pdb
 
 import binary_data_form
 import continuous_data_form
@@ -66,13 +67,31 @@ class MADataTable(QtGui.QTableView):
         cur_txs = self.model().current_txs
         cur_effect = self.model().current_effect
         data_type = self.model().get_current_outcome_type()
+        
+        ####
+        # TODO here we need to implement undo/redo.
+        # in particular, let's cache the raw data prior to editing;
+        # then undo will simply overwrite the new raw
+        # data, and that should be sufficient
         if data_type == "binary":
             form =  binary_data_form.BinaryDataForm2(ma_unit, cur_txs, cur_effect, parent=self)
+            if form.exec_():
+                # do stuff...
+                pass
         elif data_type == "continuous":
-            form = continuous_data_form.ContinuousDataForm(ma_unit, cur_txs, cur_effect, parent=self)
-        if form.exec_():
-            # update the model here?
-            pass
+            cur_raw_data_dict = {}
+            for group_name in cur_txs:
+                cur_raw_data_dict[group_name] = list(ma_unit.tx_groups[group_name].raw_data)
+                #self.raw_data = self.ma_unit.get_raw_data_for_groups(cur_txs)
+                
+            old_raw_data_dict = copy.deepcopy(cur_raw_data_dict)
+            #pyqtRemoveInputHook()
+            #pdb.set_trace()
+            form = continuous_data_form.ContinuousDataForm(copy.copy(cur_raw_data_dict), cur_txs, cur_effect, parent=self)
+            if form.exec_():
+                # update the model; push this event onto the stack
+                raw_data_edit = CommandEditRawData(ma_unit, self.model(), old_raw_data_dict, form.raw_data_dict)
+                self.undoStack.push(raw_data_edit)
 
     def rowMoved(self, row, oldIndex, newIndex):
         pass
@@ -336,6 +355,28 @@ class CommandPaste(QUndoCommand):
         self.ma_data_table_view.model().reset()
 
 
+class CommandEditRawData(QUndoCommand):
+    def __init__(self, ma_unit, model, old_raw_data_dict, new_raw_data_dict, description="Raw data edit"):
+        super(CommandEditRawData, self).__init__(description)
+        self.ma_unit = ma_unit
+        # we take the model in as a parameter so we can call reset(), in turn
+        # notifying the view to refresh. otherwise, the old data is displayed
+        # until the user interacts with it in some way
+        self.model = model 
+        self.old_raw_data_dict = old_raw_data_dict
+        self.new_raw_data_dict = new_raw_data_dict
+        self.group_names = self.old_raw_data_dict.keys()
+    
+    def undo(self):
+        for group_name in self.group_names:
+            self.ma_unit.tx_groups[group_name].raw_data = self.old_raw_data_dict[group_name]
+        self.model.reset()
+        
+    def redo(self):
+        for group_name in self.group_names:
+            self.ma_unit.tx_groups[group_name].raw_data = self.new_raw_data_dict[group_name]
+        self.model.reset()
+        
 class CommandSort(QUndoCommand):
     def __init__(self, ma_data_table_model, col, reverse_order, description="Sort"):
         super(CommandSort, self).__init__(description)

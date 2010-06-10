@@ -8,10 +8,10 @@
 #  outcome data
 ##################################################
 
-from PyQt4.Qt import *
-from PyQt4 import QtGui
 import pdb
 
+from PyQt4.Qt import *
+from PyQt4 import QtGui
 
 import meta_py_r
 import ui_continuous_data_form
@@ -25,12 +25,17 @@ NUM_DIGITS = 4
 default_col_width = 65
 
 class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm):
-    def __init__(self, ma_unit, cur_txs, cur_effect, parent=None):
+    #def __init__(self, ma_unit, cur_txs, cur_effect, parent=None):
+    def __init__(self, raw_data_dict, cur_txs, cur_effect, parent=None):
         super(ContinuousDataForm, self).__init__(parent)
         self.setupUi(self)
         self.setup_signals_and_slots()
-        self.ma_unit = ma_unit
-        self.raw_data = self.ma_unit.get_raw_data_for_groups(cur_txs)
+        #self.ma_unit = ma_unit
+        #self.raw_data = self.ma_unit.get_raw_data_for_groups(cur_txs)
+        self.raw_data_dict = raw_data_dict
+        self.raw_data = []
+        for group in cur_txs:
+            self.raw_data.extend(self.raw_data_dict[group])
         self.cur_groups = cur_txs
         self.cur_effect = cur_effect
         self.alpha = .05
@@ -94,7 +99,8 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
     def update_raw_data(self):
         self.simple_table.blockSignals(True)
         for row_index, group_name in enumerate(self.cur_groups):
-            grp_raw_data = self.ma_unit.tx_groups[group_name].raw_data
+            #grp_raw_data = self.ma_unit.tx_groups[group_name].raw_data
+            grp_raw_data = self.raw_data_dict[group_name]
             for col in range(len(grp_raw_data)):
                 val = QTableWidgetItem(str(grp_raw_data[col]))
                 self.simple_table.setItem(row_index, col, val)
@@ -126,13 +132,13 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                 # computed fields
                 self.simple_table.blockSignals(True)
                 for var_index, var_name in enumerate(var_names):
-                    float_val = self.float_to_str(float(computed_vals[var_name]))
-
+                    float_str = self.float_to_str(float(computed_vals[var_name]))
                     self.simple_table.setItem(row_index, var_index, QTableWidgetItem(QString(float_str)))
 
                     # update the raw data for N, mean and SD fields (this is all that is actually stored)
                     if var_index < 3:
-                        self.ma_unit.tx_groups[group_name].raw_data[var_index] = computed_vals[var_name]
+                        #self.ma_unit.tx_groups[group_name].raw_data[var_index] = computed_vals[var_name]
+                        self.raw_data_dict[group_name][var_index] = computed_vals[var_name]
                 self.simple_table.blockSignals(False)
 
     def impute_pre_post_data(self, table, group_index):
@@ -169,8 +175,9 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
 
                 # update the raw data for N, mean and SD fields (this is all that is actually stored)
                 if var_index < 3:
-                    self.ma_unit.tx_groups[group_name].raw_data[var_index] = computed_vals[var_name]
-                        
+                    #self.ma_unit.tx_groups[group_name].raw_data[var_index] = computed_vals[var_name]
+                    self.raw_data_dict[group_name][var_index] = computed_vals[var_name]
+                    
             self.simple_table.blockSignals(False)
             
             ###
