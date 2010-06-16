@@ -7,7 +7,7 @@
 #  Binary data form module; for flexible entry of dichotomous
 #  outcome data
 ##################################################
-
+import pdb
 
 from PyQt4.Qt import *
 from PyQt4 import QtGui
@@ -22,7 +22,12 @@ from ui_binary_data_form import Ui_BinaryDataForm
 # levels of granularity).
 NUM_DIGITS = 4 
 
+# this is the maximum size of a residual that we're willing to accept
+# when computing 2x2 data
+THRESHOLD = 1e-5
+
 class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
+    
     
     def __init__(self, ma_unit, cur_txs, cur_effect, parent=None):
         super(BinaryDataForm2, self).__init__(parent)
@@ -75,8 +80,54 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                 col += 1
             self.raw_data_table.setItem(row, col, item)
         self.raw_data_table.blockSignals(False)
+      
         
     def _cell_changed(self, row, col):
+        #self.check_for_consistencies()
+        params = self._get_vals()
+        computed = meta_py_r.fillin_2x2(params)
+        if computed is not None:
+            if max(computed['residuals'].values()) > THRESHOLD:
+                print "UH OH THERE IS A PROBLEM"
+            else:
+                print "A-OK."
+                self._set_vals(computed["coefficients"])
+            pyqtRemoveInputHook()
+            pdb.set_trace()
+        
+    def _get_vals(self):
+        vals_d = {}
+        vals_d["c11"] = self._get_int(0, 0)
+        vals_d["c12"] = self._get_int(0, 1)
+        vals_d["c21"] = self._get_int(1, 0)
+        vals_d["c22"] = self._get_int(1, 1)
+        vals_d["r1sum"] = self._get_int(0, 2)
+        vals_d["r2sum"] = self._get_int(1, 2)
+        vals_d["c1sum"] = self._get_int(2, 0)
+        vals_d["c2sum"] = self._get_int(2, 1)
+        vals_d["total"] = self._get_int(2, 2)
+        return vals_d
+        
+         
+    def _set_vals(self, computed_d):
+        self.raw_data_table.blockSignals(True)
+        self._set_table_cell(0, 0, computed_d["c11"])
+        self._set_table_cell(0, 1, computed_d["c12"])
+        self._set_table_cell(1, 0, computed_d["c21"])
+        self._set_table_cell(1, 1, computed_d["c22"])  
+        self._set_table_cell(0, 2, computed_d["r1sum"])
+        self._set_table_cell(1, 2, computed_d["r2sum"])
+        self._set_table_cell(2, 0, computed_d["c1sum"])
+        self._set_table_cell(2, 1, computed_d["c2sum"])  
+        self._set_table_cell(2, 2, computed_d["total"])  
+        self.raw_data_table.blockSignals(False)
+        
+        
+    def _set_table_cell(self, i, j, val):
+        self.raw_data_table.setItem(i, j, \
+                 QTableWidgetItem(str(val)))
+        
+    def _cell_changed1(self, row, col):
         if row < 2:
             # the offset is for indexing the data
             # in the raw_data vector, which is one

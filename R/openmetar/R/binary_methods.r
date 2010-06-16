@@ -41,6 +41,11 @@ binary.fixed.inv.var <- function(binaryData, params){
     images <- c("forest plot"=forest_path)
     plot_names <- c("forest plot"="forest_plot")
     
+    
+    ###
+    # should we return the name of the result object & the name of the
+    # plotting function as well here? perhaps only for the forest plot? 
+    # this would allow interactive plot refinement via the console...
     results <- list("images"=images, "summary"=res, "plot_names"=plot_names)
     results
 }

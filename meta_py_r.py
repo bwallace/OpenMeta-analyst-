@@ -59,6 +59,22 @@ def impute_two_by_two(bin_data_dict):
     two_by_two = ro.r('impute.bin.data(bin.data=%s)' % dataf.r_repr())
     print two_by_two
 
+
+def fillin_2x2(table_data_dict):
+    r_str = ["fillin.2x2.simple("]
+    for param, val in table_data_dict.items():
+        if val is not None:
+            r_str.append("%s=%s," % (param, val))
+        
+    # drop the last comma, close the function call
+    r_str = "".join(r_str)[:-1]
+    r_str += ")"
+    res = ro.r(r_str)
+    if "NA" in str(res).split(" "):
+        return None
+        
+    return _rls_to_pyd(res)
+
 def impute_cont_data(cont_data_dict, alpha):
     print "computing continuous data via R..."
     
@@ -164,7 +180,6 @@ def draw_network(edge_list, unconnected_vertices, network_path = '"./r_tmp/netwo
     '''
     if len(edge_list) > 0:
         edge_str = ", ".join([" '%s' " % x for x in edge_list])
-        print "el <- matrix(c(%s), nc=2, byrow=TRUE)" % edge_str
         ro.r("el <- matrix(c(%s), nc=2, byrow=TRUE)" % edge_str)
         ro.r("g <- graph.edgelist(el, directed=FALSE)")
     else:
@@ -360,8 +375,8 @@ def _rls_to_pyd(r_ls):
         try:
             # first check the key
             if str(name) != "NULL":
-                print name
-                print type(name)
+                #print name
+                #print type(name)
                 if "rpy2.robjects" in str(type(name)):
                     name = str(name[0])
                 if not "rpy2.robjects" in str(type(val)):
@@ -380,9 +395,13 @@ def _rls_to_pyd(r_ls):
                 return val
 
         except Exception,  inst:
+            print "error parsing R tuple.. "
             print inst
-            pyqtRemoveInputHook()
-            pdb.set_trace()
+            print "ignoring."
+            #print "error parsing R tuple (%s, %s).. ignoring" % (name, val)
+            #print inst
+            #pyqtRemoveInputHook()
+            #pdb.set_trace()
 
     return d
 

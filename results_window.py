@@ -63,10 +63,8 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
 
     def f(self):
-        print "!!!!!!!!!!!!!!!!!!!!!!!!!!"
         print self.current_line()
-        print "\r" in self.current_line()
-        
+
     def set_psuedo_console_text(self):
         text = ["\t\tOpenMeta(analyst)",
                "This is a pipe to the R console. The image names are as follows:"]
