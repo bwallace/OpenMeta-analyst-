@@ -72,7 +72,12 @@ def fillin_2x2(table_data_dict):
     res = ro.r(r_str)
     if "NA" in str(res).split(" "):
         return None
-        
+    
+    print "\n\n*****"
+    print r_str
+    print res
+    print "*****\n\n"
+    
     return _rls_to_pyd(res)
 
 def impute_cont_data(cont_data_dict, alpha):
@@ -373,6 +378,7 @@ def _rls_to_pyd(r_ls):
 
     for name, val in zip(r_ls.getnames(), r_ls):
         try:
+        
             # first check the key
             if str(name) != "NULL":
                 #print name
@@ -400,8 +406,6 @@ def _rls_to_pyd(r_ls):
             print "ignoring."
             #print "error parsing R tuple (%s, %s).. ignoring" % (name, val)
             #print inst
-            #pyqtRemoveInputHook()
-            #pdb.set_trace()
 
     return d
 

@@ -84,16 +84,17 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         
     def _cell_changed(self, row, col):
         #self.check_for_consistencies()
+        self._cell_changed1(row, col)
         params = self._get_vals()
         computed = meta_py_r.fillin_2x2(params)
         if computed is not None:
             if max(computed['residuals'].values()) > THRESHOLD:
-                print "UH OH THERE IS A PROBLEM"
+                print"Problem computing 2x2 table."
             else:
-                print "A-OK."
+                print "Table computed!"
                 self._set_vals(computed["coefficients"])
-            pyqtRemoveInputHook()
-            pdb.set_trace()
+            #pyqtRemoveInputHook()
+            #pdb.set_trace()
         
     def _get_vals(self):
         vals_d = {}
@@ -124,6 +125,11 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         
         
     def _set_table_cell(self, i, j, val):
+        # try to case to an int
+        try:
+            val = int(round(val))
+        except:
+            pass
         self.raw_data_table.setItem(i, j, \
                  QTableWidgetItem(str(val)))
         
@@ -206,7 +212,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         # 
         # the raw data is of the form g_n / g_N where g_N is the *total* 
         # and g_n is the event count. thus no event = g_N - g_n.
-        e1, n1, e2, n2 = [int(x) if x != "" else None for x in self.raw_data]
+        e1, n1, e2, n2 = [int(x) if (x != "" and x is not None) else None for x in self.raw_data]
         print "updating raw data with:\n e1 = %s, n1 = %s, e2 = %s, n2 = %s" % \
                                             (e1, n1, e2, n2)
         no_events1, no_events2 = None, None
@@ -251,5 +257,5 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         
     def _get_int(self, i, j):
         if not self._is_empty(i,j):
-            return int(self.raw_data_table.item(i, j).text())
+            return int(float(self.raw_data_table.item(i, j).text()))
             
