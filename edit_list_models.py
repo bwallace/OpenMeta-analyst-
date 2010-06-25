@@ -33,6 +33,7 @@ class TXGroupModel(QAbstractTableModel):
         self.group_list = self.dataset.get_group_names()
         
     def data(self, index, role=Qt.DisplayRole):
+        self.group_list = self.dataset.get_group_names()
         if not index.isValid() or not (0 <= index.row() < len(self.dataset)):
             return QVariant()
         group_name = self.group_list[index.row()]
@@ -49,7 +50,13 @@ class TXGroupModel(QAbstractTableModel):
         return 1
         
     def setData(self, index, value, role=Qt.EditRole):
-        pass
+        print dir(self.dataset)
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
+        old_name = self.group_list[index.row()]
+        new_name = value.toString()
+        self.dataset.change_group_name(old_name, new_name)
+        return True
         
     def flags(self, index):
         if not index.isValid():

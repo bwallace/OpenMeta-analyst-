@@ -67,6 +67,15 @@ class Dataset:
 
         return list(set(all_group_names))
         
+    def change_group_name(self, old_group_name, new_group_name):
+        study = self.studies[0]
+        for study in self.studies:
+            for outcome_name in study.outcomes_to_follow_ups.keys():
+                cur_outcome = study.outcomes_to_follow_ups[outcome_name]
+                for ma_unit in cur_outcome.values():                
+                    ma_unit.rename_group(old_group_name, new_group_name)
+                    
+            
     def add_study(self, study):
         # instead, allow empty outcomes/follow-ups, but handle
         # this at the point of execution
@@ -363,6 +372,10 @@ class MetaAnalyticUnit:
         
     def remove_group(self, name):
         self.tx_groups.pop(name)
+        
+    def rename_group(self, old_name, new_name):
+        self.tx_groups[new_name] = self.tx_groups[old_name]
+        self.tx_groups.pop(old_name)
         
     def get_raw_data_for_group(self, group_name):
         try:

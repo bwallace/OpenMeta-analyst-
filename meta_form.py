@@ -347,21 +347,21 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 return None
             else:
                 self.out_path = out_f
-            try:
-                print "trying to write data out to: %s" % self.out_path
-                f = open(self.out_path, 'w')
-                pickle.dump(self.model.dataset, f)
-                f.close()
-                # also write out the 'state', which contains things
-                # pertaining to the view
-                d = self.model.get_stateful_dict()
-                f = open(self.out_path + ".state", 'w')
-                pickle.dump(d, f)
-                f.close()
-            except Exception, e:
-                # @TODO handle this elegantly?
-                print e
-                raise Exception, "whoops. exception thrown attempting to save."
+        try:
+            print "trying to write data out to: %s" % self.out_path
+            f = open(self.out_path, 'wb')
+            pickle.dump(self.model.dataset, f)
+            f.close()
+            # also write out the 'state', which contains things
+            # pertaining to the view
+            d = self.model.get_stateful_dict()
+            f = open(self.out_path + ".state", 'w')
+            pickle.dump(d, f)
+            f.close()
+        except Exception, e:
+            # @TODO handle this elegantly?
+            print e
+            raise Exception, "whoops. exception thrown attempting to save."
 
 
 class CommandGenericDo(QUndoCommand):
