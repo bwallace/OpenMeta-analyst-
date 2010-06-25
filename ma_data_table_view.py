@@ -87,7 +87,7 @@ class MADataTable(QtGui.QTableView):
             old_raw_data_dict = copy.deepcopy(cur_raw_data_dict)
             #pyqtRemoveInputHook()
             #pdb.set_trace()
-            form = continuous_data_form.ContinuousDataForm(copy.copy(cur_raw_data_dict), cur_txs, cur_effect, parent=self)
+            form = continuous_data_form.ContinuousDataForm(copy.deepcopy(cur_raw_data_dict), cur_txs, cur_effect, parent=self)
             if form.exec_():
                 # update the model; push this event onto the stack
                 raw_data_edit = CommandEditRawData(ma_unit, self.model(), old_raw_data_dict, form.raw_data_dict)

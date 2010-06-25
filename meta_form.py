@@ -17,6 +17,7 @@ import pickle
 from PyQt4 import QtCore, QtGui, Qt
 from PyQt4.Qt import *
 import nose # for unit tests
+import copy
 
 #
 # hand-rolled modules
@@ -126,8 +127,16 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         form.show()
 
     def edit_dataset(self):
-        edit_window =  edit_dialog.EditDialog(self.model.dataset, parent=self)
-        edit_window.show()
+        cur_dataset = copy.deepcopy(self.model.dataset)
+        
+        edit_window =  edit_dialog.EditDialog(cur_dataset, parent=self)
+        #edit_window.show()
+        if edit_window.exec_():
+            print edit_window.dataset
+        else:
+            print "yo"
+        
+        
         
     def view_network(self):
         view_window =  network_view.ViewDialog(self.model.dataset, parent=self)

@@ -127,6 +127,15 @@ class TwoWayDict(dict):
 
         return "%s(%s)" % (self.__class__.__name__, dict.__repr__(self))
 
+    def __deepcopy__(self, memo={}):
+        from copy import deepcopy
+        newone = type(self)()
+        newone.__dict__.update(self.__dict__)
+        memo[id(self)] = newone
+        self._reverse_map = deepcopy(self._reverse_map, memo)
+        return newone
+
+
     def copy(self):
         """Return a shallow copy."""
 

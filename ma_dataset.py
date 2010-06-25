@@ -18,6 +18,7 @@
 ###########################################################################
 import pdb
 from PyQt4.QtCore import pyqtRemoveInputHook
+import copy
 
 import two_way_dict
 
@@ -50,6 +51,12 @@ class Dataset:
         # @TODO
         self.covariates = []
 
+    def copy(self):
+        cloned = Dataset(self.title, self.summary)
+        cloned.studies = list(self.studies)
+        cloned.outcome_names_to_follow_ups = copy.deepcopy(self.outcome_names_to_follow_ups)
+        return cloned
+        
     def get_outcome_names(self):
         if len(self) == 0:
             return []

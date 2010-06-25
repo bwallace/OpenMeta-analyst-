@@ -1,76 +1,57 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>edit_dialog</class>
- <widget class="QDialog" name="edit_dialog" >
-  <property name="geometry" >
+ <widget class="QDialog" name="edit_dialog">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>626</width>
-    <height>292</height>
+    <width>511</width>
+    <height>335</height>
    </rect>
   </property>
-  <property name="font" >
+  <property name="minimumSize">
+   <size>
+    <width>511</width>
+    <height>335</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>511</width>
+    <height>335</height>
+   </size>
+  </property>
+  <property name="font">
    <font>
     <family>Verdana</family>
    </font>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Edit Dataset</string>
   </property>
-  <widget class="QGroupBox" name="groupBox_2" >
-   <property name="geometry" >
+  <property name="windowIcon">
+   <iconset resource="images/icons.qrc">
+    <normaloff>:/images/meta.png</normaloff>:/images/meta.png</iconset>
+  </property>
+  <widget class="QDialogButtonBox" name="buttonBox">
+   <property name="geometry">
     <rect>
-     <x>170</x>
-     <y>10</y>
-     <width>161</width>
-     <height>271</height>
+     <x>30</x>
+     <y>290</y>
+     <width>461</width>
+     <height>32</height>
     </rect>
    </property>
-   <property name="title" >
-    <string>outcomes</string>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
    </property>
-   <widget class="QToolButton" name="nav_add_btn_2" >
-    <property name="geometry" >
-     <rect>
-      <x>50</x>
-      <y>230</y>
-      <width>51</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="text" >
-     <string/>
-    </property>
-    <property name="icon" >
-     <iconset resource="images/icons.qrc" >
-      <normaloff>:/images/function_icon_set/add_48.png</normaloff>:/images/function_icon_set/add_48.png</iconset>
-    </property>
-    <property name="iconSize" >
-     <size>
-      <width>64</width>
-      <height>64</height>
-     </size>
-    </property>
-    <property name="autoRaise" >
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QListView" name="outcome_list" >
-    <property name="geometry" >
-     <rect>
-      <x>0</x>
-      <y>20</y>
-      <width>161</width>
-      <height>209</height>
-     </rect>
-    </property>
-    <property name="alternatingRowColors" >
-     <bool>true</bool>
-    </property>
-   </widget>
+   <property name="standardButtons">
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+   </property>
   </widget>
-  <widget class="QGroupBox" name="groupBox" >
-   <property name="geometry" >
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
     <rect>
      <x>10</x>
      <y>10</y>
@@ -78,14 +59,14 @@
      <height>271</height>
     </rect>
    </property>
-   <property name="title" >
+   <property name="title">
     <string>tx groups</string>
    </property>
-   <property name="flat" >
+   <property name="flat">
     <bool>false</bool>
    </property>
-   <widget class="QListView" name="group_list" >
-    <property name="geometry" >
+   <widget class="QListView" name="group_list">
+    <property name="geometry">
      <rect>
       <x>0</x>
       <y>20</y>
@@ -93,40 +74,255 @@
       <height>211</height>
      </rect>
     </property>
-    <property name="alternatingRowColors" >
+    <property name="alternatingRowColors">
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QToolButton" name="nav_add_btn" >
-    <property name="geometry" >
+   <widget class="QToolButton" name="add_group_btn">
+    <property name="geometry">
      <rect>
-      <x>50</x>
+      <x>40</x>
       <y>230</y>
-      <width>51</width>
-      <height>41</height>
+      <width>31</width>
+      <height>31</height>
      </rect>
     </property>
-    <property name="text" >
+    <property name="text">
      <string/>
     </property>
-    <property name="icon" >
-     <iconset resource="images/icons.qrc" >
+    <property name="icon">
+     <iconset resource="images/icons.qrc">
       <normaloff>:/images/function_icon_set/add_48.png</normaloff>:/images/function_icon_set/add_48.png</iconset>
     </property>
-    <property name="iconSize" >
+    <property name="iconSize">
      <size>
       <width>64</width>
       <height>64</height>
      </size>
     </property>
-    <property name="autoRaise" >
+    <property name="autoRaise">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QToolButton" name="add_group_btn_2">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>230</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="images/icons.qrc">
+      <normaloff>:/images/function_icon_set/cancel_48.png</normaloff>:/images/function_icon_set/cancel_48.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>64</width>
+      <height>64</height>
+     </size>
+    </property>
+    <property name="autoRaise">
+     <bool>true</bool>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_2">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>10</y>
+     <width>161</width>
+     <height>271</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>outcomes</string>
+   </property>
+   <widget class="QToolButton" name="add_outcome_btn">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>230</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="images/icons.qrc">
+      <normaloff>:/images/function_icon_set/add_48.png</normaloff>:/images/function_icon_set/add_48.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>64</width>
+      <height>64</height>
+     </size>
+    </property>
+    <property name="autoRaise">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QListView" name="outcome_list">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>20</y>
+      <width>161</width>
+      <height>209</height>
+     </rect>
+    </property>
+    <property name="alternatingRowColors">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QToolButton" name="remove_outcome_btn">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>230</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="images/icons.qrc">
+      <normaloff>:/images/function_icon_set/cancel_48.png</normaloff>:/images/function_icon_set/cancel_48.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>64</width>
+      <height>64</height>
+     </size>
+    </property>
+    <property name="autoRaise">
+     <bool>true</bool>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="grpbox_follow_ups">
+   <property name="geometry">
+    <rect>
+     <x>340</x>
+     <y>10</y>
+     <width>161</width>
+     <height>271</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>follow ups</string>
+   </property>
+   <widget class="QListView" name="follow_up_list">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>20</y>
+      <width>161</width>
+      <height>209</height>
+     </rect>
+    </property>
+    <property name="alternatingRowColors">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QToolButton" name="add_outcome_btn_2">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>230</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="images/icons.qrc">
+      <normaloff>:/images/function_icon_set/add_48.png</normaloff>:/images/function_icon_set/add_48.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>64</width>
+      <height>64</height>
+     </size>
+    </property>
+    <property name="autoRaise">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QToolButton" name="remove_outcome_btn_2">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>230</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="images/icons.qrc">
+      <normaloff>:/images/function_icon_set/cancel_48.png</normaloff>:/images/function_icon_set/cancel_48.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>64</width>
+      <height>64</height>
+     </size>
+    </property>
+    <property name="autoRaise">
      <bool>true</bool>
     </property>
    </widget>
   </widget>
  </widget>
  <resources>
-  <include location="images/icons.qrc" />
+  <include location="images/icons.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>edit_dialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>edit_dialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

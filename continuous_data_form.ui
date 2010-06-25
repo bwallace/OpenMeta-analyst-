@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>670</width>
-    <height>418</height>
+    <height>425</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -54,9 +54,9 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>110</y>
+     <y>120</y>
      <width>631</width>
-     <height>261</height>
+     <height>251</height>
     </rect>
    </property>
    <property name="title">
@@ -66,7 +66,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>60</y>
+      <y>70</y>
       <width>71</width>
       <height>21</height>
      </rect>
@@ -90,7 +90,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>160</y>
+      <y>170</y>
       <width>51</width>
       <height>21</height>
      </rect>
@@ -115,7 +115,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>70</x>
-      <y>21</y>
+      <y>31</y>
       <width>550</width>
       <height>81</height>
      </rect>
@@ -219,7 +219,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>70</x>
-      <y>120</y>
+      <y>130</y>
       <width>550</width>
       <height>81</height>
      </rect>
@@ -314,8 +314,8 @@ p, li { white-space: pre-wrap; }
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>230</y>
+      <x>510</x>
+      <y>220</y>
       <width>71</width>
       <height>16</height>
      </rect>
@@ -324,11 +324,11 @@ p, li { white-space: pre-wrap; }
      <string>correlation:</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="correlation_edit">
+   <widget class="QLineEdit" name="correlation_pre_post">
     <property name="geometry">
      <rect>
-      <x>80</x>
-      <y>230</y>
+      <x>580</x>
+      <y>220</y>
       <width>41</width>
       <height>16</height>
      </rect>
@@ -491,6 +491,32 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="text">
     <string>(95% confidence interval)</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>490</x>
+     <y>100</y>
+     <width>71</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>correlation:</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="correlation_simple">
+   <property name="geometry">
+    <rect>
+     <x>570</x>
+     <y>100</y>
+     <width>41</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>0.0</string>
    </property>
   </widget>
  </widget>
