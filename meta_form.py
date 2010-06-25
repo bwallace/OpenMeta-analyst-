@@ -128,15 +128,25 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
     def edit_dataset(self):
         cur_dataset = copy.deepcopy(self.model.dataset)
-        
         edit_window =  edit_dialog.EditDialog(cur_dataset, parent=self)
-        #edit_window.show()
+    
         if edit_window.exec_():
-            print edit_window.dataset
-        else:
-            print "yo"
+            print edit_window.dataset.studies[0].outcomes_to_follow_ups
+            modified_dataset = edit_window.dataset
+            redo_f = lambda : self.set_model(modified_dataset)
+            original_dataset = copy.deepcopy(self.model.dataset)
+            undo_f = lambda : self.set_model(original_dataset) 
+            
+            edit_command = CommandGenericDo(redo_f, undo_f)
+            self.tableView.undoStack.push(edit_command)
+            
+            #pyqtRemoveInputHook()
+            #pdb.set_trace()
         
-        
+    def set_model(self, dataset):
+        self.model.dataset = dataset
+        self.model.update_current_group_names()
+        print "ok!"
         
     def view_network(self):
         view_window =  network_view.ViewDialog(self.model.dataset, parent=self)
@@ -146,6 +156,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         form = results_window.ResultsWindow(results, parent=self)
         form.show()
 
+    
     def add_new(self):
         redo_f, undo_f = None, None
         if self.cur_dimension == "outcome":

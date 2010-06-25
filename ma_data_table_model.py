@@ -50,12 +50,7 @@ class DatasetModel(QAbstractTableModel):
         self.tx_index_a = 0
         self.tx_index_b = 1
 
-        group_names = self.dataset.get_group_names()
-        if len(group_names) > 1:
-            self.current_txs = [group_names[self.tx_index_a], group_names[self.tx_index_b]]
-        else:
-            self.current_txs = ["tx A", "tx B"]
-        self.previous_txs = self.current_txs
+        self.update_current_group_names()
             
         #
         # column indices; these are a core component of this class,
@@ -83,6 +78,15 @@ class DatasetModel(QAbstractTableModel):
         self.NUM_DIGITS = 3
         self.study_auto_added = None
 
+    def update_current_group_names(self):
+        group_names = self.dataset.get_group_names()
+        if len(group_names) > 1:
+            self.current_txs = [group_names[self.tx_index_a], group_names[self.tx_index_b]]
+        else:
+            self.current_txs = ["tx A", "tx B"]
+        self.previous_txs = self.current_txs
+        self.reset()
+        
     def update_column_indices(self):
         # Here we update variable column indices, contingent on 
         # the type data being displayed, the number of covariates, etc. 
@@ -405,7 +409,11 @@ class DatasetModel(QAbstractTableModel):
         self.reset()
 
     def get_current_follow_up_name(self):
-        return self.dataset.outcome_names_to_follow_ups[self.current_outcome][self.current_time_point]
+        try:
+            return self.dataset.outcome_names_to_follow_ups[self.current_outcome][self.current_time_point]
+        except:
+            pyqtRemoveInputHook()
+            pdb.set_trace()
         
     def get_follow_up_name_for_t_point(self, t_point):
         return self.dataset.outcome_names_to_follow_ups[self.current_outcome][t_point]

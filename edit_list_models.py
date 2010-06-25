@@ -51,8 +51,6 @@ class TXGroupModel(QAbstractTableModel):
         
     def setData(self, index, value, role=Qt.EditRole):
         print dir(self.dataset)
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
         old_name = self.group_list[index.row()]
         new_name = value.toString()
         self.dataset.change_group_name(old_name, new_name)

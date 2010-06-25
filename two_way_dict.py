@@ -57,7 +57,8 @@ Stuart Mentzer <Stuart_Mentzer - objexx.com> - suggestions/bugfix for replace
 #
 
 import unittest
-
+from PyQt4.QtCore import pyqtRemoveInputHook
+import pdb
 
 class TwoWayDict(dict):
     """Dictionary with reverse mapping.
@@ -127,13 +128,15 @@ class TwoWayDict(dict):
 
         return "%s(%s)" % (self.__class__.__name__, dict.__repr__(self))
 
+
     def __deepcopy__(self, memo={}):
         from copy import deepcopy
-        newone = type(self)()
-        newone.__dict__.update(self.__dict__)
-        memo[id(self)] = newone
-        self._reverse_map = deepcopy(self._reverse_map, memo)
-        return newone
+        dup = self.__class__()
+        for k, v in self.items():
+            dup[k] = deepcopy(v, memo)
+        dup._reverse_map = deepcopy(self._reverse_map, memo)    
+        memo[id(self)] = dup
+        return dup
 
 
     def copy(self):
