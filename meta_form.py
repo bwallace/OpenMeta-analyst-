@@ -139,9 +139,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             
             edit_command = CommandGenericDo(redo_f, undo_f)
             self.tableView.undoStack.push(edit_command)
-            
-            #pyqtRemoveInputHook()
-            #pdb.set_trace()
+
         
     def set_model(self, dataset):
         self.model.dataset = dataset
@@ -199,7 +197,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     def _add_new_group(self, new_group_name):
         self.model.add_new_group(new_group_name)
         print "\nok. added new group: %s" % new_group_name
-        cur_groups = list(self.model.get_current_groups())
         cur_groups = list(self.model.get_current_groups())
         cur_groups[1] = new_group_name
         self.model.set_current_groups(cur_groups)

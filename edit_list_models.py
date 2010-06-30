@@ -32,6 +32,10 @@ class TXGroupModel(QAbstractTableModel):
         self.dataset = dataset
         self.group_list = self.dataset.get_group_names()
         
+    def refresh_group_list(self):
+        self.group_list = self.dataset.get_group_names()
+        self.reset()
+        
     def data(self, index, role=Qt.DisplayRole):
         self.group_list = self.dataset.get_group_names()
         if not index.isValid() or not (0 <= index.row() < len(self.dataset)):

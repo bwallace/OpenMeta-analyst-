@@ -1,7 +1,20 @@
+###########################
+#                                           
+#  Byron C. Wallace                   
+#  Tufts Medical Center               
+#  OpenMeta[analyst]                  
+#                                     
+#  This form is for 'batch' editing a dataset
+#  
+#                                     
+###########################
+
+
 from PyQt4.Qt import *
 import ui_edit_dialog
 import edit_list_models
 import meta_py_r
+import add_new_dialogs
 import pdb
 
 class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
@@ -25,8 +38,13 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
 
                                     
     def add_group(self):
-        print "hello?"
-        
+        form = add_new_dialogs.AddNewGroupForm(self)
+        form.group_name_le.setFocus()        
+        if form.exec_():
+            new_group_name = unicode(form.group_name_le.text().toUtf8(), "utf-8")
+            self.group_list.model().dataset.add_group(new_group_name)
+            self.group_list.model().refresh_group_list()
+            
     def remove_group(self):
         self.group_list.model().dataset.delete_group(self.selected_group)
         self.group_list.model().reset()
