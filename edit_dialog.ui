@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>511</width>
+    <width>495</width>
     <height>335</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>511</width>
+    <width>495</width>
     <height>335</height>
    </size>
   </property>
@@ -37,7 +37,7 @@
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
-     <x>30</x>
+     <x>20</x>
      <y>290</y>
      <width>461</width>
      <height>32</height>
@@ -78,14 +78,26 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QToolButton" name="add_group_btn">
+   <widget class="QPushButton" name="add_group_btn">
     <property name="geometry">
      <rect>
       <x>40</x>
       <y>230</y>
-      <width>31</width>
-      <height>31</height>
+      <width>32</width>
+      <height>32</height>
      </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>32</width>
+      <height>32</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>32</width>
+      <height>32</height>
+     </size>
     </property>
     <property name="text">
      <string/>
@@ -96,22 +108,34 @@
     </property>
     <property name="iconSize">
      <size>
-      <width>64</width>
-      <height>64</height>
+      <width>32</width>
+      <height>32</height>
      </size>
     </property>
-    <property name="autoRaise">
-     <bool>true</bool>
-    </property>
    </widget>
-   <widget class="QToolButton" name="add_group_btn_2">
+   <widget class="QPushButton" name="remove_group_btn">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
-      <x>70</x>
+      <x>80</x>
       <y>230</y>
-      <width>31</width>
-      <height>31</height>
+      <width>32</width>
+      <height>32</height>
      </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>32</width>
+      <height>32</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>32</width>
+      <height>32</height>
+     </size>
     </property>
     <property name="text">
      <string/>
@@ -122,12 +146,9 @@
     </property>
     <property name="iconSize">
      <size>
-      <width>64</width>
-      <height>64</height>
+      <width>32</width>
+      <height>32</height>
      </size>
-    </property>
-    <property name="autoRaise">
-     <bool>true</bool>
     </property>
    </widget>
   </widget>
@@ -136,21 +157,46 @@
     <rect>
      <x>170</x>
      <y>10</y>
-     <width>161</width>
+     <width>151</width>
      <height>271</height>
     </rect>
    </property>
    <property name="title">
     <string>outcomes</string>
    </property>
-   <widget class="QToolButton" name="add_outcome_btn">
+   <widget class="QListView" name="outcome_list">
     <property name="geometry">
      <rect>
-      <x>50</x>
-      <y>230</y>
-      <width>31</width>
-      <height>31</height>
+      <x>0</x>
+      <y>20</y>
+      <width>151</width>
+      <height>209</height>
      </rect>
+    </property>
+    <property name="alternatingRowColors">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="add_outcome_btn">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>230</y>
+      <width>32</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>32</width>
+      <height>32</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>32</width>
+      <height>32</height>
+     </size>
     </property>
     <property name="text">
      <string/>
@@ -161,35 +207,34 @@
     </property>
     <property name="iconSize">
      <size>
-      <width>64</width>
-      <height>64</height>
+      <width>32</width>
+      <height>32</height>
      </size>
     </property>
-    <property name="autoRaise">
-     <bool>true</bool>
-    </property>
    </widget>
-   <widget class="QListView" name="outcome_list">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>20</y>
-      <width>161</width>
-      <height>209</height>
-     </rect>
+   <widget class="QPushButton" name="remove_outcome_btn">
+    <property name="enabled">
+     <bool>false</bool>
     </property>
-    <property name="alternatingRowColors">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QToolButton" name="remove_outcome_btn">
     <property name="geometry">
      <rect>
       <x>80</x>
       <y>230</y>
-      <width>31</width>
-      <height>31</height>
+      <width>32</width>
+      <height>32</height>
      </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>32</width>
+      <height>32</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>32</width>
+      <height>32</height>
+     </size>
     </property>
     <property name="text">
      <string/>
@@ -200,21 +245,18 @@
     </property>
     <property name="iconSize">
      <size>
-      <width>64</width>
-      <height>64</height>
+      <width>32</width>
+      <height>32</height>
      </size>
-    </property>
-    <property name="autoRaise">
-     <bool>true</bool>
     </property>
    </widget>
   </widget>
   <widget class="QGroupBox" name="grpbox_follow_ups">
    <property name="geometry">
     <rect>
-     <x>340</x>
+     <x>330</x>
      <y>10</y>
-     <width>161</width>
+     <width>151</width>
      <height>271</height>
     </rect>
    </property>
@@ -226,7 +268,7 @@
      <rect>
       <x>0</x>
       <y>20</y>
-      <width>161</width>
+      <width>151</width>
       <height>209</height>
      </rect>
     </property>
@@ -234,40 +276,29 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QToolButton" name="add_outcome_btn_2">
-    <property name="geometry">
-     <rect>
-      <x>50</x>
-      <y>230</y>
-      <width>31</width>
-      <height>31</height>
-     </rect>
+   <widget class="QPushButton" name="remove_follow_up_btn">
+    <property name="enabled">
+     <bool>false</bool>
     </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset resource="images/icons.qrc">
-      <normaloff>:/images/function_icon_set/add_48.png</normaloff>:/images/function_icon_set/add_48.png</iconset>
-    </property>
-    <property name="iconSize">
-     <size>
-      <width>64</width>
-      <height>64</height>
-     </size>
-    </property>
-    <property name="autoRaise">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QToolButton" name="remove_outcome_btn_2">
     <property name="geometry">
      <rect>
       <x>80</x>
       <y>230</y>
-      <width>31</width>
-      <height>31</height>
+      <width>32</width>
+      <height>32</height>
      </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>32</width>
+      <height>32</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>32</width>
+      <height>32</height>
+     </size>
     </property>
     <property name="text">
      <string/>
@@ -278,12 +309,44 @@
     </property>
     <property name="iconSize">
      <size>
-      <width>64</width>
-      <height>64</height>
+      <width>32</width>
+      <height>32</height>
      </size>
     </property>
-    <property name="autoRaise">
-     <bool>true</bool>
+   </widget>
+   <widget class="QPushButton" name="add_follow_up_btn">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>230</y>
+      <width>32</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>32</width>
+      <height>32</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>32</width>
+      <height>32</height>
+     </size>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="images/icons.qrc">
+      <normaloff>:/images/function_icon_set/add_48.png</normaloff>:/images/function_icon_set/add_48.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>32</width>
+      <height>32</height>
+     </size>
     </property>
    </widget>
   </widget>

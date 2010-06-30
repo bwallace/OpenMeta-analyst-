@@ -82,7 +82,14 @@ class Dataset:
                 for ma_unit in cur_outcome.values():                
                     ma_unit.rename_group(old_group_name, new_group_name)
                     
-            
+    def delete_group(self, group_name):
+        study = self.studies[0]
+        for study in self.studies:
+            for outcome_name in study.outcomes_to_follow_ups.keys():
+                cur_outcome = study.outcomes_to_follow_ups[outcome_name]
+                for ma_unit in cur_outcome.values():                
+                    ma_unit.remove_group(group_name)    
+
     def add_study(self, study):
         # instead, allow empty outcomes/follow-ups, but handle
         # this at the point of execution
