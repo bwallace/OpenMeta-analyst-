@@ -254,8 +254,9 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             redo_f = lambda: self.display_follow_up(next_follow_up_t_point) 
             undo_f = lambda: self.display_follow_up(old_follow_up_t_point)
             
-        next_command = CommandGenericDo(redo_f, undo_f)
-        self.tableView.undoStack.push(next_command)
+        if redo_f is not None and undo_f is not None:
+            next_command = CommandGenericDo(redo_f, undo_f)
+            self.tableView.undoStack.push(next_command)
 
             
     def previous(self):
@@ -277,8 +278,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             print "\nold time point: %s; next time point: %s" % (old_t_point, next_t_point)
             redo_f = lambda: self.model.set_current_time_point(next_t_point) 
             undo_f = lambda: self.model.set_current_time_point(old_t_point)
-        prev_command = CommandGenericDo(redo_f, undo_f)
-        self.tableView.undoStack.push(prev_command)
+            
+        if redo_f is not None and undo_f is not None:
+            prev_command = CommandGenericDo(redo_f, undo_f)
+            self.tableView.undoStack.push(prev_command)
 
     def next_dimension(self):
         '''

@@ -429,7 +429,18 @@ class DatasetModel(QAbstractTableModel):
         
     def next_groups(self):
         ''' Returns a tuple with the next two group names (we just iterate round-robin) '''
+        
         group_names = self.dataset.get_group_names()
+        self._next_group_indices(group_names)
+        while self.tx_index_a == self.tx_index_b:
+            self._next_group_indices(group_names)
+            
+        next_txs = [group_names[self.tx_index_a], group_names[self.tx_index_b]]
+        print "new tx group indices a, b: %s, %s" % (self.tx_index_a, self.tx_index_b)
+        return next_txs
+        
+    def _next_group_indices(self, group_names):
+        
         print "\ngroup names: %s" % group_names
         if self.tx_index_b < len(group_names)-1:
             self.tx_index_b += 1
@@ -441,9 +452,6 @@ class DatasetModel(QAbstractTableModel):
                 self.tx_index_a = 0
             self.tx_index_b = 0
         
-        next_txs = [group_names[self.tx_index_a], group_names[self.tx_index_b]]
-        print "new tx group indices a, b: %s, %s" % (self.tx_index_a, self.tx_index_b)
-        return next_txs
         
     def set_current_groups(self, group_names):
         self.previous_txs = self.current_txs

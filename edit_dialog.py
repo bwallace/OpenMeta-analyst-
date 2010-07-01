@@ -1,13 +1,20 @@
-###########################
+##################################
 #                                           
 #  Byron C. Wallace                   
 #  Tufts Medical Center               
 #  OpenMeta[analyst]                  
 #                                     
-#  This form is for 'batch' editing a dataset
-#  
+#  This form is for 'batch' editing a dataset. Note that any 
+#  edits apply to *all* MetaAnalyticUnit objects known. So
+#  e.g., if a group name is changed, it will be changed 
+# *everywhere*.
+#
+#  Note also that this form doesn't itself provide any 
+#  undo/redo functionality. Rather, the strategy is to
+#  treat *all* editing done via this form as one
+#  undoable action.
 #                                     
-###########################
+##################################
 
 
 from PyQt4.Qt import *
