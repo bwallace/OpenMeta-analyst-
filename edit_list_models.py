@@ -20,7 +20,7 @@ import ma_dataset
 from ma_dataset import *
 import meta_py_r
 
-class TXGroupModel(QAbstractTableModel):
+class TXGroupsModel(QAbstractTableModel):
     '''
     This module mediates between the classes comprising a dataset
     (i.e., study & ma_unit objects) and the view. In particular, we
@@ -28,7 +28,7 @@ class TXGroupModel(QAbstractTableModel):
     to the view.
     '''
     def __init__(self, filename=QString(), dataset=None):
-        super(TXGroupModel, self).__init__()
+        super(TXGroupsModel, self).__init__()
         self.dataset = dataset
         self.group_list = self.dataset.get_group_names()
         
@@ -66,7 +66,7 @@ class TXGroupModel(QAbstractTableModel):
                             Qt.ItemIsEditable)
 
         
-class TXOutcomesModel(QAbstractTableModel):
+class OutcomesModel(QAbstractTableModel):
     '''
     This module mediates between the classes comprising a dataset
     (i.e., study & ma_unit objects) and the view. In particular, we
@@ -74,33 +74,34 @@ class TXOutcomesModel(QAbstractTableModel):
     to the view.
     '''
     def __init__(self, filename=QString(), dataset=None):
-        super(TXGroupModel, self).__init__()
+        super(OutcomesModel, self).__init__()
         self.dataset = dataset
-        self.group_list = self.dataset.get_group_names()
+        self.outcome_list = self.dataset.get_outcome_names()
+        
+    def refresh_outcome_list(self):
+        self.outcome_list = self.dataset.get_outcome_names()
+        self.reset()
         
     def data(self, index, role=Qt.DisplayRole):
-        self.group_list = self.dataset.get_group_names()
+        self.group_list = self.dataset.get_outcome_names()
         if not index.isValid() or not (0 <= index.row() < len(self.dataset)):
             return QVariant()
-        group_name = self.group_list[index.row()]
+        outcome_name = self.group_list[index.row()]
         if role == Qt.DisplayRole:
-            return QVariant(group_name)
+            return QVariant(outcome_name)
         elif role == Qt.TextAlignmentRole:
             return QVariant(int(Qt.AlignLeft|Qt.AlignVCenter))
         return QVariant()
     
     def rowCount(self, index=QModelIndex()):
-        return len(self.group_list)
+        return len(self.outcome_list)
         
     def columnCount(self, index=QModelIndex()):
         return 1
         
     def setData(self, index, value, role=Qt.EditRole):
-        old_name = self.group_list[index.row()]
-        new_name = value.toString()
-        self.dataset.change_group_name(old_name, new_name)
-        return True
-        
+        pass
+                
     def flags(self, index):
         if not index.isValid():
             return Qt.ItemIsEnabled

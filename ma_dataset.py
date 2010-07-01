@@ -277,6 +277,9 @@ class Study:
                 return outcome
         return None
            
+    def get_outcome_names(self):
+        return [outcome.name for outcome in self.outcomes]
+        
     def add_follow_up_to_outcome(self, outcome, follow_up_name, group_names=None):
         self.outcomes_to_follow_ups[outcome.name][follow_up_name] = \
                         MetaAnalyticUnit(outcome, group_names=group_names)
