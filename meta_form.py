@@ -500,8 +500,8 @@ def test_add_new_outcome():
     new_outcome_name = u"test outcome"
     new_outcome_type = "binary"
     meta._add_new_outcome(new_outcome_name, new_outcome_type)
-    print meta.model.dataset.get_outcome_names()
-    assert(False)
+    outcome_names = meta.model.dataset.get_outcome_names()
+    assert(new_outcome_name in outcome_names)
     
 def paste_from_excel_test():
     meta, app = _setup_app()

@@ -101,18 +101,17 @@ class DatasetModel(QAbstractTableModel):
         group_names = self.dataset.get_group_names()        
         n_groups = len(group_names)
         
-        # make sure the indices are within range -- the
-        # model may have changed without our knowing.
-        # may have been nicer to have a notification
-        # framework here (i.e., have the udnerlying model
-        # notify us when a group has been deleted) rather
-        # than doing it on the fly...
-        self.tx_index_a = self.tx_index_a % n_groups
-        self.tx_index_b = self.tx_index_b % n_groups
-        while self.tx_index_a == self.tx_index_b:
-            self._next_group_indices(group_names)
-
-        if len(group_names) > 1:
+        if n_groups > 1:
+            # make sure the indices are within range -- the
+            # model may have changed without our knowing.
+            # may have been nicer to have a notification
+            # framework here (i.e., have the udnerlying model
+            # notify us when a group has been deleted) rather
+            # than doing it on the fly...
+            self.tx_index_a = self.tx_index_a % n_groups
+            self.tx_index_b = self.tx_index_b % n_groups
+            while self.tx_index_a == self.tx_index_b:
+                self._next_group_indices(group_names)
             self.current_txs = [group_names[self.tx_index_a], group_names[self.tx_index_b]]
         else:
             self.current_txs = ["tx A", "tx B"]
