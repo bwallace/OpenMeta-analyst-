@@ -31,6 +31,8 @@ class QConsole(QTextEdit):
         # on the console initially...
         #self.textCursor().setPosition(100)
         #self.find(">> ")
+        ### you would think there'd be an easier
+        # /less hacky way to do this..?
         for i in range(3):
             self.moveCursor(16)
         self.moveCursor(15)
