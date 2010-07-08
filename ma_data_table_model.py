@@ -78,8 +78,40 @@ class DatasetModel(QAbstractTableModel):
         self.NUM_DIGITS = 3
         self.study_auto_added = None
 
+
+    def update_current_outcome(self):
+        outcome_names = self.dataset.get_outcome_names()
+        print "\n\n\n****\n"
+        print outcome_names
+        ###
+        # @TODO we need to maintain a current outcome
+        # index here, as we do for groups (below), so that
+        # when the user edits the currently displayed outcome,
+        # the edited outcome is shown in its place
+        self.current_outcome = outcome_names[0]
+        print self.current_outcome
+        self.reset()
+        
+        
     def update_current_group_names(self):
-        group_names = self.dataset.get_group_names()
+        '''
+        This is to be called after the model has been
+        edited (via, e.g., the edit_dialog module)
+        '''
+        group_names = self.dataset.get_group_names()        
+        n_groups = len(group_names)
+        
+        # make sure the indices are within range -- the
+        # model may have changed without our knowing.
+        # may have been nicer to have a notification
+        # framework here (i.e., have the udnerlying model
+        # notify us when a group has been deleted) rather
+        # than doing it on the fly...
+        self.tx_index_a = self.tx_index_a % n_groups
+        self.tx_index_b = self.tx_index_b % n_groups
+        while self.tx_index_a == self.tx_index_b:
+            self._next_group_indices(group_names)
+
         if len(group_names) > 1:
             self.current_txs = [group_names[self.tx_index_a], group_names[self.tx_index_b]]
         else:
@@ -313,7 +345,6 @@ class DatasetModel(QAbstractTableModel):
         return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
                             Qt.ItemIsEditable)
 
-
     def rowCount(self, index=QModelIndex()):
         return self.dataset.num_studies()
 
@@ -399,7 +430,7 @@ class DatasetModel(QAbstractTableModel):
             # WARNING if we delete a time point things might get screwed up here
             # as we're actually using the MAX when we insert new follow ups
             # TODO change this to look for the next greatest time point rather than
-            # assuming the current + 1 exists
+            # assuming the current - 1 exists
             t_point -= 1
         return (t_point, self.get_follow_up_name_for_t_point(t_point))
         

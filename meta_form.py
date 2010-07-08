@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 ###########################
 #                                           
 #  Byron C. Wallace                   
@@ -131,20 +129,27 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         edit_window =  edit_dialog.EditDialog(cur_dataset, parent=self)
     
         if edit_window.exec_():
+            self.model.update_current_outcome()
+            self.display_outcome(self.model.current_outcome)
+            print "current outcome is %s" % self.model.current_outcome
+            
             print edit_window.dataset.studies[0].outcomes_to_follow_ups
             modified_dataset = edit_window.dataset
             redo_f = lambda : self.set_model(modified_dataset)
             original_dataset = copy.deepcopy(self.model.dataset)
             undo_f = lambda : self.set_model(original_dataset) 
-            
+            print original_dataset.outcome_names_to_follow_ups
             edit_command = CommandGenericDo(redo_f, undo_f)
             self.tableView.undoStack.push(edit_command)
-
+            
         
     def set_model(self, dataset):
         self.model.dataset = dataset
         self.model.update_current_group_names()
-        print "ok!"
+        self.model.update_current_outcome()
+        self.model.try_to_update_outcomes()
+        self.model.reset()
+        print "ok -- model set" 
         
     def view_network(self):
         view_window =  network_view.ViewDialog(self.model.dataset, parent=self)
@@ -154,7 +159,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         form = results_window.ResultsWindow(results, parent=self)
         form.show()
 
-    
     def add_new(self):
         redo_f, undo_f = None, None
         if self.cur_dimension == "outcome":

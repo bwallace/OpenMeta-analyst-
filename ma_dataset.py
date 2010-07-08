@@ -1,4 +1,4 @@
-#########################################################################
+#############################################################
 #
 #  Byron C. Wallace
 #  Tufts Medical Center
@@ -15,7 +15,7 @@
 #  metrics (e.g., "OR") map to dictionaries containing that metric as computed for
 # the pairwise combinations of the groups/treatments (e.g., OR->"AvB"=x)
 #
-###########################################################################
+###############################################################
 import pdb
 from PyQt4.QtCore import pyqtRemoveInputHook
 import copy
@@ -75,13 +75,17 @@ class Dataset:
         return list(set(all_group_names))
         
     def change_group_name(self, old_group_name, new_group_name):
-        study = self.studies[0]
         for study in self.studies:
             for outcome_name in study.outcomes_to_follow_ups.keys():
                 cur_outcome = study.outcomes_to_follow_ups[outcome_name]
                 for ma_unit in cur_outcome.values():                
                     ma_unit.rename_group(old_group_name, new_group_name)
                     
+    def change_outcome_name(self, old_outcome_name, new_outcome_name):
+        for study in self.studies:
+            for outcome_name in study.outcomes_to_follow_ups.keys():
+                study.outcomes_to_follow_ups[new_outcome_name] = study.outcomes_to_follow_ups.pop(old_outcome_name)
+        
     def delete_group(self, group_name):
         study = self.studies[0]
         for study in self.studies:

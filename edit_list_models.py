@@ -100,7 +100,10 @@ class OutcomesModel(QAbstractTableModel):
         return 1
         
     def setData(self, index, value, role=Qt.EditRole):
-        pass
+        old_outcome_name = self.outcome_list[index.row()]
+        new_outcome_name = value.toString()
+        self.dataset.change_outcome_name(old_outcome_name, new_outcome_name)
+        return True
                 
     def flags(self, index):
         if not index.isValid():

@@ -46,7 +46,6 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         self._setup_connections()
         self.dataset = dataset
         
-
     def _setup_connections(self):
         ###
         # groups
@@ -61,8 +60,11 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         # outcomes   
         QObject.connect(self.add_outcome_btn, SIGNAL("pressed()"),
                                     self.add_outcome)
-        
-        #self.model.add_new_outcome(outcome_name, outcome_type)
+        QObject.connect(self.remove_outcome_btn, SIGNAL("pressed()"),
+                                    self.remove_outcome)                          
+        QObject.connect(self.outcome_list, SIGNAL("clicked(QModelIndex)"),
+                                    self.outcome_selected)
+
                                     
     def add_group(self):
         form = add_new_dialogs.AddNewGroupForm(self)
@@ -86,16 +88,26 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
             data_type = STR_TO_TYPE_DICT[data_type.lower()]
             self.outcome_list.model().dataset.add_outcome(Outcome(new_outcome_name, data_type))
             self.outcome_list.model().refresh_outcome_list()
-            #self.dataset.add_outcome(Outcome(new_outcome_name, data_type))
-            #print self.dataset.get_outcome_names()
-            
-            #self.outcome_list.model().reset()
-            
             
     def remove_group(self):
         self.group_list.model().dataset.delete_group(self.selected_group)
         self.group_list.model().reset()
         
     def group_selected(self, index):
+        self.disable_remove_buttons()
         self.selected_group = self.group_list.model().group_list[index.row()]
         self.remove_group_btn.setEnabled(True)
+        
+    def remove_outcome(self):
+        self.outcome_list.model().dataset.remove_outcome(self.selected_outcome)
+        self.outcome_list.model().reset()
+        #pass
+        
+    def outcome_selected(self, index):
+        self.disable_remove_buttons()
+        self.selected_outcome = self.outcome_list.model().outcome_list[index.row()]
+        self.remove_outcome_btn.setEnabled(True)
+
+    def disable_remove_buttons(self):
+        self.remove_group_btn.setEnabled(False)
+        self.remove_outcome_btn.setEnabled(False)
