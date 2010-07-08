@@ -122,7 +122,7 @@ class DatasetModel(QAbstractTableModel):
         # Here we update variable column indices, contingent on 
         # the type data being displayed, the number of covariates, etc. 
         # It is extremely important that these are updated as necessary
-        # fromthe view side of things
+        # from the view side of things
         current_data_type = self.get_current_outcome_type()
         # offset corresonds to the first three columns, which 
         # are include study, name, and year.
@@ -356,7 +356,8 @@ class DatasetModel(QAbstractTableModel):
         amongst other things (e.g., number of covariates).
         '''
         num_cols = 3 # we always show study name and year (and include studies)
-        if self.current_outcome is None:
+        #if self.current_outcome is None:
+        if len(self.dataset.get_outcome_names()) == 0:
             return num_cols
         else:
             num_effect_size_fields = 3 # point estimate, low, high
@@ -439,12 +440,13 @@ class DatasetModel(QAbstractTableModel):
         self.reset()
 
     def get_current_follow_up_name(self):
-        try:
-            return self.dataset.outcome_names_to_follow_ups[self.current_outcome][self.current_time_point]
-        except:
-            pyqtRemoveInputHook()
-            pdb.set_trace()
-        
+        if len(self.dataset.outcome_names_to_follow_ups) > 0:
+            try:
+                return self.dataset.outcome_names_to_follow_ups[self.current_outcome][self.current_time_point]
+            except:
+                pyqtRemoveInputHook()
+                pdb.set_trace()
+            
     def get_follow_up_name_for_t_point(self, t_point):
         return self.dataset.outcome_names_to_follow_ups[self.current_outcome][t_point]
         
