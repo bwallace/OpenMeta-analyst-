@@ -17,12 +17,22 @@ class QConsole(QTextEdit):
         elif event.key() == Qt.Key_Down:
             self.emit(SIGNAL("downArrowPressed()"))
         elif event.key() in (Qt.Key_Left, Qt.Key_Backspace) and \
-               self.textCursor().columnNumber() == START_COLUMN:
-             # we just want to 'block' here, i.e., do nothing; the user
-             # has navigated to the start of the column
+            self.textCursor().columnNumber() == START_COLUMN:
+            # we just want to 'block' here, i.e., do nothing; the user
+            # has navigated to the start of the column
             pass
             
         else:
             #self.keyPressEvent(event)
             super(QConsole, self).keyPressEvent(event)
             
+    def mousePressEvent(self, event):
+        ### this works but now you need to set the cursor 
+        # on the console initially...
+        #self.textCursor().setPosition(100)
+        #self.find(">> ")
+        for i in range(3):
+            self.moveCursor(16)
+        self.moveCursor(15)
+        print "(mouse clicked)"
+        
