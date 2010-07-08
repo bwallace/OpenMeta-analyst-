@@ -36,13 +36,11 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         ### groups
         self.groups_model = edit_list_models.TXGroupsModel(dataset = dataset)
         self.group_list.setModel(self.groups_model)
-        self.selected_group = None
         
         ### outcomes
         self.outcomes_model = edit_list_models.OutcomesModel(dataset = dataset)
         self.outcome_list.setModel(self.outcomes_model)
-        self.selected_outcome = None
-        
+
         self._setup_connections()
         self.dataset = dataset
         
@@ -73,7 +71,17 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
             new_group_name = unicode(form.group_name_le.text().toUtf8(), "utf-8")
             self.group_list.model().dataset.add_group(new_group_name)
             self.group_list.model().refresh_group_list()
-      
+            
+    def remove_group(self):
+        index = self.group_list.currentIndex()
+        selected_group = self.group_list.model().group_list[index.row()]
+        self.group_list.model().dataset.delete_group(selected_group)
+        self.group_list.model().reset()
+        
+    def group_selected(self, index):
+        self.disable_remove_buttons()
+        self.remove_group_btn.setEnabled(True)
+        
     def add_outcome(self)      :
         form =  add_new_dialogs.AddNewOutcomeForm(self)
         form.outcome_name_le.setFocus()
@@ -89,23 +97,14 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
             self.outcome_list.model().dataset.add_outcome(Outcome(new_outcome_name, data_type))
             self.outcome_list.model().refresh_outcome_list()
             
-    def remove_group(self):
-        self.group_list.model().dataset.delete_group(self.selected_group)
-        self.group_list.model().reset()
-        
-    def group_selected(self, index):
-        self.disable_remove_buttons()
-        self.selected_group = self.group_list.model().group_list[index.row()]
-        self.remove_group_btn.setEnabled(True)
-        
     def remove_outcome(self):
-        self.outcome_list.model().dataset.remove_outcome(self.selected_outcome)
+        index = self.outcome_list.currentIndex()
+        selected_outcome = self.outcome_list.model().outcome_list[index.row()]
+        self.outcome_list.model().dataset.remove_outcome(selected_outcome)
         self.outcome_list.model().reset()
-        #pass
-        
+
     def outcome_selected(self, index):
         self.disable_remove_buttons()
-        self.selected_outcome = self.outcome_list.model().outcome_list[index.row()]
         self.remove_outcome_btn.setEnabled(True)
 
     def disable_remove_buttons(self):

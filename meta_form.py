@@ -141,7 +141,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             print original_dataset.outcome_names_to_follow_ups
             edit_command = CommandGenericDo(redo_f, undo_f)
             self.tableView.undoStack.push(edit_command)
-            
         
     def set_model(self, dataset):
         self.model.dataset = dataset
@@ -502,6 +501,19 @@ def test_add_new_outcome():
     meta._add_new_outcome(new_outcome_name, new_outcome_type)
     outcome_names = meta.model.dataset.get_outcome_names()
     assert(new_outcome_name in outcome_names)
+    
+def test_remove_outcome():
+    meta, app = _setup_app()
+    data_model = _gen_some_data()
+    test_model = DatasetModel(dataset=data_model)
+    meta.tableView.setModel(test_model)
+    new_outcome_name = u"test outcome"
+    new_outcome_type = "binary"
+    meta._add_new_outcome(new_outcome_name, new_outcome_type)
+    # note that we test the adding functionality elsewhere
+    meta.model.dataset.remove_outcome(new_outcome_name)
+    outcome_names = meta.model.dataset.get_outcome_names()
+    assert (new_outcome_name not in outcome_names)
     
 def paste_from_excel_test():
     meta, app = _setup_app()
