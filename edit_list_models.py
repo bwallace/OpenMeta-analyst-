@@ -82,10 +82,14 @@ class OutcomesModel(QAbstractTableModel):
         self.reset()
         
     def data(self, index, role=Qt.DisplayRole):
-        self.group_list = self.dataset.get_outcome_names()
+        self.outcome_list = self.dataset.get_outcome_names()
         if not index.isValid() or not (0 <= index.row() < len(self.dataset)):
             return QVariant()
-        outcome_name = self.group_list[index.row()]
+        outcome_name = ""
+        try:
+            outcome_name = self.outcome_list[index.row()]
+        except:
+            pass
         if role == Qt.DisplayRole:
             return QVariant(outcome_name)
         elif role == Qt.TextAlignmentRole:
@@ -117,7 +121,7 @@ class FollowUpsModel(QAbstractTableModel):
     to the view.
     '''
     def __init__(self, filename=QString(), dataset=None):
-        super(OutcomesModel, self).__init__()
+        super(FollowUpsModel, self).__init__()
         self.dataset = dataset
         self.follow_up_list = self.dataset.get_follow_up_names()
         
@@ -129,7 +133,12 @@ class FollowUpsModel(QAbstractTableModel):
         self.group_list = self.dataset.get_outcome_names()
         if not index.isValid() or not (0 <= index.row() < len(self.dataset)):
             return QVariant()
-        outcome_name = self.follow_up_list[index.row()]
+        outcome_name = None
+        try:
+            outcome_name = self.follow_up_list[index.row()] 
+        except:
+            pass
+            
         if role == Qt.DisplayRole:
             return QVariant(outcome_name)
         elif role == Qt.TextAlignmentRole:

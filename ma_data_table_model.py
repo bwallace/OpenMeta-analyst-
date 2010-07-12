@@ -81,17 +81,23 @@ class DatasetModel(QAbstractTableModel):
 
     def update_current_outcome(self):
         outcome_names = self.dataset.get_outcome_names()
-        print "\n\n\n****\n"
-        print outcome_names
+
         ###
         # @TODO we need to maintain a current outcome
         # index here, as we do for groups (below), so that
         # when the user edits the currently displayed outcome,
         # the edited outcome is shown in its place
-        self.current_outcome = outcome_names[0]
+        self.current_outcome = outcome_names[0] if len(outcome_names)>0 else None
         print self.current_outcome
         self.reset()
         
+    def update_current_time_points(self):
+        ### TODO what if the user deletes *all* the follow-ups?
+        print "???!"
+        self.current_time_point = self.dataset.outcome_names_to_follow_ups[self.current_outcome].keys()[0]
+        print self.current_time_point
+        print ".\n\n\n"
+        self.reset()
         
     def update_current_group_names(self):
         '''
@@ -382,8 +388,7 @@ class DatasetModel(QAbstractTableModel):
         self.dataset.remove_group(group_name)
     
     def add_follow_up_to_current_outcome(self, follow_up_name):
-        cur_outcome = self.dataset.get_outcome_obj(self.current_outcome)
-        self.dataset.add_follow_up_to_outcome(cur_outcome, follow_up_name)
+        self.dataset.add_follow_up_to_outcome(self.current_outcome, follow_up_name)
         
     def remove_follow_up_from_outcome(self, follow_up_name, outcome_name):
         self.dataset.remove_follow_up_from_outcome(follow_up_name, outcome_name)

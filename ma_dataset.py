@@ -150,7 +150,18 @@ class Dataset:
                     ma_unit.remove_group(group_name)
         print "removed group: %s. cur groups: %s" % (group_name, self.get_group_names())
         
-    def add_follow_up_to_outcome(self, outcome, follow_up_name):
+    def add_follow_up(self, follow_up_name):
+        ''' adds the follow-up to *all* outcomes '''
+        for outcome in self.get_outcome_names():
+            self.add_follow_up_to_outcome(outcome, follow_up_name)
+            
+    def remove_follow_up(self, follow_up_name):
+        ''' removes the follow-up from *all* outcomes '''
+        for outcome in self.get_outcome_names():
+            self.remove_follow_up_from_outcome(follow_up_name, outcome)
+        
+    def add_follow_up_to_outcome(self, outcome_name, follow_up_name):
+        outcome = self.get_outcome_obj(outcome_name)
         cur_group_names = self.get_group_names()
         if len(cur_group_names) == 0:
             cur_group_names = None
@@ -165,6 +176,7 @@ class Dataset:
         
     def remove_follow_up_from_outcome(self, follow_up_name, outcome_name):
         time_point = self.outcome_names_to_follow_ups[outcome_name].get_key(follow_up_name)
+            
         self.outcome_names_to_follow_ups[outcome_name].pop(time_point)
         for study in self.studies:
             study.remove_follow_up_from_outcome(outcome_name, follow_up_name)

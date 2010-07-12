@@ -129,10 +129,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         edit_window =  edit_dialog.EditDialog(cur_dataset, parent=self)
     
         if edit_window.exec_():
-            self.model.update_current_outcome()
             self.display_outcome(self.model.current_outcome)
             print "current outcome is %s" % self.model.current_outcome
-            
             print edit_window.dataset.studies[0].outcomes_to_follow_ups
             modified_dataset = edit_window.dataset
             redo_f = lambda : self.set_model(modified_dataset)
@@ -146,7 +144,9 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.model.dataset = dataset
         self.model.update_current_group_names()
         self.model.update_current_outcome()
+        self.model.update_current_time_points()
         self.model.try_to_update_outcomes()
+        self.update_follow_up_label()
         self.model.reset()
         print "ok -- model set" 
         
@@ -330,9 +330,13 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     def display_follow_up(self, time_point):
         print "follow up"
         self.model.current_time_point = time_point
-        self.cur_time_lbl.setText(u"<font color='Blue'>%s</font>" % self.model.get_current_follow_up_name())
+        #self.cur_time_lbl.setText(u"<font color='Blue'>%s</font>" % self.model.get_current_follow_up_name())
+        self.update_follow_up_label()
         self.model.reset()
         self.tableView.resizeColumnsToContents()
+        
+    def update_follow_up_label(self):
+        self.cur_time_lbl.setText(u"<font color='Blue'>%s</font>" % self.model.get_current_follow_up_name())
         
     def open(self):
         file_path = unicode(QFileDialog.getOpenFileName(self, "OpenMeta[analyst] - Open File",
@@ -515,6 +519,7 @@ def test_remove_outcome():
     outcome_names = meta.model.dataset.get_outcome_names()
     assert (new_outcome_name not in outcome_names)
     
+#def test_add
 def paste_from_excel_test():
     meta, app = _setup_app()
 
