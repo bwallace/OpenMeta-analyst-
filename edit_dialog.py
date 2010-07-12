@@ -33,17 +33,23 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         super(EditDialog, self).__init__(parent)
         self.setupUi(self)
         
-        ### groups
-        self.groups_model = edit_list_models.TXGroupsModel(dataset = dataset)
-        self.group_list.setModel(self.groups_model)
         
         ### outcomes
         self.outcomes_model = edit_list_models.OutcomesModel(dataset = dataset)
         self.outcome_list.setModel(self.outcomes_model)
-
+        index_of_outcome_to_select = self.outcomes_model.outcome_list.index(parent.model.current_outcome)
+        outcome_index = self.outcomes_model.createIndex(index_of_outcome_to_select, 0)
+        self.outcome_list.setCurrentIndex(outcome_index)
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()    
+        
         ### follow-ups
         self.follow_ups_model = edit_list_models.FollowUpsModel(dataset = dataset)
         self.follow_up_list.setModel(self.follow_ups_model)
+        
+        ### groups
+        self.groups_model = edit_list_models.TXGroupsModel(dataset = dataset)
+        self.group_list.setModel(self.groups_model)
         
         self._setup_connections()
         self.dataset = dataset
