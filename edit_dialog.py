@@ -40,12 +40,14 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         index_of_outcome_to_select = self.outcomes_model.outcome_list.index(parent.model.current_outcome)
         outcome_index = self.outcomes_model.createIndex(index_of_outcome_to_select, 0)
         self.outcome_list.setCurrentIndex(outcome_index)
+        self.selected_outcome = None
         #pyqtRemoveInputHook()
         #pdb.set_trace()    
         
         ### follow-ups
         self.follow_ups_model = edit_list_models.FollowUpsModel(dataset = dataset)
         self.follow_up_list.setModel(self.follow_ups_model)
+        self.selected_follow_up = None
         
         ### groups
         self.groups_model = edit_list_models.TXGroupsModel(dataset = dataset)
@@ -117,20 +119,25 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
             self.outcome_list.model().dataset.add_outcome(Outcome(new_outcome_name, data_type))
             self.outcome_list.model().refresh_outcome_list()
             
-    def remove_outcome(self):
+    def get_selected_outcome(self):
         index = self.outcome_list.currentIndex()
-        selected_outcome = self.outcome_list.model().outcome_list[index.row()]
-        self.outcome_list.model().dataset.remove_outcome(selected_outcome)
+        return self.outcome_list.model().outcome_list[index.row()]
+        
+    def remove_outcome(self):
+        self.selected_outcome = self.get_selected_outcome()
+        self.outcome_list.model().dataset.remove_outcome(self.selected_outcome)
         self.outcome_list.model().reset()
         
         ## also update the groups and follow-up lists
         self.group_list.model().refresh_group_list()
-        self.follow_up_list.model().refresh_follow_up_list()
+        #self.follow_up_list.model().refresh_follow_up_list()
 
     def outcome_selected(self, index):
+        self.selected_outcome = self.get_selected_outcome()
+        self.follow_up_list.model().refresh_follow_up_list(self.selected_outcome)
         self.disable_remove_buttons()
         self.remove_outcome_btn.setEnabled(True)
-
+        
     def add_follow_up(self):
         form = add_new_dialogs.AddNewFollowUpForm(self)
         form.follow_up_name_le.setFocus()
@@ -139,17 +146,24 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
             self.follow_up_list.model().dataset.add_follow_up(follow_up_lbl)
             self.follow_up_list.model().refresh_follow_up_list()
             
-    def remove_follow_up(self):
+    def get_selected_follow_up(self):
         index = self.follow_up_list.currentIndex()
-        selected_follow_up = self.follow_up_list.model().follow_up_list[index.row()]
-        self.follow_up_list.model().dataset.remove_follow_up(selected_follow_up)
-        self.follow_up_list.model().refresh_follow_up_list()
+        return self.follow_up_list.model().follow_up_list[index.row()]
+        
+    def remove_follow_up(self):
+        self.selected_follow_up = self.get_selected_follow_up()
+        self.follow_up_list.model().dataset.remove_follow_up(self.selected_follow_up)
+        self.follow_up_list.model().refresh_follow_up_list(self.selected_outcome)
         #self.follow_up_list.model().reset()
         
     def follow_up_selected(self, index):
         self.disable_remove_buttons()
         self.remove_follow_up_btn.setEnabled(True)
-    
+        self.selected_follow_up = self.get_selected_follow_up()
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
+        self.group_list.model().refresh_group_list(self.selected_outcome, self.selected_follow_up)
+        
     def disable_remove_buttons(self):
         self.remove_group_btn.setEnabled(False)
         self.remove_follow_up_btn.setEnabled(False)

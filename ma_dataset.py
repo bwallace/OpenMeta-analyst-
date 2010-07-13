@@ -135,6 +135,9 @@ class Dataset:
             study.remove_outcome(outcome_name)
    
     def add_group(self, group_name):
+        ### TODO at current, when a group is added, it is added
+        # to *all* outcomes, all follow ups. I think groups are instead
+        # to be added to only the current outcome/follow-up. 
         for study in self.studies:
             for outcome_name in study.outcomes_to_follow_ups.keys():
                 cur_outcome = study.outcomes_to_follow_ups[outcome_name]
@@ -190,6 +193,14 @@ class Dataset:
                     group_names.extend(ma_unit.get_group_names())
         return list(set(group_names))
 
+    def get_group_names_for_outcome_fu(self, outcome_name, follow_up):
+        group_names = []
+        for study in self.studies:
+            if study.outcomes_to_follow_ups[outcome_name].has_key(follow_up):
+                cur_ma_unit = study.outcomes_to_follow_ups[outcome_name][follow_up]
+                group_names.extend(cur_ma_unit.get_group_names())
+        return list(set(group_names))
+        
     def get_follow_up_names(self):
         follow_up_names = []
         for study in self.studies:
@@ -197,6 +208,15 @@ class Dataset:
                 # follow_up_d is a dictionary mapping follow up names to
                 # MA units
                 follow_up_names.extend(follow_up_d.keys())
+        return list(set(follow_up_names))
+        
+    def get_follow_up_names_for_outcome(self, outcome):
+        follow_up_names = []
+        for study in self.studies:
+            try:
+                follow_up_names.extend(study.outcomes_to_follow_ups[outcome].keys())
+            except:
+                pass
         return list(set(follow_up_names))
         
     def get_network(self, outcome, time_point):

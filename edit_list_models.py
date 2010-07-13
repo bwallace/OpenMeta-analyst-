@@ -32,8 +32,9 @@ class TXGroupsModel(QAbstractTableModel):
         self.dataset = dataset
         self.group_list = self.dataset.get_group_names()
         
-    def refresh_group_list(self):
-        self.group_list = self.dataset.get_group_names()
+    def refresh_group_list(self, outcome, follow_up):
+        #self.group_list = self.dataset.get_group_names()
+        self.group_list = self.dataset.get_group_names_for_outcome_fu(outcome, follow_up)
         self.reset()
         
     def data(self, index, role=Qt.DisplayRole):
@@ -125,22 +126,21 @@ class FollowUpsModel(QAbstractTableModel):
         self.dataset = dataset
         self.follow_up_list = self.dataset.get_follow_up_names()
         
-    def refresh_follow_up_list(self):
-        self.follow_up_list = self.dataset.get_follow_up_names()
+    def refresh_follow_up_list(self, outcome):  
+        self.follow_up_list = self.dataset.get_follow_up_names_for_outcome(outcome)
         self.reset()
         
     def data(self, index, role=Qt.DisplayRole):
-        self.group_list = self.dataset.get_outcome_names()
         if not index.isValid() or not (0 <= index.row() < len(self.dataset)):
             return QVariant()
-        outcome_name = None
+        follow_up_name = None
         try:
-            outcome_name = self.follow_up_list[index.row()] 
+            follow_up_name = self.follow_up_list[index.row()] 
         except:
             pass
             
         if role == Qt.DisplayRole:
-            return QVariant(outcome_name)
+            return QVariant(follow_up_name)
         elif role == Qt.TextAlignmentRole:
             return QVariant(int(Qt.AlignLeft|Qt.AlignVCenter))
         return QVariant()
