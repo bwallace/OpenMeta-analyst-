@@ -341,10 +341,14 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     def open(self):
         file_path = unicode(QFileDialog.getOpenFileName(self, "OpenMeta[analyst] - Open File",
                                                                                         ".", "open meta files (*.oma)"))
+        data_model = None
         print "loading %s..." % file_path
-
-        data_model = pickle.load(open(file_path, 'r'))
-
+        try:
+            data_model = pickle.load(open(file_path, 'r'))
+        except:
+            return None
+        
+        self.out_path = file_path
         # this is questionable; we explicitly remove the last study, because
         # there is *always* a blank study appended to the current dataset.
         # thus when the dataset was dumped (via pickle) it included this study,
@@ -357,6 +361,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.model.set_state(state_dict)
         print state_dict
         self.tableView.setModel(self.model)
+        self.tableView.resizeColumnsToContents()
         self.cur_outcome_lbl.setText(u"<font color='Blue'>%s</font>" % self.model.current_outcome)
         self.cur_time_lbl.setText(u"<font color='Blue'>%s</font>" % self.model.current_time_point)
         print "success"
