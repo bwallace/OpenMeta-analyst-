@@ -357,14 +357,19 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         data_model.studies = data_model.studies[:-1]
         self.model = DatasetModel(dataset=data_model)
 
-        state_dict = pickle.load(open(file_path + ".state"))
-        self.model.set_state(state_dict)
-        print state_dict
+        state_dict = None
+        try:
+            state_dict = pickle.load(open(file_path + ".state"))
+            self.model.set_state(state_dict)
+            print "found state dictionary: \n%s" % state_dict
+        except:
+            print "no state dictionary found!"
+
         self.tableView.setModel(self.model)
         self.tableView.resizeColumnsToContents()
         self.cur_outcome_lbl.setText(u"<font color='Blue'>%s</font>" % self.model.current_outcome)
-        self.cur_time_lbl.setText(u"<font color='Blue'>%s</font>" % self.model.current_time_point)
-        print "success"
+        self.update_follow_up_label()
+        print "successfully loaded data"
 
 
     def quit(self):
