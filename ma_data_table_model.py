@@ -93,10 +93,7 @@ class DatasetModel(QAbstractTableModel):
         
     def update_current_time_points(self):
         ### TODO what if the user deletes *all* the follow-ups?
-        print "???!"
         self.current_time_point = self.dataset.outcome_names_to_follow_ups[self.current_outcome].keys()[0]
-        print self.current_time_point
-        print ".\n\n\n"
         self.reset()
         
     def update_current_group_names(self):
@@ -106,7 +103,7 @@ class DatasetModel(QAbstractTableModel):
         '''
         group_names = self.dataset.get_group_names()        
         n_groups = len(group_names)
-        
+
         if n_groups > 1:
             # make sure the indices are within range -- the
             # model may have changed without our knowing.
@@ -467,7 +464,6 @@ class DatasetModel(QAbstractTableModel):
         
     def next_groups(self):
         ''' Returns a tuple with the next two group names (we just iterate round-robin) '''
-        
         group_names = self.dataset.get_group_names()
         self._next_group_indices(group_names)
         while self.tx_index_a == self.tx_index_b:
@@ -700,7 +696,11 @@ class DatasetModel(QAbstractTableModel):
          '''
          # first check to see that the current outcome is contained in this study
         if not self.current_outcome in self.dataset.studies[study_index].outcomes_to_follow_ups:
-            self.dataset.studies[study_index].add_outcome(self.dataset.get_outcome_obj(self.current_outcome))
+            ###
+            # Issue 7 (RESOLVED) http://github.com/bwallace/OpenMeta-analyst-/issues/#issue/7
+            # previously, 
+            self.dataset.studies[study_index].add_outcome(self.dataset.get_outcome_obj(self.current_outcome), \
+                                                                                                group_names=self.dataset.get_group_names())
         
         # we must also make sure the time point exists. note that we use the *name* rather than the 
         # index of the current time/follow up

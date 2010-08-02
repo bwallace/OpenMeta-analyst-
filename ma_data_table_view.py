@@ -69,10 +69,9 @@ class MADataTable(QtGui.QTableView):
         data_type = self.model().get_current_outcome_type()
         
         ####
-        # TODO here we need to implement undo/redo.
-        # in particular, let's cache the raw data prior to editing;
-        # then undo will simply overwrite the new raw
-        # data, and that should be sufficient
+        # here we implement undo/redo.
+        # in particular, we cache the raw data prior to editing;
+        # then undo will simply overwrite the new raw data
         if data_type == "binary":
             form =  binary_data_form.BinaryDataForm2(ma_unit, cur_txs, cur_effect, parent=self)
             if form.exec_():
@@ -82,11 +81,8 @@ class MADataTable(QtGui.QTableView):
             cur_raw_data_dict = {}
             for group_name in cur_txs:
                 cur_raw_data_dict[group_name] = list(ma_unit.tx_groups[group_name].raw_data)
-                #self.raw_data = self.ma_unit.get_raw_data_for_groups(cur_txs)
                 
             old_raw_data_dict = copy.deepcopy(cur_raw_data_dict)
-            #pyqtRemoveInputHook()
-            #pdb.set_trace()
             form = continuous_data_form.ContinuousDataForm(copy.deepcopy(cur_raw_data_dict), cur_txs, cur_effect, parent=self)
             if form.exec_():
                 # update the model; push this event onto the stack

@@ -40,9 +40,7 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         index_of_outcome_to_select = self.outcomes_model.outcome_list.index(parent.model.current_outcome)
         outcome_index = self.outcomes_model.createIndex(index_of_outcome_to_select, 0)
         self.outcome_list.setCurrentIndex(outcome_index)
-        self.selected_outcome = None
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()    
+        self.selected_outcome = None   
         
         ### follow-ups
         self.follow_ups_model = edit_list_models.FollowUpsModel(dataset = dataset)

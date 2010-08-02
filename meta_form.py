@@ -139,6 +139,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             print original_dataset.outcome_names_to_follow_ups
             edit_command = CommandGenericDo(redo_f, undo_f)
             self.tableView.undoStack.push(edit_command)
+            
         
     def set_model(self, dataset):
         self.model.dataset = dataset
@@ -148,6 +149,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.model.try_to_update_outcomes()
         self.update_follow_up_label()
         self.model.reset()
+        self.tableView.resizeColumnsToContents()
         print "ok -- model set" 
         
     def view_network(self):
@@ -219,7 +221,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.model.remove_outcome(added_outcome)
         print "trying to display: %s" % previously_displayed_outcome
         ##
-        # TODO if previous outcome was None, this throws up
+        # RESOLVED previously, if previous outcome was None, this threw up
         # (see Issue 4: http://github.com/bwallace/OpenMeta-analyst-/issues#issue/4)
         self.display_outcome(previously_displayed_outcome)
     
@@ -330,7 +332,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     def display_follow_up(self, time_point):
         print "follow up"
         self.model.current_time_point = time_point
-        #self.cur_time_lbl.setText(u"<font color='Blue'>%s</font>" % self.model.get_current_follow_up_name())
         self.update_follow_up_label()
         self.model.reset()
         self.tableView.resizeColumnsToContents()
@@ -392,7 +393,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             # also write out the 'state', which contains things
             # pertaining to the view
             d = self.model.get_stateful_dict()
-            f = open(self.out_path + ".state", 'w')
+            f = open(self.out_path + ".state", 'wb')
             pickle.dump(d, f)
             f.close()
         except Exception, e:

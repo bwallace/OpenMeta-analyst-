@@ -357,6 +357,7 @@ class MetaAnalyticUnit:
         '''
         
         if group_names is None:
+            print "????"
             group_names = ["tx A", "tx B"]
             
         self.outcome = outcome
