@@ -20,6 +20,8 @@ import ma_dataset
 from ma_dataset import *
 import meta_py_r
 
+
+#  unicode(form.follow_up_name_le.text().toUtf8(), "utf-8")
 class TXGroupsModel(QAbstractTableModel):
     '''
     This module mediates between the classes comprising a dataset

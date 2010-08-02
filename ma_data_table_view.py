@@ -21,6 +21,13 @@ class MADataTable(QtGui.QTableView):
 
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
+        
+        # the main gui is assumed to be the form
+        # that owns this table view, i.e., the 'main'
+        # user interface/form. it is assumed that this
+        # is set elsewhere.
+        self.main_gui = None
+        
         # None maps to the special, no outcome/no follow up
         # undo stack
         self.undo_stack_dict = {None:QUndoStack(self)}
@@ -37,27 +44,30 @@ class MADataTable(QtGui.QTableView):
         self.setAlternatingRowColors(True)
         
         
-    def keyPressEvent(self, event):
-        # undo/redo
-        if (event.modifiers() & QtCore.Qt.ControlModifier):
-            if event.key() == QtCore.Qt.Key_Z:
-                self.undoStack.undo()
-            elif event.key() == QtCore.Qt.Key_Y:
-                self.undoStack.redo()
-
+    def keyPressEvent(self, event):                                       
         # copy/paste: these only happen if at least one cell is selected
         selected_indexes = self.selectionModel().selectedIndexes()
         upper_left_index, lower_right_index = (self._upper_left(selected_indexes),
                                                self._lower_right(selected_indexes))
-
         if (event.modifiers() & QtCore.Qt.ControlModifier):
-            if event.key() == QtCore.Qt.Key_C:
+            ## undo/redo
+            if event.key() == QtCore.Qt.Key_Z:
+                self.undoStack.undo()
+            elif event.key() == QtCore.Qt.Key_Y:
+                self.undoStack.redo()
+            ### copy/paste
+            elif event.key() == QtCore.Qt.Key_C:
                 # ctrl + c = copy
                 self.copy_contents_in_range(upper_left_index, lower_right_index,
                                                                 to_clipboard=True)
             elif event.key() == QtCore.Qt.Key_V:
                 # ctrl + v = paste
                 self.paste_from_clipboard(upper_left_index)
+            else:
+                ###
+                # if the command hasn't anything to do with the table view
+                # in particular, we pass the event up to the main UI
+                self.main_gui.keyPressEvent(event)
         
         
     def row_header_clicked(self, row):

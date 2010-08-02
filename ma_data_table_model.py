@@ -446,8 +446,6 @@ class DatasetModel(QAbstractTableModel):
             try:
                 return self.dataset.outcome_names_to_follow_ups[self.current_outcome][self.current_time_point]
             except:
-                #pyqtRemoveInputHook()
-                #pdb.set_trace()
                 return None
             
     def get_follow_up_name_for_t_point(self, t_point):

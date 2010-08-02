@@ -80,6 +80,11 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self._setup_connections()
         self.tableView.setSelectionMode(QTableView.ContiguousSelection)
         self.model.reset()
+        ## 
+        # we hand off a reference of the main gui to the table view
+        # so that it can do things like pass suitable events 'up'
+        # to the main form 
+        self.tableView.main_gui = self
         self.tableView.resizeColumnsToContents()
         self.out_path = None
 
@@ -88,9 +93,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         if (event.modifiers() & QtCore.Qt.ControlModifier):
             if event.key() == QtCore.Qt.Key_S:
                 # ctrl + s = save
+                print "saving?"
                 self.save()
             elif event.key() == QtCore.Qt.Key_O:
-                # ctrl + o = save
+                # ctrl + o = open
                 self.open()
             elif event.key() == QtCore.Qt.Key_A:
                 self.analysis()
@@ -277,12 +283,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             redo_f = lambda: self.display_groups(prev_groups)
             undo_f = lambda: self.display_groups(cur_groups)
         elif self.cur_dimension == "follow-up":
-            old_t_point = self.model.current_time_point
-            old_follow_up_name = self.model.get_current_follow_up_name()
-            next_t_point, next_follow_up_name = self.model.get_previous_follow_up()
-            print "\nold time point: %s; next time point: %s" % (old_t_point, next_t_point)
-            redo_f = lambda: self.model.set_current_time_point(next_t_point) 
-            undo_f = lambda: self.model.set_current_time_point(old_t_point)
+            old_follow_up_t_point = self.model.current_time_point
+            previous_follow_up_t_point = self.model.get_previous_follow_up()[0]
+            redo_f = lambda: self.display_follow_up(previous_follow_up_t_point) 
+            undo_f = lambda: self.display_follow_up(old_follow_up_t_point)
             
         if redo_f is not None and undo_f is not None:
             prev_command = CommandGenericDo(redo_f, undo_f)
