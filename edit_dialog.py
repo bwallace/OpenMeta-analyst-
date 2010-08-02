@@ -158,8 +158,6 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         self.disable_remove_buttons()
         self.remove_follow_up_btn.setEnabled(True)
         self.selected_follow_up = self.get_selected_follow_up()
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
         self.group_list.model().refresh_group_list(self.selected_outcome, self.selected_follow_up)
         
     def disable_remove_buttons(self):

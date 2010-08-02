@@ -82,10 +82,14 @@ class Dataset:
                     ma_unit.rename_group(old_group_name, new_group_name)
                     
     def change_outcome_name(self, old_outcome_name, new_outcome_name):
+        self.outcome_names_to_follow_ups[new_outcome_name] = self.outcome_names_to_follow_ups.pop(old_outcome_name)
         for study in self.studies:
-            for outcome_name in study.outcomes_to_follow_ups.keys():
-                study.outcomes_to_follow_ups[new_outcome_name] = study.outcomes_to_follow_ups.pop(old_outcome_name)
-        
+            study.outcomes_to_follow_ups[new_outcome_name] = study.outcomes_to_follow_ups.pop(old_outcome_name)
+            for outcome in study.outcomes:
+                if outcome.name == old_outcome_name:
+                    outcome.name = new_outcome_name
+                    break
+                
     def delete_group(self, group_name):
         study = self.studies[0]
         for study in self.studies:

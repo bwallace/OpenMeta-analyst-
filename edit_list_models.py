@@ -58,7 +58,13 @@ class TXGroupsModel(QAbstractTableModel):
         
     def setData(self, index, value, role=Qt.EditRole):
         old_name = self.group_list[index.row()]
-        new_name = value.toString()
+        new_name = unicode(value.toString().toUtf8(), "utf-8")
+
+        ###
+        # we don't allow empty strings for group names; just pass
+        # if this happens (typically this will be an accident on the user's part)
+        if new_name == "":
+            return False
         self.dataset.change_group_name(old_name, new_name)
         return True
         
@@ -107,7 +113,10 @@ class OutcomesModel(QAbstractTableModel):
         
     def setData(self, index, value, role=Qt.EditRole):
         old_outcome_name = self.outcome_list[index.row()]
-        new_outcome_name = value.toString()
+        new_outcome_name = unicode(value.toString().toUtf8(), "utf-8")
+        if new_outcome_name == "":
+            return False
+            
         self.dataset.change_outcome_name(old_outcome_name, new_outcome_name)
         return True
                 

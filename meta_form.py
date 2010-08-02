@@ -154,6 +154,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.model.update_current_time_points()
         self.model.try_to_update_outcomes()
         self.update_follow_up_label()
+        self.display_outcome(self.model.current_outcome)
         self.model.reset()
         self.tableView.resizeColumnsToContents()
         print "ok -- model set" 
@@ -268,7 +269,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         if redo_f is not None and undo_f is not None:
             next_command = CommandGenericDo(redo_f, undo_f)
             self.tableView.undoStack.push(next_command)
-
             
     def previous(self):
         redo_f, undo_f = None, None

@@ -162,10 +162,16 @@ class DatasetModel(QAbstractTableModel):
                 else:
                     return QVariant(study.year)
             elif column in self.RAW_DATA:
+                #pyqtRemoveInputHook()
+                #pdb.set_trace()
                 adjusted_index = column - 3
                 if self.current_outcome in study.outcomes_to_follow_ups:
+                    #try:
                     cur_raw_data = self.get_current_ma_unit_for_study(index.row()).\
                                                         get_raw_data_for_groups(self.current_txs)
+                    #except:
+                    #   pyqtRemoveInputHook()
+                    #    pdb.set_trace()                                        
                     if len(cur_raw_data) > adjusted_index:
                         return QVariant(cur_raw_data[adjusted_index])
                     else:
@@ -359,7 +365,6 @@ class DatasetModel(QAbstractTableModel):
         amongst other things (e.g., number of covariates).
         '''
         num_cols = 3 # we always show study name and year (and include studies)
-        #if self.current_outcome is None:
         if len(self.dataset.get_outcome_names()) == 0:
             return num_cols
         else:
@@ -703,6 +708,8 @@ class DatasetModel(QAbstractTableModel):
         # we must also make sure the time point exists. note that we use the *name* rather than the 
         # index of the current time/follow up
         if not self.get_current_follow_up_name() in self.dataset.studies[study_index].outcomes_to_follow_ups[self.current_outcome]:
+            pyqtRemoveInputHook()
+            pdb.set_trace()
             self.dataset.studies[study_index].add_outcome_at_follow_up(
                                 self.dataset.get_outcome_obj(self.current_outcome), self.get_current_follow_up_name())
         
