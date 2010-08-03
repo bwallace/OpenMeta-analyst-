@@ -152,6 +152,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.model.update_current_group_names()
         self.model.update_current_outcome()
         self.model.update_current_time_points()
+        pyqtRemoveInputHook()
+        pdb.set_trace()
         self.model.try_to_update_outcomes()
         self.update_follow_up_label()
         self.display_outcome(self.model.current_outcome)

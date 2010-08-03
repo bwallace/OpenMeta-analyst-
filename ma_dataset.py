@@ -80,7 +80,8 @@ class Dataset:
                 cur_outcome = study.outcomes_to_follow_ups[outcome_name]
                 for ma_unit in cur_outcome.values():                
                     ma_unit.rename_group(old_group_name, new_group_name)
-                    
+        
+                            
     def change_outcome_name(self, old_outcome_name, new_outcome_name):
         self.outcome_names_to_follow_ups[new_outcome_name] = self.outcome_names_to_follow_ups.pop(old_outcome_name)
         for study in self.studies:
@@ -205,6 +206,17 @@ class Dataset:
                 group_names.extend(cur_ma_unit.get_group_names())
         return list(set(group_names))
         
+    def change_follow_up_name(self, outcome, old_name, new_name):
+        # make sure that the follow up doesn't already exist
+        if new_name in self.get_follow_up_names_for_outcome(outcome):
+            raise Exception, "follow up name %s alerady exists for outcome!" % new_name
+        for study in self.studies:
+            #for follow_up_d in study.outcomes_to_follow_ups[outcome]:
+            study.outcomes_to_follow_ups[outcome][new_name] = study.outcomes_to_follow_ups[outcome].pop(old_name)
+        # also update the outcomes -> follow-ups dictionary
+        follow_up_key= self.outcome_names_to_follow_ups[outcome].get_key(old_name)
+        self.outcome_names_to_follow_ups[outcome][follow_up_key] = new_name
+
     def get_follow_up_names(self):
         follow_up_names = []
         for study in self.studies:

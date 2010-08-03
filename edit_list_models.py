@@ -20,8 +20,6 @@ import ma_dataset
 from ma_dataset import *
 import meta_py_r
 
-
-#  unicode(form.follow_up_name_le.text().toUtf8(), "utf-8")
 class TXGroupsModel(QAbstractTableModel):
     '''
     This module mediates between the classes comprising a dataset
@@ -35,7 +33,6 @@ class TXGroupsModel(QAbstractTableModel):
         self.group_list = self.dataset.get_group_names()
         
     def refresh_group_list(self, outcome, follow_up):
-        #self.group_list = self.dataset.get_group_names()
         self.group_list = self.dataset.get_group_names_for_outcome_fu(outcome, follow_up)
         self.reset()
         
@@ -132,13 +129,16 @@ class FollowUpsModel(QAbstractTableModel):
     Subclasses the QAbstractTableModel and provide the fields of interest
     to the view.
     '''
-    def __init__(self, filename=QString(), dataset=None):
+    def __init__(self, filename=QString(), dataset=None, outcome = None):
         super(FollowUpsModel, self).__init__()
         self.dataset = dataset
+        ## we maintain a current outcome string variable because
+        # the follow-ups are outcome specific
+        self.current_outcome = outcome
         self.follow_up_list = self.dataset.get_follow_up_names()
         
-    def refresh_follow_up_list(self, outcome):  
-        self.follow_up_list = self.dataset.get_follow_up_names_for_outcome(outcome)
+    def refresh_follow_up_list(self):  
+        self.follow_up_list = self.dataset.get_follow_up_names_for_outcome(self.current_outcome)
         self.reset()
         
     def data(self, index, role=Qt.DisplayRole):
@@ -163,11 +163,17 @@ class FollowUpsModel(QAbstractTableModel):
         return 1
         
     def setData(self, index, value, role=Qt.EditRole):
-        old_follow_up_name = self.outcome_list[index.row()]
-        new_follow_up_name = value.toString()
-        self.dataset.change_follow_up_name(old_outcome_name, new_outcome_name)
+        old_follow_up_name = self.follow_up_list[index.row()]
+        new_follow_up_name = unicode(value.toString().toUtf8(), "utf-8")
+        self.dataset.change_follow_up_name(self.current_outcome, old_follow_up_name, new_follow_up_name)
+        self.refresh_follow_up_list()
+        #self.dataset.outcome_names_to_follow_ups[self.current_outcome]
+        pyqtRemoveInputHook()
+        pdb.set_trace()
         return True
-                
+        
+        
+        
     def flags(self, index):
         if not index.isValid():
             return Qt.ItemIsEnabled
