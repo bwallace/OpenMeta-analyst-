@@ -135,7 +135,7 @@ class FollowUpsModel(QAbstractTableModel):
         ## we maintain a current outcome string variable because
         # the follow-ups are outcome specific
         self.current_outcome = outcome
-        self.follow_up_list = self.dataset.get_follow_up_names()
+        self.follow_up_list = self.dataset.get_follow_up_names_for_outcome(outcome)
         
     def refresh_follow_up_list(self):  
         self.follow_up_list = self.dataset.get_follow_up_names_for_outcome(self.current_outcome)

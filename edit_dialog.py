@@ -44,10 +44,15 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         ### follow-ups
         self.follow_ups_model = edit_list_models.FollowUpsModel(dataset = dataset, outcome = self.selected_outcome)
         self.follow_up_list.setModel(self.follow_ups_model)
-        self.selected_follow_up = None
+        self.selected_follow_up = parent.model.get_current_follow_up_name()
+        index_of_follow_up_to_select = self.follow_ups_model.follow_up_list.index(self.selected_follow_up)
+        follow_up_index = self.follow_ups_model.createIndex(index_of_follow_up_to_select, 0)
+        self.follow_up_list.setCurrentIndex(follow_up_index)
         
         ### groups
-        self.groups_model = edit_list_models.TXGroupsModel(dataset = dataset)
+        # TODO this should only show
+        self.groups_model = edit_list_models.TXGroupsModel(dataset = dataset)#, \
+                                                    #outcome = self.selected_outcome, follow_up = self.selected_follow_up)
         self.group_list.setModel(self.groups_model)
         
         self._setup_connections()
