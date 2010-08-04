@@ -254,9 +254,21 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         redo_f, undo_f = None, None
         if self.cur_dimension == "outcome":
             old_outcome = self.model.current_outcome
+            ## 
+            # note that we have to cache the currently displayed
+            # groups, as well. these groups may or may not be available
+            # on the next outcome; the next_outcome call may therefore
+            # default to displaying some other group(s). however, this
+            # would cause problems when the 'next' action is undone, as in
+            # such a case the previous (current) outcome will be displayed,
+            # but the groups being displayed may be other than what they 
+            # should be (i.e., than what they are currently)
+            previous_groups = self.model.get_current_groups()
             next_outcome = self.model.get_next_outcome_name()
             redo_f = lambda: self.display_outcome(next_outcome)
-            undo_f = lambda: self.display_outcome(old_outcome)
+            previous_follow_up = self.model.get_current_follow_up_name()
+            undo_f = lambda: self.display_outcome(old_outcome, \
+                                            follow_up_name=previous_follow_up, group_names=previous_groups)
         elif self.cur_dimension == "group":
             previous_groups = self.model.get_current_groups()
             new_groups = self.model.next_groups()
@@ -326,10 +338,42 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.model.reset()
         self.tableView.resizeColumnsToContents()
         
-    def display_outcome(self, outcome_name):
+    def display_outcome(self, outcome_name, group_names=None, follow_up_name=None):
         print "displaying outcome: %s" % outcome_name
+        ###
+        # We need to update which groups & follow-ups are current
+        # in order to avoid attempting to display a group/fu that
+        # do not belong to the outcome_name. 
         self.model.set_current_outcome(outcome_name)
-        self.model.set_current_time_point(0)
+
+        # first ascertain if the currently displayed follow up is
+        # available for this outcome
+        if follow_up_name is not None:
+            self.model.set_current_follow_up(follow_up_name)
+        else:
+            # If a follow up isn't explicitly passed in, attempt to use
+            # the current follow up. If this does not exist for the outcome
+            # to be displayed, then display a different follow up.
+            cur_follow_up = self.model.get_current_follow_up_name()
+            if not self.model.outcome_has_follow_up(outcome_name, cur_follow_up):
+                # then the outcome does not have this follow up and we have to 
+                # step on to the next one.
+                next_follow_up = self.model.get_next_follow_up()[1]
+                self.model.set_current_follow_up(next_follow_up)
+        
+        # now we check the groups.
+        if group_names is not None:
+            self.model.set_current_groups(group_names)
+        else:
+            # then no group names were explicitly passed in; ascertain
+            # that the outcome/fu contains the current groups; if not,
+            # set them to something else.
+            cur_groups = self.model.get_current_groups()
+            if not all([self.model.outcome_fu_has_group(\
+                            outcome_name, self.model.get_current_follow_up_name(), group) for group in cur_groups]):
+                self.model.set_current_groups(self.model.next_groups())
+            
+        #self.model.set_current_time_point(0)
         self.cur_outcome_lbl.setText(u"<font color='Blue'>%s</font>" % outcome_name)
         self.cur_time_lbl.setText(u"<font color='Blue'>%s</font>" % self.model.get_current_follow_up_name())
         self.model.reset()

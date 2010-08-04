@@ -162,16 +162,10 @@ class DatasetModel(QAbstractTableModel):
                 else:
                     return QVariant(study.year)
             elif column in self.RAW_DATA:
-                #pyqtRemoveInputHook()
-                #pdb.set_trace()
                 adjusted_index = column - 3
                 if self.current_outcome in study.outcomes_to_follow_ups:
-                    #try:
                     cur_raw_data = self.get_current_ma_unit_for_study(index.row()).\
-                                                        get_raw_data_for_groups(self.current_txs)
-                    #except:
-                    #   pyqtRemoveInputHook()
-                    #    pdb.set_trace()                                        
+                                                        get_raw_data_for_groups(self.current_txs)                                 
                     if len(cur_raw_data) > adjusted_index:
                         return QVariant(cur_raw_data[adjusted_index])
                     else:
@@ -383,8 +377,7 @@ class DatasetModel(QAbstractTableModel):
         self.dataset.remove_outcome(outcome_name)
         
     def add_new_group(self, name):
-        # @TODO handle unicode?
-        self.dataset.add_group(str(name))
+        self.dataset.add_group(name, self.current_outcome)
         
     def remove_group(self, group_name):
         self.dataset.remove_group(group_name)
@@ -417,7 +410,7 @@ class DatasetModel(QAbstractTableModel):
         print "\nfollow ups for outcome:"
         print self.dataset.outcome_names_to_follow_ups[self.current_outcome]
         t_point = self.current_time_point
-        if self.current_time_point == max(self.dataset.outcome_names_to_follow_ups[self.current_outcome].keys()):
+        if self.current_time_point >= max(self.dataset.outcome_names_to_follow_ups[self.current_outcome].keys()):
             t_point = 0
         else:
             # WARNING if we delete a time point things might get screwed up here
@@ -431,7 +424,7 @@ class DatasetModel(QAbstractTableModel):
         
     def get_previous_follow_up(self):
         t_point = self.current_time_point
-        if self.current_time_point == min(self.dataset.outcome_names_to_follow_ups[self.current_outcome].keys()):
+        if self.current_time_point <= min(self.dataset.outcome_names_to_follow_ups[self.current_outcome].keys()):
             t_point = max(self.dataset.outcome_names_to_follow_ups[self.current_outcome].keys())
         else:
             # WARNING if we delete a time point things might get screwed up here
@@ -445,6 +438,10 @@ class DatasetModel(QAbstractTableModel):
         self.current_time_point = time_point
         self.emit(SIGNAL("followUpChanged()"))
         self.reset()
+        
+    def set_current_follow_up(self, follow_up_name):
+        t_point = self.dataset.outcome_names_to_follow_ups[self.current_outcome].get_key(follow_up_name)
+        self.set_current_time_point(t_point)
 
     def get_current_follow_up_name(self):
         if len(self.dataset.outcome_names_to_follow_ups) > 0:
@@ -467,7 +464,10 @@ class DatasetModel(QAbstractTableModel):
         
     def next_groups(self):
         ''' Returns a tuple with the next two group names (we just iterate round-robin) '''
-        group_names = self.dataset.get_group_names()
+        ## notice that we only retrieve the group names that belong
+        # to the current outcome/follow-up tuple
+        group_names = self.dataset.get_group_names_for_outcome_fu(self.current_outcome, self.get_current_follow_up_name())
+
         self._next_group_indices(group_names)
         while self.tx_index_a == self.tx_index_b:
             self._next_group_indices(group_names)
@@ -477,7 +477,6 @@ class DatasetModel(QAbstractTableModel):
         return next_txs
         
     def _next_group_indices(self, group_names):
-        
         print "\ngroup names: %s" % group_names
         if self.tx_index_b < len(group_names)-1:
             self.tx_index_b += 1
@@ -489,7 +488,19 @@ class DatasetModel(QAbstractTableModel):
                 self.tx_index_a = 0
             self.tx_index_b = 0
         
+    def outcome_has_follow_up(self, outcome, follow_up):
+        ## we just pull the outcome from the first study; we tacitly
+        # assume that all studies have the same outcomes/follow-ups
+        outcome_d = self.dataset.studies[0].outcomes_to_follow_ups[outcome]   
+        return follow_up in outcome_d.keys()
         
+    def outcome_fu_has_group(self, outcome, follow_up, group):
+        ## we just pull the outcome from the first study; we tacitly
+        # assume that all studies have the same outcomes/follow-ups
+        outcome_d = self.dataset.studies[0].outcomes_to_follow_ups[outcome]
+        ## we _assume_ that the follow_up is in this outcome!
+        return group in outcome_d[follow_up].tx_groups.keys()
+    
     def set_current_groups(self, group_names):
         self.previous_txs = self.current_txs
         self.current_txs = group_names

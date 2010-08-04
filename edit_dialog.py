@@ -42,6 +42,8 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         self.selected_outcome = parent.model.current_outcome
         
         ### follow-ups
+        # notice that we pass the follow ups model the current outcome, because it will display only
+        # those follow-ups included for this outcome
         self.follow_ups_model = edit_list_models.FollowUpsModel(dataset = dataset, outcome = self.selected_outcome)
         self.follow_up_list.setModel(self.follow_ups_model)
         self.selected_follow_up = parent.model.get_current_follow_up_name()
@@ -51,8 +53,8 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         
         ### groups
         # TODO this should only show
-        self.groups_model = edit_list_models.TXGroupsModel(dataset = dataset)#, \
-                                                    #outcome = self.selected_outcome, follow_up = self.selected_follow_up)
+        self.groups_model = edit_list_models.TXGroupsModel(dataset = dataset,\
+                                                outcome = self.selected_outcome, follow_up = self.selected_follow_up)
         self.group_list.setModel(self.groups_model)
         
         self._setup_connections()
@@ -138,6 +140,8 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         self.selected_outcome = self.get_selected_outcome()
         self.follow_up_list.model().current_outcome = self.selected_outcome
         self.follow_up_list.model().refresh_follow_up_list()
+        self.group_list.model().refresh_group_list(self.selected_outcome, self.selected_follow_up)
+        ## update
         self.disable_remove_buttons()
         self.remove_outcome_btn.setEnabled(True)
         

@@ -139,15 +139,25 @@ class Dataset:
         for study in self.studies:
             study.remove_outcome(outcome_name)
    
-    def add_group(self, group_name):
-        ### TODO at current, when a group is added, it is added
-        # to *all* outcomes, all follow ups. I think groups are instead
-        # to be added to only the current outcome/follow-up. 
+    def add_group(self, group_name, outcome_name, follow_up_name=None):
+        ####
+        # A note on adding new groups: per consultation with sir
+        # Thomas Trikalinos, a decision has been made that when a 
+        # group is added to an outcome, it is added by default to all
+        # the follow ups belonging to said outcome. It is not, however
+        # added to all the *outcomes*.
+        #
+        # However, if the follow_up_name argument is not None, the 
+        # group will only be added to the specified follow up.
         for study in self.studies:
-            for outcome_name in study.outcomes_to_follow_ups.keys():
-                cur_outcome = study.outcomes_to_follow_ups[outcome_name]
+            cur_outcome = study.outcomes_to_follow_ups[outcome_name]
+            if follow_up_name is None:
                 for ma_unit in cur_outcome.values():
                     ma_unit.add_group(group_name)
+            else:
+                ma_unit = cur_outcome[follow_up_name]
+                ma_unit.add_group(group_name)
+
         print "added group: %s. cur groups: %s" % (group_name, self.get_group_names())
         
     def remove_group(self, group_name):

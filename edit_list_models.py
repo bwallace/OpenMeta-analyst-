@@ -27,17 +27,24 @@ class TXGroupsModel(QAbstractTableModel):
     subclass the QAbstractTableModel and provide the fields of interest
     to the view.
     '''
-    def __init__(self, filename=QString(), dataset=None):
+    def __init__(self, filename=QString(), dataset=None, outcome=None, follow_up=None):
         super(TXGroupsModel, self).__init__()
         self.dataset = dataset
-        self.group_list = self.dataset.get_group_names()
+        self.current_outcome = outcome
+        self.current_follow_up = follow_up
+        self.refresh_group_list(outcome, follow_up)
         
     def refresh_group_list(self, outcome, follow_up):
         self.group_list = self.dataset.get_group_names_for_outcome_fu(outcome, follow_up)
+        print "\n"
+        print outcome
+        print follow_up
+        print self.group_list
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
         self.reset()
         
     def data(self, index, role=Qt.DisplayRole):
-        self.group_list = self.dataset.get_group_names()
         if not index.isValid() or not (0 <= index.row() < len(self.dataset)):
             return QVariant()
         group_name = self.group_list[index.row()]
@@ -62,6 +69,8 @@ class TXGroupsModel(QAbstractTableModel):
         # if this happens (typically this will be an accident on the user's part)
         if new_name == "":
             return False
+            
+        
         self.dataset.change_group_name(old_name, new_name)
         return True
         
