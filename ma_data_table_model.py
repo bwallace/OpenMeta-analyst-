@@ -92,8 +92,12 @@ class DatasetModel(QAbstractTableModel):
         self.reset()
         
     def update_current_time_points(self):
-        ### TODO what if the user deletes *all* the follow-ups?
-        self.current_time_point = self.dataset.outcome_names_to_follow_ups[self.current_outcome].keys()[0]
+        if self.current_outcome is not None:
+            # note that the user cannot delete all follow-ups; so it's safe to assume this dictionary has 
+            # at least one entry
+            self.current_time_point = self.dataset.outcome_names_to_follow_ups[self.current_outcome].keys()[0]
+        else:
+            self.current_time_point = 0
         self.reset()
         
     def update_current_group_names(self):

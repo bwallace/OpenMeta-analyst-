@@ -36,10 +36,11 @@ class TXGroupsModel(QAbstractTableModel):
         
     def refresh_group_list(self, outcome, follow_up):
         self.group_list = self.dataset.get_group_names_for_outcome_fu(outcome, follow_up)
+        print "\ngroup names are: %s" % self.group_list
         self.reset()
         
     def data(self, index, role=Qt.DisplayRole):
-        if not index.isValid() or not (0 <= index.row() < len(self.dataset)):
+        if not index.isValid() or not (0 <= index.row() < len(self.group_list)):
             return QVariant()
         group_name = self.group_list[index.row()]
         if role == Qt.DisplayRole:
@@ -171,8 +172,6 @@ class FollowUpsModel(QAbstractTableModel):
         self.dataset.change_follow_up_name(self.current_outcome, old_follow_up_name, new_follow_up_name)
         self.refresh_follow_up_list()
         #self.dataset.outcome_names_to_follow_ups[self.current_outcome]
-        pyqtRemoveInputHook()
-        pdb.set_trace()
         return True
         
         

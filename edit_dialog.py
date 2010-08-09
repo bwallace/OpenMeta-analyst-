@@ -40,7 +40,8 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         outcome_index = self.outcomes_model.createIndex(index_of_outcome_to_select, 0)
         self.outcome_list.setCurrentIndex(outcome_index)
         self.selected_outcome = parent.model.current_outcome
-        
+        self.remove_outcome_btn.setEnabled(True)
+            
         ### follow-ups
         # notice that we pass the follow ups model the current outcome, because it will display only
         # those follow-ups included for this outcome
@@ -52,7 +53,6 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         self.follow_up_list.setCurrentIndex(follow_up_index)
         
         ### groups
-        # TODO this should only show
         self.groups_model = edit_list_models.TXGroupsModel(dataset = dataset,\
                                                 outcome = self.selected_outcome, follow_up = self.selected_follow_up)
         self.group_list.setModel(self.groups_model)
@@ -126,22 +126,32 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
             
     def get_selected_outcome(self):
         index = self.outcome_list.currentIndex()
+        if index.row() < 0 or index.row() > len(self.outcome_list.model().outcome_list):
+            return None
         return self.outcome_list.model().outcome_list[index.row()]
         
     def remove_outcome(self):
         self.selected_outcome = self.get_selected_outcome()
         self.outcome_list.model().dataset.remove_outcome(self.selected_outcome)
+        self.outcome_list.model().refresh_outcome_list()
         self.outcome_list.model().reset()
+        # now update the selected outcome
         self.selected_outcome = self.get_selected_outcome()
         # update the follow-ups list as appropriate
-        self.follow_up_list.model().current_outcome = self.selected_outcome
-        print "\ncurrent outcome: %s" % self.selected_outcome
-        self.follow_up_list.model().refresh_follow_up_list()
-        self.selected_follow_up = self.get_selected_follow_up()
-        
-        ## also update the groups and follow-up lists
-        self.group_list.model().refresh_group_list(self.selected_outcome, self.selected_follow_up)
-        
+        if self.selected_outcome is not None:
+            self.follow_up_list.model().current_outcome = self.selected_outcome
+            print "\ncurrent outcome updated. is now: %s" % self.selected_outcome
+            self.follow_up_list.model().refresh_follow_up_list()
+            self.selected_follow_up = self.get_selected_follow_up()
+            ## also update the groups and follow-up lists
+            self.group_list.model().refresh_group_list(self.selected_outcome, self.selected_follow_up)
+        else:
+            ## the assumption in this case is that all outcomes have been deleted
+            # so we clear the follow up and group lists.
+            self.follow_up_list.model().follow_up_list = []
+            self.follow_up_list.model().reset()
+            self.group_list.model().group_list = []
+            self.group_list.model().reset()
 
     def outcome_selected(self, index):
         self.selected_outcome = self.get_selected_outcome()
