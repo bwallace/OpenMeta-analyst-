@@ -50,10 +50,109 @@
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
    </property>
   </widget>
-  <widget class="QGroupBox" name="groupBox">
+  <widget class="QGroupBox" name="groupBox_2">
    <property name="geometry">
     <rect>
      <x>10</x>
+     <y>10</y>
+     <width>151</width>
+     <height>271</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>outcomes</string>
+   </property>
+   <widget class="QListView" name="outcome_list">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>20</y>
+      <width>151</width>
+      <height>209</height>
+     </rect>
+    </property>
+    <property name="alternatingRowColors">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="add_outcome_btn">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>230</y>
+      <width>32</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>32</width>
+      <height>32</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>32</width>
+      <height>32</height>
+     </size>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="images/icons.qrc">
+      <normaloff>:/images/function_icon_set/add_48.png</normaloff>:/images/function_icon_set/add_48.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>32</width>
+      <height>32</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="remove_outcome_btn">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>230</y>
+      <width>32</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>32</width>
+      <height>32</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>32</width>
+      <height>32</height>
+     </size>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="images/icons.qrc">
+      <normaloff>:/images/function_icon_set/cancel_48.png</normaloff>:/images/function_icon_set/cancel_48.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>32</width>
+      <height>32</height>
+     </size>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>330</x>
      <y>10</y>
      <width>151</width>
      <height>271</height>
@@ -152,109 +251,10 @@
     </property>
    </widget>
   </widget>
-  <widget class="QGroupBox" name="groupBox_2">
-   <property name="geometry">
-    <rect>
-     <x>170</x>
-     <y>10</y>
-     <width>151</width>
-     <height>271</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string>outcomes</string>
-   </property>
-   <widget class="QListView" name="outcome_list">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>20</y>
-      <width>151</width>
-      <height>209</height>
-     </rect>
-    </property>
-    <property name="alternatingRowColors">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="add_outcome_btn">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>230</y>
-      <width>32</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="minimumSize">
-     <size>
-      <width>32</width>
-      <height>32</height>
-     </size>
-    </property>
-    <property name="maximumSize">
-     <size>
-      <width>32</width>
-      <height>32</height>
-     </size>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset resource="images/icons.qrc">
-      <normaloff>:/images/function_icon_set/add_48.png</normaloff>:/images/function_icon_set/add_48.png</iconset>
-    </property>
-    <property name="iconSize">
-     <size>
-      <width>32</width>
-      <height>32</height>
-     </size>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="remove_outcome_btn">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>80</x>
-      <y>230</y>
-      <width>32</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="minimumSize">
-     <size>
-      <width>32</width>
-      <height>32</height>
-     </size>
-    </property>
-    <property name="maximumSize">
-     <size>
-      <width>32</width>
-      <height>32</height>
-     </size>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset resource="images/icons.qrc">
-      <normaloff>:/images/function_icon_set/cancel_48.png</normaloff>:/images/function_icon_set/cancel_48.png</iconset>
-    </property>
-    <property name="iconSize">
-     <size>
-      <width>32</width>
-      <height>32</height>
-     </size>
-    </property>
-   </widget>
-  </widget>
   <widget class="QGroupBox" name="grpbox_follow_ups">
    <property name="geometry">
     <rect>
-     <x>330</x>
+     <x>170</x>
      <y>10</y>
      <width>151</width>
      <height>271</height>

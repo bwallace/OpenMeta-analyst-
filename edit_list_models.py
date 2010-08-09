@@ -36,12 +36,6 @@ class TXGroupsModel(QAbstractTableModel):
         
     def refresh_group_list(self, outcome, follow_up):
         self.group_list = self.dataset.get_group_names_for_outcome_fu(outcome, follow_up)
-        print "\n"
-        print outcome
-        print follow_up
-        print self.group_list
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
         self.reset()
         
     def data(self, index, role=Qt.DisplayRole):

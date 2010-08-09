@@ -102,6 +102,7 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         index = self.group_list.currentIndex()
         selected_group = self.group_list.model().group_list[index.row()]
         self.group_list.model().dataset.delete_group(selected_group)
+        self.group_list.model().refresh_group_list(self.selected_outcome, self.selected_follow_up)
         self.group_list.model().reset()
         
     def group_selected(self, index):
@@ -131,10 +132,16 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         self.selected_outcome = self.get_selected_outcome()
         self.outcome_list.model().dataset.remove_outcome(self.selected_outcome)
         self.outcome_list.model().reset()
+        self.selected_outcome = self.get_selected_outcome()
+        # update the follow-ups list as appropriate
+        self.follow_up_list.model().current_outcome = self.selected_outcome
+        print "\ncurrent outcome: %s" % self.selected_outcome
+        self.follow_up_list.model().refresh_follow_up_list()
+        self.selected_follow_up = self.get_selected_follow_up()
         
         ## also update the groups and follow-up lists
-        self.group_list.model().refresh_group_list()
-
+        self.group_list.model().refresh_group_list(self.selected_outcome, self.selected_follow_up)
+        
 
     def outcome_selected(self, index):
         self.selected_outcome = self.get_selected_outcome()
@@ -156,6 +163,8 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
             
     def get_selected_follow_up(self):
         index = self.follow_up_list.currentIndex()
+        print "index is: %s" % index.row()
+        print "here is the current follow-up list: %s" % self.follow_up_list.model().follow_up_list
         return self.follow_up_list.model().follow_up_list[index.row()]
         
     def remove_follow_up(self):
@@ -166,7 +175,12 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         
     def follow_up_selected(self, index):
         self.disable_remove_buttons()
-        self.remove_follow_up_btn.setEnabled(True)
+        # we want to disallow the user from removing *all* 
+        # follow-ups for a given outcome, since this would be meaningless.
+        # thus we check if there is only follow-up; if so, disable 
+        # (or rather, don't enable) the remove button
+        if len(self.follow_up_list.model().follow_up_list) > 1:
+            self.remove_follow_up_btn.setEnabled(True)
         self.selected_follow_up = self.get_selected_follow_up()
         self.group_list.model().refresh_group_list(self.selected_outcome, self.selected_follow_up)
         
