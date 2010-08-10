@@ -64,9 +64,10 @@ class TXGroupsModel(QAbstractTableModel):
         # if this happens (typically this will be an accident on the user's part)
         if new_name == "":
             return False
-            
         
-        self.dataset.change_group_name(old_name, new_name)
+        self.dataset.change_group_name(old_name, new_name, \
+                        outcome=self.current_outcome, follow_up=self.current_follow_up)
+        self.refresh_group_list(self.current_outcome, self.current_follow_up)
         return True
         
     def flags(self, index):

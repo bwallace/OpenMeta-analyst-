@@ -74,12 +74,22 @@ class Dataset:
 
         return list(set(all_group_names))
         
-    def change_group_name(self, old_group_name, new_group_name):
+    def change_group_name(self, old_group_name, new_group_name, outcome=None, follow_up=None):
+        if (outcome is None and follow_up is not None) or (follow_up is None and outcome is not None):
+            raise Exception, "dataset -- change_group_name -- either both outcome and follow_up should be None, \
+                                            or else neither should."
+            
         for study in self.studies:
-            for outcome_name in study.outcomes_to_follow_ups.keys():
-                cur_outcome = study.outcomes_to_follow_ups[outcome_name]
-                for ma_unit in cur_outcome.values():                
-                    ma_unit.rename_group(old_group_name, new_group_name)
+            if outcome is None and follow_up is None:
+                # if no outcome/follow-up was specified, we change *all* occurences of
+                # the old_group_name to the new_group_name
+                for outcome_name in study.outcomes_to_follow_ups.keys():
+                    cur_outcome = study.outcomes_to_follow_ups[outcome_name]
+                    for ma_unit in cur_outcome.values():                
+                        ma_unit.rename_group(old_group_name, new_group_name)
+            else:
+                ma_unit = study.outcomes_to_follow_ups[outcome][follow_up]
+                ma_unit.rename_group(old_group_name, new_group_name)
         
                             
     def change_outcome_name(self, old_outcome_name, new_outcome_name):
