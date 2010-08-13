@@ -8,13 +8,13 @@ PageSize = (500, 300)
 
 class ViewDialog(QDialog, ui_network_view.Ui_network_view_dialog):
 
-    def __init__(self, dataset, parent=None):
+    def __init__(self, model, parent=None):
         super(ViewDialog, self).__init__(parent)
         self.setupUi(self)
         
-        self.dataset = dataset
-        self.cur_outcome = "death"
-        self.cur_follow_up = "baseline"
+        self.dataset = model.dataset
+        self.cur_outcome = model.current_outcome#"death"
+        self.cur_follow_up = model.get_current_follow_up_name()
         
         self.populate_cbo_boxes()
         self.setup_signals()

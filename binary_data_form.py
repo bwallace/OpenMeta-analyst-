@@ -34,7 +34,11 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.setupUi(self)
         self._setup_signals_and_slots()
         self.ma_unit = ma_unit
-        self.raw_data = self.ma_unit.get_raw_data_for_groups(cur_txs)
+        self.raw_data_d = {}
+        for group in cur_txs:
+            raw_data = self.ma_unit.get_raw_data_for_group(group)
+            self.raw_data_d[group]  = raw_data
+        
         self.cur_groups = cur_txs
         self.cur_effect = cur_effect
         self._update_raw_data()
@@ -69,30 +73,40 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
     def _update_raw_data(self):
         ''' Generates the 2x2 table with whatever parametric data was provided '''
         self.raw_data_table.blockSignals(True)
-        col = 0
-        for i in range(4):
-            item = QTableWidgetItem(str(self.raw_data[i]))
-            row = 0 if i < 2 else 1
-            col = i
-            if row == 1:
-                col = i - 2
-            if col in (1,3):
-                col += 1
-            self.raw_data_table.setItem(row, col, item)
+        for row, group in enumerate(self.cur_groups):
+            for col in (0,2):
+                adjusted_index = 0 if col==0 else 1
+                item = QTableWidgetItem(str(self.raw_data_d[group][adjusted_index]))
+                self.raw_data_table.setItem(row, col, item)
         self.raw_data_table.blockSignals(False)
       
+    def _update_ma_unit(self):
+        ''' 
+        Walk over the entries in the matrix (which may have been updated
+        via imputation in the _cell_changed method) corresponding to the 
+        raw data in the underlying meta-analytic unit and upate the values.
+        '''
+        for row in range(2):
+            for col in (0,2):
+                adjusted_col = 1 if col==2 else 0
+                self.raw_data_d[self.cur_groups[row]][adjusted_col] = self._get_int(row, col)
+                print "%s, %s: %s" % (row, col, self._get_int(row, col))
+        print "ok -- raw data is now: %s" % self.raw_data_d
         
     def _cell_changed(self, row, col):
-        #self.check_for_consistencies()
-        self._cell_changed1(row, col)
+        # tries to make sense of user input before passing
+        # on to the R routine
+        self._fillin_basics(row, col) 
         params = self._get_vals()
         computed = meta_py_r.fillin_2x2(params)
+        print computed
         if computed is not None:
             if max(computed['residuals'].values()) > THRESHOLD:
                 print"Problem computing 2x2 table."
             else:
                 print "Table computed!"
                 self._set_vals(computed["coefficients"])
+        self._update_ma_unit()
             #pyqtRemoveInputHook()
             #pdb.set_trace()
         
@@ -101,6 +115,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         vals_d["c11"] = self._get_int(0, 0)
         vals_d["c12"] = self._get_int(0, 1)
         vals_d["c21"] = self._get_int(1, 0)
+        
         vals_d["c22"] = self._get_int(1, 1)
         vals_d["r1sum"] = self._get_int(0, 2)
         vals_d["r2sum"] = self._get_int(1, 2)
@@ -133,24 +148,16 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.raw_data_table.setItem(i, j, \
                  QTableWidgetItem(str(val)))
         
-    def _cell_changed1(self, row, col):
+    def _fillin_basics(self, row, col):
+        '''
         if row < 2:
-            # the offset is for indexing the data
-            # in the raw_data vector, which is one
-            # dimensional (i.e., stretched 1X4) rather
-            # than square (2x2)
-            offset = 2 if row == 1 else 0
+            cur_group = self.cur_groups[row]
             if col in (0,2):
                 # then raw data was changed.
-                #
-                # note that the 2x2 table is setup differently than the 
-                # main data entry screen; the columns that correspond
-                # to the raw data as entered in the main sheet and kept 
-                # in MA units are 0 and 2 in the 2x2 table; namely,
-                # the number of events and total N.
                 adjusted_col = 1 if col==2 else 0
-                index = offset + adjusted_col
-                self.raw_data[offset+adjusted_col] = self._get_int(row, col)
+               
+                self.raw_data[cur_group][adjusted_col] = self._get_int(row, col)
+                self.raw_data_d[cur_group][offset+adjusted_col] = self._get_int(row, col)
                 if col == 0 and not self._is_empty(row, 1):
                     print "ne: %s, N: %s" % (self._get_int(row, 0), self._get_int(row, 1))
                     print self._get_int(row, 0) + self._get_int(row, 1)
@@ -158,18 +165,21 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                     # no events has been given, we need to update the total
                     self.raw_data[offset+1] = self._get_int(row, 0) + self._get_int(row, 1)
             else:
+                ### not sure that we want to do anything in this case
                 # then column 1, i.e., "no event" has been edited. 
                 no_events = self._get_int(row, col)
                 index = offset+1
                 print "setting %s to %s" % (index, self.raw_data[offset] + no_events)
                 self.raw_data[index] = self.raw_data[offset] + no_events
-            self._update_raw_data()
-            self._update_data_table()
+        '''
+        self._update_ma_unit()
+        self._update_raw_data()
+        self._update_data_table()
         self.check_for_consistencies()
         
         # @TODO refactor
-        d = self._build_dict()
-        meta_py_r.impute_two_by_two(d)
+        #d = self._build_dict()
+        #meta_py_r.impute_two_by_two(d)
         
     def _build_dict(self):
         d =  dict(zip(["control.n.outcome", "control.N", "tx.n.outcome", "tx.N"], self.raw_data))
@@ -212,14 +222,16 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         # 
         # the raw data is of the form g_n / g_N where g_N is the *total* 
         # and g_n is the event count. thus no event = g_N - g_n.
-        e1, n1, e2, n2 = [int(x) if (x != "" and x is not None) else None for x in self.raw_data]
+        raw_data_list = []
+        for group in self.cur_groups:
+            raw_data_list.extend(self.raw_data_d[group])
+            
+        e1, n1, e2, n2 = [int(x) if (x != "" and x is not None) else None for x in raw_data_list]
+        
         print "updating raw data with:\n e1 = %s, n1 = %s, e2 = %s, n2 = %s" % \
                                             (e1, n1, e2, n2)
         no_events1, no_events2 = None, None
         
-        #
-        # @TODO this should probably be refactored.. kind of smells.
-        #
         
         # also, instead of checking if None, check if None or "" (either way it's considered 'empty')
         if e1 is not None and n1 is not None and self._is_empty(0, 1):

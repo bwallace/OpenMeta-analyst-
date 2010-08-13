@@ -221,9 +221,11 @@ class Dataset:
     def get_group_names_for_outcome_fu(self, outcome_name, follow_up):
         group_names = []
         for study in self.studies:
-            if study.outcomes_to_follow_ups[outcome_name].has_key(follow_up):
-                cur_ma_unit = study.outcomes_to_follow_ups[outcome_name][follow_up]
-                group_names.extend(cur_ma_unit.get_group_names())
+            print study.name
+            if study.outcomes_to_follow_ups.has_key(outcome_name):
+                if study.outcomes_to_follow_ups[outcome_name].has_key(follow_up):
+                    cur_ma_unit = study.outcomes_to_follow_ups[outcome_name][follow_up]
+                    group_names.extend(cur_ma_unit.get_group_names())
         return list(set(group_names))
         
     def change_follow_up_name(self, outcome, old_name, new_name):
@@ -231,7 +233,6 @@ class Dataset:
         if new_name in self.get_follow_up_names_for_outcome(outcome):
             raise Exception, "follow up name %s alerady exists for outcome!" % new_name
         for study in self.studies:
-            #for follow_up_d in study.outcomes_to_follow_ups[outcome]:
             study.outcomes_to_follow_ups[outcome][new_name] = study.outcomes_to_follow_ups[outcome].pop(old_name)
         # also update the outcomes -> follow-ups dictionary
         follow_up_key= self.outcome_names_to_follow_ups[outcome].get_key(old_name)
@@ -473,11 +474,20 @@ class MetaAnalyticUnit:
             pyqtRemoveInputHook()
             pdb.set_trace()
         
+    def set_raw_data_for_group(self, group_name, raw_data):
+        self.tx_groups[group_name].raw_data = raw_data
+        
     def get_raw_data_for_groups(self, groups):
         raw_data = []
         for group in groups:
             raw_data.extend(self.get_raw_data_for_group(group))
         return raw_data
+        
+    def set_raw_data_for_groups(self, groups, raw_data_list):
+        # note: raw_data_list should be a *nested list*, where entry
+        # i is the raw data for groups[i]. 
+        for i,group in enumerate(groups):
+            self.set_raw_data_for_group(group, raw_data_list[i])
         
     def get_group_names(self):
         return self.tx_groups.keys()

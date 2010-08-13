@@ -160,7 +160,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         print "ok -- model set" 
         
     def view_network(self):
-        view_window =  network_view.ViewDialog(self.model.dataset, parent=self)
+        view_window =  network_view.ViewDialog(self.model, parent=self)
         view_window.show()
         
     def analysis(self, results):

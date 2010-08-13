@@ -83,10 +83,19 @@ class MADataTable(QtGui.QTableView):
         # in particular, we cache the raw data prior to editing;
         # then undo will simply overwrite the new raw data
         if data_type == "binary":
+            ### need to back up
+            cur_raw_data_dict = {}
+            for group in cur_txs:
+                cur_raw_data_dict[group] = list(ma_unit.get_raw_data_for_group(group))
+                
             form =  binary_data_form.BinaryDataForm2(ma_unit, cur_txs, cur_effect, parent=self)
             if form.exec_():
                 # do stuff...
-                pass
+                #for group, new_raw_data in zip(cur_txs, form.raw_data):
+                pyqtRemoveInputHook()
+                pdb.set_trace()
+                raw_data_edit = CommandEditRawData(ma_unit, self.model(), copy.deepcopy(cur_raw_data_dict), form.raw_data_d)
+                self.undoStack.push(raw_data_edit)
         elif data_type == "continuous":
             cur_raw_data_dict = {}
             for group_name in cur_txs:

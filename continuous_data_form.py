@@ -5,7 +5,15 @@
 #  OpenMeta[analyst]
 #  ---
 #  Continuous data form module; for flexible entry of continuous
-#  outcome data
+#  outcome data.
+#
+# Note that we don't make use of the table/custom model
+# design here. Rather, we edit the raw_data_dict 
+# directly, based on what the user inputs. This seemed a more
+# straightforward approach, because the table itself displays
+# many fields that do not ultimately belong in the raw_data --
+# it's mostly imputation going on here.
+#
 ##################################################
 
 import pdb
@@ -30,8 +38,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         super(ContinuousDataForm, self).__init__(parent)
         self.setupUi(self)
         self.setup_signals_and_slots()
-        #self.ma_unit = ma_unit
-        #self.raw_data = self.ma_unit.get_raw_data_for_groups(cur_txs)
+
         self.raw_data_dict = raw_data_dict
         self.raw_data = []
         for group in cur_txs:
@@ -99,7 +106,6 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
     def update_raw_data(self):
         self.simple_table.blockSignals(True)
         for row_index, group_name in enumerate(self.cur_groups):
-            #grp_raw_data = self.ma_unit.tx_groups[group_name].raw_data
             grp_raw_data = self.raw_data_dict[group_name]
             for col in range(len(grp_raw_data)):
                 val = QTableWidgetItem(str(grp_raw_data[col]))
