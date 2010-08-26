@@ -189,8 +189,7 @@ class DatasetModel(QAbstractTableModel):
             elif column != self.INCLUDE_STUDY:
                 # here the column is to the right of the outcomes (and not the 0th, or
                 # 'include study' column, and thus must corrrespond to a covariate.
-                cov_index = column - (self.OUTCOMES[-1]+1)
-                cov_name = self.dataset.covariates[cov_index].name
+                cov_name = self.get_cov(column).name
                 cov_value = study.covariate_dict[cov_name]
                 if cov_value is None:
                     cov_value = ""
@@ -280,8 +279,7 @@ class DatasetModel(QAbstractTableModel):
                 study.include = value.toBool()
             else:
                 # then a covariate value has been edited.
-                cov_index = column - (self.OUTCOMES[-1]+1)
-                cov = self.dataset.covariates[cov_index]
+                cov = self.get_cov(column)
                 cov_name = cov.name
                 new_value = None
                 if cov.data_type == FACTOR:
@@ -388,6 +386,10 @@ class DatasetModel(QAbstractTableModel):
     def columnCount(self, index=QModelIndex()):
         return self._get_col_count()
 
+    def get_cov(self, table_col_index):
+        cov_index = table_col_index - (self.OUTCOMES[-1]+1)
+        return self.dataset.covariates[cov_index]
+        
     def _get_col_count(self):
         '''
         Calculate how many columns to display; this is contingent on the data type,
@@ -552,6 +554,10 @@ class DatasetModel(QAbstractTableModel):
             self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by="name", reverse=reverse), reverse=reverse)
         elif col == self.YEAR:
             self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by="year", reverse=reverse), reverse=reverse)
+        elif col > self.OUTCOMES[-1]:
+            cov = self.get_cov(col)
+            self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by=cov.name, reverse=reverse), reverse=reverse)
+            
         self.reset()
 
     def order_studies(self, ids):

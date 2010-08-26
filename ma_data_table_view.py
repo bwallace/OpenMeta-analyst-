@@ -39,7 +39,8 @@ class MADataTable(QtGui.QTableView):
 
         vert_header = self.verticalHeader()
         self.connect(vert_header, SIGNAL("sectionClicked(int)"), self.row_header_clicked)
-
+    
+        ## TODO need to add covariate indices here, as needed
         self.reverse_column_sorts = {0: False, 1: False}
         self.setAlternatingRowColors(True)
         
@@ -118,6 +119,14 @@ class MADataTable(QtGui.QTableView):
 
     def header_clicked(self, column):
         can_sort_by = [self.model().NAME, self.model().YEAR]
+        ## plus we can sort by any covariates, which correspond to those columns that are
+        # beyond the last outcome
+        covariate_columns = range(self.model().OUTCOMES[-1]+1, self.model().columnCount())
+        # if a covariate column was clicked, it may not yet have an entry in the
+        # reverse_column_sorts dictionary; thus we insert one here
+        if not self.reverse_column_sorts.has_key(column):
+            self.reverse_column_sorts[column] = False
+        can_sort_by.extend(covariate_columns)
         if column in can_sort_by:
             sort_command = CommandSort(self.model(), column, self.reverse_column_sorts[column])
             self.undoStack.push(sort_command)
@@ -400,10 +409,12 @@ class CommandSort(QUndoCommand):
     def redo(self):
         self.previous_order = self.model.get_ordered_study_ids()
         self.model.sort_studies(self.col, self.reverse)
+        self.model.reset()
 
     def undo(self):
         self.model.order_studies(self.previous_order)
-
+        self.model.reset()
+        
 class StudyDelegate(QItemDelegate):
 
       def __init__(self, parent=None):

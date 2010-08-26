@@ -336,7 +336,7 @@ class Dataset:
         return (list(set(node_list)), adjacency_list)
         
     def ma_unit_has_edge_between_groups(self, ma_unit, groups):
-        # TODO this will need to be updated; right now
+        # TODO this will (probably) need to be updated; right now
         # we return false if any of the groups in the unit don't
         # contain raw_data; but really we need also to check
         # for effect sizes, which may have been entered
@@ -351,6 +351,11 @@ class Dataset:
             return lambda study_a, study_b : self._cmp_wrapper(study_a.name, study_b.name, reverse)
         elif compare_by == "year":
             return lambda study_a, study_b : self._cmp_wrapper(study_a.year, study_b.year, reverse)
+        else:
+            # then we assume that we're sorting by a covariate
+            return lambda study_a, study_b : self._cmp_wrapper(study_a.covariate_dict[compare_by], \
+                                                               study_b.covariate_dict[compare_by], \
+                                                               reverse)
     
     def _cmp_wrapper(self, study_a_val, study_b_val, reverse):
         '''
