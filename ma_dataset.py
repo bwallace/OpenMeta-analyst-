@@ -42,7 +42,9 @@ TYPE_TO_STR_DICT = {BINARY:u"binary", CONTINUOUS:u"continuous",
                                     
 # enumeration of meta-analytic types
 VANILLA, NETWORK = range(2)
-    
+
+EMPTY_VALS = ("", None) # these indicate an empty row/cell 
+
 class Dataset:
     def __len__(self):
         return len(self.studies)
@@ -348,26 +350,45 @@ class Dataset:
         
     def cmp_studies(self, compare_by="name", reverse=True):
         if compare_by == "name":
-            return lambda study_a, study_b : self._cmp_wrapper(study_a.name, study_b.name, reverse)
+            return lambda study_a, study_b : self._meta_cmp_wrapper(study_a, study_b,\
+                                                            study_a.name, study_b.name, reverse)
         elif compare_by == "year":
-            return lambda study_a, study_b : self._cmp_wrapper(study_a.year, study_b.year, reverse)
+            return lambda study_a, study_b : self._meta_cmp_wrapper(study_a, study_b, study_a.year, \
+                                                                    study_b.year, reverse)
         else:
             # then we assume that we're sorting by a covariate
-            return lambda study_a, study_b : self._cmp_wrapper(study_a.covariate_dict[compare_by], \
+            return lambda study_a, study_b : self._meta_cmp_wrapper(study_a,\
+                                                               study_b,\
+                                                               study_a.covariate_dict[compare_by], \
                                                                study_b.covariate_dict[compare_by], \
                                                                reverse)
     
+    def _both_empty(self, a, b):
+        return a in EMPTY_VALS and b in EMPTY_VALS
+        
+    def _meta_cmp_wrapper(self, study_a, study_b, study_a_val, study_b_val, reverse):
+        '''
+        This is a bit kludgey -- we wrap the cmp wrapper in cases where the study names are not
+        being compared. This is to avoid comparisons of two empty values. For example, if we are 
+        sorting by a covariate, and it is empty in two studies, we want to then sort these studies by 
+        their names. 
+        '''
+        if self._both_empty(study_a_val, study_b_val):
+            # both values being compared are empty; sort by study names
+            return self._cmp_wrapper(study_a.name, study_b.name, reverse)
+        else:
+            # at least one has a value; proceed as usual.
+            return self._cmp_wrapper(study_a_val, study_b_val, reverse)
+        
     def _cmp_wrapper(self, study_a_val, study_b_val, reverse):
         '''
         Wraps the default compare method to assert that "" (i.e., empty studies)
         are greater than non-empties
         '''
         flip_sign = -1 if reverse else 1
-        empty_vals = ("", None) # these indicate an empty row/cell
-        
-        if  study_a_val in empty_vals: 
+        if  study_a_val in EMPTY_VALS: 
             return flip_sign*1
-        elif study_b_val in empty_vals:
+        elif study_b_val in EMPTY_VALS:
             return flip_sign*-1
         else:
             return cmp(study_a_val, study_b_val)

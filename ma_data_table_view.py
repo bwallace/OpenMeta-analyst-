@@ -163,7 +163,8 @@ class MADataTable(QtGui.QTableView):
         cast to python Unicode strings and returned. If the to_clipboard flag is true, the contents will
         also be copied to the system clipboard
         '''
-        print "upper left index: %s, upper right index: %s" % (self._print_index(upper_left_index), self._print_index(lower_right_index))
+        print "upper left index: %s, upper right index: %s" % \
+                (self._print_index(upper_left_index), self._print_index(lower_right_index))
         text_matrix = []
         # +1s are because range() is right interval exclusive
         for row in range(upper_left_index.row(), lower_right_index.row()+1):
