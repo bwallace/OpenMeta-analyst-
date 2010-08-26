@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow" >
-  <property name="geometry" >
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,101 +10,101 @@
     <height>621</height>
    </rect>
   </property>
-  <property name="font" >
+  <property name="font">
    <font>
     <family>Verdana</family>
    </font>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>OpenMeta[analyst]</string>
   </property>
-  <property name="windowIcon" >
-   <iconset resource="images/icons.qrc" >
+  <property name="windowIcon">
+   <iconset resource="images/icons.qrc">
     <normaloff>:/images/meta.png</normaloff>:/images/meta.png</iconset>
   </property>
-  <widget class="QWidget" name="centralwidget" >
-   <property name="font" >
+  <widget class="QWidget" name="centralwidget">
+   <property name="font">
     <font>
      <family>Verdana</family>
     </font>
    </property>
-   <property name="cursor" >
+   <property name="cursor">
     <cursorShape>ArrowCursor</cursorShape>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout" >
-    <property name="spacing" >
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="spacing">
      <number>0</number>
     </property>
-    <property name="leftMargin" >
+    <property name="leftMargin">
      <number>2</number>
     </property>
-    <property name="rightMargin" >
+    <property name="rightMargin">
      <number>2</number>
     </property>
-    <property name="bottomMargin" >
+    <property name="bottomMargin">
      <number>0</number>
     </property>
     <item>
-     <widget class="QFrame" name="nav_frame" >
-      <property name="frameShape" >
+     <widget class="QFrame" name="nav_frame">
+      <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
       </property>
-      <property name="frameShadow" >
+      <property name="frameShadow">
        <enum>QFrame::Plain</enum>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2" >
-       <property name="spacing" >
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="spacing">
         <number>1</number>
        </property>
-       <property name="leftMargin" >
+       <property name="leftMargin">
         <number>0</number>
        </property>
-       <property name="topMargin" >
+       <property name="topMargin">
         <number>1</number>
        </property>
-       <property name="rightMargin" >
+       <property name="rightMargin">
         <number>0</number>
        </property>
-       <property name="bottomMargin" >
+       <property name="bottomMargin">
         <number>0</number>
        </property>
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout" >
-         <property name="spacing" >
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <property name="spacing">
           <number>0</number>
          </property>
-         <property name="bottomMargin" >
+         <property name="bottomMargin">
           <number>0</number>
          </property>
          <item>
-          <widget class="QTableView" name="tableView" >
-           <property name="sizePolicy" >
-            <sizepolicy vsizetype="Expanding" hsizetype="Expanding" >
+          <widget class="QTableView" name="tableView">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-           <property name="alternatingRowColors" >
+           <property name="alternatingRowColors">
             <bool>true</bool>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QFrame" name="frame" >
-           <property name="minimumSize" >
+          <widget class="QFrame" name="frame">
+           <property name="minimumSize">
             <size>
              <width>0</width>
              <height>65</height>
             </size>
            </property>
-           <property name="frameShape" >
+           <property name="frameShape">
             <enum>QFrame::StyledPanel</enum>
            </property>
-           <property name="frameShadow" >
+           <property name="frameShadow">
             <enum>QFrame::Raised</enum>
            </property>
-           <widget class="QFrame" name="frame_2" >
-            <property name="geometry" >
+           <widget class="QFrame" name="frame_2">
+            <property name="geometry">
              <rect>
               <x>10</x>
               <y>0</y>
@@ -111,14 +112,14 @@
               <height>61</height>
              </rect>
             </property>
-            <property name="frameShape" >
+            <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>
             </property>
-            <property name="frameShadow" >
+            <property name="frameShadow">
              <enum>QFrame::Raised</enum>
             </property>
-            <widget class="QToolButton" name="nav_left_btn" >
-             <property name="geometry" >
+            <widget class="QToolButton" name="nav_left_btn">
+             <property name="geometry">
               <rect>
                <x>0</x>
                <y>10</y>
@@ -126,25 +127,25 @@
                <height>41</height>
               </rect>
              </property>
-             <property name="text" >
+             <property name="text">
               <string/>
              </property>
-             <property name="icon" >
-              <iconset resource="images/icons.qrc" >
+             <property name="icon">
+              <iconset resource="images/icons.qrc">
                <normaloff>:/images/left_arrow.png</normaloff>:/images/left_arrow.png</iconset>
              </property>
-             <property name="iconSize" >
+             <property name="iconSize">
               <size>
                <width>64</width>
                <height>64</height>
               </size>
              </property>
-             <property name="autoRaise" >
+             <property name="autoRaise">
               <bool>true</bool>
              </property>
             </widget>
-            <widget class="QToolButton" name="nav_up_btn" >
-             <property name="geometry" >
+            <widget class="QToolButton" name="nav_up_btn">
+             <property name="geometry">
               <rect>
                <x>40</x>
                <y>0</y>
@@ -152,25 +153,25 @@
                <height>20</height>
               </rect>
              </property>
-             <property name="text" >
+             <property name="text">
               <string/>
              </property>
-             <property name="icon" >
-              <iconset resource="images/icons.qrc" >
+             <property name="icon">
+              <iconset resource="images/icons.qrc">
                <normaloff>:/images/up_arrow.png</normaloff>:/images/up_arrow.png</iconset>
              </property>
-             <property name="iconSize" >
+             <property name="iconSize">
               <size>
                <width>64</width>
                <height>64</height>
               </size>
              </property>
-             <property name="autoRaise" >
+             <property name="autoRaise">
               <bool>true</bool>
              </property>
             </widget>
-            <widget class="QToolButton" name="nav_down_btn" >
-             <property name="geometry" >
+            <widget class="QToolButton" name="nav_down_btn">
+             <property name="geometry">
               <rect>
                <x>40</x>
                <y>40</y>
@@ -178,31 +179,31 @@
                <height>20</height>
               </rect>
              </property>
-             <property name="text" >
+             <property name="text">
               <string/>
              </property>
-             <property name="icon" >
-              <iconset resource="images/icons.qrc" >
+             <property name="icon">
+              <iconset resource="images/icons.qrc">
                <normaloff>:/images/down_arrow.png</normaloff>:/images/down_arrow.png</iconset>
              </property>
-             <property name="iconSize" >
+             <property name="iconSize">
               <size>
                <width>64</width>
                <height>64</height>
               </size>
              </property>
-             <property name="toolButtonStyle" >
+             <property name="toolButtonStyle">
               <enum>Qt::ToolButtonIconOnly</enum>
              </property>
-             <property name="autoRaise" >
+             <property name="autoRaise">
               <bool>true</bool>
              </property>
-             <property name="arrowType" >
+             <property name="arrowType">
               <enum>Qt::NoArrow</enum>
              </property>
             </widget>
-            <widget class="QLabel" name="nav_lbl" >
-             <property name="geometry" >
+            <widget class="QLabel" name="nav_lbl">
+             <property name="geometry">
               <rect>
                <x>20</x>
                <y>20</y>
@@ -210,22 +211,22 @@
                <height>21</height>
               </rect>
              </property>
-             <property name="font" >
+             <property name="font">
               <font>
                <pointsize>10</pointsize>
                <weight>50</weight>
                <bold>false</bold>
               </font>
              </property>
-             <property name="text" >
+             <property name="text">
               <string/>
              </property>
-             <property name="alignment" >
+             <property name="alignment">
               <set>Qt::AlignCenter</set>
              </property>
             </widget>
-            <widget class="QToolButton" name="nav_right_btn" >
-             <property name="geometry" >
+            <widget class="QToolButton" name="nav_right_btn">
+             <property name="geometry">
               <rect>
                <x>110</x>
                <y>10</y>
@@ -233,25 +234,25 @@
                <height>41</height>
               </rect>
              </property>
-             <property name="text" >
+             <property name="text">
               <string/>
              </property>
-             <property name="icon" >
-              <iconset resource="images/icons.qrc" >
+             <property name="icon">
+              <iconset resource="images/icons.qrc">
                <normaloff>:/images/right_arrow.png</normaloff>:/images/right_arrow.png</iconset>
              </property>
-             <property name="iconSize" >
+             <property name="iconSize">
               <size>
                <width>64</width>
                <height>64</height>
               </size>
              </property>
-             <property name="autoRaise" >
+             <property name="autoRaise">
               <bool>true</bool>
              </property>
             </widget>
-            <widget class="QToolButton" name="nav_add_btn" >
-             <property name="geometry" >
+            <widget class="QToolButton" name="nav_add_btn">
+             <property name="geometry">
               <rect>
                <x>130</x>
                <y>10</y>
@@ -259,26 +260,26 @@
                <height>41</height>
               </rect>
              </property>
-             <property name="text" >
+             <property name="text">
               <string/>
              </property>
-             <property name="icon" >
-              <iconset resource="images/icons.qrc" >
+             <property name="icon">
+              <iconset resource="images/icons.qrc">
                <normaloff>:/images/function_icon_set/add_48.png</normaloff>:/images/function_icon_set/add_48.png</iconset>
              </property>
-             <property name="iconSize" >
+             <property name="iconSize">
               <size>
                <width>64</width>
                <height>64</height>
               </size>
              </property>
-             <property name="autoRaise" >
+             <property name="autoRaise">
               <bool>true</bool>
              </property>
             </widget>
            </widget>
-           <widget class="QWidget" name="layoutWidget" >
-            <property name="geometry" >
+           <widget class="QWidget" name="layoutWidget">
+            <property name="geometry">
              <rect>
               <x>190</x>
               <y>0</y>
@@ -286,51 +287,51 @@
               <height>61</height>
              </rect>
             </property>
-            <layout class="QGridLayout" name="gridLayout" >
-             <item row="0" column="0" >
-              <widget class="QLabel" name="label" >
-               <property name="font" >
+            <layout class="QGridLayout" name="gridLayout">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label">
+               <property name="font">
                 <font>
                  <pointsize>9</pointsize>
                 </font>
                </property>
-               <property name="text" >
+               <property name="text">
                 <string>outcome:</string>
                </property>
               </widget>
              </item>
-             <item row="0" column="1" >
-              <widget class="QLabel" name="cur_outcome_lbl" >
-               <property name="font" >
+             <item row="0" column="1">
+              <widget class="QLabel" name="cur_outcome_lbl">
+               <property name="font">
                 <font>
                  <pointsize>9</pointsize>
                 </font>
                </property>
-               <property name="text" >
+               <property name="text">
                 <string/>
                </property>
               </widget>
              </item>
-             <item row="1" column="0" >
-              <widget class="QLabel" name="label_3" >
-               <property name="font" >
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_3">
+               <property name="font">
                 <font>
                  <pointsize>9</pointsize>
                 </font>
                </property>
-               <property name="text" >
+               <property name="text">
                 <string>follow-up:</string>
                </property>
               </widget>
              </item>
-             <item row="1" column="1" >
-              <widget class="QLabel" name="cur_time_lbl" >
-               <property name="font" >
+             <item row="1" column="1">
+              <widget class="QLabel" name="cur_time_lbl">
+               <property name="font">
                 <font>
                  <pointsize>9</pointsize>
                 </font>
                </property>
-               <property name="text" >
+               <property name="text">
                 <string/>
                </property>
               </widget>
@@ -346,79 +347,85 @@
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menu_bar" >
-   <property name="geometry" >
+  <widget class="QMenuBar" name="menu_bar">
+   <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
      <width>985</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu_file" >
-    <property name="font" >
+   <widget class="QMenu" name="menu_file">
+    <property name="font">
      <font>
       <family>Verdana</family>
      </font>
     </property>
-    <property name="title" >
+    <property name="title">
      <string>File</string>
     </property>
-    <addaction name="action_save" />
-    <addaction name="action_open" />
-    <addaction name="action_quit" />
+    <addaction name="action_save"/>
+    <addaction name="action_open"/>
+    <addaction name="action_quit"/>
    </widget>
-   <widget class="QMenu" name="menuAnalysis" >
-    <property name="title" >
+   <widget class="QMenu" name="menuAnalysis">
+    <property name="title">
      <string>Analysis</string>
     </property>
-    <addaction name="action_go" />
+    <addaction name="action_go"/>
    </widget>
-   <widget class="QMenu" name="menuDataset" >
-    <property name="title" >
+   <widget class="QMenu" name="menuDataset">
+    <property name="title">
      <string>Dataset</string>
     </property>
-    <addaction name="action_edit" />
-    <addaction name="action_view_network" />
+    <addaction name="action_edit"/>
+    <addaction name="action_view_network"/>
+    <addaction name="action_add_covariate"/>
    </widget>
-   <addaction name="menu_file" />
-   <addaction name="menuAnalysis" />
-   <addaction name="menuDataset" />
+   <addaction name="menu_file"/>
+   <addaction name="menuAnalysis"/>
+   <addaction name="menuDataset"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar" />
-  <action name="action_save" >
-   <property name="text" >
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="action_save">
+   <property name="text">
     <string>save</string>
    </property>
   </action>
-  <action name="action_open" >
-   <property name="text" >
+  <action name="action_open">
+   <property name="text">
     <string>open...</string>
    </property>
   </action>
-  <action name="action_quit" >
-   <property name="text" >
+  <action name="action_quit">
+   <property name="text">
     <string>quit</string>
    </property>
   </action>
-  <action name="action_go" >
-   <property name="text" >
+  <action name="action_go">
+   <property name="text">
     <string>meta-analyze...</string>
    </property>
   </action>
-  <action name="action_edit" >
-   <property name="text" >
+  <action name="action_edit">
+   <property name="text">
     <string>edit...</string>
    </property>
   </action>
-  <action name="action_view_network" >
-   <property name="text" >
+  <action name="action_view_network">
+   <property name="text">
     <string>view network...</string>
+   </property>
+  </action>
+  <action name="action_add_covariate">
+   <property name="text">
+    <string>add covariate...</string>
    </property>
   </action>
  </widget>
  <resources>
-  <include location="images/icons.qrc" />
+  <include location="images/icons.qrc"/>
  </resources>
  <connections/>
 </ui>

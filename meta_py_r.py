@@ -20,7 +20,8 @@ from PyQt4.QtCore import pyqtRemoveInputHook
 try:
     import rpy2
     from rpy2 import robjects as ro
-except:
+except Exception, e:
+    print e
     raise Exception, "rpy2 not properly installed!"
 
 try:

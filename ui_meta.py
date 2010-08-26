@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'meta.ui'
 #
-# Created: Wed Feb 17 10:08:25 2010
-#      by: PyQt4 UI code generator 4.4.3
+# Created: Thu Aug 26 10:39:34 2010
+#      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -63,6 +63,7 @@ class Ui_MainWindow(object):
         self.frame_2.setObjectName("frame_2")
         self.nav_left_btn = QtGui.QToolButton(self.frame_2)
         self.nav_left_btn.setGeometry(QtCore.QRect(0, 10, 20, 41))
+        self.nav_left_btn.setText("")
         icon1 = QtGui.QIcon()
         icon1.addPixmap(QtGui.QPixmap(":/images/left_arrow.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.nav_left_btn.setIcon(icon1)
@@ -71,6 +72,7 @@ class Ui_MainWindow(object):
         self.nav_left_btn.setObjectName("nav_left_btn")
         self.nav_up_btn = QtGui.QToolButton(self.frame_2)
         self.nav_up_btn.setGeometry(QtCore.QRect(40, 0, 51, 20))
+        self.nav_up_btn.setText("")
         icon2 = QtGui.QIcon()
         icon2.addPixmap(QtGui.QPixmap(":/images/up_arrow.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.nav_up_btn.setIcon(icon2)
@@ -79,6 +81,7 @@ class Ui_MainWindow(object):
         self.nav_up_btn.setObjectName("nav_up_btn")
         self.nav_down_btn = QtGui.QToolButton(self.frame_2)
         self.nav_down_btn.setGeometry(QtCore.QRect(40, 40, 51, 20))
+        self.nav_down_btn.setText("")
         icon3 = QtGui.QIcon()
         icon3.addPixmap(QtGui.QPixmap(":/images/down_arrow.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.nav_down_btn.setIcon(icon3)
@@ -94,10 +97,12 @@ class Ui_MainWindow(object):
         font.setWeight(50)
         font.setBold(False)
         self.nav_lbl.setFont(font)
+        self.nav_lbl.setText("")
         self.nav_lbl.setAlignment(QtCore.Qt.AlignCenter)
         self.nav_lbl.setObjectName("nav_lbl")
         self.nav_right_btn = QtGui.QToolButton(self.frame_2)
         self.nav_right_btn.setGeometry(QtCore.QRect(110, 10, 20, 41))
+        self.nav_right_btn.setText("")
         icon4 = QtGui.QIcon()
         icon4.addPixmap(QtGui.QPixmap(":/images/right_arrow.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.nav_right_btn.setIcon(icon4)
@@ -106,6 +111,7 @@ class Ui_MainWindow(object):
         self.nav_right_btn.setObjectName("nav_right_btn")
         self.nav_add_btn = QtGui.QToolButton(self.frame_2)
         self.nav_add_btn.setGeometry(QtCore.QRect(130, 10, 51, 41))
+        self.nav_add_btn.setText("")
         icon5 = QtGui.QIcon()
         icon5.addPixmap(QtGui.QPixmap(":/images/function_icon_set/add_48.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.nav_add_btn.setIcon(icon5)
@@ -127,6 +133,7 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(9)
         self.cur_outcome_lbl.setFont(font)
+        self.cur_outcome_lbl.setText("")
         self.cur_outcome_lbl.setObjectName("cur_outcome_lbl")
         self.gridLayout.addWidget(self.cur_outcome_lbl, 0, 1, 1, 1)
         self.label_3 = QtGui.QLabel(self.layoutWidget)
@@ -139,6 +146,7 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(9)
         self.cur_time_lbl.setFont(font)
+        self.cur_time_lbl.setText("")
         self.cur_time_lbl.setObjectName("cur_time_lbl")
         self.gridLayout.addWidget(self.cur_time_lbl, 1, 1, 1, 1)
         self.verticalLayout.addWidget(self.frame)
@@ -146,7 +154,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addWidget(self.nav_frame)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menu_bar = QtGui.QMenuBar(MainWindow)
-        self.menu_bar.setGeometry(QtCore.QRect(0, 0, 985, 21))
+        self.menu_bar.setGeometry(QtCore.QRect(0, 0, 985, 20))
         self.menu_bar.setObjectName("menu_bar")
         self.menu_file = QtGui.QMenu(self.menu_bar)
         font = QtGui.QFont()
@@ -173,12 +181,15 @@ class Ui_MainWindow(object):
         self.action_edit.setObjectName("action_edit")
         self.action_view_network = QtGui.QAction(MainWindow)
         self.action_view_network.setObjectName("action_view_network")
+        self.action_add_covariate = QtGui.QAction(MainWindow)
+        self.action_add_covariate.setObjectName("action_add_covariate")
         self.menu_file.addAction(self.action_save)
         self.menu_file.addAction(self.action_open)
         self.menu_file.addAction(self.action_quit)
         self.menuAnalysis.addAction(self.action_go)
         self.menuDataset.addAction(self.action_edit)
         self.menuDataset.addAction(self.action_view_network)
+        self.menuDataset.addAction(self.action_add_covariate)
         self.menu_bar.addAction(self.menu_file.menuAction())
         self.menu_bar.addAction(self.menuAnalysis.menuAction())
         self.menu_bar.addAction(self.menuDataset.menuAction())
@@ -199,5 +210,6 @@ class Ui_MainWindow(object):
         self.action_go.setText(QtGui.QApplication.translate("MainWindow", "meta-analyze...", None, QtGui.QApplication.UnicodeUTF8))
         self.action_edit.setText(QtGui.QApplication.translate("MainWindow", "edit...", None, QtGui.QApplication.UnicodeUTF8))
         self.action_view_network.setText(QtGui.QApplication.translate("MainWindow", "view network...", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_add_covariate.setText(QtGui.QApplication.translate("MainWindow", "add covariate...", None, QtGui.QApplication.UnicodeUTF8))
 
 import icons_rc

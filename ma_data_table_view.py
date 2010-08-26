@@ -90,10 +90,7 @@ class MADataTable(QtGui.QTableView):
                 
             form =  binary_data_form.BinaryDataForm2(ma_unit, cur_txs, cur_effect, parent=self)
             if form.exec_():
-                # do stuff...
-                #for group, new_raw_data in zip(cur_txs, form.raw_data):
-                pyqtRemoveInputHook()
-                pdb.set_trace()
+                # push the edit event
                 raw_data_edit = CommandEditRawData(ma_unit, self.model(), copy.deepcopy(cur_raw_data_dict), form.raw_data_d)
                 self.undoStack.push(raw_data_edit)
         elif data_type == "continuous":

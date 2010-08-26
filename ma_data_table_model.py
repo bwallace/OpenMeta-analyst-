@@ -186,7 +186,16 @@ class DatasetModel(QAbstractTableModel):
                 if outcome_val is None:
                     return QVariant("")
                 return QVariant(round(outcome_val, self.NUM_DIGITS))
-
+            elif column != self.INCLUDE_STUDY:
+                # here the column is to the right of the outcomes (and not the 0th, or
+                # 'include study' column, and thus must corrrespond to a covariate.
+                cov_index = column - (self.OUTCOMES[-1]+1)
+                cov_name = self.dataset.covariates[cov_index].name
+                cov_value = study.covariate_dict[cov_name]
+                if cov_value is None:
+                    cov_value = ""
+                return QVariant(cov_value)
+                
         elif role == Qt.TextAlignmentRole:
             return QVariant(int(Qt.AlignLeft|Qt.AlignVCenter))
         elif role == Qt.CheckStateRole:
@@ -269,7 +278,21 @@ class DatasetModel(QAbstractTableModel):
                         ma_unit.set_upper(self.current_effect, double_val)
             elif column == self.INCLUDE_STUDY:
                 study.include = value.toBool()
-                        
+            else:
+                # then a covariate value has been edited.
+                cov_index = column - (self.OUTCOMES[-1]+1)
+                cov = self.dataset.covariates[cov_index]
+                cov_name = cov.name
+                new_value = None
+                if cov.data_type == FACTOR:
+                    new_value = value.toString()
+                else:
+                    # continuous
+                    new_value, converted_ok = value.toDouble()
+                    if not converted_ok: 
+                        new_value = None
+                study.covariate_dict[cov_name] = new_value
+                
             self.emit(SIGNAL("dataChanged(QModelIndex, QModelIndex)"), index, index)
 
             # tell the view that an entry in the table has changed, and what the old
@@ -338,7 +361,15 @@ class DatasetModel(QAbstractTableModel):
                         return QVariant("lower")
                     else:
                         return QVariant("upper")
-                        
+            else:
+                # then the column is to the right of the outcomes, and must
+                # be a covariate.
+                cov_index = section - (self.OUTCOMES[-1]+1)
+                cov_name = self.dataset.covariates[cov_index].name
+                return QVariant(cov_name)
+        
+        # this is the vertical -- non-table header -- case.
+        # we just show row numbers (not zero-based; hence the +1).
         return QVariant(int(section+1))
 
 
@@ -363,13 +394,13 @@ class DatasetModel(QAbstractTableModel):
         amongst other things (e.g., number of covariates).
         '''
         num_cols = 3 # we always show study name and year (and include studies)
-        if len(self.dataset.get_outcome_names()) == 0:
-            return num_cols
-        else:
+        if len(self.dataset.get_outcome_names()) > 0:
             num_effect_size_fields = 3 # point estimate, low, high
             num_cols += num_effect_size_fields + self.num_data_cols_for_current_unit()
-            return num_cols
-
+        # now add the covariates (if any)
+        num_cols += len(self.dataset.covariates)
+        return num_cols
+        
     def get_ordered_study_ids(self):
         return [study.id for study in self.dataset.studies]
 
@@ -391,6 +422,10 @@ class DatasetModel(QAbstractTableModel):
         
     def remove_follow_up_from_outcome(self, follow_up_name, outcome_name):
         self.dataset.remove_follow_up_from_outcome(follow_up_name, outcome_name)
+        
+    def add_covariate(self, covariate_name, covariate_type, cov_values=None):
+        self.dataset.add_covariate(Covariate(covariate_name, covariate_type), cov_values=cov_values)
+        self.reset()
         
     def remove_study(self, id):
         self.dataset.studies.pop(id)
@@ -711,8 +746,8 @@ class DatasetModel(QAbstractTableModel):
         it will be added. Thus when a new study is added to a dataset, there is no need
         to initially populate this study with empty MetaAnalytic units reflecting the known
         outcomes, time points & tx groups, as they will be added 'on-demand' here.
-         '''
-         # first check to see that the current outcome is contained in this study
+        '''
+        # first check to see that the current outcome is contained in this study
         if not self.current_outcome in self.dataset.studies[study_index].outcomes_to_follow_ups:
             ###
             # Issue 7 (RESOLVED) http://github.com/bwallace/OpenMeta-analyst-/issues/#issue/7

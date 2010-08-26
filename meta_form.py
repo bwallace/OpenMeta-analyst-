@@ -37,7 +37,7 @@ import ma_specs
 import edit_dialog
 import network_view
 
-VERSION = .003
+VERSION = .005 # completely made up. need an actual versioning system.
 NUM_DIGITS = 4
 
 class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
@@ -52,7 +52,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.setupUi(self)
 
         # this is just for debugging purposes; if a
-        # switch is passed in, display fake data
+        # switch is passed in, display fake/toy data
         if len(sys.argv)>1 and sys.argv[-1]=="--toy-data":
             # toy data for now
             data_model = _gen_some_data()
@@ -104,11 +104,11 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     def _setup_connections(self):
         ''' Signals & slots '''
         QObject.connect(self.tableView.model(), SIGNAL("cellContentChanged(QModelIndex, QVariant, QVariant)"),
-                                                                                    self.tableView.cell_content_changed)
+                                                                self.tableView.cell_content_changed)
         QObject.connect(self.tableView.model(), SIGNAL("outcomeChanged()"),
-                                                                                    self.tableView.displayed_ma_changed)
+                                                                self.tableView.displayed_ma_changed)
         QObject.connect(self.tableView.model(), SIGNAL("followUpChanged()"),
-                                                                                    self.tableView.displayed_ma_changed)
+                                                                self.tableView.displayed_ma_changed)
         QObject.connect(self.nav_add_btn, SIGNAL("pressed()"), self.add_new)
         QObject.connect(self.nav_right_btn, SIGNAL("pressed()"), self.next)
         QObject.connect(self.nav_left_btn, SIGNAL("pressed()"), self.previous)
@@ -122,6 +122,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         
         QObject.connect(self.action_edit, SIGNAL("triggered()"), self.edit_dataset)
         QObject.connect(self.action_view_network, SIGNAL("triggered()"), self.view_network)
+        QObject.connect(self.action_add_covariate, SIGNAL("triggered()"), self.add_covariate)
 
     def go(self):
         # the spec form gets *this* form as a parameter.
@@ -167,6 +168,19 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         form = results_window.ResultsWindow(results, parent=self)
         form.show()
 
+    def add_covariate(self):
+        form =  add_new_dialogs.AddNewCovariateForm(self)
+        form.covariate_name_le.setFocus()
+        if form.exec_():
+            # then the user clicked 'ok'.
+            new_covariate_name = unicode(form.covariate_name_le.text().toUtf8(), "utf-8")
+            new_covariate_type = str(form.datatype_cbo_box.currentText())
+            self.model.add_covariate(new_covariate_name, new_covariate_type)
+            #redo_f = lambda: self._add_new_outcome(new_outcome_name, new_outcome_type)
+            #prev_outcome = str(self.model.current_outcome)
+            #undo_f = lambda: self._undo_add_new_outcome(new_outcome_name, prev_outcome)
+            print "new covariate name: %s with type %s" % (new_covariate_name, new_covariate_type)
+              			
     def add_new(self):
         redo_f, undo_f = None, None
         if self.cur_dimension == "outcome":

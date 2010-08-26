@@ -22,8 +22,19 @@ import copy
 
 import two_way_dict
 
- # enumeration of data types and dictionaries mapping both ways
+
+#####
+# Let's define some module level constants.
+#####
+
+# enumeration of data types and dictionaries mapping both ways
 BINARY, CONTINUOUS, DIAGNOSTIC, OTHER = range(4)
+
+# we need two types for covariates; factor and continuous. we'll use the 
+# above definition (enumerated as part of a general data type) for continuous
+# and just define factor here.
+FACTOR = 4
+
 STR_TO_TYPE_DICT = {u"binary":BINARY, u"continuous":CONTINUOUS, 
                                     u"diagnostic":DIAGNOSTIC, u"OTHER":OTHER}
 TYPE_TO_STR_DICT = {BINARY:u"binary", CONTINUOUS:u"continuous", 
@@ -48,7 +59,9 @@ class Dataset:
 
         self.notes = ""
         
-        # @TODO
+        # this will hold a list of covariate objects. each study will
+        # have a dictionary with values for that study corresponding
+        # to each of the covariate objects here.
         self.covariates = []
 
     def copy(self):
@@ -132,6 +145,57 @@ class Dataset:
             if outcome_obj is not None:
                 return outcome_obj
         return None
+        
+    def remove_covariate(self, covariate):
+        # first remove the covariate from the list of 
+        # covariate objects for this dataset
+        for cov in self.covariates:
+            if cov.name == covariate.name:
+                self.covariates.remove(cov)
+                break
+        # now remove the covariate from all of the studies
+        # in the dataset
+        for study in self.studies:
+            study.covariate_dict.pop(covariate.name)
+        
+            
+    def add_covariate(self, covariate, cov_values=None):
+        ''' 
+        adds the parametric covariate to: 1) the list of covariate objects
+        associated with this dataset and 2) the covariate dictionaries of each
+        of the studies this dataset contains. Note: the covariate argument
+        needs to be a Covariate object (not a string)!
+        '''
+        self.covariates.append(covariate)
+        if cov_values is None:
+            for study in self.studies:
+                study.covariate_dict[covariate.name] = None
+        else:
+            # in this case, a dictionary mapping studies to 
+            # values for this covariate was passed in.
+            # this will occur in this case, e.g., that a 
+            # covariate was removed from the dataset, but then
+            # the user clicked 'redo' -- we want to repopulate
+            # the dataset with the previous covariate values.
+            for study in self.studies:
+                if cov_values.has_key(study.name):
+                    study.covariate_dict[covariate.name] = cov_values[study.name]
+                else:
+                    study.covariate_dict[covariate.name] = None
+                
+    def get_values_for_cov(self, covariate):
+        ''' returns a dictionary mapping study names to values for the given covariate '''
+        cov_name = covariate
+        if isinstance(covariate, Covariate):
+            cov_name = covariate.name
+        cov_d = {}
+        for study in self.studies:
+            cov_d[study.name] = study.covariate_dict[cov_name]
+        return cov_d
+        
+    def get_cov_names(self):
+        return [cov.name for cov in self.covariates]
+        
         
     def add_outcome(self, outcome):
         cur_group_names = self.get_group_names()
@@ -325,6 +389,9 @@ class Study:
         # whether or not this study will be included in any
         # conducted analyses
         self.include = include
+        # an empty dictionary that will map covariate names
+        # to their values for *this* study.
+        self.covariate_dict = {}
         
     def add_outcome(self, outcome, follow_up_name="baseline", group_names=None):
         ''' Adds a new, blank outcome (i.e., no raw data) '''
@@ -504,9 +571,20 @@ class Outcome:
     ''' Holds a few fields that define outcomes. '''
     def __init__(self, name, data_type, links=None):
         self.name = name
+        
         self.data_type = data_type
         self.links = links
-        
+       
+class Covariate:
+	''' Meta-data about covariates. '''
+	def __init__(self, name, data_type):
+		if not data_type in ("Factor", "Continuous"):
+			raise Exception, \
+				"covariates need to have associated type Factor or Continuous; %s was given" % data_type
+		self.name = name
+		self.data_type = CONTINUOUS if data_type == "Continuous" else FACTOR
+		
+	
 class Link:
     pass
     
