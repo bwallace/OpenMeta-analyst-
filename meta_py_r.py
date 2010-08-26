@@ -194,7 +194,6 @@ def draw_network(edge_list, unconnected_vertices, network_path = '"./r_tmp/netwo
     if len(unconnected_vertices) > 0:
         print unconnected_vertices
         vertices_str = ", ".join([" '%s' " % x for x in unconnected_vertices])
-        print "g <- add.vertices(g, %s, name=c(%s))" % (len(unconnected_vertices), vertices_str)
         ro.r("g <- add.vertices(g, %s, name=c(%s))" % (len(unconnected_vertices), vertices_str))
     ro.r("png(%s)" % network_path)
     ro.r("plot(g, vertex.label=V(g)$name, layout=layout.circle, vertex.size=25, asp=.3, margin=-.05)")
@@ -405,8 +404,6 @@ def _rls_to_pyd(r_ls):
             print "error parsing R tuple.. "
             print inst
             print "ignoring."
-            #print "error parsing R tuple (%s, %s).. ignoring" % (name, val)
-            #print inst
 
     return d
 

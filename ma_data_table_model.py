@@ -297,7 +297,14 @@ class DatasetModel(QAbstractTableModel):
             # and new values were. this for undo/redo purposes.
             new_val = self.data(index)
             self.emit(SIGNAL("cellContentChanged(QModelIndex, QVariant, QVariant)"), index, old_val, new_val)
-
+         
+            effect_d = self.get_current_ma_unit_for_study(index.row()).effects_dict[self.current_effect]
+            if any([val is None for val in [effect_d[effect_key] for effect_key in ("upper", "lower", "est")]]):
+                study.include = False
+            else:
+                study.include = True
+            #pyqtRemoveInputHook()
+            #pdb.set_trace()
             return True
         return False
 
@@ -673,7 +680,7 @@ class DatasetModel(QAbstractTableModel):
         ma_unit = self.get_current_ma_unit_for_study(study_index)
         # now set the effect size & CIs
         ma_unit.set_effect_and_ci(self.current_effect, est, lower, upper)
-
+        
     def get_cur_raw_data(self, only_if_included=True):
         raw_data = []
         for study_index in range(len(self.dataset.studies)):
