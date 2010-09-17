@@ -119,6 +119,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         QObject.connect(self.action_open, SIGNAL("triggered()"), self.open)
         QObject.connect(self.action_quit, SIGNAL("triggered()"), self.quit)
         QObject.connect(self.action_go, SIGNAL("triggered()"), self.go)
+        QObject.connect(self.action_cum_ma, SIGNAL("triggered()"), self.cum_ma)
+        QObject.connect(self.action_loo_ma, SIGNAL("triggered()"), self.loo_ma)
         
         QObject.connect(self.action_edit, SIGNAL("triggered()"), self.edit_dataset)
         QObject.connect(self.action_view_network, SIGNAL("triggered()"), self.view_network)
@@ -130,6 +132,13 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # module when specifications have been provided.
         form =  ma_specs.MA_Specs(self.model, parent=self)
         form.show()
+    
+    def cum_ma(self):
+        form =  ma_specs.MA_Specs(self.model, parent=self)
+        print "cum"
+        
+    def loo_ma(self):
+        print "loo"
 
     def edit_dataset(self):
         cur_dataset = copy.deepcopy(self.model.dataset)

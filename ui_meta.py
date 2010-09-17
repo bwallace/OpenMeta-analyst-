@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'meta.ui'
 #
-# Created: Thu Aug 26 10:39:34 2010
+# Created: Thu Sep 16 15:14:34 2010
 #      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -183,10 +183,17 @@ class Ui_MainWindow(object):
         self.action_view_network.setObjectName("action_view_network")
         self.action_add_covariate = QtGui.QAction(MainWindow)
         self.action_add_covariate.setObjectName("action_add_covariate")
+        self.action_cum_ma = QtGui.QAction(MainWindow)
+        self.action_cum_ma.setObjectName("action_cum_ma")
+        self.action_loo_ma = QtGui.QAction(MainWindow)
+        self.action_loo_ma.setObjectName("action_loo_ma")
         self.menu_file.addAction(self.action_save)
         self.menu_file.addAction(self.action_open)
         self.menu_file.addAction(self.action_quit)
         self.menuAnalysis.addAction(self.action_go)
+        self.menuAnalysis.addSeparator()
+        self.menuAnalysis.addAction(self.action_cum_ma)
+        self.menuAnalysis.addAction(self.action_loo_ma)
         self.menuDataset.addAction(self.action_edit)
         self.menuDataset.addAction(self.action_view_network)
         self.menuDataset.addAction(self.action_add_covariate)
@@ -207,9 +214,11 @@ class Ui_MainWindow(object):
         self.action_save.setText(QtGui.QApplication.translate("MainWindow", "save", None, QtGui.QApplication.UnicodeUTF8))
         self.action_open.setText(QtGui.QApplication.translate("MainWindow", "open...", None, QtGui.QApplication.UnicodeUTF8))
         self.action_quit.setText(QtGui.QApplication.translate("MainWindow", "quit", None, QtGui.QApplication.UnicodeUTF8))
-        self.action_go.setText(QtGui.QApplication.translate("MainWindow", "meta-analyze...", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_go.setText(QtGui.QApplication.translate("MainWindow", "meta-analysis...", None, QtGui.QApplication.UnicodeUTF8))
         self.action_edit.setText(QtGui.QApplication.translate("MainWindow", "edit...", None, QtGui.QApplication.UnicodeUTF8))
         self.action_view_network.setText(QtGui.QApplication.translate("MainWindow", "view network...", None, QtGui.QApplication.UnicodeUTF8))
         self.action_add_covariate.setText(QtGui.QApplication.translate("MainWindow", "add covariate...", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_cum_ma.setText(QtGui.QApplication.translate("MainWindow", "cumulative meta-analysis...", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_loo_ma.setText(QtGui.QApplication.translate("MainWindow", "leave-one-out meta-analysis...", None, QtGui.QApplication.UnicodeUTF8))
 
 import icons_rc

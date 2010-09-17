@@ -370,7 +370,6 @@ def run_binary_ma(function_name, params, res_name = "result", bin_data_name="tmp
     return {"images":_rls_to_pyd(result[0]), "image_var_names":image_var_name_d,
                                               "texts":text_d}
 
-
 def _rls_to_pyd(r_ls):
     # base case is that the type is a native python type, rather
     # than an Rvector
