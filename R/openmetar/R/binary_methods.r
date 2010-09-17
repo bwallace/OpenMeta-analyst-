@@ -1,19 +1,19 @@
-#############################################
-# OpenMeta[Analyst]                         #
-# ----                                      #
-# binary_methods.r                          # 
-# Facade module; wraps methods that perform #
-# analysis on binary data in a coherent     #
-#  interface.                               #
-#############################################
+####################################
+# OpenMeta[Analyst]                #
+# ----                             #
+# binary_methods.r                 # 
+# Facade module; wraps methods     #
+# that perform analysis on binary  #
+# data in a coherent interface.    # 
+####################################
 
 
 library(metafor)
 
 
-####################################################
-#  binary fixed effects -- inverse variance        #
-####################################################
+###################################################
+# binary fixed effects -- inverse variance        #
+###################################################
 binary.fixed.inv.var <- function(binaryData, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binaryData))) stop("Binary data expected.")  
@@ -24,7 +24,7 @@ binary.fixed.inv.var <- function(binaryData, params){
                             to=params$to)
      
                                               
-    # generate forest plot 
+    # generate the forest plot 
     forest_path <- "./r_tmp/forest.png"
     png(forest_path)
     forest_plot<-forest.rma(res, digits=params$digits)
@@ -66,15 +66,16 @@ binary.fixed.inv.var.parameters <- function(){
     parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
 }
 
-binary.fixed.inv.overall <- function(results){
+binary.fixed.inv.var.overall <- function(results) {
+    # this parses out the overall from the computed result
     res <- results$summary
-    overall <- list("estimate"=res$b[1], "lower"=res$ci.lb, "upper"=res$ci.ub)
+    overall <- list(c("estimate"=res$b[1], "lower"=res$ci.lb, "upper"=res$ci.ub))
     overall
 }
 
-########################################################
-#       binary fixed effects -- mantel haenszel        #
-########################################################
+############################################
+#  binary fixed effects -- mantel haenszel #
+############################################
 binary.fixed.mh <- function(binaryData, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binaryData))) stop("Binary data expected.")  
@@ -131,9 +132,16 @@ binary.fixed.mh.is.feasible <- function(binaryData){
          length(binaryData@g1O1) > 0
 }
 
-##################################################
+binary.fixed.mh.overall <- function(results) {
+    # this parses out the overall from the computed result
+    res <- results$summary
+    overall <- list(c("estimate"=res$b[1], "lower"=res$ci.lb, "upper"=res$ci.ub))
+    overall
+}
+
+#############################
 #       binary fixed effects -- Peto             #
-##################################################
+#############################
 binary.fixed.peto <- function(binaryData, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binaryData))) stop("Binary data expected.")  
@@ -188,10 +196,16 @@ binary.fixed.peto.is.feasible <- function(binaryData){
          length(binaryData@g1O1) > 0
 }
 
- 
+binary.fixed.peto.overall <- function(results) {
+    # this parses out the overall from the computed result
+    res <- results$summary
+    overall <- list(c("estimate"=res$b[1], "lower"=res$ci.lb, "upper"=res$ci.ub))
+    overall
+}
+
 
 ##################################
-#       binary random effects    #
+#  binary random effects         #
 ##################################
 binary.random <- function(binaryData, params){
     # assert that the argument is the correct type
@@ -246,6 +260,13 @@ binary.random.parameters <- function(){
     
     var_order <- c("rm.method", "measure", "conf.level", "digits")
     parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
+}
+
+binary.random.overall <- function(results) {
+    # this parses out the overall from the computed result
+    res <- results$summary
+    overall <- list(c("estimate"=res$b[1], "lower"=res$ci.lb, "upper"=res$ci.ub))
+    overall
 }
 
 

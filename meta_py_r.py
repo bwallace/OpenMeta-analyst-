@@ -150,7 +150,7 @@ def get_available_methods(for_data_type=None, data_obj_name=None):
     # start with the name of the data type. furthermore, the parameters
     # for those methods are returned by a method with a name
     # ending in ".parameters"
-    special_endings = [".parameters", ".is.feasible"]
+    special_endings = [".parameters", ".is.feasible", ".overall"]
     is_special = lambda f: any([f.endswith(ending) for ending in special_endings])
     all_methods = [method for method in method_list if not is_special(method)]
     if for_data_type is not None:
@@ -369,6 +369,31 @@ def run_binary_ma(function_name, params, res_name = "result", bin_data_name="tmp
 
     return {"images":_rls_to_pyd(result[0]), "image_var_names":image_var_name_d,
                                               "texts":text_d}
+                                
+def run_binary_meta(meta_function_name, function_name, params, \
+                        res_name = "result", bin_data_name="tmp_obj"):
+    params_df = ro.r['data.frame'](**params)
+    r_str = "%s<-%s('%s', %s, %s)" % (res_name, meta_function_name, function_name, bin_data_name, params_df.r_repr())
+    #pyqtRemoveInputHook()
+    #pdb.set_trace()
+    print "\n\n(run_binary_ma): executing:\n %s\n" % r_str
+    ro.r(r_str)
+    result = ro.r("%s" % res_name)
+    print "\n\n\n????"
+    print result
+    # parse out text field(s). note that "plot names" is 'reserved', i.e., it's
+    # a special field which is assumed to contain the plot variable names
+    # in R (for graphics manipulation).
+    text_d = {}
+    image_var_name_d = None
+    for text_n, text in zip(list(result.getnames())[1:], list(result)[1:]):
+        if not text_n == "plot_names":
+           text_d[text_n]=text
+        else:
+           image_var_name_d = _rls_to_pyd(text)
+
+    return {"images":_rls_to_pyd(result[0]), "image_var_names":image_var_name_d,
+                                              "texts":text_d}    
 
 def _rls_to_pyd(r_ls):
     # base case is that the type is a native python type, rather

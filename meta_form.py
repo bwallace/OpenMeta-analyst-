@@ -134,8 +134,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         form.show()
     
     def cum_ma(self):
-        form =  ma_specs.MA_Specs(self.model, parent=self)
+        ### TODO pull out meta methods auto-magically via introspection.
         print "cum"
+        form =  ma_specs.MA_Specs(self.model, meta_f_str="cum.ma.binary", parent=self)
+        form.show()
         
     def loo_ma(self):
         print "loo"

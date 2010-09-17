@@ -22,15 +22,14 @@ import meta_py_r
 
 class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
-    def __init__(self, model, parent=None, loo=False, cum=False):
+    def __init__(self, model, parent=None, meta_f_str=None):
         super(MA_Specs, self).__init__(parent)
         self.setupUi(self)
         self.model = model
         
-        # are running loo or cumulative ma?
-        # this will change the dispatch options.
-        self.loo=loo
-        self.cum=cum
+        # if not none, we assume we're running a meta
+        # method 
+        self.meta_f_str = meta_f_str
 
         QObject.connect(self.buttonBox, SIGNAL("accepted()"), self.run_ma)
         QObject.connect(self.buttonBox, SIGNAL("rejected()"), self.cancel)
@@ -59,7 +58,10 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             # tmp_obj (though you can pass in whatever var name
             # you'd like)
             meta_py_r.ma_dataset_to_simple_binary_robj(self.model)
-            result = meta_py_r.run_binary_ma(self.current_method, self.current_param_vals)
+            if self.meta_f_str is None:
+                result = meta_py_r.run_binary_ma(self.current_method, self.current_param_vals)
+            else:
+                result = meta_py_r.run_binary_meta(self.meta_f_str, self.current_method, self.current_param_vals)
         elif self.data_type == "continuous":
             meta_py_r.ma_dataset_to_simple_continuous_robj(self.model)
             result = meta_py_r.run_continuous_ma(self.current_method, self.current_param_vals)
@@ -90,7 +92,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.parameter_grp_box.setTitle(self.current_method)
         self.ui_for_params()
 
-    def populate_cbo_box(self, loo, cum):
+    def populate_cbo_box(self):
         # we first build an R object with the current data. this is to pass off         
         # to the R side to check the feasibility of the methods over the current data.
         # i.e., we do not display methods that cannot be performed over the 
