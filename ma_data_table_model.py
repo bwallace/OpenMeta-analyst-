@@ -277,6 +277,13 @@ class DatasetModel(QAbstractTableModel):
                         ma_unit.set_upper(self.current_effect, double_val)
             elif column == self.INCLUDE_STUDY:
                 study.include = value.toBool()
+                # we keep note if a study was manually 
+                # excluded; this differs from just being
+                # `included' because the latter is TRUE
+                # automatically when a study first acquires
+                # sufficient data to be included in an MA
+                if not value.toBool():
+                    study.manually_excluded = True
             else:
                 # then a covariate value has been edited.
                 cov = self.get_cov(column)
@@ -299,8 +306,15 @@ class DatasetModel(QAbstractTableModel):
             self.emit(SIGNAL("cellContentChanged(QModelIndex, QVariant, QVariant)"), index, old_val, new_val)
          
             effect_d = self.get_current_ma_unit_for_study(index.row()).effects_dict[self.current_effect]
+            # if any of the effect values are empty, we cannot include this study in the analysis, so it
+            # is automatically excluded.
             if any([val is None for val in [effect_d[effect_key] for effect_key in ("upper", "lower", "est")]]):
                 study.include = False
+            # if the study has not been explicitly excluded by the user, then we automatically
+            # include it once it has sufficient data.
+            elif not study.manually_excluded:
+                study.include = True
+                
 
             #pyqtRemoveInputHook()
             #pdb.set_trace()

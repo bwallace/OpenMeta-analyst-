@@ -418,6 +418,7 @@ class Study:
         # an empty dictionary that will map covariate names
         # to their values for *this* study.
         self.covariate_dict = {}
+        self.manually_excluded = False
         
     def add_outcome(self, outcome, follow_up_name="baseline", group_names=None):
         ''' Adds a new, blank outcome (i.e., no raw data) '''

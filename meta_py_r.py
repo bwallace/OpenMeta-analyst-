@@ -370,18 +370,20 @@ def run_binary_ma(function_name, params, res_name = "result", bin_data_name="tmp
     return {"images":_rls_to_pyd(result[0]), "image_var_names":image_var_name_d,
                                               "texts":text_d}
                                 
-def run_binary_meta(meta_function_name, function_name, params, \
-                        res_name = "result", bin_data_name="tmp_obj"):
+def run_meta_method(meta_function_name, function_name, params, \
+                        res_name = "result", data_name="tmp_obj"):
+    '''
+    Runs a binary `meta` method over the data in the bin_data_name argument
+    (on the R side). The meta-method called is specified by the meta_function_name
+    argument. 
+    '''
     params_df = ro.r['data.frame'](**params)
     r_str = "%s<-%s('%s', %s, %s)" % \
-            (res_name, meta_function_name, function_name, bin_data_name, params_df.r_repr())
+            (res_name, meta_function_name, function_name, data_name, params_df.r_repr())
 
-    print "\n\n(run_binary_ma): executing:\n %s\n" % r_str
+    print "\n\n(run_meta_method): executing:\n %s\n" % r_str
     ro.r(r_str)
     result = ro.r("%s" % res_name)
-
-    #pyqtRemoveInputHook()
-    #pdb.set_trace()
     
     # parse out text field(s). note that "plot names" is 'reserved', i.e., it's
     # a special field which is assumed to contain the plot variable names
@@ -396,6 +398,8 @@ def run_binary_meta(meta_function_name, function_name, params, \
 
     return {"images":_rls_to_pyd(result[0]), "image_var_names":image_var_name_d,
                                               "texts":text_d}    
+          
+                                                                                  
 
 def _rls_to_pyd(r_ls):
     # base case is that the type is a native python type, rather

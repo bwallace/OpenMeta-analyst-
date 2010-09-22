@@ -61,10 +61,16 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             if self.meta_f_str is None:
                 result = meta_py_r.run_binary_ma(self.current_method, self.current_param_vals)
             else:
-                result = meta_py_r.run_binary_meta(self.meta_f_str, self.current_method, self.current_param_vals)
+                result = meta_py_r.run_meta_method(self.meta_f_str, self.current_method, self.current_param_vals)
         elif self.data_type == "continuous":
             meta_py_r.ma_dataset_to_simple_continuous_robj(self.model)
-            result = meta_py_r.run_continuous_ma(self.current_method, self.current_param_vals)
+            if self.meta_f_str is None:
+                # run standard meta-analysis
+                result = meta_py_r.run_continuous_ma(self.current_method, self.current_param_vals)
+            else:
+                # get meta!
+                result = meta_py_r.run_meta_method(self.meta_f_str, self.current_method, self.current_param_vals)
+            
         self.parent().analysis(result)
         self.accept()
     
