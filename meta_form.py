@@ -141,6 +141,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         
     def loo_ma(self):
         print "loo"
+        form =  ma_specs.MA_Specs(self.model, meta_f_str="loo.ma.binary", parent=self)
+        form.show()
 
     def edit_dataset(self):
         cur_dataset = copy.deepcopy(self.model.dataset)

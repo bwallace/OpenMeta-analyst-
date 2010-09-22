@@ -301,8 +301,7 @@ class DatasetModel(QAbstractTableModel):
             effect_d = self.get_current_ma_unit_for_study(index.row()).effects_dict[self.current_effect]
             if any([val is None for val in [effect_d[effect_key] for effect_key in ("upper", "lower", "est")]]):
                 study.include = False
-            else:
-                study.include = True
+
             #pyqtRemoveInputHook()
             #pdb.set_trace()
             return True
