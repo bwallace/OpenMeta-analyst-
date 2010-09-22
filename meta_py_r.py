@@ -373,14 +373,16 @@ def run_binary_ma(function_name, params, res_name = "result", bin_data_name="tmp
 def run_binary_meta(meta_function_name, function_name, params, \
                         res_name = "result", bin_data_name="tmp_obj"):
     params_df = ro.r['data.frame'](**params)
-    r_str = "%s<-%s('%s', %s, %s)" % (res_name, meta_function_name, function_name, bin_data_name, params_df.r_repr())
-    #pyqtRemoveInputHook()
-    #pdb.set_trace()
+    r_str = "%s<-%s('%s', %s, %s)" % \
+            (res_name, meta_function_name, function_name, bin_data_name, params_df.r_repr())
+
     print "\n\n(run_binary_ma): executing:\n %s\n" % r_str
     ro.r(r_str)
     result = ro.r("%s" % res_name)
-    print "\n\n\n????"
-    print result
+
+    #pyqtRemoveInputHook()
+    #pdb.set_trace()
+    
     # parse out text field(s). note that "plot names" is 'reserved', i.e., it's
     # a special field which is assumed to contain the plot variable names
     # in R (for graphics manipulation).

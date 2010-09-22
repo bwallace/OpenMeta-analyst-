@@ -21,17 +21,13 @@
 ##################################
 cum.ma.binary <- function(fname, binary_data, params){
     # assert that the argument is the correct type
-    #if (!("BinaryData" %in% class(binary_data))) stop("Binary data expected.")
+    if (!("BinaryData" %in% class(binary_data))) stop("Binary data expected.")
     
     # iterate over the binaryData elements, adding one study at a time
     cum_results <- list()
     cum_labels <- list()
     
-    ####
-    # TODO need to compute CI for first study using est and SE;
-    # this should be added to the cum_results here.
-    ####
-    for (i in 2:length(binary_data@studyNames)){
+    for (i in 1:length(binary_data@studyNames)){
         # build a BinaryData object with the 
         # ith study removed.  
         y_tmp <- binary_data@y[1:i]
