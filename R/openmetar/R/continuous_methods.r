@@ -10,6 +10,8 @@
 
 library(metafor)
 
+# cd <- new('ContinuousData', N1=c(100), mean1=c(50.0), sd1=c(2.0), N2=c(100), mean2=c(25.0), sd2=c(3.0), studyNames=c("1"))
+# params <- list(metric="MD", conf.level=95, digits=3)
 
 compute.for.one.cont.study <- function(contData, params){
     res <- escalc(params$metric, 
@@ -24,14 +26,14 @@ get.res.for.one.cont.study <- function(contData, params){
     # get the point estimate and lower/upper bounds.
     y<-NULL
     se<-NULL
-    if (is.na(contData@y)){
+    if (length(contData@y) == 0 || is.na(contData@y)){
         res <- compute.for.one.cont.study(contData, params)    
         y <- res$yi[1]
         se <- sqrt(res$vi[1])
     }
     else{
-        y <- binaryData@y[1]
-        se <- binaryData@SE[1]
+        y <- contData@y[1]
+        se <- contData@SE[1]
     }
     # note: conf.level is given as, e.g., 95, rather than .95.
     alpha <- 1.0-(params$conf.level/100.0)

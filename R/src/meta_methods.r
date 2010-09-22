@@ -168,30 +168,30 @@ cum.ma.continuous <- function(fname, cont_data, params){
     # assert that the argument is the correct type
     if (!("ContinuousData" %in% class(cont_data))) stop("Continuous data expected.")
     
-    # iterate over the binaryData elements, adding one study at a time
+    # iterate over the continuousData elements, adding one study at a time
     cum_results <- list()
     cum_labels <- list()
     
     for (i in 1:length(cont_data@studyNames)){
-        # build a BinaryData object including studies
+        # build a ContinuousData object including studies
         # 1 through i
-        y_tmp <- binary_data@y[1:i]
-        SE_tmp <- binary_data@SE[1:i]
-        names_tmp <- binary_data@studyNames[1:i]
+        y_tmp <- cont_data@y[1:i]
+        SE_tmp <- cont_data@SE[1:i]
+        names_tmp <- cont_data@studyNames[1:i]
         cont_data_tmp <- NULL
         if (length(cont_data@N1) > 0){
             # if we have group level data for 
             # group 1, outcome 1, then we assume
             # we have it for all groups
-            N1_tmp <- binary_data@N1[1:i]
-            mean1_tmp <- binary_data@mean1[1:i]
-            se1_tmp <- binary_data@se1[1:i]
-            N2_tmp <- binary_data@N2[1:i]
-            mean2_tmp <- binary_data@mean2[1:i]
-            se2_tmp <- binary_data@se2[1:i]
+            N1_tmp <- cont_data@N1[1:i]
+            mean1_tmp <- cont_data@mean1[1:i]
+            sd1_tmp <- cont_data@sd1[1:i]
+            N2_tmp <- cont_data@N2[1:i]
+            mean2_tmp <- cont_data@mean2[1:i]
+            sd2_tmp <- cont_data@sd2[1:i]
             cont_data_tmp <- new('ContinuousData', 
-                               N1=N1_tmp, mean1=mean1_tmp , se1=se1_tmp, 
-                               N2=N2_tmp, mean2=mean2_tmp, se2=se2_tmp,
+                               N1=N1_tmp, mean1=mean1_tmp , sd1=sd1_tmp, 
+                               N2=N2_tmp, mean2=mean2_tmp, sd2=sd2_tmp,
                                y=y_tmp, SE=SE_tmp, 
                                studyNames=names_tmp)
         }

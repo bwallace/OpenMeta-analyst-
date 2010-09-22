@@ -10,7 +10,7 @@
 
 library(metafor)
 
-# cd <- new('ContinuousData', N1=c(100), mean1=c(50.0), sd1=c(2.0), N2=c(100), mean2=c(25.0), sd2=c(3.0), studyNames=c("1"))
+# cd <- new('ContinuousData', N1=c(20, 90), mean1=c(1.2, .9), sd1=c(.2, .2), N2=c(30, 50), mean2=c(2, 2), sd2=c(.1, .1), studyNames=c("1", "2"))
 # params <- list(metric="MD", conf.level=95, digits=3)
 
 compute.for.one.cont.study <- function(contData, params){
@@ -32,8 +32,8 @@ get.res.for.one.cont.study <- function(contData, params){
         se <- sqrt(res$vi[1])
     }
     else{
-        y <- binaryData@y[1]
-        se <- binaryData@SE[1]
+        y <- contData@y[1]
+        se <- contData@SE[1]
     }
     # note: conf.level is given as, e.g., 95, rather than .95.
     alpha <- 1.0-(params$conf.level/100.0)
@@ -113,7 +113,7 @@ continuous.random.parameters <- function(){
     parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
 }
 
-continuous.random.overall <- function(){
+continuous.random.overall <- function(results){
     # this parses out the overall from the computed result
     res <- results$summary
     overall <- list(c("estimate"=res$b[1], "lower"=res$ci.lb, "upper"=res$ci.ub))

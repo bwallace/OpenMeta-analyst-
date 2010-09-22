@@ -38,6 +38,12 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
         self.data_type = self.model.get_current_outcome_type()
         print "data type: %s" % self.data_type
+        if self.meta_f_str is not None:
+            # we pre-prend the data type to the meta-method function
+            # name. thus the caller (meta_form) needn't worry about
+            # the data type, only about the method name (e.g., cumulative)
+            self.meta_f_str = ".".join((self.meta_f_str, self.data_type))
+        
         self.current_widgets = []
         self.current_method = None
         self.current_params = None

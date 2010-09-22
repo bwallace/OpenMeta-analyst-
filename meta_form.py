@@ -133,15 +133,21 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         form =  ma_specs.MA_Specs(self.model, parent=self)
         form.show()
     
+    # Here are the calls to ma_specs with so-called `meta-methods`
+    # which operate over the output of meta-analytic methods. Note
+    # that we don't care what sort of data we're operating over here;
+    # ma_specs takes care of that. The convention is that each meta
+    # method, for example `cum.ma`, has .binary and .continuous 
+    # implementation.
+    ### TODO pull out meta methods auto-magically via introspection.
     def cum_ma(self):
-        ### TODO pull out meta methods auto-magically via introspection.
-        print "cum"
-        form =  ma_specs.MA_Specs(self.model, meta_f_str="cum.ma.binary", parent=self)
+        print "gettin' meta -- cumulative meta-analysis"
+        form =  ma_specs.MA_Specs(self.model, meta_f_str="cum.ma", parent=self)
         form.show()
         
     def loo_ma(self):
-        print "loo"
-        form =  ma_specs.MA_Specs(self.model, meta_f_str="loo.ma.binary", parent=self)
+        print "gettin' meta -- leave-one-out meta-analysis"
+        form =  ma_specs.MA_Specs(self.model, meta_f_str="loo.ma", parent=self)
         form.show()
 
     def edit_dataset(self):
