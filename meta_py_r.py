@@ -226,8 +226,8 @@ def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj"):
         SDs2_str = _get_str(raw_data, 5)
         
         r_str = "%s <- new('ContinuousData', \
-                                     N1=c(%s), mean1=c(%s), se1=c(%s), \
-                                     N2=c(%s), mean2=c(%s), se2=c(%s), \
+                                     N1=c(%s), mean1=c(%s), sd1=c(%s), \
+                                     N2=c(%s), mean2=c(%s), sd2=c(%s), \
                                      y=c(%s), SE=c(%s), studyNames=c(%s))" \
                         % (var_name, Ns1_str, means1_str, SDs1_str, \
                             Ns2_str, means2_str, SDs2_str, \

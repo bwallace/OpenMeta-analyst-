@@ -30,8 +30,8 @@ setClass("BinaryData",
 # ContinuousData type
 #       
 setClass("ContinuousData", 
-               representation(N1="numeric", mean1="numeric", se1="numeric",
-               N2="numeric", mean2="numeric", se2="numeric",
+               representation(N1="numeric", mean1="numeric", sd1="numeric",
+               N2="numeric", mean2="numeric", sd2="numeric",
                y="numeric", SE="numeric",
                g1Name="character", g2Name="character"), 
                contains="OMData")

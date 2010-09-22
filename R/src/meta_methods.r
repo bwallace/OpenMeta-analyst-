@@ -160,3 +160,77 @@ loo.ma.binary <- function(fname, binary_data, params){
 }
 
 
+
+##################################
+#  continuous cumulative MA      #
+##################################
+cum.ma.continuous <- function(fname, cont_data, params){
+    # assert that the argument is the correct type
+    if (!("ContinuousData" %in% class(cont_data))) stop("Continuous data expected.")
+    
+    # iterate over the binaryData elements, adding one study at a time
+    cum_results <- list()
+    cum_labels <- list()
+    
+    for (i in 1:length(cont_data@studyNames)){
+        # build a BinaryData object including studies
+        # 1 through i
+        y_tmp <- binary_data@y[1:i]
+        SE_tmp <- binary_data@SE[1:i]
+        names_tmp <- binary_data@studyNames[1:i]
+        cont_data_tmp <- NULL
+        if (length(cont_data@N1) > 0){
+            # if we have group level data for 
+            # group 1, outcome 1, then we assume
+            # we have it for all groups
+            N1_tmp <- binary_data@N1[1:i]
+            mean1_tmp <- binary_data@mean1[1:i]
+            se1_tmp <- binary_data@se1[1:i]
+            N2_tmp <- binary_data@N2[1:i]
+            mean2_tmp <- binary_data@mean2[1:i]
+            se2_tmp <- binary_data@se2[1:i]
+            cont_data_tmp <- new('ContinuousData', 
+                               N1=N1_tmp, mean1=mean1_tmp , se1=se1_tmp, 
+                               N2=N2_tmp, mean2=mean2_tmp, se2=se2_tmp,
+                               y=y_tmp, SE=SE_tmp, 
+                               studyNames=names_tmp)
+        }
+        else{
+            cont_data_tmp <- new('ContinuousData', 
+                                y=y_tmp, SE=SE_tmp, 
+                                studyNames=names_tmp)
+        }
+        # call the parametric function by name, passing along the 
+        # data and parameters. Notice that this method knows
+        # neither what method its calling nor what parameters
+        # it's passing!
+        cur_res <- eval(call(fname, cont_data_tmp, params))
+        cur_overall <- eval(call(paste(fname, ".overall", sep=""), cur_res))
+        cum_results <- c(cum_results, cur_overall)
+        cum_labels <- c(cum_labels, paste("+ Study", i))
+    }
+    
+    
+    #res <- cumul(res)
+    
+    ### @TODO 
+    # generate cum MA plot
+    forest_path <- "./r_tmp/cum_forest.png"
+    #png(forest_path)
+    #forest(res)
+    #dev.off()
+
+    #
+    # Now we package the results in a dictionary (technically, a named 
+    # vector). In particular, there are two fields that must be returned; 
+    # a dictionary of images (mapping titles to image paths) and a list of texts
+    # (mapping titles to pretty-printed text). In this case we have only one 
+    # of each. 
+    #     
+    images <- c("cumulative forest plot"=forest_path)
+    plot_names <- c("cumulative forest plot"="cumulative forest_plot")
+    
+    results <- list("images"=images, "cum_results"=cum_results, "cum_labels"=cum_labels, "plot_names"=plot_names)
+    results
+}
+

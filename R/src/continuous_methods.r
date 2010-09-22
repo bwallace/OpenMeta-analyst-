@@ -1,57 +1,101 @@
 ####################################
-# OpenMeta[Analyst]                                             #
-# ----                                                                       #
-# continuous_methods.r                                       # 
-# Facade module; wraps methods that perform    #
-# analysis on continuous data in a coherent        #
-# interface.                                                            #
+# OpenMeta[Analyst]                #
+# ----                             #
+# continuous_methods.r             # 
+# Facade module; wraps methods     #
+# that perform analyses on         # 
+# continuous data in a coherent    #
+# interface.                       #
 ####################################
 
 library(metafor)
 
-#######################
+# cd <- new('ContinuousData', N1=c(100), mean1=c(50.0), sd1=c(2.0), N2=c(100), mean2=c(25.0), sd2=c(3.0), studyNames=c("1"))
+# params <- list(metric="MD", conf.level=95, digits=3)
+
+compute.for.one.cont.study <- function(contData, params){
+    res <- escalc(params$metric, 
+                  n1i=contData@N1, m1i=contData@mean1, sd1i=contData@sd1,
+                  n2i=contData@N2, m2i=contData@mean2, sd2i=contData@sd2)
+                  
+    res      
+}
+
+get.res.for.one.cont.study <- function(contData, params){
+    # this method can be called when there is only one study to 
+    # get the point estimate and lower/upper bounds.
+    y<-NULL
+    se<-NULL
+    if (length(contData@y) == 0 || is.na(contData@y)){
+        res <- compute.for.one.cont.study(contData, params)    
+        y <- res$yi[1]
+        se <- sqrt(res$vi[1])
+    }
+    else{
+        y <- binaryData@y[1]
+        se <- binaryData@SE[1]
+    }
+    # note: conf.level is given as, e.g., 95, rather than .95.
+    alpha <- 1.0-(params$conf.level/100.0)
+    mult <- abs(qnorm(alpha/2.0))
+    ub <- y + mult*se
+    lb <- y - mult*se
+    # we make lists to comply with the get.overall method
+    res <- list("b"=c(y), "ci.lb"=lb, "ci.ub"=ub) 
+    res
+}
+
+###############################
 #  continuous random effects  #
-#######################
+###############################
 continuous.random <- function(contData, params){
     # assert that the argument is the correct type
     if (!("ContinuousData" %in% class(contData))) stop("Continuous data expected.")
     
-    # call out to the metafor package
-    if (length(contData@mean1) > 0) {
-        res<-rma.uni(n1i=contData@N1, n2i=contData@N2, 
-                                    m1i=contData@mean1, m2i=contData@mean2,
-                                    sd1i=contData@se1, sd2i=contData@se2,
-                                    slab=contData@studyNames,
-                                    method=params$rm.method, measure=params$measure,
-                                    level=params$conf.level, digits=params$digits)
+    results <- NULL
+    if (length(contData@studyNames) == 1){
+        # handle the case where only one study was passed in
+        res <- get.res.for.one.cont.study(contData, params)   
+        results <- list("summary"=res)
     }
     else{
-       res<-rma.uni(yi=contData@y, sei=contData@SE, 
-                                    slab=contData@studyNames,
-                                    method=params$rm.method, level=params$conf.level,
-                                    digits=params$digits)
+        # otherwise, call out to the metafor package
+        if (length(contData@mean1) > 0) {
+            res<-rma.uni(n1i=contData@N1, n2i=contData@N2, 
+                                        m1i=contData@mean1, m2i=contData@mean2,
+                                        sd1i=contData@sd1, sd2i=contData@sd2,
+                                        slab=contData@studyNames,
+                                        method=params$rm.method, measure=params$measure,
+                                        level=params$conf.level, digits=params$digits)
+        }
+        else{
+           res<-rma.uni(yi=contData@y, sei=contData@SE, 
+                                        slab=contData@studyNames,
+                                        method=params$rm.method, level=params$conf.level,
+                                        digits=params$digits)
+        }
+        
+        #
+        # generate forest plot 
+        #
+        getwd()
+        forest_path <- "./r_tmp/forest.png"
+        png(forest_path)
+        forest.rma(res, digits=params$digits)
+        dev.off()
+    
+        #
+        # Now we package the results in a dictionary (technically, a named 
+        # vector). In particular, there are two fields that must be returned; 
+        # a dictionary of images (mapping titles to image paths) and a list of texts
+        # (mapping titles to pretty-printed text). In this case we have only one 
+        # of each. 
+        #     
+        images <- c("forest plot"=forest_path)
+        plot_names <- c("forest plot"="forest_plot")
+        
+        results <- list("images"=images, "summary"=res, "plot_names"=plot_names)
     }
-    
-    #
-    # generate forest plot 
-    #
-    getwd()
-    forest_path <- "./r_tmp/forest.png"
-    png(forest_path)
-    forest.rma(res, digits=params$digits)
-    dev.off()
-
-    #
-    # Now we package the results in a dictionary (technically, a named 
-    # vector). In particular, there are two fields that must be returned; 
-    # a dictionary of images (mapping titles to image paths) and a list of texts
-    # (mapping titles to pretty-printed text). In this case we have only one 
-    # of each. 
-    #     
-    images <- c("forest plot"=forest_path)
-    plot_names <- c("forest plot"="forest_plot")
-    
-    results <- list("images"=images, "summary"=res, "plot_names"=plot_names)
     results
 }
 
@@ -67,4 +111,11 @@ continuous.random.parameters <- function(){
     
     var_order <- c("rm.method", "measure", "conf.level", "digits")
     parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
+}
+
+continuous.random.overall <- function(){
+    # this parses out the overall from the computed result
+    res <- results$summary
+    overall <- list(c("estimate"=res$b[1], "lower"=res$ci.lb, "upper"=res$ci.ub))
+    overall
 }
