@@ -37,7 +37,6 @@ setClass("ContinuousData",
                contains="OMData")
                
                
-# 
 #
 # The specificiation class contains parameters, etc., for the method to be run
 #

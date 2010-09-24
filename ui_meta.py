@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'meta.ui'
 #
-# Created: Thu Sep 16 15:14:34 2010
+# Created: Fri Sep 24 16:51:05 2010
 #      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -163,6 +163,8 @@ class Ui_MainWindow(object):
         self.menu_file.setObjectName("menu_file")
         self.menuAnalysis = QtGui.QMenu(self.menu_bar)
         self.menuAnalysis.setObjectName("menuAnalysis")
+        self.menuMetric = QtGui.QMenu(self.menuAnalysis)
+        self.menuMetric.setObjectName("menuMetric")
         self.menuDataset = QtGui.QMenu(self.menu_bar)
         self.menuDataset.setObjectName("menuDataset")
         MainWindow.setMenuBar(self.menu_bar)
@@ -187,9 +189,19 @@ class Ui_MainWindow(object):
         self.action_cum_ma.setObjectName("action_cum_ma")
         self.action_loo_ma = QtGui.QAction(MainWindow)
         self.action_loo_ma.setObjectName("action_loo_ma")
+        self.actionOR = QtGui.QAction(MainWindow)
+        self.actionOR.setObjectName("actionOR")
+        self.actionRR = QtGui.QAction(MainWindow)
+        self.actionRR.setObjectName("actionRR")
+        self.actionTX_Mean_one_arm = QtGui.QAction(MainWindow)
+        self.actionTX_Mean_one_arm.setObjectName("actionTX_Mean_one_arm")
+        self.actionYo = QtGui.QAction(MainWindow)
+        self.actionYo.setObjectName("actionYo")
         self.menu_file.addAction(self.action_save)
         self.menu_file.addAction(self.action_open)
         self.menu_file.addAction(self.action_quit)
+        self.menuAnalysis.addAction(self.menuMetric.menuAction())
+        self.menuAnalysis.addSeparator()
         self.menuAnalysis.addAction(self.action_go)
         self.menuAnalysis.addSeparator()
         self.menuAnalysis.addAction(self.action_cum_ma)
@@ -210,6 +222,7 @@ class Ui_MainWindow(object):
         self.label_3.setText(QtGui.QApplication.translate("MainWindow", "follow-up:", None, QtGui.QApplication.UnicodeUTF8))
         self.menu_file.setTitle(QtGui.QApplication.translate("MainWindow", "File", None, QtGui.QApplication.UnicodeUTF8))
         self.menuAnalysis.setTitle(QtGui.QApplication.translate("MainWindow", "Analysis", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuMetric.setTitle(QtGui.QApplication.translate("MainWindow", "metric", None, QtGui.QApplication.UnicodeUTF8))
         self.menuDataset.setTitle(QtGui.QApplication.translate("MainWindow", "Dataset", None, QtGui.QApplication.UnicodeUTF8))
         self.action_save.setText(QtGui.QApplication.translate("MainWindow", "save", None, QtGui.QApplication.UnicodeUTF8))
         self.action_open.setText(QtGui.QApplication.translate("MainWindow", "open...", None, QtGui.QApplication.UnicodeUTF8))
@@ -220,5 +233,9 @@ class Ui_MainWindow(object):
         self.action_add_covariate.setText(QtGui.QApplication.translate("MainWindow", "add covariate...", None, QtGui.QApplication.UnicodeUTF8))
         self.action_cum_ma.setText(QtGui.QApplication.translate("MainWindow", "cumulative meta-analysis...", None, QtGui.QApplication.UnicodeUTF8))
         self.action_loo_ma.setText(QtGui.QApplication.translate("MainWindow", "leave-one-out meta-analysis...", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionOR.setText(QtGui.QApplication.translate("MainWindow", "OR", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionRR.setText(QtGui.QApplication.translate("MainWindow", "RR", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionTX_Mean_one_arm.setText(QtGui.QApplication.translate("MainWindow", "TX Mean (one-arm)", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionYo.setText(QtGui.QApplication.translate("MainWindow", "yo", None, QtGui.QApplication.UnicodeUTF8))
 
 import icons_rc

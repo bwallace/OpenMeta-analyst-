@@ -50,7 +50,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         #
         super(MetaForm, self).__init__(parent)
         self.setupUi(self)
-
+        self.menuMetric.addAction(\
+            QAction(QString("OR"), self))
         # this is just for debugging purposes; if a
         # switch is passed in, display fake/toy data
         if len(sys.argv)>1 and sys.argv[-1]=="--toy-data":

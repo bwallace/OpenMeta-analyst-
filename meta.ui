@@ -373,7 +373,17 @@
     <property name="title">
      <string>Analysis</string>
     </property>
+    <widget class="QMenu" name="menuMetric">
+     <property name="title">
+      <string>metric</string>
+     </property>
+    </widget>
+    <addaction name="menuMetric"/>
+    <addaction name="separator"/>
     <addaction name="action_go"/>
+    <addaction name="separator"/>
+    <addaction name="action_cum_ma"/>
+    <addaction name="action_loo_ma"/>
    </widget>
    <widget class="QMenu" name="menuDataset">
     <property name="title">
@@ -405,7 +415,7 @@
   </action>
   <action name="action_go">
    <property name="text">
-    <string>meta-analyze...</string>
+    <string>meta-analysis...</string>
    </property>
   </action>
   <action name="action_edit">
@@ -421,6 +431,36 @@
   <action name="action_add_covariate">
    <property name="text">
     <string>add covariate...</string>
+   </property>
+  </action>
+  <action name="action_cum_ma">
+   <property name="text">
+    <string>cumulative meta-analysis...</string>
+   </property>
+  </action>
+  <action name="action_loo_ma">
+   <property name="text">
+    <string>leave-one-out meta-analysis...</string>
+   </property>
+  </action>
+  <action name="actionOR">
+   <property name="text">
+    <string>OR</string>
+   </property>
+  </action>
+  <action name="actionRR">
+   <property name="text">
+    <string>RR</string>
+   </property>
+  </action>
+  <action name="actionTX_Mean_one_arm">
+   <property name="text">
+    <string>TX Mean (one-arm)</string>
+   </property>
+  </action>
+  <action name="actionYo">
+   <property name="text">
+    <string>yo</string>
    </property>
   </action>
  </widget>
