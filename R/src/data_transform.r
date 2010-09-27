@@ -4,9 +4,9 @@ isnt.null <- function(x){
 }
 
 
-##############
-# Binary data calculation
-##############
+############################ 
+# Binary data calculation  #
+############################
 impute.bin.data <- function(bin.data){
     # this function imputes binary data (i.e., 2x2 tables) from the fields
     # available in the bin.data data frame parameter.
@@ -158,16 +158,14 @@ fillin.2x2.simple <- function(c11=NA, c12=NA, c21=NA, c22=NA,
 }
 
 
-############################
-#
-# Continuous data calculation
-# --- 
-# The following code is due to Tom Trikalinos.
-# Originally in fillin.continuous.r file.
-#
-############################
-
-
+#################################################
+#                                               #
+# Continuous data calculation                   #
+# ---                                           #
+# The following code is due to Tom Trikalinos.  #
+# Originally in fillin.continuous.r file.       #
+#                                               #
+#################################################
 check.1spell.res <- function(n, se) {
     succeeded <- TRUE
     comment <- ""
@@ -206,9 +204,6 @@ fillin.cont.1spell <- function(n=NA, mean=NA, sd=NA, se=NA, var=NA,
     input.vector <- c(n, mean, sd, se, var, low, high, pval)
     input.pattern <- !(is.na(input.vector))
 
-
-
-   	
     ##########################################################
     # check the mean first 
     # If not calculate it from the CI

@@ -300,8 +300,8 @@ class DatasetModel(QAbstractTableModel):
                 
             self.emit(SIGNAL("dataChanged(QModelIndex, QModelIndex)"), index, index)
 
-            # tell the view that an entry in the table has changed, and what the old
-            # and new values were. this for undo/redo purposes.
+            # Tell the view that an entry in the table has changed, and what the old
+            # and new values were. This for undo/redo purposes.
             new_val = self.data(index)
             self.emit(SIGNAL("cellContentChanged(QModelIndex, QVariant, QVariant)"), index, old_val, new_val)
          
@@ -315,9 +315,6 @@ class DatasetModel(QAbstractTableModel):
             elif not study.manually_excluded:
                 study.include = True
                 
-
-            #pyqtRemoveInputHook()
-            #pdb.set_trace()
             return True
         return False
 

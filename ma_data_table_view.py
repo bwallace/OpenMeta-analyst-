@@ -114,6 +114,7 @@ class MADataTable(QtGui.QTableView):
         cur_follow_up = self.model().current_time_point
 
     def cell_content_changed(self, index, old_val, new_val):
+        print "I AM HERE???!"
         cell_edit = CommandCellEdit(self, index, old_val, new_val)
         self.undoStack.push(cell_edit)
 

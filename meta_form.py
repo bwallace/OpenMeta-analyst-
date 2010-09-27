@@ -40,6 +40,17 @@ import network_view
 VERSION = .005 # completely made up. need an actual versioning system.
 NUM_DIGITS = 4
 
+# For now we're going to hardcode which metrics are available.
+# In the future, we may want to pull these out dynamically from 
+# the R side. But then meta-analytic methods would have either to
+# only operate over the effects and variances or else themselves 
+# know how to compute arbitrary metrics.
+BINARY_TWO_ARM_METRICS = ["OR", "RD", "RR", "AS", "PETO", "YUQ", "YUY"]
+BINARY_ONE_ARM_METRICS = ["PR", "PLN", "PLO", "PAS", "PFT"]
+
+CONTINUOUS_TWO_ARM_METRICS = ["MD", "SMD"]
+CONTINUOUS_ONE_ARM_METRICS = ["TX Mean"]
+
 class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
     def __init__(self, parent=None):
@@ -50,8 +61,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         #
         super(MetaForm, self).__init__(parent)
         self.setupUi(self)
-        self.menuMetric.addAction(\
-            QAction(QString("OR"), self))
+        
         # this is just for debugging purposes; if a
         # switch is passed in, display fake/toy data
         if len(sys.argv)>1 and sys.argv[-1]=="--toy-data":
@@ -66,6 +76,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.model = DatasetModel(dataset=data_model)
 
         self.tableView.setModel(self.model)
+        self.populate_metrics_menu()
         # attach a delegate for editing
         self.tableView.setItemDelegate(StudyDelegate(self))
 
@@ -180,6 +191,43 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.tableView.resizeColumnsToContents()
         print "ok -- model set" 
         
+    
+    def populate_metrics_menu(self):
+        '''
+        Populates the `metric` sub-menu with available metrics for the
+        current datatype.
+        '''
+        self.menuMetric.clear()
+        if self.model.get_current_outcome_type()=="binary":
+            self.add_binary_metrics()
+            
+        elif self.model.get_current_outcome_type()=="continuous":
+            pass
+                
+    def add_binary_metrics(self):
+        self.add_metrics(BINARY_ONE_ARM_METRICS, BINARY_TWO_ARM_METRICS)
+        
+    def add_continuous_metrics(self):
+        self.add_metrics(CONTINUOUS_ONE_ARM_METRICS, CONTINUOUS_TWO_ARM_METRICS)
+        
+    def add_metrics(self, one_arm_metrics, two_arm_metrics):
+        for i,metric in enumerate(two_arm_metrics):
+            metric_action = self.add_metric_action(metric + " (two-arm)")
+            if i == 0:
+                # arbitrarily check the first metric
+                metric_action.setChecked(True)
+                
+        # now add the one-arm metrics
+        self.menuMetric.addSeparator()
+        for metric in one_arm_metrics:
+            self.add_metric_action(metric + " (one-arm)")    
+            
+    def add_metric_action(self, metric):
+        metric_action = QAction(QString(metric), self)
+        metric_action.setCheckable(True)
+        self.menuMetric.addAction(metric_action)     
+        return metric_action
+    
     def view_network(self):
         view_window =  network_view.ViewDialog(self.model, parent=self)
         view_window.show()
@@ -422,16 +470,44 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.cur_time_lbl.setText(u"<font color='Blue'>%s</font>" % self.model.get_current_follow_up_name())
         
     def open(self):
+        '''
+        This gets called when the use opts to open an existing dataset. Note that we make use
+        of the pickled dataset itself (.oma) and we also look for a corresponding `state`
+        dictionary, which contains things like which outcome was currently displayed, etc.
+        Also note that, as in Excel, the open operation is undoable. 
+        '''
         file_path = unicode(QFileDialog.getOpenFileName(self, "OpenMeta[analyst] - Open File",
-                                                                                        ".", "open meta files (*.oma)"))
+                                                              ".", "open meta files (*.oma)"))
         data_model = None
         print "loading %s..." % file_path
         try:
             data_model = pickle.load(open(file_path, 'r'))
+            print "successfully loaded data"
         except:
             return None
         
+        ## cache current state for undo.
+        prev_out_path = copy.copy(self.out_path)
+        prev_state_dict = copy.copy(self.model.get_stateful_dict())
+        
         self.out_path = file_path
+        
+        state_dict = None
+        try:
+            state_dict = pickle.load(open(file_path + ".state"))
+            print "found state dictionary: \n%s" % state_dict
+        except:
+            print "no state dictionary found!"
+
+        prev_dataset = self.model.dataset.copy()
+        
+        undo_f = lambda : self.undo_set_model(prev_out_path, prev_state_dict, prev_dataset)
+        redo_f = lambda : self.set_model(data_model, state_dict)
+        
+        open_command = CommandGenericDo(redo_f, undo_f)
+        self.tableView.undoStack.push(open_command)
+        
+    def set_model(self, data_model, state_dict):
         # this is questionable; we explicitly remove the last study, because
         # there is *always* a blank study appended to the current dataset.
         # thus when the dataset was dumped (via pickle) it included this study,
@@ -439,22 +515,33 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # when it is opened. this was the easiest way to resolve this issue.
         data_model.studies = data_model.studies[:-1]
         self.model = DatasetModel(dataset=data_model)
-
-        state_dict = None
-        try:
-            state_dict = pickle.load(open(file_path + ".state"))
+        if state_dict is not None:
             self.model.set_state(state_dict)
-            print "found state dictionary: \n%s" % state_dict
-        except:
-            print "no state dictionary found!"
-
         self.tableView.setModel(self.model)
+        # This is kind of subtle. We have to reconnect
+        # our signals and slots when the underlying model 
+        # changes, because otherwise the antiquated/replaced
+        # model (which was connected to the slots of interest)
+        # remains, which is useless. 
+        self._setup_connections()
         self.tableView.resizeColumnsToContents()
-        self.cur_outcome_lbl.setText(u"<font color='Blue'>%s</font>" % self.model.current_outcome)
+        self.update_outcome_lbl()
         self.update_follow_up_label()
-        print "successfully loaded data"
-
-
+        
+    def undo_set_model(self, out_path, state_dict, dataset):
+        self.model = DatasetModel(dataset)
+        self.model.set_state(state_dict)
+        self.out_path = out_path
+        self.tableView.setModel(self.model)
+        self._setup_connections()
+        self.tableView.resizeColumnsToContents()
+        self.update_outcome_lbl()
+        self.update_follow_up_label()
+        
+    def update_outcome_lbl(self):
+        self.cur_outcome_lbl.setText(\
+                u"<font color='Blue'>%s</font>" % self.model.current_outcome)
+        
     def quit(self):
         QApplication.quit()
 
