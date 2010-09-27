@@ -445,6 +445,10 @@ class DatasetModel(QAbstractTableModel):
     def add_covariate(self, covariate_name, covariate_type, cov_values=None):
         self.dataset.add_covariate(Covariate(covariate_name, covariate_type), cov_values=cov_values)
         self.reset()
+    
+    def remove_covariate(self, covariate_name):
+        self.dataset.remove_covariate(covariate_name)
+        self.reset()
         
     def remove_study(self, id):
         self.dataset.studies.pop(id)

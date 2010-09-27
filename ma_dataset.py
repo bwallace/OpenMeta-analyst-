@@ -184,7 +184,17 @@ class Dataset:
                     study.covariate_dict[covariate.name] = cov_values[study.name]
                 else:
                     study.covariate_dict[covariate.name] = None
+        
+    def remove_covariate(self, covariate_name):
+        for cov in self.covariates:
+            if cov.name == covariate_name:
+                self.covariates.remove(cov)
+                break
                 
+        for study in self.studies:
+            study.covariate_dict.pop(covariate_name)
+        
+            
     def get_values_for_cov(self, covariate):
         ''' returns a dictionary mapping study names to values for the given covariate '''
         cov_name = covariate

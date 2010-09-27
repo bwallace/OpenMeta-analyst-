@@ -45,9 +45,12 @@ NUM_DIGITS = 4
 # the R side. But then meta-analytic methods would have either to
 # only operate over the effects and variances or else themselves 
 # know how to compute arbitrary metrics.
+
+# Binary metrics
 BINARY_TWO_ARM_METRICS = ["OR", "RD", "RR", "AS", "PETO", "YUQ", "YUY"]
 BINARY_ONE_ARM_METRICS = ["PR", "PLN", "PLO", "PAS", "PFT"]
 
+# Continuous metrics
 CONTINUOUS_TWO_ARM_METRICS = ["MD", "SMD"]
 CONTINUOUS_ONE_ARM_METRICS = ["TX Mean"]
 
@@ -202,7 +205,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.add_binary_metrics()
             
         elif self.model.get_current_outcome_type()=="continuous":
-            pass
+            self.add_continuous_metrics()
                 
     def add_binary_metrics(self):
         self.add_metrics(BINARY_ONE_ARM_METRICS, BINARY_TWO_ARM_METRICS)
@@ -243,12 +246,21 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             # then the user clicked 'ok'.
             new_covariate_name = unicode(form.covariate_name_le.text().toUtf8(), "utf-8")
             new_covariate_type = str(form.datatype_cbo_box.currentText())
-            self.model.add_covariate(new_covariate_name, new_covariate_type)
-            #redo_f = lambda: self._add_new_outcome(new_outcome_name, new_outcome_type)
-            #prev_outcome = str(self.model.current_outcome)
-            #undo_f = lambda: self._undo_add_new_outcome(new_outcome_name, prev_outcome)
-            print "new covariate name: %s with type %s" % (new_covariate_name, new_covariate_type)
-              			
+
+            redo_f = lambda: self._add_new_covariate(new_covariate_name, new_covariate_type)
+            undo_f = lambda: self._undo_add_new_covariate(new_covariate_name)
+            
+            add_cov_command = CommandGenericDo(redo_f, undo_f)
+            self.tableView.undoStack.push(add_cov_command)
+       
+    def _add_new_covariate(self, cov_name, cov_type):
+        self.model.add_covariate(cov_name, cov_type)
+        print "new covariate name: %s with type %s" % (cov_name, cov_type)
+        
+        
+    def _undo_add_new_covariate(self, cov_name):
+        self.model.remove_covariate(cov_name)
+        
     def add_new(self):
         redo_f, undo_f = None, None
         if self.cur_dimension == "outcome":
@@ -425,7 +437,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # in order to avoid attempting to display a group/fu that
         # do not belong to the outcome_name. 
         self.model.set_current_outcome(outcome_name)
-
+        self.populate_metrics_menu()
+        
         # first ascertain if the currently displayed follow up is
         # available for this outcome
         if follow_up_name is not None:
