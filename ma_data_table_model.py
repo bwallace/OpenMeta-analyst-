@@ -1,14 +1,14 @@
-#################################################################
-#
-#  Byron C. Wallace
-#  Tufts Medical Center
-#  OpenMeta[analyst]
-#  ---
-#  Proxy class, interfaces between the underlying representation (in ma_dataset.py)
-#  and the DataTableView UI. Basically deals with keeping track of which outcomes/
-#  follow-ups/treatments are being viewed. See Summerfield's chapters on M-V-C
-# in "Rapid GUI Programming with Python and QT" for an overview of the architecture.
-################################################################
+#########################################################################################
+#                                                                                       #
+#  Byron C. Wallace                                                                     #
+#  Tufts Medical Center                                                                 #
+#  OpenMeta[analyst]                                                                    #
+#  ---                                                                                  #
+#  Proxy class, interfaces between the underlying representation (in ma_dataset.py)     #
+#  and the DataTableView UI. Basically deals with keeping track of which outcomes/      #
+#  follow-ups/treatments are being viewed. See Summerfield's chapters on M-V-C          #
+# in "Rapid GUI Programming with Python and QT" for an overview of the architecture.    #
+#########################################################################################
 
 # core libraries
 import PyQt4
@@ -79,6 +79,10 @@ class DatasetModel(QAbstractTableModel):
         self.study_auto_added = None
 
 
+    def set_current_metric(self, metric):
+        self.current_effect = metric
+        print "OK! metric updated."
+        
     def update_current_outcome(self):
         outcome_names = self.dataset.get_outcome_names()
 
@@ -686,7 +690,7 @@ class DatasetModel(QAbstractTableModel):
         if self.raw_data_is_complete_for_study(study_index):
             if data_type == BINARY:
                 e1, n1, e2, n2 = self.get_cur_raw_data_for_study(study_index)
-                est, lower, upper = meta_py_r.effect_for_study(e1, n1, e2, n2)
+                est, lower, upper = meta_py_r.effect_for_study(e1, n1, e2, n2, metric=self.current_effect)
             elif data_type == CONTINUOUS:
                 n1, m1, se1, n2, m2, se2 = self.get_cur_raw_data_for_study(study_index)
                 est, lower, upper = meta_py_r.continuous_effect_for_study(n1, m1, se1, n2, m2, se2)

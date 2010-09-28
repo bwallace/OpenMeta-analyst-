@@ -1,13 +1,13 @@
-###########################
-#                                           
-#  Byron C. Wallace                   
-#  Tufts Medical Center               
-#  OpenMeta[analyst]                  
-#                                     
-#  Container form for UI. Handles     
-#  user interaction.                  
-#                                     
-###########################
+######################################
+#                                    #       
+#  Byron C. Wallace                  #
+#  Tufts Medical Center              # 
+#  OpenMeta[analyst]                 # 
+#                                    # 
+#  Container form for UI. Handles    # 
+#  user interaction.                 # 
+#                                    # 
+######################################
 
 import sys
 import pdb
@@ -36,23 +36,10 @@ import results_window
 import ma_specs
 import edit_dialog
 import network_view
+import meta_globals 
 
-VERSION = .005 # completely made up. need an actual versioning system.
+
 NUM_DIGITS = 4
-
-# For now we're going to hardcode which metrics are available.
-# In the future, we may want to pull these out dynamically from 
-# the R side. But then meta-analytic methods would have either to
-# only operate over the effects and variances or else themselves 
-# know how to compute arbitrary metrics.
-
-# Binary metrics
-BINARY_TWO_ARM_METRICS = ["OR", "RD", "RR", "AS", "PETO", "YUQ", "YUY"]
-BINARY_ONE_ARM_METRICS = ["PR", "PLN", "PLO", "PAS", "PFT"]
-
-# Continuous metrics
-CONTINUOUS_TWO_ARM_METRICS = ["MD", "SMD"]
-CONTINUOUS_ONE_ARM_METRICS = ["TX Mean"]
 
 class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
@@ -74,6 +61,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.display_outcome("death")
             self.model.set_current_time_point(0)
             self.model.try_to_update_outcomes()
+            self.model.reset()
+            self.tableView.resizeColumnsToContents()
         else:
             data_model = Dataset()
             self.model = DatasetModel(dataset=data_model)
@@ -208,29 +197,60 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.add_continuous_metrics()
                 
     def add_binary_metrics(self):
-        self.add_metrics(BINARY_ONE_ARM_METRICS, BINARY_TWO_ARM_METRICS)
+        self.add_metrics(meta_globals.BINARY_ONE_ARM_METRICS,\
+                         meta_globals.BINARY_TWO_ARM_METRICS)
         
     def add_continuous_metrics(self):
-        self.add_metrics(CONTINUOUS_ONE_ARM_METRICS, CONTINUOUS_TWO_ARM_METRICS)
+        self.add_metrics(meta_globals.CONTINUOUS_ONE_ARM_METRICS,\
+                         meta_globals.CONTINUOUS_TWO_ARM_METRICS)
         
     def add_metrics(self, one_arm_metrics, two_arm_metrics):
+        # we'll add sub-menus for two-arm and one-arm metrics
+        self.twoArmMetricMenu = self.add_sub_metric_menu("two-arm")
+        self.oneArmMetricMenu = self.add_sub_metric_menu("one-arm")
+
         for i,metric in enumerate(two_arm_metrics):
-            metric_action = self.add_metric_action(metric + " (two-arm)")
+            metric_action = self.add_metric_action(metric, self.twoArmMetricMenu)
             if i == 0:
                 # arbitrarily check the first metric
                 metric_action.setChecked(True)
                 
         # now add the one-arm metrics
-        self.menuMetric.addSeparator()
         for metric in one_arm_metrics:
-            self.add_metric_action(metric + " (one-arm)")    
-            
-    def add_metric_action(self, metric):
+            self.add_metric_action(metric, self.oneArmMetricMenu)    
+      
+    def add_sub_metric_menu(self, name):
+        sub_menu = QtGui.QMenu(QString(name), self.menuMetric)
+        self.menuMetric.addAction(sub_menu.menuAction())
+        return sub_menu
+           
+    def add_metric_action(self, metric, menu):
         metric_action = QAction(QString(metric), self)
         metric_action.setCheckable(True)
-        self.menuMetric.addAction(metric_action)     
+        QObject.connect(metric_action, \
+                        SIGNAL("toggled(bool)"),\
+                        lambda: self.metric_selected(metric, menu))
+        menu.addAction(metric_action)     
         return metric_action
     
+    
+    def metric_selected(self, metric_name, menu):
+        # de-select previously active metric --
+        # it doesn't appear that there is a more
+        # straight forward way of doing this, 
+        # unfortunately.
+        #
+        prev_metric_name = self.tableView.model().current_effect
+        for action in menu.actions():
+            action_text = action.text()
+            if prev_metric_name != metric_name and action_text == prev_metric_name:
+                action.setChecked(False)
+        
+        self.tableView.model().set_current_metric(metric_name)
+        self.model.try_to_update_outcomes()    
+        self.model.reset()
+        self.tableView.resizeColumnsToContents()
+        
     def view_network(self):
         view_window =  network_view.ViewDialog(self.model, parent=self)
         view_window.show()
@@ -637,8 +657,7 @@ def _gen_some_data():
   
     outcome = Outcome("death", BINARY)
     dataset.add_outcome(outcome)
-    
-    # self.get_current_ma_unit_for_study(index.row()).get_raw_data_for_groups(self.current_txs)
+
     for study in studies:
         dataset.add_study(study)
     
@@ -748,7 +767,7 @@ b	1785
 #   >python meta_form.py
 #
 if __name__ == "__main__":
-    welcome_str = "** welcome to OpenMeta; version %s **" % VERSION
+    welcome_str = "** welcome to OpenMeta; version %s **" % meta_globals.VERSION
     print "".join(["*" for x in range(len(welcome_str))])
     print welcome_str
     print "".join(["*" for x in range(len(welcome_str))])

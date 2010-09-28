@@ -1,27 +1,27 @@
-#############################################################
-#
-#  Byron C. Wallace
-#  Tufts Medical Center
-#  OpenMeta[analyst]
-#  
-#  Dataset module; a roll your own back end. This is a model for manipulating
-#  datasets. Note that *no QT lives here*, i.e., it is divorced from the UI entirely.
-#
-#  The structure is as follows: A Dataset object holds a list of Study objects. 
-#  These Study objects in turn contain a dictionary, mapping outcome names
-#  to another dictionary, which maps follow ups (time points) to MA_Unit
-#  objects. Finally, these MA_Unit objects in turn map treatment names
-#  - or groups (e.g., 'control', 'aspirin') - to raw data. Further, at the MA_Unit level,
-#  metrics (e.g., "OR") map to dictionaries containing that metric as computed for
-# the pairwise combinations of the groups/treatments (e.g., OR->"AvB"=x)
-#
-###############################################################
+#############################################################################################
+#                                                                                           #                
+#  Byron C. Wallace                                                                         #  
+#  Tufts Medical Center                                                                     # 
+#  OpenMeta[analyst]                                                                        # 
+#                                                                                           # 
+#  Dataset module; a roll your own back end. This is a model for manipulating               # 
+#  datasets. Note that *no QT lives here*, i.e., it is divorced from the UI entirely.       #
+#                                                                                           # 
+#  The structure is as follows: A Dataset object holds a list of Study objects.             # 
+#  These Study objects in turn contain a dictionary, mapping outcome names                  # 
+#  to another dictionary, which maps follow ups (time points) to MA_Unit                    # 
+#  objects. Finally, these MA_Unit objects in turn map treatment names                      # 
+#  - or groups (e.g., 'control', 'aspirin') - to raw data. Further, at the MA_Unit level,   # 
+#  metrics (e.g., "OR") map to dictionaries containing that metric as computed for          # 
+# the pairwise combinations of the groups/treatments (e.g., OR->"AvB"=x)                    # 
+#                                                                                           # 
+#############################################################################################
 import pdb
 from PyQt4.QtCore import pyqtRemoveInputHook
 import copy
 
 import two_way_dict
-
+import meta_globals
 
 #####
 # Let's define some module level constants.
@@ -513,21 +513,20 @@ class MetaAnalyticUnit:
             self.add_group(group)
             self.tx_groups[group].raw_data = raw_data[i]
             
-        # effects_dict maps effect names -- e.g., OR, RR, MD --
-        # to dictionaries which in turn map pairwise 
         self.effects_dict = {}
         # TODO this needs another level; effect sizes that are entered directly
         # must correspond to a particular pair of tx groups, moreover the 
-        # order matters i.e., the effect for tx a v. tx b is different than the reverse
+        # order matters i.e., the effect for tx a v. tx b is different than the reverse.
+        # Also -- where do one-arm metrics live?
         if self.outcome.data_type == BINARY:
-            for effect in ["OR", "RR", "RD"]:
+            for effect in meta_globals.BINARY_TWO_ARM_METRICS:
                 self.effects_dict[effect] = {"est":None, "lower":None,
                                                          "upper":None, "variance":None}
         elif self.outcome.data_type == CONTINUOUS:
-            # mean difference and standardized mean difference
+            # right now we only have mean difference and standardized mean difference
             # @TODO hedge's G, cohen's D, glass delta; WV doesn't
             # implement these
-            for effect in ["MD", "SMD"]:
+            for effect in meta_globals.CONTINUOUS_TWO_ARM_METRICS:
                 self.effects_dict[effect] = {"est":None, "lower":None,
                                                          "upper":None, "SE":None}
                 
