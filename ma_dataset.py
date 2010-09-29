@@ -208,7 +208,6 @@ class Dataset:
     def get_cov_names(self):
         return [cov.name for cov in self.covariates]
         
-        
     def add_outcome(self, outcome):
         cur_group_names = self.get_group_names()
         if len(cur_group_names) == 0:
@@ -519,14 +518,14 @@ class MetaAnalyticUnit:
         # order matters i.e., the effect for tx a v. tx b is different than the reverse.
         # Also -- where do one-arm metrics live?
         if self.outcome.data_type == BINARY:
-            for effect in meta_globals.BINARY_TWO_ARM_METRICS:
+            for effect in meta_globals.BINARY_TWO_ARM_METRICS + meta_globals.BINARY_ONE_ARM_METRICS:
                 self.effects_dict[effect] = {"est":None, "lower":None,
                                                          "upper":None, "variance":None}
         elif self.outcome.data_type == CONTINUOUS:
             # right now we only have mean difference and standardized mean difference
             # @TODO hedge's G, cohen's D, glass delta; WV doesn't
             # implement these
-            for effect in meta_globals.CONTINUOUS_TWO_ARM_METRICS:
+            for effect in meta_globals.CONTINUOUS_TWO_ARM_METRICS + meta_globals.CONTINUOUS_ONE_ARM_METRICS:
                 self.effects_dict[effect] = {"est":None, "lower":None,
                                                          "upper":None, "SE":None}
                 

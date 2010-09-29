@@ -68,7 +68,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.model = DatasetModel(dataset=data_model)
 
         self.tableView.setModel(self.model)
-        self.populate_metrics_menu()
         # attach a delegate for editing
         self.tableView.setItemDelegate(StudyDelegate(self))
 
@@ -97,7 +96,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         if (event.modifiers() & QtCore.Qt.ControlModifier):
             if event.key() == QtCore.Qt.Key_S:
                 # ctrl + s = save
-                print "saving?"
+                print "saving.."
                 self.save()
             elif event.key() == QtCore.Qt.Key_O:
                 # ctrl + o = open
@@ -170,19 +169,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             edit_command = CommandGenericDo(redo_f, undo_f)
             self.tableView.undoStack.push(edit_command)
             
-        
-    def set_model(self, dataset):
-        self.model.dataset = dataset
-        self.model.update_current_group_names()
-        self.model.update_current_outcome()
-        self.model.update_current_time_points()
-        self.model.try_to_update_outcomes()
-        self.update_follow_up_label()
-        self.display_outcome(self.model.current_outcome)
-        self.model.reset()
-        self.tableView.resizeColumnsToContents()
-        print "ok -- model set" 
-        
     
     def populate_metrics_menu(self):
         '''
@@ -540,7 +526,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         open_command = CommandGenericDo(redo_f, undo_f)
         self.tableView.undoStack.push(open_command)
         
-    def set_model(self, data_model, state_dict):
+    def set_model(self, data_model, state_dict=None):
         # this is questionable; we explicitly remove the last study, because
         # there is *always* a blank study appended to the current dataset.
         # thus when the dataset was dumped (via pickle) it included this study,
@@ -551,25 +537,35 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         if state_dict is not None:
             self.model.set_state(state_dict)
         self.tableView.setModel(self.model)
+        self.model_updated()
+        print "ok -- model set."
+        
+        
+    def model_updated(self):
+        ''' Call me when the model is changed. '''
+        self.model.update_current_group_names()
+        self.model.update_current_outcome()
+        self.model.try_to_update_outcomes()
+        self.model.update_current_time_points()
         # This is kind of subtle. We have to reconnect
         # our signals and slots when the underlying model 
         # changes, because otherwise the antiquated/replaced
         # model (which was connected to the slots of interest)
-        # remains, which is useless. 
+        # remains, which is useless.
         self._setup_connections()
         self.tableView.resizeColumnsToContents()
         self.update_outcome_lbl()
         self.update_follow_up_label()
+        self.populate_metrics_menu()
+        self.model.reset()
+        
         
     def undo_set_model(self, out_path, state_dict, dataset):
         self.model = DatasetModel(dataset)
         self.model.set_state(state_dict)
         self.out_path = out_path
         self.tableView.setModel(self.model)
-        self._setup_connections()
-        self.tableView.resizeColumnsToContents()
-        self.update_outcome_lbl()
-        self.update_follow_up_label()
+        self.model_updated()
         
     def update_outcome_lbl(self):
         self.cur_outcome_lbl.setText(\
