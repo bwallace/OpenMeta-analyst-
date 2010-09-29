@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Triad census, subgraphs with three vertices</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for triad.census {igraph}"><tr><td>triad.census {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Triad census, subgraphs with three vertices</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This function counts the different subgraphs of three
+vertices in a graph.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+triad.census(graph)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>graph</code></td>
+<td>
+The input graph, it should be directed. An undirected
+graph results a warning, and undefined results.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Triad census was defined by David and Leinhardt (see References
+below). Every triple of vertices (A, B, C) are classified into the 16
+possible states:
+<ul>
+<dt>003</dt><dd>A,B,C, the empty graph.</dd>
+<dt>012</dt><dd>A-&gt;B, C, the graph with a single directed edge.</dd>
+<dt>102</dt><dd>A&lt;-&gt;B, C, the graph with a mutual connection between two
+vertices.</dd>
+<dt>021D</dt><dd>A&lt;-B-&gt;C, the out-star.</dd>
+<dt>021U</dt><dd>A-&gt;B&lt;-C, the in-star.</dd>
+<dt>021C</dt><dd>A-&gt;B-&gt;C, directed line.</dd>
+<dt>111D</dt><dd>A&lt;-&gt;B&lt;-C.</dd>
+<dt>111U</dt><dd>A&lt;-&gt;B-&gt;C.</dd>
+<dt>030T</dt><dd>A-&gt;B&lt;-C, A-&gt;C.</dd>
+<dt>030C</dt><dd>A&lt;-B&lt;-C, A-&gt;C.</dd>
+<dt>201</dt><dd>A&lt;-&gt;B&lt;-&gt;C.</dd>
+<dt>120D</dt><dd>A&lt;-B-&gt;C, A&lt;-&gt;C.</dd>
+<dt>120U</dt><dd>A-&gt;B&lt;-C, A&lt;-&gt;C.</dd>
+<dt>120C</dt><dd>A-&gt;B-&gt;C, A&lt;-&gt;C.</dd>
+<dt>210</dt><dd>A-&gt;B&lt;-&gt;C, A&lt;-&gt;C.</dd>
+<dt>300</dt><dd>A&lt;-&gt;B&lt;-&gt;C, A&lt;-&gt;C, the complete graph.</dd>
+</ul>
+
+<p>
+This functions uses the RANDESU motif finder algorithm to find and
+count the subgraphs, see <code><a href="graph.motifs.html">graph.motifs</a></code>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A numeric vector, the subgraph counts, in the order given in the
+above description.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+See also Davis, J.A. and Leinhardt, S.  (1972).  The Structure of
+Positive Interpersonal Relations in Small Groups.  In J. Berger
+(Ed.), Sociological Theories in Progress, Volume 2, 218-251. 
+Boston: Houghton Mifflin.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="dyad.census.html">dyad.census</a></code> for classifying binary relationships,
+<code><a href="graph.motifs.html">graph.motifs</a></code> for the underlying implementation.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+g &lt;- erdos.renyi.game(15, 45, type="gnm", dir=TRUE)
+triad.census(g)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

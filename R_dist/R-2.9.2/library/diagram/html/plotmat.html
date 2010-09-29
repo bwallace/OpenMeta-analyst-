@@ -1,0 +1,468 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: plots a graph (network), based on a transition matrix</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for plotmat {diagram}"><tr><td>plotmat {diagram}</td><td align="right">R Documentation</td></tr></table>
+<h2>plots a graph (network), based on a transition matrix</h2>
+
+
+<h3>Description</h3>
+
+<p>
+visualises a transition matrix as a number of (labeled) boxes connected by
+(labeled) arrows.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+plotmat(A, pos=NULL, curve=NULL, name=NULL, absent=0,  
+  relsize=1, lwd=2, lcol="black" , box.size=0.1, box.type="circle",  
+  box.prop=1,box.col="white", box.lcol=lcol, box.lwd=lwd, 
+  shadow.size=0.01, shadow.col="grey", dr=0.01, dtext=0.3,  
+  self.lwd=1, self.cex=1, self.shiftx=box.size, self.shifty=NULL, 
+  self.arrpos=NULL, arr.lwd=lwd, arr.lcol=lcol, arr.col="black",
+  arr.type="curved",arr.pos=0.5, arr.length=0.4, arr.width=arr.length/2,
+  endhead=FALSE, mx=0.0, my=0.0, box.cex=1, txt.col="black",
+  prefix="", cex.txt=1, add=FALSE, main="", ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>A </code></td>
+<td>
+square coefficient matrix, specifying the links (rows=to,
+cols=from).
+</td></tr>
+<tr valign="top"><td><code>pos </code></td>
+<td>
+vector, specifying the number of elements in each graph row, 
+or a 2-column matrix with element position, or NULL.
+</td></tr>
+<tr valign="top"><td><code>curve </code></td>
+<td>
+one value, or a matrix, same dimensions as <code>A</code>, specifying
+the arrow curvature; 0 for straight; NA for default curvature.
+</td></tr>
+<tr valign="top"><td><code>name </code></td>
+<td>
+string vector, specifying the names of elements, dimension =
+number of rows (columns) of <code>A</code>.
+</td></tr>
+<tr valign="top"><td><code>absent </code></td>
+<td>
+all elements in <code>A</code> different from this value are
+connected.
+</td></tr>
+<tr valign="top"><td><code>relsize </code></td>
+<td>
+scaling factor for size of the graph.
+</td></tr>
+<tr valign="top"><td><code>lwd </code></td>
+<td>
+default line width of arrow and box.
+</td></tr>
+<tr valign="top"><td><code>lcol </code></td>
+<td>
+default color of arrow line and box line.
+</td></tr>
+<tr valign="top"><td><code>box.size </code></td>
+<td>
+size of label box, one value or a vector with dimension =
+number of rows of <code>A</code>.
+</td></tr>
+<tr valign="top"><td><code>box.type </code></td>
+<td>
+shape of label box (rect, ellipse, diamond, round, hexa,
+multi), one value or a vector with dimension=number of rows of <code>A</code>.
+</td></tr>
+<tr valign="top"><td><code>box.prop </code></td>
+<td>
+length/width ratio of label box, one value or a vector
+with dimension=number of rows of <code>A</code>.
+</td></tr>
+<tr valign="top"><td><code>box.col </code></td>
+<td>
+fill color of label box, one value or a vector with
+dimension=number of rows of <code>A</code>.
+</td></tr>
+<tr valign="top"><td><code>box.lcol </code></td>
+<td>
+line color of label box, one value or a vector with
+dimension=number of rows of <code>A</code>.
+</td></tr>
+<tr valign="top"><td><code>box.lwd </code></td>
+<td>
+line width of the box, one value or a vector with dimension
+= number of rows of <code>A</code>.
+</td></tr>
+<tr valign="top"><td><code>shadow.size </code></td>
+<td>
+relative size of shadow of label box, one value or a
+vector with dimension=number of rows of <code>A</code>.
+</td></tr>
+<tr valign="top"><td><code>shadow.col </code></td>
+<td>
+color of shadow of label box, one value or a vector with
+dimension=number of rows of <code>A</code>.
+</td></tr>
+<tr valign="top"><td><code>dr </code></td>
+<td>
+size of segments, in radians, to draw ellipse (decrease for
+smoother ellipses).
+</td></tr>
+<tr valign="top"><td><code>dtext </code></td>
+<td>
+controls the position of arrow text relative to arrowhead.
+</td></tr>
+<tr valign="top"><td><code>self.lwd </code></td>
+<td>
+line width of self-arrow, (arrow from i to i), one value or
+a vector with dimension=number of rows of <code>A</code>.
+</td></tr>
+<tr valign="top"><td><code>self.cex </code></td>
+<td>
+relative size of self-arrow, relative to box, one value or
+a vector with dimension=number of rows of <code>A</code>.
+</td></tr>
+<tr valign="top"><td><code>self.shiftx </code></td>
+<td>
+relative shift of self-arrow, in x-direction, one value
+or a vector with dimension=number of rows of <code>A</code>.
+</td></tr>
+<tr valign="top"><td><code>self.shifty </code></td>
+<td>
+relative shift of self-arrow, in x-direction, one value
+or a vector with dimension=number of rows of <code>A</code>.
+</td></tr>
+<tr valign="top"><td><code>self.arrpos </code></td>
+<td>
+position of the self-arrow, angle in radians relative to
+x-direction, one value or a vector with dimension=number of rows of
+<code>A</code>.
+</td></tr>
+<tr valign="top"><td><code>arr.lwd </code></td>
+<td>
+line width of arrow, connecting two different points, one
+value, or a matrix with same dimensions as <code>A</code>.</td></tr>
+<tr valign="top"><td><code>arr.lcol </code></td>
+<td>
+color of arrow line, one value, or a matrix with same
+dimensions as <code>A</code>.
+</td></tr>
+<tr valign="top"><td><code>arr.col </code></td>
+<td>
+color of arrowhead, one value, or a matrix with same
+dimensions as <code>A</code>.
+</td></tr>
+<tr valign="top"><td><code>arr.type </code></td>
+<td>
+type of arrowhead (curved,triangle,circle,simple), one
+value, or a matrix with same dimensions as <code>A</code>.
+</td></tr>
+<tr valign="top"><td><code>arr.pos </code></td>
+<td>
+relative position of arrowhead on arrow segment/curve, one
+value, or a matrix with same dimensions as <code>A</code>.
+</td></tr>
+<tr valign="top"><td><code>arr.length </code></td>
+<td>
+arrow length, one value, or a matrix with same
+dimensions as <code>A</code>.
+</td></tr>
+<tr valign="top"><td><code>arr.width </code></td>
+<td>
+arrow width, one value, or a matrix with same dimensions
+as <code>A</code>.
+</td></tr>
+<tr valign="top"><td><code>endhead </code></td>
+<td>
+if TRUE: the arrow line stops at the arrowhead; default =
+<code>FALSE</code> and arrow line continues beyond the arrow head.
+</td></tr>
+<tr valign="top"><td><code>mx </code></td>
+<td>
+horizontal shift of the boxes.
+</td></tr>
+<tr valign="top"><td><code>my </code></td>
+<td>
+vertical shift of the boxes.
+</td></tr>
+<tr valign="top"><td><code>box.cex </code></td>
+<td>
+relative size of text in boxes, one value or a vector with
+dimension=number of rows of <code>A</code>.
+</td></tr>
+<tr valign="top"><td><code>txt.col </code></td>
+<td>
+color of text in boxes, one value or a vector with
+dimension=number of rows of <code>A</code>.
+</td></tr>
+<tr valign="top"><td><code>prefix </code></td>
+<td>
+to be added in front of non-zero arrow labels.
+</td></tr>
+<tr valign="top"><td><code>cex.txt </code></td>
+<td>
+relative size of arrow text, one value, or a matrix with
+same dimensions as <code>A</code>.
+</td></tr>
+<tr valign="top"><td><code>add </code></td>
+<td>
+start a new plot (<code>FALSE</code>), or add to current plot
+(<code>TRUE</code>).
+</td></tr>
+<tr valign="top"><td><code>main </code></td>
+<td>
+main title.
+</td></tr>
+<tr valign="top"><td><code>... </code></td>
+<td>
+other arguments passed to function <code>shadowbox</code>.
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The square transition matrix <code>A</code> determines the number of elements
+of <code>A</code> (rows of <code>A</code>) and which elements are connected
+(all values in <code>A</code> different from <code>absent</code>).
+</p>
+<p>
+<code>A</code> also provides the values of arrowlabels.
+</p>
+<p>
+The position of the elements are specified with <code>pos</code>, which is
+either <code>NULL</code>,
+or a vector specifying the number of elements on a row, or a 2-columned
+matrix specifying the (x,y) position of each element.
+</p>
+<p>
+The ordering of elements is according to the row number of <code>A</code>
+<ul>
+<li>when <code>pos</code> is <code>NULL</code>, the elements will be arranged on a
+circle
+<li>when <code>pos</code> is a vector, it specifies the number of elements in
+each row.
+For instance, with <code>pos = c(3,2,1)</code> the elements will be arranged
+in 3 rows (length of vector); on top row, 3 elements; on second row 2,
+and on third row 1 element will be positioned. All elements within a
+row are equally distributed horizontally, all rows are equally
+distributed vertically.
+<li>when <code>pos</code> is a matrix, it specifies the x (1st column) and y
+(2nd column) position of each element.
+</ul>
+
+<p>
+The offset from x-axis and from y-axis can be changed with <code>mx</code> and
+<code>my</code>.
+</p>
+<p>
+The name of each element is given by vector <code>name</code>; this name is
+written in its respective box.
+</p>
+<p>
+The relative size of this text can be changed by <code>box.cex</code>.
+</p>
+<p>
+If <code>shadow</code> is <code>TRUE</code>, a shadow is drawn, in the right-lower
+corner of the box,
+</p>
+<p>
+its color and relative size specified with <code>shadow.col</code> and
+<code>shadow.size</code> respectively.
+</p>
+<p>
+both can be one value (equal shadows) or a vector, specifying one value
+for each box shadow.
+</p>
+<p>
+The type of the box is set with "box.type" which can take on the values:
+<ul>
+<li>"rect": a rectangle,
+<li>"ellipse": an ellipse,
+<li>"diamond": a diamond,
+<li>"round": a rectangle with rounded left and right edges,
+<li>"hexa": a hexagonal shape,
+<li>"multi": a multigonal shape.
+</ul>
+<p>
+The length of the box is set with <code>box.size</code>, the proportionality
+(length/width) ratio with <code>box.prop</code>.
+</p>
+<p>
+The fill-color of the box is specified with <code>box.col</code>;
+the line width of the box with <code>box.lwd</code> and the line color with
+<code>box.lcol</code>;
+</p>
+<p>
+All box properties can be either one value (equal boxes) or a vector,
+specifying one value for each box.
+</p>
+<p>
+For all values A[i,j] of <code>A</code> which are not equal to <code>absent</code>,
+one arrow is drawn *from* column-element j *to* the row-element i of <code>A</code>.
+</p>
+<p>
+The curvature of this arrow is specified with matrix element curve[i,j],
+</p>
+<p>
+where 'curve' is either NULL, one value, or has the same dimension as <code>A</code>.
+</p>
+<p>
+A straight arrow has curvature 0, <code>NA</code> (the default) chooses a default
+curvature,
+</p>
+<p>
+Positive or negative values of <code>curve</code> draws curved arrows.
+</p>
+<p>
+If the arrow is curved, then <code>dr</code> is the increment used to draw the
+ellipse; set to a lower value for smoother lines.
+</p>
+<p>
+The type of the arrowhead is set with <code>arr.type</code> which can take the
+values:
+<ul>
+<li>"simple"  : uses comparable R function arrows  
+<li>"triangle": uses filled triangle
+<li>"curved"  : draws arrowhead with curved edges
+<li>"circle" : draws circular head 
+</ul>
+<p>
+The line color and width of the arrow line is set with <code>arr.lcol</code> and
+<code>arr.lwd</code>
+</p>
+<p>
+The size of the arrow head is specified with <code>arr.length</code> and
+<code>arr.width</code>,
+</p>
+<p>
+the position of the arrow head is specified with <code>arr.pos</code> (value
+between [0,1]).
+</p>
+<p>
+see <code><a href="../../shape/html/Arrowhead.html">Arrowhead</a></code> for details on arrow head
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+a list containing:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>arr </code></td>
+<td>
+a data.frame with arrow information: 
+<ul>
+<li>nonzero: the elements between which an arrow is drawn.
+<li>Angle: the angle of the arrow.
+<li>Value: the value written next to the arrow head.
+<li>rad: the radius of the arrow (if 0: straight line).
+<li>ArrowX: the x-position of arrowhead.
+<li>ArrowY: the y-position of arrowhead.
+<li>TextX: the x-position of arrowtext.
+<li>TextY: the y-position of arrowtext.
+</ul>.
+</td></tr>
+<tr valign="top"><td><code>comp </code></td>
+<td>
+a matrix with the element position (centre of the boxes).
+</td></tr>
+<tr valign="top"><td><code>radii </code></td>
+<td>
+the radiusses in x- and y-direction of the boxes.
+</td></tr>
+<tr valign="top"><td><code>rect </code></td>
+<td>
+the "xleft","ybot","xright",and "ytop" of the boxes - redundant.
+</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Karline Soetaert &lt;k.soetaert@nioo.knaw.nl&gt;
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="shadowbox.html">shadowbox</a></code>,
+</p>
+<p>
+<code><a href="../../shape/html/Arrowhead.html">Arrowhead</a></code> from package shape
+</p>
+<p>
+try: demo(plotmat)
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+  M &lt;- matrix(nrow=4,ncol=4,byrow=TRUE,data=0)
+  pp&lt;-plotmat(M,pos=c(1,2,1),name=c("A","B","C","D"),lwd=1,box.lwd=2,
+              cex.txt=0.8,box.size=0.1,box.type="square",box.prop=0.5,
+              main="plotmat")
+              
+  M[2,1]&lt;-M[3,1]&lt;-M[4,2]&lt;-M[4,3] &lt;- "flow"
+
+  col   &lt;- M
+  col[] &lt;- "red"
+  col[2,1]&lt;-col[3,1]&lt;-"blue"
+  pp&lt;-plotmat(M,pos=c(1,2,1),curve=0,name=1:4,lwd=1,box.lwd=2,
+              box.cex=1:4,cex.txt=0.8, arr.lcol=col,arr.col=col,
+              box.type="circle",box.prop=1.0,main="plotmat")
+
+  diag(M) &lt;- "self"
+  pp&lt;-plotmat(M,pos=c(2,2),curve=0,name=LETTERS[1:4],lwd=1,box.lwd=2,
+              cex.txt=0.8,self.cex=0.5,self.shiftx=c(-0.1,0.1,-0.1,0.1),
+              box.type="diamond",box.prop=0.5,main="plotmat")
+  
+  M &lt;- matrix(nrow=4,ncol=4,data=0)
+  M[2,1]&lt;-1  ;M[4,2]&lt;-2;M[3,4]&lt;-3;M[1,3]&lt;-4
+  pp&lt;-plotmat(M,pos=c(1,2,1),curve=0.2,name=letters[1:4],lwd=1,box.lwd=2,
+              cex.txt=0.8,arr.type="triangle",box.size=0.1,box.type="hexa",
+              box.prop=0.5,main="plotmat")
+
+  arrlwd &lt;- M*2
+  arr.length &lt;- M*0.4
+  cextxt &lt;- M*0.8
+  plotmat(M,pos=c(1,2,1),curve=0.2,name=letters[1:4],lwd=1,box.lwd=2,
+          arr.type="triangle",box.size=0.1,box.type="hexa",
+          box.prop=0.5,main="plotmat",arr.lwd=arrlwd,
+          arr.length=arr.length,cex.txt=cextxt)
+
+  M &lt;- matrix(nrow=4,ncol=4,byrow=TRUE,data=0)
+  M     &lt;- as.data.frame(M)
+  M[[2,1]]&lt;- "k[si]"
+  M[[3,1]]&lt;- "k[N]"
+  M[[4,2]]&lt;- "sqrt(frac(2,3))"
+
+  names &lt;-
+  c(expression(lambda[12]),"?",expression(lambda[13]),expression(lambda[23]))
+
+  pp&lt;-plotmat(M,pos=c(1,2,1),name=names,lwd=1,box.lwd=2, curve=0,
+              cex.txt=0.8,box.size=0.1,box.type="square",box.prop=0.5,
+              main="plotmat")
+              
+  plotmat(M,name=letters[1:4],curve=0,box.cex=1:4,box.lwd=4:1,
+          box.size=0.075,arr.pos=0.7,
+          box.col=c("lightblue","green","yellow","orange"))
+
+              </pre>
+
+
+
+<hr><div align="center">[Package <em>diagram</em> version 1.5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

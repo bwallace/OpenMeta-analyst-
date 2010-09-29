@@ -1,0 +1,83 @@
+Entry: asVector
+Aliases: asVector
+Keywords: models
+Description: Coerce an Object to a Vector
+URL: ../../../library/splines/html/asVector.html
+
+Entry: backSpline
+Aliases: backSpline
+Keywords: models
+Description: Monotone Inverse Spline
+URL: ../../../library/splines/html/backSpline.html
+
+Entry: bs
+Aliases: bs
+Keywords: smooth
+Description: B-Spline Basis for Polynomial Splines
+URL: ../../../library/splines/html/bs.html
+
+Entry: interpSpline
+Aliases: interpSpline
+Keywords: models
+Description: Create an Interpolation Spline
+URL: ../../../library/splines/html/interpSpline.html
+
+Entry: ns
+Aliases: ns
+Keywords: smooth
+Description: Generate a Basis Matrix for Natural Cubic Splines
+URL: ../../../library/splines/html/ns.html
+
+Entry: periodicSpline
+Aliases: periodicSpline
+Keywords: models
+Description: Create a Periodic Interpolation Spline
+URL: ../../../library/splines/html/periodicSpline.html
+
+Entry: polySpline
+Aliases: polySpline as.polySpline
+Keywords: models
+Description: Piecewise Polynomial Spline Representation
+URL: ../../../library/splines/html/polySpline.html
+
+Entry: predict.bSpline
+Aliases: predict.bSpline predict.nbSpline predict.pbSpline predict.npolySpline predict.ppolySpline
+Keywords: models
+Description: Evaluate a Spline at New Values of x
+URL: ../../../library/splines/html/predict.bSpline.html
+
+Entry: predict.bs
+Aliases: predict.bs predict.ns
+Keywords: smooth
+Description: Evaluate a Spline Basis
+URL: ../../../library/splines/html/predict.bs.html
+
+Entry: splineDesign
+Aliases: splineDesign spline.des
+Keywords: models
+Description: Design Matrix for B-splines
+URL: ../../../library/splines/html/splineDesign.html
+
+Entry: splineKnots
+Aliases: splineKnots
+Keywords: models
+Description: Knot Vector from a Spline
+URL: ../../../library/splines/html/splineKnots.html
+
+Entry: splineOrder
+Aliases: splineOrder
+Keywords: models
+Description: Determine the Order of a Spline
+URL: ../../../library/splines/html/splineOrder.html
+
+Entry: splines-package
+Aliases: splines-package splines
+Keywords: package models
+Description: Regression Spline Functions and Classes
+URL: ../../../library/splines/html/splines-package.html
+
+Entry: xyVector
+Aliases: xyVector
+Keywords: models
+Description: Construct an xyVector Object
+URL: ../../../library/splines/html/xyVector.html

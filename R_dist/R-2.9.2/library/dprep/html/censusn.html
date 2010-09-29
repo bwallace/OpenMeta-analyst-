@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: The census dataset</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for censusn {dprep}"><tr><td>censusn {dprep}</td><td align="right">R Documentation</td></tr></table>
+<h2>The census dataset</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This is the census dataset from the UCI where the values of the nominal attributes 
+are numerically codified. This dataset contains plenty of missing values.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>data(censusn)</pre>
+
+
+<h3>Format</h3>
+
+<p>
+A data frame with 32561 observations on the following 14 variables.
+</p>
+
+<dl>
+<dt>V1</dt><dd>age:continuous</dd>
+<dt>V2</dt><dd>workclass:</dd>
+<dt>V3</dt><dd>fnlwgt:continuous</dd>
+<dt>V4</dt><dd>education</dd>
+<dt>V5</dt><dd>marital-status:</dd>
+<dt>V6</dt><dd>occupation:</dd>
+<dt>V7</dt><dd>relationship:</dd>
+<dt>V8</dt><dd>race</dd>
+<dt>V9</dt><dd>sex</dd>
+<dt>V10</dt><dd>capital-gain: continuous.</dd>
+<dt>V11</dt><dd>capital-loss: continuous.</dd>
+<dt>V12</dt><dd>hours-per-week: continuous.</dd>
+<dt>V13</dt><dd>native-country:</dd>
+<dt>V14</dt><dd>class: &gt;50K, &lt;=50K </dd>
+</dl>
+
+<h3>Details</h3>
+
+<p>
+The fifth and fourth features of the orginal dataset were the same, since the  fifth contained the
+numerical codifications of the fourth. In  censusn only one of these feature is considered.
+The values of the nominal attributes are as follows: 
+workclass: Private, Self-emp-not-inc, Self-emp-inc, Federal-gov, Local-gov, State-gov, Without-pay, Never-worked.
+education: Bachelors, Some-college, 11th, HS-grad, Prof-school, Assoc-acdm, Assoc-voc, 9th, 7th-8th, 12th, Masters, 
+1st-4th, 10th, Doctorate, 5th-6th, Preschool.
+marital-status: Married-civ-spouse, Divorced, Never-married, Separated, Widowed, Married-spouse-absent, Married-AF-spouse.
+occupation: Tech-support, Craft-repair, Other-service, Sales, Exec-managerial, Prof-specialty, Handlers-cleaners, Machine-op-inspct, 
+Adm-clerical, Farming-fishing, Transport-moving, Priv-house-serv, Protective-serv, Armed-Forces.
+relationship: Wife, Own-child, Husband, Not-in-family, Other-relative, Unmarried.
+race: White, Asian-Pac-Islander, Amer-Indian-Eskimo, Other, Black.
+sex: Female, Male.
+native-country: United-States, Cambodia, England, Puerto-Rico, Canada, Germany, Outlying-US(Guam-USVI-etc), India, Japan, 
+Greece, South, China, Cuba, Iran, Honduras, Philippines, Italy, Poland, Jamaica, Vietnam, Mexico, Portugal, Ireland, France,
+Dominican-Republic, Laos, Ecuador, Taiwan, Haiti, Columbia, Hungary, Guatemala, Nicaragua, Scotland, Thailand, Yugoslavia, 
+El-Salvador, Trinadad&amp;Tobago, Peru, Hong, Holand-Netherlands.
+</p>
+
+
+<h3>Source</h3>
+
+<p>
+The UCI Machine Learning Database Repository at:
+<ul>
+<li><a href="ftp://ftp.ics.uci.edu/pub/machine-learning-databases">ftp://ftp.ics.uci.edu/pub/machine-learning-databases</a>
+<li><a href="http://www.ics.uci.edu/~mlearn/MLRepository.html">http://www.ics.uci.edu/~mlearn/MLRepository.html</a>
+</ul>
+
+<h3>Examples</h3>
+
+<pre>
+data(censusn)
+#----knn imputation------
+data(censusn)
+imagmiss(censusn, "censusn")
+</pre>
+
+
+
+<hr><div align="center">[Package <em>dprep</em> version 2.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

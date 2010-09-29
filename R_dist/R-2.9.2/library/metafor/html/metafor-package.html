@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Metafor: A Meta-Analysis Package for R</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for metafor-package {metafor}"><tr><td>metafor-package {metafor}</td><td align="right">R Documentation</td></tr></table>
+<h2>Metafor: A Meta-Analysis Package for R</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The <span class="pkg">metafor</span> package provides functions for conducting meta-analyses in <font face="Courier New,Courier" color="#666666"><b>R</b></font>. Currently, there are functions to fit the meta-analytic fixed- and random-effects model via the general linear (mixed-effects) model, the Mantel-Haenszel method, and Peto's method (the latter two only for fixed-effects models). Moderators (study-level covariates) can be included when using the general linear (mixed-effects) model approach, allowing the user to fit &lsquo;meta-regression&rsquo; models. The package also provides various plot functions (for example, for forest, funnel, and radial plots) and functions for assessing the model fit and obtaining case diagnostics.
+</p>
+
+
+<h3>The rma.uni Function</h3>
+
+<p>
+The various meta-analytic models that are usually applied in practice are special cases of the general linear (mixed-effects) model. The <code><a href="rma.uni.html">rma.uni</a></code> function (with alias <code><a href="rma.uni.html">rma</a></code>) provides a general framework for fitting the various models. The function can be used in conjunction with any of the usual effect size or outcome measures used in meta-analyses (e.g., log odds ratios, log risk ratios, risk differences, mean differences, standardized mean differences, raw correlation coefficients, correlation coefficients transformed with Fisher's r-to-z transformation, and so on). For details on these effect size or outcome measures, please see the documentation of the <code><a href="escalc.html">escalc</a></code> function. The notation and models underlying the <code><a href="rma.uni.html">rma.uni</a></code> function are explained below.
+</p>
+<p>
+For a set of <i>i = 1, ..., k</i> independent studies, let <i>y_i</i> denote the observed value of the effect size or outcome measure in the <i>ith</i> study. Let <i>theta_i</i> denote the corresponding (unknown) true effect or outcome in the <i>ith</i> study, such that <i>y_i | theta_i ~ N(theta_i, v_i)</i>. In other words, the observed effects or outcomes are assumed to be unbiased and normally distributed estimates of the corresponding (unknown) true effects or outcomes with sampling variances equal to <i>v_i</i>. The <i>v_i</i> values are assumed to be known.
+</p>
+<p>
+The <B>fixed-effects model</B> conditions on the true effects or outcomes and therefore provides a <EM>conditional inference</EM> about the set of <i>k</i> studies included in the meta-analysis. This implies that the fitted model provides an estimate of <i>sum w_i theta_i / sum w_i</i>, that is, the <EM>weighted average</EM> of the true effects in the set of <i>k</i> studies, with weights equal to <i>w_i = 1/v_i</i>. One can also employ an unweighted estimation method, which provides an estimate of the <EM>unweighted average</EM> of the true effects in the set of <i>k</i> studies (i.e., an estimate of <i>sum theta_i / k</i>).
+</p>
+<p>
+Moderators can be included in the fixed-effects model, yielding a <B>fixed-effects with moderators model</B>. Again, since the model conditions on the set of <i>k</i> studies included in the meta-analysis, the regression coefficients from the fitted model estimate the weighted least-squares relationship between the true effects and the moderator variables within the set of <i>k</i> studies included in the meta-analysis (again using weights equal to <i>w_i = 1/v_i</i>). The (unweighted) least-squares relationship between the true effects and the moderator variables can be obtained when using the unweighted estimation method.
+</p>
+<p>
+The <B>random-effects model</B> does not condition on the true effects. Instead, the <i>k</i> studies included in the meta-analysis are assumed to be a random selection from a hypothetical population of studies. One can envision this hypothetical population as an essentially infinite set of studies comprising all of the studies that have been conducted, that could have been conducted, or that may be conducted in the future. The true effects or outcomes in this population of studies are assumed to be normally distributed with <i>mu</i> denoting the average effect and <i>tau^2</i> denoting the variance of the true effects in the population (<i>tau^2</i> is therefore often referred to as the &lsquo;amount of heterogeneity&rsquo; in the population of studies). The fitted model provides an estimate of <i>mu</i> and <i>tau^2</i>. Consequently, the random-effects model provides an <EM>unconditional inference</EM> about the average effect in the population of studies from which the <i>k</i> studies included in the meta-analysis are assumed to be a random selection.
+</p>
+<p>
+When including moderator variables in the random-effects model, we obtain what is typically called a <B>mixed-effects model</B> in the meta-analytic literature. The coefficients from the fitted model then estimate the relationship between the average true effect or outcome in the population of studies and the moderator variables included in the model. The value of <i>tau^2</i> in the mixed-effects model denotes the &lsquo;amount of residual heterogeneity&rsquo; in the true effects or outcomes (i.e., the amount of variability in the true effects or outcomes over and beyond the heterogeneity that is introduced by the moderators).
+</p>
+<p>
+One can also choose between weighted and unweighted estimation in the context of the random- and mixed-effects model, although the parameters that are estimated remain the same regardless of the estimation method used (as opposed to the fixed-effects model case, where the parameter estimated is different for weighted and unweighted estimation).
+</p>
+<p>
+Contrary to what is often stated in the literature, it is important to realize that the fixed-effects model does <EM>not</EM> assume that the true effects or outcomes are homogeneous (i.e., that <i>theta_i</i> is equal to some common value <i>theta</i> for all <i>k</i> studies). Therefore, the fixed-effects model may be used even when the true effects or outcomes are heterogeneous. However, when using a fixed-effects model, we can only draw conclusions about the average effect (weighted or unweighted) in the set of <i>k</i> studies included in the meta-analysis. On the other hand, the random-effects model provides an inference about the average effect in the entire population of studies from which the included studies are assumed to be a random selection. 
+</p>
+<p>
+Moreover, the fixed-effects with moderators model does <EM>not</EM> assume that the heterogeneity in the true effects or outcomes is fully accounted for by the moderators included in the model. However, when using a fixed-effects with moderators model, we must again restrict our inferences to the set of <i>k</i> studies included in the meta-analysis. For more details on the distinction between fixed- and random-effects models, see Hedges and Vevea (1998) and Laird and Mosteller (1990).
+</p>
+
+
+<h3>The rma.mh Function</h3>
+
+<p>
+The Mantel-Haenszel method provides an alternative approach to fitting the fixed-effects model when dealing with studies providing data in the form of 2x2 tables (Mantel &amp; Haenszel, 1959). The method is particularly advantageous when aggregating a large number of tables with small sample sizes (the so-called sparse data or increasing strata case). The Mantel-Haenszel method is implemented in the <code><a href="rma.mh.html">rma.mh</a></code> function. It can be used in combination with odds ratios, risk ratios, and risk differences. The Mantel-Haenszel method is always based on a weighted estimation approach.
+</p>
+
+
+<h3>The rma.peto Function</h3>
+
+<p>
+Yet another method that can be used in the context of a meta-analysis of 2x2 tables is Peto's method (see Yusuf et al., 1985), implemented in the <code><a href="rma.peto.html">rma.peto</a></code> function. It is a weighted estimation approach for the combination of odds ratios.
+</p>
+
+
+<h3>Future Plans and Updates</h3>
+
+<p>
+The <span class="pkg">metafor</span> package is a work in progress and is updated on a regular basis with new functions and options. With <code><a href="metafor.news.html">metafor.news</a></code>, you can read the &lsquo;<span class="file">NEWS</span>&rsquo; file of the package after installation. Comments, feedback, and suggestions for improvements are very welcome.
+</p>
+<p>
+And since this is a frequently-asked-question: Functions for conducting multivariate meta-analyses and for handling correlated outcomes are currently under development and will be included in the package at a later point.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Wolfgang Viechtbauer <br>
+e-mail: <a href="mailto:wvb@www.wvbauer.com">wvb@www.wvbauer.com</a> <br>
+web: <a href="http://www.wvbauer.com/">http://www.wvbauer.com/</a> <br>
+</p>
+<p>
+Please post any questions about the package to the R-help mailing list (<a href="https://stat.ethz.ch/mailman/listinfo/r-help">https://stat.ethz.ch/mailman/listinfo/r-help</a>). Make sure you first read and follow the posting guide (<a href="http://www.r-project.org/posting-guide.html">http://www.r-project.org/posting-guide.html</a>). To make sure that my mail filter catches your post, include the package name (i.e., &lsquo;metafor&rsquo;) in your post.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Cooper, H. C. &amp; Hedges, L. V. (1994) <EM>The handbook of research synthesis</EM>. New York: Russell Sage Foundation.
+</p>
+<p>
+Hedges, L. V. &amp; Olkin, I. (1985) <EM>Statistical methods for meta-analysis</EM>. San Diego, CA: Academic Press.
+</p>
+<p>
+Hedges, L. V. &amp; Vevea, J. L. (1998) Fixed- and random-effects models in meta-analysis. <EM>Psychological Methods</EM>, <B>3</B>, 486&ndash;504.
+</p>
+<p>
+Laird, N. M. &amp; Mosteller, F (1990). Some statistical methods for combining experimental results. <EM>International Journal of Technology Assessment in Health Care</EM>, <B>6</B>, 5&ndash;30.
+</p>
+<p>
+Mantel, N. &amp; Haenszel, W. (1959) Statistical aspects of the analysis of data from retrospective studies of disease. <EM>Journal of the National Cancer Institute</EM>, <B>22</B>, 719&ndash;748.
+</p>
+<p>
+Yusuf, S., Peto, R., Lewis, J., Collins, R. &amp; Sleight, P. (1985) Beta blockade during and after myocardial infarction: An overview of the randomized trials. <EM>Progress in Cardiovascular Disease</EM>, <B>27</B>, 335&ndash;371.
+</p>
+
+
+
+<hr><div align="center">[Package <em>metafor</em> version 0.5-7 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

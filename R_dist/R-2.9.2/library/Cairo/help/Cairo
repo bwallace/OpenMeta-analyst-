@@ -1,0 +1,211 @@
+Cairo                 package:Cairo                 R Documentation
+
+_C_r_e_a_t_e _a _n_e_w _C_a_i_r_o-_b_a_s_e_d _g_r_a_p_h_i_c_s _d_e_v_i_c_e
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     'Cairo' initializes a new graphics device that uses the cairo
+     graphics library for rendering. The current implementation
+     produces high-quality PNG, JPEG, TIFF bitmap files, high
+     resolution PDF files with embedded fonts, SVG graphics and
+     PostScript files. It also provides X11 and Windows interactive
+     graphics devices. Unlike other devices it supports all graphics
+     features including alpha blending, anti-aliasing etc.
+
+     'CairoX11', 'CairoPNG', 'CairoPDF', 'CairoPS' and 'CairoSVG' are
+     convenience wrappers of 'Cairo' that take the same arguments as
+     the corresponding device it replaces such as 'X11', 'png', 'pdf',
+     etc. Use of the 'Cairo' function is encouraged as it is more
+     flexible than the wrappers.
+
+_U_s_a_g_e:
+
+     Cairo(width = 640, height = 480, file="", type="png", pointsize=12, 
+           bg = "transparent", canvas = "white", units = "px", dpi = "auto",
+           ...)
+
+     CairoX11(display=Sys.getenv("DISPLAY"), width = 7, height = 7,
+              pointsize = 12, gamma = getOption("gamma"), bg = "transparent",
+              canvas = "white", xpos = NA, ypos = NA, ...)
+     CairoPNG(filename = "Rplot%03d.png", width = 480, height = 480,
+              pointsize = 12, bg = "white",  res = NA, ...)
+     CairoJPEG(filename = "Rplot%03d.jpeg", width = 480, height = 480,
+              pointsize = 12, quality = 75, bg = "white", res = NA, ...)
+     CairoTIFF(filename = "Rplot%03d.tiff", width = 480, height = 480,
+              pointsize = 12, bg = "white", res = NA, ...)
+     CairoPDF(file = ifelse(onefile, "Rplots.pdf","Rplot%03d.pdf"),
+              width = 6, height = 6, onefile = TRUE, family = "Helvetica",
+              title = "R Graphics Output", fonts = NULL, version = "1.1",
+              paper = "special", encoding, bg, fg, pointsize, pagecentre)
+     CairoSVG(file = ifelse(onefile, "Rplots.svg", "Rplot%03d.svg"),
+              width = 6, height = 6, onefile = TRUE, bg = "transparent",
+              pointsize = 12, ...)
+     CairoWin(width = 7, height = 7, pointsize = 12,
+              record = getOption("graphics.record"),
+              rescale = c("R", "fit", "fixed"), xpinch, ypinch, bg =
+              "transparent", canvas = "white", gamma = getOption("gamma"),
+              xpos = NA, ypos = NA, buffered = getOption("windowsBuffered"),
+              restoreConsole = FALSE, ...)
+     CairoPS(file = ifelse(onefile, "Rplots.ps", "Rplot%03d.ps"),
+             onefile = TRUE, family, title = "R Graphics Output", fonts = NULL,
+             encoding, bg, fg, width, height, horizontal, pointsize, paper,
+             pagecentre, print.it, command, colormodel)
+
+_A_r_g_u_m_e_n_t_s:
+
+   width: width of the plot area (also see 'units').
+
+  height: height of the plot area (also see 'units').
+
+    file: name of the file to be created or connection to write to.
+          Only PDF, PS and PNG types support connections. For X11 type
+          'file' specifies the display name. If 'NULL' or '""' a
+          reasonable default will be chosen which is '"plot.type"' for
+          file-oriented types and value of the 'DISPLAY' environment
+          variable for X11. For image types the file name can contain
+          printf-style formatting expecting one integer parameter which
+          is the page number, such as '"Rplot%03d.png"'. The page
+          numbers start at one.
+
+    type: output type. This version of Cario supports "png", "jpeg" and
+          "tiff" bitmaps (png/tiff with transparent background), "pdf"
+          PDF-file with embedded fonts, "svg" SVG-file, "ps"
+          PostScript-file, "x11" X11 interactive window and "win"
+          Windows graphics. Depending on the support of various
+          backends in cairo graphics some of the options may not be
+          available for your system. See 'Cairo.capabilities' function.
+
+pointsize: initial text size (in points).
+
+  canvas: canvas color (must be opaque). The canvas is only used by
+          devices that display graphics on a screen and the canvas is
+          only visible only if bg is transparent.
+
+      bg: plot background color (can include alpha-component or be
+          transparent alltogether).
+
+   units: units for of the 'width' and 'height' specifications. It can
+          be any of '"px"' (pixels), '"in"' (inches), '"pt"' (points),
+          '"cm"' (centimeters) or '"mm"' (millimeters).
+
+     dpi: DPI used for the conversion of units to pixels. If set to
+          '"auto"' the DPI resolution will be determined by the
+          back-end.
+
+     ...: additional backend specific parameters (e.g. 'quality'
+          setting for JPEG (0..100) and 'compression' for TIFF
+          (0,1=none, 5=LZW (default), 7=JPEG, 8=Adobe Deflate))   
+
+          All parameters listed below are defined by the other devices
+          are are used by the wrappers to make it easier replace other
+          devices by 'Cairo'. They are described in detail in the
+          documentation corresponding to the device that is being
+          replaced.
+
+ display: X11 display, see 'X11'
+
+   gamma: gamma correction
+
+    xpos: see 'X11'
+
+    ypos: see 'X11'
+
+filename: same as 'file' in 'Cairo'
+
+     res: see 'png', will be mapped to 'dpi' for 'Cairo'
+
+ quality: quality of the jpeg, see 'jpeg'
+
+ onefile: logical: if true (the default) allow multiple figures in one
+          file (see 'pdf'). false is currently not supported by vector
+          devices
+
+  family: font family, see 'pdf'
+
+   title: see 'pdf' (ignored)
+
+   fonts: see 'pdf', ignored, 'Cairo' automatically detects and embeds
+          fonts
+
+ version: PDF version, see 'pdf' (ignored)
+
+   paper: see 'pdf' (ignored, 'Cairo' uses device dimensions)
+
+encoding: see 'pdf' (ignored, 'Cairo' uses native enconding except for
+          symbols)
+
+      fg: see 'pdf' (ignored)
+
+pagecentre: see 'pdf' (ignored, 'Cairo' uses device dimensions and thus
+          it is irrelevant)
+
+  record: see 'windows' (ignored)
+
+ rescale: see 'windows' (ignored)
+
+  xpinch: see 'windows' (ignored)
+
+  ypinch: see 'windows' (ignored)
+
+buffered: see 'windows' (ignored, 'Cairo' always uses cache buffer)
+
+restoreConsole: see 'windows' (ignored)
+
+horizontal: see 'postscript' (ignored)
+
+print.it: see 'postscript' (ignored)
+
+ command: see 'postscript' (ignored)
+
+colormodel: see 'postscript' (ignored, 'Cairo' always uses 'RGB' or
+          'ARGB')
+
+_V_a_l_u_e:
+
+     The (invisible) return value is NULL if the device couldn't be
+     created or a 'Cairo' object if successful. The vaule of the object
+     is the device number.
+
+_K_n_o_w_n _i_s_s_u_e_s:
+
+
+        *  The X11 backend is quite slow. The reason is the
+           cairographics implementation of the backend, so we can't do
+           much about it. It should be possible to drop cairographics'
+           Xlib backend entirely and use image backend copied into an
+           X11 window instead. We may try that in future releases.
+
+        *  TrueType (and OpenType) fonts are supported when this
+           package is compiled against a cairo graphics library
+           configured with FreeType and Fontconfig support. Therefore
+           make sure have a cairo grpahics library with all bell and
+           whistles to get a good result.
+
+        *  R math symbols are supported, but require a TrueType
+           "Symbol" font accessible to Cairo under that name.
+
+_S_e_e _A_l_s_o:
+
+     'CairoFonts'
+
+_E_x_a_m_p_l_e_s:
+
+     # very simple KDE
+     Cairo(600, 600, file="plot.png", type="png", bg="white")
+     plot(rnorm(4000),rnorm(4000),col="#ff000018",pch=19,cex=2) # semi-transparent red
+     dev.off() # creates a file "plot.png" with the above plot
+
+     # you can use any Cairo backend and get the same result
+     # vector, bitmap or on-screen
+     CairoPDF("plot.pdf", 6, 6, bg="transparent")
+     data(iris)
+     attach(iris)
+     plot(Petal.Length, rep(-0.03,length(Species)), xlim=c(1,7),
+          ylim=c(0,1.7), xlab="Petal.Length", ylab="Density",
+          pch=21, cex=1.5, col="#00000001", main = "Iris (yet again)",
+          bg=c("#ff000020","#00ff0020","#0000ff20")[unclass(Species)])
+     for (i in 1:3)
+       polygon(density(Petal.Length[unclass(Species)==i],bw=0.2),
+         col=c("#ff000040","#00ff0040","#0000ff40")[i])
+     dev.off()
+

@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Methods for Time Series Objects</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for ts-methods {stats}"><tr><td>ts-methods {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>Methods for Time Series Objects</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Methods for objects of class <code>"ts"</code>, typically the result of
+<code><a href="ts.html">ts</a></code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'ts':
+diff(x, lag = 1, differences = 1, ...)
+
+## S3 method for class 'ts':
+na.omit(object, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+an object of class <code>"ts"</code> containing the values to be
+differenced.</td></tr>
+<tr valign="top"><td><code>lag</code></td>
+<td>
+an integer indicating which lag to use.</td></tr>
+<tr valign="top"><td><code>differences</code></td>
+<td>
+an integer indicating the order of the difference.</td></tr>
+<tr valign="top"><td><code>object</code></td>
+<td>
+a univariate or multivariate time series.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+further arguments to be passed to or from methods.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The <code>na.omit</code> method omits initial and final segments with
+missing values in one or more of the series.  &lsquo;Internal&rsquo;
+missing values will lead to failure.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+For the <code>na.omit</code> method, a time series without missing values.
+The class of <code>object</code> will be preserved.</p>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../base/html/diff.html">diff</a></code>;
+<code><a href="na.fail.html">na.omit</a></code>, <code><a href="na.fail.html">na.fail</a></code>,
+<code><a href="na.contiguous.html">na.contiguous</a></code>.
+</p>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

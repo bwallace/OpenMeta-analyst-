@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Scaling and Centering of Matrix-like Objects</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for scale {base}"><tr><td>scale {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Scaling and Centering of Matrix-like Objects</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>scale</code> is generic function whose default method centers and/or
+scales the columns of a numeric matrix.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+scale(x, center = TRUE, scale = TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+a numeric matrix(like object).</td></tr>
+<tr valign="top"><td><code>center</code></td>
+<td>
+either a logical value or a numeric vector of length
+equal to the number of columns of <code>x</code>.</td></tr>
+<tr valign="top"><td><code>scale</code></td>
+<td>
+either a logical value or a numeric vector of length
+equal to the number of columns of <code>x</code>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The value of <code>center</code> determines how column centering is
+performed.
+If <code>center</code> is a numeric vector with length equal to the number
+of columns of <code>x</code>, then each column of <code>x</code> has the
+corresponding value from <code>center</code> subtracted from it.
+If <code>center</code> is <code>TRUE</code> then centering is done by subtracting
+the column means (omitting <code>NA</code>s) of <code>x</code> from their
+corresponding columns, and if <code>center</code> is <code>FALSE</code>,
+no centering is done.
+</p>
+<p>
+The value of <code>scale</code> determines how column scaling is performed
+(after centering).
+If <code>scale</code> is a numeric vector with length equal to the number of
+columns of <code>x</code>, then each column of <code>x</code> is divided by the
+corresponding value from <code>scale</code>.
+If <code>scale</code> is <code>TRUE</code> then scaling is done by dividing the
+(centered) columns of <code>x</code> by their root-mean-square, and if
+<code>scale</code> is <code>FALSE</code>, no scaling is done.
+</p>
+<p>
+The root-mean-square for a column is obtained by computing the
+square-root of the sum-of-squares of the non-missing values in the
+column divided by the number of non-missing values minus one.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+For <code>scale.default</code>, the centered, scaled matrix. The numeric
+centering and scalings used (if any) are returned as attributes
+<code>"scaled:center"</code> and <code>"scaled:scale"</code></p>
+
+<h3>References</h3>
+
+<p>
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+<EM>The New S Language</EM>.
+Wadsworth &amp; Brooks/Cole.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="sweep.html">sweep</a></code> which allows centering (and scaling) with
+arbitrary statistics.
+</p>
+<p>
+For working with the scale of a plot, see <code><a href="../../graphics/html/par.html">par</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+require(stats)
+x &lt;- matrix(1:10, ncol=2)
+(centered.x &lt;- scale(x, scale=FALSE))
+cov(centered.scaled.x &lt;- scale(x))# all 1
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

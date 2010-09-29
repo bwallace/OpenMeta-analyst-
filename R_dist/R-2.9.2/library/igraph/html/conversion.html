@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Convert a graph to an adjacency matrix or an edge list</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for conversion {igraph}"><tr><td>conversion {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Convert a graph to an adjacency matrix or an edge list</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Sometimes it is useful to have a standard representation of
+a graph, like an adjacency matrix or an edge list.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+get.adjacency(graph, type=c("both", "upper", "lower"),
+       attr=NULL, names=TRUE, binary=FALSE, sparse=FALSE)
+get.edgelist(graph, names=TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>graph</code></td>
+<td>
+The graph to convert.</td></tr>
+<tr valign="top"><td><code>type</code></td>
+<td>
+Gives how to create the adjacency matrix for undirected
+graphs. It is ignored for directed graphs. Possible values:
+<code>upper</code>: the upper right triangle of the matrix is used,
+<code>lower</code>: the lower left triangle of the matrix is
+used. <code>both</code>: the whole matrix is used, a symmetric matrix is
+returned.</td></tr>
+<tr valign="top"><td><code>attr</code></td>
+<td>
+Either <code>NULL</code> or a character string giving an edge
+attribute name. If <code>NULL</code> a traditional adjacency matrix is
+returned. If not <code>NULL</code> then the values of the given edge
+attribute are included in the adjacency matrix. If the graph has
+multiple edges, the edge attribute of an arbitrarily chosen edge
+(for the multiple edges) is included.</td></tr>
+<tr valign="top"><td><code>names</code></td>
+<td>
+Logical constant.
+<br>
+For <code>graph.adjacenct</code> it gives whether to assign row and column names
+to the matrix. These are only assigned if the <code>name</code> vertex
+attribute is present in the graph.
+<br>
+for <code>get.edgelist</code> it gives whether to return a character
+matrix containing vertex names (ie. the <code>name</code> vertex
+attribute) if they exist or numeric vertex ids.
+</td></tr>
+<tr valign="top"><td><code>binary</code></td>
+<td>
+Logical, whether to return a binary matrix. This argument
+is ignored if <code>attr</code> is not <code>NULL</code>.</td></tr>
+<tr valign="top"><td><code>sparse</code></td>
+<td>
+Logical scalar, whether to create a sparse matrix. The
+&lsquo;<code>Matrix</code>&rsquo; package must be installed for creating sparse
+matrices.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>get.adjacency</code> returns the adjacency matrix of a graph, a
+regular <font face="Courier New,Courier" color="#666666"><b>R</b></font> matrix if <code>sparse</code> is <code>FALSE</code>, or a sparse
+matrix, as defined in the &lsquo;<code>Matrix</code>&rsquo; package, if
+<code>sparse</code> if <code>TRUE</code>.
+</p>
+<p>
+<code>get.edgelist</code> returns the list of edges in a graph.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A <code>vcount(graph)</code> by <code>vcount(graph)</code> (usually) numeric
+matrix for <code>get.adjacency</code>. (This can be huge!) Note that a
+non-numeric matrix might be returned if <code>attr</code> is a non-numeric
+edge attribute.
+<br>
+A <code>ecount(graph)</code> by 2 numeric matrix for <code>get.edgelist</code>.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="graph.adjacency.html">graph.adjacency</a></code>, <code><a href="read.graph.html">read.graph</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+g &lt;- erdos.renyi.game(10, 2/10)
+get.edgelist(g)
+get.adjacency(g)
+V(g)$name &lt;- letters[1:vcount(g)]
+get.adjacency(g)
+E(g)$weight &lt;- runif(ecount(g))
+get.adjacency(g, attr="weight")
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: draping colors over a persp plot</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for drapecol {shape}"><tr><td>drapecol {shape}</td><td align="right">R Documentation</td></tr></table>
+<h2>draping colors over a persp plot</h2>
+
+
+<h3>Description</h3>
+
+<p>
+generates color(s) that will appear on the surface facets of a "persp" plot.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+drapecol(A, col=femmecol(100), NAcol="white")
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>A </code></td>
+<td>
+matrix with input grid.
+</td></tr>
+<tr valign="top"><td><code>col </code></td>
+<td>
+color palette.
+</td></tr>
+<tr valign="top"><td><code>NAcol </code></td>
+<td>
+color of <code>NA</code> elements.
+</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+a vector of character strings giving the colors in hexadecimal format,
+one for each surface facet.</p>
+
+<h3>Note</h3>
+
+<p>
+This function is inspired by a similar function in package <code>fields</code>,
+unfortunately made unavailable in most recent version of fields
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Karline Soetaert &lt;k.soetaert@nioo.knaw.nl&gt;.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../VGAM/html/notdocumentedyet.html">persp</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+  persp(volcano,theta = 135, phi = 30, col = drapecol(volcano),main="drapecol")
+  persp(volcano,theta = 135, phi = 30, col = drapecol(volcano),border=NA,
+        main="drapecol")
+</pre>
+
+
+
+<hr><div align="center">[Package <em>shape</em> version 1.2.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

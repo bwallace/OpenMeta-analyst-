@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Taper a Time Series by a Cosine Bell</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for spec.taper {stats}"><tr><td>spec.taper {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>Taper a Time Series by a Cosine Bell</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Apply a cosine-bell taper to a time series.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+spec.taper(x, p = 0.1)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+A univariate or multivariate time series</td></tr>
+<tr valign="top"><td><code>p</code></td>
+<td>
+The proportion to be tapered at each end of the series,
+either a scalar (giving the proportion for all series)
+or a vector of the length of the number of series (giving the
+proportion for each series..</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The cosine-bell taper is applied to the first and last <code>p[i]</code>
+observations of time series <code>x[, i]</code>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A new time series object.</p>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="spec.pgram.html">spec.pgram</a></code>, <code><a href="cpgram.html">cpgram</a></code>
+</p>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

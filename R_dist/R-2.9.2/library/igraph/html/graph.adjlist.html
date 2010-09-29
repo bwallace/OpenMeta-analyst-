@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Create graphs from adjacency lists</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for Graphs from adjacency lists {igraph}"><tr><td>Graphs from adjacency lists {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Create graphs from adjacency lists</h2>
+
+
+<h3>Description</h3>
+
+<p>
+An adjacency list is a list of numeric vectors, containing
+the neighbor vertices for each vertex. This function creates an igraph
+graph object from such a list.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+graph.adjlist(adjlist, directed = TRUE, duplicate = TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>adjlist</code></td>
+<td>
+The adjacency list. It should be consistent, i.e. the
+maximum throughout all vectors in the list must be less than the
+number of vectors (=the number of vertices in the graph). Note that
+the list is expected to be 0-indexed.</td></tr>
+<tr valign="top"><td><code>directed</code></td>
+<td>
+Logical scalar, whether or not to create a directed
+graph.</td></tr>
+<tr valign="top"><td><code>duplicate</code></td>
+<td>
+Logical scalar. For undirected graphs it gives
+whether edges are included in the list twice. E.g. if it is
+<code>TRUE</code> then for an undirected <code>{A,B}</code> edge
+<code>graph.adjlist</code> expects <code>A</code> included in the neighbors of
+<code>B</code> and <code>B</code> to be included in the neighbors of <code>A</code>.
+<br>
+This argument is ignored if <code>directed</code> is <code>TRUE</code>.
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Adjacency lists are handy if you intend to do many (small)
+modifications to a graph. In this case adjacency lists are more
+efficient than igraph graphs.
+</p>
+<p>
+The idea is that you convert your graph to an adjacency list by
+<code><a href="get.adjlist.html">get.adjlist</a></code>, do your modifications to the graphs and
+finally create again an igraph graph by calling <code>graph.adjlist</code>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+An igraph graph object.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="conversion.html">get.edgelist</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## Directed
+g &lt;- graph.ring(10, dir=TRUE)
+al &lt;- get.adjlist(g, mode="out")
+g2 &lt;- graph.adjlist(al)
+graph.isomorphic(g, g2)
+
+## Undirected
+g &lt;- graph.ring(10)
+al &lt;- get.adjlist(g)
+g2 &lt;- graph.adjlist(al, dir=FALSE)
+graph.isomorphic(g, g2)
+ecount(g2)
+g3 &lt;- graph.adjlist(al, dir=FALSE, duplicate=FALSE)
+ecount(g3)
+is.multiple(g3)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

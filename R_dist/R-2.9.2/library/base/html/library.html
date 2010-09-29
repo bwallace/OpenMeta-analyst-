@@ -1,0 +1,322 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Loading and Listing of Packages</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for library {base}"><tr><td>library {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Loading and Listing of Packages</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>library</code> and <code>require</code> load add-on packages.
+</p>
+<p>
+<code>.First.lib</code> is called when a package is loaded;
+<code>.Last.lib</code> is called when a package is detached.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+library(package, help, pos = 2, lib.loc = NULL,
+        character.only = FALSE, logical.return = FALSE,
+        warn.conflicts = TRUE,
+        keep.source = getOption("keep.source.pkgs"),
+        verbose = getOption("verbose"))
+
+require(package, lib.loc = NULL, quietly = FALSE,
+        warn.conflicts = TRUE,
+        keep.source = getOption("keep.source.pkgs"),
+        character.only = FALSE, save = TRUE)
+
+.First.lib(libname, pkgname)
+.Last.lib(libpath)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>package, help</code></td>
+<td>
+the name of a package, given as a <a href="name.html">name</a> or
+literal character string, or a character string, depending on
+whether <code>character.only</code> is <code>FALSE</code> (default) or
+<code>TRUE</code>).</td></tr>
+<tr valign="top"><td><code>pos</code></td>
+<td>
+the position on the search list at which to attach the
+loaded package.  Note that <code>.First.lib</code> may attach other
+packages, and <code>pos</code> is computed <EM>after</EM> <code>.First.lib</code>
+has been run.  Can also be the name of a position on the current
+search list as given by <code><a href="search.html">search</a>()</code>.</td></tr>
+<tr valign="top"><td><code>lib.loc</code></td>
+<td>
+a character vector describing the location of <font face="Courier New,Courier" color="#666666"><b>R</b></font>
+library trees to search through, or <code>NULL</code>.  The default value
+of <code>NULL</code> corresponds to all libraries currently known.
+Non-existent library trees are silently ignored.</td></tr>
+<tr valign="top"><td><code>character.only</code></td>
+<td>
+a logical indicating whether <code>package</code> or
+<code>help</code> can be assumed to be character strings.</td></tr>
+<tr valign="top"><td><code>logical.return</code></td>
+<td>
+logical.  If it is <code>TRUE</code>,  <code>FALSE</code> or
+<code>TRUE</code> is returned to indicate success.</td></tr>
+<tr valign="top"><td><code>warn.conflicts</code></td>
+<td>
+logical.  If <code>TRUE</code>, warnings are
+printed about <code><a href="conflicts.html">conflicts</a></code> from attaching the new
+package, unless that package contains an object
+<code>.conflicts.OK</code>.  A conflict is a function masking a function,
+or a non-function masking a non-function.
+</td></tr>
+<tr valign="top"><td><code>keep.source</code></td>
+<td>
+logical.  If <code>TRUE</code>, functions
+&lsquo;keep their source&rsquo; including comments, see argument
+<code>keep.source</code> to <code><a href="options.html">options</a></code>.  This applies only to
+the named package, and not to any packages or name spaces which might be
+loaded to satisfy dependencies or imports.
+<br>
+This argument does not apply to packages using lazy-loading.
+Whether they have kept source is determined when they are installed
+(and is most likely false).
+</td></tr>
+<tr valign="top"><td><code>verbose</code></td>
+<td>
+a logical.  If <code>TRUE</code>, additional diagnostics are
+printed.</td></tr>
+<tr valign="top"><td><code>quietly</code></td>
+<td>
+a logical.  If <code>TRUE</code>, no message confirming
+package loading is printed.</td></tr>
+<tr valign="top"><td><code>save</code></td>
+<td>
+logical or environment.  If <code>TRUE</code>, a call to
+<code>require</code> from the source for a package will save the name of
+the required package in the variable <code>".required"</code>, allowing
+function <code><a href="detach.html">detach</a></code> to warn if a required package is
+detached. See section &lsquo;Packages that require other packages&rsquo; below.</td></tr>
+<tr valign="top"><td><code>libname</code></td>
+<td>
+a character string giving the library directory where
+the package was found.</td></tr>
+<tr valign="top"><td><code>pkgname</code></td>
+<td>
+a character string giving the name of the package.</td></tr>
+<tr valign="top"><td><code>libpath</code></td>
+<td>
+a character string giving the complete path to the
+package.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>library(package)</code> and <code>require(package)</code> both load the
+package with name <code>package</code>.  <code>require</code> is designed for use
+inside other functions; it returns <code>FALSE</code> and gives a warning
+(rather than an error as <code>library()</code> does by default) if the
+package does not exist.  Both functions check and update the list of
+currently loaded packages and do not reload a package which is already
+loaded.  (Furthermore, if the package has a name space and a name
+space of that name is already loaded, they work from the existing
+name space rather than reloading from the file system.  If you want to
+reload a package, call <code><a href="detach.html">detach</a></code> or
+<code><a href="ns-load.html">unloadNamespace</a></code> first.)
+</p>
+<p>
+To suppress messages during the loading of packages use
+<code><a href="message.html">suppressPackageStartupMessages</a></code>: this will suppress all
+messages from <font face="Courier New,Courier" color="#666666"><b>R</b></font> itself but not necessarily all those from package
+authors.
+</p>
+<p>
+If <code>library</code> is called with no <code>package</code> or <code>help</code>
+argument, it lists all available packages in the libraries specified
+by <code>lib.loc</code>, and returns the corresponding information in an
+object of class <code>"libraryIQR"</code>.  The structure of this class may
+change in future versions.  In earlier versions of <font face="Courier New,Courier" color="#666666"><b>R</b></font>, only the names
+of all available packages were returned; use <code>.packages(all =
+    TRUE)</code> for obtaining these.  Note that
+<code><a href="../../utils/html/installed.packages.html">installed.packages</a>()</code>
+returns even more information.
+</p>
+<p>
+<code>library(help = somename)</code> computes basic information about the
+package <code>somename</code>, and returns this in an object of class
+<code>"packageInfo"</code>.  The structure of this class may change in
+future versions.  When used with the default value (<code>NULL</code>) for
+<code>lib.loc</code>, the loaded packages are searched before the libraries.
+</p>
+<p>
+<code>.First.lib</code> is called when a package without a name space is
+loaded by <code>library</code>.  (For packages with name spaces see
+<code><a href="ns-hooks.html">.onLoad</a></code>.)  It is called with two arguments, the name of
+the library directory where the package was found (i.e., the
+corresponding element of <code>lib.loc</code>), and the name of the package.
+It is a good place to put calls to <code><a href="library.dynam.html">library.dynam</a></code> which
+are needed when loading a package into this function (don't call
+<code>library.dynam</code> directly, as this will not work if the package is
+not installed in a standard location).  <code>.First.lib</code> is invoked
+after the search path interrogated by <code>search()</code> has been
+updated, so <code>as.environment(match("package:name", search()))</code>
+will return the environment in which the package is stored.  If
+calling <code>.First.lib</code> gives an error the loading of the package is
+abandoned, and the package will be unavailable.  Similarly, if the
+option <code>".First.lib"</code> has a list element with the package's name,
+this element is called in the same manner as <code>.First.lib</code> when
+the package is loaded.  This mechanism allows the user to set package
+&lsquo;load hooks&rsquo; in addition to startup code as provided by the
+package maintainers, but <code><a href="userhooks.html">setHook</a></code> is preferred.
+</p>
+<p>
+<code>.Last.lib</code> is called when a package is detached.  Beware
+that it might be called if <code>.First.lib</code> has failed, so it
+should be written defensively. (It is called within <code><a href="try.html">try</a></code>,
+so errors will not stop the package being detached.)
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+Normally <code>library</code> returns (invisibly) the list of loaded
+packages, but <code>TRUE</code> or <code>FALSE</code> if <code>logical.return</code> is
+<code>TRUE</code>.  When called as <code>library()</code> it returns an object of
+class <code>"libraryIQR"</code>, and for <code>library(help=)</code>, one of
+class <code>"packageInfo"</code>.
+<br>
+<code>require</code> returns (invisibly) a logical indicating whether the required
+package is available.</p>
+
+<h3>Packages that require other packages</h3>
+
+<p>
+<B>NB:</B> This mechanism has been almost entirely superseded by
+using the <code>Depends:</code> field in the &lsquo;<span class="file">DESCRIPTION</span>&rsquo; file of a package.
+</p>
+<p>
+The source code for a
+package that requires one or more other packages should have a call
+to <code>require</code>, preferably near the beginning of the source, and
+of course before any code that uses functions, classes or methods
+from the other package.  The default for argument <code>save</code> will
+save the names of all required packages in the environment of the
+new package.  The saved package names are used by
+<code><a href="detach.html">detach</a></code> when a package is detached to warn if other
+packages still require the to-be-detached package.  Also, if a package is
+installed with saved image (see <a href="../../utils/html/INSTALL.html">INSTALL</a>), the saved package
+names are used to require these packages when the new package is
+attached.
+</p>
+
+
+<h3>Formal methods</h3>
+
+<p>
+<code>library</code> takes some further actions when package <span class="pkg">methods</span>
+is attached (as it is by default).  Packages may define formal generic
+functions as well as re-defining functions in other packages (notably
+<span class="pkg">base</span>) to be generic, and this information is cached whenever
+such a package is loaded after <span class="pkg">methods</span> and re-defined functions
+(<a href="../../methods/html/implicitGeneric.html">implicit generic</a>s) are excluded from the list of conflicts.
+The caching  and check for conflicts require looking for a pattern of
+objects; the search may be avoided by defining an object
+<code>.noGenerics</code> (with any value) in the package.  Naturally, if the
+package <EM>does</EM> have any such methods, this will prevent them from
+being used.
+</p>
+
+
+<h3>Note</h3>
+
+<p>
+<code>library</code> and <code>require</code> can only load an <EM>installed</EM>
+package, and this is detected by having a &lsquo;<span class="file">DESCRIPTION</span>&rsquo; file
+containing a <code>Built:</code> field.
+</p>
+<p>
+Under Unix-alikes, the code checks that the package was installed
+under a similar operating system as given by <code>R.version$platform</code>
+(the canonical name of the platform under which R was compiled),
+provided it contains compiled code.  Packages which do not contain
+compiled code can be shared between Unix-alikes, but not to other OSes
+because of potential problems with line endings and OS-specific help
+files.  If sub-architectures are used, the OS similarity is not
+checked since the OS used to build may differ (e.g.
+<code>i386-pc-linux-gnu</code> code can be built on an
+<code>x86_64-unknown-linux-gnu</code> OS).
+</p>
+<p>
+The package name given to <code>library</code> and <code>require</code> must match
+the name given in the package's &lsquo;<span class="file">DESCRIPTION</span>&rsquo; file exactly, even
+on case-insensitive file systems such as MS Windows.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+<EM>The New S Language</EM>.
+Wadsworth &amp; Brooks/Cole.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="libPaths.html">.libPaths</a></code>, <code><a href="zpackages.html">.packages</a></code>.
+</p>
+<p>
+<code><a href="attach.html">attach</a></code>, <code><a href="detach.html">detach</a></code>, <code><a href="search.html">search</a></code>,
+<code><a href="ls.html">objects</a></code>, <code><a href="autoload.html">autoload</a></code>,
+<code><a href="library.dynam.html">library.dynam</a></code>, <code><a href="../../utils/html/data.html">data</a></code>,
+<code><a href="../../utils/html/update.packages.html">install.packages</a></code> and
+<code><a href="../../utils/html/installed.packages.html">installed.packages</a></code>;
+<code><a href="../../utils/html/INSTALL.html">INSTALL</a></code>, <code><a href="../../utils/html/REMOVE.html">REMOVE</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+library()                   # list all available packages
+library(lib.loc = .Library) # list all packages in the default library
+library(help = splines)     # documentation on package 'splines'
+library(splines)            # load package 'splines'
+require(splines)            # the same
+search()                    # "splines", too
+detach("package:splines")
+
+# if the package name is in a character vector, use
+pkg &lt;- "splines"
+library(pkg, character.only = TRUE)
+detach(pos = match(paste("package", pkg, sep=":"), search()))
+
+require(pkg, character.only = TRUE)
+detach(pos = match(paste("package", pkg, sep=":"), search()))
+
+require(nonexistent)        # FALSE
+## Not run: 
+## Suppose a package needs to call a DLL named 'fooEXT',
+## where 'EXT' is the system-specific extension.  Then you should use
+.First.lib &lt;- function(lib, pkg)
+  library.dynam("foo", pkg, lib)
+
+## if you want to mask as little as possible, use
+library(mypkg, pos = "package:base")
+## End(Not run)</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

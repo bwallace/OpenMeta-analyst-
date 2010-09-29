@@ -1,0 +1,88 @@
+bkde               package:KernSmooth               R Documentation
+
+_C_o_m_p_u_t_e _a _B_i_n_n_e_d _K_e_r_n_e_l _D_e_n_s_i_t_y _E_s_t_i_m_a_t_e
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Returns x and y coordinates of the binned kernel density estimate
+     of the probability density of the data.
+
+_U_s_a_g_e:
+
+     bkde(x, kernel = "normal", canonical = FALSE, bandwidth,
+          gridsize = 401L, range.x, truncate = TRUE)
+
+_A_r_g_u_m_e_n_t_s:
+
+       x: vector of observations from the distribution whose density is
+          to be estimated.  Missing values are not allowed. 
+
+bandwidth: the kernel bandwidth smoothing parameter.  Larger values of
+          'bandwidth' make smoother estimates, smaller values of
+          'bandwidth' make less smooth estimates.  The default is a
+          bandwidth computed from the variance of 'x', specifically the
+          ‘oversmoothed bandwidth selector’ of Wand and Jones (1995,
+          page 61). 
+
+  kernel: character string which determines the smoothing kernel.
+          'kernel' can be: '"normal"' - the Gaussian density function
+          (the default). '"box"' - a rectangular box. '"epanech"' - the
+          centred beta(2,2) density. '"biweight"' - the centred
+          beta(3,3) density. '"triweight"' - the centred beta(4,4)
+          density. This can be abbreviated to any unique abbreviation. 
+
+canonical: logical flag: if 'TRUE', canonically scaled kernels are
+          used. 
+
+gridsize: the number of equally spaced points at which to estimate the
+          density. 
+
+ range.x: vector containing the minimum and maximum values of 'x' at
+          which to compute the estimate. The default is the minimum and
+          maximum data values, extended by the support of the kernel. 
+
+truncate: logical flag: if 'TRUE', data with 'x' values outside the
+          range specified by 'range.x' are ignored. 
+
+_D_e_t_a_i_l_s:
+
+     This is the binned approximation to the ordinary kernel density
+     estimate. Linear binning is used to obtain the bin counts.   For
+     each 'x' value in the sample, the kernel is centered on that 'x'
+     and the heights of the kernel at each datapoint are summed. This
+     sum, after a normalization, is the corresponding 'y' value in the
+     output.
+
+_V_a_l_u_e:
+
+     a list containing the following components:
+
+       x: vector of sorted 'x' values at which the estimate was
+          computed. 
+
+       y: vector of density estimates at the corresponding 'x'. 
+
+_B_a_c_k_g_r_o_u_n_d:
+
+     Density estimation is a smoothing operation. Inevitably there is a
+     trade-off between bias in the estimate and the estimate's
+     variability: large bandwidths will produce smooth estimates that
+     may hide local features of the density; small bandwidths may
+     introduce spurious bumps into the estimate.
+
+_R_e_f_e_r_e_n_c_e_s:
+
+     Wand, M. P. and Jones, M. C. (1995). _Kernel Smoothing._ Chapman
+     and Hall, London.
+
+_S_e_e _A_l_s_o:
+
+     'density', 'dpik', 'hist', 'ksmooth'.
+
+_E_x_a_m_p_l_e_s:
+
+     data(geyser, package="MASS")
+     x <- geyser$duration
+     est <- bkde(x, bandwidth=0.25)
+     plot(est, type="l")
+

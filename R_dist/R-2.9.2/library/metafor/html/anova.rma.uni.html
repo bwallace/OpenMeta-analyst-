@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Compare Fit Statistics and Likelihoods of rma.uni Objects</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for anova.rma.uni {metafor}"><tr><td>anova.rma.uni {metafor}</td><td align="right">R Documentation</td></tr></table>
+<h2>Compare Fit Statistics and Likelihoods of rma.uni Objects</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The function provides a full versus reduced model comparison of two objects of class <code>"rma.uni"</code>. Model fit statistics for the two models are provided. A likelihood ratio test comparing the two models is also performed.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'rma.uni':
+anova(object, object2, digits=object$digits, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>object</code></td>
+<td>
+an object of class <code>"rma.uni"</code>.</td></tr>
+<tr valign="top"><td><code>object2</code></td>
+<td>
+an object of class <code>"rma.uni"</code>.</td></tr>
+<tr valign="top"><td><code>digits</code></td>
+<td>
+an integer specifying the number of decimal places to which the printed results should be rounded (the default is to take the value from the object).</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+other arguments.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The two models must be based on the same set of data and should be nested for the likelihood ratio test to make sense.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+An object of class <code>"anova.rma.uni"</code>. The object is a list containing the following components:    
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>fit.stats.f</code></td>
+<td>
+log likelihood, deviance, AIC, and BIC for the full model.</td></tr>
+<tr valign="top"><td><code>fit.stats.r</code></td>
+<td>
+log likelihood, deviance, AIC, and BIC for the reduced model.</td></tr>
+<tr valign="top"><td><code>p.f</code></td>
+<td>
+number of parameters in the full model.</td></tr>
+<tr valign="top"><td><code>p.r</code></td>
+<td>
+number of parameters in the reduced model.</td></tr>
+<tr valign="top"><td><code>LRT</code></td>
+<td>
+likelihood ratio test statistic.</td></tr>
+<tr valign="top"><td><code>pval</code></td>
+<td>
+p-value for the likelihood ratio test.</td></tr>
+<tr valign="top"><td><code>QE.f</code></td>
+<td>
+test statistic for the test of (residual) heterogeneity from the full model.</td></tr>
+<tr valign="top"><td><code>QE.r</code></td>
+<td>
+test statistic for the test of (residual) heterogeneity from the reduced model.</td></tr>
+<tr valign="top"><td><code>tau2.f</code></td>
+<td>
+tau2 value from the full model.</td></tr>
+<tr valign="top"><td><code>tau2.r</code></td>
+<td>
+tau2 value from the reduced model.</td></tr>
+<tr valign="top"><td><code>VAF</code></td>
+<td>
+amount of (residual) heterogeneity in the reduced model that is accounted for in the full model. <code>NA</code> for fixed-effects models or if the amount of heterogeneity in the reduced model is equal to zero.</td></tr>
+</table>
+<p>
+
+<br>
+The results are formated and printed with the <code><a href="print.anova.rma.uni.html">print.anova.rma.uni</a></code> function.</p>
+
+<h3>Note</h3>
+
+<p>
+Note that likelihood ratio tests are not meaningful when using REML estimation and the two models have different fixed effects. 
+</p>
+<p>
+In principle, one can also consider likelihood ratio tests for (residual) heterogeneity in random- and mixed-effects models. The full model should then be fitted with either <code>method="ML"</code> or <code>method="REML"</code> and the reduced model with <code>method="FE"</code>. The p-value from that test is based on a chi-square distribution with 1 degree of freedom, but actually needs to be adjusted for the fact that the parameter (i.e., <i>tau^2</i>) falls on the boundary of the parameter space under the null hypothesis. Moreover, the Q-test usually keeps better control of the Type I error rate and therefore should be preferred (see Viechtbauer, 2007, for more details).
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Wolfgang Viechtbauer; <a href="mailto:wvb@www.wvbauer.com">wvb@www.wvbauer.com</a>; <a href="http://www.wvbauer.com/">http://www.wvbauer.com/</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Viechtbauer, W. (2007) Hypothesis tests for population heterogeneity in meta-analysis. <EM>British Journal of Mathematical and Statistical Psychology</EM>, <B>60</B>, 29&ndash;60.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="rma.uni.html">rma.uni</a></code>, <code><a href="print.anova.rma.uni.html">print.anova.rma.uni</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+### load BCG vaccine data
+data(dat.bcg)
+
+### calculate log risk ratios and corresponding sampling variances
+dat &lt;- escalc(measure="RR", ai=tpos, bi=tneg, ci=cpos, di=cneg, data=dat.bcg)
+dat &lt;- cbind(dat.bcg, dat)
+
+### random-effects model 
+res2 &lt;- rma(yi, vi, data=dat, method="REML")
+
+### mixed-effects model with two moderators (absolute latitude and publication year)
+res1 &lt;- rma(yi, vi, mods=cbind(ablat, year), data=dat, method="REML")
+
+anova(res1, res2)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>metafor</em> version 0.5-7 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

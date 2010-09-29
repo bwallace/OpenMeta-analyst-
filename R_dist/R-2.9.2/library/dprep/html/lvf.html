@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Las Vegas Filter</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for lvf {dprep}"><tr><td>lvf {dprep}</td><td align="right">R Documentation</td></tr></table>
+<h2>Las Vegas Filter</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Las Vegas Filter uses a random generation of subsets and an 
+inconsistency measure as the evaluation function to determine the
+relevance of features in the dataset.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+lvf(data, lambda, maxiter)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>data</code></td>
+<td>
+Name of the discretized dataset</td></tr>
+<tr valign="top"><td><code>lambda</code></td>
+<td>
+Threshold for the inconsistency</td></tr>
+<tr valign="top"><td><code>maxiter</code></td>
+<td>
+Maximum number of iterations</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+If the dataset has continuous variables, these must first be discretized. This
+package includes four discretization methods. A value of lambda close to the 
+inconsistency of the whole dataset yields a large number of selected features,
+a large lambda yields few selected features.
+</p>
+
+
+<h3>Value</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>bestsubset</code></td>
+<td>
+The best subset of features </td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Edgar Acuna
+</p>
+
+
+<h3>References</h3>
+
+<p>
+LIU, H. and SETIONO, R. (1996). A probabilistic approach to feature selection: a
+filter solution. Proc. of the thirteenth International Conference of Machine
+Learning, 319-337.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="disc.ew.html">disc.ew</a></code>,<code><a href="inconsist.html">inconsist</a></code>,<code><a href="finco.html">finco</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+#---- LVF method ----
+data(my.iris)
+iris.discew=disc.ew(my.iris,1:6)
+inconsist(iris.discew)
+lvf(iris.discew,0,300)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>dprep</em> version 2.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

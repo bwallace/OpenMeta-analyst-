@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Plant Species Traits Data</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for plantTraits {cluster}"><tr><td>plantTraits {cluster}</td><td align="right">R Documentation</td></tr></table>
+<h2>Plant Species Traits Data</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This dataset constitutes a description of 136 plant species
+according to biological attributes (morphological or reproductive)
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>data(plantTraits)
+</pre>
+
+
+<h3>Format</h3>
+
+<p>
+A data frame with 136 observations on the following 31 variables.
+<dl>
+<dt><code>pdias</code></dt><dd>Diaspore mass (mg)</dd>
+<dt><code>longindex</code></dt><dd>Seed bank longevity</dd>
+<dt><code>durflow</code></dt><dd>Flowering duration</dd>
+<dt><code>height</code></dt><dd>Plant height, an ordered factor with levels
+<code>1</code> &lt; <code>2</code> &lt; ... &lt; <code>8</code>.</dd>
+
+
+<dt><code>begflow</code></dt><dd>Time of first flowering, an ordered factor with levels <code>1</code> &lt; <code>2</code> &lt; <code>3</code> &lt; <code>4</code> &lt; <code>5</code> &lt; <code>6</code> &lt; <code>7</code> &lt; <code>8</code> &lt; <code>9</code></dd>
+
+
+<dt><code>mycor</code></dt><dd>Mycorrhizas, an ordered factor with levels <code>0</code>never &lt; <code>1</code> sometimes&lt; <code>2</code>always</dd>
+
+
+<dt><code>vegaer</code></dt><dd>aerial vegetative propagation, an ordered
+factor with levels <code>0</code>never &lt; <code>1</code> present but limited&lt; <code>2</code>important.</dd>
+
+
+<dt><code>vegsout</code></dt><dd>underground vegetative propagation, an ordered
+factor with 3 levels identical to <code>vegaer</code> above.</dd>
+
+
+<dt><code>autopoll</code></dt><dd>selfing pollination, an ordered factor with
+levels <code>0</code>never &lt; <code>1</code>rare &lt; <code>2</code> often&lt; the rule<code>3</code></dd>
+
+
+<dt><code>insects</code></dt><dd>insect pollination, an ordered factor with 5 levels <code>0</code> &lt; ... &lt; <code>4</code>.</dd>
+<dt><code>wind</code></dt><dd>wind pollination, an ordered factor with 5 levels <code>0</code> &lt; ... &lt; <code>4</code>.</dd>
+<dt><code>lign</code></dt><dd>a binary factor with levels <code>0:1</code>,
+indicating if plant is woody.</dd>
+<dt><code>piq</code></dt><dd>a binary factor indicating if plant is thorny.</dd>
+<dt><code>ros</code></dt><dd>a binary factor indicating if plant is rosette.</dd>
+<dt><code>semiros</code></dt><dd>semi-rosette plant, a binary factor (<code>0</code>:
+no; <code>1</code>: yes).</dd>
+<dt><code>leafy</code></dt><dd>leafy plant, a binary factor.</dd>
+<dt><code>suman</code></dt><dd>summer annual, a binary factor.</dd>
+<dt><code>winan</code></dt><dd>winter annual, a binary factor.</dd>
+<dt><code>monocarp</code></dt><dd>monocarpic perennial, a binary factor.</dd>
+<dt><code>polycarp</code></dt><dd>polycarpic perennial, a binary factor.</dd>
+<dt><code>seasaes</code></dt><dd>seasonal aestival leaves, a binary factor.</dd>
+<dt><code>seashiv</code></dt><dd>seasonal hibernal leaves, a binary factor.</dd>
+<dt><code>seasver</code></dt><dd>seasonal vernal leaves, a binary factor.</dd>
+<dt><code>everalw</code></dt><dd>leaves always evergreen, a binary factor.</dd>
+<dt><code>everparti</code></dt><dd>leaves partially evergreen, a binary factor.</dd>
+<dt><code>elaio</code></dt><dd>fruits with an elaiosome (dispersed by ants), a binary factor.</dd>
+<dt><code>endozoo</code></dt><dd>endozoochorous fruits, a binary factor.</dd>
+<dt><code>epizoo</code></dt><dd>epizoochorous fruits, a binary factor.</dd>
+<dt><code>aquat</code></dt><dd>aquatic dispersal fruits, a binary factor.</dd>
+<dt><code>windgl</code></dt><dd>wind dispersed fruits,  a binary factor.</dd>
+<dt><code>unsp</code></dt><dd>unspecialized mechanism of seed dispersal, a binary factor.</dd>
+</dl>
+
+<h3>Details</h3>
+
+<p>
+Most of factor attributes are not disjunctive. For example, a plant can be usually
+pollinated by insects but sometimes self-pollination can occured.
+</p>
+
+
+<h3>Source</h3>
+
+<p>
+Vallet, Jeanne (2005)
+<EM>Structuration de communautés végétales et analyse comparative de
+traits biologiques le long d'un gradient d'urbanisation</EM>.
+Mémoire de Master 2 'Ecologie-Biodiversité-Evolution';
+Université Paris Sud XI, 30p.+ annexes (in french)
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(plantTraits)
+
+## Calculation of a dissimilarity matrix
+library(cluster)
+dai.b &lt;- daisy(plantTraits,
+               type = list(ordratio = 4:11, symm = 12:13, asymm = 14:31))
+
+## Hierarchical classification
+agn.trts &lt;- agnes(dai.b, method="ward")
+plot(agn.trts, which.plots = 2, cex= 0.6)
+plot(agn.trts, which.plots = 1)
+cutree6 &lt;- cutree(agn.trts, k=6)
+cutree6
+
+## Principal Coordinate Analysis
+cmdsdai.b &lt;- cmdscale(dai.b, k=6)
+plot(cmdsdai.b[, 1:2], asp = 1, col = cutree6)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>cluster</em> version 1.12.0 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

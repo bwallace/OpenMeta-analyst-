@@ -1,0 +1,88 @@
+dpik               package:KernSmooth               R Documentation
+
+_S_e_l_e_c_t _a _B_a_n_d_w_i_d_t_h _f_o_r _K_e_r_n_e_l _D_e_n_s_i_t_y _E_s_t_i_m_a_t_i_o_n
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Use direct plug-in methodology to select the bandwidth of a kernel
+     density estimate.
+
+_U_s_a_g_e:
+
+     dpik(x, scalest = "minim", level = 2L, kernel = "normal",   
+          canonical = FALSE, gridsize = 401L, range.x = range(x), 
+          truncate = TRUE)
+
+_A_r_g_u_m_e_n_t_s:
+
+       x: vector containing the sample on which the kernel density
+          estimate is to be constructed. 
+
+ scalest: estimate of scale.
+
+          '"stdev"' - standard deviation is used.
+
+          '"iqr"' - inter-quartile range divided by 1.349 is used.
+
+          '"minim"' - minimum of '"stdev"' and '"iqr"' is used. 
+
+   level: number of levels of functional estimation used in the plug-in
+          rule. 
+
+  kernel: character string which determines the smoothing kernel.
+          'kernel' can be: '"normal"' - the Gaussian density function
+          (the default). '"box"' - a rectangular box. '"epanech"' - the
+          centred beta(2,2) density. '"biweight"' - the centred
+          beta(3,3) density. '"triweight"' - the centred beta(4,4)
+          density. This can be abbreviated to any unique abbreviation. 
+
+canonical: logical flag: if 'TRUE', canonically scaled kernels are used 
+
+gridsize: the number of equally-spaced points over which binning is 
+          performed to obtain kernel functional approximation.  
+
+ range.x: vector containing the minimum and maximum values of 'x' at
+          which to compute the estimate. The default is the minimum and
+          maximum data values. 
+
+truncate: logical flag: if 'TRUE', data with 'x' values outside the
+          range specified by 'range.x' are ignored. 
+
+_D_e_t_a_i_l_s:
+
+     The direct plug-in approach, where unknown functionals that appear
+     in expressions for the asymptotically optimal bandwidths are
+     replaced by kernel estimates, is used. The normal distribution is
+     used to provide an initial estimate.
+
+_V_a_l_u_e:
+
+     the selected bandwidth.
+
+_B_a_c_k_g_r_o_u_n_d:
+
+     This method for selecting the bandwidth of a kernel density
+     estimate was proposed by Sheather and Jones (1991) and is
+     described in Section 3.6 of Wand and Jones (1995).
+
+_R_e_f_e_r_e_n_c_e_s:
+
+     Sheather, S. J. and Jones, M. C. (1991). A reliable data-based
+     bandwidth selection method for kernel density estimation. _Journal
+     of the Royal Statistical Society, Series B_, *53*, 683-690.
+
+     Wand, M. P. and Jones, M. C. (1995). _Kernel Smoothing._ Chapman
+     and Hall, London.
+
+_S_e_e _A_l_s_o:
+
+     'bkde', 'density', 'ksmooth'
+
+_E_x_a_m_p_l_e_s:
+
+     data(geyser, package="MASS")
+     x <- geyser$duration
+     h <- dpik(x)
+     est <- bkde(x, bandwidth=h)
+     plot(est,type="l")
+

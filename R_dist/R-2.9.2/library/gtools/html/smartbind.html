@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Efficient rbind of data framesy, even if the column names don't match</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for smartbind {gtools}"><tr><td>smartbind {gtools}</td><td align="right">R Documentation</td></tr></table>
+<h2>Efficient rbind of data framesy, even if the column names don't match</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Efficient rbind of data frames, even if the column names don't match
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+smartbind(...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>...</code></td>
+<td>
+Data frames to combine</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+The returned data frame will contain:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>columns</code></td>
+<td>
+all columns present in any provided data frame</td></tr>
+<tr valign="top"><td><code>rows</code></td>
+<td>
+a set of rows from each provided data frame, with values
+in columns not present in the given data frame filled with missing
+(<code>NA</code>) values.</td></tr>
+</table>
+<p>
+
+The data type of columns will be preserved, as long as all data frames
+with a given column name agree on the data type of that column.  If
+the data frames disagree, the column will be converted into a
+character strings.  The user will need to coerce such character
+columns into an appropriate type.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Gregory R. Warnes <a href="mailto:greg@random-technologies-llc.com">greg@random-technologies-llc.com</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../timeSeries/html/methods-bind.html">rbind</a></code>, <code><a href="../../timeSeries/html/methods-bind.html">cbind</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+
+  df1 &lt;- data.frame(A=1:10, B=LETTERS[1:10], C=rnorm(10) )
+  df2 &lt;- data.frame(A=11:20, D=rnorm(10), E=letters[1:10] )
+
+  # rbind would fail
+## Not run: 
+  rbind(df1, df2)
+  # Error in match.names(clabs, names(xi)) : names do not match previous
+  # names:
+  #     D, E
+## End(Not run)
+  # but smartbind combines them, appropriately creating NA entries
+  smartbind(df1, df2)
+
+
+</pre>
+
+
+
+<hr><div align="center">[Package <em>gtools</em> version 2.6.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

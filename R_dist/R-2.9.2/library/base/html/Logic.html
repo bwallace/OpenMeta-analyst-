@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Logical Operators</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for Logic {base}"><tr><td>Logic {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Logical Operators</h2>
+
+
+<h3>Description</h3>
+
+<p>
+These operators act on logical vectors.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+! x
+x &amp; y
+x &amp;&amp; y
+x | y
+x || y
+xor(x, y)
+
+isTRUE(x)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x, y</code></td>
+<td>
+logical vectors, or objects which can be coerced to such
+or for which methods have been written.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>!</code> indicates logical negation (NOT).
+</p>
+<p>
+<code>&amp;</code> and <code>&amp;&amp;</code> indicate logical AND and <code>|</code> and <code>||</code>
+indicate logical OR.  The shorter form performs elementwise
+comparisons in much the same way as arithmetic operators.  The longer
+form evaluates left to right examining only the first element of each
+vector.  Evaluation proceeds only until the result is determined.  The
+longer form is appropriate for programming control-flow and typically
+preferred in <code><a href="Control.html">if</a></code> clauses.
+</p>
+<p>
+<code>xor</code> indicates elementwise exclusive OR.
+</p>
+<p>
+<code>isTRUE(x)</code> is an abbreviation of <code>identical(TRUE, x)</code>, and
+so is true if and only if <code>x</code> is a length-one logical vector with
+no attributes (not even names).
+</p>
+<p>
+Numeric and complex vectors will be coerced to logical values, with
+zero being false and all non-zero values being true.  Raw vectors are
+handled without any coercion for <code>!</code>, <code>&amp;</code> and <code>|</code>, with
+these operators being applied bitwise (so <code>!</code> is the 1-complement).
+</p>
+<p>
+The operators <code>!</code>, <code>&amp;</code> and <code>|</code> are generic functions:
+methods can be written for them individually or via the
+<code><a href="groupGeneric.html">Ops</a></code> (or S4 <code>Logic</code>, see below)
+group generic function.  (See <code><a href="groupGeneric.html">Ops</a></code> for
+how dispatch is computed.)
+</p>
+<p>
+<code><a href="NA.html">NA</a></code> is a valid logical object.  Where a component of
+<code>x</code> or <code>y</code> is <code>NA</code>, the result will be <code>NA</code> if the
+outcome is ambiguous.  In other words <code>NA &amp; TRUE</code> evaluates to
+<code>NA</code>, but <code>NA &amp; FALSE</code> evaluates to <code>FALSE</code>.  See the
+examples below.
+</p>
+<p>
+See <a href="Syntax.html">Syntax</a> for the precedence of these operators: unlike many
+other languages (including S) the AND and OR operators do not have the
+same precedence (the AND operators are higher than the OR operators).
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+For <code>!</code>, a logical or raw vector of the same length as <code>x</code>.
+<br>
+For <code>|</code>, <code>&amp;</code> and <code>xor</code> a logical or raw vector. The
+elements of shorter vectors are recycled as necessary (with a
+<code><a href="warning.html">warning</a></code> when they are recycled only <EM>fractionally</EM>).
+The rules for determining the attributes of the result are rather
+complicated.  Most attributes are taken from the longer argument, the
+first if they are of the same length.  Names will be copied from the
+first if it is the same length as the answer, otherwise from the
+second if that is.  For time series, these operations are allowed only
+if the series are compatible, when the class and <code><a href="../../stats/html/tsp.html">tsp</a></code>
+attribute of whichever is a time series (the same, if both are) are
+used.  For arrays (and an array result) the dimensions and dimnames
+are taken from first argument if it is an array, otherwise the second.
+<br>
+For <code>||</code>, <code>&amp;&amp;</code> and <code>isTRUE</code>, a length-one logical vector.</p>
+
+<h3>S4 methods</h3>
+
+<p>
+<code>!</code>, <code>&amp;</code> and <code>|</code> are S4 generics, the latter two part
+of the <code><a href="../../methods/html/S4groupGeneric.html">Logic</a></code> group generic (and
+hence methods need argument names <code>e1, e2</code>).
+</p>
+<p>
+Prior to <font face="Courier New,Courier" color="#666666"><b>R</b></font> 2.6.0 S4 methods for <code>!</code> needed argument name
+<code>e1</code>, but now <code>x</code> is correct.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+<EM>The New S Language</EM>.
+Wadsworth &amp; Brooks/Cole.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="logical.html">TRUE</a></code> or <code><a href="logical.html">logical</a></code>.
+</p>
+<p>
+<code><a href="any.html">any</a></code> and <code><a href="all.html">all</a></code> for OR and AND on many scalar
+arguments.
+</p>
+<p>
+<code><a href="Syntax.html">Syntax</a></code> for operator precedence.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+y &lt;- 1 + (x &lt;- stats::rpois(50, lambda=1.5) / 4 - 1)
+x[(x &gt; 0) &amp; (x &lt; 1)]    # all x values between 0 and 1
+if (any(x == 0) || any(y == 0)) "zero encountered"
+
+## construct truth tables :
+
+x &lt;- c(NA, FALSE, TRUE)
+names(x) &lt;- as.character(x)
+outer(x, x, "&amp;")## AND table
+outer(x, x, "|")## OR  table
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

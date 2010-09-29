@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Compute a 2D Binned Kernel Density Estimate</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for bkde2D {KernSmooth}"><tr><td>bkde2D {KernSmooth}</td><td align="right">R Documentation</td></tr></table>
+<h2>Compute a 2D Binned Kernel Density Estimate</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Returns the set of grid points in each coordinate direction,
+and the matrix of density estimates over the mesh induced by
+the grid points. The kernel is the standard bivariate normal
+density.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+bkde2D(x, bandwidth, gridsize = c(51L, 51L), range.x, truncate = TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+a two-column matrix containing the observations from the  
+distribution whose density is to be estimated.
+Missing values are not allowed.
+</td></tr>
+<tr valign="top"><td><code>bandwidth</code></td>
+<td>
+vector containing the bandwidth to be used in each coordinate
+direction.
+</td></tr>
+<tr valign="top"><td><code>gridsize</code></td>
+<td>
+vector containing the number of equally spaced points in each direction
+over which the density is to be estimated.
+</td></tr>
+<tr valign="top"><td><code>range.x</code></td>
+<td>
+a list containing two vectors, where each vector 
+contains the minimum and maximum values of <code>x</code>
+at which to compute the estimate for each direction.
+The default minimum in each direction is minimum
+data value minus 1.5 times the bandwidth for
+that direction. The default maximum is the maximum
+data value plus 1.5 times the bandwidth for
+that direction
+</td></tr>
+<tr valign="top"><td><code>truncate</code></td>
+<td>
+logical flag: if TRUE, data with <code>x</code> values outside the
+range specified by <code>range.x</code> are ignored.
+</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+a list containing the following components:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>x1</code></td>
+<td>
+vector of values of the grid points in the first coordinate
+direction at which the estimate was computed. 
+</td></tr>
+<tr valign="top"><td><code>x2</code></td>
+<td>
+vector of values of the grid points in the second coordinate
+direction at which the estimate was computed. 
+</td></tr>
+<tr valign="top"><td><code>fhat</code></td>
+<td>
+matrix of density estimates 
+over the mesh induced by <code>x1</code> and <code>x2</code>.
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This is the binned approximation to the 2D kernel density estimate.
+Linear binning is used to obtain the bin counts and the
+Fast Fourier Transform is used to perform the discrete convolutions.
+For each <code>x1</code>,<code>x2</code> pair the bivariate Gaussian kernel is
+centered on that location and the heights of the 
+kernel, scaled by the bandwidths, at each datapoint are summed.
+This sum, after a normalization, is the corresponding 
+<code>fhat</code> value in the output.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Wand, M. P. (1994).
+Fast Computation of Multivariate Kernel Estimators.
+<EM>Journal of Computational and Graphical Statistics,</EM>
+<B>3</B>, 433-445.
+</p>
+<p>
+Wand, M. P. and Jones, M. C. (1995).
+<EM>Kernel Smoothing.</EM>
+Chapman and Hall, London.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="bkde.html">bkde</a></code>, <code><a href="../../stats/html/density.html">density</a></code>, <code><a href="../../graphics/html/hist.html">hist</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(geyser, package="MASS")
+x &lt;- cbind(geyser$duration, geyser$waiting)
+est &lt;- bkde2D(x, bandwidth=c(0.7, 7))
+contour(est$x1, est$x2, est$fhat)
+persp(est$fhat)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>KernSmooth</em> version 2.23-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

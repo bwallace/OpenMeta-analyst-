@@ -1,0 +1,134 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Median Polish of a Matrix</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for medpolish {stats}"><tr><td>medpolish {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>Median Polish of a Matrix</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Fits an additive model using Tukey's <EM>median polish</EM> procedure.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+medpolish(x, eps = 0.01, maxiter = 10, trace.iter = TRUE,
+          na.rm = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+a numeric matrix.</td></tr>
+<tr valign="top"><td><code>eps</code></td>
+<td>
+real number greater than 0. A tolerance for convergence:
+see &lsquo;Details&rsquo;.</td></tr>
+<tr valign="top"><td><code>maxiter</code></td>
+<td>
+the maximum number of iterations</td></tr>
+<tr valign="top"><td><code>trace.iter</code></td>
+<td>
+logical. Should progress in convergence be reported?</td></tr>
+<tr valign="top"><td><code>na.rm</code></td>
+<td>
+logical. Should missing values be removed?</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The model fitted is additive (constant + rows + columns). The
+algorithm works by alternately removing the row and column medians,
+and continues until the proportional reduction in the sum
+of absolute residuals is less than <code>eps</code>
+or until there have been <code>maxiter</code> iterations.
+The sum of absolute residuals is printed at
+each iteration of the fitting process, if <code>trace.iter</code> is <code>TRUE</code>.
+If <code>na.rm</code> is <code>FALSE</code> the presence of any <code>NA</code> value in
+<code>x</code> will cause an error, otherwise <code>NA</code> values are ignored.
+</p>
+<p>
+<code>medpolish</code> returns an object of class <code>medpolish</code> (see below).
+There are printing and plotting methods for this
+class, which are invoked via by the generics
+<code><a href="../../base/html/print.html">print</a></code> and <code><a href="../../graphics/html/plot.html">plot</a></code>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+An object of class <code>medpolish</code> with the following named components:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>overall</code></td>
+<td>
+the fitted constant term.</td></tr>
+<tr valign="top"><td><code>row</code></td>
+<td>
+the fitted row effects.</td></tr>
+<tr valign="top"><td><code>col</code></td>
+<td>
+the fitted column effects.</td></tr>
+<tr valign="top"><td><code>residuals</code></td>
+<td>
+the residuals.</td></tr>
+<tr valign="top"><td><code>name</code></td>
+<td>
+the name of the dataset.</td></tr>
+</table>
+
+<h3>References</h3>
+
+<p>
+Tukey, J. W. (1977).
+<EM>Exploratory Data Analysis</EM>,
+Reading Massachusetts: Addison-Wesley.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="median.html">median</a></code>; <code><a href="aov.html">aov</a></code> for a <EM>mean</EM>
+instead of <EM>median</EM> decomposition.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+require(graphics)
+
+## Deaths from sport parachuting;  from ABC of EDA, p.224:
+deaths &lt;-
+    rbind(c(14,15,14),
+          c( 7, 4, 7),
+          c( 8, 2,10),
+          c(15, 9,10),
+          c( 0, 2, 0))
+dimnames(deaths) &lt;- list(c("1-24", "25-74", "75-199", "200++", "NA"),
+                         paste(1973:1975))
+deaths
+(med.d &lt;- medpolish(deaths))
+plot(med.d)
+## Check decomposition:
+all(deaths ==
+    med.d$overall + outer(med.d$row,med.d$col, "+") + med.d$residuals)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

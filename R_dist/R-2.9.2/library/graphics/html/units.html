@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Graphical Units</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for units {graphics}"><tr><td>units {graphics}</td><td align="right">R Documentation</td></tr></table>
+<h2>Graphical Units</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>xinch</code> and <code>yinch</code> convert the specified number of inches
+given as their arguments into the correct units for plotting with
+graphics functions.  Usually, this only makes sense when normal
+coordinates are used, i.e., <EM>no</EM> <code>log</code> scale (see the
+<code>log</code> argument to <code><a href="par.html">par</a></code>).
+</p>
+<p>
+<code>xyinch</code> does the same for a pair of numbers <code>xy</code>,
+simultaneously.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+xinch(x = 1, warn.log = TRUE)
+yinch(y = 1, warn.log = TRUE)
+xyinch(xy = 1, warn.log = TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x,y</code></td>
+<td>
+numeric vector</td></tr>
+<tr valign="top"><td><code>xy</code></td>
+<td>
+numeric of length 1 or 2.</td></tr>
+<tr valign="top"><td><code>warn.log</code></td>
+<td>
+logical; if <code>TRUE</code>, a warning is printed in case
+of active log scale.</td></tr>
+</table>
+
+<h3>Examples</h3>
+
+<pre>
+all(c(xinch(),yinch()) == xyinch()) # TRUE
+xyinch()
+xyinch #- to see that is really   delta{"usr"} / "pin"
+
+## plot labels offset 0.12 inches to the right
+## of plotted symbols in a plot
+with(mtcars, {
+    plot(mpg, disp, pch=19, main= "Motor Trend Cars")
+    text(mpg + xinch(0.12), disp, row.names(mtcars),
+         adj = 0, cex = .7, col = 'blue')
+    })
+</pre>
+
+
+
+<hr><div align="center">[Package <em>graphics</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

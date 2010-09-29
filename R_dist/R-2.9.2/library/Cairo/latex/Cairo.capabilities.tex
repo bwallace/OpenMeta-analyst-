@@ -1,0 +1,25 @@
+\HeaderA{Cairo.capabilities}{Reports which output types are supported by this Cairo build}{Cairo.capabilities}
+\keyword{device}{Cairo.capabilities}
+\begin{Description}\relax
+\code{Cairo.capabilities} returns a logical vector describing the
+capabilities of this particular Cairo build.
+\end{Description}
+\begin{Usage}
+\begin{verbatim}
+Cairo.capabilities()
+\end{verbatim}
+\end{Usage}
+\begin{Details}\relax
+The \code{Cairo} package provides multiple back-ends, such as images
+(PNG, JPEG, TIFF), vector graphics (PDF, PostScript, SVG) or displays
+(X11, Windows). However, not all systems support all back-ends. The
+\code{Cairo.capabilities} function returns a logical vector showing
+which capabilities are supported in this particular Cairo build.
+
+Note that the capabilities depend both on the libraries available in
+the system as well as the compiled-in modules in cairo graphics.
+\end{Details}
+\begin{SeeAlso}\relax
+\code{\LinkA{Cairo}{Cairo}}
+\end{SeeAlso}
+

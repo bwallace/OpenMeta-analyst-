@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Parallel Coordinate Plot</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for parallelplot {dprep}"><tr><td>parallelplot {dprep}</td><td align="right">R Documentation</td></tr></table>
+<h2>Parallel Coordinate Plot</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Constructs a parallel coordinate plot for a data set with classes in last column.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+parallelplot(x, name = "", comb = -1, class = 0, obs = rep(0, 0), col = 2, lty = 1, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+A matrix of numerical values with classes in last column</td></tr>
+<tr valign="top"><td><code>name</code></td>
+<td>
+The name of data set as will appear in the graph title</td></tr>
+<tr valign="top"><td><code>comb</code></td>
+<td>
+An integer that represents the number of one of the possible 
+combinations for the columns of this matrix.</td></tr>
+<tr valign="top"><td><code>class</code></td>
+<td>
+A value representing the class number to which the plot should be limited </td></tr>
+<tr valign="top"><td><code>obs</code></td>
+<td>
+A list of one or more row numbers that are to be highlighted in the plot</td></tr>
+<tr valign="top"><td><code>col</code></td>
+<td>
+A value that provides a choice of color for the plot (if plotting only one class)</td></tr>
+<tr valign="top"><td><code>lty</code></td>
+<td>
+A value that provides a choice of line width for the plot (if plotting only one class)</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+Additional arguments for the matplot function </td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This plot is not recommended for a large number of features (say more than 50).
+If comb=0, all distinct combinations of columns are graphed. If comb=-1 (default), the attributes are 
+plotted in their original order, else comb should be equal to an integer that represents 
+the number of one of the possible combinations for the columns of this matrix.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A parallel coordinate plot of the data is produced.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Caroline Rodriguez
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Wegman, E. (1990), Hyperdimensional data analysis using parallel coordinates, 
+Journal of the American Statistical Association,85,664-675
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="starcoord.html">starcoord</a></code>,  <code><a href="surveyplot.html">surveyplot</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+#---Parallel Coordinate Plot----
+data(bupa)
+parallelplot(bupa,"Bupa Dataset")
+parallelplot(bupa,"Bupa Dataset",comb=0)
+#parallelplot(bupa,"Bupa Dataset",comb=1,c(1,22,50))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>dprep</em> version 2.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

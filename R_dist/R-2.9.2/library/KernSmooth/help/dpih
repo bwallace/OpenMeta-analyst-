@@ -1,0 +1,84 @@
+dpih               package:KernSmooth               R Documentation
+
+_S_e_l_e_c_t _a _H_i_s_t_o_g_r_a_m _B_i_n _W_i_d_t_h
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Uses direct plug-in methodology to select the bin width of  a
+     histogram.
+
+_U_s_a_g_e:
+
+     dpih(x, scalest = "minim", level = 2L, gridsize = 401L, 
+          range.x = range(x), truncate = TRUE)
+
+_A_r_g_u_m_e_n_t_s:
+
+       x: vector containing the sample on which the histogram is to be
+          constructed. 
+
+ scalest: estimate of scale.
+
+          '"stdev"' - standard deviation is used.
+
+          '"iqr"' - inter-quartile range divided by 1.349 is used.
+
+          '"minim"' - minimum of '"stdev"' and '"iqr"' is used. 
+
+   level: number of levels of functional estimation used in the plug-in
+          rule. 
+
+gridsize: number of grid points used in the binned approximations to
+          functional estimates. 
+
+ range.x: range over which functional estimates are obtained. The
+          default is the minimum and maximum data values. 
+
+truncate: if 'truncate' is 'TRUE' then observations outside of the
+          interval specified by 'range.x' are omitted. Otherwise, they
+          are used to weight the extreme grid points. 
+
+_D_e_t_a_i_l_s:
+
+     The direct plug-in approach, where unknown functionals that appear
+     in expressions for the asymptotically optimal bin width and
+     bandwidths are replaced by kernel estimates, is used. The normal
+     distribution is used to provide an initial estimate.
+
+_V_a_l_u_e:
+
+     the selected bin width.
+
+_B_a_c_k_g_r_o_u_n_d:
+
+     This method for selecting the bin width of a histogram is
+     described in Wand (1995). It is an extension of the normal scale
+     rule of Scott (1979) and uses plug-in ideas from bandwidth
+     selection for kernel density estimation (e.g. Sheather and Jones,
+     1991).
+
+_R_e_f_e_r_e_n_c_e_s:
+
+     Scott, D. W. (1979).  On optimal and data-based histograms.
+     _Biometrika_, *66*, 605-610.
+
+     Sheather, S. J. and Jones, M. C. (1991). A reliable data-based
+     bandwidth selection method for kernel density estimation. _Journal
+     of the Royal Statistical Society, Series B_, *53*, 683-690. 
+
+     Wand, M. P. (1995). Data-based choice of histogram binwidth.
+     _University of New South Wales_, Australian Graduate School of
+     Management  Working Paper Series No. 95-011.
+
+_S_e_e _A_l_s_o:
+
+     'hist'
+
+_E_x_a_m_p_l_e_s:
+
+     data(geyser, package="MASS")
+     x <- geyser$duration
+     h <- dpih(x)
+     bins <- seq(min(x)-0.1, max(x)+0.1+h, by=h)
+     hist(x, breaks=bins)
+

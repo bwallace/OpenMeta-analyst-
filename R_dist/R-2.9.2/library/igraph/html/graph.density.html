@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Graph density</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for graph.density {igraph}"><tr><td>graph.density {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Graph density</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The density of a graph is the ratio of the number of edges
+and the number of possible edges.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+graph.density(graph, loops=FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>graph</code></td>
+<td>
+The input graph.</td></tr>
+<tr valign="top"><td><code>loops</code></td>
+<td>
+Logical constant, whether to allow loop edges in the
+graph. If this is TRUE then self loops are considered to be possible. If
+this is FALSE then we assume that the graph does not contain any
+loop edges and that loop edges are not meaningful.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Note that this function may return strange results for graph with
+multiple edges, density is ill-defined for graphs with multiple
+edges.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A real constant. This function returns <code>NaN</code> (=0.0/0.0) for an
+empty graph with zero vertices.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Wasserman, S., and Faust, K.  (1994).  Social Network Analysis:
+Methods and Applications.  Cambridge: Cambridge University Press.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="structure.info.html">vcount</a></code>, <code><a href="structure.info.html">ecount</a></code>,
+<code><a href="simplify.html">simplify</a></code> to get rid of the multiple and/or loop edges.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+g1 &lt;- graph.empty(n=10)
+g2 &lt;- graph.full(n=10)
+g3 &lt;- erdos.renyi.game(n=10, 0.4)
+
+# loop edges
+g &lt;- graph( c(0,1, 1,1, 1,2) )
+graph.density(g, loops=FALSE)              # this is wrong!!!
+graph.density(g, loops=TRUE)               # this is right!!!
+graph.density(simplify(g), loops=FALSE)    # this is also right, but different
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

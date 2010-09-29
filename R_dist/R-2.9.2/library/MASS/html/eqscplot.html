@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Plots with Geometrically Equal Scales</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for eqscplot {MASS}"><tr><td>eqscplot {MASS}</td><td align="right">R Documentation</td></tr></table>
+<h2>Plots with Geometrically Equal Scales</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Version of a scatterplot with scales chosen to be equal on both axes, that
+is 1cm represents the same units on each
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+eqscplot(x, y, ratio = 1, tol = 0.04, uin, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+vector of x values, or a 2-column matrix, or a list with components
+<code>x</code> and <code>y</code>
+</td></tr>
+<tr valign="top"><td><code>y</code></td>
+<td>
+vector of y values
+</td></tr>
+<tr valign="top"><td><code>ratio</code></td>
+<td>
+desired ratio of units on the axes.  Units on the y axis are drawn at
+<code>ratio</code> times the size of units on the x axis.  Ignored if <code>uin</code> is
+specified and of length 2.
+</td></tr>
+<tr valign="top"><td><code>tol</code></td>
+<td>
+proportion of white space at the margins of plot
+</td></tr>
+<tr valign="top"><td><code>uin</code></td>
+<td>
+desired values for the units-per-inch parameter. If of length 1, the
+desired units per inch on the x axis.
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+further arguments for <code>plot</code> and graphical parameters.  Note that
+<code>par(xaxs="i", yaxs="i")</code> is enforced, and <code>xlim</code> and
+<code>ylim</code> will be adjusted accordingly.
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Limits for the x and y axes are chosen so that they include the
+data.  One of the sets of limits is then stretched from the midpoint to
+make the units in the ratio given by <code>ratio</code>. Finally both are
+stretched by <code>1 + tol</code> to move points away from the axes, and the
+points plotted.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+invisibly, the values of <code>uin</code> used for the plot.</p>
+
+<h3>Side Effects</h3>
+
+<p>
+performs the plot.
+</p>
+
+
+<h3>Note</h3>
+
+<p>
+Arguments <code>ratio</code> and <code>uin</code> were suggested by Bill Dunlap.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Venables, W. N. and Ripley, B. D. (2002)
+<EM>Modern Applied Statistics with S.</EM> Fourth edition.  Springer.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../graphics/html/plot.html">plot</a></code>, <code><a href="../../graphics/html/par.html">par</a></code>
+</p>
+
+
+
+<hr><div align="center">[Package <em>MASS</em> version 7.2-48 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

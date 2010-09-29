@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Read and Write Binary Data in ENVI Format</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for read.ENVI & write.ENVI {caTools}"><tr><td>read.ENVI & write.ENVI {caTools}</td><td align="right">R Documentation</td></tr></table>
+<h2>Read and Write Binary Data in ENVI Format</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Read and write binary data in ENVI format, which is supported by 
+most GIS software.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+  X=read.ENVI(filename, headerfile=paste(filename, ".hdr", sep="")) 
+  write.ENVI (X, filename, interleave = c("bsq", "bil", "bip")) 
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>X</code></td>
+<td>
+data to be saved in ENVI file. Can be a matrix or 3D array.</td></tr>
+<tr valign="top"><td><code>filename</code></td>
+<td>
+character string with name of the file (connection)</td></tr>
+<tr valign="top"><td><code>headerfile</code></td>
+<td>
+optional character string with name of the header file</td></tr>
+<tr valign="top"><td><code>interleave</code></td>
+<td>
+optional character string specifying interleave to be used</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+ENVI binary files use a generalized raster data format that consists of two 
+parts: 
+<ul>
+<li>binary file - flat binary file equivalent to memory dump, as produced by 
+<code><a href="../../base/html/readBin.html">writeBin</a></code> in R or <code>fwrite</code> in C/C++.
+<li>header file - small text (ASCII) file containing the metadata 
+associated with the binary file. This file can contain the following 
+fields, followed by equal sign and a variable: 
+<ul>
+<li><code>samples</code> - number of columns <br>
+<li><code>lines</code> - number of rows <br>
+<li><code>bands</code> - number of bands (channels, planes) <br>
+<li><code>data type</code> - following types are supported:
+<ul>
+<li>1 - 1-byte unsigned integer
+<li>2 - 2-byte signed integer
+<li>3 - 4-byte signed integer
+<li>4 - 4-byte float
+<li>5 - 8-byte double
+<li>9 - 2x8-byte complex number made up from 2 doubles
+<li>12 - 2-byte unsigned integer
+</ul>
+<li><code>header offset</code> -  number of bytes to skip before 
+raster data starts in binary file. 
+<li><code>interleave</code> - Permutations of dimensions in binary data:
+<ul>
+<li><code>BSQ</code> - Band Sequential (X[col,row,band])
+<li><code>BIL</code> - Band Interleave by Line (X[col,band,row])
+<li><code>BIP</code> - Band Interleave by Pixel (X[band,col,row]) 
+</ul>
+<li><code>byte order</code> - the endian-ness of the saved data: 
+<ul>
+<li>0 - means little-endian byte order, format used on PC/Intel machines
+<li>1 - means big-endian (aka IEEE, aka "network") byte order, format 
+used on UNIX and Macintosh machines
+</ul>
+</ul>
+</ul>
+<p>
+Fields <code>samples</code>, <code>lines</code>, <code>bands</code>, <code>data type</code> are 
+required, while <code>header offset</code>, <code>interleave</code>, <code>byte order</code> are
+optional. All of them are in form of integers except <code>interleave</code> which
+is a string.
+</p>
+<p>
+This generic format allows reading of many raw file formats, including those 
+with embedded header information. Also it is a handy binary format to 
+exchange data between PC and UNIX/Mac machines, as well as different 
+languages like: C, Fortran, Matlab, etc. Especially since header files are 
+simple enough to edit by hand.
+</p>
+<p>
+File type supported by most of GIS (geographic information system) software
+including: ENVI software, Freelook (free file viewer by ENVI), ArcGIS, etc.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+Function <code>read.ENVI</code> returns either a matrix or 3D array. 
+Function <code>write.ENVI</code> does not return anything.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Jarek Tuszynski (SAIC) <a href="mailto:jaroslaw.w.tuszynski@saic.com">jaroslaw.w.tuszynski@saic.com</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+Displaying of images can be done through functions: <code><a href="../../graphics/html/image.html">image</a></code>,
+<code><a href="../../fields/html/image.plot.html">image.plot</a></code> and <code><a href="../../fields/html/add.image.html">add.image</a></code> from 
+<span class="pkg">fields</span> or <code><a href="../../spatstat/html/plot.im.html">plot.im</a></code> from <span class="pkg">spatstat</span>.
+</p>
+<p>
+ENVI files are practically C-style memory-dumps as performed by 
+<code><a href="../../base/html/readBin.html">readBin</a></code> and <code><a href="../../base/html/readBin.html">writeBin</a></code> functions plus separate 
+meta-data header file.
+</p>
+<p>
+GIF file formats can also store 3D data (see <code><a href="GIF.html">read.gif</a></code> and 
+<code><a href="GIF.html">write.gif</a></code> functions).
+</p>
+<p>
+Packages related to GIS data: <span class="pkg">shapefiles</span>, <span class="pkg">maptools</span>, <span class="pkg">sp</span>, 
+<span class="pkg">spdep</span>, <span class="pkg">adehabitat</span>, <span class="pkg">GRASS</span>, <span class="pkg">PBSmapping</span>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+  X = array(1:60, 3:5)
+  write.ENVI(X, "temp.nvi")
+  Y = read.ENVI("temp.nvi")
+  stopifnot(X == Y)
+  readLines("temp.nvi.hdr")
+  
+  d = c(20,30,40)
+  X = array(runif(prod(d)), d)
+  write.ENVI(X, "temp.nvi", interleave="bil")
+  Y = read.ENVI("temp.nvi")
+  stopifnot(X == Y)
+  readLines("temp.nvi.hdr")
+  
+  file.remove("temp.nvi")
+  file.remove("temp.nvi.hdr")
+</pre>
+
+
+
+<hr><div align="center">[Package <em>caTools</em> version 1.9 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

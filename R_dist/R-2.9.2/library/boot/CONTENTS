@@ -1,0 +1,527 @@
+Entry: EEF.profile
+Aliases: EEF.profile EL.profile
+Keywords: htest
+Description: Empirical Likelihoods
+URL: ../../../library/boot/html/EEF.profile.html
+
+Entry: Imp.Estimates
+Aliases: Imp.Estimates imp.moments imp.prob imp.quantile imp.reg
+Keywords: htest nonparametric
+Description: Importance Sampling Estimates
+URL: ../../../library/boot/html/Imp.Estimates.html
+
+Entry: abc.ci
+Aliases: abc.ci
+Keywords: nonparametric htest
+Description: Nonparametric ABC Confidence Intervals
+URL: ../../../library/boot/html/abc.ci.html
+
+Entry: acme
+Aliases: acme
+Keywords: datasets
+Description: Monthly Excess Returns
+URL: ../../../library/boot/html/acme.html
+
+Entry: aids
+Aliases: aids
+Keywords: datasets
+Description: Delay in AIDS Reporting in England and Wales
+URL: ../../../library/boot/html/aids.html
+
+Entry: aircondit
+Aliases: aircondit aircondit7
+Keywords: datasets
+Description: Failures of Air-conditioning Equipment
+URL: ../../../library/boot/html/aircondit.html
+
+Entry: amis
+Aliases: amis
+Keywords: datasets
+Description: Car Speeding and Warning Signs
+URL: ../../../library/boot/html/amis.html
+
+Entry: aml
+Aliases: aml
+Keywords: datasets
+Description: Remission Times for Acute Myelogenous Leukaemia
+URL: ../../../library/boot/html/aml.html
+
+Entry: beaver
+Aliases: beaver
+Keywords: datasets
+Description: Beaver Body Temperature Data
+URL: ../../../library/boot/html/beaver.html
+
+Entry: bigcity
+Aliases: bigcity city
+Keywords: datasets
+Description: Population of U.S. Cities
+URL: ../../../library/boot/html/bigcity.html
+
+Entry: boot-practicals
+Aliases: nested.corr lik.CI
+Keywords: internal
+Description: Functions for Bootstrap Practicals
+URL: ../../../library/boot/html/boot-practicals.html
+
+Entry: boot
+Aliases: boot boot.return
+Keywords: nonparametric htest
+Description: Bootstrap Resampling
+URL: ../../../library/boot/html/boot.html
+
+Entry: boot.array
+Aliases: boot.array
+Keywords: nonparametric
+Description: Bootstrap Resampling Arrays
+URL: ../../../library/boot/html/boot.array.html
+
+Entry: boot.ci
+Aliases: boot.ci
+Keywords: nonparametric htest
+Description: Nonparametric Bootstrap Confidence Intervals
+URL: ../../../library/boot/html/boot.ci.html
+
+Entry: brambles
+Aliases: brambles
+Keywords: datasets
+Description: Spatial Location of Bramble Canes
+URL: ../../../library/boot/html/brambles.html
+
+Entry: breslow
+Aliases: breslow
+Keywords: datasets
+Description: Smoking Deaths Among Doctors
+URL: ../../../library/boot/html/breslow.html
+
+Entry: calcium
+Aliases: calcium
+Keywords: datasets
+Description: Calcium Uptake Data
+URL: ../../../library/boot/html/calcium.html
+
+Entry: cane
+Aliases: cane
+Keywords: datasets
+Description: Sugar-cane Disease Data
+URL: ../../../library/boot/html/cane.html
+
+Entry: capability
+Aliases: capability
+Keywords: datasets
+Description: Simulated Manufacturing Process Data
+URL: ../../../library/boot/html/capability.html
+
+Entry: catsM
+Aliases: catsM
+Keywords: datasets
+Description: Weight Data for Domestic Cats
+URL: ../../../library/boot/html/catsM.html
+
+Entry: cav
+Aliases: cav
+Keywords: datasets
+Description: Position of Muscle Caveolae
+URL: ../../../library/boot/html/cav.html
+
+Entry: cd4
+Aliases: cd4
+Keywords: datasets
+Description: CD4 Counts for HIV-Positive Patients
+URL: ../../../library/boot/html/cd4.html
+
+Entry: cd4.nested
+Aliases: cd4.nested
+Keywords: datasets
+Description: Nested Bootstrap of cd4 data
+URL: ../../../library/boot/html/cd4.nested.html
+
+Entry: censboot
+Aliases: censboot cens.return
+Keywords: survival
+Description: Bootstrap for Censored Data
+URL: ../../../library/boot/html/censboot.html
+
+Entry: channing
+Aliases: channing
+Keywords: datasets
+Description: Channing House Data
+URL: ../../../library/boot/html/channing.html
+
+Entry: claridge
+Aliases: claridge
+Keywords: datasets
+Description: Genetic Links to Left-handedness
+URL: ../../../library/boot/html/claridge.html
+
+Entry: cloth
+Aliases: cloth
+Keywords: datasets
+Description: Number of Flaws in Cloth
+URL: ../../../library/boot/html/cloth.html
+
+Entry: co.transfer
+Aliases: co.transfer
+Keywords: datasets
+Description: Carbon Monoxide Transfer
+URL: ../../../library/boot/html/co.transfer.html
+
+Entry: coal
+Aliases: coal
+Keywords: datasets
+Description: Dates of Coal Mining Disasters
+URL: ../../../library/boot/html/coal.html
+
+Entry: control
+Aliases: control
+Keywords: nonparametric
+Description: Control Variate Calculations
+URL: ../../../library/boot/html/control.html
+
+Entry: corr
+Aliases: corr
+Keywords: math multivariate
+Description: Correlation Coefficient
+URL: ../../../library/boot/html/corr.html
+
+Entry: cum3
+Aliases: cum3
+Keywords: math multivariate
+Description: Calculate Third Order Cumulants
+URL: ../../../library/boot/html/cum3.html
+
+Entry: cv.glm
+Aliases: cv.glm
+Keywords: regression
+Description: Cross-validation for Generalized Linear Models
+URL: ../../../library/boot/html/cv.glm.html
+
+Entry: darwin
+Aliases: darwin
+Keywords: datasets
+Description: Darwin's Plant Height Differences
+URL: ../../../library/boot/html/darwin.html
+
+Entry: dogs
+Aliases: dogs
+Keywords: datasets
+Description: Cardiac Data for Domestic Dogs
+URL: ../../../library/boot/html/dogs.html
+
+Entry: downs.bc
+Aliases: downs.bc
+Keywords: datasets
+Description: Incidence of Down's Syndrome in British Columbia
+URL: ../../../library/boot/html/downs.bc.html
+
+Entry: ducks
+Aliases: ducks
+Keywords: datasets
+Description: Behavioral and Plumage Characteristics of Hybrid Ducks
+URL: ../../../library/boot/html/ducks.html
+
+Entry: empinf
+Aliases: empinf
+Keywords: nonparametric math
+Description: Empirical Influence Values
+URL: ../../../library/boot/html/empinf.html
+
+Entry: envelope
+Aliases: envelope
+Keywords: dplot htest
+Description: Confidence Envelopes for Curves
+URL: ../../../library/boot/html/envelope.html
+
+Entry: exp.tilt
+Aliases: exp.tilt
+Keywords: nonparametric smooth
+Description: Exponential Tilting
+URL: ../../../library/boot/html/exp.tilt.html
+
+Entry: fir
+Aliases: fir
+Keywords: datasets
+Description: Counts of Balsam-fir Seedlings
+URL: ../../../library/boot/html/fir.html
+
+Entry: freq.array
+Aliases: freq.array
+Keywords: nonparametric
+Description: Bootstrap Frequency Arrays
+URL: ../../../library/boot/html/freq.array.html
+
+Entry: frets
+Aliases: frets
+Keywords: datasets
+Description: Head Dimensions in Brothers
+URL: ../../../library/boot/html/frets.html
+
+Entry: glm.diag
+Aliases: glm.diag
+Keywords: regression dplot
+Description: Generalized Linear Model Diagnostics
+URL: ../../../library/boot/html/glm.diag.html
+
+Entry: glm.diag.plots
+Aliases: glm.diag.plots
+Keywords: regression dplot hplot
+Description: Diagnostics plots for generalized linear models
+URL: ../../../library/boot/html/glm.diag.plots.html
+
+Entry: gravity
+Aliases: gravity grav
+Keywords: datasets
+Description: Acceleration Due to Gravity
+URL: ../../../library/boot/html/gravity.html
+
+Entry: hirose
+Aliases: hirose
+Keywords: datasets
+Description: Failure Time of PET Film
+URL: ../../../library/boot/html/hirose.html
+
+Entry: imp.weights
+Aliases: imp.weights
+Keywords: nonparametric
+Description: Importance Sampling Weights
+URL: ../../../library/boot/html/imp.weights.html
+
+Entry: inv.logit
+Aliases: inv.logit
+Keywords: math
+Description: Inverse Logit Function
+URL: ../../../library/boot/html/inv.logit.html
+
+Entry: islay
+Aliases: islay
+Keywords: datasets
+Description: Jura Quartzite Azimuths on Islay
+URL: ../../../library/boot/html/islay.html
+
+Entry: jack.after.boot
+Aliases: jack.after.boot
+Keywords: hplot nonparametric
+Description: Jackknife-after-Bootstrap Plots
+URL: ../../../library/boot/html/jack.after.boot.html
+
+Entry: k3.linear
+Aliases: k3.linear
+Keywords: nonparametric
+Description: Linear Skewness Estimate
+URL: ../../../library/boot/html/k3.linear.html
+
+Entry: linear.approx
+Aliases: linear.approx
+Keywords: nonparametric
+Description: Linear Approximation of Bootstrap Replicates
+URL: ../../../library/boot/html/linear.approx.html
+
+Entry: lines.saddle.distn
+Aliases: lines.saddle.distn
+Keywords: aplot smooth nonparametric
+Description: Add a Saddlepoint Approximation to a Plot
+URL: ../../../library/boot/html/lines.saddle.distn.html
+
+Entry: logit
+Aliases: logit
+Keywords: math
+Description: Logit of Proportions
+URL: ../../../library/boot/html/logit.html
+
+Entry: manaus
+Aliases: manaus
+Keywords: datasets
+Description: Average Heights of the Rio Negro river at Manaus
+URL: ../../../library/boot/html/manaus.html
+
+Entry: melanoma
+Aliases: melanoma
+Keywords: datasets
+Description: Survival from Malignant Melanoma
+URL: ../../../library/boot/html/melanoma.html
+
+Entry: motor
+Aliases: motor
+Keywords: datasets
+Description: Data from a Simulated Motorcycle Accident
+URL: ../../../library/boot/html/motor.html
+
+Entry: neuro
+Aliases: neuro
+Keywords: datasets
+Description: Neurophysiological Point Process Data
+URL: ../../../library/boot/html/neuro.html
+
+Entry: nitrofen
+Aliases: nitrofen
+Keywords: datasets
+Description: Toxicity of Nitrofen in Aquatic Systems
+URL: ../../../library/boot/html/nitrofen.html
+
+Entry: nodal
+Aliases: nodal
+Keywords: datasets
+Description: Nodal Involvement in Prostate Cancer
+URL: ../../../library/boot/html/nodal.html
+
+Entry: norm.ci
+Aliases: norm.ci
+Keywords: htest
+Description: Normal Approximation Confidence Intervals
+URL: ../../../library/boot/html/norm.ci.html
+
+Entry: nuclear
+Aliases: nuclear
+Keywords: datasets
+Description: Nuclear Power Station Construction Data
+URL: ../../../library/boot/html/nuclear.html
+
+Entry: paulsen
+Aliases: paulsen
+Keywords: datasets
+Description: Neurotransmission in Guinea Pig Brains
+URL: ../../../library/boot/html/paulsen.html
+
+Entry: plot.boot
+Aliases: plot.boot
+Keywords: hplot nonparametric
+Description: Plots of the Output of a Bootstrap Simulation
+URL: ../../../library/boot/html/plot.boot.html
+
+Entry: poisons
+Aliases: poisons
+Keywords: datasets
+Description: Animal Survival Times
+URL: ../../../library/boot/html/poisons.html
+
+Entry: polar
+Aliases: polar
+Keywords: datasets
+Description: Pole Positions of New Caledonian Laterites
+URL: ../../../library/boot/html/polar.html
+
+Entry: print.boot
+Aliases: print.boot
+Keywords: nonparametric htest
+Description: Print a Summary of a Bootstrap Object
+URL: ../../../library/boot/html/print.boot.html
+
+Entry: print.bootci
+Aliases: print.bootci
+Keywords: print htest
+Description: Print Bootstrap Confidence Intervals
+URL: ../../../library/boot/html/print.bootci.html
+
+Entry: print.saddle.distn
+Aliases: print.saddle.distn
+Keywords: print smooth nonparametric
+Description: Print Quantiles of Saddlepoint Approximations
+URL: ../../../library/boot/html/print.saddle.distn.html
+
+Entry: print.simplex
+Aliases: print.simplex
+Keywords: print optimize
+Description: Print Solution to Linear Programming Problem
+URL: ../../../library/boot/html/print.simplex.html
+
+Entry: remission
+Aliases: remission
+Keywords: datasets
+Description: Cancer Remission and Cell Activity
+URL: ../../../library/boot/html/remission.html
+
+Entry: saddle
+Aliases: saddle
+Keywords: smooth nonparametric
+Description: Saddlepoint Approximations for Bootstrap Statistics
+URL: ../../../library/boot/html/saddle.html
+
+Entry: saddle.distn
+Aliases: saddle.distn
+Keywords: nonparametric smooth dplot
+Description: Saddlepoint Distribution Approximations for Bootstrap Statistics
+URL: ../../../library/boot/html/saddle.distn.html
+
+Entry: saddle.distn.object
+Aliases: saddle.distn.object
+Keywords: nonparametric methods smooth
+Description: Saddlepoint Distribution Approximation Objects
+URL: ../../../library/boot/html/saddle.distn.object.html
+
+Entry: salinity
+Aliases: salinity
+Keywords: datasets
+Description: Water Salinity and River Discharge
+URL: ../../../library/boot/html/salinity.html
+
+Entry: simplex
+Aliases: simplex
+Keywords: optimize
+Description: Simplex Method for Linear Programming Problems
+URL: ../../../library/boot/html/simplex.html
+
+Entry: simplex.object
+Aliases: simplex.object
+Keywords: optimize methods
+Description: Linear Programming Solution Objects
+URL: ../../../library/boot/html/simplex.object.html
+
+Entry: smooth.f
+Aliases: smooth.f
+Keywords: smooth nonparametric
+Description: Smooth Distributions on Data Points
+URL: ../../../library/boot/html/smooth.f.html
+
+Entry: sunspot
+Aliases: sunspot
+Keywords: datasets
+Description: Annual Mean Sunspot Numbers
+URL: ../../../library/boot/html/sunspot.html
+
+Entry: survival
+Aliases: survival
+Keywords: datasets
+Description: Survival of Rats after Radiation Doses
+URL: ../../../library/boot/html/survival.html
+
+Entry: tau
+Aliases: tau
+Keywords: datasets
+Description: Tau Particle Decay Modes
+URL: ../../../library/boot/html/tau.html
+
+Entry: tilt.boot
+Aliases: tilt.boot
+Keywords: nonparametric
+Description: Non-parametric Tilted Bootstrap
+URL: ../../../library/boot/html/tilt.boot.html
+
+Entry: tsboot
+Aliases: tsboot ts.return
+Keywords: nonparametric ts
+Description: Bootstrapping of Time Series
+URL: ../../../library/boot/html/tsboot.html
+
+Entry: tuna
+Aliases: tuna
+Keywords: datasets
+Description: Tuna Sighting Data
+URL: ../../../library/boot/html/tuna.html
+
+Entry: urine
+Aliases: urine
+Keywords: datasets
+Description: Urine Analysis Data
+URL: ../../../library/boot/html/urine.html
+
+Entry: var.linear
+Aliases: var.linear
+Keywords: nonparametric
+Description: Linear Variance Estimate
+URL: ../../../library/boot/html/var.linear.html
+
+Entry: wool
+Aliases: wool
+Keywords: datasets
+Description: Australian Relative Wool Prices
+URL: ../../../library/boot/html/wool.html

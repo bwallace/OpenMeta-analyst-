@@ -1,0 +1,139 @@
+read.ENVI & write.ENVI        package:caTools        R Documentation
+
+_R_e_a_d _a_n_d _W_r_i_t_e _B_i_n_a_r_y _D_a_t_a _i_n _E_N_V_I _F_o_r_m_a_t
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Read and write binary data in ENVI format, which is supported by 
+     most GIS software.
+
+_U_s_a_g_e:
+
+       X=read.ENVI(filename, headerfile=paste(filename, ".hdr", sep="")) 
+       write.ENVI (X, filename, interleave = c("bsq", "bil", "bip")) 
+
+_A_r_g_u_m_e_n_t_s:
+
+       X: data to be saved in ENVI file. Can be a matrix or 3D array.
+
+filename: character string with name of the file (connection)
+
+headerfile: optional character string with name of the header file
+
+interleave: optional character string specifying interleave to be used
+
+_D_e_t_a_i_l_s:
+
+     ENVI binary files use a generalized raster data format that
+     consists of two  parts: 
+
+        *  binary file - flat binary file equivalent to memory dump, as
+           produced by  'writeBin' in R or 'fwrite' in C/C++.
+
+        *  header file - small text (ASCII) file containing the
+           metadata  associated with the binary file. This file can
+           contain the following  fields, followed by equal sign and a
+           variable: 
+
+           *  'samples' - number of columns 
+
+           *  'lines' - number of rows 
+
+           *  'bands' - number of bands (channels, planes) 
+
+           *  'data type' - following types are supported:
+
+              *  1 - 1-byte unsigned integer
+
+              *  2 - 2-byte signed integer
+
+              *  3 - 4-byte signed integer
+
+              *  4 - 4-byte float
+
+              *  5 - 8-byte double
+
+              *  9 - 2x8-byte complex number made up from 2 doubles
+
+              *  12 - 2-byte unsigned integer
+
+           *  'header offset' -  number of bytes to skip before  raster
+              data starts in binary file. 
+
+           *  'interleave' - Permutations of dimensions in binary data:
+
+              *  'BSQ' - Band Sequential (X[col,row,band])
+
+              *  'BIL' - Band Interleave by Line (X[col,band,row])
+
+              *  'BIP' - Band Interleave by Pixel (X[band,col,row]) 
+
+           *  'byte order' - the endian-ness of the saved data: 
+
+              *  0 - means little-endian byte order, format used on
+                 PC/Intel machines
+
+              *  1 - means big-endian (aka IEEE, aka "network") byte
+                 order, format  used on UNIX and Macintosh machines
+
+
+
+     Fields 'samples', 'lines', 'bands', 'data type' are  required,
+     while 'header offset', 'interleave', 'byte order' are optional.
+     All of them are in form of integers except 'interleave' which is a
+     string.
+
+     This generic format allows reading of many raw file formats,
+     including those  with embedded header information. Also it is a
+     handy binary format to  exchange data between PC and UNIX/Mac
+     machines, as well as different  languages like: C, Fortran,
+     Matlab, etc. Especially since header files are  simple enough to
+     edit by hand.
+
+     File type supported by most of GIS (geographic information system)
+     software including: ENVI software, Freelook (free file viewer by
+     ENVI), ArcGIS, etc.
+
+_V_a_l_u_e:
+
+     Function 'read.ENVI' returns either a matrix or 3D array. 
+     Function 'write.ENVI' does not return anything.
+
+_A_u_t_h_o_r(_s):
+
+     Jarek Tuszynski (SAIC) jaroslaw.w.tuszynski@saic.com
+
+_S_e_e _A_l_s_o:
+
+     Displaying of images can be done through functions: 'image',
+     'image.plot' and 'add.image' from  'fields' or 'plot.im' from
+     'spatstat'.
+
+     ENVI files are practically C-style memory-dumps as performed by 
+     'readBin' and 'writeBin' functions plus separate  meta-data header
+     file.
+
+     GIF file formats can also store 3D data (see 'read.gif' and 
+     'write.gif' functions).
+
+     Packages related to GIS data: 'shapefiles', 'maptools', 'sp', 
+     'spdep', 'adehabitat', 'GRASS', 'PBSmapping'.
+
+_E_x_a_m_p_l_e_s:
+
+       X = array(1:60, 3:5)
+       write.ENVI(X, "temp.nvi")
+       Y = read.ENVI("temp.nvi")
+       stopifnot(X == Y)
+       readLines("temp.nvi.hdr")
+       
+       d = c(20,30,40)
+       X = array(runif(prod(d)), d)
+       write.ENVI(X, "temp.nvi", interleave="bil")
+       Y = read.ENVI("temp.nvi")
+       stopifnot(X == Y)
+       readLines("temp.nvi.hdr")
+       
+       file.remove("temp.nvi")
+       file.remove("temp.nvi.hdr")
+

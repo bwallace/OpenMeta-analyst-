@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Weight versus age of chicks on different diets</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for ChickWeight {datasets}"><tr><td>ChickWeight {datasets}</td><td align="right">R Documentation</td></tr></table>
+<h2>Weight versus age of chicks on different diets</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The <code>ChickWeight</code> data frame has 578 rows and 4 columns from an
+experiment on the effect of diet on early growth of chicks.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>ChickWeight</pre>
+
+
+<h3>Format</h3>
+
+<p>
+This data frame contains the following columns:
+<dl>
+<dt>weight</dt><dd>a numeric vector giving the body weight of the chick (gm).
+</dd>
+<dt>Time</dt><dd>a numeric vector giving the number of days since birth when
+the measurement was made.
+</dd>
+<dt>Chick</dt><dd>an ordered factor with levels
+<code>18</code> &lt; ... &lt; <code>48</code>
+giving a unique identifier for the chick.  The ordering of
+the levels groups chicks on the same diet together and
+orders them according to their final weight (lightest to
+heaviest) within diet.
+</dd>
+<dt>Diet</dt><dd>a factor with levels 1,...,4 indicating which
+experimental diet the chick received.
+</dd>
+</dl>
+
+<h3>Details</h3>
+
+<p>
+The body weights of the chicks were measured at birth and every
+second day thereafter until day 20.  They were also measured on day
+21.  There were four groups on chicks on different protein diets.
+</p>
+
+
+<h3>Source</h3>
+
+<p>
+Crowder, M. and Hand, D. (1990), <EM>Analysis of Repeated Measures</EM>,
+Chapman and Hall (example 5.3)
+</p>
+<p>
+Hand, D. and Crowder, M. (1996), <EM>Practical Longitudinal Data
+Analysis</EM>, Chapman and Hall (table A.2)
+</p>
+<p>
+Pinheiro, J. C. and Bates, D. M. (2000) <EM>Mixed-effects Models in
+S and S-PLUS</EM>, Springer.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+require(stats); require(graphics)
+coplot(weight ~ Time | Chick, data = ChickWeight,
+    type = "b", show.given = FALSE)
+## fit a representative chick
+fm1 &lt;- nls(weight ~ SSlogis( Time, Asym, xmid, scal ),
+    data = ChickWeight, subset = Chick == 1)
+summary( fm1 )
+</pre>
+
+
+
+<hr><div align="center">[Package <em>datasets</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

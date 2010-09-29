@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Replicate Elements of Vectors and Lists</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for rep {base}"><tr><td>rep {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Replicate Elements of Vectors and Lists</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>rep</code> replicates the values in <code>x</code>.  It is a generic
+function, and the (internal) default method is described here.
+</p>
+<p>
+<code>rep.int</code> is a faster simplified version for the most common case.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+rep(x, ...)
+
+rep.int(x, times)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+a vector (of any mode including a list) or a pairlist or a
+factor or (except for <code>rep.int</code>) a <code>POSIXct</code> or
+<code>POSIXlt</code> or <code>date</code> object; or also, an S4 object containing
+a vector of the above kind.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+further arguments to be passed to or from other methods.
+For the internal default method these can include:
+<dl>
+<dt><code>times</code></dt><dd>A vector giving the number of
+times to repeat each element if of length <code>length(x)</code>, or to
+repeat the whole vector if of length 1.</dd>
+<dt><code>length.out</code></dt><dd>non-negative integer. The desired length of the
+output vector.  Ignored if <code>NA</code> or invalid.</dd>
+<dt><code>each</code></dt><dd>non-negative integer.  Each element of <code>x</code> is
+repeated <code>each</code> times.  Treated as <code>1</code> if <code>NA</code> or
+invalid.</dd>
+</dl>
+</td></tr>
+<tr valign="top"><td><code>times</code></td>
+<td>
+see <code>...</code>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The default behaviour is as if the call was <code>rep(x, times=1,
+    length.out=NA, each=1)</code>.  Normally just one of the additional
+arguments is specified, but if <code>each</code> is specified with either
+of the other two, its replication is performed first, and then that
+implied by <code>times</code> or <code>length.out</code>.
+</p>
+<p>
+If <code>times</code> consists of a single integer, the result consists of
+the whole input repeated this many times.  If <code>times</code> is a
+vector of the same length as <code>x</code> (after replication by
+<code>each</code>), the result consists of <code>x[1]</code> repeated
+<code>times[1]</code> times, <code>x[2]</code> repeated <code>times[2]</code> times and
+so on.
+</p>
+<p>
+<code>length.out</code> may be given in place of <code>times</code>,
+in which case <code>x</code> is repeated as many times as is
+necessary to create a vector of this length.  If both are given,
+<code>length.out</code> takes priority and <code>times</code> is ignored.
+</p>
+<p>
+Non-integer values of <code>times</code> will be truncated towards zero.
+If <code>times</code> is a computed quantity it is prudent to add a small fuzz.
+</p>
+<p>
+If <code>x</code> has length zero and <code>length.out</code> is supplied and is
+positive, the values are filled in using the extraction rules, that is
+by an <code>NA</code> of the appropriate class for an atomic vector
+(<code>0</code> for raw vectors) and <code>NULL</code> for a list.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+An object of the same type as <code>x</code> (except that <code>rep</code> will
+coerce pairlists to vector lists).
+<br>
+<code>rep.int</code> returns no attributes.
+<br>
+The default method of <code>rep</code> gives the result names (which will
+almost always contain duplicates) if <code>x</code> had names, but retains
+no other attributes except for factors.</p>
+
+<h3>Note</h3>
+
+<p>
+Function <code>rep.int</code> is a simple case handled by internal code, and
+provided as a separate function purely for S compatibility.
+</p>
+<p>
+Function <code>rep</code> is a primitive, but (partial)
+matching of argument names is performed as for normal functions.
+You can no longer pass a missing argument to. e.g. <code>length.out</code>.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+<EM>The New S Language</EM>.
+Wadsworth &amp; Brooks/Cole.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="seq.html">seq</a></code>, <code><a href="sequence.html">sequence</a></code>, <code><a href="lapply.html">replicate</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+rep(1:4, 2)
+rep(1:4, each = 2)       # not the same.
+rep(1:4, c(2,2,2,2))     # same as second.
+rep(1:4, c(2,1,2,1))
+rep(1:4, each = 2, len = 4)    # first 4 only.
+rep(1:4, each = 2, len = 10)   # 8 integers plus two recycled 1's.
+rep(1:4, each = 2, times = 3)  # length 24, 3 complete replications
+
+rep(1, 40*(1-.8)) # length 7 on most platforms
+rep(1, 40*(1-.8)+1e-7) # better
+
+## replicate a list
+fred &lt;- list(happy = 1:10, name = "squash")
+rep(fred, 5)
+
+# date-time objects
+x &lt;- .leap.seconds[1:3]
+rep(x, 2)
+rep(as.POSIXlt(x), rep(2, 3))
+
+## named factor
+x &lt;- factor(LETTERS[1:4]); names(x) &lt;- letters[1:4]
+x
+rep(x, 2)
+rep(x, each=2)
+rep.int(x, 2)  # no names
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

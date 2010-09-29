@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Graph Laplacian</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for graph.laplacian {igraph}"><tr><td>graph.laplacian {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Graph Laplacian</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The Laplacian of a graph.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+graph.laplacian(graph, normalized=FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>graph</code></td>
+<td>
+The input graph.</td></tr>
+<tr valign="top"><td><code>normalized</code></td>
+<td>
+Whether to calculate the normalized Laplacian. See
+definitions below.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The Laplacian Matrix of a graph is a symmetric matrix having
+the same number of rows and columns as the number of vertices in the
+graph and element (i,j) is d[i], the degree of vertex i if if i==j,
+-1 if i!=j and there is an edge between vertices i and j and 0
+otherwise.
+</p>
+<p>
+A normalized version of the Laplacian Matrix is similar: element (i,j)
+is 1 if i==j, -1/sqrt(d[i] d[j]) if i!=j and there is an edge between
+vertices i and j and 0 otherwise.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+g &lt;- graph.ring(10)
+graph.laplacian(g)
+graph.laplacian(g, norm=TRUE)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

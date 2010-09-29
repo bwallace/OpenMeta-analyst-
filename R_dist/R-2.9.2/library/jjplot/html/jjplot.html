@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: The workhorse plotting function for the jjplot plotting library.</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for jjplot {jjplot}"><tr><td>jjplot {jjplot}</td><td align="right">R Documentation</td></tr></table>
+<h2>The workhorse plotting function for the jjplot plotting library.</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This is the main entry point for generating plots via the jjplot
+library.   It is called by specifying a data frame on which
+to operate, along with a formula which defines aesthetic mappings
+along with a tree of statistic and geometry commands.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+jjplot(f, data = NULL, color = NULL,
+       fill = NULL, size = NULL, alpha = 1.0,
+       log.x = FALSE, log.y = FALSE,
+       xlab = NULL, ylab = NULL,
+       expand = c(0.04, 0.04),
+       color.scale = NULL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>f</code></td>
+<td>
+A formula specifying mappings for x and y aesthetics, as well as the
+statistic and geometry commands.  See details. 
+</td></tr>
+<tr valign="top"><td><code>data</code></td>
+<td>
+A data frame in whose scope the data expressions (i.e., <code>f</code>)
+should be evaluated. 
+</td></tr>
+<tr valign="top"><td><code>color</code></td>
+<td>
+The expression to map to the color aesthetic.
+</td></tr>
+<tr valign="top"><td><code>fill</code></td>
+<td>
+The expression to map to the fill aesthetic.
+</td></tr>
+<tr valign="top"><td><code>size</code></td>
+<td>
+The expression to map to the size aesthetic.
+</td></tr>
+<tr valign="top"><td><code>alpha</code></td>
+<td>
+A constant numeric value with which to specify the alpha blending
+used on color and fill scales.
+</td></tr>
+<tr valign="top"><td><code>log.x</code></td>
+<td>
+Use a logarithmic x scale.
+</td></tr>
+<tr valign="top"><td><code>log.y</code></td>
+<td>
+Use a logarithmic y scale.
+</td></tr>
+<tr valign="top"><td><code>xlab</code></td>
+<td>
+When specified, this overrides the default label for the x axis.
+</td></tr>
+<tr valign="top"><td><code>ylab</code></td>
+<td>
+When specified, this overrides the default label for the y axis.
+</td></tr>
+<tr valign="top"><td><code>expand</code></td>
+<td>
+A length-2 numeric vector.  The axes are guaranteed to
+contain the range of the data plus a fraction of the data range
+specified by this parameter.  The default simulates the default
+behavior of R's base plotting functions.  </td></tr>
+<tr valign="top"><td><code>color.scale</code></td>
+<td>
+A function which maps values between 0 and 1 to colors.  If
+specified this color scale will override the default automatically
+generated color scale.
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The formula is specified by placing the optional y aesthetic to the
+left of the '~' and the x aesthetic as 
+the first term (rightmost) of the formula.  Layers are subsequently
+evaluated from right to left, separated by '+'.  Parentheses are
+grouping operators for layers.  Statistics can be applied using the
+':' operator, with the statistic on the right hand side and operations
+depending on the statistic on the left hand side.
+</p>
+<p>
+Full up-to-date documentation with examples can be found at:
+<a href="http://code.google.com/p/jjplot/wiki/Documentation">http://code.google.com/p/jjplot/wiki/Documentation</a>
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+The function is called only for its side effect (namely, a plot!).</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Jonathan Chang &lt;jcone@princeton.edu&gt;
+Eytan Bakshy &lt;ebakshy@gmail.com&gt;
+</p>
+
+
+<h3>References</h3>
+
+<p>
+<a href="http://code.google.com/p/jjplot/wiki/Documentation">http://code.google.com/p/jjplot/wiki/Documentation</a>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+ ## See the demos for example usages.
+ ## Not run: demo(jjplot)
+
+ ## See the following demo for speed tests.
+ ## Not run: demo(jjplot.performance)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>jjplot</em> version 0.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

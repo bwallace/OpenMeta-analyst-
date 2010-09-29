@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: 1-D Scatter Plots</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for stripchart {graphics}"><tr><td>stripchart {graphics}</td><td align="right">R Documentation</td></tr></table>
+<h2>1-D Scatter Plots</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>stripchart</code> produces one dimensional scatter plots (or dot
+plots) of the given data.  These plots are a good alternative to
+<code><a href="boxplot.html">boxplot</a></code>s when sample sizes are small.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+stripchart(x, ...)
+
+## S3 method for class 'formula':
+stripchart(x, data = NULL, dlab = NULL, ...,
+           subset, na.action = NULL)
+
+## Default S3 method:
+stripchart(x, method = "overplot", jitter = 0.1, offset = 1/3,
+           vertical = FALSE, group.names, add = FALSE,
+           at = NULL, xlim = NULL, ylim = NULL,
+           ylab=NULL, xlab=NULL, dlab="", glab="",
+           log = "", pch = 0, col = par("fg"), cex = par("cex"), 
+           axes = TRUE, frame.plot = axes, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+the data from which the plots are to be produced.  In the default
+method the data can be specified as a single numeric vector, or as list of numeric
+vectors, each corresponding to a component plot.  In the <code>formula</code> 
+method, a symbolic specification of the form <code>y ~ g</code> can be given,
+indicating the observations in the vector <code>y</code> are to be
+grouped according to the levels of the factor <code>g</code>. <code>NA</code>s
+are allowed in the data.</td></tr>
+<tr valign="top"><td><code>data</code></td>
+<td>
+a data.frame (or list) from which the variables in
+<code>x</code> should be taken.</td></tr>
+<tr valign="top"><td><code>subset</code></td>
+<td>
+an optional vector specifying a subset of observations
+to be used for plotting.</td></tr>
+<tr valign="top"><td><code>na.action</code></td>
+<td>
+a function which indicates what should happen
+when the data contain <code>NA</code>s.  The default is to ignore missing
+values in either the response or the group.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+additional parameters passed to the default method, or by
+it to <code>plot</code>, <code>axis</code> and <code>title</code> to control the
+appearance of the plot.</td></tr>
+<tr valign="top"><td><code>method</code></td>
+<td>
+the method to be used to separate coincident points.
+The default method <code>"overplot"</code> causes such points to be
+overplotted, but it is also possible to specify <code>"jitter"</code> to
+jitter the points, or <code>"stack"</code> have coincident points
+stacked.  The last method only makes sense for very granular data.</td></tr>
+<tr valign="top"><td><code>jitter</code></td>
+<td>
+when <code>method="jitter"</code> is used, <code>jitter</code>
+gives the amount of jittering applied.</td></tr>
+<tr valign="top"><td><code>offset</code></td>
+<td>
+when stacking is used, points are stacked this many
+line-heights (symbol widths) apart.</td></tr>
+<tr valign="top"><td><code>vertical</code></td>
+<td>
+when vertical is <code>TRUE</code> the plots are drawn
+vertically rather than the default horizontal.</td></tr>
+<tr valign="top"><td><code>group.names</code></td>
+<td>
+group labels which will be printed alongside
+(or underneath) each plot.</td></tr>
+<tr valign="top"><td><code>add</code></td>
+<td>
+logical, if true <EM>add</EM> the chart to the current plot.</td></tr>
+<tr valign="top"><td><code>at</code></td>
+<td>
+numeric vector giving the locations where the charts should
+be drawn, particularly when <code>add = TRUE</code>;
+defaults to <code>1:n</code> where <code>n</code> is the number of boxes.</td></tr>
+<tr valign="top"><td><code>ylab, xlab</code></td>
+<td>
+labels: see <code><a href="title.html">title</a></code>.</td></tr>
+<tr valign="top"><td><code>dlab, glab</code></td>
+<td>
+alternate way to specify axis labels: see &lsquo;Details&rsquo;.</td></tr>
+<tr valign="top"><td><code>xlim, ylim</code></td>
+<td>
+plot limits: see <code><a href="plot.window.html">plot.window</a></code>.</td></tr>
+<tr valign="top"><td><code>log</code></td>
+<td>
+on which axes to use a log scale:  see 
+<code><a href="plotdefault.html">plot.default</a></code></td></tr>
+<tr valign="top"><td><code>pch, col, cex</code></td>
+<td>
+Graphical parameters: see <code><a href="par.html">par</a></code>.</td></tr>
+<tr valign="top"><td><code>axes, frame.plot</code></td>
+<td>
+Axis control:  see <code><a href="plotdefault.html">plot.default</a></code></td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Extensive examples of the use of this kind of plot can be found in
+Box, Hunter and Hunter or Seber and Wild.
+</p>
+<p>
+The <code>dlab</code> and <code>glab</code> labels may be used instead of <code>xlab</code>
+and <code>ylab</code> if those are not specified.  <code>dlab</code> applies to the 
+continuous data axis (the X axis unless <code>vertical</code> is <code>TRUE</code>),
+<code>glab</code> to the group axis.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+x &lt;- stats::rnorm(50)
+xr &lt;- round(x, 1)
+stripchart(x) ; m &lt;- mean(par("usr")[1:2])
+text(m, 1.04, "stripchart(x, \"overplot\")")
+stripchart(xr, method = "stack", add = TRUE, at = 1.2)
+text(m, 1.35, "stripchart(round(x,1), \"stack\")")
+stripchart(xr, method = "jitter", add = TRUE, at = 0.7)
+text(m, 0.85, "stripchart(round(x,1), \"jitter\")")
+
+stripchart(decrease ~ treatment,
+    main = "stripchart(OrchardSprays)", 
+    vertical = TRUE, log = "y", data = OrchardSprays)
+
+stripchart(decrease ~ treatment, at = c(1:8)^2,
+    main = "stripchart(OrchardSprays)", 
+    vertical = TRUE, log = "y", data = OrchardSprays)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>graphics</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

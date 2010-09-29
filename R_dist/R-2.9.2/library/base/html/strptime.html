@@ -1,0 +1,345 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Date-time Conversion Functions to and from Character</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for strptime {base}"><tr><td>strptime {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Date-time Conversion Functions to and from Character</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Functions to convert between character representations and objects of
+classes <code>"POSIXlt"</code> and <code>"POSIXct"</code> representing calendar
+dates and times.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'POSIXct':
+format(x, format = "", tz = "", usetz = FALSE, ...)
+## S3 method for class 'POSIXlt':
+format(x, format = "", usetz = FALSE, ...)
+
+## S3 method for class 'POSIXt':
+as.character(x, ...)
+
+strftime(x, format="", tz = "", usetz = FALSE, ...)
+strptime(x, format, tz = "")
+
+ISOdatetime(year, month, day, hour, min, sec, tz = "")
+ISOdate(year, month, day, hour = 12, min = 0, sec = 0, tz = "GMT")
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+An object to be converted.</td></tr>
+<tr valign="top"><td><code>tz</code></td>
+<td>
+A timezone specification to be used for the conversion.
+System-specific (see <code><a href="as.POSIXlt.html">as.POSIXlt</a></code>), but <code>""</code> is the
+current time zone, and <code>"GMT"</code> is UTC.</td></tr>
+<tr valign="top"><td><code>format</code></td>
+<td>
+A character string.  The default is
+<code>"%Y-%m-%d %H:%M:%S"</code> if any component has a time
+component which is not midnight, and <code>"%Y-%m-%d"</code>
+otherwise.  If <code><a href="options.html">options</a>("digits.secs")</code> is set, up to
+the specified number of digits will be printed for seconds.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+Further arguments to be passed from or to other methods.</td></tr>
+<tr valign="top"><td><code>usetz</code></td>
+<td>
+logical.  Should the timezone be appended to the output?
+This is used in printing times, and as a workaround for problems with
+using <code>"%Z"</code> on most Linux systems.</td></tr>
+<tr valign="top"><td><code>year, month, day</code></td>
+<td>
+numerical values to specify a day.</td></tr>
+<tr valign="top"><td><code>hour, min, sec</code></td>
+<td>
+numerical values for a time within a day.
+Fractional seconds are allowed.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The <code>format</code> and <code>as.character</code> methods and <code>strftime</code>
+convert objects from the classes <code>"POSIXlt"</code> and <code>"POSIXct"</code>
+(not <code>strftime</code>) to character vectors.
+</p>
+<p>
+<code>strptime</code> converts character strings to class <code>"POSIXlt"</code>:
+its input <code>x</code> is first coerced to character if necessary.  Each
+string is processed as far as necessary for the format specified: any
+trailing characters are ignored.
+</p>
+<p>
+<code>strftime</code> is a wrapper for <code>format.POSIXlt</code>, and it and
+<code>format.POSIXct</code> first converts to class <code>"POSIXlt"</code> by
+calling <code><a href="as.POSIXlt.html">as.POSIXlt</a></code>.  Note that only that conversion
+depends on the time zone.
+</p>
+<p>
+The usual vector re-cycling rules are applied to <code>x</code> and
+<code>format</code> so the answer will be of length that of the longer of the
+vectors.
+</p>
+<p>
+Locale-specific conversions to and from character strings are used
+where appropriate and available.  This affects the names of the days
+and months, the AM/PM indicator (if used) and the separators in
+formats such as <code>%x</code> and <code>%X</code> (via the setting of the
+<code>LC_TIME</code> locale category).
+</p>
+<p>
+The details of the formats are system-specific, but the following are
+defined by the ISO C / POSIX standard for <code>strftime</code> and are
+likely to be widely available.  A <EM>conversion specification</EM> is
+introduced by <code>%</code>, usually followed by a single letter or
+<code>O</code> or <code>E</code> and then a single letter.
+Any character in the format string not part of a conversion specification
+is interpreted literally (and <code>%%</code> gives <code>%</code>).  Widely
+implemented conversion specifications include
+<dl>
+<dt><code>%a</code></dt><dd>Abbreviated weekday name in the current
+locale. (Also matches full name on input.)</dd>
+<dt><code>%A</code></dt><dd>Full weekday name in the current locale.  (Also
+matches abbreviated name on input.)</dd>
+<dt><code>%b</code></dt><dd>Abbreviated month name in the current
+locale. (Also matches full name on input.)</dd>
+<dt><code>%B</code></dt><dd>Full month name in the current locale.  (Also
+matches abbreviated name on input.)</dd>
+<dt><code>%c</code></dt><dd>Date and time, locale-specific.</dd>
+<dt><code>%d</code></dt><dd>Day of the month as decimal number (01&ndash;31).</dd>
+<dt><code>%H</code></dt><dd>Hours as decimal number (00&ndash;23).</dd>
+<dt><code>%I</code></dt><dd>Hours as decimal number (01&ndash;12).</dd>
+<dt><code>%j</code></dt><dd>Day of year as decimal number (001&ndash;366).</dd>
+<dt><code>%m</code></dt><dd>Month as decimal number (01&ndash;12).</dd>
+<dt><code>%M</code></dt><dd>Minute as decimal number (00&ndash;59).</dd>
+<dt><code>%p</code></dt><dd>AM/PM indicator in the locale.  Used in
+conjunction with <code>%I</code> and <B>not</B> with <code>%H</code>.  An
+empty string in some locales.</dd>
+<dt><code>%S</code></dt><dd>Second as decimal number (00&ndash;61), allowing for
+up to two leap-seconds (but POSIX-compliant OSes will ignore leap
+seconds).</dd>
+<dt><code>%U</code></dt><dd>Week of the year as decimal number (00&ndash;53) using
+Sunday as the first day 1 of the week (and typically with the
+first Sunday of the year as day 1 of week 1).  The US convention.</dd>
+<dt><code>%w</code></dt><dd>Weekday as decimal number (0&ndash;6, Sunday is 0).</dd>
+<dt><code>%W</code></dt><dd>Week of the year as decimal number (00&ndash;53) using
+Monday as the first day of week (and typically with the
+first Monday of the year as day 1 of week 1). The UK convention.</dd>
+<dt><code>%x</code></dt><dd>Date, locale-specific.</dd>
+<dt><code>%X</code></dt><dd>Time, locale-specific.</dd>
+<dt><code>%y</code></dt><dd>Year without century (00&ndash;99). If you use this on
+input, which century you get is system-specific.  So don't!  Often
+values up to 68 (or 69) are prefixed by 20 and 69 (or 70) to 99 by 19.</dd>
+<dt><code>%Y</code></dt><dd>Year with century.</dd>
+<dt><code>%z</code>, <code>%Z</code></dt><dd>(output only.)  Time zone as a character
+string (empty if not available).  For <code>%z</code> this differs
+from POSIX.  Also, this is done by a Windows C function and so
+will use Windows' idea of the timezone names, not that used by
+other date-time functions.</dd>
+</dl>
+<p>
+Where leading zeros are shown they will be used on output but are
+optional on input.
+Windows allows the modifier <code>#</code> in conversion specifications for
+output: <code>%#c</code> and <code>%#x</code> use longer forms, and for
+<code>dHIjmMSUwWyY</code> leading zeros are suppressed.
+</p>
+<p>
+Also defined in the current standards but less widely implemented
+(e.g. not for output on Windows) are
+<dl>
+<dt><code>%C</code></dt><dd>Century (00&ndash;99): the integer part of the year
+divided by 100.</dd>
+<dt><code>%D</code></dt><dd>Locale-specific date format such as
+<code>%m/%d/%y</code>: ISO C99 says it should be that exact format.</dd>
+<dt><code>%e</code></dt><dd>Day of the month as decimal number (1&ndash;31), with
+a leading space for a single-digit number.</dd>
+<dt><code>%F</code></dt><dd>Equivalent to %Y-%m-%d (the ISO 8601 date
+format).</dd>
+<dt><code>%g</code></dt><dd>The last two digits of the week-based year
+(see <code>%V</code>).  (Typically accepted but ignored on input.)</dd>
+<dt><code>%G</code></dt><dd>The week-based year (see <code>%V</code>) as a decimal
+number.  (Typically accepted but ignored on input.)</dd>
+<dt><code>%h</code></dt><dd>Equivalent to <code>%b</code>.</dd>
+<dt><code>%k</code></dt><dd>The 24-hour clock time with single digits preceded
+by a blank.</dd>
+<dt><code>%l</code></dt><dd>The 12-hour clock time with single digits preceded
+by a blank.</dd>
+<dt><code>%n</code></dt><dd>Newline on output, arbitrary whitespace on input.</dd>
+<dt><code>%r</code></dt><dd>The 12-hour clock time (using the locale's AM or PM).</dd>
+<dt><code>%R</code></dt><dd>Equivalent to <code>%H:%M</code>.</dd>
+<dt><code>%t</code></dt><dd>Tab on output, arbitrary whitespace on input.</dd>
+<dt><code>%T</code></dt><dd>Equivalent to <code>%H:%M:%S</code>.</dd>
+<dt><code>%u</code></dt><dd>Weekday as a decimal number (1&ndash;7, Monday is 1).</dd>
+<dt><code>%V</code></dt><dd>Week of the year as decimal number (00&ndash;53) as
+defined in ISO 8601.
+If the week (starting on Monday) containing 1 January has four or
+more days in the new year, then it is considered week 1.  Otherwise, it
+is the last week of the previous year, and the next week is week
+1.  (Typically accepted but ignored on input.)</dd>
+</dl>
+<p>
+For output (and possibly input) there are also <code>%O[dHImMUVwWy]</code>
+which may emit numbers in an alternative locale-dependent format
+(e.g. roman numerals), and <code>%E[cCyYxX]</code> which can use an
+alternative &lsquo;era&rsquo; (e.g. a different religious calendar).  Which
+of these are supported is OS-dependent.
+</p>
+<p>
+Specific to <font face="Courier New,Courier" color="#666666"><b>R</b></font> is <code>%OSn</code>, which for output gives the
+seconds to <code>0 &lt;= n &lt;= 6</code> decimal places (and if <code>%OS</code> is
+not followed by a digit, it uses the setting of
+<code><a href="options.html">getOption</a>("digits.secs")</code>, or if that is unset, <code>n = 3</code>).
+Further, for <code>strptime</code> <code>%OS</code> will input seconds including
+fractional seconds.  Note that <code>%S</code> ignores (and not rounds)
+fractional parts on output.
+</p>
+<p>
+The behaviour of other conversion specifications (and even if other
+character sequences commencing with <code>%</code> <EM>are</EM> conversion
+specifications) is system-specific.
+For output on Windows, a conversion specification is <code>%</code>
+optionally followed by <code>#</code> and then by a single letter.  Any
+conversion specification which is unimplemented is ignored.
+</p>
+<p>
+<code>ISOdatetime</code> and <code>ISOdate</code> are convenience wrappers for
+<code>strptime</code>, that differ only in their defaults and that
+<code>ISOdate</code> sets a timezone.  (For dates without times it would be
+better to use the <code>"<a href="Dates.html">Date</a>"</code> class.)
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+The <code>format</code> methods and <code>strftime</code> return character vectors
+representing the time.  <code>NA</code> times are returned as <code>NA_character_</code>.
+<br>
+<code>strptime</code> turns character representations into an object of
+class <code>"<a href="DateTimeClasses.html">POSIXlt</a>"</code>.  The timezone is used to set the
+<code>isdst</code> component and to set the <code>"tzone"</code> attribute if
+<code>tz != ""</code>.
+<br>
+<code>ISOdatetime</code> and <code>ISOdate</code> return an object of class
+<code>"<a href="DateTimeClasses.html">POSIXct</a>"</code>.</p>
+
+<h3>Note</h3>
+
+<p>
+The default formats follow the rules of the ISO 8601 international
+standard which expresses a day as <code>"2001-02-28"</code> and a time as
+<code>"14:01:02"</code> using leading zeroes as here.  The ISO form uses no
+space to separate dates and times.
+</p>
+<p>
+If the date string does not specify the date completely, the returned
+answer may be system-specific.  The most common behaviour is to assume
+that unspecified seconds, minutes or hours are zero, and a missing
+year, month or day is the current one.  If it specifies a date
+incorrectly, reliable implementations will give an error and the date
+is reported as <code>NA</code>.  Unfortunately some common implementations
+(such as <span class="samp">glibc</span>) are unreliable and guess at the intended meaning.
+</p>
+<p>
+If the timezone specified is invalid on your system, what happens is
+system-specific but it will probably be ignored.
+</p>
+<p>
+OS facilities will probably not print years before 1CE (aka 1AD)
+correctly.
+</p>
+<p>
+Remember that in most timezones some times do not occur and some occur
+twice because of transitions to/from summer time.  What happens in
+those cases is OS-specific.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+International Organization for Standardization (2004, 1988, 1997,
+...)
+<EM>ISO 8601. Data elements and interchange formats &ndash;
+Information interchange &ndash; Representation of dates and times.</EM>
+For links to versions available on-line see (at the time of writing)
+<a href="http://www.qsl.net/g1smd/isopdf.htm">http://www.qsl.net/g1smd/isopdf.htm</a>; for information on the
+current official version, see
+<a href="http://www.iso.org/iso/en/prods-services/popstds/datesandtime.html">http://www.iso.org/iso/en/prods-services/popstds/datesandtime.html</a>.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<a href="DateTimeClasses.html">DateTimeClasses</a> for details of the date-time classes;
+<code><a href="locales.html">locales</a></code> to query or set a locale.
+</p>
+<p>
+Your system's help pages on <code>strftime</code> and <code>strptime</code> to
+see how to specify their formats.
+Windows users will find no help page for <code>strptime</code>: code based
+on <span class="samp">glibc</span> is used (with corrections), so all the conversion
+specifications described here are supported, but with no alternative
+number representation nor era available in any locale.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## locale-specific version of date()
+format(Sys.time(), "%a %b %d %X %Y %Z")
+
+## time to sub-second accuracy (if supported by the OS)
+format(Sys.time(), "%H:%M:%OS3")
+
+## read in date info in format 'ddmmmyyyy'
+## This will give NA(s) in some locales; setting the C locale
+## as in the commented lines will overcome this on most systems.
+## lct &lt;- Sys.getlocale("LC_TIME"); Sys.setlocale("LC_TIME", "C")
+x &lt;- c("1jan1960", "2jan1960", "31mar1960", "30jul1960")
+z &lt;- strptime(x, "%d%b%Y")
+## Sys.setlocale("LC_TIME", lct)
+z
+
+## read in date/time info in format 'm/d/y h:m:s'
+dates &lt;- c("02/27/92", "02/27/92", "01/14/92", "02/28/92", "02/01/92")
+times &lt;- c("23:03:20", "22:29:56", "01:03:30", "18:21:03", "16:56:26")
+x &lt;- paste(dates, times)
+strptime(x, "%m/%d/%y %H:%M:%S")
+
+## time with fractional seconds
+z &lt;- strptime("20/2/06 11:16:16.683", "%d/%m/%y %H:%M:%OS")
+z # prints without fractional seconds
+op &lt;- options(digits.secs=3)
+z
+options(op)
+
+## timezones are not portable, but 'EST5EDT' comes pretty close.
+(x &lt;- strptime(c("2006-01-08 10:07:52", "2006-08-07 19:33:02"),
+               "%Y-%m-%d %H:%M:%S", tz="EST5EDT"))
+attr(x, "tzone")
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

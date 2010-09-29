@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Girth of a graph</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for girth {igraph}"><tr><td>girth {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Girth of a graph</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The girth of a graph is the length of the shortest circle
+in it.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+girth(graph, circle=TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>graph</code></td>
+<td>
+The input graph. It may be directed, but the algorithm
+searches for undirected circles anyway.</td></tr>
+<tr valign="top"><td><code>circle</code></td>
+<td>
+Logical scalar, whether to return the shortest circle
+itself.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The current implementation works for undirected graphs only, 
+directed graphs are treated as undirected graphs. Loop edges and
+multiple edges are ignored.
+If the graph is a forest (ie. acyclic), then zero is returned.
+</p>
+<p>
+This implementation is based on Alon Itai and Michael Rodeh:
+Finding a minimum circuit in a graph
+<EM>Proceedings of the ninth annual ACM symposium on Theory of
+computing</EM>, 1-10, 1977. The first implementation of this
+function was done by Keith Briggs, thanks Keith.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A named list with two components:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>girth</code></td>
+<td>
+Integer constant, the girth of the graph, or 0 if the
+graph is acyclic.</td></tr>
+<tr valign="top"><td><code>circle</code></td>
+<td>
+Numeric vector with the vertex ids in the shortest
+circle.</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Alon Itai and Michael Rodeh: Finding a minimum circuit in a graph 
+<EM>Proceedings of the ninth annual ACM symposium on Theory of 
+computing</EM>, 1-10, 1977
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+# No circle in a tree
+g &lt;- graph.tree(1000, 3)
+girth(g)
+
+# The worst case running time is for a ring
+g &lt;- graph.ring(100)
+girth(g)
+
+# What about a random graph?
+g &lt;- erdos.renyi.game(1000, 1/1000)
+girth(g)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

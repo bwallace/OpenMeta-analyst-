@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Report the Space Allocated for an Object</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for object.size {gdata}"><tr><td>object.size {gdata}</td><td align="right">R Documentation</td></tr></table>
+<h2>Report the Space Allocated for an Object</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Provides an estimate of the memory that is being used to store an <font face="Courier New,Courier" color="#666666"><b>R</b></font> object.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+object.size(...)
+
+## S3 method for class 'object_size':
+print(x, quote=FALSE, humanReadable, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>...</code></td>
+<td>
+<code>object.size</code>: <font face="Courier New,Courier" color="#666666"><b>R</b></font> objects; <code>print</code>; arguments 
+to be passed to or from other methods.</td></tr>
+<tr valign="top"><td><code>x</code></td>
+<td>
+output from <code>object.size</code></td></tr>
+<tr valign="top"><td><code>quote</code></td>
+<td>
+logical, indicating whether or not the result should be
+printed with surrounding quotes.</td></tr>
+<tr valign="top"><td><code>humanReadable</code></td>
+<td>
+logical, use the &ldquo;human readable&rdquo; format.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This is a modified copy from the utils package in R as fo 2008-12-15.
+</p>
+<p>
+Exactly which parts of the memory allocation should be attributed to
+which object is not clear-cut.  This function merely provides a rough
+indication: it should be reasonably accurate for atomic vectors, but
+does not detect if elements of a list are shared, for example.
+(Sharing amongst elements of a character vector is taken into account,
+but not that between character vectors in a single object.)
+</p>
+<p>
+The calculation is of the size of the object, and excludes the space
+needed to store its name in the symbol table.
+</p>
+<p>
+Associated space (e.g. the environment of a function and what the
+pointer in a <code>EXTPTRSXP</code> points to) is not included in the
+calculation.
+</p>
+<p>
+Object sizes are larger on 64-bit platforms than 32-bit ones, but will
+very likely be the same on different platforms with the same word
+length and pointer size.
+</p>
+<p>
+Class of returned object is <code>c("byte", "numeric")</code> with
+appropriate <code>print</code> and <code>c</code> methods.
+</p>
+<p>
+By default <code>object.size</code> outputs size in bytes, but human
+readable format similar to <code>ls</code>, <code>df</code> or <code>du</code> shell
+commands can be invoked with <code>options(humanReadable=TRUE)</code>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+An object of class <code>"object.size"</code> with a length-one double value,
+an estimate of the memory allocation attributable to the object in bytes.</p>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../base/html/Memory-limits.html">Memory-limits</a></code> for the design limitations on object size.
+<code><a href="humanReadable.html">humanReadable</a></code> for human readable format.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+object.size(letters)
+object.size(ls)
+## find the 10 largest objects in the base package
+z &lt;- sapply(ls("package:base"), function(x)
+            object.size(get(x, envir = baseenv())))
+(tmp &lt;- as.matrix(rev(sort(z))[1:10]))
+
+as.object_size(14567567)
+options(humanReadable=TRUE)
+(z &lt;- object.size(letters, c(letters, letters), rep(letters, 100), rep(letters, 10000)))
+is.object_size(z)
+as.object_size(14567567)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>gdata</em> version 2.6.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Add a Saddlepoint Approximation to a Plot</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for lines.saddle.distn {boot}"><tr><td>lines.saddle.distn {boot}</td><td align="right">R Documentation</td></tr></table>
+<h2>Add a Saddlepoint Approximation to a Plot</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This function adds a line corresponding to a saddlepoint density or 
+distribution function approximation to the current plot.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'saddle.distn':
+lines(x, dens = TRUE, h = function(u) u, J = function(u) 1, 
+     npts = 50, lty = 1, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+An object of class <code>"saddle.distn"</code>  (see
+<code><a href="saddle.distn.object.html">saddle.distn.object</a></code> representing a saddlepoint
+approximation to a distribution.
+</td></tr>
+<tr valign="top"><td><code>dens</code></td>
+<td>
+A logical variable indicating whether the saddlepoint density
+(<code>TRUE</code>; the default) or the saddlepoint distribution function
+(<code>FALSE</code>) should be plotted.
+</td></tr>
+<tr valign="top"><td><code>h</code></td>
+<td>
+Any transformation of the variable that is required.  Its first argument
+must be the value at which the approximation is being performed and the
+function must be vectorized.
+</td></tr>
+<tr valign="top"><td><code>J</code></td>
+<td>
+When <code>dens=TRUE</code> this function specifies the Jacobian for any
+transformation that may be necessary.  The first argument of <code>J</code>
+must the value at which the approximation is being performed and the
+function must be vectorized. If <code>h</code> is supplied <code>J</code> must
+also be supplied and both must have the same argument list.
+</td></tr>
+<tr valign="top"><td><code>npts</code></td>
+<td>
+The number of points to be used for the plot.  These points will be evenly
+spaced over the range of points used in finding the saddlepoint
+approximation.
+</td></tr>
+<tr valign="top"><td><code>lty</code></td>
+<td>
+The line type to be used.
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+Any additional arguments to <code>h</code> and <code>J</code>.
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The function uses <code>smooth.spline</code> to produce the saddlepoint
+curve.  When <code>dens=TRUE</code> the spline is on the log scale and when
+<code>dens=FALSE</code> it is on the probit scale.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>sad.d</code> is returned invisibly.</p>
+
+<h3>Side Effects</h3>
+
+<p>
+A line is added to the current plot.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Davison, A.C. and Hinkley, D.V. (1997) 
+<EM>Bootstrap Methods and Their Application</EM>. Cambridge University Press.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="saddle.distn.html">saddle.distn</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+# In this example we show how a plot such as that in Figure 9.9 of
+# Davison and Hinkley (1997) may be produced.  Note the large number of
+# bootstrap replicates required in this example.
+expdata &lt;- rexp(12)
+vfun &lt;- function(d, i) 
+{    n &lt;- length(d)
+     (n-1)/n*var(d[i])
+}
+exp.boot &lt;- boot(expdata,vfun, R = 9999)
+exp.L &lt;- (expdata-mean(expdata))^2 - exp.boot$t0
+exp.tL &lt;- linear.approx(exp.boot, L = exp.L)
+hist(exp.tL, nclass = 50, prob = TRUE)
+exp.t0 &lt;- c(0,sqrt(var(exp.boot$t)))
+exp.sp &lt;- saddle.distn(A = exp.L/12,wdist = "m", t0 = exp.t0)
+
+# The saddlepoint approximation in this case is to the density of
+# t-t0 and so t0 must be added for the plot.
+lines(exp.sp,h = function(u,t0) u+t0, J = function(u,t0) 1,
+      t0 = exp.boot$t0)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>boot</em> version 1.2-38 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

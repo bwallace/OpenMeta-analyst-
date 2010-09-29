@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Is an Object a Language Object?</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for is.language {base}"><tr><td>is.language {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Is an Object a Language Object?</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>is.language</code> returns <code>TRUE</code> if <code>x</code> is a
+variable <code><a href="name.html">name</a></code>, a <code><a href="call.html">call</a></code>, or an
+<code><a href="expression.html">expression</a></code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+is.language(x)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+object to be tested.</td></tr>
+</table>
+
+<h3>Note</h3>
+
+<p>
+This is a <a href="Primitive.html">primitive</a> function.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+<EM>The New S Language</EM>.
+Wadsworth &amp; Brooks/Cole.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+ll &lt;- list(a = expression(x^2 - 2*x + 1), b = as.name("Jim"),
+           c = as.expression(exp(1)), d = call("sin", pi))
+sapply(ll, typeof)
+sapply(ll, mode)
+stopifnot(sapply(ll, is.language))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

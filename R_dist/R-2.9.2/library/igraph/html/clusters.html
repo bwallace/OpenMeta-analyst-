@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Connected components of a graph</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for clusters {igraph}"><tr><td>clusters {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Connected components of a graph</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Calculate the maximal (weakly or strongly) 
+connected components of a graph
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+is.connected(graph, mode=c("weak", "strong"))
+clusters(graph, mode=c("weak", "strong"))
+no.clusters(graph, mode=c("weak", "strong"))
+cluster.distribution(graph, cumulative = FALSE, mul.size = FALSE, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>graph</code></td>
+<td>
+The graph to analyze.</td></tr>
+<tr valign="top"><td><code>mode</code></td>
+<td>
+Character string, either &ldquo;weak&rdquo; or &ldquo;strong&rdquo;.
+For directed graphs &ldquo;weak&rdquo; implies weakly, &ldquo;strong&rdquo;
+strongly connected components to search. It is ignored for
+undirected graphs.</td></tr>
+<tr valign="top"><td><code>cumulative</code></td>
+<td>
+Logical, if TRUE the cumulative distirubution
+(relative frequency) is calculated.</td></tr>
+<tr valign="top"><td><code>mul.size</code></td>
+<td>
+Logical. If TRUE the relative frequencies will be
+multiplied by the cluster sizes.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+Additional attributes to pass to <code>cluster</code>, right
+now only <code>mode</code> makes sense.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>is.connected</code> decides whether the graph is weakly or strongly
+connected.
+</p>
+<p>
+<code>clusters</code> finds the maximal (weakly or strongly) connected
+components of a graph.
+</p>
+<p>
+<code>no.clusters</code> does almost the same as <code>clusters</code> but returns
+only the number of clusters found instead of returning the actual
+clusters.
+</p>
+<p>
+<code>cluster.distribution</code> creates a histogram for the maximal
+connected component sizes.
+</p>
+<p>
+Breadth-first search is conducted from each not-yet visited
+vertex.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+For <code>is.connected</code> a logical constant.
+<br>
+For <code>clusters</code> a named list with three components:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>membership</code></td>
+<td>
+numeric vector giving the cluster id to which each
+vertex belongs.</td></tr>
+<tr valign="top"><td><code>csize</code></td>
+<td>
+numeric vector giving the sizes of the clusters.</td></tr>
+<tr valign="top"><td><code>no</code></td>
+<td>
+numeric constant, the number of clusters.</td></tr>
+</table>
+<p>
+
+<br>
+For <code>no.clusters</code> an integer constant is returned.
+<br>
+For <code>cluster.distribution</code> a numeric vector with the relative
+frequencies. The length of the vector is the size of the largest
+component plus one. Note that (for currently unknown reasons) the
+first element of the vector is the number of clusters of size zero, so
+this is always zero.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="components.html">subcomponent</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+g &lt;- erdos.renyi.game(20, 1/20)
+clusters(g)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Read and write external matrix formats</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for externalFormats {Matrix}"><tr><td>externalFormats {Matrix}</td><td align="right">R Documentation</td></tr></table>
+<h2>Read and write external matrix formats</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Read matrices stored in the Harwell-Boeing or MatrixMarket formats
+or write sparseMatrix objects to one of these formats.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+readHB(file)
+readMM(file)
+writeMM(obj, file, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>obj</code></td>
+<td>
+a real sparse matrix</td></tr>
+<tr valign="top"><td><code>file</code></td>
+<td>
+for <code>writeMM</code> - the name of the file to be written.
+For <code>readHB</code> and <code>readMM</code> the name of the file to read, as
+a character scalar.  The names of files storing matrices in the
+Harwell-Boeing format usually end in <code>".rua"</code> or <code>".rsa"</code>.
+Those storing matrices in the MatrixMarket format usually end in
+<code>".mtx"</code>.
+<br>
+Alternatively, <code>readHB</code> and <code>readMM</code> accept connection objects.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+optional additional arguments. Currently none are used in
+any methods.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+The <code>readHB</code> and <code>readMM</code> functions return an object that
+inherits from the <code>"<a href="Matrix-class.html">Matrix</a>"</code> class.  Methods for the
+<code>writeMM</code> generic functions usually return
+<code><a href="../../base/html/NULL.html">NULL</a></code> and, as a side effect, the matrix <code>obj</code> is
+written to <code>file</code> in the MatrixMarket format (writeMM).</p>
+
+<h3>Note</h3>
+
+<p>
+The Harwell-Boeing format is older and less flexible than the
+MatrixMarket format.  The function <code>writeHB</code> was deprecated and
+has now been removed.  Please use <code>writeMM</code> instead.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+<a href="http://math.nist.gov/MatrixMarket">http://math.nist.gov/MatrixMarket</a>
+</p>
+<p>
+<a href="http://www.cise.ufl.edu/research/sparse/matrices">http://www.cise.ufl.edu/research/sparse/matrices</a>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+str(pores &lt;- readMM(system.file("external/pores_1.mtx",
+                                package = "Matrix")))
+str(utm &lt;- readHB(system.file("external/utm300.rua",
+                               package = "Matrix")))
+str(lundA &lt;- readMM(system.file("external/lund_a.mtx",
+                                package = "Matrix")))
+str(lundA &lt;- readHB(system.file("external/lund_a.rsa",
+                                package = "Matrix")))
+## Not run: 
+## NOTE: The following examples take quite some time
+## ----  even on a fast internet connection:
+if(FALSE) # the URL has been corrected, but we need an un-tar step!
+str(sm &lt;-
+ readHB(gzcon(url("http://www.cise.ufl.edu/research/sparse/RB/Boeing/msc00726.tar.gz"))))
+
+str(jgl009 &lt;-
+ readMM(gzcon(url("ftp://math.nist.gov/pub/MatrixMarket2/Harwell-Boeing/counterx/jgl009.mtx.gz"))))
+## End(Not run)
+data(KNex)
+writeMM(KNex$mm, "mmMM.mtx")
+</pre>
+
+
+
+<hr><div align="center">[Package <em>Matrix</em> version 0.999375-30 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

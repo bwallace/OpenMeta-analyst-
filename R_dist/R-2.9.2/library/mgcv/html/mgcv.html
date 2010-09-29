@@ -1,0 +1,249 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Multiple Smoothing Parameter Estimation by GCV or UBRE</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for mgcv {mgcv}"><tr><td>mgcv {mgcv}</td><td align="right">R Documentation</td></tr></table>
+<h2>Multiple Smoothing Parameter Estimation by GCV or UBRE</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Function to efficiently estimate smoothing parameters in Generalized
+Ridge Regression Problem with multiple (quadratic) penalties, by GCV 
+or UBRE. The function uses Newton's method in multi-dimensions, backed up by steepest descent to iteratively 
+adjust a set of relative smoothing parameters for each penalty. To ensure that the overall level of smoothing
+is optimal, and to guard against trapping by local minima, a highly efficient global minimisation with respect to 
+one overall smoothing parameter is also made at each iteration. This is the original Wood (2000) method. It has now 
+been superceded by the methods in <code><a href="magic.html">magic</a></code> (Wood, 2004) and <code><a href="gam.fit3.html">gam.fit3</a></code> (Wood, 2008).
+</p>
+<p>
+For a listing of all routines in the <code>mgcv</code> package type:<br>
+<code>library(help="mgcv")</code>. For an overview of the <code>mgcv</code> package see <code><a href="mgcv-package.html">mgcv-package</a></code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+mgcv(y,X,sp,S,off,C=NULL,w=rep(1,length(y)),H=NULL,
+     scale=1,gcv=TRUE,control=mgcv.control())
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>y</code></td>
+<td>
+The response data vector.</td></tr>
+<tr valign="top"><td><code>X</code></td>
+<td>
+The design matrix for the problem, note that <code>ncol(X)</code>
+must give the number of model parameters, while <code>nrow(X)</code> 
+should give the number of data.</td></tr>
+<tr valign="top"><td><code>sp</code></td>
+<td>
+An array of smoothing parameters. If <code>control$fixed==TRUE</code> then these are taken as being the 
+smoothing parameters. Otherwise any positive values are assumed to be initial estimates and negative values to
+signal auto-initialization.</td></tr>
+<tr valign="top"><td><code>S</code></td>
+<td>
+A list of penalty matrices. Only the smallest square block containing all non-zero matrix
+elements is actually stored, and <code>off[i]</code> indicates the element of the parameter vector that 
+<code>S[[i]][1,1]</code> relates to.</td></tr>
+<tr valign="top"><td><code>off</code></td>
+<td>
+Offset values indicating where in the overall parameter a particular stored penalty starts operating. 
+For example if <code>p</code> is the model parameter vector and <code>k=nrow(S[[i]])-1</code>, then the ith penalty is given by <br>
+<code>t(p[off[i]:(off[i]+k)])%*%S[[i]]%*%p[off[i]:(off[i]+k)]</code>.</td></tr>
+<tr valign="top"><td><code>C</code></td>
+<td>
+Matrix containing any linear equality constraints 
+on the problem (i.e. <i>C</i> in <i>Cp=0</i>).</td></tr>
+<tr valign="top"><td><code>w</code></td>
+<td>
+A vector of weights for the data (often proportional to the 
+reciprocal of the standard deviation of <code>y</code>). </td></tr>
+<tr valign="top"><td><code>H</code></td>
+<td>
+A single fixed penalty matrix to be used in place of the multiple 
+penalty matrices in <code>S</code>. <code>mgcv</code> cannot mix fixed and estimated penalties.</td></tr>
+<tr valign="top"><td><code>scale</code></td>
+<td>
+This is the known scale parameter/error variance to use with UBRE. 
+Note that it is assumed that the variance of <i>y_i</i> is 
+given by <i><code>scale</code>/w_i</i>.</td></tr>
+<tr valign="top"><td><code>gcv</code></td>
+<td>
+If <code>gcv</code> is TRUE then smoothing parameters are estimated by GCV,
+otherwise UBRE is used.</td></tr>
+<tr valign="top"><td><code>control</code></td>
+<td>
+A list of control options returned by <code><a href="mgcv.control.html">mgcv.control</a></code>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This is documentation for the code implementing the method described in section 
+4 of 
+Wood (2000) . The method is a computationally efficient means of applying GCV to 
+the 
+problem of smoothing parameter selection in generalized ridge regression problems 
+of 
+the form:
+</p><p align="center"><i>min ||W(Xp-y)||^2 rho + 
+lambda_1 p'S_1 p + lambda_1 p'S_2 p + . . .</i></p><p>
+possibly subject to constraints <i>Cp=0</i>. 
+<i>X</i> is a design matrix, <i>p</i> a parameter vector, 
+<i>y</i> a data vector, <i>W</i> a diagonal weight matrix,
+<i>S_i</i> a positive semi-definite matrix  of coefficients
+defining the ith penalty and <i>C</i> a matrix of coefficients 
+defining any linear equality constraints on the problem. The smoothing
+parameters are the <i>lambda_i</i> but there is an overall
+smoothing parameter <i>rho</i> as well. Note that <i>X</i>
+must be of full column rank, at least when projected  into the null space
+of any equality constraints.  
+</p>
+<p>
+The method operates by alternating very efficient direct searches for 
+<i>rho</i>
+with Newton or steepest descent updates of the logs of the <i>lambda_i</i>. 
+Because the GCV/UBRE scores are flat w.r.t. very large or very small <i>lambda_i</i>, 
+it's important to get good starting parameters, and to be careful not to step into a flat region
+of the smoothing parameter space. For this reason the algorithm rescales any Newton step that 
+would result in a <i>log(lambda_i)</i> change of more than 5. Newton steps are only used
+if the Hessian of the GCV/UBRE is postive definite, otherwise steepest descent is used. Similarly steepest 
+descent is used if the Newton step has to be contracted too far (indicating that the quadratic model 
+underlying Newton is poor). All initial steepest descent steps are scaled so that their largest component is
+1. However a step is calculated, it is never expanded if it is successful (to avoid flat portions of the objective), 
+but steps are successively halved if they do not decrease the GCV/UBRE score, until they do, or the direction is deemed to have 
+failed. <code>M$conv</code> provides some convergence diagnostics.
+</p>
+<p>
+The method is coded in <code>C</code> and is intended to be portable. It should be 
+noted that seriously ill conditioned problems (i.e. with close to column rank 
+deficiency in the design matrix) may cause problems, especially if weights vary 
+wildly between observations.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+An object is returned with the following elements:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>b</code></td>
+<td>
+The best fit parameters given the estimated smoothing parameters.</td></tr>
+<tr valign="top"><td><code>scale</code></td>
+<td>
+The estimated or supplied scale parameter/error variance.</td></tr>
+<tr valign="top"><td><code>score</code></td>
+<td>
+The UBRE or GCV score.</td></tr>
+<tr valign="top"><td><code>sp</code></td>
+<td>
+The estimated (or supplied) smoothing parameters (<i>lambda_i/rho</i>)</td></tr>
+<tr valign="top"><td><code>Vb</code></td>
+<td>
+Estimated covariance matrix of model parameters.</td></tr>
+<tr valign="top"><td><code>hat</code></td>
+<td>
+diagonal of the hat/influence matrix.</td></tr>
+<tr valign="top"><td><code>edf</code></td>
+<td>
+array of estimated degrees of freedom for each parameter.</td></tr>
+<tr valign="top"><td><code>info</code></td>
+<td>
+A list of convergence diagnostics, with the following elements:
+<ul>
+<dt>edf</dt><dd>Array of whole model estimated degrees of freedom.</dd>
+<dt>score</dt><dd>Array of ubre/gcv scores at the edfs for the final set of relative smoothing parameters.</dd>
+<dt>g</dt><dd>the gradient of the GCV/UBRE score w.r.t. the smoothing parameters at termination.</dd>
+<dt>h</dt><dd>the second derivatives corresponding to <code>g</code> above - i.e. the leading diagonal of the Hessian.</dd>
+<dt>e</dt><dd>the eigenvalues of the Hessian. These should all be non-negative!</dd>
+<dt>iter</dt><dd>the number of iterations taken.</dd>
+<dt>in.ok</dt><dd><code>TRUE</code> if the second smoothing parameter guess improved the GCV/UBRE score. (Please report examples 
+where this is <code>FALSE</code>)</dd>
+<dt>step.fail</dt><dd><code>TRUE</code> if the algorithm terminated by failing to improve the GCV/UBRE score rather than by "converging". 
+Not necessarily a problem, but check the above derivative information quite carefully.</dd>
+</ul> 
+</td></tr>
+</table>
+
+<h3>WARNING</h3>
+
+<p>
+The method may not behave well with near column rank defficient <i>X</i>
+especially in contexts where the weights vary wildly.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Simon N. Wood <a href="mailto:simon.wood@r-project.org">simon.wood@r-project.org</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Gu and Wahba (1991) Minimizing GCV/GML scores with multiple smoothing parameters via
+the Newton method. SIAM J. Sci. Statist. Comput. 12:383-398
+</p>
+<p>
+Wood, S.N. (2000)  Modelling and Smoothing Parameter Estimation
+with Multiple  Quadratic Penalties. J.R.Statist.Soc.B 62(2):413-428
+</p>
+<p>
+Wood, S.N. (2004) Stable and efficient multiple smoothing parameter estimation for
+generalized additive models. J. Amer. Statist. Ass. 99:673-686
+</p>
+<p>
+Wood, S.N. (2008) Fast stable direct fitting and smoothness selection for generalized
+additive models. J.R.Statist.Soc.B 70(3):495-518
+</p>
+<p>
+<a href="http://www.maths.bath.ac.uk/~sw283/">http://www.maths.bath.ac.uk/~sw283/</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="gam.html">gam</a></code>,
+<code><a href="magic.html">magic</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+library(help="mgcv") # listing of all routines
+
+set.seed(1);n&lt;-400;sig2&lt;-4
+x0 &lt;- runif(n, 0, 1);x1 &lt;- runif(n, 0, 1)
+x2 &lt;- runif(n, 0, 1);x3 &lt;- runif(n, 0, 1)
+f &lt;- 2 * sin(pi * x0)
+f &lt;- f + exp(2 * x1) - 3.75887
+f &lt;- f+0.2*x2^11*(10*(1-x2))^6+10*(10*x2)^3*(1-x2)^10-1.396
+e &lt;- rnorm(n, 0, sqrt(sig2))
+y &lt;- f + e
+# set up additive model
+G&lt;-gam(y~s(x0)+s(x1)+s(x2)+s(x3),fit=FALSE)
+# fit using mgcv
+mgfit&lt;-mgcv(G$y,G$X,G$sp,G$S,G$off,C=G$C)
+ 
+</pre>
+
+
+
+<hr><div align="center">[Package <em>mgcv</em> version 1.5-5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

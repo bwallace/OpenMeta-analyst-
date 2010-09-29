@@ -1,0 +1,23 @@
+Entry: Cairo
+Aliases: Cairo CairoX11 CairoPNG CairoPDF CairoSVG CairoPS CairoWin CairoJPEG CairoTIFF
+Keywords: device
+Description: Create a new Cairo-based graphics device
+URL: ../../../library/Cairo/html/Cairo.html
+
+Entry: Cairo.capabilities
+Aliases: Cairo.capabilities
+Keywords: device
+Description: Reports which output types are supported by this Cairo build
+URL: ../../../library/Cairo/html/Cairo.capabilities.html
+
+Entry: CairoFonMatch
+Aliases: CairoFontMatch
+Keywords: device
+Description: Find installed fonts with a fontconfig pattern
+URL: ../../../library/Cairo/html/CairoFontMatch.html
+
+Entry: CairoFonts
+Aliases: CairoFonts
+Keywords: device
+Description: Set the fonts used for all Cairo graphics devices.
+URL: ../../../library/Cairo/html/CairoFonts.html

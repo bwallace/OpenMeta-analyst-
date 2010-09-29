@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Predictions from a gls Object</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for predict.gls {nlme}"><tr><td>predict.gls {nlme}</td><td align="right">R Documentation</td></tr></table>
+<h2>Predictions from a gls Object</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The predictions for the linear model represented by <code>object</code> are
+obtained at the covariate values defined in <code>newdata</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'gls':
+predict(object, newdata, na.action, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>object</code></td>
+<td>
+an object inheriting from class <code>gls</code>, representing
+a generalized least squares fitted linear model.</td></tr>
+<tr valign="top"><td><code>newdata</code></td>
+<td>
+an optional data frame to be used for obtaining the
+predictions. All variables used in the linear model must be present
+in the data frame. If missing, the fitted values are returned.</td></tr>
+<tr valign="top"><td><code>na.action</code></td>
+<td>
+a function that indicates what should happen when
+<code>newdata</code> contains <code>NA</code>s.  The default action
+(<code>na.fail</code>) causes the function to print an error message and
+terminate if there are any incomplete observations.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+some methods for this generic require additional
+arguments.  None are used in this method.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+a vector with the predicted values.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Jose Pinheiro <a href="mailto:Jose.Pinheiro@pharma.novartis.com">Jose.Pinheiro@pharma.novartis.com</a> and Douglas Bates <a href="mailto:bates@stat.wisc.edu">bates@stat.wisc.edu</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="gls.html">gls</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+fm1 &lt;- gls(follicles ~ sin(2*pi*Time) + cos(2*pi*Time), Ovary,
+           correlation = corAR1(form = ~ 1 | Mare))
+newOvary &lt;- data.frame(Time = c(-0.75, -0.5, 0, 0.5, 0.75))
+predict(fm1, newOvary)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>nlme</em> version 3.1-93 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

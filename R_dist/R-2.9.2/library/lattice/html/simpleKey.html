@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Function to generate a simple key</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for simpleKey {lattice}"><tr><td>simpleKey {lattice}</td><td align="right">R Documentation</td></tr></table>
+<h2>Function to generate a simple key</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Simple interface to generate a list appropriate for <code>draw.key</code>
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+simpleKey(text, points = TRUE,
+          rectangles = FALSE,
+          lines = FALSE,
+          col, cex, alpha, font,
+          fontface, fontfamily, 
+          lineheight, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>text</code></td>
+<td>
+character or expression vector, to be used as labels for levels of
+the grouping variable
+</td></tr>
+<tr valign="top"><td><code>points</code></td>
+<td>
+logical </td></tr>
+<tr valign="top"><td><code>rectangles</code></td>
+<td>
+logical </td></tr>
+<tr valign="top"><td><code>lines</code></td>
+<td>
+logical </td></tr>
+<tr valign="top"><td><code>col, cex, alpha, font, fontface, fontfamily, lineheight</code></td>
+<td>
+Used as top-level components of the list produced, to be used for
+the text labels. Defaults to the values in
+<code>trellis.par.get("add.text")</code>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+further arguments added to the list, eventually passed to
+<code>draw.key</code>
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+A lattice plot can include a legend (key) if an appropriate list is
+specified as the <code>key</code> argument to a high level Lattice function
+such as <code>xyplot</code>. This key can be very flexible, but that
+flexibility comes at the cost of this list being very complicated even
+in simple situations. The <code>simpleKey</code> function is a shortcut,
+which assumes that the key is being drawn in conjunction with the
+<code>groups</code> argument, and that the default Trellis settings are
+being used. At most one each of points, rectangles and lines can be
+drawn.
+</p>
+<p>
+See also the <code>auto.key</code> argument for high level plots.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A list that would work as the <code>key</code> argument to <code>xyplot</code>
+etc.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Deepayan Sarkar <a href="mailto:Deepayan.Sarkar@R-project.org">Deepayan.Sarkar@R-project.org</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="draw.key.html">draw.key</a></code>, <code><a href="xyplot.html">xyplot</a></code>, <code><a href="Lattice.html">Lattice</a></code>
+</p>
+
+
+
+<hr><div align="center">[Package <em>lattice</em> version 0.17-25 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

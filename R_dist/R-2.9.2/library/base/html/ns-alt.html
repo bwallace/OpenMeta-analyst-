@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Experimental Alternative Name Specification Support</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for ns-alt {base}"><tr><td>ns-alt {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Experimental Alternative Name Specification Support</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Alternative interface for specifying a name space within the code of a
+package.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+.Export(...)
+.Import(...)
+.ImportFrom(name, ...)
+.S3method(generic, class, method)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>...</code></td>
+<td>
+name or literal character string arguments.</td></tr>
+<tr valign="top"><td><code>name</code></td>
+<td>
+name or literal character string.</td></tr>
+<tr valign="top"><td><code>generic</code></td>
+<td>
+name or literal character string.</td></tr>
+<tr valign="top"><td><code>class</code></td>
+<td>
+name or literal character string.</td></tr>
+<tr valign="top"><td><code>method</code></td>
+<td>
+optional character or function argument.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+As an experimental alternative to using a &lsquo;<span class="file">NAMESPACE</span>&rsquo; file it is
+possible to add a name space to a package by adding a
+<code>Namespace: &lt;package_name&gt;</code> entry to the &lsquo;<span class="file">DESCRIPTION</span>&rsquo;
+file and placing directives to specify imports and exports directly in
+package code.  These directives should be viewed as declarations, not
+as function calls.   Except to the optional method argument to
+<code>.S3method</code> arguments are not evaluated.  These directives should
+only be used at top level of package code except as noted below.
+</p>
+<p>
+<code>.Export</code> is used to declare exports.  Its arguments should be
+literal names or character strings.  <code>.Export</code> should only be
+used at package top level.
+</p>
+<p>
+<code>.Import</code> is used to declare the import of entire name spaces.
+Its arguments should be literal names or character strings.
+<code>.ImportFrom</code> is used to declare the import of selected
+variables from a single name space.  The first argument is a literal
+name or character string identifying the source name space; the
+remaining arguments are literal names or character strings identifying
+the variables to import.  As an experimental feature both
+<code>.Import</code> and <code>.ImportFrom</code> can be used to import
+variables into a local environment.  The drawback of allowing this
+is that dependencies cannot be determined easily at package load
+time, and as a result this feature may need to be dropped.
+</p>
+<p>
+<code>.S3method</code> is used to declare a method for S3-style
+<code>UseMethod</code> dispatch.  This is needed since methods in packages
+that are imported but not on the search path might not be visible to
+the standard dispatch mechanism at a call site.  The first argument
+is the name of the generic, the second specifies the class.  The third
+argument is optional and defaults to the usual concatenation of
+generic and class separated by a period.  If supplied, the third
+argument should evaluate to a character string or a function.  If the
+third argument is omitted or a character string is supplied, then a
+function by that name must be defined.  If a function is supplied,
+it is used as the method.  When the method is specified as a name,
+explicitly or implicitly, the function lookup is handled lazily;
+this allows the definition to occur after the <code>.S3method</code>
+declaration and also integrates with possible data base storage of
+package code.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Luke Tierney
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## Not run: 
+## code for package/name space 'foo'
+x &lt;- 1
+f &lt;- function(y) c(x,y)
+print.foo &lt;- function(x, ...) cat("&lt;a foo&gt;\n")
+.Export(f)
+S3method(print,foo)
+
+## code for package/name space 'bar'
+.Import(foo)
+c &lt;- function(...) sum(...)
+g &lt;- function(y) f(c(y, 7))
+h &lt;- function(y) y+9
+.Export(g, h)
+## End(Not run)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,47 @@
+\HeaderA{predict.LogitBoost}{Prediction Based on LogitBoost Classification Algorithm}{predict.LogitBoost}
+\keyword{classif}{predict.LogitBoost}
+\begin{Description}\relax
+Prediction or Testing using logitboost classification algorithm
+\end{Description}
+\begin{Usage}
+\begin{verbatim}predict.LogitBoost(object, xtest, type = c("class", "raw"), nIter=NA, ...)\end{verbatim}
+\end{Usage}
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{object}] An object of class "LogitBoost" see "Value" section of 
+\code{\LinkA{LogitBoost}{LogitBoost}} for details
+\item[\code{xtest}] A matrix or data frame with test data. Rows contain samples 
+and columns contain features
+\item[\code{type}] See "Value" section
+\item[\code{nIter}] An optional integer, used to lower number of iterations 
+(decision stumps) used in the decision making. If not provided than the 
+number will be the same as the one provided in \code{\LinkA{LogitBoost}{LogitBoost}}. 
+If provided than the results will be the same as running 
+\code{\LinkA{LogitBoost}{LogitBoost}} with fewer iterations. 
+\item[\code{...}] not used but needed for compatibility with generic predict 
+method
+\end{ldescription}
+\end{Arguments}
+\begin{Details}\relax
+Logitboost algorithm relies on a voting scheme to make classifications. Many
+(\code{nIter} of them) week classifiers are applied to each sample and their
+findings are used as votes to make the final classification. The class with 
+the most votes "wins". However, with this scheme it is common for two cases 
+have a tie (the same number of votes), especially if number of iterations is 
+even. In that case NA is returned, instead of a label.
+\end{Details}
+\begin{Value}
+If type = "class" (default) label of the class with maximal probability is 
+returned for each sample. If type = "raw", the a-posterior probabilities for 
+each class are returned.
+\end{Value}
+\begin{Author}\relax
+Jarek Tuszynski (SAIC) \email{jaroslaw.w.tuszynski@saic.com}
+\end{Author}
+\begin{SeeAlso}\relax
+\code{\LinkA{LogitBoost}{LogitBoost}} has training half of LogitBoost code
+\end{SeeAlso}
+\begin{Examples}
+\begin{ExampleCode}# See LogitBoost example\end{ExampleCode}
+\end{Examples}
+

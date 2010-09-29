@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Cleveland Dot Plots</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for dotchart {graphics}"><tr><td>dotchart {graphics}</td><td align="right">R Documentation</td></tr></table>
+<h2>Cleveland Dot Plots</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Draw a Cleveland dot plot.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+dotchart(x, labels = NULL, groups = NULL, gdata = NULL,
+         cex = par("cex"), pch = 21, gpch = 21, bg = par("bg"),
+         color = par("fg"), gcolor = par("fg"), lcolor = "gray",
+         xlim = range(x[is.finite(x)]),
+         main = NULL, xlab = NULL, ylab = NULL, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+either a vector or matrix of numeric values (<code>NA</code>s are
+allowed).  If <code>x</code> is a matrix the overall plot consists of
+juxtaposed dotplots for each row.</td></tr>
+<tr valign="top"><td><code>labels</code></td>
+<td>
+a vector of labels for each point.
+For vectors the default is to use <code>names(x)</code> and for matrices
+the row labels <code>dimnames(x)[[1]]</code>.</td></tr>
+<tr valign="top"><td><code>groups</code></td>
+<td>
+an optional factor indicating how the elements of
+<code>x</code> are grouped.
+If <code>x</code> is a matrix, <code>groups</code> will default to the columns
+of <code>x</code>.</td></tr>
+<tr valign="top"><td><code>gdata</code></td>
+<td>
+data values for the groups.
+This is typically a summary such as the median or mean
+of each group.</td></tr>
+<tr valign="top"><td><code>cex</code></td>
+<td>
+the character size to be used.  Setting <code>cex</code>
+to a value smaller than one can be a useful way of avoiding label
+overlap.  Unlike many other graphics functions, this sets the actual
+size, not a multiple of <code>par("cex")</code>.</td></tr>
+<tr valign="top"><td><code>pch</code></td>
+<td>
+the plotting character or symbol to be used.</td></tr>
+<tr valign="top"><td><code>gpch</code></td>
+<td>
+the plotting character or symbol to be used for group
+values.</td></tr>
+<tr valign="top"><td><code>bg</code></td>
+<td>
+the background color of plotting characters or symbols to be
+used; use <code><a href="par.html">par</a>(bg= *)</code> to set the background color of
+the whole plot.</td></tr>
+<tr valign="top"><td><code>color</code></td>
+<td>
+the color(s) to be used for points and labels.</td></tr>
+<tr valign="top"><td><code>gcolor</code></td>
+<td>
+the single color to be used for group labels and
+values.</td></tr>
+<tr valign="top"><td><code>lcolor</code></td>
+<td>
+the color(s) to be used for the horizontal lines.</td></tr>
+<tr valign="top"><td><code>xlim</code></td>
+<td>
+horizontal range for the plot, see
+<code><a href="plot.window.html">plot.window</a></code>, e.g.</td></tr>
+<tr valign="top"><td><code>main</code></td>
+<td>
+overall title for the plot, see <code><a href="title.html">title</a></code>.</td></tr>
+<tr valign="top"><td><code>xlab, ylab</code></td>
+<td>
+axis annotations as in <code>title</code>.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+graphical parameters can also be specified as arguments.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+This function is invoked for its side effect, which is to produce two
+variants of dotplots as described in Cleveland (1985).
+<br>
+Dot plots are a reasonable substitute for bar plots.</p>
+
+<h3>References</h3>
+
+<p>
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+<EM>The New S Language</EM>.
+Wadsworth &amp; Brooks/Cole.
+</p>
+<p>
+Cleveland, W. S. (1985)
+<EM>The Elements of Graphing Data.</EM>
+Monterey, CA: Wadsworth.
+</p>
+<p>
+Murrell, P. (2005) <EM>R Graphics</EM>. Chapman &amp; Hall/CRC Press.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+dotchart(VADeaths, main = "Death Rates in Virginia - 1940")
+op &lt;- par(xaxs="i")# 0 -- 100%
+dotchart(t(VADeaths), xlim = c(0,100),
+         main = "Death Rates in Virginia - 1940")
+par(op)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>graphics</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

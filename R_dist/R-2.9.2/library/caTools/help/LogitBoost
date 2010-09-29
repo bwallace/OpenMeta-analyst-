@@ -1,0 +1,114 @@
+LogitBoost              package:caTools              R Documentation
+
+_L_o_g_i_t_B_o_o_s_t _C_l_a_s_s_i_f_i_c_a_t_i_o_n _A_l_g_o_r_i_t_h_m
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Train logitboost classification algorithm using decision  stumps
+     (one node decision trees) as weak learners.
+
+_U_s_a_g_e:
+
+     LogitBoost(xlearn, ylearn, nIter=ncol(xlearn))
+
+_A_r_g_u_m_e_n_t_s:
+
+  xlearn: A matrix or data frame with training data. Rows contain
+          samples  and columns contain features
+
+  ylearn: Class labels for the training data samples.  A response
+          vector with one label for each row/component of 'xlearn'. Can
+          be either a factor, string or a numeric vector.
+
+   nIter: An integer, describing the number of iterations for which
+          boosting should be run, or number of decision stumps that
+          will be  used.
+
+_D_e_t_a_i_l_s:
+
+     The function was adapted from logitboost.R function written by
+     Marcel  Dettling. See references and "See Also" section. The code
+     was modified in  order to make it much faster for very large data
+     sets. The speed-up was  achieved by implementing a internal
+     version of decision stump classifier  instead of using calls to
+     'rpart'. That way, some of the most time  consuming operations
+     were precomputed once, instead of performing them at  each
+     iteration. Another difference is that training and testing phases
+     of the  classification process were split into separate functions.
+
+_V_a_l_u_e:
+
+     An object of class "LogitBoost" including components:  
+
+   Stump: List of decision stumps (one node decision trees) used:
+
+             *  column 1: feature numbers or each stump, or which
+                column each stump  operates on
+
+             *  column 2: threshold to be used for that column
+
+             *  column 3: bigger/smaller info: 1 means that if values
+                in the column  are above threshold than corresponding
+                samples will be labeled as  'lablist[1]'. Value "-1"
+                means the opposite.
+
+          If there are more than two classes, than several "Stumps"
+          will be 'cbind''ed 
+
+ lablist: names of each class
+
+_A_u_t_h_o_r(_s):
+
+     Jarek Tuszynski (SAIC) jaroslaw.w.tuszynski@saic.com
+
+_R_e_f_e_r_e_n_c_e_s:
+
+     Dettling and Buhlmann (2002), _Boosting for Tumor Classification
+     of Gene  Expression Data_, available on the web page  <URL:
+     http://stat.ethz.ch/~dettling/boosting.html>. 
+
+     <URL: http://www.cs.princeton.edu/~schapire/boost.html>
+
+_S_e_e _A_l_s_o:
+
+
+        *  'predict.LogitBoost' has prediction half of LogitBoost code
+
+        *  'logitboost' function from 'boost' library
+
+        *  'logitboost' function from 'logitboost' library (not in CRAN
+           or BioConductor but can be found at  <URL:
+           http://stat.ethz.ch/~dettling/boosting.html>) is very
+           similar but much slower on very large datasets. It also
+           perform optional cross-validation.
+
+_E_x_a_m_p_l_e_s:
+
+       data(iris)
+       Data  = iris[,-5]
+       Label = iris[, 5]
+       
+       # basic interface
+       model = LogitBoost(Data, Label, nIter=20)
+       Lab   = predict(model, Data)
+       Prob  = predict(model, Data, type="raw")
+       t     = cbind(Lab, Prob)
+       t[1:10, ]
+
+       # two alternative call syntax
+       p=predict(model,Data)
+       q=predict.LogitBoost(model,Data)
+       pp=p[!is.na(p)]; qq=q[!is.na(q)]
+       stopifnot(pp == qq)
+
+       # accuracy increases with nIter (at least for train set)
+       table(predict(model, Data, nIter= 2), Label)
+       table(predict(model, Data, nIter=10), Label)
+       table(predict(model, Data),           Label)
+       
+       # example of spliting the data into train and test set
+       mask = sample.split(Label)
+       model = LogitBoost(Data[mask,], Label[mask], nIter=10)
+       table(predict(model, Data[!mask,], nIter=2), Label[!mask])
+       table(predict(model, Data[!mask,]),          Label[!mask])
+

@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Burt's constraint</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for constraint {igraph}"><tr><td>constraint {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Burt's constraint</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Given a graph, <code>constraint</code> calculates Burt's constraint for
+each vertex.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+constraint(graph, nodes=V(graph), weights=NULL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>graph</code></td>
+<td>
+A graph object, the input graph.</td></tr>
+<tr valign="top"><td><code>nodes</code></td>
+<td>
+The vertices for which the constraint will be
+calculated. Defaults to all vertices.</td></tr>
+<tr valign="top"><td><code>weights</code></td>
+<td>
+The weights of the edges. If this is <code>NULL</code> and
+there is a <code>weight</code> edge attribute this is used. If there is no
+such edge attribute all edges will have the same weight.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Burt's constraint is higher if ego has less, or mutually
+stronger related (i.e. more redundant) contacts. Burt's measure of
+constraint, <i>C[i]</i>, of vertex <i>i</i>'s ego network
+<i>V[i]</i>, is defined for directed and valued graphs,
+</p><p align="center"><i>C[i] = sum( sum( (p[i,q] p[q,j])^2, q in V[i], q != i,j ), j in V[], j != i)
+</i></p><p>
+for a graph of order (ie. number of vertices) <i>N</i>, where
+proportional tie strengths are defined as 
+</p><p align="center"><i>p[i,j]=(a[i,j]+a[j,i]) / sum(a[i,k]+a[k,i], k in V[i], k != i),
+</i></p><p>
+<i>a[i,j]</i> are elements of <i>A</i> and the latter being the
+graph adjacency matrix. For isolated vertices, constraint is undefined.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A numeric vector of constraint scores</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Jeroen Bruggeman <a href="mailto:j.p.bruggeman@uva.nl">j.p.bruggeman@uva.nl</a> and Gabor Csardi
+<a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Burt, R.S. (2004). Structural holes and good ideas. <EM>American
+Journal of Sociology</EM> 110, 349-399.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+g &lt;- erdos.renyi.game(20, 5/20)
+constraint(g)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

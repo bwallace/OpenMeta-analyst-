@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Check if a newer version of R is available</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for checkRVersion {gtools}"><tr><td>checkRVersion {gtools}</td><td align="right">R Documentation</td></tr></table>
+<h2>Check if a newer version of R is available</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Check if a newer version of R is available
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+checkRVersion(quiet = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>quiet</code></td>
+<td>
+Logical indicating whether printed output should be supressed.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This function accesses the R web site to discover the latest released
+version of R.  It then compares this version to the running version.
+If the running version is the same as the latest version, it prints
+the message, "The latest version of R is installed:" followed by the
+version number, and returns NULL.  If the running version is older
+than the current version, it displays the message, "A newer version of
+R is now available:" followed by the corresponding version number, and
+returns the version number.
+</p>
+<p>
+If <code>quiet=TRUE</code>, no printing is performed.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+Either the version number of the latest version of R, if the running
+version is less than the latest version, or NULL.</p>
+
+<h3>Note</h3>
+
+<p>
+This function utilizes the internet to access the R project web
+site.  If internet access is unavailable, the function will fail.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Gregory R. Warnes <a href="mailto:gregory.warnes@rochester.edu&gt;">gregory.warnes@rochester.edu&gt;</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../base/html/R.Version.html">R.Version</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+
+checkRVersion()
+
+ver &lt;- checkRVersion()
+print(ver)
+
+</pre>
+
+
+
+<hr><div align="center">[Package <em>gtools</em> version 2.6.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

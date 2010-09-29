@@ -1,0 +1,32 @@
+ELISA                   Data from an ELISA assay
+addLast                 Add a function to be executed when R exits.
+ask                     Display a prompt and collect the user's
+                        response
+binsearch               Binary Search
+capture                 Capture printed output of an R expression in a
+                        string
+checkRVersion           Check if a newer version of R is available
+combinations            Enumerate the Combinations or Permutations of
+                        the Elements of a Vector
+defmacro                Define a macro
+foldchange              Compute fold-change or convert between
+                        log-ratio and fold-change.
+gtools-deprecated       Deprecated Functions in the gtools package
+invalid                 Test if a value is missing, empty, or contains
+                        only NA or NULL values
+keywords                List valid keywords for R man pages
+logit                   Generalized logit and inverse logit function
+mixedsort               Order or Sort strings with embedded numbers so
+                        that the numbers are in the correct order
+odd                     Detect odd/even integers
+permute                 Randomly Permute the Elements of a Vector
+quantcut                Create a Factor Variable Using the Quantiles of
+                        a Continuous Variable
+rdirichlet              Functions for the Dirichlet Distribution
+running                 Apply a Function Over Adjacent Subsets of a
+                        Vector
+scat                    Display debugging text
+setTCPNoDelay           Modify the TCP\_NODELAY ('de-Nagle') flag for
+                        socket objects
+smartbind               Efficient rbind of data framesy, even if the
+                        column names don't match

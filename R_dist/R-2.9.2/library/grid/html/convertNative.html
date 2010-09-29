@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Convert a Unit Object to Native units</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for convertNative {grid}"><tr><td>convertNative {grid}</td><td align="right">R Documentation</td></tr></table>
+<h2>Convert a Unit Object to Native units</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<B>This function is deprecated in grid version 0.8 and will be
+made defunct in grid version 1.9</B>
+</p>
+<p>
+You should use the <code>convertUnit()</code> function or one of its
+close allies instead.
+</p>
+<p>
+This function returns a numeric vector containing the specified
+x or y locations or dimensions, converted to "user" or "data"
+units, relative to the current viewport.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+convertNative(unit, dimension="x", type="location")
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>unit</code></td>
+<td>
+A unit object. </td></tr>
+<tr valign="top"><td><code>dimension</code></td>
+<td>
+Either "x" or "y". </td></tr>
+<tr valign="top"><td><code>type</code></td>
+<td>
+Either "location" or "dimension". </td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+A numeric vector.</p>
+
+<h3>WARNING</h3>
+
+<p>
+If you draw objects based on output from these conversion
+functions, then resize your device, the objects will be drawn 
+incorrectly &ndash; the base R display list will not recalculate these
+conversions.  This means that you can only rely on the results of 
+these calculations if the size of your device is fixed.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Paul Murrell
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="grid.convert.html">grid.convert</a></code>, <code><a href="unit.html">unit</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+grid.newpage()
+pushViewport(viewport(width=unit(.5, "npc"),
+                       height=unit(.5, "npc")))
+grid.rect()
+w &lt;- convertNative(unit(1, "inches"))
+h &lt;- convertNative(unit(1, "inches"), "y")
+# This rectangle starts off life as 1in square, but if you
+# resize the device it will no longer be 1in square
+grid.rect(width=unit(w, "native"), height=unit(h, "native"),
+          gp=gpar(col="red"))
+popViewport(1)
+
+# How to use grid.convert(), etc instead
+convertNative(unit(1, "inches")) ==
+  convertX(unit(1, "inches"), "native", valueOnly=TRUE)
+convertNative(unit(1, "inches"), "y", "dimension") ==
+  convertHeight(unit(1, "inches"), "native", valueOnly=TRUE)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>grid</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

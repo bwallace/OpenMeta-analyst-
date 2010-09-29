@@ -1,0 +1,23 @@
+Entry: checkUsage
+Aliases: checkUsage checkUsageEnv checkUsagePackage
+Keywords: programming
+Description: Check R Code for Possible Problems
+URL: ../../../library/codetools/html/checkUsage.html
+
+Entry: codetools
+Aliases: codetools collectLocals collectUsage constantFold findFuncLocals findLocals findLocalsList flattenAssignment getAssignedVar isConstantValue makeCodeWalker makeConstantFolder makeLocalsCollector makeUsageCollector walkCode
+Keywords: programming
+Description: Low Level Code Analysis Tools for R
+URL: ../../../library/codetools/html/codetools.html
+
+Entry: findGlobals
+Aliases: findGlobals
+Keywords: programming
+Description: Find Global Functions and Variables Used by a Closure
+URL: ../../../library/codetools/html/findGlobals.html
+
+Entry: showTree
+Aliases: showTree
+Keywords: programming
+Description: Print Lisp-Style Representation of R Expression
+URL: ../../../library/codetools/html/showTree.html

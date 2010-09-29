@@ -1,0 +1,515 @@
+Entry: AirPassengers
+Aliases: AirPassengers
+Keywords: datasets
+Description: Monthly Airline Passenger Numbers 1949-1960
+URL: ../../../library/datasets/html/AirPassengers.html
+
+Entry: BJsales
+Aliases: BJsales BJsales.lead
+Keywords: datasets
+Description: Sales Data with Leading Indicator
+URL: ../../../library/datasets/html/BJsales.html
+
+Entry: BOD
+Aliases: BOD
+Keywords: datasets
+Description: Biochemical Oxygen Demand
+URL: ../../../library/datasets/html/BOD.html
+
+Entry: ChickWeight
+Aliases: ChickWeight
+Keywords: datasets
+Description: Weight versus age of chicks on different diets
+URL: ../../../library/datasets/html/ChickWeight.html
+
+Entry: DNase
+Aliases: DNase
+Keywords: datasets
+Description: Elisa assay of DNase
+URL: ../../../library/datasets/html/DNase.html
+
+Entry: EuStockMarkets
+Aliases: EuStockMarkets
+Keywords: datasets
+Description: Daily Closing Prices of Major European Stock Indices, 1991-1998
+URL: ../../../library/datasets/html/EuStockMarkets.html
+
+Entry: Formaldehyde
+Aliases: Formaldehyde
+Keywords: datasets
+Description: Determination of Formaldehyde
+URL: ../../../library/datasets/html/Formaldehyde.html
+
+Entry: HairEyeColor
+Aliases: HairEyeColor
+Keywords: datasets
+Description: Hair and Eye Color of Statistics Students
+URL: ../../../library/datasets/html/HairEyeColor.html
+
+Entry: Harman23.cor
+Aliases: Harman23.cor
+Keywords: datasets
+Description: Harman Example 2.3
+URL: ../../../library/datasets/html/Harman23.cor.html
+
+Entry: Harman74.cor
+Aliases: Harman74.cor
+Keywords: datasets
+Description: Harman Example 7.4
+URL: ../../../library/datasets/html/Harman74.cor.html
+
+Entry: Indometh
+Aliases: Indometh
+Keywords: datasets
+Description: Pharmacokinetics of Indomethicin
+URL: ../../../library/datasets/html/Indometh.html
+
+Entry: InsectSprays
+Aliases: InsectSprays
+Keywords: datasets
+Description: Effectiveness of Insect Sprays
+URL: ../../../library/datasets/html/InsectSprays.html
+
+Entry: JohnsonJohnson
+Aliases: JohnsonJohnson
+Keywords: datasets
+Description: Quarterly Earnings per Johnson & Johnson Share
+URL: ../../../library/datasets/html/JohnsonJohnson.html
+
+Entry: LakeHuron
+Aliases: LakeHuron
+Keywords: datasets
+Description: Level of Lake Huron 1875-1972
+URL: ../../../library/datasets/html/LakeHuron.html
+
+Entry: LifeCycleSavings
+Aliases: LifeCycleSavings
+Keywords: datasets
+Description: Intercountry Life-Cycle Savings Data
+URL: ../../../library/datasets/html/LifeCycleSavings.html
+
+Entry: Loblolly
+Aliases: Loblolly
+Keywords: datasets
+Description: Growth of Loblolly pine trees
+URL: ../../../library/datasets/html/Loblolly.html
+
+Entry: Nile
+Aliases: Nile
+Keywords: datasets
+Description: Flow of the River Nile
+URL: ../../../library/datasets/html/Nile.html
+
+Entry: Orange
+Aliases: Orange
+Keywords: datasets
+Description: Growth of Orange Trees
+URL: ../../../library/datasets/html/Orange.html
+
+Entry: OrchardSprays
+Aliases: OrchardSprays
+Keywords: datasets
+Description: Potency of Orchard Sprays
+URL: ../../../library/datasets/html/OrchardSprays.html
+
+Entry: PlantGrowth
+Aliases: PlantGrowth
+Keywords: datasets
+Description: Results from an Experiment on Plant Growth
+URL: ../../../library/datasets/html/PlantGrowth.html
+
+Entry: Puromycin
+Aliases: Puromycin
+Keywords: datasets
+Description: Reaction velocity of an enzymatic reaction
+URL: ../../../library/datasets/html/Puromycin.html
+
+Entry: Theoph
+Aliases: Theoph
+Keywords: datasets
+Description: Pharmacokinetics of theophylline
+URL: ../../../library/datasets/html/Theoph.html
+
+Entry: Titanic
+Aliases: Titanic
+Keywords: datasets
+Description: Survival of passengers on the Titanic
+URL: ../../../library/datasets/html/Titanic.html
+
+Entry: ToothGrowth
+Aliases: ToothGrowth
+Keywords: datasets
+Description: The Effect of Vitamin C on Tooth Growth in Guinea Pigs
+URL: ../../../library/datasets/html/ToothGrowth.html
+
+Entry: UCBAdmissions
+Aliases: UCBAdmissions
+Keywords: datasets
+Description: Student Admissions at UC Berkeley
+URL: ../../../library/datasets/html/UCBAdmissions.html
+
+Entry: UKDriverDeaths
+Aliases: UKDriverDeaths Seatbelts
+Keywords: datasets
+Description: Road Casualties in Great Britain 1969-84
+URL: ../../../library/datasets/html/UKDriverDeaths.html
+
+Entry: UKLungDeaths
+Aliases: UKLungDeaths ldeaths fdeaths mdeaths
+Keywords: datasets
+Description: Monthly Deaths from Lung Diseases in the UK
+URL: ../../../library/datasets/html/UKLungDeaths.html
+
+Entry: UKgas
+Aliases: UKgas
+Keywords: datasets
+Description: UK Quarterly Gas Consumption
+URL: ../../../library/datasets/html/UKgas.html
+
+Entry: USAccDeaths
+Aliases: USAccDeaths
+Keywords: datasets
+Description: Accidental Deaths in the US 1973-1978
+URL: ../../../library/datasets/html/USAccDeaths.html
+
+Entry: USArrests
+Aliases: USArrests
+Keywords: datasets
+Description: Violent Crime Rates by US State
+URL: ../../../library/datasets/html/USArrests.html
+
+Entry: USJudgeRatings
+Aliases: USJudgeRatings
+Keywords: datasets
+Description: Lawyers' Ratings of State Judges in the US Superior Court
+URL: ../../../library/datasets/html/USJudgeRatings.html
+
+Entry: USPersonalExpenditure
+Aliases: USPersonalExpenditure
+Keywords: datasets
+Description: Personal Expenditure Data
+URL: ../../../library/datasets/html/USPersonalExpenditure.html
+
+Entry: VADeaths
+Aliases: VADeaths
+Keywords: datasets
+Description: Death Rates in Virginia (1940)
+URL: ../../../library/datasets/html/VADeaths.html
+
+Entry: WWWusage
+Aliases: WWWusage
+Keywords: datasets
+Description: Internet Usage per Minute
+URL: ../../../library/datasets/html/WWWusage.html
+
+Entry: WorldPhones
+Aliases: WorldPhones
+Keywords: datasets
+Description: The World's Telephones
+URL: ../../../library/datasets/html/WorldPhones.html
+
+Entry: ability.cov
+Aliases: ability.cov
+Keywords: datasets
+Description: Ability and Intelligence Tests
+URL: ../../../library/datasets/html/ability.cov.html
+
+Entry: airmiles
+Aliases: airmiles
+Keywords: datasets
+Description: Passenger Miles on Commercial US Airlines, 1937-1960
+URL: ../../../library/datasets/html/airmiles.html
+
+Entry: airquality
+Aliases: airquality
+Keywords: datasets
+Description: New York Air Quality Measurements
+URL: ../../../library/datasets/html/airquality.html
+
+Entry: anscombe
+Aliases: anscombe
+Keywords: datasets
+Description: Anscombe's Quartet of "Identical" Simple Linear Regressions
+URL: ../../../library/datasets/html/anscombe.html
+
+Entry: attenu
+Aliases: attenu
+Keywords: datasets
+Description: The Joyner-Boore Attenuation Data
+URL: ../../../library/datasets/html/attenu.html
+
+Entry: attitude
+Aliases: attitude
+Keywords: datasets
+Description: The Chatterjee-Price Attitude Data
+URL: ../../../library/datasets/html/attitude.html
+
+Entry: austres
+Aliases: austres
+Keywords: datasets
+Description: Quarterly Time Series of the Number of Australian Residents
+URL: ../../../library/datasets/html/austres.html
+
+Entry: beavers
+Aliases: beavers beaver1 beaver2
+Keywords: datasets
+Description: Body Temperature Series of Two Beavers
+URL: ../../../library/datasets/html/beavers.html
+
+Entry: cars
+Aliases: cars
+Keywords: datasets
+Description: Speed and Stopping Distances of Cars
+URL: ../../../library/datasets/html/cars.html
+
+Entry: chickwts
+Aliases: chickwts
+Keywords: datasets
+Description: Chicken Weights by Feed Type
+URL: ../../../library/datasets/html/chickwts.html
+
+Entry: co2
+Aliases: co2
+Keywords: datasets
+Description: Mauna Loa Atmospheric CO2 Concentration
+URL: ../../../library/datasets/html/co2.html
+
+Entry: crimtab
+Aliases: crimtab
+Keywords: datasets
+Description: Student's 3000 Criminals Data
+URL: ../../../library/datasets/html/crimtab.html
+
+Entry: datasets-package
+Aliases: datasets-package datasets
+Keywords: package
+Description: The R Datasets Package
+URL: ../../../library/datasets/html/datasets-package.html
+
+Entry: discoveries
+Aliases: discoveries
+Keywords: datasets
+Description: Yearly Numbers of Important Discoveries
+URL: ../../../library/datasets/html/discoveries.html
+
+Entry: esoph
+Aliases: esoph
+Keywords: datasets
+Description: Smoking, Alcohol and (O)esophageal Cancer
+URL: ../../../library/datasets/html/esoph.html
+
+Entry: euro
+Aliases: euro euro.cross
+Keywords: datasets
+Description: Conversion Rates of Euro Currencies
+URL: ../../../library/datasets/html/euro.html
+
+Entry: eurodist
+Aliases: eurodist
+Keywords: datasets
+Description: Distances Between European Cities
+URL: ../../../library/datasets/html/eurodist.html
+
+Entry: faithful
+Aliases: faithful
+Keywords: datasets
+Description: Old Faithful Geyser Data
+URL: ../../../library/datasets/html/faithful.html
+
+Entry: freeny
+Aliases: freeny freeny.x freeny.y
+Keywords: datasets
+Description: Freeny's Revenue Data
+URL: ../../../library/datasets/html/freeny.html
+
+Entry: infert
+Aliases: infert
+Keywords: datasets
+Description: Infertility after Spontaneous and Induced Abortion
+URL: ../../../library/datasets/html/infert.html
+
+Entry: iris
+Aliases: iris iris3
+Keywords: datasets
+Description: Edgar Anderson's Iris Data
+URL: ../../../library/datasets/html/iris.html
+
+Entry: islands
+Aliases: islands
+Keywords: datasets
+Description: Areas of the World's Major Landmasses
+URL: ../../../library/datasets/html/islands.html
+
+Entry: lh
+Aliases: lh
+Keywords: datasets
+Description: Luteinizing Hormone in Blood Samples
+URL: ../../../library/datasets/html/lh.html
+
+Entry: longley
+Aliases: longley
+Keywords: datasets
+Description: Longley's Economic Regression Data
+URL: ../../../library/datasets/html/longley.html
+
+Entry: lynx
+Aliases: lynx
+Keywords: datasets
+Description: Annual Canadian Lynx trappings 1821-1934
+URL: ../../../library/datasets/html/lynx.html
+
+Entry: morley
+Aliases: morley
+Keywords: datasets
+Description: Michaelson-Morley Speed of Light Data
+URL: ../../../library/datasets/html/morley.html
+
+Entry: mtcars
+Aliases: mtcars
+Keywords: datasets
+Description: Motor Trend Car Road Tests
+URL: ../../../library/datasets/html/mtcars.html
+
+Entry: nhtemp
+Aliases: nhtemp
+Keywords: datasets
+Description: Average Yearly Temperatures in New Haven
+URL: ../../../library/datasets/html/nhtemp.html
+
+Entry: nottem
+Aliases: nottem
+Keywords: datasets
+Description: Average Monthly Temperatures at Nottingham, 1920-1939
+URL: ../../../library/datasets/html/nottem.html
+
+Entry: occupationalStatus
+Aliases: occupationalStatus
+Keywords: datasets
+Description: Occupational Status of Fathers and their Sons
+URL: ../../../library/datasets/html/occupationalStatus.html
+
+Entry: precip
+Aliases: precip
+Keywords: datasets
+Description: Annual Precipitation in US Cities
+URL: ../../../library/datasets/html/precip.html
+
+Entry: presidents
+Aliases: presidents
+Keywords: datasets
+Description: Quarterly Approval Ratings of US Presidents
+URL: ../../../library/datasets/html/presidents.html
+
+Entry: pressure
+Aliases: pressure
+Keywords: datasets
+Description: Vapor Pressure of Mercury as a Function of Temperature
+URL: ../../../library/datasets/html/pressure.html
+
+Entry: quakes
+Aliases: quakes
+Keywords: datasets
+Description: Locations of Earthquakes off Fiji
+URL: ../../../library/datasets/html/quakes.html
+
+Entry: randu
+Aliases: randu
+Keywords: datasets
+Description: Random Numbers from Congruential Generator RANDU
+URL: ../../../library/datasets/html/randu.html
+
+Entry: rivers
+Aliases: rivers
+Keywords: datasets
+Description: Lengths of Major North American Rivers
+URL: ../../../library/datasets/html/rivers.html
+
+Entry: rock
+Aliases: rock
+Keywords: datasets
+Description: Measurements on Petroleum Rock Samples
+URL: ../../../library/datasets/html/rock.html
+
+Entry: sleep
+Aliases: sleep
+Keywords: datasets
+Description: Student's Sleep Data
+URL: ../../../library/datasets/html/sleep.html
+
+Entry: stackloss
+Aliases: stackloss stack.loss stack.x
+Keywords: datasets
+Description: Brownlee's Stack Loss Plant Data
+URL: ../../../library/datasets/html/stackloss.html
+
+Entry: state
+Aliases: state state.abb state.area state.center state.division state.name state.region state.x77
+Keywords: datasets
+Description: US State Facts and Figures
+URL: ../../../library/datasets/html/state.html
+
+Entry: sunspot.month
+Aliases: sunspot.month
+Keywords: datasets
+Description: Monthly Sunspot Data, 1749-1997
+URL: ../../../library/datasets/html/sunspot.month.html
+
+Entry: sunspot.year
+Aliases: sunspot.year
+Keywords: datasets
+Description: Yearly Sunspot Data, 1700-1988
+URL: ../../../library/datasets/html/sunspot.year.html
+
+Entry: sunspots
+Aliases: sunspots
+Keywords: datasets
+Description: Monthly Sunspot Numbers, 1749-1983
+URL: ../../../library/datasets/html/sunspots.html
+
+Entry: swiss
+Aliases: swiss
+Keywords: datasets
+Description: Swiss Fertility and Socioeconomic Indicators (1888) Data
+URL: ../../../library/datasets/html/swiss.html
+
+Entry: treering
+Aliases: treering
+Keywords: datasets
+Description: Yearly Treering Data, -6000-1979
+URL: ../../../library/datasets/html/treering.html
+
+Entry: trees
+Aliases: trees
+Keywords: datasets
+Description: Girth, Height and Volume for Black Cherry Trees
+URL: ../../../library/datasets/html/trees.html
+
+Entry: uspop
+Aliases: uspop
+Keywords: datasets
+Description: Populations Recorded by the US Census
+URL: ../../../library/datasets/html/uspop.html
+
+Entry: volcano
+Aliases: volcano
+Keywords: datasets
+Description: Topographic Information on Auckland's Maunga Whau Volcano
+URL: ../../../library/datasets/html/volcano.html
+
+Entry: warpbreaks
+Aliases: warpbreaks
+Keywords: datasets
+Description: The Number of Breaks in Yarn during Weaving
+URL: ../../../library/datasets/html/warpbreaks.html
+
+Entry: women
+Aliases: women
+Keywords: datasets
+Description: Average Heights and Weights for American Women
+URL: ../../../library/datasets/html/women.html
+
+Entry: CO2
+Aliases: CO2
+Keywords: datasets
+Description: Carbon Dioxide uptake in grass plants
+URL: ../../../library/datasets/html/zCO2.html

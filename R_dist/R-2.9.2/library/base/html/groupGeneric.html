@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: S3 Group Generic Functions</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for groupGeneric {base}"><tr><td>groupGeneric {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>S3 Group Generic Functions</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Group generic methods can be defined for four pre-specified groups of
+functions, <code>Math</code>, <code>Ops</code>, <code>Summary</code> and <code>Complex</code>.
+(There are no objects of these names in base <font face="Courier New,Courier" color="#666666"><b>R</b></font>, but there are in the
+<span class="pkg">methods</span> package.)
+</p>
+<p>
+A method defined for an individual member of the group takes
+precedence over a method defined for the group as a whole.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 methods for group generics have prototypes:
+Math(x, ...)
+Ops(e1, e2)
+Complex(z)
+Summary(..., na.rm = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x, z, e1, e2</code></td>
+<td>
+objects.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+further arguments passed to methods.</td></tr>
+<tr valign="top"><td><code>na.rm</code></td>
+<td>
+logical: should missing values be removed?</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+There are four <EM>groups</EM> for which S3 methods can be written,
+namely the <code>"Math"</code>, <code>"Ops"</code>, <code>"Summary"</code> and
+<code>"Complex"</code> groups.  These are not <font face="Courier New,Courier" color="#666666"><b>R</b></font> objects, but methods can be
+supplied for them and base <font face="Courier New,Courier" color="#666666"><b>R</b></font> contains <code><a href="factor.html">factor</a></code>,
+<code><a href="data.frame.html">data.frame</a></code> and <code><a href="difftime.html">difftime</a></code> methods for
+the first three groups.  (There is also a <code><a href="factor.html">ordered</a></code>
+method for <code>Ops</code>, <code><a href="DateTimeClasses.html">POSIXt</a></code> and <code><a href="Dates.html">Date</a></code>
+methods for <code>Math</code> and <code>Ops</code>, <code><a href="numeric_version.html">package_version</a></code>
+methods for <code>Ops</code> and <code>Summary</code>, as well as a
+<code><a href="../../stats/html/ts.html">ts</a></code> method for <code>Ops</code> in package <span class="pkg">stats</span>.)
+</p>
+
+<ol>
+<li>Group <code>"Math"</code>:
+<ul>
+<li><code>abs</code>, <code>sign</code>, <code>sqrt</code>,<br>
+<code>floor</code>, <code>ceiling</code>, <code>trunc</code>,<br>
+<code>round</code>, <code>signif</code>
+<li><code>exp</code>, <code>log</code>,  <code>expm1</code>, <code>log1p</code>,<br>
+<code>cos</code>, <code>sin</code>, <code>tan</code>,<br>
+<code>acos</code>, <code>asin</code>, <code>atan</code>
+</p>
+<p>
+<code>cosh</code>, <code>sinh</code>, <code>tanh</code>,<br>
+<code>acosh</code>, <code>asinh</code>, <code>atanh</code>
+<li><code>lgamma</code>, <code>gamma</code>, <code>digamma</code>, <code>trigamma</code>
+<li><code>cumsum</code>, <code>cumprod</code>, <code>cummax</code>, <code>cummin</code>
+</ul>
+<p>
+Members of this group dispatch on <code>x</code>.  Most members accept
+only one argument, but members <code>log</code>, <code>round</code> and
+<code>signif</code> accept one or two arguments, and <code>trunc</code> accepts
+one or more.
+<li>Group <code>"Ops"</code>:
+<ul>
+<li><code>"+"</code>, <code>"-"</code>, <code>"*"</code>, <code>"/"</code>,
+<code>"^"</code>, <code>"%%"</code>, <code>"%/%"</code>
+<li><code>"&amp;"</code>, <code>"|"</code>, <code>"!"</code>
+<li><code>"=="</code>, <code>"!="</code>,
+<code>"&lt;"</code>, <code>"&lt;="</code>, <code>"&gt;="</code>, <code>"&gt;"</code>
+</ul>
+<p>
+This group contains both binary and unary operators (<code>+</code>,
+<code>-</code> and <code>!</code>): when a unary operator is encountered the
+<code>Ops</code> method is called with one argument and <code>e2</code> is
+missing.
+</p>
+<p>
+The classes of both arguments are considered in dispatching any
+member of this group.  For each argument its vector of classes is
+examined to see if there is a matching specific (preferred) or
+<code>Ops</code> method.  If a method is found for just one argument or
+the same method is found for both, it is used.
+If different methods are found, there is a warning about
+&lsquo;incompatible methods&rsquo;: in that case or if no method is found
+for either argument the internal method is used.
+</p>
+<p>
+If the members of this group are called as functions, any argument
+names are removed to ensure that positional matching is always used.
+<li>Group <code>"Summary"</code>:
+<ul>
+<li><code>all</code>, <code>any</code>
+<li><code>sum</code>, <code>prod</code>
+<li><code>min</code>, <code>max</code>
+<li><code>range</code>
+</ul>
+<p>
+Members of this group dispatch on the first argument supplied.
+<li>Group <code>"Complex"</code>:
+<ul>
+<li><code>Arg</code>, <code>Conj</code>, <code>Im</code>, <code>Mod</code>, <code>Re</code>
+</ul>
+<p>
+Members of this group dispatch on <code>z</code>.
+</ol>
+
+<p>
+Note that a method will used for either one of these groups or one of
+its members <EM>only</EM> if it corresponds to a <code>"class"</code>
+attribute, as the internal code dispatches on <code><a href="class.html">oldClass</a></code>
+and not on <code><a href="class.html">class</a></code>.  This is for efficiency: having to
+dispatch on, say, <code>Ops.integer</code> would be too slow.
+</p>
+<p>
+The number of arguments supplied for primitive members of the
+<code>"Math"</code> group generic methods is not checked prior to dispatch.
+</p>
+<p>
+There is no lazy evaluation of arguments for group-generic functions.
+</p>
+
+
+<h3>Technical Details</h3>
+
+<p>
+These functions are all primitive and <a href="zMethods.html">internal generic</a>.
+</p>
+<p>
+The details of method dispatch and variables such as <code>.Generic</code>
+are discussed in the help for <code><a href="UseMethod.html">UseMethod</a></code>.  There are a
+few small differences:
+<ul>
+<li>For the operators of group <code>Ops</code>, the object
+<code>.Method</code> is a length-two character vector with elements the
+methods selected for the left and right arguments respectively.  (If
+no method was selected, the corresponding element is <code>""</code>.)
+<li>Object <code>.Group</code> records the group used for dispatch (if
+a specific method is used this is <code>""</code>).
+</ul>
+
+<h3>References</h3>
+
+<p>
+Appendix A, <EM>Classes and Methods</EM> of<br>
+Chambers, J. M.  and Hastie, T. J. eds (1992)
+<EM>Statistical Models in S.</EM>
+Wadsworth &amp; Brooks/Cole.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../utils/html/methods.html">methods</a></code> for methods of non-Internal generic functions.
+</p>
+<p>
+<a href="../../methods/html/S4groupGeneric.html">S4groupGeneric</a> for group generics for S4 methods.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+require(utils)
+
+d.fr &lt;- data.frame(x=1:9, y=stats::rnorm(9))
+class(1 + d.fr) == "data.frame" ##-- add to d.f. ...
+
+methods("Math")
+methods("Ops")
+methods("Summary")
+methods("Complex")  # none in base R
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

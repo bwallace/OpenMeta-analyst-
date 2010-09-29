@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Version Information</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for R.Version {base}"><tr><td>R.Version {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Version Information</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>R.Version()</code> provides detailed information about the version of
+<font face="Courier New,Courier" color="#666666"><b>R</b></font> running.
+</p>
+<p>
+<code>R.version</code> is a variable (a <code><a href="list.html">list</a></code>) holding this
+information (and <code>version</code> is a copy of it for S compatibility).
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+R.Version()
+R.version
+R.version.string
+version
+</pre>
+
+
+<h3>Value</h3>
+
+<p>
+<code>R.Version</code> returns a list with character-string components
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>platform</code></td>
+<td>
+the platform for which <font face="Courier New,Courier" color="#666666"><b>R</b></font> was built.  A triplet of the
+form CPU-VENDOR-OS, as determined by the configure script.  E.g,
+<code>"i586-unknown-linux"</code> or <code>"i386-pc-mingw32"</code>.
+</td></tr>
+<tr valign="top"><td><code>arch</code></td>
+<td>
+the architecture (CPU) <font face="Courier New,Courier" color="#666666"><b>R</b></font> was built on/for.</td></tr>
+<tr valign="top"><td><code>os</code></td>
+<td>
+the underlying operating system</td></tr>
+<tr valign="top"><td><code>system</code></td>
+<td>
+CPU and OS, separated by a comma.</td></tr>
+<tr valign="top"><td><code>status</code></td>
+<td>
+the status of the version (e.g., <code>"Alpha"</code>)</td></tr>
+<tr valign="top"><td><code>major</code></td>
+<td>
+the major version number</td></tr>
+<tr valign="top"><td><code>minor</code></td>
+<td>
+the minor version number, including the patchlevel</td></tr>
+<tr valign="top"><td><code>year</code></td>
+<td>
+the year the version was released</td></tr>
+<tr valign="top"><td><code>month</code></td>
+<td>
+the month the version was released</td></tr>
+<tr valign="top"><td><code>day</code></td>
+<td>
+the day the version was released</td></tr>
+<tr valign="top"><td><code>svn rev</code></td>
+<td>
+the Subversion revision number, which should be either
+<code>"unknown"</code> or a single number. (A range of numbers or a number
+with <span class="samp">M</span> or <span class="samp">S</span> appended indicates inconsistencies in the
+sources used to build this version of <font face="Courier New,Courier" color="#666666"><b>R</b></font>.)
+</td></tr>
+<tr valign="top"><td><code>language</code></td>
+<td>
+always <code>"R"</code>.</td></tr>
+<tr valign="top"><td><code>version.string</code></td>
+<td>
+a
+<code><a href="character.html">character</a></code> string concatenating some of the info above,
+useful for plotting, etc.</td></tr>
+</table>
+<p>
+
+<br>
+<code>R.version</code> and <code>version</code> are lists of class
+<code>"simple.list"</code> which has a <code>print</code> method.</p>
+
+<h3>Note</h3>
+
+<p>
+Do <EM>not</EM> use <code>R.version$os</code> to test the platform the
+code is running on: use <code>.Platform$OS.type</code> instead.  Slightly
+different versions of the OS may report different values of
+<code>R.version$os</code>, as may different versions of <font face="Courier New,Courier" color="#666666"><b>R</b></font>.
+</p>
+<p>
+<code>R.version.string</code> is a copy of <code>R.version$version.string</code>
+for simplicity and backwards compatibility.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../utils/html/sessionInfo.html">sessionInfo</a></code> which provides additional
+information;
+<code><a href="numeric_version.html">getRversion</a></code> typically used inside R code,
+<code><a href="Platform.html">.Platform</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+require(graphics)
+
+R.version$os # to check how lucky you are ...
+plot(0) # any plot
+mtext(R.version.string, side=1,line=4,adj=1)# a useful bottom-right note
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

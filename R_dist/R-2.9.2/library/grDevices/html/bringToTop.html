@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Assign Focus to a Window</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for bringToTop {grDevices}"><tr><td>bringToTop {grDevices}</td><td align="right">R Documentation</td></tr></table>
+<h2>Assign Focus to a Window</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>bringToTop</code> brings the specified screen device's window to the
+front of the window stack (and gives it focus).  With first argument
+<code>-1</code> it brings the console to the top.
+</p>
+<p>
+If <code>stay =  TRUE</code>, the window is designated as a topmost window,
+i.e. it will stay on top of any regular window.  <code>stay</code> may only be used
+when Rgui is run in SDI mode.  This corresponds to the &ldquo;Stay on top&rdquo;
+popup menu item in Rgui.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+bringToTop(which = dev.cur(), stay = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>which</code></td>
+<td>
+a device number, or <code>-1</code>.</td></tr>
+<tr valign="top"><td><code>stay</code></td>
+<td>
+whether to make the window stay on top.</td></tr>
+</table>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="msgWindow.html">msgWindow</a></code>, <code><a href="windows.html">windows</a></code>
+</p>
+
+
+
+<hr><div align="center">[Package <em>grDevices</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

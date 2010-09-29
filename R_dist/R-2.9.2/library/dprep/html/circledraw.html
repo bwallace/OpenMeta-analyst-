@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: circledraw</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for circledraw {dprep}"><tr><td>circledraw {dprep}</td><td align="right">R Documentation</td></tr></table>
+<h2>circledraw</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This function draws a circle using the polygon function from the graphics package. It is
+an auxiliary function used by radviz2d.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+circledraw (numpts = 200, radius = 1)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>numpts</code></td>
+<td>
+Number of edges of the polygon, default is 200.</td></tr>
+<tr valign="top"><td><code>radius</code></td>
+<td>
+Radius of the circle to be drawn, default is 1.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+A circle of a specified radius is drawn by the polygon function of the graphics library
+by constructing a polygon with numpts number of edges. It is intended to be an auxiliary
+function for the radviz2d visualization.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+Displays a circle of radius = radius.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Caroline Rodriguez
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+#----Circledraw examples
+circledraw()
+</pre>
+
+
+
+<hr><div align="center">[Package <em>dprep</em> version 2.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

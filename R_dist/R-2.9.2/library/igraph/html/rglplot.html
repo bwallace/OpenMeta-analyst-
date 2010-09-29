@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: 3D plotting of graphs with OpenGL</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for rglplot {igraph}"><tr><td>rglplot {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>3D plotting of graphs with OpenGL</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Using the <code>rgl</code> package, <code>rglplot</code> plots a graph
+in 3D. The plot can be zoomed, rotated, shifted, etc. but the
+coordinates of the vertices is fixed.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+rglplot(x, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+The graph to plot.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+Additional arguments, see <code><a href="plot.common.html">igraph.plotting</a></code>
+fo the details</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Note that <code>rglplot</code> is considered to be highly experimental. It
+is not very useful either. See <code><a href="plot.common.html">igraph.plotting</a></code> for the
+possible arguments.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>NULL</code>, invisibly.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="plot.common.html">igraph.plotting</a></code>,
+<code><a href="plot.graph.html">plot.igraph</a></code> for the 2D version,
+<code><a href="tkplot.html">tkplot</a></code> for interactive graph drawing in 2D.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## Not run: 
+g &lt;- graph.lattice( c(5,5,5) )
+coords &lt;- layout.fruchterman.reingold(g, dim=3)
+rglplot(g, layout=coords)
+## End(Not run)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

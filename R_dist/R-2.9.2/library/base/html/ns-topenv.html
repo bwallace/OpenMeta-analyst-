@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Top Level Environment</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for ns-topenv {base}"><tr><td>ns-topenv {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Top Level Environment</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Finding the top level environment.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+topenv(envir = parent.frame(),
+       matchThisEnv = getOption("topLevelEnvironment"))
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>envir</code></td>
+<td>
+environment.</td></tr>
+<tr valign="top"><td><code>matchThisEnv</code></td>
+<td>
+return this environment, if it matches before
+any other criterion is satisfied.  The default, the option
+&lsquo;topLevelEnvironment&rsquo;, is set by <code><a href="sys.source.html">sys.source</a></code>,
+which treats a specific environment as the top level environment.
+Supplying the argument as <code>NULL</code> means it will never match.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>topenv</code> returns the first top level environment found when
+searching <code>envir</code> and its parent environments.  An environment is
+considered top level if it is the internal environment of a name space,
+a package environment in the search path, or <code>.GlobalEnv</code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+topenv(.GlobalEnv)
+topenv(new.env())
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

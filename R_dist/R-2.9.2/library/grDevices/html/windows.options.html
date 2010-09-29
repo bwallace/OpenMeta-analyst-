@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Auxiliary Function to Set/View Defaults for Arguments of windows()</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for windows.options {grDevices}"><tr><td>windows.options {grDevices}</td><td align="right">R Documentation</td></tr></table>
+<h2>Auxiliary Function to Set/View Defaults for Arguments of windows()</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The auxiliary function <code>windows.options</code> can be used to set or view
+(if called without arguments) the default values for the arguments of
+<code><a href="windows.html">windows</a></code>.
+</p>
+<p>
+<code>windows.options</code> needs to be called before calling <code>windows</code>,
+and the default values it sets can be overridden by supplying
+arguments to <code>windows</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+windows.options(..., reset = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>...</code></td>
+<td>
+arguments <code>width</code>, <code>height</code>, <code>pointsize</code>,
+<code>record</code>, <code>rescale</code>, <code>xpinch</code>, <code>ypinch</code>,
+<code>bg</code>, <code>canvas</code>, <code>gamma</code>, <code>xpos</code>, <code>ypos</code>,
+<code>buffered</code>, <code>restoreConsole</code>, <code>clickToConfirm</code>
+and <code>title</code> can be supplied.</td></tr>
+<tr valign="top"><td><code>reset</code></td>
+<td>
+logical: should the defaults be reset to their
+&lsquo;factory-fresh&rsquo; values?</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+If both <code>reset = TRUE</code> and <code>...</code> are supplied the defaults
+are first reset to the &lsquo;factory-fresh&rsquo; values and then the new
+values are applied.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A named list of all the defaults.  If any arguments are
+supplied the return values are the old values and the result has the
+visibility flag turned off.</p>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="windows.html">windows</a></code>, <code><a href="ps.options.html">ps.options</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>## Not run: 
+## put something like this is your .Rprofile to customize the defaults
+setHook(packageEvent("grDevices", "onLoad"),
+        function(...)
+            grDevices::windows.options(width=8, height=6, xpos=0,
+                                       pointsize=10))
+## End(Not run)</pre>
+
+
+
+<hr><div align="center">[Package <em>grDevices</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

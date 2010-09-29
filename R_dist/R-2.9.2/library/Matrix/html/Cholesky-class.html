@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Cholesky and Bunch-Kaufman Decompositions</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for Cholesky-class {Matrix}"><tr><td>Cholesky-class {Matrix}</td><td align="right">R Documentation</td></tr></table>
+<h2>Cholesky and Bunch-Kaufman Decompositions</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The <code>"Cholesky"</code> class is the class of Cholesky
+decompositions of positive-semidefinite, real dense matrices.  The
+<code>"BunchKaufman"</code> class is the class of Bunch-Kaufman
+decompositions of symmetric, real matrices.  The <code>"pCholesky"</code>
+and <code>"pBunchKaufman"</code> classes are their <EM><B>p</B>acked</EM>
+storage versions.
+</p>
+
+
+<h3>Objects from the Class</h3>
+
+<p>
+Objects can be created by calls of the form <code>new("Cholesky",
+    ...)</code> or <code>new("BunchKaufman", ...)</code>, etc,
+or rather by calls of the form <code><a href="chol.html">chol</a>(pm)</code> or
+<code><a href="BunchKaufman-methods.html">BunchKaufman</a>(pm)</code> where <code>pm</code> inherits from
+the <code>"<a href="dpoMatrix-class.html">dpoMatrix</a>"</code> or <code>"<a href="dsyMatrix-class.html">dsyMatrix</a>"</code>
+class or as a side-effect of other functions
+applied to <code>"dpoMatrix"</code> objects (see <code><a href="dpoMatrix-class.html">dpoMatrix</a></code>).
+</p>
+
+
+<h3>Slots</h3>
+
+<p>
+A Cholesky decomposition extends class
+<code><a href="MatrixFactorization-class.html">MatrixFactorization</a></code> but is basically a triangular
+matrix extending the <code>"<a href="dtrMatrix-class.html">dtrMatrix</a>"</code> class.
+<dl>
+<dt><code>uplo</code>:</dt><dd>inherited from the <code>"dtrMatrix"</code> class.</dd>
+<dt><code>diag</code>:</dt><dd>inherited from the <code>"dtrMatrix"</code> class.</dd>
+<dt><code>x</code>:</dt><dd>inherited from the <code>"dtrMatrix"</code> class.</dd>
+<dt><code>Dim</code>:</dt><dd>inherited from the <code>"dtrMatrix"</code> class.</dd>
+<dt><code>Dimnames</code>:</dt><dd>inherited from the <code>"dtrMatrix"</code> class.</dd>
+</dl>
+<p>
+A Bunch-Kaufman decomposition also extends the <code>"dtrMatrix"</code>
+class and has a <code>perm</code> slot representing a permutation matrix.
+The packed versions extend the <code>"dtpMatrix"</code> class.
+</p>
+
+
+<h3>Extends</h3>
+
+<p>
+Class <code>"MatrixFactorization"</code> and <code>"dtrMatrix"</code>, directly.
+Class <code>"dgeMatrix"</code>, by class <code>"dtrMatrix"</code>.
+Class <code>"Matrix"</code>, by class <code>"dtrMatrix"</code>.
+</p>
+
+
+<h3>Methods</h3>
+
+<p>
+There are currently no methods defined with class "Cholesky" in the
+signature.  Of course methods for <code>"dtrMatrix"</code> or
+<code>"MatrixFactorization"</code> do apply.
+</p>
+
+
+<h3>Note</h3>
+
+<ol>
+<li>Objects of class <code>"Cholesky"</code> typically stem from
+<code><a href="chol.html">chol</a>(D)</code>, applied to a <EM>dense</EM> matrix <code>D</code>.
+</p>
+<p>
+On the other hand, the <EM>function</EM> <code><a href="Cholesky.html">Cholesky</a>(S)</code>
+applies to a <EM>sparse</EM> matrix <code>S</code>, and results in objects
+inheriting from class <code><a href="CHMfactor-class.html">CHMfactor</a></code>.
+<li>For traditional matrices <code>m</code>, <code>chol(m)</code> is a
+traditional matrix as well, triangular, but simply an <i>n * n</i> numeric <code><a href="../../base/html/matrix.html">matrix</a></code>.  Hence, for compatibility,
+the <code>"Cholesky"</code> and <code>"BunchKaufman"</code> classes (and their
+<code>"p*"</code> packed versions) also extend triangular Matrix classes
+(such as "dtrMatrix").
+</p>
+<p>
+Consequently, <code><a href="../../base/html/det.html">determinant</a>(R)</code> for <code>R &lt;- chol(A)</code>
+returns the determinant of <code>R</code>, not of <code>A</code>.  This is in
+contrast to class <code><a href="CHMfactor-class.html">CHMfactor</a></code> objects <code>C</code>, where
+<code>determinant(C)</code> gives the determinant of the <EM>original</EM>
+matrix <code>A</code>, for <code>C &lt;- Cholesky(A)</code>, see also the
+<code>determinant</code> method documentation on the class
+<code><a href="CHMfactor-class.html">CHMfactor</a></code> page.
+</ol>
+
+<h3>See Also</h3>
+
+<p>
+Classes <code><a href="dtrMatrix-class.html">dtrMatrix</a></code>, <code><a href="dpoMatrix-class.html">dpoMatrix</a></code>;
+function <code><a href="chol.html">chol</a></code>.
+</p>
+<p>
+Function <code><a href="Cholesky.html">Cholesky</a></code> resulting in class
+<code><a href="CHMfactor-class.html">CHMfactor</a></code> objects, <EM>not</EM> class "Cholesky"
+ones, see the section &lsquo;Note&rsquo;.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+(sm &lt;- as(as(Matrix(diag(5) + 1), "dsyMatrix"), "dspMatrix"))
+signif(csm &lt;- chol(sm), 4)
+
+(pm &lt;- crossprod(Matrix(rnorm(18), nrow = 6, ncol = 3)))
+(ch &lt;- chol(pm))
+if (toupper(ch@uplo) == "U") # which is TRUE
+   crossprod(ch)
+stopifnot(all.equal(as(crossprod(ch), "matrix"),
+                    as(pm, "matrix"), tol=1e-14))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>Matrix</em> version 0.999375-30 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

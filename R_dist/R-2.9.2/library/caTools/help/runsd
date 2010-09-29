@@ -1,0 +1,159 @@
+runsd                package:caTools                R Documentation
+
+_S_t_a_n_d_a_r_d _D_e_v_i_a_t_i_o_n _o_f _M_o_v_i_n_g _W_i_n_d_o_w_s
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Moving (aka running, rolling) Window's Standard Deviation 
+     calculated over a vector
+
+_U_s_a_g_e:
+
+       runsd(x, k, center = runmean(x,k), 
+                      endrule=c("sd", "NA", "trim", "keep", "constant", "func"))
+
+_A_r_g_u_m_e_n_t_s:
+
+       x: numeric vector of length n
+
+       k: width of moving window; must be an integer between one and n.
+          In case of even k's one will have to provide different
+          'center' function, since 'runmed' does not take even k's.
+
+ endrule: character string indicating how the values at the beginning 
+          and the end, of the data, should be treated. Only first and
+          last 'k2'  values at both ends are affected, where 'k2' is
+          the half-bandwidth  'k2 = k %/% 2'.
+
+             *  '"mad"' - applies the mad function to smaller and
+                smaller sections of the array. Equivalent to:  'for(i
+                in 1:k2) out[i]=mad(x[1:(i+k2)])'. 
+
+             *  '"trim"' - trim the ends; output array length is equal
+                to  'length(x)-2*k2 (out = out[(k2+1):(n-k2)])'. This
+                option mimics  output of 'apply' '(embed(x,k),1,FUN)'
+                and other  related functions.
+
+             *  '"keep"' - fill the ends with numbers from 'x' vector 
+                '(out[1:k2] = x[1:k2])'. This option makes more sense
+                in case of  smoothing functions, kept here for
+                consistency.
+
+             *  '"constant"' - fill the ends with first and last
+                calculated  value in output array '(out[1:k2] =
+                out[k2+1])'
+
+             *  '"NA"' - fill the ends with NA's '(out[1:k2] = NA)'
+
+             *  '"func"' - same as '"mad"' option except that
+                implemented in R for testing purposes. Avoid since it
+                can be very slow for large windows.
+
+          Similar to 'endrule' in 'runmed' function which has the 
+          following options: “'c("median", "keep", "constant")'” . 
+
+  center: moving window center. Defaults  to running mean ('runmean'
+          function). Similar to 'center'   in 'mad' function. 
+
+_D_e_t_a_i_l_s:
+
+     Apart from the end values, the result of y = runmad(x, k) is the
+     same as  “'for(j=(1+k2):(n-k2)) y[j]=sd(x[(j-k2):(j+k2)], na.rm =
+     TRUE)'”. It can handle  non-finite numbers like NaN's and Inf's
+     (like 'mean(x, na.rm = TRUE)').
+
+     The main incentive to write this set of functions was relative
+     slowness of  majority of moving window functions available in R
+     and its packages.  With the  exception of 'runmed', a running
+     window median function, all  functions listed in "see also"
+     section are slower than very inefficient 
+     “'apply(embed(x,k),1,FUN)'” approach.
+
+_V_a_l_u_e:
+
+     Returns a numeric vector of the same length as 'x'. Only in case
+     of  'endrule="trim"'.the output will be shorter.
+
+_A_u_t_h_o_r(_s):
+
+     Jarek Tuszynski (SAIC) jaroslaw.w.tuszynski@saic.com
+
+_S_e_e _A_l_s_o:
+
+     Links related to:
+
+        *  'runsd' - 'sd', 'rollVar' from  'fSeries' library
+
+        *  Other moving window functions  from this package: 'runmin', 
+           'runmax', 'runquantile', 'runmad' and 'runmean' 
+
+        *  generic running window functions: 'apply'' (embed(x,k), 1,
+           FUN)' (fastest), 'rollFun'  from 'fSeries' (slow), 'running'
+           from 'gtools'  package (extremely slow for this purpose),
+           'rapply' from  'zoo' library, 'subsums' from  'magic'
+           library can perform running window operations on data with
+           any  dimensions. 
+
+_E_x_a_m_p_l_e_s:
+
+       # show runmed function
+       k=25; n=200;
+       x = rnorm(n,sd=30) + abs(seq(n)-n/4)
+       col = c("black", "red", "green")
+       m=runmean(x, k)
+       y=runsd(x, k, center=m)
+       plot(x, col=col[1], main = "Moving Window Analysis Functions")
+       lines(m    , col=col[2])
+       lines(m-y/2, col=col[3])
+       lines(m+y/2, col=col[3])
+       lab = c("data", "runmean", "runmean-runsd/2", "runmean+runsd/2")
+       legend(0,0.9*n, lab, col=col, lty=1 )
+
+       # basic tests against apply/embed
+       eps = .Machine$double.eps ^ 0.5
+       k=25 # odd size window
+       a = runsd(x,k, endrule="trim")
+       b = apply(embed(x,k), 1, sd)
+       stopifnot(all(abs(a-b)<eps));
+       k=24 # even size window
+       a = runsd(x,k, endrule="trim")
+       b = apply(embed(x,k), 1, sd)
+       stopifnot(all(abs(a-b)<eps));
+       
+       # test against loop approach
+       # this test works fine at the R prompt but fails during package check - need to investigate
+       k=25; n=200;
+       x = rnorm(n,sd=30) + abs(seq(n)-n/4) # create random data
+       x[seq(1,n,11)] = NaN;                # add NANs
+       k2 = k
+       k1 = k-k2-1
+       a = runsd(x, k)
+       b = array(0,n)
+       for(j in 1:n) {
+         lo = max(1, j-k1)
+         hi = min(n, j+k2)
+         b[j] = sd(x[lo:hi], na.rm = TRUE)
+       }
+       #stopifnot(all(abs(a-b)<eps));
+       
+       # compare calculation at array ends
+       k=25; n=100;
+       x = rnorm(n,sd=30) + abs(seq(n)-n/4)
+       a = runsd(x, k, endrule="sd" )   # fast C code
+       b = runsd(x, k, endrule="func")  # slow R code
+       stopifnot(all(abs(a-b)<eps));
+       
+       # test if moving windows forward and backward gives the same results
+       k=51;
+       a = runsd(x     , k)
+       b = runsd(x[n:1], k)
+       stopifnot(all(abs(a[n:1]-b)<eps));
+
+       # speed comparison
+       ## Not run: 
+       x=runif(1e5); k=51;                       # reduce vector and window sizes
+       system.time(runsd( x,k,endrule="trim"))
+       system.time(apply(embed(x,k), 1, sd)) 
+       
+     ## End(Not run)
+

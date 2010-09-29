@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Write Files in Stata Binary Format</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for write.dta {foreign}"><tr><td>write.dta {foreign}</td><td align="right">R Documentation</td></tr></table>
+<h2>Write Files in Stata Binary Format</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Writes the data frame to file in the Stata binary
+format.  Does not write array variables unless they can be
+<code><a href="../../base/html/drop.html">drop</a></code>-ed to a vector.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+write.dta(dataframe, file, version = 7L,
+          convert.dates = TRUE, tz = "GMT",
+          convert.factors = c("labels", "string", "numeric", "codes"))
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>dataframe</code></td>
+<td>
+a data frame.</td></tr>
+<tr valign="top"><td><code>file</code></td>
+<td>
+character string giving filename.</td></tr>
+<tr valign="top"><td><code>version</code></td>
+<td>
+integer: Stata version: 6, 7, 8 and 10 are supported,
+and 9 is mapped to 8.</td></tr>
+<tr valign="top"><td><code>convert.dates</code></td>
+<td>
+Convert <code>Date</code> and <code>POSIXt</code> objects
+to Stata dates?</td></tr>
+<tr valign="top"><td><code>tz</code></td>
+<td>
+timezone for date conversion</td></tr>
+<tr valign="top"><td><code>convert.factors</code></td>
+<td>
+how to handle factors</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The major differences between file formats in Stata versions is that
+version 7.0 and later allow 32-character variable names (5 and 6 were
+restricted to 8-character name).  The <code>abbreviate</code> function is
+used to trim long variables to the permitted length.  A warning is
+given if this is needed and it is an error for the abbreviated names
+not to be unique.
+</p>
+<p>
+The columns in the data frame become variables in the Stata data set.
+Missing values are correctly handled.
+</p>
+<p>
+Unless deselected, R date and date-time objects (<code>POSIXt</code>
+classes) are converted into the Stata format.  For date-time objects
+this may lose information &ndash; Stata dates are in days since 1960-1-1.
+<code>POSIXct</code> objects can be written without conversion but will not
+be understood as dates by Stata; <code>POSIXlt</code> objects cannot be
+written without conversion.
+</p>
+<p>
+There are four options for handling factors.  The default is to use
+Stata <code>value labels</code> for the factor levels. With
+<code>convert.factors="string"</code>, the factor levels are written as
+strings.  With <code>convert.factors="numeric"</code> the numeric values of
+the levels are written, or <code>NA</code> if they cannot be coerced to
+numeric.  Finally, <code>convert.factors="codes"</code> writes the
+underlying integer codes of the factors.  This last used to be the
+only available method and is provided largely for backwards
+compatibility.
+</p>
+<p>
+For Stata 8 or later use the default <code>version=7</code> &ndash; the only
+advantage of Stata 8 format is that it can represent multiple
+different missing value types, and R doesn't have them.  Stata 10
+allows longer format lists, but R does not make use of them.
+</p>
+<p>
+Note that the Stata formats are documented to be use ASCII strings &ndash;
+<font face="Courier New,Courier" color="#666666"><b>R</b></font> does not enforce this, but use of non-ASCII character strings will
+not be portable as the encoding is not recorded.  Up to 244 bytes are
+allowed in character data, and longer strings will be truncated with a
+warning.
+</p>
+<p>
+Stata uses some large numerical values to represent missing
+values.  This function does not currently check, and hence integers
+greater than <code>2147483620</code> and doubles greater than
+<code>8.988e+307</code> may be misinterpreted by Stata.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>NULL</code></p>
+
+<h3>Author(s)</h3>
+
+<p>
+Thomas Lumley
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Stata 6.0 Users Manual, Stata 7.0 Programming manual, Stata 8.0, 9.0 online
+help describe the file formats.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="read.dta.html">read.dta</a></code>,
+<code><a href="../../base/html/attributes.html">attributes</a></code>,
+<code><a href="../../base/html/DateTimeClasses.html">DateTimeClasses</a></code>,
+<code><a href="../../base/html/abbreviate.html">abbreviate</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+write.dta(swiss, swissfile &lt;- tempfile())
+read.dta(swissfile)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>foreign</em> version 0.8-37 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

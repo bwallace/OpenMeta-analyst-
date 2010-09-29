@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Return both a value and its visibility</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for withVisible {base}"><tr><td>withVisible {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Return both a value and its visibility</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This function evaluates an expression, returning it in a two element list
+containing its value and a flag showing whether it would automatically print.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+withVisible(x)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+An expression to be evaluated. </td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The argument is evaluated in the caller's context.
+</p>
+
+
+<h3>Value</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>value </code></td>
+<td>
+The value of <code>x</code> after evaluation.</td></tr>
+<tr valign="top"><td><code>visible </code></td>
+<td>
+logical; whether the value would auto-print.</td></tr>
+</table>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="invisible.html">invisible</a></code>, <code><a href="eval.html">eval</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+x &lt;- 1
+withVisible(x &lt;- 1)
+x
+withVisible(x)
+
+# Wrap the call in evalq() for special handling
+
+df &lt;- data.frame(a=1:5, b=1:5)
+evalq(withVisible(a + b), envir=df)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

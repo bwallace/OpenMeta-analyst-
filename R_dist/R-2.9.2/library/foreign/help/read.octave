@@ -1,0 +1,45 @@
+read.octave             package:foreign             R Documentation
+
+_R_e_a_d _O_c_t_a_v_e _T_e_x_t _D_a_t_a _F_i_l_e_s
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Read a file in Octave text data format into a list.
+
+_U_s_a_g_e:
+
+     read.octave(file)
+
+_A_r_g_u_m_e_n_t_s:
+
+    file: a character string with the name of the file to read.
+
+_D_e_t_a_i_l_s:
+
+     This function is used to read in files in Octave text data format,
+     as created by 'save -ascii' in Octave.  It knows about most of the
+     common types of variables, including the standard atomic (real and
+     complex scalars, matrices, and N-d arrays, strings, ranges, and
+     boolean scalars and matrices) and recursive (structs, cells, and
+     lists) ones, but has no guarantee to read all types.  If a type is
+     not recognized, a warning indicating the unknown type is issued,
+     it is attempted to skip the unknown entry, and 'NULL' is used as
+     its value.  Note that this will give incorrect results, and maybe
+     even errors, in the case of unknown recursive data types.
+
+     As Octave can read MATLAB binary files, one can make the contents
+     of such files available to R by using Octave's load and save (as
+     text) facilities as an intermediary step.
+
+_V_a_l_u_e:
+
+     A list with one named component for each variable in the file.
+
+_A_u_t_h_o_r(_s):
+
+     Stephen Eglen stephen@gnu.org and Kurt Hornik
+
+_R_e_f_e_r_e_n_c_e_s:
+
+     <URL: http://www.octave.org/>
+

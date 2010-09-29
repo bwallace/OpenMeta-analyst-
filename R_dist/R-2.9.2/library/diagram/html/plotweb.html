@@ -1,0 +1,253 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: plots a web</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for plotweb {diagram}"><tr><td>plotweb {diagram}</td><td align="right">R Documentation</td></tr></table>
+<h2>plots a web</h2>
+
+
+<h3>Description</h3>
+
+<p>
+plots a web, based on a flow matrix
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+plotweb(flowmat, names=NULL, lab.size=1.5, add=FALSE, fig.size=1.3, 
+  main="", sub="", sub2="", log=FALSE, mar=c(2,2,2,2),
+  nullflow=NULL, minflow=NULL, maxflow=NULL,legend=TRUE,
+  leg.digit=5, leg.title=NULL, lcol="black", arr.col="black",
+  val=FALSE, val.digit=5, val.size=0.6, val.col="red",
+  val.title=NULL, val.ncol=1, budget=FALSE, bud.digit=5, bud.size=0.6,
+  bud.title="budget", bud.ncol=1, maxarrow=10, minarrow=1, length=0.1,
+  dcirc=1.2, bty="o", ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>flowmat </code></td>
+<td>
+flow matrix, rows=flow *from*, columns=flow *to*.
+</td></tr>
+<tr valign="top"><td><code>names </code></td>
+<td>
+string vector with the names of components.
+</td></tr>
+<tr valign="top"><td><code>lab.size </code></td>
+<td>
+relative size of name label text.
+</td></tr>
+<tr valign="top"><td><code>add </code></td>
+<td>
+start a new plot (<code>FALSE</code>), or add to current (<code>TRUE</code>).
+</td></tr>
+<tr valign="top"><td><code>fig.size </code></td>
+<td>
+if <code>add = FALSE</code>: relative size of figure.
+</td></tr>
+<tr valign="top"><td><code>main </code></td>
+<td>
+if <code>add = FALSE</code>: main title.
+</td></tr>
+<tr valign="top"><td><code>sub </code></td>
+<td>
+if <code>add = FALSE</code>: sub title.
+</td></tr>
+<tr valign="top"><td><code>sub2 </code></td>
+<td>
+if<code>add = FALSE</code>: title in bottom.
+</td></tr>
+<tr valign="top"><td><code>log </code></td>
+<td>
+logical indicating whether to scale the flow values
+logarithmically.
+</td></tr>
+<tr valign="top"><td><code>mar </code></td>
+<td>
+the figure margins.
+</td></tr>
+<tr valign="top"><td><code>nullflow </code></td>
+<td>
+either one value or a two-valued vector; if flow &lt;
+nullflow[1] or flow &gt; nullflow[2] (if two values): flow is assumed
+= 0 and the arrow is not drawn.
+</td></tr>
+<tr valign="top"><td><code>minflow </code></td>
+<td>
+flowvalue corresponding to minimum arrow thickness.
+</td></tr>
+<tr valign="top"><td><code>maxflow </code></td>
+<td>
+flowvalue corresponding to maximum arrow thickness.
+</td></tr>
+<tr valign="top"><td><code>legend </code></td>
+<td>
+logical indicating whether to add a legend with arrow thickness.
+</td></tr>
+<tr valign="top"><td><code>leg.digit </code></td>
+<td>
+nr of digits for writing legend - only if <code>legend</code>
+= TRUE.
+</td></tr>
+<tr valign="top"><td><code>leg.title </code></td>
+<td>
+title for arrow legend, e.g to give units - only if
+<code>legend</code> =TRUE.
+</td></tr>
+<tr valign="top"><td><code>lcol </code></td>
+<td>
+line color of arrow - not used.
+</td></tr>
+<tr valign="top"><td><code>arr.col </code></td>
+<td>
+arrow color. One value or a matrix, with same dimensions as
+flowmat; if a matrix, each arrow can have a different color.
+</td></tr>
+<tr valign="top"><td><code>val </code></td>
+<td>
+logical indicating whether to write flow values as a legend.
+</td></tr>
+<tr valign="top"><td><code>val.digit </code></td>
+<td>
+nr of digits for writing values - only if <code>val =TRUE</code>.
+</td></tr>
+<tr valign="top"><td><code>val.size </code></td>
+<td>
+relative size for writing values - only if <code>val =TRUE</code>.
+</td></tr>
+<tr valign="top"><td><code>val.col </code></td>
+<td>
+color for writing values - only if <code>val =TRUE</code>.
+</td></tr>
+<tr valign="top"><td><code>val.title </code></td>
+<td>
+title for values legend - only if <code>val =TRUE</code>.
+</td></tr>
+<tr valign="top"><td><code>val.ncol </code></td>
+<td>
+number of columns for writing values - only if
+<code>val =TRUE</code>.
+</td></tr>
+<tr valign="top"><td><code>budget </code></td>
+<td>
+logical indicating whether to calculate budget
+(sum of flows in - sum of flows out) per component.
+</td></tr>
+<tr valign="top"><td><code>bud.digit </code></td>
+<td>
+nr of digits for writing budget - only if
+<code>budget =TRUE</code>.
+</td></tr>
+<tr valign="top"><td><code>bud.size </code></td>
+<td>
+relative size for writing budget - only if
+<code>budget =TRUE</code>.
+</td></tr>
+<tr valign="top"><td><code>bud.title </code></td>
+<td>
+title for budget legend - only if
+<code>budget =TRUE</code>.
+</td></tr>
+<tr valign="top"><td><code>bud.ncol </code></td>
+<td>
+number of columns for writing budget - only if
+<code>budget =TRUE</code>.
+</td></tr>
+<tr valign="top"><td><code>maxarrow </code></td>
+<td>
+maximal thickness of arrow.
+</td></tr>
+<tr valign="top"><td><code>minarrow </code></td>
+<td>
+minimal thickness of arrow.
+</td></tr>
+<tr valign="top"><td><code>length </code></td>
+<td>
+length of the edges of the arrow head (in inches).
+</td></tr>
+<tr valign="top"><td><code>dcirc </code></td>
+<td>
+if cannibalism (flow from i to i), offset of circular 'arrow' -
+if <code>dcirc</code> = 0:no circle drawn.
+</td></tr>
+<tr valign="top"><td><code>bty </code></td>
+<td>
+the type of box to be drawn around the legends (<code>legend</code>,
+<code>val</code>, <code>budget</code>). The allowed values are "o" (the default)
+and "n".
+</td></tr>
+<tr valign="top"><td><code>... </code></td>
+<td>
+extra arguments passed to R-function <a href="../../graphics/html/arrows.html">arrows</a>.
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This function is less flexible than function <code><a href="plotmat.html">plotmat</a></code>
+</p>
+<p>
+It is meant for visualisation of food web flows, that are inputted as a
+flow matrix.
+</p>
+<p>
+It displays the elements on a circle, and, where there is a mass flow,
+two elements are connected,
+</p>
+<p>
+the magnitude of the web flows is reflected by the thickness of the arrow
+</p>
+<p>
+Note that the input matrices from function <code>plotmat</code> and <code>plotweb</code>
+are transposed.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Karline Soetaert &lt;k.soetaert@nioo.knaw.nl&gt;
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="plotmat.html">plotmat</a></code>,
+</p>
+<p>
+<code><a href="Rigaweb.html">Rigaweb</a></code>, <code><a href="Takapotoweb.html">Takapotoweb</a></code>
+</p>
+<p>
+try: demo(plotweb)
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+  plotweb(Rigaweb,main="Gulf of Riga food web",sub="mgC/m3/d",val=TRUE)
+
+  ArrCol &lt;- Rigaweb
+  ArrCol[] &lt;- "black"
+  ArrCol[,"Sedimentation"] &lt;- "green"
+
+  plotweb(Rigaweb,main="Gulf of Riga food web",sub="mgC/m3/d",val=FALSE,
+          arr.col=ArrCol)
+
+  plotweb(diag(20),main="plotweb")
+</pre>
+
+
+
+<hr><div align="center">[Package <em>diagram</em> version 1.5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

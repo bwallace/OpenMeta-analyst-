@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Class for &ldquo;no quote&rdquo; Printing of Character Strings</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for noquote {base}"><tr><td>noquote {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Class for &ldquo;no quote&rdquo; Printing of Character Strings</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Print character strings without quotes.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+noquote(obj)
+
+## S3 method for class 'noquote':
+print(x, ...)
+
+## S3 method for class 'noquote':
+c(..., recursive = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>obj</code></td>
+<td>
+any <font face="Courier New,Courier" color="#666666"><b>R</b></font> object, typically a vector of
+<code><a href="character.html">character</a></code> strings.</td></tr>
+<tr valign="top"><td><code>x</code></td>
+<td>
+an object of class <code>"noquote"</code>.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+further options passed to next methods, such as <code><a href="print.html">print</a></code>.</td></tr>
+<tr valign="top"><td><code>recursive</code></td>
+<td>
+for compatibility with the generic <code><a href="c.html">c</a></code> function.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>noquote</code> returns its argument as an object of class
+<code>"noquote"</code>.  There is a method for <code>c()</code> and subscript
+method (<code>"[.noquote"</code>) which ensures that the class is not lost
+by subsetting.  The print method (<code>print.noquote</code>) prints
+character strings <EM>without</EM> quotes (<code>"..."</code>).
+</p>
+<p>
+These functions exist both as utilities and as an example of using (S3)
+<code><a href="class.html">class</a></code> and object orientation.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Martin Maechler <a href="mailto:maechler@stat.math.ethz.ch">maechler@stat.math.ethz.ch</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../utils/html/methods.html">methods</a></code>,
+<code><a href="class.html">class</a></code>,
+<code><a href="print.html">print</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+letters
+nql &lt;- noquote(letters)
+nql
+nql[1:4] &lt;- "oh"
+nql[1:12]
+
+cmp.logical &lt;- function(log.v)
+{
+  ## Purpose: compact printing of logicals
+  log.v &lt;- as.logical(log.v)
+  noquote(if(length(log.v)==0)"()" else c(".","|")[1+log.v])
+}
+cmp.logical(stats::runif(20) &gt; 0.8)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

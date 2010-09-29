@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Space Shuttle Autolander Problem</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for shuttle {MASS}"><tr><td>shuttle {MASS}</td><td align="right">R Documentation</td></tr></table>
+<h2>Space Shuttle Autolander Problem</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The <code>shuttle</code> data frame has 256 rows and 7 columns.
+The first six columns are categorical variables giving example
+conditions; the seventh is the decision.  The first 253 rows are the
+training set, the last 3 the test conditions.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+shuttle
+</pre>
+
+
+<h3>Format</h3>
+
+<p>
+This data frame contains the following factor columns:
+<dl>
+<dt><code>stability</code></dt><dd>stable positioning or not (<code>stab</code> / <code>xstab</code>).
+</dd>
+<dt><code>error</code></dt><dd>size of error (<code>MM</code> / <code>SS</code> / <code>LX</code> / <code>XL</code>).
+</dd>
+<dt><code>sign</code></dt><dd>sign of error, positive or negative (<code>pp</code> / <code>nn</code>).
+</dd>
+<dt><code>wind</code></dt><dd>wind sign (<code>head</code> / <code>tail</code>).
+</dd>
+<dt><code>magn</code></dt><dd>wind strength (<code>Light</code> / <code>Medium</code> / <code>Strong</code> /
+<code>Out of Range</code>).
+</dd>
+<dt><code>vis</code></dt><dd>visibility (<code>yes</code> / <code>no</code>).
+</dd>
+<dt><code>use</code></dt><dd>use the autolander or not. (<code>auto</code> / <code>noauto</code>.)
+</dd>
+</dl>
+
+<h3>Source</h3>
+
+<p>
+D. Michie (1989)
+Problems of computer-aided concept formation. In
+<EM>Applications of Expert Systems 2</EM>,
+ed. J. R. Quinlan, Turing Institute Press / Addison-Wesley, pp. 310&ndash;333.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Venables, W. N. and Ripley, B. D. (2002)
+<EM>Modern Applied Statistics with S.</EM> Fourth edition.  Springer.
+</p>
+
+
+
+<hr><div align="center">[Package <em>MASS</em> version 7.2-48 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Split Data into Test and Train Set</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for sample.split {caTools}"><tr><td>sample.split {caTools}</td><td align="right">R Documentation</td></tr></table>
+<h2>Split Data into Test and Train Set</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Split data from vector Y into two sets in predefined ratio while 
+preserving relative ratios of different labels in Y. Used to split the data
+used during classification into train and test subsets.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+ sample.split( Y, SplitRatio = 2/3, group = NULL )
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>Y</code></td>
+<td>
+Vector of data labels. If there are only a few labels (as is 
+expected) than relative ratio of data in both subsets will be the same.</td></tr>
+<tr valign="top"><td><code>SplitRatio</code></td>
+<td>
+Splitting ratio: 
+<ul>
+<li>if <code>(0&lt;=SplitRatio&lt;1)</code> then <code>SplitRatio</code> fraction of 
+points from Y will be set toTRUE
+<li>if <code>(SplitRatio==1)</code> then one random point from Y will be set 
+to TRUE
+<li>if <code>(SplitRatio&gt;1)</code> then <code>SplitRatio</code> number of points 
+from Y will be set to TRUE
+</ul>
+</td></tr>
+<tr valign="top"><td><code>group</code></td>
+<td>
+Optional vector/list used when multiple copies of each sample 
+are present. In such a case <code>group</code> contains unique sample labels, 
+marking all copies of the same sample with the same 
+label, and the function tries to place all copies in either train or test 
+subset. If provided than has to have the same length as <code>Y</code>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Function <code>msc.sample.split</code> is the old name of the 
+<code>sample.split</code> function. To be retired soon.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+Returns logical vector of the same length as Y with random
+<code>SplitRatio*length(Y)</code> elements set to TRUE.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Jarek Tuszynski (SAIC) <a href="mailto:jaroslaw.w.tuszynski@saic.com">jaroslaw.w.tuszynski@saic.com</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<ul>
+<li>Similar to <code><a href="../../timeDate/html/sample.html">sample</a></code> function.
+<li>Variable <code>group</code> is used in the same way as <code>f</code> argument in 
+<code><a href="../../flowCore/html/split-methods.html">split</a></code> and <code>INDEX</code> argument in <code><a href="../../base/html/tapply.html">tapply</a></code>
+</ul>
+
+<h3>Examples</h3>
+
+<pre>
+  library(MASS)
+  data(cats)   # load cats data
+  Y = cats[,1] # extract labels from the data
+  msk = sample.split(Y, SplitRatio=3/4)
+  table(Y,msk)
+  t=sum( msk)  # number of elements in one class
+  f=sum(!msk)  # number of elements in the other class
+  stopifnot( round((t+f)*3/4) == t ) # test ratios
+  
+  # example of using group variable
+  g = rep(seq(length(Y)/4), each=4); g[48]=12;
+  msk = sample.split(Y, SplitRatio=1/2, group=g)
+  table(Y,msk) # try to get correct split ratios ...
+  split(msk,g) # ... while keeping samples with the same group label together
+
+  # test results
+  print(paste( "All Labels numbers: total=",t+f,", train=",t,", test=",f,
+        ", ratio=", t/(t+f) ) )
+  U = unique(Y)       # extract all unique labels
+  for( i in 1:length(U)) {  # check for all labels
+    lab = (Y==U[i])   # mask elements that have label U[i]
+    t=sum( msk[lab])  # number of elements with label U[i] in one class
+    f=sum(!msk[lab])  # number of elements with label U[i] in the other class 
+    print(paste( "Label",U[i],"numbers: total=",t+f,", train=",t,", test=",f, 
+                 ", ratio=", t/(t+f) ) )
+  }
+  
+  # use results
+  train = cats[ msk,2:3]  # use output of sample.split to ...
+  test  = cats[!msk,2:3]  # create train and test subsets
+  z = lda(train, Y[msk])  # perform classification
+  table(predict(z, test)$class, Y[!msk]) # predicted &amp; true labels
+  
+  # see also LogitBoost example
+</pre>
+
+
+
+<hr><div align="center">[Package <em>caTools</em> version 1.9 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

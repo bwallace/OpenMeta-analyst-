@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: coordinates of elements on a plot</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for coordinates {diagram}"><tr><td>coordinates {diagram}</td><td align="right">R Documentation</td></tr></table>
+<h2>coordinates of elements on a plot</h2>
+
+
+<h3>Description</h3>
+
+<p>
+estimates coordinates of elements, neatly arranged on a plot.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+coordinates(pos=NULL, mx=0.0, my=0.0, N=length(pos), hor=TRUE, 
+  relsize=1)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>pos </code></td>
+<td>
+vector specifying the number of elements in each row, or
+2-columned matrix with element position, or <code>NULL</code>.
+</td></tr>
+<tr valign="top"><td><code>mx </code></td>
+<td>
+horizontal shift (x).
+</td></tr>
+<tr valign="top"><td><code>my </code></td>
+<td>
+vertical shift (y).
+</td></tr>
+<tr valign="top"><td><code>N </code></td>
+<td>
+total number of elements to be positioned - only if pos=<code>NULL</code>.
+</td></tr>
+<tr valign="top"><td><code>hor </code></td>
+<td>
+only if <code>pos</code> is a 2-columned matrix. In this case, when
+<code>hor = TRUE</code>, <code>pos</code> specifies number of elements per row;
+when <code>FALSE</code> per column.
+</td></tr>
+<tr valign="top"><td><code>relsize </code></td>
+<td>
+scaling factor as a function of graph size.
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+the position of the elements are specified with <code>pos</code>, which is
+either <code>NULL</code>, or a vector specifying the number of elements on a row,
+or a 2-columned matrix specifying the (x,y) position of each element.
+<ul>
+<li>when <code>pos</code> is <code>NULL</code>, the elements will be arranged
+on a circle; in this case, the number of elements to be
+positioned must be specified with <code>N</code>.
+<li>when <code>pos</code> is a vector, it specifies the number of elements
+in each row (if <code>hor =TRUE</code>) or in each column (if
+<code>hor = FALSE</code>).
+</p>
+<p>
+For instance, with <code>hor=TRUE</code> and <code>pos = c(3,2,1)</code> the
+elements will be arranged in 3 rows (length of vector); on the top row
+3 elements; on the second row 2; and on the third row 1
+element will be positioned. All elements within a row are equally
+distributed horizontally; all rows are equally distributed vertically;
+<li>when <code>pos</code> is a matrix, it specifies the x(1st column) and
+y(2nd column) position of each element and is returned as such.
+</ul>
+<p>
+The offset from the x-axis and from the y-axis can be changed with
+<code>mx</code> and <code>my</code>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+2-columned matrix, with coordinates (x,y) of each of the elements</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Karline Soetaert &lt;k.soetaert@nioo.knaw.nl&gt;
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+  openplotmat(main="coordinates")
+  text(coordinates(N=6),lab=LETTERS[1:6],cex=2)
+  text(coordinates(N=8,relsize=0.5),lab=letters[1:8],cex=2)
+  openplotmat(main="coordinates")
+  text(coordinates(pos=c(2,4,2)),lab=letters[1:8],cex=2)
+  plot(0,type="n",xlim=c(0,5),ylim=c(2,8),main="coordinates")
+  text(coordinates(pos=c(2,4,3),hor=FALSE),lab=1:9,cex=2)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>diagram</em> version 1.5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

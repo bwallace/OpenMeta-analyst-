@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Generalized Additive Model residuals</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for residuals.gam {mgcv}"><tr><td>residuals.gam {mgcv}</td><td align="right">R Documentation</td></tr></table>
+<h2>Generalized Additive Model residuals</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Returns residuals for a fitted <code>gam</code> model
+object. Pearson, deviance, working and response residuals are
+available.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'gam':
+residuals(object, type = c("deviance", "pearson","scaled.pearson", 
+                                         "working", "response"),...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>object</code></td>
+<td>
+a <code>gam</code> fitted model object. </td></tr>
+<tr valign="top"><td><code>type</code></td>
+<td>
+the type of residuals wanted. </td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+other arguments.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Response residuals are the raw residuals (data minus fitted
+values). Scaled Pearson residuals are raw residuals divided by the standard
+deviation of the data according to the model mean variance
+relationship and estimated scale parameter. Pearson residuals are the same, but multiplied by the square root 
+of the scale parameter (so they are independent of the scale parameter):
+(<i>(y-m)/V(m)^0.5</i>, where  <i>y</i> is data <i>m</i> 
+is model fitted value and <i>V</i> is model mean-variance relationship.). Both are provided since not all texts 
+agree on the definition of Pearson residuals. Deviance residuals simply
+return the deviance residuals defined by the model family. Working
+residuals are the residuals returned from model fitting at convergence.
+</p>
+<p>
+There is  a special function for <code>gam</code> objects because of a bug
+in the calculation of Pearson residuals in some earlier versions of
+<code>residual.glm</code>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+An array of residuals.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Simon N. Wood <a href="mailto:simon.wood@r-project.org">simon.wood@r-project.org</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="gam.html">gam</a></code>
+</p>
+
+
+
+<hr><div align="center">[Package <em>mgcv</em> version 1.5-5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

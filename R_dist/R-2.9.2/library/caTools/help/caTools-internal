@@ -1,0 +1,68 @@
+EndRule               package:caTools               R Documentation
+
+_i_n_t_e_r_n_a_l _f_u_n_c_t_i_o_n
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     internal function
+
+_U_s_a_g_e:
+
+     EndRule(x, y, k, 
+                  endrule=c("NA", "trim", "keep", "constant", "func"), Func, ...)
+
+_A_r_g_u_m_e_n_t_s:
+
+       x: numeric vector of length n
+
+       k: width of moving window; must be an integer between one and n.
+
+ endrule: character string indicating how the values at the beginning 
+          and the end, of the data, should be treated. Only first and
+          last 'k2'  values at both ends are affected, where 'k2' is
+          the half-bandwidth  'k2 = k %/% 2'.
+
+             *  '"mad"' - applies the mad function to smaller and
+                smaller sections of the array. Equivalent to:  'for(i
+                in 1:k2) out[i]=mad(x[1:(i+k2)])'. 
+
+             *  '"trim"' - trim the ends; output array length is equal
+                to  'length(x)-2*k2 (out = out[(k2+1):(n-k2)])'. This
+                option mimics  output of 'apply' '(embed(x,k),1,FUN)'
+                and other  related functions.
+
+             *  '"keep"' - fill the ends with numbers from 'x' vector 
+                '(out[1:k2] = x[1:k2])'. This option makes more sense
+                in case of  smoothing functions, kept here for
+                consistency.
+
+             *  '"constant"' - fill the ends with first and last
+                calculated  value in output array '(out[1:k2] =
+                out[k2+1])'
+
+             *  '"NA"' - fill the ends with NA's '(out[1:k2] = NA)'
+
+             *  '"func"' - same as '"mad"' option except that
+                implemented in R for testing purposes. Avoid since it
+                can be very slow for large windows.
+
+       y: numeric vector of length n, which is partially filled output
+          of  one of the 'run' functions. Function 'EndRule' will fill
+          the  remaining beginning and end sections using method chosen
+          by 'endrule'  argument.
+
+    Func: Function name that 'EndRule' will use in case of 
+          'endrule="func"'.
+
+     ...: Additional parameters to 'Func' that 'EndRule' will  use in
+          case of 'endrule="func"'.
+
+_V_a_l_u_e:
+
+     Returns a numeric vector of the same length as 'x'. Only in case
+     of  'endrule="trim"'.the output will be shorter.
+
+_A_u_t_h_o_r(_s):
+
+     Jarek Tuszynski (SAIC) jaroslaw.w.tuszynski@saic.com
+

@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: internal function</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for EndRule {caTools}"><tr><td>EndRule {caTools}</td><td align="right">R Documentation</td></tr></table>
+<h2>internal function</h2>
+
+
+<h3>Description</h3>
+
+<p>
+internal function
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>EndRule(x, y, k, 
+             endrule=c("NA", "trim", "keep", "constant", "func"), Func, ...)</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+numeric vector of length n</td></tr>
+<tr valign="top"><td><code>k</code></td>
+<td>
+width of moving window; must be an integer between one and n.</td></tr>
+<tr valign="top"><td><code>endrule</code></td>
+<td>
+character string indicating how the values at the beginning 
+and the end, of the data, should be treated. Only first and last <code>k2</code> 
+values at both ends are affected, where <code>k2</code> is the half-bandwidth 
+<code>k2 = k %/% 2</code>.
+<ul>
+<li><code>"mad"</code> - applies the mad function to
+smaller and smaller sections of the array. Equivalent to: 
+<code>for(i in 1:k2) out[i]=mad(x[1:(i+k2)])</code>. 
+<li><code>"trim"</code> - trim the ends; output array length is equal to 
+<code>length(x)-2*k2 (out = out[(k2+1):(n-k2)])</code>. This option mimics 
+output of <code><a href="../../msProcess/html/apply.html">apply</a></code> <code>(<a href="../../stats/html/embed.html">embed</a>(x,k),1,FUN)</code> and other 
+related functions.
+<li><code>"keep"</code> - fill the ends with numbers from <code>x</code> vector 
+<code>(out[1:k2] = x[1:k2])</code>. This option makes more sense in case of 
+smoothing functions, kept here for consistency.
+<li><code>"constant"</code> - fill the ends with first and last calculated 
+value in output array <code>(out[1:k2] = out[k2+1])</code>
+<li><code>"NA"</code> - fill the ends with NA's <code>(out[1:k2] = NA)</code>
+<li><code>"func"</code> - same as <code>"mad"</code> option except that implemented
+in R for testing purposes. Avoid since it can be very slow for large windows.
+</ul>
+</td></tr>
+<tr valign="top"><td><code>y</code></td>
+<td>
+numeric vector of length n, which is partially filled output of 
+one of the <code>run</code> functions. Function <code>EndRule</code> will fill the 
+remaining beginning and end sections using method chosen by <code>endrule</code> 
+argument.</td></tr>
+<tr valign="top"><td><code>Func</code></td>
+<td>
+Function name that <code>EndRule</code> will use in case of 
+<code>endrule="func"</code>.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+Additional parameters to <code>Func</code> that <code>EndRule</code> will 
+use in case of <code>endrule="func"</code>.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+Returns a numeric vector of the same length as <code>x</code>. Only in case of 
+<code>endrule="trim"</code>.the output will be shorter.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Jarek Tuszynski (SAIC) <a href="mailto:jaroslaw.w.tuszynski@saic.com">jaroslaw.w.tuszynski@saic.com</a>
+</p>
+
+
+
+<hr><div align="center">[Package <em>caTools</em> version 1.9 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

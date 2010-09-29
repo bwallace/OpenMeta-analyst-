@@ -1,0 +1,159 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: adds a colored and rotated multigonal shape to a plot</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for filledmultigonal {shape}"><tr><td>filledmultigonal {shape}</td><td align="right">R Documentation</td></tr></table>
+<h2>adds a colored and rotated multigonal shape to a plot</h2>
+
+
+<h3>Description</h3>
+
+<p>
+draws and colors a rotated shape with equal-sized vertices ;
+color can be a palette.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+filledmultigonal(mid=c(0,0), rx=1, ry=rx, nr=4, 
+  col=femmecol(100),values=NULL, zlim=NULL,lwd=2,lcol=NA,angle=0, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>mid </code></td>
+<td>
+midpoint of multigonal.
+</td></tr>
+<tr valign="top"><td><code>rx </code></td>
+<td>
+horizontal radius.
+</td></tr>
+<tr valign="top"><td><code>ry </code></td>
+<td>
+vertical radius.
+</td></tr>
+<tr valign="top"><td><code>nr </code></td>
+<td>
+number of sides.
+</td></tr>
+<tr valign="top"><td><code>col </code></td>
+<td>
+color palette to be used; also allowed are two extremes or one value.
+</td></tr>
+<tr valign="top"><td><code>values </code></td>
+<td>
+if not <code>NULL</code>, a matrix providing (radius,z-values)
+couples, used for coloring.
+</td></tr>
+<tr valign="top"><td><code>zlim </code></td>
+<td>
+Only if <code>values</code> is not <code>NULL</code>: the minimum and
+maximum z values for which colors should be plotted,
+defaulting to the range of the finite values of the second column of
+<code>values</code>.
+</td></tr>
+<tr valign="top"><td><code>lwd </code></td>
+<td>
+width of external line.
+</td></tr>
+<tr valign="top"><td><code>lcol </code></td>
+<td>
+line color.
+</td></tr>
+<tr valign="top"><td><code>angle </code></td>
+<td>
+angle of rotation, in degrees.
+</td></tr>
+<tr valign="top"><td><code>... </code></td>
+<td>
+arguments passed to R-function <a href="../../graphics/html/polygon.html">polygon</a>.
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Coloration proceeds from midpoint to external edge
+</p>
+<p>
+<code>rx</code>,<code>ry</code>: horizontal and vertical radiusses of the shape.
+Here "horizontal" and "vertical" denote the position BEFORE rotation
+</p>
+<p>
+<code>values</code>: if not <code>NULL</code>, a matrix providing (radius,z-values)
+couples, used for coloring.
+Here radius are positive values denoting the relative distance between
+the shapes centre and edge.
+The radiusses are rescaled to be in [0,1] if needed.
+z-values (2nd column of <code>values</code>) together with <code>zlim</code> and
+<code>col</code> denote the coloration level.
+</p>
+<p>
+Colors in <code>col</code> will be interpolated to the z-values and used to
+color an interval as given by the input radiusses.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Karline Soetaert &lt;k.soetaert@nioo.knaw.nl&gt;
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="filledrectangle.html">filledrectangle</a></code>, <code><a href="filledshape.html">filledshape</a></code>,
+<code><a href="filledcylinder.html">filledcylinder</a></code>, <code><a href="filledellipse.html">filledellipse</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>emptyplot(c(-1,1),main="filledmultigonal")
+  filledmultigonal(rx=0.25,ry=0.125,nr=3,mid=c(-0.75,0.75),
+                   angle=45,col=shadepalette("red","blue",n=50))
+  filledmultigonal(rx=0.125,ry=0.25,nr=3,mid=c(-0.25,0.75),
+                   col=shadepalette("red","yellow",n=50))
+  filledmultigonal(rx=0.25,ry=0.25 ,nr=3,mid=c(0.25,0.75), 
+                   col=c("red","orange"))
+  filledmultigonal(rx=0.25,ry=0.25 ,nr=3,mid=c(0.75,0.75),
+                   angle=90, col="red")
+  
+  filledmultigonal(rx=0.25,ry=0.25,nr=4,mid=c(-0.75,0.25),angle=0,
+                   col=shadepalette("red","blue",n=50))
+  filledmultigonal(rx=0.25,ry=0.25,nr=4,mid=c(-0.25,0.25),angle=45,
+                   col=shadepalette("red","blue",n=50))
+  filledmultigonal(rx=0.25,ry=0.125,nr=4,mid=c(0.25,0.25),angle=0,
+                   col=shadepalette("red","blue",n=50))
+  filledmultigonal(rx=0.25,ry=0.125,nr=4,mid=c(0.75,0.25),angle=45,
+                   col=shadepalette("red","blue",n=50))
+  
+  filledmultigonal(rx=0.25,ry=0.25,nr=5,mid=c(-0.75,-0.25),angle=0,
+                   col=shadepalette("darkgreen","lightgreen",n=50))
+  filledmultigonal(rx=0.25,angle=0,nr=5,mid=c(-0.25,-0.25),
+                   col=rainbow(50))
+  filledmultigonal(rx=0.25,angle=30,nr=6,mid=c(0.25,-0.25),
+                   col=femmecol(50))
+  filledmultigonal(rx=0.25,ry=0.125,angle=30,nr=6,mid=c(0.75,-0.25),
+                   col="black")
+  
+  filledmultigonal(rx=0.25,col="darkblue",nr=7,mid=c(-0.75,-0.75))
+  filledmultigonal(rx=0.25,col="darkblue",nr=9,mid=c(-0.25,-0.75))
+  filledmultigonal(rx=0.25,col="darkblue",nr=3.7,mid=c(0.25,-0.75))
+  filledmultigonal(rx=0.25,col="darkblue",nr=4.5,mid=c(0.75,-0.75))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>shape</em> version 1.2.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

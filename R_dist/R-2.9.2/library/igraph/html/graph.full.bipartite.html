@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Create a full bipartite graph</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for graph.full.bipartite {igraph}"><tr><td>graph.full.bipartite {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Create a full bipartite graph</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Bipartite graphs are also called two-mode by some. This
+function creates a bipartite graph in which every possible edge is
+present.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+graph.full.bipartite (n1, n2, directed = FALSE, mode = c("all", "out", "in")) 
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>n1</code></td>
+<td>
+The number of vertices of the first kind.</td></tr>
+<tr valign="top"><td><code>n2</code></td>
+<td>
+The number of vertices of the second kind.</td></tr>
+<tr valign="top"><td><code>directed</code></td>
+<td>
+Logical scalar, whether the graphs is directed.</td></tr>
+<tr valign="top"><td><code>mode</code></td>
+<td>
+Scalar giving the kind of edges to create for directed
+graphs. If this is &lsquo;<code>out</code>&rsquo; then all vertices of the
+first kind are connected to the others; &lsquo;<code>in</code>&rsquo; specifies
+the opposite direction; &lsquo;<code>all</code>&rsquo; creates mutual
+edges. This argument is ignored for undirected graphs.x</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Bipartite graphs have a &lsquo;<code>type</code>&rsquo; vertex attribute in
+igraph, this is boolean and <code>FALSE</code> for the vertices of the first
+kind and <code>TRUE</code> for vertices of the second kind.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+An igraph graph, with the &lsquo;<code>type</code>&rsquo; vertex attribute set.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="graph.constructors.html">graph.full</a></code> for creating one-mode full graphs
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+g &lt;- graph.full.bipartite(2, 3)
+g2 &lt;- graph.full.bipartite(2, 3, dir=TRUE)
+g3 &lt;- graph.full.bipartite(2, 3, dir=TRUE, mode="in")
+g4 &lt;- graph.full.bipartite(2, 3, dir=TRUE, mode="all")
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

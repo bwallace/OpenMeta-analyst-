@@ -1,0 +1,46 @@
+ROCR.hiv                package:ROCR                R Documentation
+
+_D_a_t_a _s_e_t: _S_u_p_p_o_r_t _v_e_c_t_o_r _m_a_c_h_i_n_e_s _a_n_d _n_e_u_r_a_l _n_e_t_w_o_r_k_s _a_p_p_l_i_e_d _t_o _t_h_e
+_p_r_e_d_i_c_t_i_o_n _o_f _H_I_V-_1 _c_o_r_e_c_e_p_t_o_r _u_s_a_g_e
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Linear support vector machines (libsvm) and neural networks (R
+     package nnet) were applied to predict usage of the coreceptors
+     CCR5 and CXCR4 based on sequence data of the third variable loop
+     of the HIV envelope protein.
+
+_U_s_a_g_e:
+
+     data(ROCR.hiv)
+
+_F_o_r_m_a_t:
+
+     A list consisting of the SVM ('ROCR.hiv$hiv.svm') and NN
+     ('ROCR.hiv$hiv.nn') classification data. Each of those is in turn
+     a list consisting of the two elements '$predictions' and '$labels'
+     (10 element list representing cross-validation data).
+
+_R_e_f_e_r_e_n_c_e_s:
+
+     Sing, T. & Beerenwinkel, N. & Lengauer, T.  "Learning mixtures of
+     localized rules by maximizing the area under the ROC curve".  1st
+     International Workshop on ROC Analysis in AI, 89-96, 2004.
+
+_E_x_a_m_p_l_e_s:
+
+     data(ROCR.hiv)
+     attach(ROCR.hiv)
+     pred.svm <- prediction(hiv.svm$predictions, hiv.svm$labels)
+     perf.svm <- performance(pred.svm, 'tpr', 'fpr')
+     pred.nn <- prediction(hiv.nn$predictions, hiv.svm$labels)
+     perf.nn <- performance(pred.nn, 'tpr', 'fpr')
+     plot(perf.svm, lty=3, col="red",main="SVMs and NNs for prediction of
+     HIV-1 coreceptor usage")
+     plot(perf.nn, lty=3, col="blue",add=TRUE)
+     plot(perf.svm, avg="vertical", lwd=3, col="red",
+          spread.estimate="stderror",plotCI.lwd=2,add=TRUE)
+     plot(perf.nn, avg="vertical", lwd=3, col="blue",
+     spread.estimate="stderror",plotCI.lwd=2,add=TRUE)
+     legend(0.6,0.6,c('SVM','NN'),col=c('red','blue'),lwd=3)
+

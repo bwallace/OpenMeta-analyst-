@@ -1,0 +1,99 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Combine R Objects With a Column Labeling the Source</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for combine {gdata}"><tr><td>combine {gdata}</td><td align="right">R Documentation</td></tr></table>
+<h2>Combine R Objects With a Column Labeling the Source</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Take a sequence of vector, matrix or data frames and
+combine into rows of a common data frame with an additional column
+<code>source</code> indicating the source object.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+combine(..., names=NULL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>...</code></td>
+<td>
+vectors or matrices to combine.</td></tr>
+<tr valign="top"><td><code>names</code></td>
+<td>
+character vector of names to use when creating source column.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+If there are several matrix arguments, they must all have the same
+number of columns.  The number of columns in the result will be one
+larger than the number of columns in the component matrixes. If all
+of the arguments are vectors, these are treated as single column
+matrixes.  In this case, the column containing the combineinated
+vector data is labeled <code>data</code>.
+</p>
+<p>
+When the arguments consist of a mix of matrices and vectors the
+number of columns of the result is determined by the number
+of columns of the matrix arguments.  Vectors are considered row
+vectors and have their values recycled or subsetted (if necessary)
+to achieve this length.
+</p>
+<p>
+The <code>source</code> column is created as a factor with levels
+corresponding to the name of the object from which the each row was
+obtained.  When the <code>names</code> argument is ommitted, the name of
+each object is obtained from the specified argument name in the
+call (if present) or from the name of the object.  See below for
+examples.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Gregory R. Warnes <a href="mailto:greg@random-technologies-llc.com">greg@random-technologies-llc.com</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../timeSeries/html/methods-bind.html">rbind</a></code>, <code><a href="../../timeSeries/html/methods-bind.html">merge</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+
+a  &lt;-  matrix(rnorm(12),ncol=4,nrow=3)
+b  &lt;-  1:4
+combine(a,b)
+
+combine(x=a,b)
+combine(x=a,y=b)
+combine(a,b,names=c("one","two"))
+
+c &lt;- 1:6
+combine(b,c)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>gdata</em> version 2.6.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

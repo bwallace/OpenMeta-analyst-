@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Add Summary Estimate Polygon to Forest Plot</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for addpoly.rma {metafor}"><tr><td>addpoly.rma {metafor}</td><td align="right">R Documentation</td></tr></table>
+<h2>Add Summary Estimate Polygon to Forest Plot</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Function to add a polygon to a forest plot showing the summary estimate with correspondong confidence interval based on an object of class <code>"rma"</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'rma':
+addpoly(x, row=-2, level=x$level, digits=2, annotate=TRUE, 
+        mlab=NULL, transf=FALSE, atransf=FALSE, targs=NULL, 
+        col="black", efac=1, cex=NULL, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+an object of class <code>"rma"</code>.</td></tr>
+<tr valign="top"><td><code>row</code></td>
+<td>
+integer specifying the row number where the polygon should be placed (default is -2).</td></tr>
+<tr valign="top"><td><code>level</code></td>
+<td>
+a numerical value between 0 and 100 specifying the confidence interval level (the default is to take the value from the object).</td></tr>
+<tr valign="top"><td><code>digits</code></td>
+<td>
+integer value specifying the number of decimal places to which the annotations should be rounded (default is 2).</td></tr>
+<tr valign="top"><td><code>annotate</code></td>
+<td>
+logical specifying whether annotations for the summary estimate should be added to the plot (default is <code>TRUE</code>).</td></tr>
+<tr valign="top"><td><code>mlab</code></td>
+<td>
+optional character string giving a label for the summary estimate polygon. Defaults to <code>NULL</code>, which means that the label is created within the function.</td></tr>
+<tr valign="top"><td><code>transf</code></td>
+<td>
+an optional argument specifying the name of a function that should be used to transform the summary estimate and confidence interval bound. Defaults to <code>FALSE</code>, which means that no transformation is used.</td></tr>
+<tr valign="top"><td><code>atransf</code></td>
+<td>
+an optional argument specifying the name of a function that should be used to transform the annotations. Defaults to <code>FALSE</code>, which means that no transformation is used.</td></tr>
+<tr valign="top"><td><code>targs</code></td>
+<td>
+optional arguments needed by the function specified via <code>transf</code> or <code>atransf</code>.</td></tr>
+<tr valign="top"><td><code>col</code></td>
+<td>
+color of the polygon that is drawn (default is <code>"black"</code>).</td></tr>
+<tr valign="top"><td><code>efac</code></td>
+<td>
+vertical expansion factor for the polygon. The default value of 1 should usually work okay.</td></tr>
+<tr valign="top"><td><code>cex</code></td>
+<td>
+an optional symbol expansion factor. If <code>NULL</code> (default), the function tries to set this to a sensible value.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+other arguments.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The function can be used to add a polygon to an existing forest plot created with the <code><a href="forest.html">forest</a></code> function. The polygon shows the summary estimate based on a fixed- or random-effects model.
+</p>
+<p>
+The arguments <code>transf</code>, <code>atransf</code>, <code>efac</code>, and <code>cex</code> should always be set equal to the same values used to create the forest plot.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Wolfgang Viechtbauer; <a href="mailto:wvb@www.wvbauer.com">wvb@www.wvbauer.com</a>; <a href="http://www.wvbauer.com/">http://www.wvbauer.com/</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="forest.rma.html">forest.rma</a></code>, <code><a href="forest.default.html">forest.default</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+### load BCG vaccine data
+data(dat.bcg)
+
+### meta-analysis of the log risk ratios using the Mantel-Haenszel method
+res &lt;- rma.mh(ai=tpos, bi=tneg, ci=cpos, di=cneg, slab=paste(author, year),
+              data=dat.bcg, measure="RR")
+
+### forest plot of the observer risk ratios with summary estimate
+forest(res, atransf=exp, addrows=1, xlab="Relative Risk (log scale)")
+
+### meta-analysis of the log risk ratios using a random-effects model
+res &lt;- rma(ai=tpos, bi=tneg, ci=cpos, di=cneg, 
+           data=dat.bcg, measure="RR", method="REML")
+
+### add summary estimate from the random-effects model to forest plot
+addpoly(res, atransf=exp)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>metafor</em> version 0.5-7 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

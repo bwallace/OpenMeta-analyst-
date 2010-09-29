@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Kruskal's Non-metric Multidimensional Scaling</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for isoMDS {MASS}"><tr><td>isoMDS {MASS}</td><td align="right">R Documentation</td></tr></table>
+<h2>Kruskal's Non-metric Multidimensional Scaling</h2>
+
+
+<h3>Description</h3>
+
+<p>
+One form of non-metric multidimensional scaling
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+isoMDS(d, y = cmdscale(d, k), k = 2, maxit = 50, trace = TRUE,
+       tol = 1e-3, p = 2)
+
+Shepard(d, x, p = 2)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>d</code></td>
+<td>
+distance structure of the form returned by <code>dist</code>, or a full,
+symmetric matrix.  Data are assumed to be dissimilarities or relative
+distances, but must be positive except for self-distance.  Both
+missing and infinite values are allowed.
+</td></tr>
+<tr valign="top"><td><code>y</code></td>
+<td>
+An initial configuration. If none is supplied, <code>cmdscale</code> is used
+to provide the classical solution, unless there are missing or
+infinite dissimilarities.
+</td></tr>
+<tr valign="top"><td><code>k</code></td>
+<td>
+The desired dimension for the solution, passed to <code>cmdscale</code>.
+</td></tr>
+<tr valign="top"><td><code>maxit</code></td>
+<td>
+The maximum number of iterations.
+</td></tr>
+<tr valign="top"><td><code>trace</code></td>
+<td>
+Logical for tracing optimization. Default <code>TRUE</code>.
+</td></tr>
+<tr valign="top"><td><code>tol</code></td>
+<td>
+convergence tolerance.
+</td></tr>
+<tr valign="top"><td><code>p</code></td>
+<td>
+Power for Minkowski distance in the configuration space.</td></tr>
+<tr valign="top"><td><code>x</code></td>
+<td>
+A final configuration.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This chooses a k-dimensional (default k = 2) configuration to minimize
+the stress, the square root of the ratio of the sum of squared
+differences between the input distances and those of the configuration
+to the sum of configuration distances squared.  However, the input
+distances are allowed a monotonic transformation.
+</p>
+<p>
+An iterative algorithm is used, which will usually converge in around
+10 iterations.  As this is necessarily an <i>O(n^2)</i> calculation,
+it is slow for large datasets.  Further, since for the default <i>p = 2</i>
+the configuration is only determined up to rotations and reflections
+(by convention the centroid is at the origin), the result can vary
+considerably from machine to machine.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+Two components:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>points</code></td>
+<td>
+A k-column vector of the fitted configuration.
+</td></tr>
+<tr valign="top"><td><code>stress</code></td>
+<td>
+The final stress achieved (in percent).
+</td></tr>
+</table>
+
+<h3>Side Effects</h3>
+
+<p>
+If <code>trace</code> is true, the initial stress and the current stress
+are printed out every 5 iterations.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+T. F. Cox and M. A. A. Cox (1994, 2001)
+<EM>Multidimensional Scaling</EM>. Chapman &amp; Hall.
+</p>
+<p>
+Ripley, B. D. (1996)
+<EM>Pattern Recognition and Neural Networks</EM>. Cambridge University Press.
+</p>
+<p>
+Venables, W. N. and Ripley, B. D. (2002)
+<EM>Modern Applied Statistics with S.</EM> Fourth edition.  Springer.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../stats/html/cmdscale.html">cmdscale</a></code>, <code><a href="sammon.html">sammon</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+swiss.x &lt;- as.matrix(swiss[, -1])
+swiss.dist &lt;- dist(swiss.x)
+swiss.mds &lt;- isoMDS(swiss.dist)
+plot(swiss.mds$points, type = "n")
+text(swiss.mds$points, labels = as.character(1:nrow(swiss.x)))
+swiss.sh &lt;- Shepard(swiss.dist, swiss.mds$points)
+plot(swiss.sh, pch = ".")
+lines(swiss.sh$x, swiss.sh$yf, type = "S")
+</pre>
+
+
+
+<hr><div align="center">[Package <em>MASS</em> version 7.2-48 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

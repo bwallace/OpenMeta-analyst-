@@ -1,0 +1,20 @@
+RUNIT TEST PROTOCOL -- Wed Aug 19 12:18:43 2009 
+*********************************************** 
+Number of test functions: 0 
+Number of errors: 0 
+Number of failures: 0 
+
+ 
+1 Test Suite : 
+gdata RUnit testing - 0 test functions, 0 errors, 0 failures
+
+
+
+Details 
+*************************** 
+Test Suite: gdata RUnit testing 
+Test function regexp: ^test.+ 
+Test file regexp: ^base.+\.[rR]$ 
+Involved directory: 
+/Users/warnes/src/r-gregmisc/gdata/inst/unitTests 
+no test files 

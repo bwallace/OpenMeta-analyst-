@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Cumulative meta-analysis</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for metacum {meta}"><tr><td>metacum {meta}</td><td align="right">R Documentation</td></tr></table>
+<h2>Cumulative meta-analysis</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Performs a cumulative meta-analysis.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+metacum(x, pooled, sortvar, level=x$level, level.comb=x$level.comb)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+An object of class <code>meta</code>.</td></tr>
+<tr valign="top"><td><code>pooled</code></td>
+<td>
+A character string indicating whether a fixed effect or
+random effects model is used for pooling. Either missing (see
+Details), <code>"fixed"</code>, or <code>"random"</code>, can be abbreviated.</td></tr>
+<tr valign="top"><td><code>sortvar</code></td>
+<td>
+An optional vector used to sort the individual studies
+(must be of same length as <code>x$TE</code>).</td></tr>
+<tr valign="top"><td><code>level</code></td>
+<td>
+The level used to calculate confidence intervals for
+individual studies.</td></tr>
+<tr valign="top"><td><code>level.comb</code></td>
+<td>
+The level used to calculate confidence intervals for
+pooled estimates.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+A cumulative meta-analysis is performed. Studies are included
+sequentially as defined by <code>sortvar</code>.
+</p>
+<p>
+Information from object <code>x</code> is utilised if argument <code>pooled</code>
+is missing. A fixed effect model is assumed (<code>pooled="fixed"</code>) if
+parameter <code>x$comb.fixed</code> is <code>TRUE</code>; a random effects model
+is assumed (<code>pooled="random"</code>) if
+parameter <code>x$comb.random</code> is <code>TRUE</code> and <code>x$comb.fixed</code>
+is <code>FALSE</code>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+An object of class <code>c("metacum", "meta")</code> with corresponding
+<code>print</code>, <code>plot</code> function. The object is a
+list containing the following components:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>TE, seTE</code></td>
+<td>
+Estimated treatment effect and standard error of
+pooled estimate in cumulative meta-analyses.</td></tr>
+<tr valign="top"><td><code>studlab</code></td>
+<td>
+Study label describing addition of studies.</td></tr>
+<tr valign="top"><td><code>p.value</code></td>
+<td>
+P-value for test of overall effect.</td></tr>
+<tr valign="top"><td><code>I2</code></td>
+<td>
+Heterogeneity statistic I2.</td></tr>
+<tr valign="top"><td><code>tau</code></td>
+<td>
+Square-root of between-study variance.</td></tr>
+<tr valign="top"><td><code>sm</code></td>
+<td>
+Summary measure.</td></tr>
+<tr valign="top"><td><code>method</code></td>
+<td>
+Method used for pooling.</td></tr>
+<tr valign="top"><td><code>k</code></td>
+<td>
+Number of studies combined in meta-analysis.</td></tr>
+<tr valign="top"><td><code>pooled</code></td>
+<td>
+As defined above.</td></tr>
+<tr valign="top"><td><code>TE.fixed, seTE.fixed</code></td>
+<td>
+Value is <code>NA</code>.</td></tr>
+<tr valign="top"><td><code>TE.random, seTE.random</code></td>
+<td>
+Value is <code>NA</code>.</td></tr>
+<tr valign="top"><td><code>Q</code></td>
+<td>
+Value is <code>NA</code>.</td></tr>
+<tr valign="top"><td><code>tau</code></td>
+<td>
+Value is <code>NA</code>.</td></tr>
+<tr valign="top"><td><code>level</code></td>
+<td>
+The level used to calculate confidence intervals for
+individual studies.</td></tr>
+<tr valign="top"><td><code>level.comb</code></td>
+<td>
+The level used to calculate confidence intervals for
+pooled estimates.</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Guido Schwarzer <a href="mailto:sc@imbi.uni-freiburg.de">sc@imbi.uni-freiburg.de</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Cooper H &amp; Hedges LV (1994),
+<EM>The Handbook of Research Synthesis</EM>.
+Newbury Park, CA: Russell Sage Foundation.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="metabin.html">metabin</a></code>, <code><a href="metacont.html">metacont</a></code>, <code><a href="print.meta.html">print.meta</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(Fleiss93)
+meta1 &lt;- metabin(event.e, n.e, event.c, n.c,
+                 data=Fleiss93, studlab=study,
+                 sm="RR", meth="I")
+meta1
+
+metacum(meta1)
+metacum(meta1, pooled="random")
+
+grid.newpage()
+forest(metacum(meta1, pooled="random"))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>meta</em> version 1.1-8 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

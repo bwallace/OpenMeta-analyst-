@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Import RevMan 4 data files (.mtv)</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for read.mtv {meta}"><tr><td>read.mtv {meta}</td><td align="right">R Documentation</td></tr></table>
+<h2>Import RevMan 4 data files (.mtv)</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Reads a file created with RevMan 4 and creates a data frame from it.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+read.mtv(file)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>file</code></td>
+<td>
+The name of a file to read data values from.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Reads a file created with RevMan 4 (Menu: "File" - "Export" -
+"Analysis data file...") and creates a data frame from it.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A data frame containing the following components:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>comp.no</code></td>
+<td>
+Comparison number.</td></tr>
+<tr valign="top"><td><code>outcome.no</code></td>
+<td>
+Outcome number.</td></tr>
+<tr valign="top"><td><code>group.no</code></td>
+<td>
+Group number.</td></tr>
+<tr valign="top"><td><code>studlab</code></td>
+<td>
+Study label.</td></tr>
+<tr valign="top"><td><code>year</code></td>
+<td>
+Year of publication.</td></tr>
+<tr valign="top"><td><code>event.e</code></td>
+<td>
+Number of events in experimental group.</td></tr>
+<tr valign="top"><td><code>n.e</code></td>
+<td>
+Number of observations in experimental group.</td></tr>
+<tr valign="top"><td><code>event.c</code></td>
+<td>
+Number of events in control group.</td></tr>
+<tr valign="top"><td><code>n.c</code></td>
+<td>
+Number of observations in control group.</td></tr>
+<tr valign="top"><td><code>mean.e</code></td>
+<td>
+Estimated mean in experimental group.</td></tr>
+<tr valign="top"><td><code>sd.e</code></td>
+<td>
+Standard deviation in experimental group.</td></tr>
+<tr valign="top"><td><code>mean.c</code></td>
+<td>
+Estimated mean in control group.</td></tr>
+<tr valign="top"><td><code>sd.c</code></td>
+<td>
+Standard deviation in control group.</td></tr>
+<tr valign="top"><td><code>O.E</code></td>
+<td>
+Observed minus expected (IPD analysis).</td></tr>
+<tr valign="top"><td><code>V</code></td>
+<td>
+Variance of <code>O.E</code> (IPD analysis).</td></tr>
+<tr valign="top"><td><code>order</code></td>
+<td>
+Ordering of studies.</td></tr>
+<tr valign="top"><td><code>conceal</code></td>
+<td>
+Concealment of treatment allocation.</td></tr>
+<tr valign="top"><td><code>grplab</code></td>
+<td>
+Group label.</td></tr>
+<tr valign="top"><td><code>type</code></td>
+<td>
+Type of outcome. D = dichotomous, C = continuous, P = IPD.</td></tr>
+<tr valign="top"><td><code>outclab</code></td>
+<td>
+Outcome label.</td></tr>
+<tr valign="top"><td><code>graph.exp</code></td>
+<td>
+Graph label for experimental group.</td></tr>
+<tr valign="top"><td><code>graph.cont</code></td>
+<td>
+Graph label for control group.</td></tr>
+<tr valign="top"><td><code>label.exp</code></td>
+<td>
+Label for experimental group.</td></tr>
+<tr valign="top"><td><code>label.cont</code></td>
+<td>
+Label for control group.</td></tr>
+<tr valign="top"><td><code>complab</code></td>
+<td>
+Comparison label.</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Guido Schwarzer <a href="mailto:sc@imbi.uni-freiburg.de">sc@imbi.uni-freiburg.de</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+<EM>Review Manager (RevMan)</EM> [Computer program]. Version 4.2 for
+Windows. Copenhagen: The Nordic Cochrane Centre, The Cochrane
+Collaboration, 2003.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="metabin.html">metabin</a></code>, <code><a href="metacont.html">metacont</a></code>, <code><a href="metagen.html">metagen</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## Locate MTV-data file "FLEISS93.MTV" in sub-directory of package "meta"
+##
+filename &lt;- paste(searchpaths()[seq(along=search())[search()==
+                  "package:meta"]], "/data/FLEISS93.MTV", sep="")
+##
+fleiss93.cc &lt;- read.mtv(filename)
+
+## Same result: example(Fleiss93)
+##
+metabin(event.e, n.e, event.c, n.c,
+        data=fleiss93.cc, subset=type=="D",
+        studlab=paste(studlab, year))
+
+## Same result: example(Fleiss93cont)
+##
+metacont(n.e, mean.e, sd.e, n.c, mean.c, sd.c,
+        data=fleiss93.cc, subset=type=="C",
+        studlab=paste(studlab, year))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>meta</em> version 1.1-8 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,49 @@
+write.arff              package:foreign              R Documentation
+
+_W_r_i_t_e _D_a_t_a _i_n_t_o _A_R_F_F _F_i_l_e_s
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Writes data into Weka Attribute-Relation File Format (ARFF) files.
+
+_U_s_a_g_e:
+
+     write.arff(x, file, eol = "\n", relation = deparse(substitute(x)))
+
+_A_r_g_u_m_e_n_t_s:
+
+       x: the data to be written, preferably a matrix or data frame. If
+          not, coercion to a data frame is attempted.
+
+    file: either a character string naming a file, or a connection.
+          '""' indicates output to the standard output connection.
+
+     eol: the character(s) to print at the end of each line (row).
+
+relation: The name of the relation to be written in the file.
+
+_D_e_t_a_i_l_s:
+
+     'relation' will be passed through 'make.names' before writing to
+     the file, in an attempt to it them acceptable to Weka, and column
+     names what do not start with an alphabetic character will have 'X'
+     prepended.
+
+     However, the references say that ARFF files are ASCII files, and
+     that encoding is not enforced.
+
+_R_e_f_e_r_e_n_c_e_s:
+
+     Attribute-Relation File Format <URL:
+     http://www.cs.waikato.ac.nz/~ml/weka/arff.html>
+      <URL:
+     http://weka.sourceforge.net/wekadoc/index.php/en:ARFF_(3.5.1)>
+
+_S_e_e _A_l_s_o:
+
+     'read.arff'
+
+_E_x_a_m_p_l_e_s:
+
+     write.arff(iris, file = "")
+

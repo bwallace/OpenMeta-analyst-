@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Sigmoidal Normalization</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for signorm {dprep}"><tr><td>signorm {dprep}</td><td align="right">R Documentation</td></tr></table>
+<h2>Sigmoidal Normalization</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Function that performs sigmoidal normalization.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+signorm(data)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>data</code></td>
+<td>
+The dataset to be normalized, including classes</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This method transforms the input data nonlinearly into [-1,1] using
+a sigmoid function. The original data is first centered about the 
+mean, and then mapped to the almost linear region of the sigmoid.
+Is especially appropriate when outlying values are present.
+</p>
+<p>
+Removes classes before normalization, and returns the normalized data set
+complete with classes rejoined.
+</p>
+
+
+<h3>Value</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>sigdata</code></td>
+<td>
+Original dataset normalized</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Caroline Rodriguez and Edgar Acuna
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Hann, J., Kamber, M. (2000). Data Mining: Concepts and Techniques. 
+Morgan Kaufman Publishers.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+#---- Sigmoidal Normalization ---
+data(vehicle)
+vehicle.signorm=signorm(vehicle)
+op=par(mfrow=c(2,1))
+plot(vehicle[,1])
+plot(vehicle.signorm[,1])
+par(op)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>dprep</em> version 2.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

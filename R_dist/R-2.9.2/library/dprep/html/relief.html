@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: RELIEF Feature Selection</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for relief {dprep}"><tr><td>relief {dprep}</td><td align="right">R Documentation</td></tr></table>
+<h2>RELIEF Feature Selection</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This function implements the RELIEF feature selection algorithm.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+relief(data, nosample, threshold,vnom)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>data</code></td>
+<td>
+The dataset for which feature selection will be carried out</td></tr>
+<tr valign="top"><td><code>nosample</code></td>
+<td>
+The number of instances drawn from the original dataset</td></tr>
+<tr valign="top"><td><code>threshold</code></td>
+<td>
+The cutoff point to select the features</td></tr>
+<tr valign="top"><td><code>vnom</code></td>
+<td>
+A vector containing the indexes of the nominal features</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The general idea of this method is to choose the features that can be most
+distinguished between classes. These are known as the relevant features. At 
+each step of an iterative process, an instance x is chosen at random from
+the dataset and the weight for each feature is updated according to the 
+distance of x to its Nearmiss and NearHit.
+</p>
+
+
+<h3>Value</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>relevant</code></td>
+<td>
+A table that gives the ratio between the frequency 
+with which the feature was selected as relevant and the total number of
+trials performed in one column, and the average weight of the feature
+in another.</td></tr>
+<tr valign="top"><td><code>a plot</code></td>
+<td>
+A plot of the weights of the features</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Edgar Acuna
+</p>
+
+
+<h3>References</h3>
+
+<p>
+KIRA, K. and RENDEL, L. (1992). The Feature Selection Problem : Traditional
+Methods and a new algorithm. Proc. Tenth National Conference on Artificial
+Intelligence, MIT Press, 129-134.
+</p>
+<p>
+KONONENKO, I., SIMEC, E., and ROBNIK-SIKONJA, M. (1997). Overcoming
+the myopia of induction learning algorithms with RELIEFF. Applied Intelligence
+Vol7, 1, 39-55.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+##---- Feature Selection ---
+data(my.iris)
+relief(my.iris,150,0.01)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>dprep</em> version 2.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: The Heart Cleveland dataset</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for heartc {dprep}"><tr><td>heartc {dprep}</td><td align="right">R Documentation</td></tr></table>
+<h2>The Heart Cleveland dataset</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This dataset contains information concerning heart disease diagnosis. 
+The data was collected from the  Cleveland Clinic Foundation, and it is available 
+at the UCI machine learning Repository. Six instances containing missing values 
+have been deleted from the original dataset.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>data(heartc)</pre>
+
+
+<h3>Format</h3>
+
+<p>
+A data frame with 297 observations on the following 14 variables.
+<dl>
+<dt>V1</dt><dd>age(continuous)</dd>
+<dt>V2</dt><dd>sex</dd>
+<dt>V3</dt><dd>cp, chest pain type:1,2,3,4</dd>
+<dt>V4</dt><dd>trestbps: resting blood pressure(continuous)</dd>
+<dt>V5</dt><dd>cholesterol(continuous)</dd>
+<dt>V6</dt><dd>fps: fatsing blood sugar&gt;120? yes=1, no =0</dd>
+<dt>V7</dt><dd>restecg: resting electrocardiographic results, 0,1, 2</dd>
+<dt>V8</dt><dd>thalach: maximum heart rate achieved(continuous) </dd>
+<dt>V9</dt><dd>exang: exercise induced angina (1 = yes; 0 = no)</dd>
+<dt>V10</dt><dd>oldpeak = ST depression induced by exercise relative to rest (continuous)</dd>
+<dt>V11</dt><dd>slope: the slope of the peak exercise ST segment</dd>
+<dt>V12</dt><dd>ca: number of major vessels (0-3) colored by flourosopy</dd>
+<dt>V13</dt><dd>thal: 3 = normal; 6 = fixed defect; 7 = reversable defect</dd>
+<dt>V14</dt><dd>diagnosis of heart disease: 1: &lt; 50
+2: &gt; 50
+</dd>
+</dl>
+
+<h3>Details</h3>
+
+<p>
+Six instances containing missing values have been deleted from the original dataset. 
+This dataset includes continuous, binomial, nominal, and ordinal features.
+</p>
+
+
+<h3>Source</h3>
+
+<p>
+The UCI Machine Learning Database Repository at:
+<ul>
+<li><a href="ftp://ftp.ics.uci.edu/pub/machine-learning-databases">ftp://ftp.ics.uci.edu/pub/machine-learning-databases</a>
+<li><a href="http://www.ics.uci.edu/~mlearn/MLRepository.html">http://www.ics.uci.edu/~mlearn/MLRepository.html</a>
+</ul>
+
+<h3>Examples</h3>
+
+<pre>
+#----Detecting outliers using the Relief---
+data(heartc)
+relief(heartc,100,0.4,vnom=c(2,3,6,7,9,11:13))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>dprep</em> version 2.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

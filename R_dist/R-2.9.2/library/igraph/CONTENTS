@@ -1,0 +1,701 @@
+Entry: igraph-package
+Aliases: igraph-package igraph
+Keywords: 
+Description: The igraph package
+URL: ../../../library/igraph/html/aaa-igraph-package.html
+
+Entry: aging.prefatt.game
+Aliases: aging.prefatt.game aging.barabasi.game aging.ba.game
+Keywords: graphs
+Description: Generate an evolving random graph with preferential attachment and aging
+URL: ../../../library/igraph/html/aging.prefatt.game.html
+
+Entry: alpha.centrality
+Aliases: alpha.centrality
+Keywords: graphs
+Description: Find Bonacich alpha centrality scores of network positions
+URL: ../../../library/igraph/html/alpha.centrality.html
+
+Entry: arpack
+Aliases: arpack arpack-options igraph.arpack.default arpack.unpack.complex
+Keywords: graphs
+Description: ARPACK eigenvector calculation
+URL: ../../../library/igraph/html/arpack.html
+
+Entry: articulation.points
+Aliases: articulation.points
+Keywords: graphs
+Description: Articulation points of a graph
+URL: ../../../library/igraph/html/articulation.points.html
+
+Entry: as.directed
+Aliases: as.directed as.undirected
+Keywords: graphs
+Description: Convert between directed and undirected graphs
+URL: ../../../library/igraph/html/as.directed.html
+
+Entry: attributes
+Aliases: attributes set.graph.attribute get.graph.attribute remove.graph.attribute list.graph.attributes set.vertex.attribute get.vertex.attribute remove.vertex.attribute list.vertex.attributes set.edge.attribute get.edge.attribute remove.edge.attribute list.edge.attributes
+Keywords: graphs
+Description: Graph, vertex and edge attributes
+URL: ../../../library/igraph/html/attributes.html
+
+Entry: barabasi.game
+Aliases: barabasi.game ba.game
+Keywords: graphs
+Description: Generate scale-free graphs according to the Barabasi-Albert model
+URL: ../../../library/igraph/html/ba.game.html
+
+Entry: betweenness
+Aliases: betweenness edge.betweenness betweenness.estimate edge.betweenness.estimate
+Keywords: graphs
+Description: Vertex and edge betweenness centrality
+URL: ../../../library/igraph/html/betweenness.html
+
+Entry: biconnected.components
+Aliases: biconnected.components
+Keywords: graphs
+Description: Biconnected components
+URL: ../../../library/igraph/html/biconnected.components.html
+
+Entry: bipartite.projection
+Aliases: bipartite.projection bipartite.projection.size
+Keywords: graphs
+Description: Project a bipartite graph
+URL: ../../../library/igraph/html/bipartite.projection.html
+
+Entry: bonpow
+Aliases: bonpow
+Keywords: graphs
+Description: Find Bonacich Power Centrality Scores of Network Positions
+URL: ../../../library/igraph/html/bonpow.html
+
+Entry: canonical.permutation
+Aliases: canonical.permutation
+Keywords: graphs
+Description: Canonical permutation of a graph
+URL: ../../../library/igraph/html/canonical.permutation.html
+
+Entry: cliques
+Aliases: cliques largest.cliques maximal.cliques clique.number
+Keywords: graphs
+Description: The functions find cliques, ie. complete subgraphs in a graph
+URL: ../../../library/igraph/html/cliques.html
+
+Entry: closeness
+Aliases: closeness closeness.estimate
+Keywords: graphs
+Description: Closeness centrality of vertices
+URL: ../../../library/igraph/html/closeness.html
+
+Entry: clusters
+Aliases: no.clusters clusters is.connected cluster.distribution
+Keywords: graphs
+Description: Connected components of a graph
+URL: ../../../library/igraph/html/clusters.html
+
+Entry: cocitation
+Aliases: cocitation bibcoupling
+Keywords: graphs
+Description: Cocitation coupling
+URL: ../../../library/igraph/html/cocitation.html
+
+Entry: cohesive.blocks
+Aliases: cohesive.blocks structurally.cohesive.blocks is.bgraph
+Keywords: graphs
+Description: Calculate Cohesive Blocks
+URL: ../../../library/igraph/html/cohesive.blocks.html
+
+Entry: edge.betweenness.community
+Aliases: edge.betweenness.community edge.betweenness.community.merges
+Keywords: graphs
+Description: Community structure detection based on edge betweenness
+URL: ../../../library/igraph/html/community.edge.betweenness.html
+
+Entry: communities
+Aliases: communities community.to.membership
+Keywords: graphs
+Description: Common functions supporting community detection algorithms
+URL: ../../../library/igraph/html/community.structure.html
+
+Entry: components
+Aliases: subcomponent
+Keywords: graphs
+Description: In- or out- component of a vertex
+URL: ../../../library/igraph/html/components.html
+
+Entry: constraint
+Aliases: constraint
+Keywords: graphs
+Description: Burt's constraint
+URL: ../../../library/igraph/html/constraint.html
+
+Entry: conversion
+Aliases: get.adjacency get.edgelist
+Keywords: graphs
+Description: Convert a graph to an adjacency matrix or an edge list
+URL: ../../../library/igraph/html/conversion.html
+
+Entry: decompose.graph
+Aliases: decompose.graph
+Keywords: graphs
+Description: Decompose a graph into components
+URL: ../../../library/igraph/html/decompose.graph.html
+
+Entry: degree
+Aliases: degree degree.distribution
+Keywords: graphs
+Description: Degree and degree distribution of the vertices
+URL: ../../../library/igraph/html/degree.html
+
+Entry: degree.sequence.game
+Aliases: degree.sequence.game
+Keywords: graphs
+Description: Generate random graphs with a given degree sequence
+URL: ../../../library/igraph/html/degree.sequence.game.html
+
+Entry: diameter
+Aliases: diameter get.diameter farthest.nodes
+Keywords: graphs
+Description: Diameter of a graph
+URL: ../../../library/igraph/html/diameter.html
+
+Entry: dyad.census
+Aliases: dyad.census
+Keywords: graphs
+Description: Dyad census of a graph
+URL: ../../../library/igraph/html/dyad.census.html
+
+Entry: edge.connectivity
+Aliases: edge.connectivity edge.disjoint.paths graph.adhesion
+Keywords: graphs
+Description: Edge connectivity.
+URL: ../../../library/igraph/html/edge.connectivity.html
+
+Entry: erdos.renyi.game
+Aliases: erdos.renyi.game random.graph.game
+Keywords: graphs
+Description: Generate random graphs according to the Erdos-Renyi model
+URL: ../../../library/igraph/html/erdos.renyi.game.html
+
+Entry: evcent
+Aliases: evcent
+Keywords: graphs
+Description: Find Eigenvector Centrality Scores of Network Positions
+URL: ../../../library/igraph/html/evcent.html
+
+Entry: revolver
+Aliases: evolver revolver evolver.d revolver.d revolver.ad revolver.ade revolver.adi revolver.air revolver.ar revolver.de revolver.di revolver.dl revolver.e revolver.el revolver.il revolver.ir revolver.l revolver.r revolver.error.d revolver.error.ad revolver.error.ade revolver.error.adi revolver.error.air revolver.error.ar revolver.error.de revolver.error.di revolver.error.dl revolver.error.e revolver.error.el revolver.error.il revolver.error.ir revolver.error.l revolver.error.r revolver.d.d revolver.p.p revolver.ml.AD.alpha.a.beta revolver.ml.AD.dpareto revolver.ml.AD.dpareto.eval revolver.ml.ad revolver.ml.ade revolver.ml.ADE.alpha.a.beta revolver.ml.ADE.dpareto revolver.ml.ADE.dpareto.eval revolver.ml.ADE.dpareto.evalf revolver.ml.d revolver.ml.D.alpha revolver.ml.D.alpha.a revolver.ml.de revolver.ml.DE.alpha.a revolver.ml.df revolver.ml.f revolver.ml.l revolver.probs.ad revolver.probs.ade revolver.probs.ADE.dpareto revolver.probs.d revolver.probs.de
+Keywords: graphs
+Description: Measuring the driving force in evolving networks
+URL: ../../../library/igraph/html/evolver.html
+
+Entry: fastgreedy.community
+Aliases: fastgreedy.community
+Keywords: graphs
+Description: Community structure via greedy optimization of modularity
+URL: ../../../library/igraph/html/fastgreedy.community.html
+
+Entry: forest.fire.game
+Aliases: forest.fire.game
+Keywords: graphs
+Description: Forest Fire Network Model
+URL: ../../../library/igraph/html/forest.fire.game.html
+
+Entry: get.adjlist
+Aliases: get.adjlist get.adjedgelist
+Keywords: graphs
+Description: Adjacency lists
+URL: ../../../library/igraph/html/get.adjlist.html
+
+Entry: get.incidence
+Aliases: get.incidence
+Keywords: graphs
+Description: Incidence matrix of a bipartite graph
+URL: ../../../library/igraph/html/get.incidence.html
+
+Entry: girth
+Aliases: girth
+Keywords: graphs
+Description: Girth of a graph
+URL: ../../../library/igraph/html/girth.html
+
+Entry: graph.adjacency
+Aliases: graph.adjacency
+Keywords: graphs
+Description: Create graphs from adjacency matrices
+URL: ../../../library/igraph/html/graph.adjacency.html
+
+Entry: Graphs from adjacency lists
+Aliases: graph.adjlist
+Keywords: graphs
+Description: Create graphs from adjacency lists
+URL: ../../../library/igraph/html/graph.adjlist.html
+
+Entry: graph.automorphisms
+Aliases: graph.automorphisms
+Keywords: graphs
+Description: Number of automorphisms
+URL: ../../../library/igraph/html/graph.automorphisms.html
+
+Entry: graph.bipartite
+Aliases: graph.bipartite
+Keywords: graphs
+Description: Create a bipartite graph
+URL: ../../../library/igraph/html/graph.bipartite.html
+
+Entry: graph.constructors
+Aliases: graph.constructors graph.empty graph graph.star graph.lattice graph.ring graph.tree graph.full graph.full.citation graph.atlas graph.edgelist graph.extended.chordal.ring
+Keywords: graphs
+Description: Various methods for creating graphs
+URL: ../../../library/igraph/html/graph.constructors.html
+
+Entry: graph.data.frame
+Aliases: graph.data.frame
+Keywords: graphs
+Description: Creating igraph graphs from data frames
+URL: ../../../library/igraph/html/graph.data.frame.html
+
+Entry: graph.de.bruijn
+Aliases: graph.de.bruijn
+Keywords: graphs
+Description: De Bruijn graphs.
+URL: ../../../library/igraph/html/graph.de.bruijn.html
+
+Entry: graph.density
+Aliases: graph.density
+Keywords: graphs
+Description: Graph density
+URL: ../../../library/igraph/html/graph.density.html
+
+Entry: graph.famous
+Aliases: graph.famous
+Keywords: graphs
+Description: Creating named graphs
+URL: ../../../library/igraph/html/graph.famous.html
+
+Entry: graph.formula
+Aliases: graph.formula
+Keywords: graphs
+Description: Creating (small) graphs via a simple interface
+URL: ../../../library/igraph/html/graph.formula.html
+
+Entry: graph.full.bipartite
+Aliases: graph.full.bipartite
+Keywords: graphs
+Description: Create a full bipartite graph
+URL: ../../../library/igraph/html/graph.full.bipartite.html
+
+Entry: graph.graphdb
+Aliases: graph.graphdb
+Keywords: graphs
+Description: Load a graph from the graph database for testing graph isomorphism.
+URL: ../../../library/igraph/html/graph.graphdb.html
+
+Entry: graph.incidence
+Aliases: graph.incidence
+Keywords: graphs
+Description: Create graphs from an incidence matrix
+URL: ../../../library/igraph/html/graph.incidence.html
+
+Entry: graph-isomorphism
+Aliases: graph.isoclass graph.isocreate graph.isomorphic graph.isomorphic.vf2 graph.count.isomorphisms.vf2 graph.count.subisomorphisms.vf2 graph.get.isomorphisms.vf2 graph.get.subisomorphisms.vf2 graph.isoclass.subgraph graph.isomorphic.34 graph.isomorphic.bliss graph.subisomorphic.vf2
+Keywords: graphs
+Description: Graph Isomorphism
+URL: ../../../library/igraph/html/graph.isomorphism.html
+
+Entry: graph.kautz
+Aliases: graph.kautz
+Keywords: graphs
+Description: Kautz graphs
+URL: ../../../library/igraph/html/graph.kautz.html
+
+Entry: graph.coreness
+Aliases: graph.coreness
+Keywords: graphs
+Description: K-core decomposition of graphs
+URL: ../../../library/igraph/html/graph.kcores.html
+
+Entry: graph.knn
+Aliases: graph.knn
+Keywords: graphs
+Description: Average nearest neighbor degree
+URL: ../../../library/igraph/html/graph.knn.html
+
+Entry: graph.laplacian
+Aliases: graph.laplacian
+Keywords: graphs
+Description: Graph Laplacian
+URL: ../../../library/igraph/html/graph.laplacian.html
+
+Entry: graph.lcf
+Aliases: graph.lcf
+Keywords: graphs
+Description: Creating a graph from LCF notation
+URL: ../../../library/igraph/html/graph.lcf.html
+
+Entry: graph.maxflow
+Aliases: graph.maxflow graph.mincut
+Keywords: graphs
+Description: Maximum flow in a network
+URL: ../../../library/igraph/html/graph.maxflow.html
+
+Entry: graph-motifs
+Aliases: graph.motifs graph.motifs.no graph.motifs.est
+Keywords: graphs
+Description: Graph motifs
+URL: ../../../library/igraph/html/graph.motifs.html
+
+Entry: graph.strength
+Aliases: graph.strength
+Keywords: graphs
+Description: Strength or weighted vertex degree
+URL: ../../../library/igraph/html/graph.strength.html
+
+Entry: graph.structure
+Aliases: add.edges add.vertices delete.edges delete.vertices
+Keywords: graphs
+Description: Method for structural manipulation of graphs
+URL: ../../../library/igraph/html/graph.structure.html
+
+Entry: igraph from/to graphNEL conversion
+Aliases: igraph.from.graphNEL igraph.to.graphNEL
+Keywords: graphs
+Description: Convert igraph graphs to graphNEL objects or back
+URL: ../../../library/igraph/html/graphNEL.html
+
+Entry: grg.game
+Aliases: grg.game
+Keywords: graphs
+Description: Geometric random graphs
+URL: ../../../library/igraph/html/grg.game.html
+
+Entry: growing.random.game
+Aliases: growing.random.game
+Keywords: graphs
+Description: Growing random graph generation
+URL: ../../../library/igraph/html/growing.random.game.html
+
+Entry: igraph-parameters
+Aliases: igraph.par
+Keywords: graphs
+Description: Parameters for the igraph package
+URL: ../../../library/igraph/html/igraph.par.html
+
+Entry: igraph.sample
+Aliases: igraph.sample
+Keywords: datagen
+Description: Sampling a random integer sequence
+URL: ../../../library/igraph/html/igraph.sample.html
+
+Entry: Vertex shapes
+Aliases: igraph.vertex.shapes
+Keywords: graphs
+Description: Various vertex shapes when plotting igraph graphs
+URL: ../../../library/igraph/html/igraph.vertex.shapes.html
+
+Entry: independent.vertex.sets
+Aliases: independent.vertex.sets largest.independent.vertex.sets maximal.independent.vertex.sets independence.number
+Keywords: graphs
+Description: Independent vertex sets
+URL: ../../../library/igraph/html/independent.sets.html
+
+Entry: is.bipartite
+Aliases: is.bipartite
+Keywords: graphs
+Description: Decide whether a graph is bipartite
+URL: ../../../library/igraph/html/is.bipartite.html
+
+Entry: is.igraph
+Aliases: is.igraph
+Keywords: graphs
+Description: Is this object a graph?
+URL: ../../../library/igraph/html/is.graph.html
+
+Entry: is.multiple
+Aliases: is.loop is.multiple count.multiple
+Keywords: graphs
+Description: Find the multiple or loop edges in a graph
+URL: ../../../library/igraph/html/is.multiple.html
+
+Entry: is.mutual
+Aliases: is.mutual
+Keywords: graphs
+Description: Find mutual edges in a directed graph
+URL: ../../../library/igraph/html/is.mutual.html
+
+Entry: iterators
+Aliases: iterators V E V<- E<- %--% %->% %<-% [<-.igraph.es [.igraph.es $<-.igraph.es $.igraph.es [<-.igraph.vs [.igraph.vs $<-.igraph.vs $.igraph.vs print.igraph.es print.igraph.vs
+Keywords: graphs
+Description: Vertex and edge sequences and iterators
+URL: ../../../library/igraph/html/iterators.html
+
+Entry: kleinberg
+Aliases: authority.score hub.score
+Keywords: graphs
+Description: Kleinberg's centrality scores.
+URL: ../../../library/igraph/html/kleinberg.html
+
+Entry: label.propagation.community
+Aliases: label.propagation.community
+Keywords: graphs
+Description: Finding communities based on propagating labels
+URL: ../../../library/igraph/html/label.propagation.community.html
+
+Entry: layout
+Aliases: layout layout.random layout.circle layout.sphere layout.fruchterman.reingold layout.fruchterman.reingold.grid layout.kamada.kawai layout.spring layout.reingold.tilford layout.lgl layout.mds layout.svd layout.graphopt layout.norm
+Keywords: graphs
+Description: Generate coordinates for plotting graphs
+URL: ../../../library/igraph/html/layout.html
+
+Entry: layout.drl
+Aliases: layout.drl igraph.drl.default igraph.drl.coarsen igraph.drl.coarsest igraph.drl.refine igraph.drl.final
+Keywords: graphs
+Description: The DrL graph layout generator
+URL: ../../../library/igraph/html/layout.drl.html
+
+Entry: layout.merge
+Aliases: layout.merge piecewise.layout
+Keywords: graphs
+Description: Merging graph layouts
+URL: ../../../library/igraph/html/layout.merge.html
+
+Entry: leading.eigenvector.community
+Aliases: leading.eigenvector.community leading.eigenvector.community.step leading.eigenvector.community.naive community.le.to.membership
+Keywords: graphs
+Description: Community structure detecting based on the leading eigenvector of the community matrix
+URL: ../../../library/igraph/html/leading.eigenvector.html
+
+Entry: line.graph
+Aliases: line.graph
+Keywords: graphs
+Description: Line graph of a graph
+URL: ../../../library/igraph/html/line.graph.html
+
+Entry: measure.dynamics
+Aliases: measure.dynamics measure.dynamics.idage measure.dynamics.id measure.dynamics.d.d measure.dynamics.citedcat.id.age measure.dynamics.citingcat.id.age measure.dynamics.lastcit measure.dynamics.age measure.dynamics.citedcat measure.dynamics.citingcat.citedcat
+Keywords: graphs
+Description: Measuring the driving force in evolving networks
+URL: ../../../library/igraph/html/measure.dynamics.html
+
+Entry: minimum.spanning.tree
+Aliases: minimum.spanning.tree
+Keywords: graphs
+Description: Minimum spanning tree
+URL: ../../../library/igraph/html/minimum.spanning.tree.html
+
+Entry: modularity
+Aliases: modularity
+Keywords: graphs
+Description: Modularity of a community structure of a graph
+URL: ../../../library/igraph/html/modularity.html
+
+Entry: neighborhood
+Aliases: neighborhood neighborhood.size graph.neighborhood connect.neighborhood
+Keywords: graphs
+Description: Neighborhood of graph vertices
+URL: ../../../library/igraph/html/neighborhood.html
+
+Entry: graph-operators
+Aliases: graph.union graph.disjoint.union graph.intersection graph.compose graph.difference graph.complementer %c% %du% %m% %s% %u%
+Keywords: graphs
+Description: Graph operators
+URL: ../../../library/igraph/html/operators.html
+
+Entry: page.rank
+Aliases: page.rank page.rank.old
+Keywords: graphs
+Description: The Page Rank algorithm
+URL: ../../../library/igraph/html/page.rank.html
+
+Entry: permute.vertices
+Aliases: permute.vertices
+Keywords: graphs
+Description: Permute the vertices of a graph
+URL: ../../../library/igraph/html/permute.vertices.html
+
+Entry: plot.bgraph
+Aliases: plot.bgraph
+Keywords: graphs
+Description: Plot graphs and their cohesive block hierarchy
+URL: ../../../library/igraph/html/plot.bgraph.html
+
+Entry: Drawing graphs
+Aliases: igraph.plotting
+Keywords: graphs
+Description: Drawing graphs
+URL: ../../../library/igraph/html/plot.common.html
+
+Entry: plot.igraph
+Aliases: plot.igraph
+Keywords: graphs
+Description: Plotting of graphs
+URL: ../../../library/igraph/html/plot.graph.html
+
+Entry: power.law.fit
+Aliases: power.law.fit
+Keywords: graphs
+Description: Fitting a power-law distribution function to discrete data
+URL: ../../../library/igraph/html/power.law.fit.html
+
+Entry: preference.game
+Aliases: preference.game asymmetric.preference.game
+Keywords: graphs
+Description: Trait-based random generation
+URL: ../../../library/igraph/html/preference.game.html
+
+Entry: print.igraph
+Aliases: print.igraph print.bgraph summary.igraph
+Keywords: graphs
+Description: Print graphs to the terminal
+URL: ../../../library/igraph/html/print.graph.html
+
+Entry: read.graph
+Aliases: read.graph LGL Pajek GraphML GML
+Keywords: graphs
+Description: Reading foreign file formats
+URL: ../../../library/igraph/html/read.graph.html
+
+Entry: reciprocity
+Aliases: reciprocity
+Keywords: graphs
+Description: Reciprocity of graphs
+URL: ../../../library/igraph/html/reciprocity.html
+
+Entry: rewire
+Aliases: rewire
+Keywords: graphs
+Description: Graph rewiring
+URL: ../../../library/igraph/html/rewire.html
+
+Entry: rewire.edges
+Aliases: rewire.edges
+Keywords: graphs
+Description: Rewires the endpoints of the edges of a graph randomly
+URL: ../../../library/igraph/html/rewire.edges.html
+
+Entry: rglplot
+Aliases: rglplot rglplot.igraph
+Keywords: graphs
+Description: 3D plotting of graphs with OpenGL
+URL: ../../../library/igraph/html/rglplot.html
+
+Entry: running.mean
+Aliases: running.mean
+Keywords: manip
+Description: Running mean of a time series
+URL: ../../../library/igraph/html/running.mean.html
+
+Entry: shortest.paths
+Aliases: shortest.paths get.shortest.paths get.all.shortest.paths average.path.length path.length.hist
+Keywords: graphs
+Description: Shortest (directed or undirected) paths between vertices
+URL: ../../../library/igraph/html/shortest.paths.html
+
+Entry: similarity
+Aliases: similarity.jaccard similarity.dice similarity.invlogweighted
+Keywords: graphs
+Description: Similarity measures of two vertices
+URL: ../../../library/igraph/html/similarity.html
+
+Entry: simplify
+Aliases: simplify is.simple
+Keywords: graphs
+Description: Simple graphs
+URL: ../../../library/igraph/html/simplify.html
+
+Entry: spinglass.community
+Aliases: spinglass.community
+Keywords: graphs
+Description: Finding communities in graphs based on statistical meachanics
+URL: ../../../library/igraph/html/spinglass.community.html
+
+Entry: structure.info
+Aliases: vcount ecount neighbors is.directed are.connected get.edge get.edges
+Keywords: graphs
+Description: Gaining information about graph structure
+URL: ../../../library/igraph/html/structure.info.html
+
+Entry: subgraph
+Aliases: subgraph
+Keywords: graphs
+Description: Subgraph of a graph
+URL: ../../../library/igraph/html/subgraph.html
+
+Entry: tkigraph
+Aliases: tkigraph
+Keywords: graphs
+Description: Experimental basic igraph GUI
+URL: ../../../library/igraph/html/tkigraph.html
+
+Entry: tkplot
+Aliases: tkplot tkplot.close tkplot.off tkplot.fit.to.screen tkplot.reshape tkplot.export.postscript tkplot.getcoords tkplot.center tkplot.rotate
+Keywords: graphs
+Description: Interactive plotting of graphs
+URL: ../../../library/igraph/html/tkplot.html
+
+Entry: topological.sort
+Aliases: topological.sort
+Keywords: graphs
+Description: Topological sorting of vertices in a graph
+URL: ../../../library/igraph/html/topological.sort.html
+
+Entry: traits
+Aliases: callaway.traits.game establishment.game
+Keywords: graphs
+Description: Graph generation based on different vertex types
+URL: ../../../library/igraph/html/traits.html
+
+Entry: transitivity
+Aliases: transitivity
+Keywords: graphs
+Description: Transitivity of a graph
+URL: ../../../library/igraph/html/transitivity.html
+
+Entry: triad.census
+Aliases: triad.census
+Keywords: graphs
+Description: Triad census, subgraphs with three vertices
+URL: ../../../library/igraph/html/triad.census.html
+
+Entry: igraph.undocumented
+Aliases: cited.type.game citing.cited.type.game lastcit.game
+Keywords: graphs
+Description: Undocumented and unsupportted igraph functions
+URL: ../../../library/igraph/html/undocumented.html
+
+Entry: unfold.tree
+Aliases: unfold.tree
+Keywords: graphs
+Description: Convert a general graph into a forest
+URL: ../../../library/igraph/html/unfold.tree.html
+
+Entry: vertex.connectivity
+Aliases: vertex.connectivity vertex.disjoint.paths graph.cohesion
+Keywords: graphs
+Description: Vertex connectivity.
+URL: ../../../library/igraph/html/vertex.connectivity.html
+
+Entry: walktrap.community
+Aliases: walktrap.community
+Keywords: graphs
+Description: Community strucure via short random walks
+URL: ../../../library/igraph/html/walktrap.community.html
+
+Entry: watts.strogatz.game
+Aliases: watts.strogatz.game
+Keywords: graphs
+Description: The Watts-Strogatz small-world model
+URL: ../../../library/igraph/html/watts.strogatz.game.html
+
+Entry: write.graph
+Aliases: write.graph
+Keywords: graphs
+Description: Writing the graph to a file in some format
+URL: ../../../library/igraph/html/write.graph.html
+
+Entry: write.pajek.bgraph
+Aliases: write.pajek.bgraph
+Keywords: graphs
+Description: Write graphs and their cohesive block hierarchy as Pajek files
+URL: ../../../library/igraph/html/write.pajek.bgraph.html

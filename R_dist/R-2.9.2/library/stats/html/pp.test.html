@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Phillips-Perron Test for Unit Roots</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for PP.test {stats}"><tr><td>PP.test {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>Phillips-Perron Test for Unit Roots</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Computes the Phillips-Perron test for the null hypothesis that
+<code>x</code> has a unit root against a stationary alternative.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+PP.test(x, lshort = TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+a numeric vector or univariate time series.</td></tr>
+<tr valign="top"><td><code>lshort</code></td>
+<td>
+a logical indicating whether the short or long version
+of the truncation lag parameter is used.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The general regression equation which incorporates a constant and a
+linear trend is used and the corrected t-statistic for a first order
+autoregressive coefficient equals one is computed.  To estimate
+<code>sigma^2</code> the Newey-West estimator is used.  If <code>lshort</code>
+is <code>TRUE</code>, then the truncation lag parameter is set to
+<code>trunc(4*(n/100)^0.25)</code>, otherwise
+<code>trunc(12*(n/100)^0.25)</code> is used.  The p-values are
+interpolated from Table 4.2, page 103 of Banerjee <EM>et al.</EM>
+(1993).
+</p>
+<p>
+Missing values are not handled.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A list with class <code>"htest"</code> containing the following components:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>statistic</code></td>
+<td>
+the value of the test statistic.</td></tr>
+<tr valign="top"><td><code>parameter</code></td>
+<td>
+the truncation lag parameter.</td></tr>
+<tr valign="top"><td><code>p.value</code></td>
+<td>
+the p-value of the test.</td></tr>
+<tr valign="top"><td><code>method</code></td>
+<td>
+a character string indicating what type of test was
+performed.</td></tr>
+<tr valign="top"><td><code>data.name</code></td>
+<td>
+a character string giving the name of the data.</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+A. Trapletti
+</p>
+
+
+<h3>References</h3>
+
+<p>
+A. Banerjee, J. J. Dolado, J. W. Galbraith, and D. F. Hendry (1993)
+<EM>Cointegration, Error Correction, and the Econometric Analysis
+of Non-Stationary Data</EM>, Oxford University Press, Oxford.
+</p>
+<p>
+P. Perron (1988) Trends and random walks in macroeconomic time
+series. <EM>Journal of Economic Dynamics and Control</EM> <B>12</B>,
+297&ndash;332.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+x &lt;- rnorm(1000)
+PP.test(x)
+y &lt;- cumsum(x) # has unit root
+PP.test(y)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

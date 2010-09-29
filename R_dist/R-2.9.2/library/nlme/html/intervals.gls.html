@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Confidence Intervals on gls Parameters</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for intervals.gls {nlme}"><tr><td>intervals.gls {nlme}</td><td align="right">R Documentation</td></tr></table>
+<h2>Confidence Intervals on gls Parameters</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Approximate confidence intervals for the parameters in the linear
+model represented by <code>object</code> are obtained, using
+a normal approximation to the distribution of the (restricted)
+maximum likelihood estimators (the estimators are assumed to have a
+normal distribution centered at the true parameter values and with
+covariance matrix equal to the negative inverse Hessian matrix of the
+(restricted) log-likelihood evaluated at the estimated parameters).
+Confidence intervals are obtained in an unconstrained scale first,
+using the normal approximation, and, if necessary, transformed to the
+constrained scale.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'gls':
+intervals(object, level, which, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>object</code></td>
+<td>
+an object inheriting from class <code>gls</code>, representing
+a generalized least squares fitted linear model.</td></tr>
+<tr valign="top"><td><code>level</code></td>
+<td>
+an optional numeric value for the interval confidence
+level. Defaults to 0.95.</td></tr>
+<tr valign="top"><td><code>which</code></td>
+<td>
+an optional character string specifying the subset
+of parameters for which to construct the confidence
+intervals. Possible values are <code>"all"</code> for all parameters,
+<code>"var-cov"</code> for the variance-covariance parameters only, and
+<code>"coef"</code> for the linear model coefficients  only. Defaults to
+<code>"all"</code>.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+some methods for this generic require additional
+arguments.  None are used in this method.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+a list with components given by data frames with rows corresponding to
+parameters and columns <code>lower</code>, <code>est.</code>, and <code>upper</code>
+representing respectively lower confidence limits, the estimated
+values, and upper confidence limits for the parameters. Possible
+components are:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>coef</code></td>
+<td>
+linear model coefficients, only present when <code>which</code>
+is not equal to <code>"var-cov"</code>.</td></tr>
+<tr valign="top"><td><code>corStruct</code></td>
+<td>
+correlation parameters, only present when
+<code>which</code> is not equal to <code>"coef"</code> and a 
+correlation structure is used in <code>object</code>.</td></tr>
+<tr valign="top"><td><code>varFunc</code></td>
+<td>
+variance function parameters, only present when
+<code>which</code> is not equal to <code>"coef"</code> and a variance function
+structure is used in <code>object</code>.</td></tr>
+<tr valign="top"><td><code>sigma</code></td>
+<td>
+residual standard error.</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Jose Pinheiro <a href="mailto:Jose.Pinheiro@pharma.novartis.com">Jose.Pinheiro@pharma.novartis.com</a> and Douglas Bates <a href="mailto:bates@stat.wisc.edu">bates@stat.wisc.edu</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Pinheiro, J.C., and Bates, D.M. (2000) "Mixed-Effects Models
+in S and S-PLUS", Springer.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="gls.html">gls</a></code>, <code><a href="intervals.html">intervals</a></code>,
+<code><a href="intervals.gls.html">print.intervals.gls</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+fm1 &lt;- gls(follicles ~ sin(2*pi*Time) + cos(2*pi*Time), Ovary,
+           correlation = corAR1(form = ~ 1 | Mare))
+intervals(fm1)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>nlme</em> version 3.1-93 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

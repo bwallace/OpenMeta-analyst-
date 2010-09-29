@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Methods for image() in Package 'Matrix'</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for image-methods {Matrix}"><tr><td>image-methods {Matrix}</td><td align="right">R Documentation</td></tr></table>
+<h2>Methods for image() in Package 'Matrix'</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Methods for function <code><a href="../../graphics/html/image.html">image</a></code> in package
+<span class="pkg">Matrix</span>.  An image of a matrix simply color codes all matrix
+entries and draws the <i>n x m</i> matrix using an
+<i>n x m</i> grid of (colored) rectangles.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S4 method for signature 'dgTMatrix':
+image(x,
+      xlim = .5 + c(0, di[2]),
+      ylim = .5 + c(di[1], 0), aspect = "iso",
+      sub = sprintf("Dimensions: %d x %d", di[1], di[2]),
+      xlab = "Column", ylab = "Row",
+      useAbs = NULL, colorkey = !useAbs,
+      col.regions = NULL,
+      lwd = NULL, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+a Matrix object, i.e., fulfilling
+<code><a href="../../methods/html/is.html">is</a>(x, "Matrix")</code>.</td></tr>
+<tr valign="top"><td><code>xlim, ylim</code></td>
+<td>
+x- and y-axis limits; may be used to &ldquo;zoom
+into&rdquo; matrix.</td></tr>
+<tr valign="top"><td><code>aspect</code></td>
+<td>
+aspect ratio specified as number (y/x) or string;
+see <code><a href="../../lattice/html/levelplot.html">levelplot</a></code>.</td></tr>
+<tr valign="top"><td><code>sub, xlab, ylab</code></td>
+<td>
+axis annotation with sensible defaults;
+see <code><a href="../../graphics/html/plotdefault.html">plot.default</a></code>.</td></tr>
+<tr valign="top"><td><code>useAbs</code></td>
+<td>
+logical indicating if <code><a href="../../base/html/MathFun.html">abs</a>(x)</code> should be
+shown; if <code>TRUE</code>, the former (implicit) default, the default
+<code>col.regions</code> will be <code><a href="../../grDevices/html/gray.html">grey</a></code> colors (and no
+<code>colorkey</code> drawn).  The default is <code>FALSE</code> unless the
+matrix has no negative entries.</td></tr>
+<tr valign="top"><td><code>colorkey</code></td>
+<td>
+logical indicating if a color key aka &lsquo;legend&rsquo;
+should be produced.  Default is to draw one, unless <code>useAbs</code> is
+true.</td></tr>
+<tr valign="top"><td><code>col.regions</code></td>
+<td>
+vector of gradually varying colors; see
+<code><a href="../../lattice/html/levelplot.html">levelplot</a></code>.</td></tr>
+<tr valign="top"><td><code>lwd</code></td>
+<td>
+non-negative number or <code>NULL</code> (default), specifying the
+line-width of the rectangles of each non-zero matrix entry (drawn by
+<code><a href="../../grid/html/grid.rect.html">grid.rect</a></code>).  The default depends on the matrix
+dimension and the device size.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+further arguments passed to methods and
+<code><a href="../../lattice/html/levelplot.html">levelplot</a></code>.</td></tr>
+</table>
+
+<h3>Methods</h3>
+
+<p>
+All methods currently end up calling the method for the
+<code><a href="dgTMatrix-class.html">dgTMatrix</a></code> class.
+Use <code>showMethods(image)</code> to list them all.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+showMethods(image)
+## If you want to see all the methods' implementations:
+showMethods(image, incl=TRUE, inherit=FALSE)
+
+data(CAex)
+image(CAex, main = "image(CAex)")
+image(CAex, useAbs=TRUE, main = "image(CAex, useAbs=TRUE)")
+
+cCA &lt;- Cholesky(crossprod(CAex), Imult = .01)
+image(cCA, main="Cholesky(crossprod(CAex), Imult = .01)")
+image(cCA, useAbs=TRUE)
+
+data(USCounties)
+image(USCounties)# huge
+image(sign(USCounties))## just the pattern
+    # how the result looks, may depend heavily on
+    # the device, screen resolution, antialiasing etc
+    # e.g. x11(type="Xlib") may show very differently than cairo-based
+
+## Drawing borders around each rectangle;
+    # again, viewing depends very much on the device:
+image(USCounties[1:400,1:200], lwd=.1)
+image(USCounties[1:200,1:200], lwd=.5)
+image(USCounties[1:200,1:200], lwd=.01)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>Matrix</em> version 0.999375-30 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

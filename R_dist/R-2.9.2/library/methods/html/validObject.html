@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Test the Validity of an Object</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for validObject {methods}"><tr><td>validObject {methods}</td><td align="right">R Documentation</td></tr></table>
+<h2>Test the Validity of an Object</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The validity of <code>object</code> related to its class definition is
+tested.  If the object is valid, <code>TRUE</code> is returned; otherwise,
+either a vector of strings describing validity failures is returned,
+or an error is generated (according to whether <code>test</code> is
+<code>TRUE</code>).  Optionally, all slots in the object can also be validated.
+</p>
+<p>
+The function <code>setValidity</code> sets the validity method of a class
+(but more normally, this method will be supplied as the
+<code>validity</code> argument to <code><a href="setClass.html">setClass</a></code>).  The method
+should be a function of one object that returns <code>TRUE</code> or a
+description of the non-validity.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+validObject(object, test = FALSE, complete = FALSE)
+
+setValidity(Class, method, where = topenv(parent.frame()) )
+
+getValidity(ClassDef)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>object</code></td>
+<td>
+any object, but not much will happen unless the
+object's class has a formal definition.</td></tr>
+<tr valign="top"><td><code>test</code></td>
+<td>
+logical; if <code>TRUE</code> and validity fails, the
+function returns a vector of strings describing the problems.  If
+<code>test</code> is <code>FALSE</code> (the default) validity failure generates
+an error.</td></tr>
+<tr valign="top"><td><code>complete</code></td>
+<td>
+logical; if <code>TRUE</code>, validity methods will be
+applied recursively to any of the slots that have such methods.</td></tr>
+<tr valign="top"><td><code>Class</code></td>
+<td>
+the name or class definition of the class whose validity
+method is to be set.</td></tr>
+<tr valign="top"><td><code>ClassDef</code></td>
+<td>
+a class definition object, as from
+<code><a href="getClass.html">getClassDef</a></code>.</td></tr>
+<tr valign="top"><td><code>method</code></td>
+<td>
+a validity method;  that is, either <code>NULL</code> or a
+function of one argument (<code>object</code>).  Like
+<code>validObject</code>, the function should return <code>TRUE</code> if the
+object is valid, and one or more descriptive strings if any problems
+are found.  Unlike <code>validObject</code>, it should never generate an
+error.
+</td></tr>
+<tr valign="top"><td><code>where</code></td>
+<td>
+the modified class definition will be stored in this
+environment.</td></tr>
+</table>
+<p>
+
+<br>
+Note that validity methods do not have to check validity of
+superclasses: the logic of <code>validObject</code> ensures these tests are
+done once only.  As a consequence, if one validity method wants to use
+another, it should extract and call the method from the other
+definition of the other class by calling <code>getValidity()</code>: it
+should <EM>not</EM> call <code>validObject</code>.</p>
+
+<h3>Details</h3>
+
+<p>
+Validity testing takes place &lsquo;bottom up&rsquo;: Optionally, if
+<code>complete=TRUE</code>, the validity of the object's slots, if any, is
+tested.  Then, in all cases, for each of the classes that this class
+extends (the &lsquo;superclasses&rsquo;), the explicit validity method of
+that class is called, if one exists.  Finally, the validity method of
+<code>object</code>'s class is called, if there is one.
+</p>
+<p>
+Testing generally stops at the first stage of finding an error, except
+that all the slots will be examined even if a slot has failed its
+validity test.
+</p>
+<p>
+The standard validity test (with <code>complete=FALSE</code>) is applied
+when an object is created via <code><a href="new.html">new</a></code> with any optional
+arguments (without the extra arguments the result is just the class
+prototype object).
+</p>
+<p>
+An attempt is made to fix up the definition of a validity method if
+its argument is not <code>object</code>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>validObject</code> returns <code>TRUE</code> if the object is valid.
+Otherwise a vector of strings describing problems found, except that
+if <code>test</code> is <code>FALSE</code>, validity failure generates an error,
+with the corresponding strings in the error message.</p>
+
+<h3>References</h3>
+
+<p>
+Chambers, John M. (2008)
+<EM>Software for Data Analysis: Programming with R</EM>
+Springer.  (For the R version.)
+</p>
+<p>
+Chambers, John M. (1998)
+<EM>Programming with Data</EM>
+Springer (For the original S4 version.)
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="setClass.html">setClass</a></code>;
+class <code><a href="classRepresentation-class.html">classRepresentation</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+setClass("track",
+          representation(x="numeric", y = "numeric"))
+t1 &lt;- new("track", x=1:10, y=sort(stats::rnorm(10)))
+## A valid "track" object has the same number of x, y values
+validTrackObject &lt;- function(object) {
+    if(length(object@x) == length(object@y)) TRUE
+    else paste("Unequal x,y lengths: ", length(object@x), ", ",
+               length(object@y), sep="")
+}
+## assign the function as the validity method for the class
+setValidity("track", validTrackObject)
+## t1 should be a valid "track" object
+validObject(t1)
+## Now we do something bad
+t2 &lt;- t1
+t2@x &lt;- 1:20
+## This should generate an error
+## Not run: try(validObject(t2))
+
+
+setClass("trackCurve",
+         representation("track", smooth = "numeric"))
+
+## all superclass validity methods are used when validObject
+## is called from initialize() with arguments, so this fails
+## Not run: trynew("trackCurve", t2)
+
+
+setClass("twoTrack", representation(tr1 = "track", tr2 ="track"))
+
+## validity tests are not applied recursively by default,
+## so this object is created (invalidly)
+tT  &lt;- new("twoTrack", tr2 = t2)
+
+## A stricter test detects the problem
+## Not run: try(validObject(tT, complete = TRUE))
+
+</pre>
+
+
+
+<hr><div align="center">[Package <em>methods</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

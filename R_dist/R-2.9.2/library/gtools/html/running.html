@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Apply a Function Over Adjacent Subsets of a Vector</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for running {gtools}"><tr><td>running {gtools}</td><td align="right">R Documentation</td></tr></table>
+<h2>Apply a Function Over Adjacent Subsets of a Vector</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Applies a function over subsets of the vector(s) formed by
+taking a fixed number of previous points.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+running(X, Y=NULL, fun=mean, width=min(length(X), 20),
+        allow.fewer=FALSE, pad=FALSE, align=c("right", "center","left"),
+        simplify=TRUE, by, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>X</code></td>
+<td>
+data vector </td></tr>
+<tr valign="top"><td><code>Y</code></td>
+<td>
+data vector (optional) </td></tr>
+<tr valign="top"><td><code>fun</code></td>
+<td>
+Function to apply. Default is <code>mean</code></td></tr>
+<tr valign="top"><td><code>width</code></td>
+<td>
+Integer giving the number of vector elements to include
+in the subsets.  Defaults to the lesser of the length of the data and
+20 elements.</td></tr>
+<tr valign="top"><td><code>allow.fewer</code></td>
+<td>
+Boolean indicating whether the function should be
+computed for subsets with fewer than <code>width</code> points</td></tr>
+<tr valign="top"><td><code>pad</code></td>
+<td>
+Boolean indicating whether the returned results should
+be 'padded' with NAs corresponding to sets with less than
+<code>width</code> elements.  This only applies when when
+<code>allow.fewer</code> is FALSE.</td></tr>
+<tr valign="top"><td><code>align</code></td>
+<td>
+One of "right", "center", or "left".
+This controls the relative location of `short' subsets with less
+then <code>width</code> elements: "right" allows short subsets only at the
+beginning of the sequence so that all of the complete subsets are at
+the end of the sequence (i.e. `right aligned'), "left" allows short
+subsets only at the end of the data so that the complete subsets
+are `left aligned', and "center" allows short subsets at both ends
+of the data so that complete subsets are `centered'.
+</td></tr>
+<tr valign="top"><td><code>simplify</code></td>
+<td>
+Boolean.  If FALSE the returned object will be a list
+containing one element per evaluation.  If TRUE, the returned
+object will be coerced into a vector (if the computation returns a
+scalar) or a matrix (if the computation returns multiple values).
+Defaults to FALSE.</td></tr>
+<tr valign="top"><td><code>by</code></td>
+<td>
+Integer separation between groups. If <code>by=width</code> will
+give non-overlapping windows. Default is missing, in which case
+groups will start at each value in the X/Y range.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+parameters to be passed to <code>fun</code> </td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>running</code> applies the specified function to
+a sequential windows on <code>X</code> and (optionally) <code>Y</code>.  If
+<code>Y</code> is specified the function must be bivariate.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+List (if <code>simplify==TRUE</code>), vector, or matrix containg the
+results of applying the function <code>fun</code> to the
+subsets of <code>X</code> (<code>running</code>) or <code>X</code> and <code>Y</code>.
+<br>
+Note that this function will create a vector or matrix even for
+objects which are not simplified by <code>sapply</code>.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Gregory R. Warnes <a href="mailto:greg@random-technologies-llc.com">greg@random-technologies-llc.com</a>,
+with contributions by Nitin Jain <a href="mailto:nitin.jain@pfizer.com">nitin.jain@pfizer.com</a>.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../gplots/html/wapply.html">wapply</a></code> to apply a function over an x-y window
+centered at each x point, <code><a href="../../base/html/sapply.html">sapply</a></code>,
+<code><a href="../../base/html/lapply.html">lapply</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+
+# show effect of pad
+running(1:20, width=5)
+running(1:20, width=5, pad=TRUE)
+
+# show effect of align
+running(1:20, width=5, align="left", pad=TRUE)
+running(1:20, width=5, align="center", pad=TRUE)
+running(1:20, width=5, align="right", pad=TRUE)
+
+# show effect of simplify
+running(1:20, width=5, fun=function(x) x )  # matrix
+running(1:20, width=5, fun=function(x) x, simplify=FALSE) # list
+
+# show effect of by
+running(1:20, width=5)       # normal
+running(1:20, width=5, by=5) # non-overlapping
+running(1:20, width=5, by=2) # starting every 2nd
+
+# Use 'pad' to ensure correct length of vector, also show the effect
+# of allow.fewer.
+par(mfrow=c(2,1))
+plot(1:20, running(1:20, width=5, allow.fewer=FALSE, pad=TRUE), type="b")
+plot(1:20, running(1:20, width=5, allow.fewer=TRUE,  pad=TRUE), type="b")
+par(mfrow=c(1,1))
+
+# plot running mean and central 2 standard deviation range
+# estimated by *last* 40 observations
+dat &lt;- rnorm(500, sd=1 + (1:500)/500 )
+plot(dat)
+sdfun &lt;- function(x,sign=1) mean(x) + sign * sqrt(var(x))
+lines(running(dat, width=51, pad=TRUE, fun=mean), col="blue")
+lines(running(dat, width=51, pad=TRUE, fun=sdfun, sign=-1), col="red")
+lines(running(dat, width=51, pad=TRUE, fun=sdfun, sign= 1), col="red")
+
+# plot running correlation estimated by last 40 observations (red)
+# against the true local correlation (blue)
+sd.Y &lt;- seq(0,1,length=500)
+
+X &lt;- rnorm(500, sd=1)
+Y &lt;- rnorm(500, sd=sd.Y)
+
+plot(running(X,X+Y,width=20,fun=cor,pad=TRUE),col="red",type="s")
+
+r &lt;- 1 / sqrt(1 + sd.Y^2) # true cor of (X,X+Y)
+lines(r,type="l",col="blue")
+</pre>
+
+
+
+<hr><div align="center">[Package <em>gtools</em> version 2.6.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

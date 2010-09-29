@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Modify families for use in GAM fitting</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for fix.family.link {mgcv}"><tr><td>fix.family.link {mgcv}</td><td align="right">R Documentation</td></tr></table>
+<h2>Modify families for use in GAM fitting</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Generalized Additive Model fitting by `outer' iteration,
+requires extra derivatives of the variance and link functions to be 
+added to family objects. The functions add what is needed.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+fix.family.link(fam)
+fix.family.var(fam)
+fix.family.ls(fam)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>fam</code></td>
+<td>
+A <code>family</code>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Outer iteration GAM estimation requires derivatives of the GCV, UBRE/gAIC,
+GACV, REML or ML score, which are obtained by finding the derivatives of the model
+coefficients w.r.t. the log smoothing parameters, using the implicit function theorem. 
+The expressions for the derivatives require the second and third derivatives of the link 
+w.r.t. the mean (and the 4th derivatives if Fisher scoring is not used). Also required are the first
+and second derivatives of the variance function w.r.t. the mean (plus the third 
+derivative if Fisher scoring is not used). Finally REML or ML estimation of smoothing parameters
+requires the log saturated likelihood and its first two derivatives w.r.t. the scale parameter.
+These functions add functions evaluating these quantities to a family. 
+</p>
+<p>
+If the family already has functions <code>dvar</code>, <code>d2var</code>, <code>d3var</code>, <code>d2link</code>,
+<code>d3link</code>, <code>d4link</code> and for RE/ML <code>ls</code>, then these functions simply 
+return the family unmodified: this allows non-standard links
+to be used with <code><a href="gam.html">gam</a></code> when using outer iteration (performance
+iteration operates with unmodified families). Note that if you only need Fisher scoring then 
+<code>d4link</code> and <code>d3var</code> can be dummy, as they are ignored. similalry <code>ls</code> is only needed for 
+RE/ML.
+</p>
+<p>
+The <code>dvar</code> function is a function of a mean vector, <code>mu</code>, and returns
+a vector of corresponding first derivatives of the family variance
+function. The <code>d2link</code> function is also a function of a vector of mean
+values, <code>mu</code>: it returns a vector of second derivatives of the link,
+evaluated at <code>mu</code>. Higher derivatives are defined similarly.
+</p>
+<p>
+If modifying your own family, note that you can often get away with supplying
+only a <code>dvar</code> and <code>d2var</code>, function if your family only requires links that occur in
+one of the standard families.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A family object with extra component functions <code>dvar</code>,
+<code>d2var</code>, <code>d2link</code>, <code>d3link</code>, <code>d4link</code> and <code>ls</code>.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Simon N. Wood <a href="mailto:simon.wood@r-project.org">simon.wood@r-project.org</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="gam.fit3.html">gam.fit3</a></code>
+</p>
+
+
+
+<hr><div align="center">[Package <em>mgcv</em> version 1.5-5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

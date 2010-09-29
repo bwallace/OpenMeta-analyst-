@@ -1,0 +1,99 @@
+Animals2                Brain and Body Weights for 65 Species of Land
+                        Animals
+CrohnD                  Crohn's Disease Adverse Events Data
+NOxEmissions            NOx Air Pollution Data
+Qn                      Robust Location-Free Scale Estimate More
+                        Efficient than MAD
+SiegelsEx               Siegel's Exact Fit Example Data
+Sn                      Robust Location-Free Scale Estimate More
+                        Efficient than MAD
+adjOutlyingness         Compute Skewness-adjusted Multivariate
+                        Outlyingness
+adjbox                  Plot an Adjusted Boxplot for Skew Distributions
+adjboxStats             Statistics for Skewness-adjusted Boxplots
+aircraft                Aircraft Data
+airmay                  Air Quality Data
+alcohol                 Alcohol Solubility in Water Data
+ambientNOxCH            Daily Means of NOx (mono-nitrogen oxides) in
+                        air
+anova.glmrob            Analysis of Robust Quasi-Deviance for "glmrob"
+                        Objects
+anova.lmrob             Analysis of Robust Deviances ('anova') for
+                        "lmrob" Objects
+bushfire                Campbell Bushfire Data
+carrots                 Insect Damages on Carrots
+chgDefaults-methods     Methods for Function chgDefaults() in Package
+                        'robustbase'
+cloud                   Cloud point of a Liquid
+coleman                 Coleman Data Set
+condroz                 Condroz Data
+covMcd                  Robust Location and Scatter Estimation via MCD
+covOGK                  Orthogonalized Gnanadesikan-Kettenring (OGK)
+                        Covariance Matrix Estimation
+cushny                  Cushny and Peebles Prolongation of Sleep Data
+delivery                Delivery Time Data
+education               Education Expenditure Data
+epilepsy                Epilepsy Attacks Data Set
+exAM                    Example Data of Antille and May - for Simple
+                        Regression
+functionX-class         Class "functionX" of Psi-like Vectorized
+                        Functions
+functionXal-class       Class "functionXal" of Functionals (of Psi-like
+                        functions)
+glmrob                  Robust Fitting of Generalized Linear Models
+glmrobMqle.control      Auxiliary for Controlling Robust GLM Fitting by
+                        the Method "Mqle"
+h.alpha.n               Compute h, the subsample size for MCD and LTS
+hbk                     Hawkins, Bradu, Kass's Artificial Data
+heart                   Heart Catherization Data
+huberM                  Safe (generalized) Huber M-Estimator of
+                        Location
+kootenay                (Modified) Waterflow Measurements of Kootenay
+                        River in Libby and Newgate
+lactic                  Lactic Acid Concentration Measurement Data
+lmrob                   MM-Estimators for Linear Regression
+lmrob..M..fit           Compute M-estimators of regression
+lmrob.S                 S-regression estimators
+lmrob.control           Tuning parameters for lmrob
+lmrob.fit.MM            MM-estimator for regression
+los                     Length of Stay Data
+ltsReg                  Least Trimmed Squares Robust (High Breakdown)
+                        Regression
+mc                      Medcouple, a Robust Measure of Skewness
+milk                    Daudin's Milk Composition Data
+nlrob                   Robust Fitting of Nonlinear Regression Models
+pension                 Pension Funds Data
+phosphor                Phosphorus Content Data
+pilot                   Pilot-Plant Data
+plot.lmrob              Plot Method for "lmrob" Objects
+plot.lts                Robust LTS Regression Diagnostic Plots
+plot.mcd                Robust Distance Plots
+possumDiv               Possum Diversity Data
+print.lmrob             Print Method for Objects of Class "lmrob"
+psiFunc                 Constructor for Objects "Psi Function" Class
+psi_func-class          Class of "Psi Functions" for M-Estimation
+pulpfiber               Pulp Fiber and Paper Data
+radarImage              Satellite Radar Image Data from near Munich
+rrcov.control           Control object for the estimation parameters
+salinity                Salinity Data
+scaleTau2               Robust Tau-Estimate of Scale
+starsCYG                Hertzsprung-Russell Diagram Data of Star
+                        Cluster CYG OB1
+summarizeRobWeights     Print a Nice "summary" of Robustness Weights
+summary.glmrob          Summarizing Robust Fits of Generalized Linear
+                        Models
+summary.lmrob           Summary Method for "lmrob" Objects
+summary.lts             Summary Method for LTS objects
+summary.mcd             Summary Method for MCD objects
+summary.nlrob           Summarizing Robust Fits of Nonlinear Regression
+                        Models
+telef                   Number of International Calls from Belgium
+tolEllipsePlot          Tolerance Ellipse Plot
+toxicity                Toxicity of Carboxylic Acids Data
+tukeyChi                Tukey's "Chi", the Bi-square Loss (Rho)
+                        Function
+tukeyPsi1               Tukey's Bi-square Score (Psi) Function and
+                        Derivative
+vaso                    Vaso Constriction Data Set
+wgt.himedian            Weighted Hi-Median
+wood                    Modified Data on Wood Specific Gravity

@@ -1,0 +1,365 @@
+Entry: Lattice
+Aliases: Lattice lattice lattice-package
+Keywords: dplot
+Description: Lattice Graphics
+URL: ../../../library/lattice/html/Lattice.html
+
+Entry: Rows
+Aliases: Rows
+Keywords: utilities
+Description: Extract rows from a list
+URL: ../../../library/lattice/html/Rows.html
+
+Entry: axis.default
+Aliases: axis.default xscale.components.default yscale.components.default
+Keywords: dplot
+Description: Default axis annotation utilities
+URL: ../../../library/lattice/html/axis.default.html
+
+Entry: banking
+Aliases: banking
+Keywords: dplot
+Description: Banking
+URL: ../../../library/lattice/html/banking.html
+
+Entry: barchart.table
+Aliases: barchart.table barchart.array barchart.matrix dotplot.table dotplot.array dotplot.matrix
+Keywords: hplot
+Description: table methods for barchart and dotplot
+URL: ../../../library/lattice/html/barchart.table.html
+
+Entry: barley
+Aliases: barley
+Keywords: datasets
+Description: Yield data from a Minnesota barley trial
+URL: ../../../library/lattice/html/barley.html
+
+Entry: cloud
+Aliases: cloud wireframe cloud.formula cloud.matrix cloud.table wireframe.formula wireframe.matrix
+Keywords: hplot
+Description: 3d Scatter Plot and Wireframe Surface Plot
+URL: ../../../library/lattice/html/cloud.html
+
+Entry: draw.colorkey
+Aliases: draw.colorkey
+Keywords: dplot
+Description: Produce a Colorkey for levelplot
+URL: ../../../library/lattice/html/draw.colorkey.html
+
+Entry: draw.key
+Aliases: draw.key
+Keywords: dplot
+Description: Produce a Legend or Key
+URL: ../../../library/lattice/html/draw.key.html
+
+Entry: environmental
+Aliases: environmental
+Keywords: datasets
+Description: Atmospheric environmental conditions in New York City
+URL: ../../../library/lattice/html/environmental.html
+
+Entry: ethanol
+Aliases: ethanol
+Keywords: datasets
+Description: Engine exhaust fumes from burning ethanol
+URL: ../../../library/lattice/html/ethanol.html
+
+Entry: histogram
+Aliases: histogram histogram.factor histogram.numeric histogram.formula densityplot densityplot.numeric densityplot.formula do.breaks
+Keywords: hplot
+Description: Histograms and Kernel Density Plots
+URL: ../../../library/lattice/html/histogram.html
+
+Entry: interaction
+Aliases: panel.identify panel.identify.qqmath panel.identify.cloud panel.link.splom panel.brush.splom trellis.focus trellis.unfocus trellis.switchFocus trellis.panelArgs trellis.vpname trellis.grobname
+Keywords: dplot
+Description: Functions to Interact with Lattice Plots
+URL: ../../../library/lattice/html/interaction.html
+
+Entry: lattice.options
+Aliases: lattice.options lattice.getOption
+Keywords: dplot
+Description: Low-level Options Controlling Behaviour of Lattice
+URL: ../../../library/lattice/html/lattice.options.html
+
+Entry: latticeParseFormula
+Aliases: latticeParseFormula
+Keywords: utilities
+Description: Parse Trellis formula
+URL: ../../../library/lattice/html/latticeParseFormula.html
+
+Entry: level.colors
+Aliases: level.colors
+Keywords: utilities
+Description: A function to compute false colors representing a numeric or categorical variable
+URL: ../../../library/lattice/html/level.colors.html
+
+Entry: levelplot
+Aliases: levelplot contourplot levelplot.formula contourplot.formula levelplot.table contourplot.table levelplot.array contourplot.array levelplot.matrix contourplot.matrix
+Keywords: hplot
+Description: Level plots and contour plots
+URL: ../../../library/lattice/html/levelplot.html
+
+Entry: llines
+Aliases: llines lpoints ltext llines.default lpoints.default ltext.default lplot.xy larrows lsegments lrect lpolygon panel.arrows panel.lines panel.points panel.segments panel.text panel.rect panel.polygon
+Keywords: dplot
+Description: Replacements of traditional graphics functions
+URL: ../../../library/lattice/html/llines.html
+
+Entry: lset
+Aliases: lset
+Keywords: utilities
+Description: Interface to modify Trellis Settings - Deprecated
+URL: ../../../library/lattice/html/lset.html
+
+Entry: make.groups
+Aliases: make.groups
+Keywords: dplot
+Description: Grouped data from multiple vectors
+URL: ../../../library/lattice/html/make.groups.html
+
+Entry: melanoma
+Aliases: melanoma
+Keywords: datasets
+Description: Melanoma skin cancer incidence
+URL: ../../../library/lattice/html/melanoma.html
+
+Entry: oneway
+Aliases: oneway
+Keywords: dplot
+Description: Fit One-way Model
+URL: ../../../library/lattice/html/oneway.html
+
+Entry: packet.panel.default
+Aliases: packet.panel.default
+Keywords: dplot
+Description: Associating Packets with Panels
+URL: ../../../library/lattice/html/packet.panel.default.html
+
+Entry: panel.axis
+Aliases: panel.axis current.panel.limits
+Keywords: dplot
+Description: Panel Function for Drawing Axis Ticks and Labels
+URL: ../../../library/lattice/html/panel.axis.html
+
+Entry: panel.barchart
+Aliases: panel.barchart
+Keywords: dplot
+Description: Default Panel Function for barchart
+URL: ../../../library/lattice/html/panel.barchart.html
+
+Entry: panel.bwplot
+Aliases: panel.bwplot
+Keywords: dplot
+Description: Default Panel Function for bwplot
+URL: ../../../library/lattice/html/panel.bwplot.html
+
+Entry: panel.cloud
+Aliases: panel.cloud panel.wireframe panel.3dscatter panel.3dwire
+Keywords: dplot
+Description: Default Panel Function for cloud
+URL: ../../../library/lattice/html/panel.cloud.html
+
+Entry: panel.densityplot
+Aliases: panel.densityplot
+Keywords: dplot
+Description: Default Panel Function for densityplot
+URL: ../../../library/lattice/html/panel.densityplot.html
+
+Entry: panel.dotplot
+Aliases: panel.dotplot
+Keywords: dplot
+Description: Default Panel Function for dotplot
+URL: ../../../library/lattice/html/panel.dotplot.html
+
+Entry: panel.functions
+Aliases: panel.functions panel.abline panel.refline panel.curve panel.rug panel.fill panel.grid panel.lmline panel.loess panel.average panel.linejoin panel.mathdensity
+Keywords: dplot
+Description: Useful Panel Functions
+URL: ../../../library/lattice/html/panel.functions.html
+
+Entry: panel.histogram
+Aliases: panel.histogram
+Keywords: dplot
+Description: Default Panel Function for histogram
+URL: ../../../library/lattice/html/panel.histogram.html
+
+Entry: panel.levelplot
+Aliases: panel.levelplot panel.contourplot
+Keywords: dplot
+Description: Default Panel Function for levelplot
+URL: ../../../library/lattice/html/panel.levelplot.html
+
+Entry: panel.number
+Aliases: current.row current.column packet.number panel.number which.packet trellis.currentLayout
+Keywords: dplot
+Description: Accessing Auxiliary Information During Plotting
+URL: ../../../library/lattice/html/panel.number.html
+
+Entry: panel.pairs
+Aliases: panel.pairs diag.panel.splom
+Keywords: dplot
+Description: Default Superpanel Function for splom
+URL: ../../../library/lattice/html/panel.pairs.html
+
+Entry: panel.parallel
+Aliases: panel.parallel
+Keywords: dplot
+Description: Default Panel Function for parallel
+URL: ../../../library/lattice/html/panel.parallel.html
+
+Entry: panel.qqmath
+Aliases: panel.qqmath
+Keywords: dplot
+Description: Default Panel and Prepanel Function for qqmath
+URL: ../../../library/lattice/html/panel.qqmath.html
+
+Entry: panel.qqmathline
+Aliases: panel.qqmathline
+Keywords: dplot
+Description: Useful panel function with qqmath
+URL: ../../../library/lattice/html/panel.qqmathline.html
+
+Entry: panel.smoothScatter
+Aliases: panel.smoothScatter
+Keywords: hplot
+Description: Lattice panel function analogous to smoothScatter
+URL: ../../../library/lattice/html/panel.smoothScatter.html
+
+Entry: panel.stripplot
+Aliases: panel.stripplot
+Keywords: dplot
+Description: Default Panel Function for stripplot
+URL: ../../../library/lattice/html/panel.stripplot.html
+
+Entry: panel.superpose
+Aliases: panel.superpose panel.superpose.2
+Keywords: dplot
+Description: Panel Function for Display Marked by groups
+URL: ../../../library/lattice/html/panel.superpose.html
+
+Entry: panel.violin
+Aliases: panel.violin
+Keywords: dplot
+Description: Panel Function to create Violin Plots
+URL: ../../../library/lattice/html/panel.violin.html
+
+Entry: panel.xyplot
+Aliases: panel.xyplot panel.splom panel.qq
+Keywords: dplot
+Description: Default Panel Function for xyplot
+URL: ../../../library/lattice/html/panel.xyplot.html
+
+Entry: prepanel.default
+Aliases: prepanel.default.bwplot prepanel.default.histogram prepanel.default.qq prepanel.default.xyplot prepanel.default.cloud prepanel.default.levelplot prepanel.default.qqmath prepanel.default.densityplot prepanel.default.parallel prepanel.default.splom
+Keywords: dplot
+Description: Default Prepanel Functions
+URL: ../../../library/lattice/html/prepanel.default.html
+
+Entry: prepanel.functions
+Aliases: prepanel.lmline prepanel.loess prepanel.qqmathline
+Keywords: dplot
+Description: Useful Prepanel Function for Lattice
+URL: ../../../library/lattice/html/prepanel.functions.html
+
+Entry: print.trellis
+Aliases: print.trellis plot.trellis summary.trellis dim.trellis dimnames.trellis panel.error
+Keywords: hplot
+Description: Plot and Summarize Trellis Objects
+URL: ../../../library/lattice/html/print.trellis.html
+
+Entry: qq
+Aliases: qq qq.formula
+Keywords: dplot
+Description: Quantile-Quantile Plots of Two Samples
+URL: ../../../library/lattice/html/qq.html
+
+Entry: qqmath
+Aliases: qqmath qqmath.formula qqmath.numeric
+Keywords: dplot
+Description: Q-Q Plot with Theoretical Distribution
+URL: ../../../library/lattice/html/qqmath.html
+
+Entry: rfs
+Aliases: rfs
+Keywords: dplot
+Description: Residual and Fit Spread Plots
+URL: ../../../library/lattice/html/rfs.html
+
+Entry: shingles
+Aliases: equal.count plot.shingle print.shingle as.character.shingleLevel print.shingleLevel summary.shingle as.data.frame.shingle as.factorOrShingle as.shingle [.shingle is.shingle shingle
+Keywords: print hplot methods classes
+Description: shingles
+URL: ../../../library/lattice/html/shingles.html
+
+Entry: simpleKey
+Aliases: simpleKey
+Keywords: dplot
+Description: Function to generate a simple key
+URL: ../../../library/lattice/html/simpleKey.html
+
+Entry: simpleTheme
+Aliases: simpleTheme
+Keywords: dplot
+Description: Function to generate a simple theme
+URL: ../../../library/lattice/html/simpleTheme.html
+
+Entry: singer
+Aliases: singer
+Keywords: datasets
+Description: Heights of New York Choral Society singers
+URL: ../../../library/lattice/html/singer.html
+
+Entry: splom
+Aliases: splom parallel splom.matrix splom.data.frame parallel.matrix parallel.data.frame splom.formula parallel.formula
+Keywords: hplot
+Description: Scatter Plot Matrices
+URL: ../../../library/lattice/html/splom.html
+
+Entry: strip.default
+Aliases: strip.default strip.custom
+Keywords: dplot
+Description: Default Trellis Strip Function
+URL: ../../../library/lattice/html/strip.default.html
+
+Entry: tmd
+Aliases: tmd tmd.formula tmd.trellis prepanel.tmd.default prepanel.tmd.qqmath panel.tmd.default panel.tmd.qqmath
+Keywords: dplot
+Description: Tukey Mean-Difference Plot
+URL: ../../../library/lattice/html/tmd.html
+
+Entry: trellis.device
+Aliases: trellis.device standard.theme canonical.theme col.whitebg
+Keywords: dplot
+Description: Initializing Trellis Displays
+URL: ../../../library/lattice/html/trellis.device.html
+
+Entry: trellis.object
+Aliases: trellis.object
+Keywords: classes
+Description: A Trellis Plot Object
+URL: ../../../library/lattice/html/trellis.object.html
+
+Entry: trellis.par.get
+Aliases: trellis.par.get trellis.par.set show.settings
+Keywords: dplot
+Description: Graphical Parameters for Trellis Displays
+URL: ../../../library/lattice/html/trellis.par.get.html
+
+Entry: update.trellis
+Aliases: update.trellis [.trellis t.trellis trellis.last.object
+Keywords: dplot
+Description: Retrieve and Update Trellis Object
+URL: ../../../library/lattice/html/update.trellis.html
+
+Entry: utilities.3d
+Aliases: utilities.3d palette.shade ltransform3dMatrix ltransform3dto3d
+Keywords: dplot
+Description: Utility functions for 3-D plots
+URL: ../../../library/lattice/html/utilities.3d.html
+
+Entry: xyplot
+Aliases: xyplot xyplot.formula barchart barchart.formula barchart.numeric barchart.default bwplot bwplot.formula bwplot.numeric dotplot dotplot.formula dotplot.numeric dotplot.default stripplot stripplot.formula stripplot.numeric
+Keywords: hplot
+Description: Common Bivariate Trellis Plots
+URL: ../../../library/lattice/html/xyplot.html

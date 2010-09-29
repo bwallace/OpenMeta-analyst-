@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Chi-Square Plot</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for chisq.plot {mvoutlier}"><tr><td>chisq.plot {mvoutlier}</td><td align="right">R Documentation</td></tr></table>
+<h2>Chi-Square Plot</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The function chisq.plot plots the ordered robust mahalanobis distances of the data against
+the quantiles of the Chi-squared distribution. By user interaction this plotting 
+is iterated each time leaving out the observation with the greatest distance.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>chisq.plot(x, quan=1/2, ask=TRUE, ...)</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+matrix or data.frame containing the data</td></tr>
+<tr valign="top"><td><code>quan</code></td>
+<td>
+amount of observations which are used for mcd estimations. 
+has to be between 0.5 and 1, default ist 0.5</td></tr>
+<tr valign="top"><td><code>ask</code></td>
+<td>
+logical. specifies whether user interacton is allowed or not. default is TRUE</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+additional graphical parameters</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The function chisq.plot plots the ordered robust mahalanobis distances of the data 
+against the quantiles of the Chi-squared distribution. If the data is normal distributed 
+these values should approximately correspond to each other, so outliers can be detected 
+visually. By user interaction this procedure is repeated, each time leaving out the 
+observation with the greatest distance (the number of the observation is printed on the 
+console). This method can be seen as an iterative deletion of outliers until a straight 
+line appears.
+</p>
+
+
+<h3>Value</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>outliers</code></td>
+<td>
+indices of the outliers that are removed by left-click
+on the plotting device.</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Moritz Gschwandtner &lt;<a href="mailto:e0125439@student.tuwien.ac.at">e0125439@student.tuwien.ac.at</a>&gt;
+<br> Peter Filzmoser &lt;<a href="mailto:P.Filzmoser@tuwien.ac.at">P.Filzmoser@tuwien.ac.at</a>&gt;
+<a href="http://www.statistik.tuwien.ac.at/public/filz/">http://www.statistik.tuwien.ac.at/public/filz/</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+R.G. Garrett (1989).
+The chi-square plot: a tools for multivariate outlier recognition.
+<EM>Journal of Geochemical Exploration</EM>, 32 (1/3), 319-341.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(humus)
+res &lt;-chisq.plot(log(humus[,c("Co","Cu","Ni")]))
+res$outliers # these are the potential outliers
+</pre>
+
+
+
+<hr><div align="center">[Package <em>mvoutlier</em> version 1.4 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

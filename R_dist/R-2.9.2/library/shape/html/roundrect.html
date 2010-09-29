@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: adds a rounded rectangular box to a plot</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for roundrect {shape}"><tr><td>roundrect {shape}</td><td align="right">R Documentation</td></tr></table>
+<h2>adds a rounded rectangular box to a plot</h2>
+
+
+<h3>Description</h3>
+
+<p>
+adds a rectangular box with rounded left and right edges to a plot
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+roundrect(mid, radx, rady, rx=rady, dr=0.01, 
+  col="white", lcol="black", lwd=2, angle=0, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>mid </code></td>
+<td>
+midpoint (x,y) of the box.
+</td></tr>
+<tr valign="top"><td><code>radx </code></td>
+<td>
+horizontal radius of the box.
+</td></tr>
+<tr valign="top"><td><code>rady </code></td>
+<td>
+vertical radius of the box.
+</td></tr>
+<tr valign="top"><td><code>rx </code></td>
+<td>
+radius of rounded part.
+</td></tr>
+<tr valign="top"><td><code>dr </code></td>
+<td>
+size of segments, in radians, to draw the rounded line 
+(decrease for smoother).
+</td></tr>
+<tr valign="top"><td><code>col </code></td>
+<td>
+fill color of the box.
+</td></tr>
+<tr valign="top"><td><code>lcol </code></td>
+<td>
+line color surrounding box.
+</td></tr>
+<tr valign="top"><td><code>lwd </code></td>
+<td>
+line width of line surrounding the box.
+</td></tr>
+<tr valign="top"><td><code>angle </code></td>
+<td>
+rotation angle, degrees.
+</td></tr>
+<tr valign="top"><td><code>... </code></td>
+<td>
+arguments passed to function <a href="filledshape.html">filledshape</a>.
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>radx</code> and <code>rady</code> are the horizontal and vertical radiusses of
+the box; <code>rx</code> is the horizontal radius of the rounded part.
+</p>
+<p>
+Here <code>horizontal</code> and <code>vertical</code> denote the position BEFORE
+rotation.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Karline Soetaert &lt;k.soetaert@nioo.knaw.nl&gt;
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>emptyplot(c(-0.1,1.1),main="roundrect")
+  for (i in 1:10) roundrect(mid=runif(2),col=i,radx=0.1,rady=0.05)
+  for (i in 1:5) roundrect(mid=runif(2),col=greycol(20),radx=0.05,
+                           rady=0.05,angle=runif(1)*360)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>shape</em> version 1.2.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

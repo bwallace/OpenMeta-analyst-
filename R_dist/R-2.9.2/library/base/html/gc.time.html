@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Report Time Spent in Garbage Collection</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for gc.time {base}"><tr><td>gc.time {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Report Time Spent in Garbage Collection</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This function reports the time spent in garbage collection so far in
+the <font face="Courier New,Courier" color="#666666"><b>R</b></font> session while GC timing was enabled.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+gc.time(on = TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>on</code></td>
+<td>
+logical; if <code>TRUE</code>, GC timing is enabled.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+A numerical vector of length 5 giving the user CPU time, the system
+CPU time, the elapsed time and children's user and system CPU times
+(normally both zero), of time spent doing garbage collection whilst
+GC timing was enabled.</p>
+
+<h3>Warnings</h3>
+
+<p>
+This is experimental functionality, likely to be removed as soon as
+the next release.
+</p>
+<p>
+The timings are rounded up by the sampling interval for timing
+processes, and so are likely to be over-estimates.
+</p>
+<p>
+It is a <a href="Primitive.html">primitive</a> and so ignores any argument name.
+</p>
+
+
+<h3>Note</h3>
+
+<p>
+Times of child processes are not available and will always be given as
+<code>NA</code>.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="gc.html">gc</a></code>,
+<code><a href="proc.time.html">proc.time</a></code> for the timings for the session.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+gc.time()
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

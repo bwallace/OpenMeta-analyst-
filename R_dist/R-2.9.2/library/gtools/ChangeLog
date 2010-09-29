@@ -1,0 +1,987 @@
+2009-05-09 03:15  warnes
+
+	* [r1326] NEWS, inst, inst/NEWS: Move actual NEWS file into inst.
+
+2009-05-09 03:13  warnes
+
+	* [r1325] DESCRIPTION, man/addLast.Rd, man/binsearch.Rd,
+	  man/capture.Rd, man/combinations.Rd, man/defmacro.Rd,
+	  man/dirichlet.Rd, man/foldchange.Rd, man/gtools-deprecated.Rd,
+	  man/invalid.Rd, man/logit.Rd, man/mixedsort.Rd, man/oddeven.Rd,
+	  man/permute.Rd, man/quantcut.Rd, man/running.Rd, man/scat.Rd,
+	  man/setTCPNoDelay.Rd, man/smartbind.Rd: Update Greg's email
+	  address and fix Rd syntax errors
+
+2009-02-16 15:34  warnes
+
+	* [r1313] src/Makevars.win: Correct windows make flags as suggested
+	  by Brian Ripley.
+
+2008-08-15 13:15  warnes
+
+	* [r1303] DESCRIPTION, NAMESPACE, R/keywords.R, man/keywords.Rd:
+	  Add keywords() function to show /doc/KEYWORDS file
+
+2008-05-29 23:19  warnes
+
+	* [r1285] R/newVersionAvailable.R: Add newVersionAvailable()
+	  function to compare running and latest available R versions
+
+2008-05-26 19:15  warnes
+
+	* [r1284] DESCRIPTION: Update license specification
+
+2008-05-26 15:04  warnes
+
+	* [r1283] man/assert-deprecated.Rd: Remove 'assert' man page
+
+2008-05-22 16:40  warnes
+
+	* [r1282] man/assert.R: Finish rename of assert.R to
+	  assert-depricated.Rd
+
+2008-05-22 16:35  warnes
+
+	* [r1281] R/checkRVersion.R: Add checkRVersion.R file
+
+2008-05-22 16:34  warnes
+
+	* [r1280] man/assert-deprecated.Rd: Rename again to get correct
+	  extension!
+
+2008-05-22 16:30  warnes
+
+	* [r1279] NEWS: Update NEWS for 2.5.0
+
+2008-05-22 16:17  warnes
+
+	* [r1278] man/checkRVersion.Rd: Add man page for checkRVersion
+
+2008-05-22 16:16  warnes
+
+	* [r1277] man/assert-deprecated.R, man/assert.R: Rename
+	  assert-deprecated.R to assert.R to meet R file name requirements.
+
+2008-05-22 16:15  warnes
+
+	* [r1276] DESCRIPTION, NAMESPACE: Add checkRVersion to NAMESPACE,
+	  and increment version in DESCRIPTION.
+
+2008-05-22 16:14  warnes
+
+	* [r1275] man/gtools-deprecated.Rd: Remove broken SEE LSO reference
+
+2008-04-12 19:42  warnes
+
+	* [r1259] man/defmacro.Rd: Improve text explanation of how
+	  defmacro() and strmacro() differ from
+	  function().
+
+2008-04-12 19:19  warnes
+
+	* [r1258] NEWS, man/assert-deprecated.R, man/assert.Rd,
+	  man/gtools-deprecated.Rd: assert() is now deprecated in favor of
+	  base::stopifnot()
+
+2008-04-12 19:19  warnes
+
+	* [r1257] R/assert.R, R/deprecated.R: Rename 'assert.R' to
+	  'deprecated.R'.
+
+2008-04-12 19:14  warnes
+
+	* [r1256] R/assert.R: Assert is now deprecated in favor of
+	  base::stopifnot(), so add call to
+	  .Deprecated() to inform the user.
+
+2007-11-30 18:05  warnes
+
+	* [r1228] R/oddeven.R: Update defnitions of odd() and even() to use
+	  modulus operator instead of division. Prettier, I think, :-D
+
+2007-08-08 13:52  warnes
+
+	* [r1121] DESCRIPTION, R/binsearch.R: Fix bug identified by R-2.6's
+	  check routings in binsearch()
+
+2007-08-08 13:48  warnes
+
+	* [r1120] DESCRIPTION, NAMESPACE, NEWS, R/binsearch.R,
+	  man/binsearch.Rd: Add the binsearch(), previously in the genetics
+	  package.
+
+2007-07-18 11:48  ggorjan
+
+	* [r1100] man/combinations.Rd: typo fixed
+
+2007-04-12 21:16  warnes
+
+	* [r1088] NAMESPACE, NEWS, R/ask.R, man/ask.Rd: Add ask() function
+	  to prompt the user and collect a single response.
+
+2007-04-07 13:41  warnes
+
+	* [r1087] DESCRIPTION, R/mixedsort.R: Fix improper escapes in
+	  regexp detected by R 2.5.0 package check.
+
+2007-03-23 22:53  warnes
+
+	* [r1083] R/combinations.R: Allow permutations for r>n provided
+	  repeats.allowed=TRUE
+
+2006-11-28 00:53  warnes
+
+	* [r1023] man/smartbind.Rd: Replace F with FALSE in smartbind
+	  example.
+
+2006-11-27 22:42  warnes
+
+	* [r1022] man/smartbind.Rd: Replace T with TRUE in smartbind
+	  example
+
+2006-11-27 21:40  warnes
+
+	* [r1021] data/ELISA.rda: Temprary remove to reset binary flag
+
+2006-11-27 21:40  warnes
+
+	* [r1020] data/ELISA.rda: Temprary remove to reset binary flag
+
+2006-11-27 21:34  warnes
+
+	* [r1019] DESCRIPTION, NAMESPACE, NEWS, R/smartbind.R,
+	  man/smartbind.Rd: Add smartbind() to list of exported functions,
+	  and add corresponding
+	  documentation file.
+
+2006-11-27 20:52  warnes
+
+	* [r1018] DESCRIPTION: Update my email address
+
+2006-11-14 22:25  ggorjan
+
+	* [r1012] trunk/gdata/man/combine.Rd,
+	  trunk/gdata/man/frameApply.Rd, trunk/gmodels/R/ci.R,
+	  trunk/gmodels/R/fast.prcomp.R, trunk/gmodels/man/ci.Rd,
+	  trunk/gplots/R/bandplot.R, trunk/gplots/R/boxplot.n.R,
+	  trunk/gplots/R/lowess.R, trunk/gplots/R/plot.lm.R,
+	  trunk/gplots/R/plotCI.R, trunk/gplots/R/plotmeans.R,
+	  trunk/gplots/R/residplot.R, trunk/gplots/R/wapply.R,
+	  trunk/gplots/man/boxplot.n.Rd, trunk/gplots/man/plotCI.Rd,
+	  trunk/gplots/man/plotmeans.Rd, R/combinations.R, R/running.R,
+	  man/ELISA.Rd, man/combinations.Rd: Removed executable property
+
+2006-08-02 22:21  warnes
+
+	* [r977] trunk/BalloonPlotPaper/BalloonPlot.pdf,
+	  trunk/BalloonPlotPaper/BalloonPlot.tex,
+	  trunk/MSOfficeUtil/DESCRIPTION,
+	  trunk/PathwayModeling/thesispaper/slides.tex,
+	  trunk/RMCMC/DESCRIPTION, trunk/RMCMC/man/make.density.Rd,
+	  trunk/Rlsf/DESCRIPTION, trunk/Rlsf/man/lsf.numcpu.Rd,
+	  trunk/Rlsf/man/lsf.parRapply.Rd, trunk/Rlsf/man/scat.Rd,
+	  trunk/bwRF/DESCRIPTION, trunk/bwRF/man/RF.Rd,
+	  trunk/exp.ssize/inst/doc/ssize.pdf,
+	  trunk/exp.ssize/inst/doc/ssize.tex, trunk/fork/DESCRIPTION,
+	  trunk/fork/man/exit.Rd, trunk/fork/man/fork.Rd,
+	  trunk/fork/man/getpid.Rd, trunk/fork/man/kill.Rd,
+	  trunk/fork/man/signame.Rd, trunk/fork/man/wait.Rd,
+	  trunk/gdata/inst/doc/gregmisc.tex,
+	  trunk/gdata/man/ConvertMedUnits.Rd,
+	  trunk/gdata/man/aggregate.table.Rd, trunk/gdata/man/combine.Rd,
+	  trunk/gdata/man/interleave.Rd, trunk/gdata/man/matchcols.Rd,
+	  trunk/gdata/man/nobs.Rd, trunk/gdata/man/read.xls.Rd,
+	  trunk/gdata/man/rename.vars.Rd, trunk/gdata/man/reorder.Rd,
+	  trunk/gdata/man/trim.Rd, trunk/gdata/man/unmatrix.Rd,
+	  trunk/gdata/man/upperTriangle.Rd,
+	  trunk/gmodels/man/fast.prcomp.Rd,
+	  trunk/gmodels/man/fit.contrast.Rd, trunk/gmodels/man/glh.test.Rd,
+	  trunk/gmodels/man/make.contrasts.Rd,
+	  trunk/gplots/inst/doc/BalloonPlot.pdf,
+	  trunk/gplots/man/balloonplot.Rd, trunk/gplots/man/bandplot.Rd,
+	  trunk/gplots/man/boxplot.n.Rd, trunk/gplots/man/colorpanel.Rd,
+	  trunk/gplots/man/hist2d.Rd, trunk/gplots/man/ooplot.Rd,
+	  trunk/gplots/man/overplot.Rd, trunk/gplots/man/plot.lm2.Rd,
+	  trunk/gplots/man/plotCI.Rd, trunk/gplots/man/plotmeans.Rd,
+	  trunk/gplots/man/residplot.Rd, trunk/gplots/man/sinkplot.Rd,
+	  trunk/gplots/man/smartlegend.Rd, trunk/gplots/man/space.Rd,
+	  trunk/gplots/man/textplot.Rd, trunk/gplots/man/wapply.Rd,
+	  trunk/gregmisc/DESCRIPTION,
+	  trunk/gregmisc/gregmisc/DESCRIPTION.standalone,
+	  trunk/gregmisc/inst/doc/gregmisc.tex, man/addLast.Rd,
+	  man/assert.Rd, man/capture.Rd, man/combinations.Rd,
+	  man/defmacro.Rd, man/dirichlet.Rd, man/foldchange.Rd,
+	  man/invalid.Rd, man/logit.Rd, man/mixedsort.Rd, man/oddeven.Rd,
+	  man/permute.Rd, man/quantcut.Rd, man/running.Rd, man/scat.Rd,
+	  man/setTCPNoDelay.Rd, trunk/nws/DESCRIPTION,
+	  trunk/qvalue/DESCRIPTION, trunk/qvalue/man/print.qvalue.Rd,
+	  trunk/ssize/DESCRIPTION, trunk/ssize/man/pow.Rd: Update my email
+	  address
+
+2006-05-05 18:13  nj7w
+
+	* [r958] man/combinations.Rd: Fixed minor typo - in {value} - n was
+	  replaced by r
+
+2006-05-05 16:55  nj7w
+
+	* [r957] NAMESPACE, man/capture.Rd: Fixed minor typos
+
+2006-03-01 19:12  warnes
+
+	* [r903] R/smartbind.R: Add smartbind function
+
+2006-01-18 16:28  warnes
+
+	* [r845] man/mixedsort.Rd: Add concept tags to make mixedsort
+	  easier to locate.
+
+2005-12-21 15:23  warnes
+
+	* [r837] DESCRIPTION: Update version number and date
+
+2005-12-21 06:11  warnes
+
+	* [r836] NEWS: Note changes for 2.2.3
+
+2005-12-21 06:08  warnes
+
+	* [r835] src/Makevars.win, src/setTCPNoDelay.c: Should now work on
+	  Windows
+
+2005-12-20 20:25  warnes
+
+	* [r834] src/setTCPNoDelay.c: Temporary fix to allow
+	  setTCPNoDelay.c to compile on Windows. If compiled on windows
+	  calling setTCPNoDelay will just raise an error.
+
+2005-12-14 15:48  warnes
+
+	* [r813] src/setTCPNoDelay.c: Change C++ comment to standard
+	  comment
+
+2005-12-13 16:19  nj7w
+
+	* [r810] ChangeLog: *** empty log message ***
+
+2005-12-13 16:18  nj7w
+
+	* [r809] trunk/gplots/ChangeLog, trunk/gplots/NEWS, NEWS: Updated
+	  NEWS and removed ChangeLog
+
+2005-12-12 22:10  nj7w
+
+	* [r800] DESCRIPTION: Updated version for CRAN release
+
+2005-12-08 20:21  warnes
+
+	* [r790] src, src/setTCPNoDelay.c: Add C source code for
+	  setTCPNoDelay.
+
+2005-12-01 16:54  nj7w
+
+	* [r776] trunk/gmodels/man/ci.Rd, trunk/gmodels/man/coefFrame.Rd,
+	  trunk/gmodels/man/estimable.Rd,
+	  trunk/gmodels/man/fit.contrast.Rd,
+	  trunk/gmodels/man/make.contrasts.Rd,
+	  trunk/gplots/man/balloonplot.Rd, trunk/gplots/man/bandplot.Rd,
+	  trunk/gplots/man/boxplot.n.Rd, trunk/gplots/man/colorpanel.Rd,
+	  trunk/gplots/man/overplot.Rd, trunk/gplots/man/plotmeans.Rd,
+	  trunk/gplots/man/textplot.Rd, trunk/gplots/man/wapply.Rd,
+	  man/combinations.Rd, man/foldchange.Rd, man/invalid.Rd,
+	  man/logit.Rd, man/mixedsort.Rd, man/oddeven.Rd, man/quantcut.Rd,
+	  man/running.Rd: Updated Greg's email address
+
+2005-11-29 22:30  warnes
+
+	* [r769] NAMESPACE: Add UseDynLib to NAMESPACE so the shared
+	  library gets properly loaded.
+
+2005-11-29 22:25  warnes
+
+	* [r768] R/setTCPNoDelay.R: - Remove debugging comments
+	  - Change return value on success to "Success".
+
+2005-11-22 22:54  warnes
+
+	* [r758] NAMESPACE: NAMESPACE
+
+2005-11-22 22:54  warnes
+
+	* [r757] NEWS: Update news for 2.2.1 release.
+
+2005-11-22 22:51  warnes
+
+	* [r756] man/addLast.Rd, man/setTCPNoDelay.Rd: Fixes for R CMD
+	  check
+
+2005-11-22 22:31  warnes
+
+	* [r755] DESCRIPTION, NAMESPACE, R/setTCPNoDelay.R,
+	  man/setTCPNoDelay.Rd: Add setTCPNoDelay() function and
+	  documentation
+
+2005-11-22 15:46  warnes
+
+	* [r745] R/addLast.R, man/addLast.Rd: New function 'addLast' that
+	  adds functions to R's .Last() so that
+	  they will be executed when R is terminating.
+
+2005-09-22 18:12  warnes
+
+	* [r678] DESCRIPTION, NAMESPACE, man/defmacro.Rd: More changes for
+	  strmacro(), also changes for 2.1.1 release
+
+2005-09-22 17:26  warnes
+
+	* [r677] R/defmacro.R, R/strmacro.R, man/defmacro.Rd: Add strmaco()
+	  which defines functions that use strings for macro definition
+
+2005-09-21 18:51  warnes
+
+	* [r676] DESCRIPTION, R/defmacro.R, man/defmacro.Rd: Add support
+	  for DOTS/... arguments to defmacro
+
+2005-09-12 15:44  nj7w
+
+	* [r671] trunk/gdata/man/aggregate.table.Rd,
+	  trunk/gdata/man/interleave.Rd, trunk/gdata/man/matchcols.Rd,
+	  trunk/gdata/man/nobs.Rd, trunk/gdata/man/read.xls.Rd,
+	  trunk/gdata/man/rename.vars.Rd, trunk/gdata/man/trim.Rd,
+	  trunk/gdata/man/unmatrix.Rd, trunk/gmodels/man/fast.prcomp.Rd,
+	  trunk/gmodels/man/glh.test.Rd, trunk/gplots/man/hist2d.Rd,
+	  trunk/gplots/man/ooplot.Rd, trunk/gplots/man/residplot.Rd,
+	  trunk/gplots/man/sinkplot.Rd, trunk/gplots/man/smartlegend.Rd,
+	  trunk/gplots/man/space.Rd, man/assert.Rd, man/dirichlet.Rd,
+	  man/permute.Rd, man/scat.Rd: Updated Greg's email
+
+2005-09-02 22:53  nj7w
+
+	* [r653] NAMESPACE: Exported assert
+
+2005-09-02 22:53  nj7w
+
+	* [r652] DESCRIPTION: Updated the version number
+
+2005-09-02 22:52  nj7w
+
+	* [r651] NEWS: Added NEWS
+
+2005-09-02 22:52  nj7w
+
+	* [r650] ChangeLog: Added ChangeLog
+
+2005-09-02 22:51  nj7w
+
+	* [r649] man/assert.Rd: Fixed syntax errors
+
+2005-09-02 16:43  warnes
+
+	* [r648] R/assert.R, man/assert.Rd: Add assert() and documentation
+
+2005-09-02 16:28  warnes
+
+	* [r647] man/defmacro.Rd: Fix problem in defmacro.Rd file: don't
+	  use \code{} in the example section.
+
+2005-08-31 20:00  warnes
+
+	* [r645] DESCRIPTION, NAMESPACE, R/defmacro.R, man/defmacro.Rd:
+	  Adding the defmacro() function, extracted from
+	  
+	  Lumley T. "Programmer's Niche: Macros in {R}", R News, 2001, Vol
+	  1,
+	  No. 3, pp 11--13, \url{http://CRAN.R-project.org/doc/Rnews/}
+
+2005-08-31 16:18  warnes
+
+	* [r642] DESCRIPTION, DESCRIPTION.in: Add stand-alone DESCRIPTION
+	  file and remove old DESCRIPTION.in file.
+
+2005-06-13 17:08  nj7w
+
+	* [r626] R/mixedsort.R: Fixed a bug in mixedsort - check if
+	  "which.na" and "which.blank" is numeric(0) before subsetting the
+	  datasets.
+
+2005-06-09 14:20  nj7w
+
+	* [r625] trunk/gdata/R/Args.R, trunk/gdata/R/aggregate.table.R,
+	  trunk/gdata/R/combine.R, trunk/gdata/R/elem.R,
+	  trunk/gdata/R/env.R, trunk/gdata/R/frameApply.R,
+	  trunk/gdata/R/interleave.R, trunk/gdata/R/is.what.R,
+	  trunk/gdata/R/keep.R, trunk/gdata/R/ll.R,
+	  trunk/gdata/R/matchcols.R, trunk/gdata/R/nobs.R,
+	  trunk/gdata/R/read.xls.R, trunk/gdata/R/rename.vars.R,
+	  trunk/gdata/R/reorder.R, trunk/gdata/R/trim.R,
+	  trunk/gdata/R/unmatrix.R, trunk/gdata/inst/perl/IO/AtomicFile.pm,
+	  trunk/gdata/inst/perl/IO/InnerFile.pm,
+	  trunk/gdata/inst/perl/IO/Lines.pm,
+	  trunk/gdata/inst/perl/IO/Scalar.pm,
+	  trunk/gdata/inst/perl/IO/Scalar.pm.html,
+	  trunk/gdata/inst/perl/IO/ScalarArray.pm,
+	  trunk/gdata/inst/perl/IO/Stringy.pm,
+	  trunk/gdata/inst/perl/IO/Wrap.pm,
+	  trunk/gdata/inst/perl/IO/WrapTie.pm,
+	  trunk/gdata/man/aggregate.table.Rd, trunk/gdata/man/combine.Rd,
+	  trunk/gdata/man/drop.levels.Rd, trunk/gdata/man/interleave.Rd,
+	  trunk/gdata/man/nobs.Rd, trunk/gdata/man/rename.vars.Rd,
+	  trunk/gdata/man/reorder.Rd, trunk/gmodels/R/ci.R,
+	  trunk/gmodels/R/coefFrame.R, trunk/gmodels/R/estimable.R,
+	  trunk/gmodels/R/fast.prcomp.R, trunk/gmodels/R/fit.contrast.R,
+	  trunk/gmodels/R/glh.test.R, trunk/gmodels/R/make.contrasts.R,
+	  trunk/gmodels/man/CrossTable.Rd, trunk/gmodels/man/ci.Rd,
+	  trunk/gmodels/man/coefFrame.Rd, trunk/gmodels/man/estimable.Rd,
+	  trunk/gmodels/man/fast.prcomp.Rd,
+	  trunk/gmodels/man/fit.contrast.Rd, trunk/gmodels/man/glh.test.Rd,
+	  trunk/gmodels/man/make.contrasts.Rd,
+	  trunk/gplots/R/balloonplot.R, trunk/gplots/R/bandplot.R,
+	  trunk/gplots/R/boxplot.n.R, trunk/gplots/R/colorpanel.R,
+	  trunk/gplots/R/heatmap.2.R, trunk/gplots/R/hist2d.R,
+	  trunk/gplots/R/lowess.R, trunk/gplots/R/ooplot.R,
+	  trunk/gplots/R/overplot.R, trunk/gplots/R/plotCI.R,
+	  trunk/gplots/R/plotmeans.R, trunk/gplots/R/qqnorm.aov.R,
+	  trunk/gplots/R/residplot.R, trunk/gplots/R/rich.color.R,
+	  trunk/gplots/R/sinkplot.R, trunk/gplots/R/smartlegend.R,
+	  trunk/gplots/R/space.R, trunk/gplots/R/textplot.R,
+	  trunk/gplots/R/wapply.R, trunk/gplots/man/1,
+	  trunk/gplots/man/bandplot.Rd, trunk/gplots/man/barplot2.Rd,
+	  trunk/gplots/man/boxplot.n.Rd, trunk/gplots/man/hist2d.Rd,
+	  trunk/gplots/man/lowess.Rd, trunk/gplots/man/plotCI.Rd,
+	  trunk/gplots/man/plotmeans.Rd, trunk/gplots/man/residplot.Rd,
+	  trunk/gplots/man/space.Rd, trunk/gplots/man/wapply.Rd,
+	  R/RSCompat.S, R/combinations.R, R/dirichlet.R, R/foldchange.R,
+	  R/invalid.R, R/logit.R, R/mixedsort.R, R/oddeven.R, R/permute.R,
+	  R/quantcut.R, R/running.R, R/scat.R, man/ELISA.Rd,
+	  man/combinations.Rd, man/dirichlet.Rd, man/foldchange.Rd,
+	  man/invalid.Rd, man/logit.Rd, man/mixedsort.Rd, man/oddeven.Rd,
+	  man/permute.Rd, man/quantcut.Rd, man/running.Rd, man/scat.Rd:
+	  Updating the version number, and various help files to
+	  synchronize splitting of gregmisc bundle in 4 individual
+	  components.
+
+2005-05-10 22:05  warnes
+
+	* [r619] R/mixedsort.R: Fix handling of NA's in mixedorder. We were
+	  using a high UTF character to try
+	  to put NA's at the end of the sort order, but R 2.1.0 checks if
+	  characters
+	  are in the correct range. Instead, we explicitly force NA's to
+	  the end.
+
+2005-04-07 00:28  warnes
+
+	* [r606] NAMESPACE, R/scat.R, man/scat.Rd: - Add scat() function
+	  which writes its arguments to stderr and
+	  flushes so that output is immediately displayed, but only if
+	  'getOption("DEBUG")' is true.
+
+2005-04-02 04:19  warnes
+
+	* [r600] trunk/gdata/NAMESPACE, trunk/gdata/R/drop.levels.R,
+	  trunk/gdata/man/drop.levels.Rd, NAMESPACE, R/drop.levels.R,
+	  man/drop.levels.Rd: Move drop.levels() from gtools to gdata.
+
+2005-04-02 04:17  warnes
+
+	* [r599] R/mixedsort.R: Minor reordering of functions in file
+
+2005-04-02 04:14  warnes
+
+	* [r598] trunk/gdata/NAMESPACE, trunk/gdata/R/frameApply.R,
+	  trunk/gdata/man/frameApply.Rd, NAMESPACE, R/frameApply.R,
+	  man/frameApply.Rd: Move frameApply() to gdata package.
+
+2005-04-02 03:28  warnes
+
+	* [r597] R/mixedsort.R: Fix error if only one value passed to
+	  mixedorder.
+
+2005-04-02 02:37  warnes
+
+	* [r596] R/quantcut.R, man/quantcut.Rd: Add proper handling where
+	  more than one quantile obtains the same value
+
+2005-04-01 23:00  warnes
+
+	* [r595] man/ELISA.Rd, man/combinations.Rd, man/dirichlet.Rd,
+	  man/drop.levels.Rd, man/foldchange.Rd, man/invalid.Rd,
+	  man/logit.Rd, man/mixedsort.Rd, man/oddeven.Rd, man/permute.Rd,
+	  man/quantcut.Rd, man/running.Rd: Add CVS ID tag to file headers.
+
+2005-04-01 23:00  warnes
+
+	* [r594] R/frameApply.R, man/frameApply.Rd: Fixes from Jim Rogers
+	  for R CMD check problems in frameApply
+
+2005-03-31 19:03  warnes
+
+	* [r591] R/drop.levels.R, R/frameApply.R, man/drop.levels.Rd,
+	  man/frameApply.Rd: Updates to drop.levels() and frameApply() from
+	  Jim Rogers
+
+2005-03-31 19:01  warnes
+
+	* [r590] data, data/ELISA.rda, man/ELISA.Rd: Add ELISA data set
+	  used by frameApply and drop.levels examples
+
+2005-02-25 23:02  warnes
+
+	* [r562] man/frameApply.Rd: Replace 'T' with TRUE.
+
+2005-02-25 22:54  warnes
+
+	* [r561] man/frameApply.Rd: Remove dependency on ELISA data set for
+	  the example.
+
+2005-02-25 21:00  warnes
+
+	* [r558] trunk/gregmisc/.tnatr:fnmap, trunk/gregmisc/DESCRIPTION,
+	  NAMESPACE: Add drop.levels, frameApply to namespace export.
+
+2005-02-15 00:41  warnes
+
+	* [r542] R/drop.levels.R, R/frameApply.R, man/drop.levels.Rd,
+	  man/frameApply.Rd: Add frameApply and drop.levels contributed by
+	  Jim Rogers.
+
+2005-01-12 20:50  warnes
+
+	* [r515] trunk/gdata/DESCRIPTION.in, trunk/gmodels/DESCRIPTION.in,
+	  trunk/gplots/DESCRIPTION.in, DESCRIPTION.in: Add dependency on R
+	  1.9.0+ to prevent poeple from installing on old
+	  versions of R which don't support namespaces.
+
+2004-09-27 21:01  warneg
+
+	* [r461] trunk/gdata/DESCRIPTION, trunk/gdata/DESCRIPTION.in,
+	  trunk/gdata/NAMESPACE, trunk/gdata/man/.Rhistory,
+	  trunk/gmodels/DESCRIPTION, trunk/gmodels/DESCRIPTION.in,
+	  trunk/gplots/DESCRIPTION, trunk/gplots/DESCRIPTION.in,
+	  trunk/gplots/man/sinkplot.Rd, trunk/gplots/man/textplot.Rd,
+	  trunk/gregmisc/.Rhistory, trunk/gregmisc/DESCRIPTION,
+	  DESCRIPTION, DESCRIPTION.in, man/running.Rd: Updated to pass R
+	  CMD check.
+
+2004-09-03 17:27  warneg
+
+	* [r446] trunk/gdata/DESCRIPTION, trunk/gdata/DESCRIPTION.in,
+	  trunk/gdata/NAMESPACE, trunk/gdata/R/Args.R,
+	  trunk/gdata/R/aggregate.table.R, trunk/gdata/R/combine.R,
+	  trunk/gdata/R/elem.R, trunk/gdata/R/env.R,
+	  trunk/gdata/R/interleave.R, trunk/gdata/R/is.what.R,
+	  trunk/gdata/R/keep.R, trunk/gdata/R/ll.R,
+	  trunk/gdata/R/matchcols.R, trunk/gdata/R/nobs.R,
+	  trunk/gdata/R/read.xls.R, trunk/gdata/R/rename.vars.R,
+	  trunk/gdata/R/reorder.R, trunk/gdata/R/trim.R,
+	  trunk/gdata/man/reorder.Rd, trunk/gmodels/DESCRIPTION,
+	  trunk/gmodels/NAMESPACE, trunk/gmodels/R/CrossTable.R,
+	  trunk/gmodels/R/ci.R, trunk/gmodels/R/estimable.R,
+	  trunk/gmodels/R/fast.prcomp.R, trunk/gmodels/R/fit.contrast.R,
+	  trunk/gmodels/R/glh.test.R, trunk/gmodels/R/make.contrasts.R,
+	  trunk/gmodels/man/estimable.Rd,
+	  trunk/gmodels/man/fit.contrast.Rd, trunk/gmodels/man/glh.test.Rd,
+	  trunk/gmodels/man/make.contrasts.Rd, trunk/gplots/DESCRIPTION,
+	  trunk/gplots/NAMESPACE, trunk/gplots/R/balloonplot.R,
+	  trunk/gplots/R/bandplot.R, trunk/gplots/R/barplot2.R,
+	  trunk/gplots/R/boxplot.n.R, trunk/gplots/R/colorpanel.R,
+	  trunk/gplots/R/heatmap.2.R, trunk/gplots/R/hist2d.R,
+	  trunk/gplots/R/lowess.R, trunk/gplots/R/ooplot.R,
+	  trunk/gplots/R/overplot.R, trunk/gplots/R/plotCI.R,
+	  trunk/gplots/R/plotmeans.R, trunk/gplots/R/qqnorm.aov.R,
+	  trunk/gplots/R/residplot.R, trunk/gplots/R/rich.color.R,
+	  trunk/gplots/R/sinkplot.R, trunk/gplots/R/smartlegend.R,
+	  trunk/gplots/R/space.R, trunk/gplots/R/textplot.R,
+	  trunk/gplots/R/wapply.R, DESCRIPTION, NAMESPACE, R/dirichlet.R,
+	  R/foldchange.R, R/invalid.R, R/mixedsort.R, R/oddeven.R,
+	  R/permute.R, R/quantcut.R, R/running.R, man/running.Rd: initial
+	  bundle checkin
+
+2004-09-02 17:14  warneg
+
+	* [r442] trunk/gdata/DESCRIPTION, trunk/gdata/DESCRIPTION.in,
+	  trunk/gdata/NAMESPACE, trunk/gdata/man/.Rhistory,
+	  trunk/gmodels/DESCRIPTION, trunk/gmodels/DESCRIPTION.in,
+	  trunk/gmodels/NAMESPACE, trunk/gplots/DESCRIPTION,
+	  trunk/gplots/DESCRIPTION.in, trunk/gplots/NAMESPACE,
+	  trunk/gplots/man/1, trunk/gplots/man/residplot.Rd,
+	  trunk/gregmisc/.Rhistory, DESCRIPTION, DESCRIPTION.in, NAMESPACE:
+	  Initial revision
+
+2004-08-27 21:57  warnes
+
+	* [r441] trunk/gdata/R/reorder.R, trunk/gdata/man/reorder.Rd,
+	  R/mixedsort.R, man/mixedsort.Rd: Fixed bug in mixedsort, and
+	  modified reorder.factor to use mixedsort.
+
+2004-08-26 20:08  warnes
+
+	* [r440] R/mixedsort.R: - Fix bug pointed out by Jim Rogers.
+	  - Use a more distictive internal separator: $@$ instead of just $
+	  - Capitalization is now irrelevent for search order (unlike
+	  ASCII).
+
+2004-06-08 15:49  warnes
+
+	* [r372] R/running.R, man/running.Rd: Nitin Jain added by=
+	  parameter to allow specifying separation between groups.
+
+2004-05-26 13:40  warnes
+
+	* [r345] trunk/gdata/man/read.xls.Rd, man/combinations.Rd: Escape
+	  underscores in email addresses so Latex is happy.
+
+2004-05-26 13:18  warnes
+
+	* [r343] R/combinations.R: Replace 'T' with 'TRUE' to pass R CMD
+	  check.
+
+2004-05-25 17:11  warnes
+
+	* [r334] R/combinations.R: Remove extraneous comments.
+
+2004-05-25 17:08  warnes
+
+	* [r333] R/combinations.R: Fix an error in the code when using
+	  repeats.allow=T and r>2. Bug
+	  report and fix both due to Elizabeth Purdom
+	  <epurdom@stanford.edu>.
+
+2004-05-24 17:36  warnes
+
+	* [r323] R/invalid.R: Check if argument is a vector before doing
+	  is.na to avoid generating a warning.
+
+2004-05-24 17:17  warnes
+
+	* [r322] R/invalid.R, man/invalid.Rd: Add invalid() function for
+	  testing if a parameter value is non-missing, non-NA,
+	  non-NULL.
+
+2004-04-27 14:33  warnes
+
+	* [r321] R/running.R, man/running.Rd: Replaced argument `as.list'
+	  with `simplify'. Updated documentation,
+	  and updated examples appropriately.
+
+2004-04-26 16:37  warnes
+
+	* [r320] R/running.R, man/running.Rd: Added as.list argument to
+	  return one list element per evaluation.
+
+2004-03-26 22:21  warnes
+
+	* [r303] man/combinations.Rd: Uncomment and fix large 'n' example.
+
+2004-03-26 22:19  warnes
+
+	* [r301] man/running.Rd: - Update to match changes in running()
+	  - Add examples to illustrate new arguments.
+	  - Modify running correlation plot example to be more clear.
+
+2004-03-26 22:12  warnes
+
+	* [r299] R/running.R: More of the same.
+
+2004-03-26 15:34  warnes
+
+	* [r297] R/running.R: Fix bug discovered by Sean Davis
+	  <sdavis2@mail.nih.gov>. The running
+	  function took an improper shortcut. When allow.fewer=FALSE it was
+	  still passing shorter lists of elements to the called function,
+	  and
+	  then overwriting the results for the shorter lists with NAs. The
+	  code
+	  now skips evaluation of the function on lists shorter than the
+	  specified length when allow.fewer=FALSE.
+
+2004-01-21 04:31  warnes
+
+	* [r277] trunk/gplots/R/textplot.R, R/capture.R: - Mark sprint() as
+	  depreciated.
+	  - Replace references to sprint with capture.output()
+	  - Use match.arg for halign and valign arguments to
+	  textplot.default.
+	  - Fix textplot.character so that a vector of characters is
+	  properly
+	  displayed. Previouslt, character vectors were plotted on top of
+	  each
+	  other.
+
+2003-12-03 02:46  warnes
+
+	* [r253] trunk/gdata/man/elem.Rd, trunk/gdata/man/ll.Rd,
+	  trunk/gplots/man/lowess.Rd, trunk/gplots/man/textplot.Rd,
+	  trunk/gplots/man/wapply.Rd, man/foldchange.Rd: - match function
+	  argument defaults with 'usage'
+
+2003-11-21 23:00  warnes
+
+	* [r237] man/foldchange.Rd: Removed 'deqn' call that was confusing
+	  things.
+
+2003-11-21 20:54  warnes
+
+	* [r234] man/logit.Rd: Add email address to author field
+
+2003-11-21 20:35  warnes
+
+	* [r233] R/foldchange.R, man/foldchange.Rd: - new files
+
+2003-11-21 19:54  warnes
+
+	* [r232] R/mixedsort.R, man/mixedsort.Rd: - Change 'T' to 'TRUE' in
+	  mixedsort.R
+	  - Add missing brace in mixedsort.Rd
+
+2003-11-20 15:56  warnes
+
+	* [r230] R/oddeven.R, man/oddeven.Rd: - Move 'odd' and 'even'
+	  functions to a separate file & provide documentation
+
+2003-11-18 22:47  warnes
+
+	* [r227] R/mixedsort.R, man/mixedsort.Rd: - Renamed smartsort to
+	  mixedsort and added documentation.
+
+2003-11-10 22:11  warnes
+
+	* [r220] trunk/gdata/R/elem.R, trunk/gdata/R/env.R,
+	  trunk/gdata/R/is.what.R, trunk/gdata/R/keep.R,
+	  trunk/gdata/R/ll.R, trunk/gdata/man/elem.Rd,
+	  trunk/gdata/man/env.Rd, trunk/gdata/man/is.what.Rd,
+	  trunk/gdata/man/keep.Rd, trunk/gdata/man/ll.Rd,
+	  trunk/gplots/R/heatmap.2.R, trunk/gplots/R/overplot.R,
+	  trunk/gplots/R/plotmeans.R, trunk/gplots/R/space.R,
+	  trunk/gplots/R/wapply.R, trunk/gregmisc/DESCRIPTION, R/capture.R,
+	  man/capture.Rd: - Add files contributed by Arni Magnusson
+	  <arnima@u.washington.edu>. As well as some of my own.
+
+2003-05-23 18:14  warnes
+
+	* [r196] trunk/gdata/R/matchcols.R, trunk/gdata/man/matchcols.Rd,
+	  R/logit.R, man/logit.Rd: - library() backported from 1.7-devel.
+	  This version of the function
+	  adds the "pos=" argument to specify where in the search path the
+	  library should be placed.
+	  
+	  - updated .First.lib to use library(...pos=3) for MASS to avoid
+	  the
+	  'genotype' data set in MASS from masking the genotype funciton in
+	  genetics when it loads gregmisc
+	  
+	  - Added logit() inv.logit() matchcols() function and
+	  corresponding docs
+
+2003-04-22 16:00  warnes
+
+	* [r189] man/combinations.Rd: - Fixed tpyo in example that allowed
+	  combinations(500,2) to run when
+	  it should have been ignred for testing..
+
+2003-04-10 16:22  warnes
+
+	* [r186] man/combinations.Rd: - Added note about the need to
+	  increase options("expressions") to use
+	  large values for 'n'. Prompted by bug report from Huan Huang
+	  <huan.huang@bnpparibas.com
+
+2003-04-04 13:58  warnes
+
+	* [r183] R/RSCompat.S: - Replace 'T' with 'TRUE'
+
+2003-04-04 13:49  warnes
+
+	* [r182] trunk/gplots/R/balloonplot.R,
+	  trunk/gplots/man/qqnorm.aov.Rd, R/dirichlet.R: - Change
+	  occurences of 'T' to 'TRUE'
+
+2003-04-04 13:46  warnes
+
+	* [r181] man/capture.Rd: - Allow optional arguments to sprint to be
+	  passed to print
+	  - Fix R CMD check errors
+
+2003-04-04 13:45  warnes
+
+	* [r180] R/capture.R: - Allow optional arguments to sprint to be
+	  passed to print
+
+2003-04-03 13:20  warnes
+
+	* [r177] man/capture.Rd: - Had mistyped 'sprint' as 'sprintf'.
+
+2003-04-03 13:18  warnes
+
+	* [r176] man/capture.Rd: - Add help file for capture and sprintf.
+
+2003-04-02 22:28  warnes
+
+	* [r174] R/capture.R: - Added file 'capture.R' containing capture()
+	  and sprint().
+
+2003-03-07 15:48  warnes
+
+	* [r168] trunk/gmodels/R/fast.prcomp.R, trunk/gplots/R/hist2d.R,
+	  trunk/gplots/R/qqnorm.aov.R, trunk/gregmisc/DESCRIPTION,
+	  R/RSCompat.S: - Minor changes to code to allow the package to be
+	  provided as an
+	  S-Plus chapter.
+
+2003-01-30 21:56  warnes
+
+	* [r161] man/running.Rd: - Fixed typo in email address.
+
+2003-01-02 15:42  warnes
+
+	* [r148] R/RSCompat.S: - Add nlevels function.
+
+2002-10-11 18:22  warnes
+
+	* [r133] R/permute.R, man/permute.Rd: - Add permute() function
+	  (wraper for sample) and man page
+
+2002-10-11 18:21  warnes
+
+	* [r132] man/dirichlet.Rd: - Escaped underscores in my email
+	  address that was causing a parse
+	  error in the {r,p}dirichlet man page.
+
+2002-09-30 20:43  warnes
+
+	* [r128] R/dirichlet.R, man/dirichlet.Rd: - Added rdirichlet() and
+	  ddirichlet() with accompaning help page and tests.
+
+2002-09-24 14:57  warnes
+
+	* [r122] R/running.R: - Fixed error where running was always
+	  calling running2 with
+	  'fun=mean', ignoring the specified funtion.
+
+2002-09-23 13:59  warnes
+
+	* [r117] trunk/gdata/R/aggregate.table.R, trunk/gdata/R/combine.R,
+	  trunk/gdata/R/interleave.R, trunk/gdata/R/nobs.R,
+	  trunk/gdata/man/aggregate.table.Rd, trunk/gdata/man/combine.Rd,
+	  trunk/gdata/man/interleave.Rd, trunk/gdata/man/nobs.Rd,
+	  trunk/gdata/man/rename.vars.Rd, trunk/gdata/man/reorder.Rd,
+	  trunk/gmodels/R/ci.R, trunk/gmodels/man/estimable.Rd,
+	  trunk/gmodels/man/glh.test.Rd, trunk/gplots/R/boxplot.n.R,
+	  trunk/gplots/R/hist2d.R, trunk/gplots/R/lowess.R,
+	  trunk/gplots/R/residplot.R, trunk/gplots/man/bandplot.Rd,
+	  trunk/gplots/man/hist2d.Rd, trunk/gplots/man/lowess.Rd,
+	  trunk/gplots/man/plotCI.Rd, trunk/gplots/man/space.Rd,
+	  man/combinations.Rd, man/quantcut.Rd: - Modified all files to
+	  include CVS Id and Log tags.
+
+2002-09-23 13:38  warnes
+
+	* [r116] trunk/gmodels/R/CrossTable.R,
+	  trunk/gmodels/man/CrossTable.Rd, trunk/gplots/R/barplot2.R,
+	  trunk/gplots/man/barplot2.Rd, trunk/gregmisc/DESCRIPTION,
+	  R/combinations.R: - Added CrossTable() and barplot2() code and
+	  docs contributed by Marc Schwartz.
+	  - Permit combinations() to be used when r>n provided
+	  repeat.allowed=TRUE
+	  - Bumped up version number
+
+2002-08-01 19:37  warnes
+
+	* [r114] trunk/gmodels/R/ci.R, trunk/gmodels/man/ci.Rd,
+	  trunk/gmodels/man/estimable.Rd, trunk/gmodels/man/glh.test.Rd,
+	  trunk/gplots/R/hist2d.R, trunk/gplots/R/wapply.R,
+	  trunk/gregmisc/DESCRIPTION, R/running.R: - Corrected
+	  documentation mismatch for ci, ci.default.
+	  
+	  - Replaced all occurences of '_' for assignment with '<-'.
+	  
+	  - Replaced all occurences of 'T' or 'F' for 'TRUE' and 'FALSE'
+	  with
+	  the spelled out version.
+	  
+	  - Updaded version number and date.
+
+2002-04-09 00:51  warneg
+
+	* [r109] trunk/gdata/R/rename.vars.R,
+	  trunk/gdata/man/aggregate.table.Rd,
+	  trunk/gdata/man/interleave.Rd, trunk/gdata/man/reorder.Rd,
+	  trunk/gmodels/R/ci.R, trunk/gmodels/R/estimable.R,
+	  trunk/gmodels/R/glh.test.R, trunk/gmodels/man/glh.test.Rd,
+	  trunk/gplots/R/bandplot.R, trunk/gplots/R/boxplot.n.R,
+	  trunk/gplots/R/hist2d.R, trunk/gplots/R/plot.lm.R,
+	  trunk/gplots/R/plotCI.R, trunk/gplots/R/plotmeans.R,
+	  trunk/gplots/R/residplot.R, trunk/gplots/R/space.R,
+	  trunk/gplots/R/wapply.R, trunk/gplots/man/bandplot.Rd,
+	  trunk/gplots/man/boxplot.n.Rd, trunk/gplots/man/hist2d.Rd,
+	  trunk/gplots/man/plotmeans.Rd, trunk/gplots/man/space.Rd,
+	  trunk/gplots/man/wapply.Rd, trunk/gregmisc/DESCRIPTION,
+	  R/combinations.R, man/combinations.Rd, man/running.Rd: Checkin
+	  for version 0.5.3
+
+2002-03-26 14:49  warneg
+
+	* [r97] man/quantcut.Rd: Initial Checkin
+
+2002-03-26 14:29  warneg
+
+	* [r96] R/quantcut.R: Initial checkin.
+
+2002-03-20 03:44  warneg
+
+	* [r91] R/RSCompat.S: - Added definition of is.R function.
+	  
+	  - Added boxplot.formula
+
+2002-03-07 23:39  warneg
+
+	* [r90] man/running.Rd: - Added documentation and example for
+	  running2
+
+2002-03-07 23:38  warneg
+
+	* [r89] R/running.R: - Added "running2", which handles both
+	  univariate and bivariate cases
+	  - Modified "running" to call "running2"
+
+2002-02-05 02:20  warneg
+
+	* [r75] R/RSCompat.S: - Fix typo that caused code meant to run only
+	  under S-Plus to run
+	  under R, causing problems.
+
+2001-12-19 22:45  warneg
+
+	* [r67] R/RSCompat.S: - Added code for %in%.
+
+2001-09-18 14:15  warneg
+
+	* [r18] trunk/gplots/R/plotCI.R, trunk/gplots/R/plotmeans.R,
+	  trunk/gregmisc/DESCRIPTION, R/RSCompat.S: Release 0.3.2
+
+2001-09-01 19:19  warneg
+
+	* [r17] R/RSCompat.S: Initial checkin.
+
+2001-09-01 00:01  warneg
+
+	* [r16] trunk/gplots/man/wapply.Rd, trunk/gregmisc/DESCRIPTION,
+	  R/running.R, man/running.Rd: Release 0.3.0
+
+2001-08-25 05:53  warneg
+
+	* [r13] R/running.R: Initial CVS checkin.
+
+2001-08-25 05:50  warneg
+
+	* [r11] man/combinations.Rd: Fixed a typo and a syntax error.
+
+2001-08-25 03:59  warneg
+
+	* [r7] man/running.Rd: Initial Checkin
+
+2001-06-29 13:24  warneg
+
+	* [r6] ., R, R/combinations.R, man, man/combinations.Rd: Initial
+	  revision.
+

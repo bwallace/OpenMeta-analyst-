@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Constructor for Objects "Psi Function" Class</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for psiFunc {robustbase}"><tr><td>psiFunc {robustbase}</td><td align="right">R Documentation</td></tr></table>
+<h2>Constructor for Objects "Psi Function" Class</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>psiFunc(..)</code> is a convenience interface to
+<code>new("psi_func",..)</code>, i.e. for constructing objects of class
+<code>"psi_func"</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+psiFunc(rho, psi, wgt, Dpsi, Erho = NULL, Epsi2 = NULL, EDpsi = NULL, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>rho, psi, wgt, Dpsi</code></td>
+<td>
+each a <code><a href="../../base/html/function.html">function</a></code> of <code>x</code> and
+tuning parameters typically.</td></tr>
+<tr valign="top"><td><code>Erho, Epsi2, EDpsi</code></td>
+<td>
+see <code><a href="psi_func-class.html">psi_func-class</a></code>, and note
+that these may change in the future.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+potential further arguments for specifying tuning
+parameter names and defaults.</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Martin Maechler
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="psi_func-class.html">psi_func-class</a></code> for the class description.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## classical {trivial, not interesting}:
+F1 &lt;- function(x) rep.int(1, length(x))
+cPsi &lt;- psiFunc(rho = function(x) x^2 / 2, psi = function(x) x,
+                wgt = F1, Dpsi = F1,
+                Erho = function(x) rep.int(1/2, length(x)),
+                Epsi2 = F1, EDpsi = F1)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>robustbase</em> version 0.4-5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

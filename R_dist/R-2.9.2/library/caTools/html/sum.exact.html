@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Basic Sum Operations without Round-off Errors</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for sum.exact, cumsum.exact & runsum.exact {caTools}"><tr><td>sum.exact, cumsum.exact & runsum.exact {caTools}</td><td align="right">R Documentation</td></tr></table>
+<h2>Basic Sum Operations without Round-off Errors</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Functions for performing basic sum operations without round-off errors
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+  sum.exact(..., na.rm = FALSE)
+  cumsum.exact(x)
+  runsum.exact(x,k)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+numeric vector</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+numeric vector(s), numbers or other objects to be summed</td></tr>
+<tr valign="top"><td><code>na.rm</code></td>
+<td>
+logical. Should missing values be removed?</td></tr>
+<tr valign="top"><td><code>k</code></td>
+<td>
+width of moving window; must be an odd integer between one and n </td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+All three functions use full precision summation using multiple doubles for 
+intermediate values. The sum of numbers x &amp; y is a=x+y with error term 
+b=error(a+b). That way a+b is equal exactly x+y, so sum of 2 numbers is stored
+as 2 or fewer values, which when added would under-flow. By extension sum of n 
+numbers is calculated with intermediate results stored as array of numbers 
+that can not be added without introducing an error. Only final result is 
+converted to a single number
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+Function <code>sum.exact</code> returns single number. Function <code>cumsum.exact</code> 
+returns vector of the same length as <code>x</code>. Function <code>runsum.exact</code> 
+returns vector of length <code>length(x)-k</code> and attribute "count" containing
+number of finite (as in <code><a href="../../base/html/is.finite.html">is.finite</a></code>) elements in each window.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Jarek Tuszynski (SAIC) <a href="mailto:jaroslaw.w.tuszynski@saic.com">jaroslaw.w.tuszynski@saic.com</a> based on
+code by Vadim Ogranovich, which is based on algorithms described in 
+references, pointed out by Gabor Grothendieck.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Round-off error correction is based on:
+Shewchuk, Jonathan, <EM>Adaptive Precision Floating-Point Arithmetic and  
+Fast Robust Geometric Predicates</EM>,  
+<a href="http://www-2.cs.cmu.edu/afs/cs/project/quake/public/papers/robust-arithmetic.ps">http://www-2.cs.cmu.edu/afs/cs/project/quake/public/papers/robust-arithmetic.ps</a>
+and its implementation found at:
+<a href="http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/393090">http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/393090</a> 
+</p>
+<p>
+McCullough, D.B., (1998) <EM>Assessing the Reliability of Statistical 
+Software, Part I</EM>, The American Statistician, Vol. 52 No 4, 
+<a href="http://www.amstat.org/publications/tas/mccull-1.pdf">http://www.amstat.org/publications/tas/mccull-1.pdf</a>
+</p>
+<p>
+McCullough, D.B., (1999) <EM>Assessing the Reliability of Statistical 
+Software, Part II</EM>, The American Statistician, Vol. 53 No 2
+<a href="http://www.amstat.org/publications/tas/mccull.pdf">http://www.amstat.org/publications/tas/mccull.pdf</a>
+</p>
+<p>
+NIST Statistical Reference Datasets (StRD) website 
+<a href="http://www.nist.gov/itl/div898/strd">http://www.nist.gov/itl/div898/strd</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<ul>       
+<li><code><a href="../../base/html/sum.html">sum</a></code> is faster but not error-save version of 
+<code>sum.exact</code>
+<li><code><a href="../../base/html/cumsum.html">cumsum</a></code> is equivalent to <code>cumsum.exact</code>
+<li><code><a href="runmean.html">runmean</a>(x,k,endrule="trim")</code> is similar to 
+<code>runsum.exact</code>.
+</ul>
+
+<h3>Examples</h3>
+
+<pre>
+  x = c(1, 1e20, 1e40, -1e40, -1e20, -1)
+  a = sum(x);          print(a)
+  b = sum.exact(x);    print(b)
+  stopifnot(b==0)
+  a = cumsum(x);       print(a)
+  b = cumsum.exact(x); print(b)
+  stopifnot(b[6]==0)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>caTools</em> version 1.9 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

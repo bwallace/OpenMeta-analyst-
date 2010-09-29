@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Convert R vectors to/from the Base64 format</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for base64encode & base64decode {caTools}"><tr><td>base64encode & base64decode {caTools}</td><td align="right">R Documentation</td></tr></table>
+<h2>Convert R vectors to/from the Base64 format</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Convert R vectors of any type to and from the Base64 format for encrypting
+any binary data as string using alphanumeric subset of ASCII character set.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+  z = base64encode(x, size=NA, endian=.Platform$endian)
+  x = base64decode(z, what, size=NA, signed = TRUE, endian=.Platform$endian)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+vector or any structure that can be converted to a vector by  
+<code><a href="../../R.huge/html/Non-documented_objects.html">as.vector</a></code> function. Strings are also allowed.</td></tr>
+<tr valign="top"><td><code>z</code></td>
+<td>
+String with Base64 code, using [A-Z,a-z,0-9,+,/,=] subset of 
+characters</td></tr>
+<tr valign="top"><td><code>what</code></td>
+<td>
+Either an object whose mode will give the mode of the vector
+to be created, or a character vector of length one describing
+the mode: one of '"numeric", "double", "integer", "int",
+"logical", "complex", "character", "raw".  
+Same as variable <code>what</code> in <code><a href="../../base/html/readBin.html">readBin</a></code> functions. </td></tr>
+<tr valign="top"><td><code>size</code></td>
+<td>
+integer.  The number of bytes per element in the byte stream 
+stored in <code>r</code>. The default, '<code>NA</code>', uses the natural size. 
+Same as variable <code>size</code> in <code><a href="../../base/html/readBin.html">readBin</a></code> functions. </td></tr>
+<tr valign="top"><td><code>signed</code></td>
+<td>
+logical. Only used for integers of sizes 1 and 2, when it
+determines if the quantity stored as raw should be regarded as a
+signed or unsigned integer.
+Same as variable <code>signed</code> in <code><a href="../../base/html/readBin.html">readBin</a></code> functions. </td></tr>
+<tr valign="top"><td><code>endian</code></td>
+<td>
+If provided, can be used to swap endian-ness. Using '"swap"' 
+will force swapping of byte order. Use '"big"' (big-endian, aka IEEE, 
+aka "network") or '"little"' (little-endian, format used on PC/Intel 
+machines) to indicate type of data encoded in "raw" format.
+Same as variable <code>endian</code> in <code><a href="../../base/html/readBin.html">readBin</a></code> functions.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The Base64 encoding is designed to encode arbitrary binary information for 
+transmission by electronic mail. It is defined by MIME (Multipurpose Internet 
+Mail Extensions) specification RFC 1341, RFC 1421, RFC 2045 and others. 
+Triplets of 8-bit octets are encoded as groups of four characters, each 
+representing 6 bits of the source 24 bits. Only a 65-character subset 
+([A-Z,a-z,0-9,+,/,=]) present in all variants of ASCII and EBCDIC is used, 
+enabling 6 bits to be represented per printable character.
+</p>
+<p>
+Default <code>size</code>s for different types of <code>what</code>: <code>logical</code> - 4, 
+<code>integer</code> - 4, <code>double</code> - 8 , <code>complex</code> - 16, 
+<code>character</code> - 2, <code>raw</code> - 1.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+Function <code><a href="base64.html">base64encode</a></code> returns a string with Base64 code.
+Function <code><a href="base64.html">base64decode</a></code> returns vector of appropriate mode 
+and length (see <code>x</code> above).</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Jarek Tuszynski (SAIC) <a href="mailto:jaroslaw.w.tuszynski@saic.com">jaroslaw.w.tuszynski@saic.com</a>
+</p>
+
+
+<h3>References</h3>
+
+<ul>
+<li>Base64 description in <EM>Connected: An Internet Encyclopedia</EM>
+<a href="http://www.freesoft.org/CIE/RFC/1521/7.htm">http://www.freesoft.org/CIE/RFC/1521/7.htm</a>
+<li>MIME RFC 1341 <a href="http://www.faqs.org/rfcs/rfc1341.html">http://www.faqs.org/rfcs/rfc1341.html</a>
+<li>MIME RFC 1421 <a href="http://www.faqs.org/rfcs/rfc1421.html">http://www.faqs.org/rfcs/rfc1421.html</a>
+<li>MIME RFC 2045 <a href="http://www.faqs.org/rfcs/rfc2045.html">http://www.faqs.org/rfcs/rfc2045.html</a>
+<li>Portions of the code are based on Matlab code by Peter Acklam
+<a href="http://home.online.no/~pjacklam/matlab/software/util/datautil/">http://home.online.no/~pjacklam/matlab/software/util/datautil/</a>
+</ul>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../XML/html/xmlValue.html">xmlValue</a></code> from <span class="pkg">XML</span> package reads XML code
+which sometimes is encoded in Base64 format.
+</p>
+<p>
+<code><a href="../../base/html/readBin.html">readBin</a></code>, <code><a href="../../base/html/readBin.html">writeBin</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+   x = (10*runif(10)&gt;5) # logical
+   for (i in c(NA, 1, 2, 4)) {
+     y = base64encode(x, size=i)
+     z = base64decode(y, typeof(x), size=i)
+     stopifnot(x==z)
+   }
+   print("Checked base64 for encode/decode logical type")
+
+   x = as.integer(1:10) # integer
+   for (i in c(NA, 1, 2, 4)) {
+     y = base64encode(x, size=i)
+     z = base64decode(y, typeof(x), size=i)
+     stopifnot(x==z)
+   }
+   print("Checked base64 encode/decode for integer type")
+   
+   x = (1:10)*pi        # double
+   for (i in c(NA, 4, 8)) {
+     y = base64encode(x, size=i)
+     z = base64decode(y, typeof(x), size=i)
+     stopifnot(mean(abs(x-z))&lt;1e-5)
+   }
+   print("Checked base64 for encode/decode double type")
+   
+   x = log(as.complex(-(1:10)*pi))        # complex
+   y = base64encode(x)
+   z = base64decode(y, typeof(x))
+   stopifnot(x==z)
+   print("Checked base64 for encode/decode complex type")
+  
+   x = "Chance favors the prepared mind" # character
+   y = base64encode(x)
+   z = base64decode(y, typeof(x))
+   stopifnot(x==z)
+   print("Checked base64 for encode/decode character type")
+</pre>
+
+
+
+<hr><div align="center">[Package <em>caTools</em> version 1.9 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,97 @@
+sample.split             package:caTools             R Documentation
+
+_S_p_l_i_t _D_a_t_a _i_n_t_o _T_e_s_t _a_n_d _T_r_a_i_n _S_e_t
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Split data from vector Y into two sets in predefined ratio while 
+     preserving relative ratios of different labels in Y. Used to split
+     the data used during classification into train and test subsets.
+
+_U_s_a_g_e:
+
+      sample.split( Y, SplitRatio = 2/3, group = NULL )
+
+_A_r_g_u_m_e_n_t_s:
+
+       Y: Vector of data labels. If there are only a few labels (as is 
+          expected) than relative ratio of data in both subsets will be
+          the same.
+
+SplitRatio: Splitting ratio: 
+
+             *  if '(0<=SplitRatio<1)' then 'SplitRatio' fraction of 
+                points from Y will be set toTRUE
+
+             *  if '(SplitRatio==1)' then one random point from Y will
+                be set  to TRUE
+
+             *  if '(SplitRatio>1)' then 'SplitRatio' number of points 
+                from Y will be set to TRUE
+
+   group: Optional vector/list used when multiple copies of each sample
+           are present. In such a case 'group' contains unique sample
+          labels,  marking all copies of the same sample with the same 
+          label, and the function tries to place all copies in either
+          train or test  subset. If provided than has to have the same
+          length as 'Y'.
+
+_D_e_t_a_i_l_s:
+
+     Function 'msc.sample.split' is the old name of the  'sample.split'
+     function. To be retired soon.
+
+_V_a_l_u_e:
+
+     Returns logical vector of the same length as Y with random
+     'SplitRatio*length(Y)' elements set to TRUE.
+
+_A_u_t_h_o_r(_s):
+
+     Jarek Tuszynski (SAIC) jaroslaw.w.tuszynski@saic.com
+
+_S_e_e _A_l_s_o:
+
+
+        *  Similar to 'sample' function.
+
+        *  Variable 'group' is used in the same way as 'f' argument in 
+           'split' and 'INDEX' argument in 'tapply'
+
+_E_x_a_m_p_l_e_s:
+
+       library(MASS)
+       data(cats)   # load cats data
+       Y = cats[,1] # extract labels from the data
+       msk = sample.split(Y, SplitRatio=3/4)
+       table(Y,msk)
+       t=sum( msk)  # number of elements in one class
+       f=sum(!msk)  # number of elements in the other class
+       stopifnot( round((t+f)*3/4) == t ) # test ratios
+       
+       # example of using group variable
+       g = rep(seq(length(Y)/4), each=4); g[48]=12;
+       msk = sample.split(Y, SplitRatio=1/2, group=g)
+       table(Y,msk) # try to get correct split ratios ...
+       split(msk,g) # ... while keeping samples with the same group label together
+
+       # test results
+       print(paste( "All Labels numbers: total=",t+f,", train=",t,", test=",f,
+             ", ratio=", t/(t+f) ) )
+       U = unique(Y)       # extract all unique labels
+       for( i in 1:length(U)) {  # check for all labels
+         lab = (Y==U[i])   # mask elements that have label U[i]
+         t=sum( msk[lab])  # number of elements with label U[i] in one class
+         f=sum(!msk[lab])  # number of elements with label U[i] in the other class 
+         print(paste( "Label",U[i],"numbers: total=",t+f,", train=",t,", test=",f, 
+                      ", ratio=", t/(t+f) ) )
+       }
+       
+       # use results
+       train = cats[ msk,2:3]  # use output of sample.split to ...
+       test  = cats[!msk,2:3]  # create train and test subsets
+       z = lda(train, Y[msk])  # perform classification
+       table(predict(z, test)$class, Y[!msk]) # predicted & true labels
+       
+       # see also LogitBoost example
+

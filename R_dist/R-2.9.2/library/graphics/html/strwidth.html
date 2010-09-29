@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Plotting Dimensions of Character Strings and Math Expressions</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for strwidth {graphics}"><tr><td>strwidth {graphics}</td><td align="right">R Documentation</td></tr></table>
+<h2>Plotting Dimensions of Character Strings and Math Expressions</h2>
+
+
+<h3>Description</h3>
+
+<p>
+These functions compute the width or height, respectively, of the
+given strings or mathematical expressions <code>s[i]</code> on
+the current plotting device in <EM>user</EM> coordinates, <EM>inches</EM>
+or as fraction of the figure width <code>par("fin")</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+strwidth(s, units = "user", cex = NULL, font = NULL, vfont = NULL, ...)
+strheight(s, units = "user", cex = NULL, font = NULL, vfont = NULL, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>s</code></td>
+<td>
+a character or <a href="../../base/html/expression.html">expression</a> vector whose dimensions
+are to be determined.  Other objects are coerced by
+<code><a href="../../grDevices/html/as.graphicsAnnot.html">as.graphicsAnnot</a></code>.</td></tr>
+<tr valign="top"><td><code>units</code></td>
+<td>
+character indicating in which units <code>s</code> is measured;
+should be one of <code>"user"</code>, <code>"inches"</code>, <code>"figure"</code>;
+partial matching is performed.</td></tr>
+<tr valign="top"><td><code>cex</code></td>
+<td>
+numeric <B>c</B>haracter <B>ex</B>pansion factor; multiplied
+by <code><a href="par.html">par</a>("cex")</code> yields the final character size; the
+default <code>NULL</code> is equivalent to <code>1</code>.</td></tr>
+<tr valign="top"><td><code>font, vfont, ...</code></td>
+<td>
+additional information about the font,
+possibly including the graphics parameter <code>"family"</code>:
+see <code><a href="text.html">text</a></code>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Where an element of <code>s</code> is a multi-line string (that is, contains
+newlines <code>\n</code>), the width and height are of an enclosing
+rectangle of the string as plotted by <code><a href="text.html">text</a></code>.  The
+inter-line spacing is controlled by <code>cex</code>,
+<code><a href="par.html">par</a>("lheight")</code> and the &lsquo;point size&rsquo; (but not the
+actual font in use).
+</p>
+<p>
+Measurements in <code>"user"</code> units (the default) are only available
+after <code><a href="frame.html">plot.new</a></code> has been called &ndash; otherwise an error is
+thrown.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+Numeric vector with the same length as <code>s</code>, giving the
+width or height for each <code>s[i]</code>.  <code>NA</code> strings are given
+width and height 0 (as they are not plotted).</p>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="text.html">text</a></code>, <code><a href="../../base/html/nchar.html">nchar</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+str.ex &lt;- c("W","w","I",".","WwI.")
+op &lt;- par(pty='s'); plot(1:100,1:100, type="n")
+sw &lt;- strwidth(str.ex); sw
+all.equal(sum(sw[1:4]), sw[5])
+#- since the last string contains the others
+
+sw.i &lt;- strwidth(str.ex, "inches"); 25.4 * sw.i # width in [mm]
+unique(sw / sw.i)
+# constant factor: 1 value
+mean(sw.i / strwidth(str.ex, "fig")) / par('fin')[1] # = 1: are the same
+
+## See how letters fall in classes
+##  -- depending on graphics device and font!
+all.lett &lt;- c(letters, LETTERS)
+shL &lt;- strheight(all.lett, units = "inches") * 72 # 'big points'
+table(shL) # all have same heights ...
+mean(shL)/par("cin")[2] # around 0.6
+
+(swL &lt;- strwidth(all.lett, units="inches") * 72) # 'big points'
+split(all.lett, factor(round(swL, 2)))
+
+sumex &lt;- expression(sum(x[i], i=1,n), e^{i * pi} == -1)
+strwidth(sumex)
+strheight(sumex)
+
+par(op)#- reset to previous setting
+</pre>
+
+
+
+<hr><div align="center">[Package <em>graphics</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

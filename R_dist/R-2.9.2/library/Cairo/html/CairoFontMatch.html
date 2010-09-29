@@ -1,0 +1,128 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Find installed fonts with a fontconfig pattern</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for CairoFonMatch {Cairo}"><tr><td>CairoFonMatch {Cairo}</td><td align="right">R Documentation</td></tr></table>
+<h2>Find installed fonts with a fontconfig pattern</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>CairoFontMatch</code> searches for fonts based on a fontconfig pattern.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+CairoFontMatch(fontpattern="Helvetica",sort=FALSE,verbose=FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>fontpattern</code></td>
+<td>
+character; a fontconfig pattern.</td></tr>
+<tr valign="top"><td><code>sort</code></td>
+<td>
+logical; if 'FALSE', display only the best matching font for the pattern. If 'TRUE', display a sorted list of best matching fonts.</td></tr>
+<tr valign="top"><td><code>verbose</code></td>
+<td>
+logical; if 'FALSE', display the family, style, and file property for the pattern. if 'TRUE', display the canonical font pattern for each match.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This function displays a list of one or more fonts matching the supplied
+fontconfig pattern. sort='FALSE' displays the font that Cairo will use
+for the supplied pattern, while sort='TRUE' displays a sorted list of
+best matching fonts. The simplest fontconfig pattern matching all installed fonts
+is ":". Here's what CairoFontMatch(":") displays on this system:
+</p>
+<pre>
+1. family: "Bitstream Vera Sans", style: "Roman", file: "/usr/share/fonts/truetype/ttf-bitstream-vera/Vera.ttf"
+</pre>
+</p>
+<p>
+verbose='FALSE' displays the font properties 'family', 'style', and 'file', while
+verbose='TRUE' will display the canonical font pattern, displaying all properties known
+for the font (output of CairoFontMatch(":",verbose=TRUE)):
+</p>
+<pre>
+1. family: "Bitstream Vera Sans", style: "Roman", file: "/usr/share/fonts/truetype/ttf-bitstream-vera/Vera.ttf"
+   "Bitstream Vera Sans-12:familylang=en:style=Roman:stylelang=en:slant=0:weight=80:width=100:pixelsize=12.5:foundry=bitstream:hintstyle=3:hinting=True:verticallayout=False:autohint=False:globaladvance=True:index=0:outline=True:scalable=True:dpi=75:rgba=1:scale=1:fontversion=131072:fontformat=TrueType:embeddedbitmap=True:decorative=False"
+</pre>
+</p>
+<p>
+A simple approach to selecting a font starts with calling CairoFontMatch(":",sort=TRUE) to
+list all available fonts. Next, the user will choose a font from the list and call
+CairoFontMatch("FamilyName:style=PreferredStyle",sort=TRUE) substituting "FamilyName"
+and "PreferredStyle" with the desired values. If only one font is found, then the user
+has found the fontconfig pattern that will select the desired font. Otherwise, the user
+will call CairoFontMatch with verbose=TRUE to determine other properties to add to
+the pattern to attain the desired font, for instance the fontformat.
+</p>
+<p>
+The following excerpt is from the fontconfig user's manual (http://fontconfig.org/) and
+better describes the fontconfig pattern definition:
+</p>
+<p>
+"Fontconfig provides a textual representation for patterns that
+the library can both accept and generate. The representation is
+in three parts, first a list of family names, second a list of
+point sizes and finally a list of additional properties:
+</p>
+<p>
+&lt;families&gt;-&lt;point sizes&gt;:&lt;name1&gt;=&lt;values1&gt;:&lt;name2&gt;=&lt;values2&gt;...
+</p>
+<p>
+Values in a list are separated with commas. The name needn't
+include either families or point sizes; they can be elided. In
+addition, there are symbolic constants that simultaneously
+indicate both a name and a value. Here are some examples:
+</p>
+<pre>
+Font Pattern                    Meaning
+----------------------------------------------------------
+Times-12                        12 point Times Roman
+Times-12:bold                   12 point Times Bold
+Courier:italic                  Courier Italic in the default size
+Monospace:matrix=1 .1 0 1       The users preferred monospace font
+                                with artificial obliquing
+</pre>
+</p>
+<p>
+The '', '-', ':' and ',' characters in family names
+must be preceeded by a '' character to avoid having them
+misinterpreted. Similarly, values containing '', '=', '_', ':'
+and ',' must also have them preceeded by a '' character. The
+'' characters are stripped out of the family name and values
+as the font name is read."
+</p>
+
+
+<h3>Known issues</h3>
+
+<ul>
+<li>This function is only available when the Cairo graphics library is configured
+with FreeType and Fontcofig support.
+</ul>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="CairoFonts.html">CairoFonts</a></code>,
+<code><a href="Cairo.html">Cairo</a></code>
+</p>
+
+
+
+<hr><div align="center">[Package <em>Cairo</em> version 1.4-5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

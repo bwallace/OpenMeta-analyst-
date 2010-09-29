@@ -1,0 +1,12 @@
+Cairo	Cairo
+Cairo.capabilities	Cairo.capabilities
+CairoFontMatch	CairoFontMatch
+CairoFonts	CairoFonts
+CairoJPEG	Cairo
+CairoPDF	Cairo
+CairoPNG	Cairo
+CairoPS	Cairo
+CairoSVG	Cairo
+CairoTIFF	Cairo
+CairoWin	Cairo
+CairoX11	Cairo

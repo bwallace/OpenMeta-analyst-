@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Fitting a power-law distribution function to discrete data</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for power.law.fit {igraph}"><tr><td>power.law.fit {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Fitting a power-law distribution function to discrete data</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>power.law.fit</code> fits a power-law distribution to a
+data set.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+power.law.fit(x, xmin = NULL, start = 2, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+The data to fit, a numeric vector containing integer values.</td></tr>
+<tr valign="top"><td><code>xmin</code></td>
+<td>
+The lower bound for fitting the power-law. If NULL, the
+smallest value in <code>x</code> will be used. This argument makes it
+possible to fit only the tail of the distribution. </td></tr>
+<tr valign="top"><td><code>start</code></td>
+<td>
+The initial value of the exponent for the minimizing
+function. Ususally it is safe to leave this untouched.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+Additional arguments, passed to the maximum likelyhood
+optimizing function, <code><a href="../../stats4/html/mle.html">mle</a></code>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+A power-law distribution is fitted with maximum likelyhood
+methods as recommended by Newman and (by default) the 
+BFGS optimization (see <a href="../../stats4/html/mle.html">mle</a>) algorithm is applied.
+</p>
+<p>
+The additional arguments are passed to the mle function, so it is
+possible to change the optimization method and/or its parameters.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+An object with class &lsquo;<code>mle</code>&rsquo;. It can be used to
+calculate confidence intervals and log-likelihood. See
+<code><a href="../../stats4/html/mle-class.html">mle-class</a></code> for details.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Power laws, Pareto distributions and Zipf's law,
+M. E. J. Newman, <EM>Contemporary Physics</EM>, in press.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../stats4/html/mle.html">mle</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+# This should approximately yield the correct exponent 3
+g &lt;- barabasi.game(1000)    # increase this number to have a better estimation
+d &lt;- degree(g, mode="in")
+power.law.fit(d+1, 20)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

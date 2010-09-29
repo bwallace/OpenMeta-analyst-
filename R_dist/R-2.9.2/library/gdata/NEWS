@@ -1,0 +1,221 @@
+CHANGES IN 2.6.1 (2009-07-15)
+-----------------------------
+
+Bug Fixes
+
+- Modify unit tests to avoid issues related to zime zones.
+
+
+CHANGES IN 2.6.0 (2009-07-15)
+-----------------------------
+
+Bug Fixes
+
+- Correct minor typos & issues in man pages for write.fwf(),
+  resample() (Greg Warnes) 
+
+- Correct calculation of object sizes in env() and ll() (Gregor Gorjanc)
+
+New Features
+
+- Add support for using tab for field separator during translation
+  from xls format in read.xls (Greg Warnes)
+
+- Enhanced function object.size that returns the size of multiple
+  objects. There is also a handy print method that can print size of
+  an object in "human readable" format when
+    options(humanReadable=TRUE) 
+  or 
+    print(object.size(x), humanReadable=TRUE). 
+  (Gregor Gorjanc) 
+
+- New function wideByFactor that reshapes given dataset by a given
+  factor - it creates a "multivariate" data.frame. (Gregor Gorjanc) 
+
+- New function nPairs that gives the number of variable pairs in a
+  data.frame or a matrix. (Gregor Gorjanc) 
+
+- New functions getYear, getMonth, getDay, getHour, getMin, and getSec
+  for extracting the date/time parts from objects of a date/time
+  class. (Gregor Gorjanc) 
+
+- New function bindData that binds two data frames into a multivariate
+  data frame in a different way than merge. (Gregor Gorjanc)
+
+Other Changes
+
+- Correct Greg's email address
+
+
+CHANGES IN 2.5.0
+----------------
+
+- New function .runRUnitTestsGdata that enables run of all RUnit tests during
+  the R CMD check as well as directly from within R.
+
+- Enhanced function object.size that returns the size of multiple objects. There
+  is also a handy print method that can print size of an object in "human readable"
+  format when options(humanReadable=TRUE) or print(x, humanReadable=TRUE).
+
+- New function bindData that binds two data frames into a multivariate data frame
+  in a different way than merge.
+  
+- New function wideByFactor that reshapes given dataset by a given factor -
+  it creates a "multivariate" data.frame.
+
+- New functions getYear, getMonth, getDay, getHour, getMin, and getSec for
+  extracting the date/time parts from objects of a date/time class.
+
+- New function nPairs that gives the number of variable pairs in a data.frame
+  or a matrix.
+
+- New function trimSum that sums trimmed values.
+
+- New function cbindX that can bind objects with different number of rows.
+
+- write.fwf gains the width argument. The value for unknown can increase or 
+  decrease the width of the columns. Additional tests and documentation fixes.
+
+CHANGES IN 2.4.2 (2008-05-11)
+-----------------------------
+
+- Enhancements and bug fixes for read.xls() and xls2csv():
+
+    - More informative log messages when verbose=TRUE
+
+    - File paths containing spaces or other non-traditional characters
+      are now properly handled
+
+    - Better error messages, particularly when perl fails to generate
+      an output .csv file.
+
+    - The 'shortcut' character "~" (meaning user's home directory) is
+      now properly handled in file paths.
+
+    - XLS files created by OpenOffice are now properly handled.  Thanks to
+       Robert Burns for pointing out the patch
+       (http://rt.cpan.org/Public/Bug/Display.html?id=7206)
+
+CHANGES IN 2.4.1 (2008-03-24)
+-----------------------------
+
+- Update perl libraries needed by xls2csv() and read.xls()
+  to latest available versions on CRAN.
+
+- Add read.xls() to exported function list
+
+- Correct iris.xls example file.  It didn't contain the complete
+  & properly formatted iris data set. Fixed.
+
+- Fix typo in win32 example for read.xls()
+
+CHANGES IN 2.4.0 (2008-01-30)
+-----------------------------
+
+- The keep() function now includes an 'all' argument to specify how
+  objects with names starting with '.' are handled.
+
+- keep() now shows an informative warning message when a requested
+  object does not exist
+
+- New vignette "Mapping Levels of a Factor" describing the use of
+  mapLevels().
+
+- New vignette "Working with Unknown Values" describing the use of
+  isUnknown() and unknownToNA().
+
+- Several enhancements to read.xls() (thanks to Gabor Grothendieck):
+
+  - New function xls2csv(), which handles converting an xls file
+    to a csv file and returns a connection to the
+    temporary csv file
+
+  - xls2csv() and read.xls() both allow a file or a url to be specified
+
+  - read.xls() has a new 'pattern' argument which, if supplied,
+    will ignore everything prior to the first line in th csv file
+    that matches the pattern.  This is typically used if there
+    are a variable number of comment lines prior to the header
+    in which case one can specify one of the column
+    headings as the pattern.  read.xls should
+    be compatible with the old read.xls.
+
+- Minor fixes to drop.levels(), is.what().
+
+- Implementation of unit tests for most functions.
+
+CHANGES IN 2.3.1 (2006-10-29)
+-----------------------------
+
+- Arguments as well as their position of reorder.factor have been changed
+  to conform with reorder.factor method in stats package, due to collision
+  bug. Argument 'make.ordered' is now 'order' and old argument 'order' is
+  now 'new.order'! Therefore, you have to implicitly specify new.order i.e.
+
+  reorder(trt, new.order=c("PLACEBO", "300 MG", "600 MG", "1200 MG"))
+
+- trim() gains ... argument.
+
+- Added "unknown" methods for matrices.
+
+- Added c() method for factors based on mapLevels() functions.
+
+- Added write.fwf, which writes file in *F*ixed *W*idth *F*ormat.
+
+CHANGES FROM 2.1.X to 2.3.0 (2006-09-19)
+---------------------------------------
+
+- Added mapLevels(), which produces a map with information on levels and/or
+  internal integer codes.  Contributed by Gregor Gorjanc.
+
+- Extended dropLevels() to work on the factors contained in a data
+  frame, as well as individual factors.
+
+- Add unknown(), which changes given unknown value to NA and vice
+  versa. Contributed by Gregor Gorjanc.
+
+- Extended trim() to handle a variety of data types data.frames,
+  lists, factors, etc.  Code changes contributed by Gregor Gorjanc.
+
+- Added resample() command that acts like sample() except that it
+  _always_ samples from the arguments provided, even if only a single
+  argument is present.  This differs from sample() which behaves
+  differently in this case.
+
+- Updated my email address.
+
+CHANGES IN GDATA 2.1.2
+-----------------------
+
+ - Fixed bug in interleave.R - option to covert 1-column matrices to
+   vector (based on Andrew Burgess's suggestion)
+
+ - Updated Greg and Jim's email adresses
+
+ - ll.R: Suppressed warning message in attach() call.
+
+ - frameApply.Rd, reorder.Rd: Remove explicit loading of
+   gtools in examples, so that failure to import functions from
+   gtools gets properly caught by running the examples.
+
+ - upperTriangle.R, man/upperTriangle.Rd: Add functions for
+   extracting and modifying the upper and lower trianglular components of
+   matrices.
+
+ - is.what.R: Replaced the "not.using" vector with a more robust
+   try(get(test)) to find out whether a particular is.* function
+   returns a logical of length one.
+
+-  DESCRIPTION: Added Suggests field
+
+ -  Updated the example in frameApply
+
+
+CHANGES IN GDATA 2.0.8
+-----------------------
+
+ - Added DESCRIPTION and removed DESCRIPTION.in
+
+ - Updated ll.Rd documentation
+
+ - Fixed bug in Args.R, is.what.R, ll.R

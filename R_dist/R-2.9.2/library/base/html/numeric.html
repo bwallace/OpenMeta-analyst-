@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Numeric Vectors</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for numeric {base}"><tr><td>numeric {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Numeric Vectors</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Creates or coerces objects of type <code>"numeric"</code>.
+<code>is.numeric</code> is a more general test of an object being
+interpretable as numbers.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+numeric(length = 0)
+as.numeric(x, ...)
+is.numeric(x)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>length</code></td>
+<td>
+desired length.</td></tr>
+<tr valign="top"><td><code>x</code></td>
+<td>
+object to be coerced or tested.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+further arguments passed to or from other methods.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>numeric</code> is identical to <code><a href="double.html">double</a></code> (and <code>real</code>).
+It creates a double-precision vector of the specified length with each
+element equal to <code>0</code>.
+</p>
+<p>
+<code>as.numeric</code> is a generic function, but S3 methods must be
+written for <code><a href="double.html">as.double</a></code>.  It is identical to
+<code>as.double</code> (and <code>as.real</code>).
+</p>
+<p>
+<code>is.numeric</code> is generic: you can write methods to handle
+specific classes of objects, see <a href="zMethods.html">InternalMethods</a>.  It is
+<STRONG>not</STRONG> the same as <code><a href="double.html">is.double</a></code>.  Factors are handled
+by the default method, and there are methods for classes
+<code>"<a href="Dates.html">Date</a>"</code> and <code>"<a href="DateTimeClasses.html">POSIXt</a>"</code> (in all three cases
+the result is false).  Methods for <code>is.numeric</code> should only
+return true if the base type of the class is <code>double</code> or
+<code>integer</code> <EM>and</EM> values can reasonably be regarded as
+numeric (e.g. arithmetic on them makes sense).
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+for <code>numeric</code> and <code>as.numeric</code> see <code><a href="double.html">double</a></code>.
+<br>
+The default method for <code>is.numeric</code> returns <code>TRUE</code>
+if its argument is of <a href="mode.html">mode</a> <code>"numeric"</code>
+(<a href="typeof.html">type</a> <code>"double"</code> or type <code>"integer"</code>) and not a
+factor, and <code>FALSE</code> otherwise.  That is,
+<code>is.integer(x) || is.double(x)</code>, or
+<code>(mode(x) == "numeric") &amp;&amp; !is.factor(x)</code>.</p>
+
+<h3>S4 methods</h3>
+
+<p>
+<code>as.numeric</code> and <code>is.numeric</code> are internally S4 generic and
+so methods can be set for them <EM>via</EM> <code>setMethod</code>.
+</p>
+<p>
+To ensure that <code>as.numeric</code>, <code>as.double</code> and <code>as.real</code>
+remain identical, S4 methods can only be set for <code>as.numeric</code>.
+</p>
+
+
+<h3>Note on names</h3>
+
+<p>
+It is a historical anomaly that <font face="Courier New,Courier" color="#666666"><b>R</b></font> has three names for its
+floating-point vectors, <code><a href="double.html">double</a></code>, <code><a href="numeric.html">numeric</a></code>
+and <code><a href="real.html">real</a></code>.
+</p>
+<p>
+<code>double</code> is the name of the <a href="typeof.html">type</a>.
+<code>numeric</code> is the name of the <a href="mode.html">mode</a> and also of the implicit
+<a href="class.html">class</a>.  As an S4 formal class, use <code>"numeric"</code> (there was
+a formal class <code>"double"</code> prior to <font face="Courier New,Courier" color="#666666"><b>R</b></font> 2.7.0).
+</p>
+<p>
+<code>real</code> is deprecated and should not be used in new code.
+</p>
+<p>
+The potential confusion is that <font face="Courier New,Courier" color="#666666"><b>R</b></font> has used <EM><a href="mode.html">mode</a></EM>
+<code>"numeric"</code> to mean &lsquo;double or integer&rsquo;, which conflicts
+with the S4 usage.  Thus <code>is.numeric</code> tests the mode, not the
+class, but <code>as.numeric</code> (which is identical to <code>as.double</code>)
+coerces to the class.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+<EM>The New S Language</EM>.
+Wadsworth &amp; Brooks/Cole.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="double.html">double</a></code>, <code><a href="integer.html">integer</a></code>, <code><a href="mode.html">storage.mode</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+as.numeric(c("-.1"," 2.7 ","B")) # (-0.1, 2.7, NA)  +  warning
+as.numeric(factor(5:10))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

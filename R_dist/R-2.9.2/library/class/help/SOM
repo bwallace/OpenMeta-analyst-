@@ -1,0 +1,82 @@
+SOM                  package:class                  R Documentation
+
+_S_e_l_f-_O_r_g_a_n_i_z_i_n_g _M_a_p_s: _O_n_l_i_n_e _A_l_g_o_r_i_t_h_m
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Kohonen's Self-Organizing Maps are a crude form of
+     multidimensional scaling.
+
+_U_s_a_g_e:
+
+     SOM(data, grid = somgrid(), rlen = 10000, alpha, radii, init)
+
+_A_r_g_u_m_e_n_t_s:
+
+    data: a matrix or data frame of observations, scaled so that
+          Euclidean distance is appropriate. 
+
+    grid: A grid for the representatives: see 'somgrid'. 
+
+    rlen: the number of updates: used only in the defaults for 'alpha'
+          and 'radii'. 
+
+   alpha: the amount of change: one update is done for each element of
+          'alpha'. Default is to decline linearly from 0.05 to 0 over
+          'rlen' updates. 
+
+   radii: the radii of the neighbourhood to be used for each update:
+          must be the same length as 'alpha'.  Default is to decline
+          linearly from 4 to 1 over 'rlen' updates. 
+
+    init: the initial representatives.  If missing, chosen (without
+          replacement) randomly from 'data'. 
+
+_D_e_t_a_i_l_s:
+
+     'alpha' and 'radii' can also be lists, in which case each
+     component is used in turn, allowing two- or more phase training.
+
+_V_a_l_u_e:
+
+     an object of class '"SOM"' with components
+
+    grid: the grid, an object of class '"somgrid"'. 
+
+   codes: a matrix of representatives. 
+
+_R_e_f_e_r_e_n_c_e_s:
+
+     Kohonen, T. (1995) _Self-Organizing Maps._ Springer-Verlag
+
+     Kohonen, T., Hynninen, J., Kangas, J. and Laaksonen, J. (1996)
+     _SOM PAK: The self-organizing map program package._ Laboratory of
+     Computer and Information Science, Helsinki University of
+     Technology, Technical Report A31.
+
+     Ripley, B. D. (1996) _Pattern Recognition and Neural Networks._
+     Cambridge.
+
+     Venables, W. N. and Ripley, B. D. (2002) _Modern Applied
+     Statistics with S._ Fourth edition.  Springer.
+
+_S_e_e _A_l_s_o:
+
+     'somgrid', 'batchSOM'
+
+_E_x_a_m_p_l_e_s:
+
+     data(crabs, package = "MASS")
+
+     lcrabs <- log(crabs[, 4:8])
+     crabs.grp <- factor(c("B", "b", "O", "o")[rep(1:4, rep(50,4))])
+     gr <- somgrid(topo = "hexagonal")
+     crabs.som <- SOM(lcrabs, gr)
+     plot(crabs.som)
+
+     ## 2-phase training
+     crabs.som2 <- SOM(lcrabs, gr,
+         alpha = list(seq(0.05, 0, len = 1e4), seq(0.02, 0, len = 1e5)),
+         radii = list(seq(8, 1, len = 1e4), seq(4, 1, len = 1e5)))
+     plot(crabs.som2)
+

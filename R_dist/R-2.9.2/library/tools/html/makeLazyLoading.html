@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Lazy Loading of Packages</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for makeLazyLoading {tools}"><tr><td>makeLazyLoading {tools}</td><td align="right">R Documentation</td></tr></table>
+<h2>Lazy Loading of Packages</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Tools for lazy loading of packages from a database.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+makeLazyLoading(package, lib.loc = NULL, compress = TRUE,
+                keep.source = getOption("keep.source.pkgs"))
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>package</code></td>
+<td>
+package name string</td></tr>
+<tr valign="top"><td><code>lib.loc</code></td>
+<td>
+library trees, as in <code>library</code></td></tr>
+<tr valign="top"><td><code>keep.source</code></td>
+<td>
+logical; should sources be kept when saving from source</td></tr>
+<tr valign="top"><td><code>compress</code></td>
+<td>
+logical; whether to compress entries on the database.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+A tool to set up packages for lazy loading from a database.  For
+packages other than <span class="pkg">base</span> you can use
+<code>makeLazyLoading(package)</code> to convert them to use lazy loading.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Luke Tierney and Brian Ripley
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## set up package "splines" for lazy loading -- already done
+## Not run: 
+tools:::makeLazyLoading("splines")
+## End(Not run)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>tools</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

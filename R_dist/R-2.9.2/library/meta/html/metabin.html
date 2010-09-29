@@ -1,0 +1,369 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Meta-analysis of binary outcome data</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for metabin {meta}"><tr><td>metabin {meta}</td><td align="right">R Documentation</td></tr></table>
+<h2>Meta-analysis of binary outcome data</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Calculation of fixed and random effects estimates (relative risk, odds
+ratio, risk difference or arcsine difference) for meta-analyses with
+binary outcome data. Mantel-Haenszel, inverse variance and Peto method
+are available for pooling.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+metabin(event.e, n.e, event.c, n.c, studlab,
+        data = NULL, subset = NULL, method = "MH",
+        sm = ifelse(!is.na(charmatch(method, c("Peto", "peto"), nomatch = NA)), "OR", "RR"),
+        incr = 0.5, allincr = FALSE, addincr = FALSE, allstudies = FALSE,
+        MH.exact = FALSE, RR.cochrane = FALSE,
+        level = 0.95, level.comb = level,
+        comb.fixed=TRUE, comb.random=TRUE,
+        title="", complab="", outclab="",
+        label.e="Experimental", label.c="Control",
+        byvar, bylab, print.byvar=TRUE,
+        warn = TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>event.e</code></td>
+<td>
+Number of events in experimental group.</td></tr>
+<tr valign="top"><td><code>n.e</code></td>
+<td>
+Number of observations in experimental group.</td></tr>
+<tr valign="top"><td><code>event.c</code></td>
+<td>
+Number of events in control group.</td></tr>
+<tr valign="top"><td><code>n.c</code></td>
+<td>
+Number of observations in control group.</td></tr>
+<tr valign="top"><td><code>studlab</code></td>
+<td>
+An optional vector with study labels.</td></tr>
+<tr valign="top"><td><code>data</code></td>
+<td>
+An optional data frame containing the study information,
+i.e., event.e, n.e, event.c, and n.c.</td></tr>
+<tr valign="top"><td><code>subset</code></td>
+<td>
+An optional vector specifying a subset of studies to be used.</td></tr>
+<tr valign="top"><td><code>method</code></td>
+<td>
+A character string indicating which method is to be used
+for pooling of studies. One of <code>"Inverse"</code>, <code>"MH"</code>, or
+<code>"Peto"</code>, can be abbreviated.</td></tr>
+<tr valign="top"><td><code>sm</code></td>
+<td>
+A character string indicating which summary measure
+(<code>"RR"</code>, <code>"OR"</code>, <code>"RD"</code>, or <code>"AS"</code>) is to be used
+for pooling of studies, see Details.</td></tr>
+<tr valign="top"><td><code>incr</code></td>
+<td>
+Could be either a numerical value which is added to each cell
+frequency for studies with a zero cell count or the character string
+<code>"TA"</code> which stands for treatment arm continuity correction, see
+Details.</td></tr>
+<tr valign="top"><td><code>allincr</code></td>
+<td>
+A logical indicating if <code>incr</code> is added to each
+cell frequency of all studies if at least one study has a zero cell
+count. If false, <code>incr</code> is added only to each cell frequency of
+studies with a zero cell count.</td></tr>
+<tr valign="top"><td><code>addincr</code></td>
+<td>
+A logical indicating if <code>incr</code> is added to each cell
+frequency of all studies irrespective of zero cell counts.</td></tr>
+<tr valign="top"><td><code>allstudies</code></td>
+<td>
+A logical indicating if studies with zero or all
+events in both groups are to be included in the meta-analysis
+(applies only if sm = <code>"RR"</code> or <code>"OR"</code>).</td></tr>
+<tr valign="top"><td><code>MH.exact</code></td>
+<td>
+A logical indicating if <code>incr</code> is not to be added
+to all cell frequencies for studies with a zero cell count to
+calculate the pooled estimate based on the Mantel-Haenszel method.</td></tr>
+<tr valign="top"><td><code>RR.cochrane</code></td>
+<td>
+A logical indicating if 2*<code>incr</code> instead of
+1*<code>incr</code> is to be added to <code>n.e</code> and <code>n.c</code> in the
+calculation of the relative risk (i.e., <code>sm="RR"</code>) for studies
+with a zero cell. This is used in RevMan 5, the
+Cochrane Collaboration's program for preparing and maintaining
+Cochrane reviews.</td></tr>
+<tr valign="top"><td><code>level</code></td>
+<td>
+The level used to calculate confidence intervals for
+individual studies.</td></tr>
+<tr valign="top"><td><code>level.comb</code></td>
+<td>
+The level used to calculate confidence intervals for
+pooled estimates.</td></tr>
+<tr valign="top"><td><code>comb.fixed</code></td>
+<td>
+A logical indicating whether a fixed effect
+meta-analysis should be conducted.</td></tr>
+<tr valign="top"><td><code>comb.random</code></td>
+<td>
+A logical indicating whether a random effects
+meta-analysis should be conducted.</td></tr>
+<tr valign="top"><td><code>title</code></td>
+<td>
+Title of meta-analysis / systematic review.</td></tr>
+<tr valign="top"><td><code>complab</code></td>
+<td>
+Comparison label.</td></tr>
+<tr valign="top"><td><code>outclab</code></td>
+<td>
+Outcome label.</td></tr>
+<tr valign="top"><td><code>label.e</code></td>
+<td>
+Label for experimental group.</td></tr>
+<tr valign="top"><td><code>label.c</code></td>
+<td>
+Label for control group.</td></tr>
+<tr valign="top"><td><code>byvar</code></td>
+<td>
+An optional vector containing grouping information (must
+be of same length as <code>event.e</code>).</td></tr>
+<tr valign="top"><td><code>bylab</code></td>
+<td>
+A character string with a label for the grouping variable.</td></tr>
+<tr valign="top"><td><code>print.byvar</code></td>
+<td>
+A logical indicating whether the name of the grouping
+variable should be printed in front of the group labels.</td></tr>
+<tr valign="top"><td><code>warn</code></td>
+<td>
+A logical indicating whether the addition of <code>incr</code>
+to studies with zero cell frequencies should result in a warning.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Treatment estimates and standard errors are calculated for each
+study. The following measures of treatment effect are available:
+relative risk (if <code>sm="RR"</code>), odds ratio (<code>sm="OR"</code>), risk
+difference (<code>sm="RD"</code>), and arcsine difference (<code>sm="AS"</code>).
+</p>
+<p>
+For studies with a zero cell count, by default, 0.5 is added to
+all cell frequencies of these studies; if <code>incr</code> is
+<code>"TA"</code> a treatment arm continuity correction is used instead
+(Sweeting et al., 2004; Diamond et al., 2007). Treatment estimates
+and standard errors are only calculated for studies with zero or all
+events in both groups if <code>allstudies</code> is <code>TRUE</code>.
+</p>
+<p>
+Internally, both fixed effect and random effects models are calculated
+regardless of values choosen for arguments <code>comb.fixed</code> and
+<code>comb.random</code>. Accordingly, the estimate for the random effects
+model can be extracted from component <code>TE.random</code> of an object
+of class <code>"meta"</code> even if <code>comb.random=FALSE</code>. However, all
+functions in R package <code>meta</code> will adequately consider the values
+for <code>comb.fixed</code> and <code>comb.random</code>. E.g. function
+<code><a href="print.meta.html">print.meta</a></code> will not print results for the random effects
+model if <code>comb.random=FALSE</code>.
+</p>
+<p>
+By default, both fixed effect and random effects models are considered
+(arguments <code>comb.fixed=TRUE</code> and <code>comb.random=TRUE</code>). If
+<code>method</code> is <code>"MH"</code> (default), the Mantel-Haenszel method is
+used to calculate the fixed effect estimate; if <code>method</code> is
+<code>"Inverse"</code>, inverse variance weighting is used for
+pooling; finally, if <code>method</code> is <code>"Peto"</code>, the Peto method
+is used for pooling. The DerSimonian-Laird estimate is used in the
+random effects model. For the Peto method, Peto's log odds ratio,
+i.e. <code>(O-E)/V</code> and its standard error <code>sqrt(1/V)</code> with
+<code>O-E</code> and <code>V</code> denoting "Observed minus Expected" and
+"V", are utilised in the random effects model. Accordingly, results of
+a random effects model using <code>sm="Peto"</code> can be (slightly)
+different to results from a random effects model using <code>sm="MH"</code> or
+<code>sm="Inverse"</code>.
+</p>
+<p>
+For the Mantel-Haenszel method, by default (if <code>MH.exact</code> is
+FALSE), 0.5 is added to all cell frequencies of a study with a zero cell
+count in the calculation of the pooled estimate. This approach is also
+used in other software, e.g. RevMan 5 and the Stata procedure metan.
+According to Fleiss (in Cooper &amp; Hedges, 1994), there is no need to
+add 0.5 to a cell frequency of zero to calculate the Mantel-Haenszel
+estimate and he advocates the exact method
+(<code>MH.exact</code>=TRUE). Note, the estimate based on the exact method
+is not defined if the number of events is zero in all studies either
+in the experimental or control group.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+An object of class <code>c("metabin", "meta")</code> with corresponding
+<code>print</code>, <code>summary</code>, <code>plot</code> function. The object is a
+list containing the following components:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>event.e, n.e, event.c, n.c, studlab,</code></td>
+<td>
+</td></tr>
+<tr valign="top"><td><code>sm, method, incr, allincr, addincr, </code></td>
+<td>
+</td></tr>
+<tr valign="top"><td><code>allstudies, MH.exact, RR.cochrane, warn,</code></td>
+<td>
+</td></tr>
+<tr valign="top"><td><code>level, level.comb, comb.fixed, comb.random,</code></td>
+<td>
+</td></tr>
+<tr valign="top"><td><code>byvar, bylab, print.byvar</code></td>
+<td>
+As defined above.</td></tr>
+<tr valign="top"><td><code>TE, seTE</code></td>
+<td>
+Estimated treatment effect and standard error of individual studies.</td></tr>
+<tr valign="top"><td><code>w.fixed, w.random</code></td>
+<td>
+Weight of individual studies (in fixed and
+random effects model).</td></tr>
+<tr valign="top"><td><code>TE.fixed, seTE.fixed</code></td>
+<td>
+Estimated overall treatment effect and
+standard error (fixed effect model).</td></tr>
+<tr valign="top"><td><code>TE.random, seTE.random</code></td>
+<td>
+Estimated overall treatment effect and
+standard error (random effects model).</td></tr>
+<tr valign="top"><td><code>k</code></td>
+<td>
+Number of studies combined in meta-analysis.</td></tr>
+<tr valign="top"><td><code>Q</code></td>
+<td>
+Heterogeneity statistic Q.</td></tr>
+<tr valign="top"><td><code>tau</code></td>
+<td>
+Square-root of between-study variance (moment estimator of
+DerSimonian-Laird).</td></tr>
+<tr valign="top"><td><code>Q.CMH</code></td>
+<td>
+Cochrane-Mantel-Haenszel heterogeneity statistic.</td></tr>
+<tr valign="top"><td><code>incr.e, incr.c</code></td>
+<td>
+Increment added to cells in the experimental and
+control group, respectively</td></tr>
+<tr valign="top"><td><code>sparse</code></td>
+<td>
+Logical flag indicating if any study included in
+meta-analysis has any zero cell frequencies.</td></tr>
+<tr valign="top"><td><code>call</code></td>
+<td>
+Function call.</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Guido Schwarzer <a href="mailto:sc@imbi.uni-freiburg.de">sc@imbi.uni-freiburg.de</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Cooper H &amp; Hedges LV (1994),
+<EM>The Handbook of Research Synthesis</EM>.
+Newbury Park, CA: Russell Sage Foundation.
+</p>
+<p>
+Diamond GA, Bax L, Kaul S (2007,
+Uncertain Effects of Rosiglitazone on the Risk for Myocardial
+Infarction and Cardiovascular Death.
+<EM>Annals of Internal Medicine</EM>, <B>147</B>, 578&ndash;581.
+</p>
+<p>
+DerSimonian R &amp; Laird N (1986),
+Meta-analysis in clinical trials. <EM>Controlled Clinical Trials</EM>,
+<B>7</B>, 177&ndash;188.
+</p>
+<p>
+Fleiss JL (1993),
+The statistical basis of meta-analysis.
+<EM>Statistical Methods in Medical Research</EM>, <B>2</B>, 121&ndash;145.
+</p>
+<p>
+Greenland S &amp; Robins JM (1985),
+Estimation of a common effect parameter from sparse follow-up data.
+<EM>Biometrics</EM>, <B>41</B>, 55&ndash;68.
+</p>
+<p>
+<EM>Review Manager (RevMan)</EM> [Computer program]. Version 5.0. The
+Nordic Cochrane Centre, The Cochrane Collaboration, 2008.
+</p>
+<p>
+Ruecker G, Schwarzer G, Carpenter JR (2008)
+Arcsine test for publication bias in meta-analyses with binary
+outcomes. <EM>Statistics in Medicine</EM>, <B>27</B>,746&ndash;763.
+</p>
+<p>
+StataCorp. 2009.
+<EM>Stata Statistical Software: Release 11</EM>. College Station, TX:
+Stata Corporation.
+</p>
+<p>
+Sweeting MJ, Sutton AJ, Lambert PC (2004),
+What to add to nothing? Use and avoidance of continuity corrections
+in meta-analysis of sparse data.
+<EM>Statistics in Medicine</EM>, <B>23</B>, 1351&ndash;1375.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="funnel.html">funnel</a></code>, <code><a href="metabias.html">metabias</a></code>, <code><a href="metacont.html">metacont</a></code>, <code><a href="metagen.html">metagen</a></code>, <code><a href="print.meta.html">print.meta</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+metabin(10, 20, 15, 20, sm="OR")
+
+##
+## Different results:
+##
+metabin(0, 10, 0, 10, sm="OR")
+metabin(0, 10, 0, 10, sm="OR", allstudies=TRUE)
+
+data(Olkin95)
+
+meta1 &lt;- metabin(event.e, n.e, event.c, n.c,
+                 data=Olkin95, subset=c(41,47,51,59),
+                 sm="RR", meth="I")
+summary(meta1)
+funnel(meta1)
+
+meta2 &lt;- metabin(event.e, n.e, event.c, n.c,
+                 data=Olkin95, subset=Olkin95$year&lt;1970,
+                 sm="RR", meth="I")
+summary(meta2)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>meta</em> version 1.1-8 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

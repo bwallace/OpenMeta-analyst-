@@ -1,0 +1,218 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: The Gamma Distribution</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for GammaDist {stats}"><tr><td>GammaDist {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>The Gamma Distribution</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Density, distribution function, quantile function and random
+generation for the Gamma distribution with parameters <code>shape</code> and
+<code>scale</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+dgamma(x, shape, rate = 1, scale = 1/rate, log = FALSE)
+pgamma(q, shape, rate = 1, scale = 1/rate, lower.tail = TRUE,
+       log.p = FALSE)
+qgamma(p, shape, rate = 1, scale = 1/rate, lower.tail = TRUE,
+       log.p = FALSE)
+rgamma(n, shape, rate = 1, scale = 1/rate)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x, q</code></td>
+<td>
+vector of quantiles.</td></tr>
+<tr valign="top"><td><code>p</code></td>
+<td>
+vector of probabilities.</td></tr>
+<tr valign="top"><td><code>n</code></td>
+<td>
+number of observations. If <code>length(n) &gt; 1</code>, the length
+is taken to be the number required.</td></tr>
+<tr valign="top"><td><code>rate</code></td>
+<td>
+an alternative way to specify the scale.</td></tr>
+<tr valign="top"><td><code>shape, scale</code></td>
+<td>
+shape and scale parameters.  Must be positive,
+<code>scale</code> strictly.</td></tr>
+<tr valign="top"><td><code>log, log.p</code></td>
+<td>
+logical; if <code>TRUE</code>, probabilities/densities <i>p</i>
+are returned as <i>log(p)</i>.</td></tr>
+<tr valign="top"><td><code>lower.tail</code></td>
+<td>
+logical; if TRUE (default), probabilities are
+<i>P[X &lt;= x]</i>, otherwise, <i>P[X &gt; x]</i>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+If <code>scale</code> is omitted, it assumes the default value of <code>1</code>.
+</p>
+<p>
+The Gamma distribution with parameters <code>shape</code> <i>= a</i>
+and <code>scale</code> <i>= s</i> has density
+</p><p align="center"><i>f(x)= 1/(s^a Gamma(a)) x^(a-1) e^-(x/s)</i></p><p>
+for <i>x &gt;= 0</i>, <i>a &gt; 0</i> and <i>s &gt; 0</i>.
+(Here <i>Gamma(a)</i> is the function implemented by <font face="Courier New,Courier" color="#666666"><b>R</b></font>'s
+<code><a href="../../base/html/Special.html">gamma</a>()</code> and defined in its help.  Note that <i>a=0</i>
+corresponds to the trivial distribution with all mass at point 0.)
+</p>
+<p>
+The mean and variance are
+<i>E(X) = a*s</i> and
+<i>Var(X) = a*s^2</i>.
+</p>
+<p>
+The cumulative hazard <i>H(t) = - log(1 - F(t))</i>
+is <code>-pgamma(t, ..., lower = FALSE, log = TRUE)</code>.
+</p>
+<p>
+Note that for smallish values of <code>shape</code> (and moderate
+<code>scale</code>) a large parts of the mass of the Gamma distribution is
+on values of <i>x</i> so near zero that they will be represented as
+zero in computer arithmetic.  So <code>rgamma</code> can well return values
+which will be represented as zero.  (This will also happen for very
+large values of <code>scale</code> since the actual generation is done for
+<code>scale=1</code>.) Similarly, <code>qgamma</code> has a very hard job for
+small <code>scale</code>, and warns of potential unreliability for
+<code>scale &lt; 1e-10</code>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>dgamma</code> gives the density,
+<code>pgamma</code> gives the distribution function,
+<code>qgamma</code> gives the quantile function, and
+<code>rgamma</code> generates random deviates.
+<br>
+Invalid arguments will result in return value <code>NaN</code>, with a warning.</p>
+
+<h3>Note</h3>
+
+<p>
+The S parametrization is via <code>shape</code> and <code>rate</code>: S has no
+<code>scale</code> parameter.
+</p>
+<p>
+<code>pgamma</code> is closely related to the incomplete gamma function.  As
+defined by Abramowitz and Stegun 6.5.1 (and by &lsquo;Numerical
+Recipes&rsquo;) this is
+</p><p align="center"><i>P(a,x) =
+1/Gamma(a) integral_0^x t^(a-1) exp(-t) dt</i></p><p>
+<i>P(a, x)</i> is <code>pgamma(x, a)</code>.  Other authors (for example
+Karl Pearson in his 1922 tables) omit the normalizing factor,
+defining the incomplete gamma function as <code>pgamma(x, a) * gamma(a)</code>.
+A few use the &lsquo;upper&rsquo; incomplete gamma function, the integral
+from <i>x</i> to <i>infty</i> which can be computed by
+<code>pgamma(x, a, lower=FALSE) * gamma(a)</code>, or its normalized
+version. See also
+<a href="http://en.wikipedia.org/wiki/Incomplete_gamma_function">http://en.wikipedia.org/wiki/Incomplete_gamma_function</a>.
+</p>
+
+
+<h3>Source</h3>
+
+<p>
+<code>dgamma</code> is computed via the Poisson density, using code contributed
+by Catherine Loader (see <code><a href="Binomial.html">dbinom</a></code>).
+</p>
+<p>
+<code>pgamma</code> uses an unpublished (and not otherwise documented)
+algorithm &lsquo;mainly by Morten Welinder&rsquo;.
+</p>
+<p>
+<code>qgamma</code> is based on a C translation of
+</p>
+<p>
+Best, D. J. and D. E. Roberts (1975).
+Algorithm AS91. Percentage points of the chi-squared distribution.
+<EM>Applied Statistics</EM>,  <B>24</B>, 385&ndash;388.
+</p>
+<p>
+plus a final Newton step to improve the approximation.
+</p>
+<p>
+<code>rgamma</code> for <code>shape &gt;= 1</code> uses
+</p>
+<p>
+Ahrens, J. H. and Dieter, U. (1982).
+Generating gamma variates by a modified rejection technique.
+<EM>Communications of the ACM</EM>, <B>25</B>, 47&ndash;54,
+</p>
+<p>
+and for <code>0 &lt; shape &lt; 1</code> uses
+</p>
+<p>
+Ahrens, J. H. and Dieter, U. (1974).
+Computer methods for sampling from gamma, beta, Poisson and binomial
+distributions. <EM>Computing</EM>, <B>12</B>, 223&ndash;246.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+<EM>The New S Language</EM>.
+Wadsworth &amp; Brooks/Cole.
+</p>
+<p>
+Shea, B. L. (1988)
+Algorithm AS 239,  Chi-squared and incomplete Gamma integral,
+<EM>Applied Statistics (JRSS C)</EM> <B>37</B>, 466&ndash;473.
+</p>
+<p>
+Abramowitz, M. and Stegun, I. A. (1972)
+<EM>Handbook of Mathematical Functions.</EM> New York: Dover.
+Chapter 6: Gamma and Related Functions.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../base/html/Special.html">gamma</a></code> for the gamma function, <code><a href="Beta.html">dbeta</a></code> for
+the Beta distribution and <code><a href="Chisquare.html">dchisq</a></code> for the chi-squared
+distribution which is a special case of the Gamma distribution.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+-log(dgamma(1:4, shape=1))
+p &lt;- (1:9)/10
+pgamma(qgamma(p,shape=2), shape=2)
+1 - 1/exp(qgamma(p, shape=1))
+
+# even for shape = 0.001 about half the mass is on numbers
+# that cannot be represented accurately (and most of those as zero)
+pgamma(.Machine$double.xmin, 0.001)
+pgamma(5e-324, 0.001)  # on most machines this is the smallest
+                       # representable non-zero number
+table(rgamma(1e4, 0.001) == 0)/1e4
+</pre>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

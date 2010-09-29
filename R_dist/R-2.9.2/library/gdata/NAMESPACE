@@ -1,0 +1,141 @@
+
+export(
+       Args,
+       aggregate.table,
+       bindData,
+       cbindX,
+       combine,
+       ConvertMedUnits,
+       drop.levels,
+       elem,
+       env,
+       frameApply,
+       interleave,
+       is.what,
+       keep,
+       ll,
+       lowerTriangle,
+       "lowerTriangle<-",
+       matchcols,
+       nobs,
+       nPairs,
+       read.xls,
+       rename.vars,
+       remove.vars,
+       reorder.factor,
+       resample,
+       trim,
+       trimSum,
+       unmatrix,
+       upperTriangle,
+       "upperTriangle<-",
+       wideByFactor,
+       write.fwf,
+       xls2csv,
+       xls2tab,
+       xls2sep,       
+
+       ## Object size stuff
+       object.size, as.object_size, is.object_size, humanReadable,
+
+       ## getDateTime stuff
+       getYear, getMonth, getDay, getHour, getMin, getSec,
+
+       ## mapLevels stuff
+       mapLevels, as.levelsMap, as.listLevelsMap, is.levelsMap, is.listLevelsMap, "mapLevels<-",
+
+       ## unknown stuff
+       isUnknown, unknownToNA, NAToUnknown,
+
+       ## Unit testing
+       .runRUnitTestsGdata
+)
+
+importFrom(stats, reorder)
+importFrom(gtools, mixedsort)
+
+S3method(reorder, factor)
+
+## drop.levels stuff
+S3method(drop.levels, default)
+S3method(drop.levels, factor)
+S3method(drop.levels, list)
+S3method(drop.levels, data.frame)
+
+## getDateTime stuff
+S3method(getYear, default)
+S3method(getYear, Date)
+S3method(getYear, POSIXct)
+S3method(getYear, POSIXlt)
+
+S3method(getMonth, default)
+S3method(getMonth, Date)
+S3method(getMonth, POSIXct)
+S3method(getMonth, POSIXlt)
+
+S3method(getDay, default)
+S3method(getDay, Date)
+S3method(getDay, POSIXct)
+S3method(getDay, POSIXlt)
+
+S3method(getHour, default)
+
+S3method(getMin, default)
+
+S3method(getSec, default)
+
+## mapLevels stuff
+S3method(mapLevels, default)
+S3method(mapLevels, character)
+S3method(mapLevels, factor)
+S3method(mapLevels, list)
+S3method(mapLevels, data.frame)
+
+S3method("mapLevels<-", default)
+S3method("mapLevels<-", list)
+S3method("mapLevels<-", data.frame)
+
+S3method(print, levelsMap)
+S3method(print, listLevelsMap)
+
+S3method("[", levelsMap)
+S3method("[", listLevelsMap)
+
+S3method(c, levelsMap)
+S3method(c, listLevelsMap)
+
+S3method(unique, levelsMap)
+S3method(sort, levelsMap)
+
+## nobs stuff
+S3method(nobs, data.frame)
+S3method(nobs, default)
+S3method(nobs, lm)
+
+## Object size stuff
+S3method(print, object_size)
+S3method(c, object_size)
+
+## unknown stuff
+S3method(isUnknown, default)
+S3method(isUnknown, POSIXlt)
+S3method(isUnknown, list)
+S3method(isUnknown, data.frame)
+S3method(isUnknown, matrix)
+
+S3method(unknownToNA, default)
+S3method(unknownToNA, factor)
+S3method(unknownToNA, list)
+S3method(unknownToNA, data.frame)
+
+S3method(NAToUnknown, default)
+S3method(NAToUnknown, factor)
+S3method(NAToUnknown, list)
+S3method(NAToUnknown, data.frame)
+
+## trim stuff
+S3method(trim, character)
+S3method(trim, default)
+S3method(trim, factor)
+S3method(trim, list)
+S3method(trim, data.frame)

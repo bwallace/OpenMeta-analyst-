@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Assignment Operators</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for assignOps {base}"><tr><td>assignOps {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Assignment Operators</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Assign a value to a name.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+x &lt;- value
+x &lt;&lt;- value
+value -&gt; x
+value -&gt;&gt; x
+
+x = value
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+a variable name (possibly quoted).</td></tr>
+<tr valign="top"><td><code>value</code></td>
+<td>
+a value to be assigned to <code>x</code>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+There are three different assignment operators: two of them
+have leftwards and rightwards forms.
+</p>
+<p>
+The operators <code>&lt;-</code> and <code>=</code> assign into the environment in
+which they are evaluated.  The  operator <code>&lt;-</code> can be used
+anywhere, whereas the operator <code>=</code> is only allowed at the top
+level (e.g., in the complete expression typed at the command prompt)
+or as one of the subexpressions in a braced list of expressions.
+</p>
+<p>
+The operators <code>&lt;&lt;-</code> and <code>-&gt;&gt;</code> cause a search to made through
+the environment for an existing definition of the variable being
+assigned.  If such a variable is found (and its binding is not locked)
+then its value is redefined, otherwise assignment takes place in the
+global environment.  Note that their semantics differ from that in the
+S language, but are useful in conjunction with the scoping rules of
+<font face="Courier New,Courier" color="#666666"><b>R</b></font>.  See &lsquo;The R Language Definition&rsquo; manual for further details
+and examples.
+</p>
+<p>
+In all the assignment operator expressions, <code>x</code> can be a name
+or an expression defining a part of an object to be replaced (e.g.,
+<code>z[[1]]</code>).  A syntactic name does not need to be quoted,
+though it can be (preferably by <a href="Quotes.html">backtick</a>s).
+</p>
+<p>
+The leftwards forms of assignment <code>&lt;- = &lt;&lt;-</code> group right to left,
+the other from left to right.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>value</code>.  Thus one can use <code>a &lt;- b &lt;- c &lt;- 6</code>.</p>
+
+<h3>References</h3>
+
+<p>
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+<EM>The New S Language</EM>.
+Wadsworth &amp; Brooks/Cole.
+</p>
+<p>
+Chamber, J. M. (1998)
+<EM>Programming with Data. A Guide to the S Language</EM>.
+Springer (for <code>=</code>).
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="assign.html">assign</a></code>,
+<code><a href="environment.html">environment</a></code>.
+</p>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

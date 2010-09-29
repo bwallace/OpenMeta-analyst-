@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Calculate Cohesive Blocks</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for cohesive.blocks {igraph}"><tr><td>cohesive.blocks {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Calculate Cohesive Blocks</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Calculates cohesive blocks for objects of class <code>igraph</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+cohesive.blocks(graph, db=NULL,
+                useDB=(vcount(graph)&gt;400 &amp;&amp; require(RSQLite)),
+                cutsetHeuristic=TRUE,
+                verbose=igraph.par("verbose"))
+is.bgraph(graph)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>graph</code></td>
+<td>
+A graph object of class <code>igraph</code>.</td></tr>
+<tr valign="top"><td><code>db</code></td>
+<td>
+An optional <code>RSQLite</code> connection to an existing
+SQLite database (see details). Ignored if <code>NULL</code>.</td></tr>
+<tr valign="top"><td><code>useDB</code></td>
+<td>
+Logical. Whether to use an external SQLite database
+instead of internal R datastructures (see details). By default an
+SQLite database is used if the graph has more than 400 vertices
+and the <code>RSQLite</code> package is installed.</td></tr>
+<tr valign="top"><td><code>cutsetHeuristic</code></td>
+<td>
+Logical scalar. TODO</td></tr>
+<tr valign="top"><td><code>verbose</code></td>
+<td>
+Level of console output. Supply <code>TRUE</code> here to
+follow the progress of the computation.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Cohesive blocking is a method of determining hierarchical subsets of
+graph vertices based on their structural cohesion (or vertex
+connectivity). For a given graph <i>G</i>, a subset of its vertices <i>Ssubset
+V(G)</i> is said to be maximally <i>k</i>-cohesive if there is no superset of
+<i>S</i> with vertex connectivity greater than or equal to <i>k</i>. Cohesive
+blocking is a process through which, given a <i>k</i>-cohesive set of
+vertices, maximally <i>l</i>-cohesive subsets are recursively identified with
+<i>l&gt;k</i>. Thus a hiearchy of vertex subsets is found, whith the entire
+graph <i>G</i> at its root. 
+</p>
+<p>
+For certain larger graphs this algorithm can be quite memory-intensive
+due to the number of vertex subsets that are examined. In these cases it
+is worthwhile to use a database to keep track of this data, specified by
+the <code>useDB</code> argument. If <code>useDB</code> is <code>TRUE</code>, then either a
+temporary SQLite database is created, or the <code>RSQLite</code> connection
+specified in <code>db</code> is used. In either case the package
+<code>RSQLite</code> will be required. 
+</p>
+<p>
+<code>structurally.cohesive.blocks</code> is an alias to
+<code>cohesive.blocks</code>.
+</p>
+<p>
+<code>is.bgraph</code> decides whether its argument is a <code>bgraph</code>
+object.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>cohesive.blocks</code> returns a graph of class <code>c(bgraph,igraph)</code>,
+with four (new) graph attributes:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>blocks</code></td>
+<td>
+A list with one element for each cohesive block found. The
+elements are numeric vectors listing the indices of the nodes within
+that block.</td></tr>
+<tr valign="top"><td><code>block.cohesion</code></td>
+<td>
+A numeric vector with length equal to the number
+of cohesive blocks found, listing the cohesion of those blocks.</td></tr>
+<tr valign="top"><td><code>tree</code></td>
+<td>
+The hierarchical tree of the cohesive blocks. Each node of
+this graph represents a cohesive block, and directed edges represent
+inclusion as proper subset.</td></tr>
+<tr valign="top"><td><code>data</code></td>
+<td>
+A list containing supplementary data from the
+calculation.</td></tr>
+</table>
+<p>
+
+<br>
+<code>is.bgraph</code> returns a logical scalar.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Peter McMahan <a href="mailto:peter.mcmahan@gmail.com">peter.mcmahan@gmail.com</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+A. Kanevsky. On the number of minimum size separating vertex sets
+in a graph and how to find all of them
+<EM>Proceedings of the first annual ACM-SIAM symposium on Discrete algorithms</EM>
+San Francisco, California, United States. 411&ndash;421, 1990.
+</p>
+<p>
+J. Moody and D. R. White. Structural cohesion and embeddedness: A
+hierarchical concept of social groups. <EM>American Sociological
+Review</EM>, 68(1):103&ndash;127, Feb 2003.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="vertex.connectivity.html">graph.cohesion</a></code>, <code><a href="plot.bgraph.html">plot.bgraph</a></code> for
+plotting graphs together with their block hierarchy,
+<code><a href="write.pajek.bgraph.html">write.pajek.bgraph</a></code> for a writing graphs and cohesive
+blocks information to Pajek files. See <code><a href="attributes.html">attributes</a></code> for
+handling graph attributes.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## Create a graph with an interesting structure:
+g &lt;- graph.disjoint.union(graph.full(4), graph.empty(2,directed=FALSE))
+g &lt;- add.edges(g,c(3,4,4,5,4,2))
+g &lt;- graph.disjoint.union(g,g,g)
+g &lt;- add.edges(g,c(0,6,1,7,0,12,4,0,4,1))
+
+## Find cohesive blocks:
+gBlocks &lt;- cohesive.blocks(g)
+
+## Examine block membership and cohesion:
+gBlocks$blocks
+gBlocks$block.cohesion
+
+## Plot the resulting graph with its block hierarchy:
+## Not run: 
+plot(gBlocks, vertex.size=7, layout=layout.kamada.kawai)
+## End(Not run)
+
+## Save the results as Pajek ".net" and ".clu" files:
+## Not run: 
+write.pajek.bgraph(gBlocks,file="gBlocks")
+## End(Not run)
+
+## An example that works better with the "kanevsky" cutset algorithm
+## Not run: 
+g &lt;- read.graph(file="http://intersci.ss.uci.edu/wiki/Vlado/SanJuanSur.net", format="pajek")
+gBlocks &lt;- cohesive.blocks(g, cutsetAlgorithm="kanevsky")
+## End(Not run)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

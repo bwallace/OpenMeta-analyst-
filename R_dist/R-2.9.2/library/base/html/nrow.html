@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: The Number of Rows/Columns of an Array</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for nrow {base}"><tr><td>nrow {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>The Number of Rows/Columns of an Array</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>nrow</code> and <code>ncol</code> return the number of rows or columns
+present in <code>x</code>.
+<code>NCOL</code> and <code>NROW</code> do the same treating a vector as
+1-column matrix.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+nrow(x)
+ncol(x)
+NCOL(x)
+NROW(x)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+a vector, array or data frame</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+an <code><a href="integer.html">integer</a></code> of length 1 or <code><a href="NULL.html">NULL</a></code>.</p>
+
+<h3>References</h3>
+
+<p>
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+<EM>The New S Language</EM>.
+Wadsworth &amp; Brooks/Cole (<code>ncol</code> and <code>nrow</code>.)
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="dim.html">dim</a></code> which returns <EM>all</EM> dimensions;
+<code><a href="array.html">array</a></code>, <code><a href="matrix.html">matrix</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+ma &lt;- matrix(1:12, 3, 4)
+nrow(ma)   # 3
+ncol(ma)   # 4
+
+ncol(array(1:24, dim = 2:4)) # 3, the second dimension
+NCOL(1:12) # 1
+NROW(1:12) # 12
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

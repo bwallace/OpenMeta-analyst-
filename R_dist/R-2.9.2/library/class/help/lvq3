@@ -1,0 +1,68 @@
+lvq3                  package:class                  R Documentation
+
+_L_e_a_r_n_i_n_g _V_e_c_t_o_r _Q_u_a_n_t_i_z_a_t_i_o_n _3
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Moves examples in a codebook to better represent the training set.
+
+_U_s_a_g_e:
+
+     lvq3(x, cl, codebk, niter = 100*nrow(codebk$x), alpha = 0.03,
+          win = 0.3, epsilon = 0.1)
+
+_A_r_g_u_m_e_n_t_s:
+
+       x: a matrix or data frame of examples 
+
+      cl: a vector or factor of classifications for the examples 
+
+  codebk: a codebook 
+
+   niter: number of iterations 
+
+   alpha: constant for training 
+
+     win: a tolerance for the closeness of the two nearest vectors. 
+
+ epsilon: proportion of move for correct vectors 
+
+_D_e_t_a_i_l_s:
+
+     Selects 'niter' examples at random  with replacement, and adjusts
+     the nearest two examples in the codebook for each.
+
+_V_a_l_u_e:
+
+     A codebook, represented as a list with components 'x' and 'cl'
+     giving the examples and classes.
+
+_R_e_f_e_r_e_n_c_e_s:
+
+     Kohonen, T. (1990) The self-organizing map. _Proc. IEEE_ *78*,
+     1464-1480.
+
+     Kohonen, T. (1995) _Self-Organizing Maps._ Springer, Berlin.
+
+     Ripley, B. D. (1996) _Pattern Recognition and Neural Networks._
+     Cambridge.
+
+     Venables, W. N. and Ripley, B. D. (2002) _Modern Applied
+     Statistics with S._ Fourth edition.  Springer.
+
+_S_e_e _A_l_s_o:
+
+     'lvqinit', 'lvq1', 'olvq1', 'lvq2', 'lvqtest'
+
+_E_x_a_m_p_l_e_s:
+
+     train <- rbind(iris3[1:25,,1], iris3[1:25,,2], iris3[1:25,,3])
+     test <- rbind(iris3[26:50,,1], iris3[26:50,,2], iris3[26:50,,3])
+     cl <- factor(c(rep("s",25), rep("c",25), rep("v",25)))
+     cd <- lvqinit(train, cl, 10)
+     lvqtest(cd, train)
+     cd0 <- olvq1(train, cl, cd)
+     lvqtest(cd0, train)
+     cd3 <- lvq3(train, cl, cd0)
+     lvqtest(cd3, train)
+

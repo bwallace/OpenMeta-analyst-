@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Auxiliary Functions for the Windows Port</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for winextras {utils}"><tr><td>winextras {utils}</td><td align="right">R Documentation</td></tr></table>
+<h2>Auxiliary Functions for the Windows Port</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Auxiliary functions for the Windows port
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+win.version()
+zip.unpack(zipname, dest)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>zipname</code></td>
+<td>
+character string giving name of zip file.</td></tr>
+<tr valign="top"><td><code>dest</code></td>
+<td>
+character string giving directory within which to unpack.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>win.version</code> is an auxiliary function for
+<code><a href="bug.report.html">bug.report</a></code> which returns a character string describing
+the version of Windows in use.
+</p>
+<p>
+<code>zip.unpack</code> unpacks the zip file <code>zipname</code> in directory
+<code>dest</code>: it is an internal version of <code>unzip zipfile -d dest</code>
+(but will use an external <code>unzip</code> if one is set in
+<code>options("unzip")</code>).  The result is an error code, with an
+attribute <code>"extracted"</code> listing the full paths to the extracted files.
+</p>
+
+
+
+<hr><div align="center">[Package <em>utils</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

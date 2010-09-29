@@ -1,0 +1,76 @@
+caTools-package           package:caTools           R Documentation
+
+_T_o_o_l_s: _m_o_v_i_n_g _w_i_n_d_o_w _s_t_a_t_i_s_t_i_c_s, _G_I_F, _B_a_s_e_6_4, _R_O_C _A_U_C, _e_t_c.
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Contains several basic utility functions including: moving
+     (rolling, running) window statistic functions, read/write for GIF
+     and ENVI binary files, fast calculation of AUC, LogitBoost
+     classifier, base64 encoder/decoder, round-off error free sum and
+     cumsum, etc.
+
+_D_e_t_a_i_l_s:
+
+
+       Package:   caTools
+       Version:   1.6
+       Date:      Apr 11 2006
+       Depends:   R (>= 2.2.0), bitops
+       Suggests:  MASS, rpart
+       License:   The caMassClass Software License, Version 1.0 (See COPYING file or <URL: http://ncicb.nci.nih.gov/download/camassclasslicense.jsp>)
+       URL:       http://ncicb.nci.nih.gov/download/index.jsp
+       Built:     R 2.2.1; i386-pc-mingw32; 2006-04-14 10:45:20; windows
+
+     Index:
+
+
+     LogitBoost              LogitBoost Classification Algorithm
+     predict.LogitBoost      Prediction Based on LogitBoost Algorithm
+     base64encode            Convert R vectors to/from the Base64
+     format
+     colAUC                  Column-wise Area Under ROC Curve (AUC)
+     combs                   All Combinations of k Elements from Vector
+     v
+     read.ENVI               Read and Write Binary Data in ENVI Format
+     read.gif                Read and Write Images in GIF format
+     runmean                 Mean of a Moving Window
+     runmin                  Minimum and Maximum of Moving Windows
+     runquantile             Quantile of Moving Window
+     runmad                  Median Absolute Deviation of Moving
+     Windows
+     runsd                   Standard Deviation of Moving Windows
+     sample.split            Split Data into Test and Train Set
+     sum.exact               Basic Sum Operations without Round-off
+     Errors
+     trapz                   Trapezoid Rule Numerical Integration
+
+
+_A_u_t_h_o_r(_s):
+
+     Jarek Tuszynski <jaroslaw.w.tuszynski@saic.com>
+
+_E_x_a_m_p_l_e_s:
+
+       # GIF image read & write
+       write.gif( volcano, "volcano.gif", col=terrain.colors, flip=TRUE, 
+                scale="always", comment="Maunga Whau Volcano")
+       y = read.gif("volcano.gif", verbose=TRUE, flip=TRUE)
+       image(y$image, col=y$col, main=y$comment, asp=1)
+
+       # test runmin, runmax and runmed
+       k=25; n=200;
+       x = rnorm(n,sd=30) + abs(seq(n)-n/4)
+       col = c("black", "red", "green", "brown", "blue", "magenta", "cyan")
+       plot(x, col=col[1], main = "Moving Window Analysis Functions (window size=25)")
+       lines(runmin (x,k), col=col[2])
+       lines(runmed (x,k), col=col[3])
+       lines(runmean(x,k), col=col[4])
+       lines(runmax (x,k), col=col[5])
+       legend(0,.9*n, c("data", "runmin", "runmed", "runmean", "runmax"), col=col, lty=1 )
+
+       # sum vs. sum.exact
+       x = c(1, 1e20, 1e40, -1e40, -1e20, -1)
+       a = sum(x);          print(a)
+       b = sum.exact(x);    print(b)
+

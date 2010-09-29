@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Detach Objects from the Search Path</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for detach {base}"><tr><td>detach {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Detach Objects from the Search Path</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Detach a database, i.e., remove it from the <code><a href="search.html">search</a>()</code> path
+of available <font face="Courier New,Courier" color="#666666"><b>R</b></font> objects.  Usually, this is either a <code><a href="data.frame.html">data.frame</a></code>
+which has been <code><a href="attach.html">attach</a></code>ed or a package which was required
+previously.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+detach(name, pos = 2, unload = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>name</code></td>
+<td>
+The object to detach.  Defaults to <code>search()[pos]</code>.
+This can be an unquoted name or a character string but <EM>not</EM> a
+character vector.  If a number is supplied this is taken as <code>pos</code>.
+</td></tr>
+<tr valign="top"><td><code>pos</code></td>
+<td>
+Index position in <code><a href="search.html">search</a>()</code> of database to
+detach.  When <code>name</code> is a number, <code>pos = name</code>
+is used.
+</td></tr>
+<tr valign="top"><td><code>unload</code></td>
+<td>
+A logical value indicating whether or not to attempt to
+unload the namespace and S4 methods when a package is being
+detached.  If the package has a namespace and <code>unload</code> is
+<code>TRUE</code>, then <code>detach</code> will attempt to unload the
+namespace and remove any S4 methods defined by the package.  If
+the namespace is in use or <code>unload</code> is <code>FALSE</code>, no
+unloading will occur.
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This most commonly used with a single number argument referring to a
+position on the search list, and can also be used with a unquoted or
+quoted name of an item on the search list such as <code>package:tools</code>.
+</p>
+<p>
+If a package has a namespace, detaching it does not by default unload
+the namespace (and may not even with <code>unload=TRUE</code>), and
+detaching will not in general unload any dynamically loaded compiled
+code (DLLs).  Further, registered S3 methods from the namespace will not be
+removed.  If you use <code><a href="library.html">library</a></code> on a package whose name
+space is loaded, it attaches the exports of the loaded name space.
+So detaching and re-attaching a package may not refresh some
+or all components of the package, and is inadvisable.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+The attached database is returned invisibly, either as
+<code><a href="data.frame.html">data.frame</a></code> or as <code><a href="list.html">list</a></code>.</p>
+
+<h3>Note</h3>
+
+<p>
+You cannot detach either the workspace (position 1) or the <span class="pkg">base</span>
+package (the last item in the search list).
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+<EM>The New S Language</EM>.
+Wadsworth &amp; Brooks/Cole.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="attach.html">attach</a></code>, <code><a href="library.html">library</a></code>, <code><a href="search.html">search</a></code>,
+<code><a href="ls.html">objects</a></code>, <code><a href="ns-load.html">unloadNamespace</a></code>,
+<code><a href="library.dynam.html">library.dynam.unload</a></code> .
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+require(splines) # package
+detach(package:splines)
+## could equally well use detach("package:splines")
+## but NOT  pkg &lt;- "package:splines"; detach(pkg)
+## Instead, use
+library(splines)
+pkg &lt;- "package:splines"
+detach(pos = match(pkg, search()))
+
+## careful: do not do this unless 'splines' is not already loaded.
+library(splines)
+detach(2) # 'pos' used for 'name'
+
+## an example of the name argument to attach
+## and of detaching a database named by a character vector
+attach_and_detach &lt;- function(db, pos=2)
+{
+   name &lt;- deparse(substitute(db))
+   attach(db, pos=pos, name=name)
+   print(search()[pos])
+   eval(substitute(detach(n), list(n=name)))
+}
+attach_and_detach(women, pos=3)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

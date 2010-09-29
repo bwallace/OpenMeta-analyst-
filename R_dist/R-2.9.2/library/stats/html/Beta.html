@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: The Beta Distribution</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for Beta {stats}"><tr><td>Beta {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>The Beta Distribution</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Density, distribution function, quantile function and random
+generation for the Beta distribution with parameters <code>shape1</code> and
+<code>shape2</code> (and optional non-centrality parameter <code>ncp</code>).
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+dbeta(x, shape1, shape2, ncp = 0, log = FALSE)
+pbeta(q, shape1, shape2, ncp = 0, lower.tail = TRUE, log.p = FALSE)
+qbeta(p, shape1, shape2, ncp = 0, lower.tail = TRUE, log.p = FALSE)
+rbeta(n, shape1, shape2, ncp = 0)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x, q</code></td>
+<td>
+vector of quantiles.</td></tr>
+<tr valign="top"><td><code>p</code></td>
+<td>
+vector of probabilities.</td></tr>
+<tr valign="top"><td><code>n</code></td>
+<td>
+number of observations. If <code>length(n) &gt; 1</code>, the length
+is taken to be the number required.</td></tr>
+<tr valign="top"><td><code>shape1, shape2</code></td>
+<td>
+positive parameters of the Beta distribution.</td></tr>
+<tr valign="top"><td><code>ncp</code></td>
+<td>
+non-centrality parameter.</td></tr>
+<tr valign="top"><td><code>log, log.p</code></td>
+<td>
+logical; if TRUE, probabilities p are given as log(p).</td></tr>
+<tr valign="top"><td><code>lower.tail</code></td>
+<td>
+logical; if TRUE (default), probabilities are
+<i>P[X &lt;= x]</i>, otherwise, <i>P[X &gt; x]</i>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The Beta distribution with parameters <code>shape1</code> <i>= a</i> and
+<code>shape2</code> <i>= b</i> has density
+</p><p align="center"><i>Gamma(a+b)/(Gamma(a)Gamma(b))x^(a-1)(1-x)^(b-1)</i></p><p>
+for <i>a &gt; 0</i>, <i>b &gt; 0</i> and <i>0 &lt;= x &lt;= 1</i>
+where the boundary values at <i>x=0</i> or <i>x=1</i> are defined as
+by continuity (as limits).
+<br>
+The mean is <i>a/(a+b)</i> and the variance is <i>ab/((a+b)^2 (a+b+1))</i>.
+</p>
+<p>
+<code>pbeta</code> is closely related to the incomplete beta function.  As
+defined by Abramowitz and Stegun 6.6.1
+</p><p align="center"><i>B_x(a,b) =
+integral_0^x t^(a-1) (1-t)^(b-1) dt,</i></p><p>
+and 6.6.2 <i>I_x(a,b) = B_x(a,b) / B(a,b)</i> where
+<i>B(a,b) = B_1(a,b)</i> is the Beta function (<code><a href="../../base/html/Special.html">beta</a></code>).
+</p>
+<p>
+<i>I_x(a,b)</i> is <code>pbeta(x,a,b)</code>.
+</p>
+<p>
+The noncentral Beta distribution (with <code>ncp</code> <i> = &lambda;</i>)
+is defined (Johnson et al, 1995, pp. 502) as the distribution of
+<i>X/(X+Y)</i> where <i>X ~ chi^2_2a(lambda)</i>
+and <i>Y ~ chi^2_2b</i>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>dbeta</code> gives the density, <code>pbeta</code> the distribution
+function, <code>qbeta</code> the quantile function, and <code>rbeta</code>
+generates random deviates.
+<br>
+Invalid arguments will result in return value <code>NaN</code>, with a warning.</p>
+
+<h3>Source</h3>
+
+<p>
+The central <code>dbeta</code> is based on a binomial probability, using code
+contributed by Catherine Loader (see <code><a href="Binomial.html">dbinom</a></code>) if either
+shape parameter is larger than one, otherwise directly from the definition.
+The non-central case is based on the derivation as a Poisson
+mixture of betas (Johnson <EM>et al</EM>, 1995, pp. 502&ndash;3).
+</p>
+<p>
+The central <code>pbeta</code> uses a C translation (and enhancement for
+<code>log_p=TRUE</code>) of
+</p>
+<p>
+Didonato, A. and Morris, A., Jr, (1992)
+Algorithm 708: Significant digit computation of the incomplete beta
+function ratios,
+<EM>ACM Transactions on Mathematical Software</EM>, <B>18</B>, 360&ndash;373.
+(See also<br> 
+Brown, B. and Lawrence Levy, L. (1994)
+Certification of algorithm 708: Significant digit computation of the
+incomplete beta,
+<EM>ACM Transactions on Mathematical Software</EM>, <B>20</B>, 393&ndash;397.)
+</p>
+<p>
+The non-central <code>pbeta</code> uses a C translation of
+</p>
+<p>
+Lenth, R. V. (1987) Algorithm AS226: Computing noncentral beta
+probabilities. <EM>Appl. Statist</EM>, <B>36</B>, 241&ndash;244,
+incorporating<br>
+Frick, H. (1990)'s AS R84, <EM>Appl. Statist</EM>, <B>39</B>, 311&ndash;2,
+and<br>
+Lam, M.L. (1995)'s AS R95, <EM>Appl. Statist</EM>, <B>44</B>, 551&ndash;2.
+</p>
+<p>
+<code>qbeta</code> is based on a C translation of
+</p>
+<p>
+Cran, G. W., K. J. Martin and G. E. Thomas (1977).
+Remark AS R19 and Algorithm AS 109,
+<EM>Applied Statistics</EM>,  <B>26</B>, 111&ndash;114,
+and subsequent remarks (AS83 and correction).
+</p>
+<p>
+<code>rbeta</code> is based on a C translation of
+</p>
+<p>
+R. C. H. Cheng (1978).
+Generating beta variates with nonintegral shape parameters.
+<EM>Communications of the ACM</EM>, <B>21</B>, 317&ndash;322.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+<EM>The New S Language</EM>.
+Wadsworth &amp; Brooks/Cole.
+</p>
+<p>
+Abramowitz, M. and Stegun, I. A. (1972)
+<EM>Handbook of Mathematical Functions.</EM> New York: Dover.
+Chapter 6: Gamma and Related Functions.
+</p>
+<p>
+Johnson, N. L., Kotz, S. and Balakrishnan, N. (1995)
+<EM>Continuous Univariate Distributions</EM>, volume 2, especially
+chapter 25. Wiley, New York.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../base/html/Special.html">beta</a></code> for the Beta function, and <code><a href="GammaDist.html">dgamma</a></code> for
+the Gamma distribution.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+x &lt;- seq(0, 1, length=21)
+dbeta(x, 1, 1)
+pbeta(x, 1, 1)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

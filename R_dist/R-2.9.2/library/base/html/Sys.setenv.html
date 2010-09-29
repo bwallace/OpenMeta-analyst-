@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Set or Unset Environment Variables</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for Sys.setenv {base}"><tr><td>Sys.setenv {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Set or Unset Environment Variables</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>Sys.setenv</code> sets environment variables (for other processes
+called from within <font face="Courier New,Courier" color="#666666"><b>R</b></font> or future calls to <code><a href="Sys.getenv.html">Sys.getenv</a></code> from
+this <font face="Courier New,Courier" color="#666666"><b>R</b></font> process).
+</p>
+<p>
+<code>Sys.unsetenv</code> removes environment variables.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+Sys.setenv(...)
+
+Sys.unsetenv(x)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>...</code></td>
+<td>
+named arguments with values coercible to a character string.</td></tr>
+<tr valign="top"><td><code>x</code></td>
+<td>
+a character vector, or an object coercible to character.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The names <code>setenv</code> and <code>putenv</code> come from different Unix
+traditions: <font face="Courier New,Courier" color="#666666"><b>R</b></font> also has <code>Sys.putenv</code>, but this is now deprecated.
+The internal code uses <code>setenv</code> if available, otherwise <code>putenv</code>.
+</p>
+<p>
+Non-standard <font face="Courier New,Courier" color="#666666"><b>R</b></font> names must be quoted in <code>Sys.setenv</code>:
+see the examples.  Most platforms (and POSIX) do not allow names
+containing <code>"="</code>.
+</p>
+<p>
+There may be system-specific limits on the maximum length of the values
+of individual environment variables or of all environment variables.
+Windows has a limit of 32,767 characters on the environment block, and
+<code>cmd.exe</code> has a limit of 2047 (Windows 2000) or 8192 characters
+(XP and later) for each value.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A logical vector, with elements being true if (un)setting the
+corresponding variable succeeded.  (For <code>Sys.unsetenv</code> this
+includes attempting to remove a non-existent variable.)</p>
+
+<h3>Note</h3>
+
+<p>
+Not all systems need support <code>Sys.setenv</code> (although all known
+current platforms do) nor <code>Sys.unsetenv</code>.
+Both are provided on Windows (although C-level <code>unsetenv</code> is not
+available).
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="Sys.getenv.html">Sys.getenv</a></code>, <a href="Startup.html">Startup</a> for ways to set environment
+variables for the <font face="Courier New,Courier" color="#666666"><b>R</b></font> session.
+</p>
+<p>
+<code><a href="getwd.html">setwd</a></code> for the working directory.
+</p>
+<p>
+The help for &lsquo;<a href="EnvVar.html">environment variables</a>&rsquo; lists many of the
+environment variables used by <font face="Courier New,Courier" color="#666666"><b>R</b></font>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+print(Sys.setenv(R_TEST="testit", "A+C"=123))  # `A+C` could also be used
+Sys.getenv("R_TEST")
+Sys.unsetenv("R_TEST")
+Sys.getenv("R_TEST", unset=NA)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

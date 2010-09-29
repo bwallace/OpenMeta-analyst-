@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Plot Multivariate Outliers in a Map</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for map.plot {mvoutlier}"><tr><td>map.plot {mvoutlier}</td><td align="right">R Documentation</td></tr></table>
+<h2>Plot Multivariate Outliers in a Map</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The function map.plot creates a map using geographical (x,y)-coordinates. 
+This is thought for spatially dependent data of which coordinates are available. 
+Multivariate outliers are marked.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>map.plot(coord, data, quan=1/2, alpha=0.025, symb=FALSE, plotmap=TRUE, map="kola.background",which.map=c(1,2,3,4),map.col=c(5,1,3,4),map.lwd=c(2,1,2,1), ... )</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>coord</code></td>
+<td>
+(x,y)-coordinates of the data</td></tr>
+<tr valign="top"><td><code>data</code></td>
+<td>
+matrix or data.frame containing the data.</td></tr>
+<tr valign="top"><td><code>quan</code></td>
+<td>
+amount of observations which are used for mcd estimations. 
+has to be between 0.5 and 1, default ist 0.5</td></tr>
+<tr valign="top"><td><code>alpha</code></td>
+<td>
+amount of observations used for calculating the adjusted quantile (see function arw).</td></tr>
+<tr valign="top"><td><code>symb</code></td>
+<td>
+logical for plotting special symbols (see details).</td></tr>
+<tr valign="top"><td><code>plotmap</code></td>
+<td>
+logical for plotting the background map.</td></tr>
+<tr valign="top"><td><code>map</code></td>
+<td>
+see plot.kola.background()</td></tr>
+<tr valign="top"><td><code>which.map</code></td>
+<td>
+see plot.kola.background()</td></tr>
+<tr valign="top"><td><code>map.col</code></td>
+<td>
+see plot.kola.background()</td></tr>
+<tr valign="top"><td><code>map.lwd</code></td>
+<td>
+see plot.kola.background()</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+additional graphical parameters</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The function map.plot shows mutlivariate outliers in a map.
+If symb=FALSE (default), only two colors and no special symbols are used to 
+mark multivariate outliers (the outliers are marked red). 
+If symb=TRUE different symbols and colors are used. 
+The symbols (cross means big value, circle means little value) are selected according to 
+the robust mahalanobis distance based on the adjusted mcd estimator (see function symbol.plot)
+Different colors (red means big value, blue means little value) 
+according to the euclidean distances of the observations (see function color.plot)
+are used. For details see Filzmoser et al. (2005).
+</p>
+
+
+<h3>Value</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>outliers</code></td>
+<td>
+boolean vector of outliers</td></tr>
+<tr valign="top"><td><code>md</code></td>
+<td>
+robust mahalanobis distances of the data</td></tr>
+<tr valign="top"><td><code>euclidean</code></td>
+<td>
+(only if symb=TRUE) euclidean distances of the observations according to 
+the minimum of the data.</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Moritz Gschwandtner &lt;<a href="mailto:e0125439@student.tuwien.ac.at">e0125439@student.tuwien.ac.at</a>&gt;
+<br> Peter Filzmoser &lt;<a href="mailto:P.Filzmoser@tuwien.ac.at">P.Filzmoser@tuwien.ac.at</a>&gt;
+<a href="http://www.statistik.tuwien.ac.at/public/filz/">http://www.statistik.tuwien.ac.at/public/filz/</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+P. Filzmoser, R.G. Garrett, and C. Reimann. 
+Multivariate outlier detection in exploration geochemistry.
+<EM>Computers &amp; Geosciences</EM>, 31:579-587, 2005.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="symbol.plot.html">symbol.plot</a></code>, <code><a href="color.plot.html">color.plot</a></code>, <code><a href="arw.html">arw</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(humus) # Load humus data
+xy &lt;- humus[,c("XCOO","YCOO")] # X and Y Coordinates
+myhumus &lt;- log(humus[, c("As", "Cd", "Co", "Cu", "Mg", "Pb", "Zn")])
+map.plot(xy, myhumus, symb=TRUE)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>mvoutlier</em> version 1.4 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

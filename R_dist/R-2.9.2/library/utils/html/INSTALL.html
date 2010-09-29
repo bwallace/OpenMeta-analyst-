@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Install Add-on Packages</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for INSTALL {utils}"><tr><td>INSTALL {utils}</td><td align="right">R Documentation</td></tr></table>
+<h2>Install Add-on Packages</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Utility for installing add-on packages.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+R CMD INSTALL [options] [-l lib] pkgs
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>pkgs</code></td>
+<td>
+a space-separated list with the path names of the packages to be
+installed.</td></tr>
+<tr valign="top"><td><code>lib</code></td>
+<td>
+the path name of the <font face="Courier New,Courier" color="#666666"><b>R</b></font> library tree to install to.  Also
+accepted in the form <span class="samp">--library=lib</span>.</td></tr>
+<tr valign="top"><td><code>options</code></td>
+<td>
+a space-separated list of options through which in
+particular the process for building the help files can be controlled.
+Most options should only be given once, and paths including spaces should
+be quoted.  Use <code>R CMD INSTALL --help</code> for the full current
+list of options.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This will stop at the first error, so if you want all the <code>pkgs</code>
+to be tried, call this via a shell loop.
+</p>
+<p>
+If used as <code>R CMD INSTALL pkgs</code> without explicitly specifying
+<code>lib</code>, packages are installed into the library tree rooted at the
+first directory in the library path which would be used by <font face="Courier New,Courier" color="#666666"><b>R</b></font> run in
+the current environment.
+</p>
+<p>
+To install into the library tree <code>lib</code>, use <code>R CMD INSTALL
+  -l lib pkgs</code>.  This prepends <code>lib</code> to the library path for
+duration of the install, so required packages in the installation
+directory will be found (and used in preference to those in other
+libraries).
+</p>
+<p>
+Windows Perl and the files for installing from source packages need to
+be installed.  It is possible that environment variable <span class="env">TMPDIR</span>
+will need to be set (although <code>R CMD</code> tries to set it suitably
+otherwise): use forward slashes and no spaces for the path to a
+writable directory.
+</p>
+<p>
+Both <code>lib</code> and the elements of <code>pkgs</code> may be absolute or
+relative path names of directories.  <code>pkgs</code> may also contain
+names of package/bundle archive files of the form
+&lsquo;<span class="file">pkg_version.tar.gz</span>&rsquo; as obtained from CRAN: these are then
+extracted to a temporary directory.
+</p>
+<p>
+The package sources can be cleaned up prior to installation by
+<span class="option">--preclean</span> or after by <span class="option">--clean</span>: cleaning is
+essential if the sources are to be used with more than one
+architecture or platform.
+</p>
+<p>
+If <span class="option">--no-docs</span> is given, no help files are built.  Options
+<span class="option">--no-text</span>, <span class="option">--no-html</span>, and <span class="option">--no-latex</span> suppress
+creating the text, HTML, and LaTeX versions, respectively.  The
+default is to build help files in all three versions.  Similarly,
+<span class="option">--no-example</span> suppresses extraction of the <font face="Courier New,Courier" color="#666666"><b>R</b></font> code for the
+examples from the help files.
+</p>
+<p>
+If the attempt to install the package fails, leftovers are removed.
+If the package was already installed, the old version is restored.
+This happens either if a command encounters an error or if the
+install is interrupted from the keyboard: after cleaning up the script
+terminates.
+</p>
+<p>
+By default the library directory is &lsquo;locked&rsquo; by creating a
+directory &lsquo;<span class="file">00LOCK</span>&rsquo; within it.  This has two purposes: it
+prevents any other process installing into that library concurrently,
+and is used to store any previous version of the package/bundle to
+restore on error.  A finer-grained locking is provided by the option
+<span class="option">--pkglock</span> which creates a separate lock for each
+package/bundle: this allows enough freedom for careful parallel
+installation as done by <code><a href="update.packages.html">install.packages</a>(Ncpus =
+  <VAR>n</VAR>)</code> with <code><VAR>n</VAR> &gt; 1</code>.  Finally locking (and restoration
+on error) can be suppressed by <span class="option">--no-lock</span> or <span class="option">--unsafe</span>
+(two names for the same option).
+</p>
+<p>
+On Windows it can be helpful to store text, latex and example code
+files and data files in zip archives since many small files can take
+up an inordinate amount of disc space.  This is controlled by the
+options <span class="option">--use-zip-help</span> and <span class="option">--use-zip-data</span>, and
+<span class="option">--use-zip</span> which implies both.  CRAN binaries are produced by
+<span class="option">--auto-zip</span> which chooses to zip help if there are more than
+20 help files, and data if the sources are more than 100Kb and there
+are no files with names differing only by extension.
+</p>
+<p>
+Option <span class="option">--build</span> can be used to zip up the installed package or
+bundle for distribution: it implies <span class="option">--auto-zip</span>.
+</p>
+<p>
+Use <code>R CMD INSTALL --help</code> for concise usage information,
+including all the available options
+</p>
+
+
+<h3>Packages using the methods package</h3>
+
+<p>
+Packages that require the methods package and make use functions such
+as <code><a href="../../methods/html/setMethod.html">setMethod</a></code> or <code><a href="../../methods/html/setClass.html">setClass</a></code>, should be
+installed using lazy-loading (or, deprecated, by creating a binary
+image): use the field <code>LazyLoad</code> in the &lsquo;<span class="file">DESCRIPTION</span>&rsquo; file
+to ensure this.
+</p>
+
+
+<h3>Note</h3>
+
+<p>
+Some parts of the operation of <code>INSTALL</code> depend on the <font face="Courier New,Courier" color="#666666"><b>R</b></font>
+temporary directory (see <code><a href="../../base/html/tempfile.html">tempdir</a></code>, usually under
+&lsquo;<span class="file">/tmp</span>&rsquo;) having both write and execution access to the account
+running <font face="Courier New,Courier" color="#666666"><b>R</b></font>.  This is usually the case, but if &lsquo;<span class="file">/tmp</span>&rsquo; has been
+mounted as <code>noexec</code>, environment variable <span class="env">TMPDIR</span> may need
+to be set to a directory from which execution is allowed.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="REMOVE.html">REMOVE</a></code> and <code><a href="../../base/html/library.html">library</a></code> for information on
+using several library trees;
+<code><a href="update.packages.html">update.packages</a></code> for automatic update of packages using
+the internet (or other <font face="Courier New,Courier" color="#666666"><b>R</b></font> level installation of packages, such as by
+<code>install.packages</code>).
+</p>
+<p>
+The section on &ldquo;Add-on packages&rdquo; in &ldquo;R Installation and
+Administration&rdquo; and the chapter on &ldquo;Creating R packages&rdquo; in
+&ldquo;Writing <font face="Courier New,Courier" color="#666666"><b>R</b></font> Extensions&rdquo;
+(on the Help menu in <code>RGui</code>,
+<code><a href="RShowDoc.html">RShowDoc</a></code> and the &lsquo;<span class="file">doc/manual</span>&rsquo; subdirectory of the
+<font face="Courier New,Courier" color="#666666"><b>R</b></font> source tree).
+</p>
+
+
+
+<hr><div align="center">[Package <em>utils</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

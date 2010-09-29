@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Class "mle" for Results of Maximum Likelihood Estimation</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for mle-class {stats4}"><tr><td>mle-class {stats4}</td><td align="right">R Documentation</td></tr></table>
+<h2>Class "mle" for Results of Maximum Likelihood Estimation</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This class encapsulates results of a generic maximum
+likelihood procedure.
+</p>
+
+
+<h3>Objects from the Class</h3>
+
+<p>
+Objects can be created by calls of the form <code>new("mle", ...)</code>, but
+most often as the result of a call to <code><a href="mle.html">mle</a></code>.
+</p>
+
+
+<h3>Slots</h3>
+
+<dl>
+<dt><code>call</code>:</dt><dd>Object of class <code>"language"</code>.
+The call to <code><a href="mle.html">mle</a></code>.</dd>
+<dt><code>coef</code>:</dt><dd>Object of class <code>"numeric"</code>.  Estimated
+parameters.</dd>
+<dt><code>fullcoef</code>:</dt><dd>Object of class <code>"numeric"</code>.
+Fixed and estimated parameters.</dd>
+<dt><code>vcov</code>:</dt><dd>Object of class <code>"matrix"</code>.  Approximate
+variance-covariance matrix.</dd>
+<dt><code>min</code>:</dt><dd>Object of class <code>"numeric"</code>.  Minimum value
+of objective function.</dd>
+<dt><code>details</code>:</dt><dd>Object of class <code>"list"</code>.  List returned
+from <code><a href="../../stats/html/optim.html">optim</a></code>.</dd>
+<dt><code>minuslogl</code>:</dt><dd>Object of class <code>"function"</code>.  The
+negative loglikelihood function.</dd>
+<dt><code>method</code>:</dt><dd>Object of class <code>"character"</code>.  The
+optimization method used.</dd>
+</dl>
+
+<h3>Methods</h3>
+
+<dl>
+<dt>confint</dt><dd><code>signature(object = "mle")</code>: Confidence
+intervals from likelihood profiles.</dd>
+<dt>logLik</dt><dd><code>signature(object = "mle")</code>: Extract maximized
+log-likelihood.</dd>
+<dt>profile</dt><dd><code>signature(fitted = "mle")</code>: Likelihood profile
+generation.</dd>
+<dt>show</dt><dd><code>signature(object = "mle")</code>: Display object briefly.</dd>
+<dt>summary</dt><dd><code>signature(object = "mle")</code>: Generate object summary.</dd>
+<dt>update</dt><dd><code>signature(object = "mle")</code>:  Update fit.</dd>
+<dt>vcov</dt><dd><code>signature(object = "mle")</code>: Extract
+variance-covariance matrix.</dd>
+</dl>
+
+
+<hr><div align="center">[Package <em>stats4</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,155 @@
+Entry: car.test.frame
+Aliases: car.test.frame
+Keywords: datasets
+Description: Automobile Data from 'Consumer Reports' 1990
+URL: ../../../library/rpart/html/car.test.frame.html
+
+Entry: cu.summary
+Aliases: cu.summary
+Keywords: datasets
+Description: Automobile Data from 'Consumer Reports' 1990
+URL: ../../../library/rpart/html/cu.summary.html
+
+Entry: kyphosis
+Aliases: kyphosis
+Keywords: datasets
+Description: Data on Children who have had Corrective Spinal Surgery
+URL: ../../../library/rpart/html/kyphosis.html
+
+Entry: labels.rpart
+Aliases: labels.rpart
+Keywords: tree
+Description: Create Split Labels For an Rpart Object
+URL: ../../../library/rpart/html/labels.rpart.html
+
+Entry: meanvar.rpart
+Aliases: meanvar meanvar.rpart
+Keywords: tree
+Description: Mean-Variance Plot for an Rpart Object
+URL: ../../../library/rpart/html/meanvar.rpart.html
+
+Entry: na.rpart
+Aliases: na.rpart
+Keywords: tree
+Description: Handles Missing Values in an Rpart Object
+URL: ../../../library/rpart/html/na.rpart.html
+
+Entry: path.rpart
+Aliases: path.rpart
+Keywords: tree
+Description: Follow Paths to Selected Nodes of an Rpart Object
+URL: ../../../library/rpart/html/path.rpart.html
+
+Entry: plot.rpart
+Aliases: plot.rpart
+Keywords: tree
+Description: Plot an Rpart Object
+URL: ../../../library/rpart/html/plot.rpart.html
+
+Entry: plotcp
+Aliases: plotcp
+Keywords: tree
+Description: Plot a Complexity Parameter Table for an Rpart Fit
+URL: ../../../library/rpart/html/plotcp.html
+
+Entry: post.rpart
+Aliases: post.rpart post
+Keywords: tree
+Description: PostScript Presentation Plot of an Rpart Object
+URL: ../../../library/rpart/html/post.rpart.html
+
+Entry: predict.rpart
+Aliases: predict.rpart
+Keywords: tree
+Description: Predictions from a Fitted Rpart Object
+URL: ../../../library/rpart/html/predict.rpart.html
+
+Entry: print.rpart
+Aliases: print.rpart
+Keywords: tree
+Description: Print an Rpart Object
+URL: ../../../library/rpart/html/print.rpart.html
+
+Entry: printcp
+Aliases: printcp
+Keywords: tree
+Description: Displays CP table for Fitted Rpart Object
+URL: ../../../library/rpart/html/printcp.html
+
+Entry: prune.rpart
+Aliases: prune.rpart prune
+Keywords: tree
+Description: Cost-complexity Pruning of an Rpart Object
+URL: ../../../library/rpart/html/prune.rpart.html
+
+Entry: residuals.rpart
+Aliases: residuals.rpart
+Keywords: tree
+Description: Residuals From a Fitted Rpart Object
+URL: ../../../library/rpart/html/residuals.rpart.html
+
+Entry: rpart-internal
+Aliases: pred.rpart rpart.matrix
+Keywords: internal
+Description: Internal Functions
+URL: ../../../library/rpart/html/rpart-internal.html
+
+Entry: rpart
+Aliases: rpart rpartcallback
+Keywords: tree
+Description: Recursive Partitioning and Regression Trees
+URL: ../../../library/rpart/html/rpart.html
+
+Entry: rpart.control
+Aliases: rpart.control
+Keywords: tree
+Description: Control for Rpart Models
+URL: ../../../library/rpart/html/rpart.control.html
+
+Entry: rpart.object
+Aliases: rpart.object
+Keywords: tree methods
+Description: Recursive Partitioning and Regression Trees Object
+URL: ../../../library/rpart/html/rpart.object.html
+
+Entry: rpconvert
+Aliases: rpconvert
+Keywords: tree
+Description: Update an rpart object
+URL: ../../../library/rpart/html/rpconvert.html
+
+Entry: rsq.rpart
+Aliases: rsq.rpart
+Keywords: tree
+Description: Plots the Approximate R-Square for the Different Splits
+URL: ../../../library/rpart/html/rsq.rpart.html
+
+Entry: snip.rpart
+Aliases: snip.rpart
+Keywords: tree
+Description: Snip Subtrees of an Rpart Object
+URL: ../../../library/rpart/html/snip.rpart.html
+
+Entry: solder
+Aliases: solder
+Keywords: datasets
+Description: Soldering of Components on Printed-Circuit Boards
+URL: ../../../library/rpart/html/solder.html
+
+Entry: summary.rpart
+Aliases: summary.rpart
+Keywords: tree
+Description: Summarize a Fitted Rpart Object
+URL: ../../../library/rpart/html/summary.rpart.html
+
+Entry: text.rpart
+Aliases: text.rpart
+Keywords: tree
+Description: Place Text on a Dendrogram
+URL: ../../../library/rpart/html/text.rpart.html
+
+Entry: xpred.rpart
+Aliases: xpred.rpart
+Keywords: tree
+Description: Return Cross-Validated Predictions
+URL: ../../../library/rpart/html/xpred.rpart.html

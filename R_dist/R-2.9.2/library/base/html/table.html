@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Cross Tabulation and Table Creation</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for table {base}"><tr><td>table {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Cross Tabulation and Table Creation</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>table</code> uses the cross-classifying factors to build a contingency
+table of the counts at each combination of factor levels.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+table(..., exclude = if (useNA == "no") c(NA, NaN), useNA = c("no", 
+    "ifany", "always"), dnn = list.names(...), deparse.level = 1) 
+
+as.table(x, ...)
+is.table(x)
+
+## S3 method for class 'table':
+as.data.frame(x, row.names = NULL, ...,
+              responseName = "Freq")
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>...</code></td>
+<td>
+one of more objects which can be interpreted as factors
+(including character strings), or a list (or data frame) whose
+components can be so interpreted.  (For <code>as.table</code> and
+<code>as.data.frame</code>, arguments passed to specific methods.)</td></tr>
+<tr valign="top"><td><code>exclude</code></td>
+<td>
+levels to remove
+from all factors in <code>...</code>. If set to <code>NULL</code>, it implies
+<code>useNA="always"</code>.</td></tr>
+<tr valign="top"><td><code>useNA</code></td>
+<td>
+whether to include extra <code>NA</code> levels in the table.</td></tr>
+<tr valign="top"><td><code>dnn</code></td>
+<td>
+the names to be given to the dimensions in the result (the
+<EM>dimnames names</EM>).</td></tr>
+<tr valign="top"><td><code>deparse.level</code></td>
+<td>
+controls how the default <code>dnn</code> is
+constructed.  See details.</td></tr>
+<tr valign="top"><td><code>x</code></td>
+<td>
+an arbitrary <font face="Courier New,Courier" color="#666666"><b>R</b></font> object, or an object inheriting from class
+<code>"table"</code> for the <code>as.data.frame</code> method.</td></tr>
+<tr valign="top"><td><code>row.names</code></td>
+<td>
+a character vector giving the row names for the data
+frame.</td></tr>
+<tr valign="top"><td><code>responseName</code></td>
+<td>
+The name to be used for the column of
+table entries, usually counts.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+If the argument <code>dnn</code> is not supplied, the internal function
+<code>list.names</code> is called to compute the &lsquo;dimname names&rsquo;.  If the
+arguments in <code>...</code> are named, those names are used.  For the
+remaining arguments, <code>deparse.level = 0</code> gives an empty name,
+<code>deparse.level = 1</code> uses the supplied argument if it is a symbol,
+and <code>deparse.level = 2</code> will deparse the argument.
+</p>
+<p>
+Only when <code>exclude</code> is specified and non-NULL (i.e., not by
+default), will <code>table</code> potentially drop levels of factor
+arguments.
+</p>
+<p>
+Both <code>exclude</code> and <code>useNA</code> operate on an "all or none"
+basis. If you want to control the dimensions of a multiway table
+separately, modify each argument using <code>factor</code> or <code>addNA</code>
+</p>
+<p>
+The <code>summary</code> method for class <code>"table"</code> (used for objects
+created by <code>table</code> or <code><a href="../../stats/html/xtabs.html">xtabs</a></code>) which gives basic
+information and performs a chi-squared test for independence of
+factors (note that the function <code><a href="../../stats/html/chisq.test.html">chisq.test</a></code> currently
+only handles 2-d tables).
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>table()</code> returns a <EM>contingency table</EM>, an object of
+<code><a href="class.html">class</a></code> <code>"table"</code>, an array of integer values.
+Note that unlike S the result is always an array, a 1D array if one
+factor is given.
+<br>
+<code>as.table</code> and <code>is.table</code> coerce to and test for contingency
+table, respectively.
+<br>
+The <code>as.data.frame</code> method for objects inheriting from class
+<code>"table"</code> can be used to convert the array-based representation
+of a contingency table to a data frame containing the classifying
+factors and the corresponding entries (the latter as component
+named by <code>responseName</code>).  This is the inverse of <code><a href="../../stats/html/xtabs.html">xtabs</a></code>.</p>
+
+<h3>References</h3>
+
+<p>
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+<EM>The New S Language</EM>.
+Wadsworth &amp; Brooks/Cole.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="tabulate.html">tabulate</a></code> is the underlying function and allows finer
+control. 
+</p>
+<p>
+Use <code><a href="../../stats/html/ftable.html">ftable</a></code> for printing (and more) of
+multidimensional tables.  <code><a href="margin.table.html">margin.table</a></code>,
+<code><a href="prop.table.html">prop.table</a></code>, <code><a href="../../stats/html/addmargins.html">addmargins</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+require(stats) # for rpois and xtabs
+## Simple frequency distribution
+table(rpois(100,5))
+## Check the design:
+with(warpbreaks, table(wool, tension))
+table(state.division, state.region)
+
+# simple two-way contingency table
+with(airquality, table(cut(Temp, quantile(Temp)), Month))
+
+a &lt;- letters[1:3]
+table(a, sample(a))                    # dnn is c("a", "")
+table(a, sample(a), deparse.level = 0) # dnn is c("", "")
+table(a, sample(a), deparse.level = 2) # dnn is c("a", "sample(a)")
+
+## xtabs() &lt;-&gt; as.data.frame.table() :
+UCBAdmissions ## already a contingency table
+DF &lt;- as.data.frame(UCBAdmissions)
+class(tab &lt;- xtabs(Freq ~ ., DF)) # xtabs &amp; table
+## tab *is* "the same" as the original table:
+all(tab == UCBAdmissions)
+all.equal(dimnames(tab), dimnames(UCBAdmissions))
+
+a &lt;- rep(c(NA, 1/0:3), 10)
+table(a)
+table(a, exclude=NULL)
+b &lt;- factor(rep(c("A","B","C"), 10))
+table(b)
+table(b, exclude="B")
+d &lt;- factor(rep(c("A","B","C"), 10), levels=c("A","B","C","D","E"))
+table(d, exclude="B")
+print(table(b,d), zero.print = ".")
+
+## NA counting:
+is.na(d) &lt;- 3:4
+d. &lt;- addNA(d)
+d.[1:7]
+table(d.) # ", exclude = NULL" is not needed
+## i.e., if you want to count the NA's of 'd', use
+table(d, useNA="ifany")
+
+## Two-way tables with NA counts. The 3rd variant is absurd, but shows
+## something that cannot be done using exclude or useNA. 
+with(airquality,
+   table(OzHi=Ozone &gt; 80, Month, useNA="ifany"))
+with(airquality,
+   table(OzHi=Ozone &gt; 80, Month, useNA="always"))
+with(airquality,
+   table(OzHi=Ozone &gt; 80, addNA(Month)))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

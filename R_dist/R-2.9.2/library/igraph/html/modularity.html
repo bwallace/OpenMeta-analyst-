@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Modularity of a community structure of a graph</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for modularity {igraph}"><tr><td>modularity {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Modularity of a community structure of a graph</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This function calculates how modular is a given division of a
+graph into subgraphs.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+modularity(graph, membership, weights = NULL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>graph</code></td>
+<td>
+The input graph.</td></tr>
+<tr valign="top"><td><code>membership</code></td>
+<td>
+Numeric vector, for each vertex it gives its
+community. The communities are numbered from zero.
+</td></tr>
+<tr valign="top"><td><code>weights</code></td>
+<td>
+If not <code>NULL</code> then a numeric vector giving edge
+weights.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The modularity of a graph with respect to some division (or vertex
+types) measures how good the division is, or how separated are the 
+different vertex types from each other. It defined as 
+</p><p align="center"><i>Q=1/(2m) * sum(Aij-ki*kj/(2m)delta(ci,cj),i,j),</i></p><p>
+here <i>m</i> is the number of edges, <i>Aij</i> is the element
+of the <i>A</i> adjacency matrix 
+in row <i>i</i> and column <i>j</i>, <i>ki</i> is the degree of <i>i</i>,
+<i>kj</i> is the degree of <i>j</i>, <i>ci</i> is the type (or
+component) of <i>i</i>, <i>cj</i> that of <i>j</i>, the sum goes
+over all <i>i</i> and <i>j</i> pairs of vertices, and
+<i>delta(x,y)</i> is 1 if <i>x=y</i> and 0 otherwise.
+</p>
+<p>
+If edge weights are given, then these are considered as the element of
+the <i>A</i> adjacency matrix, and <i>ki</i> is the sum of weights
+of adjacent edges for vertex <i>i</i>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A numeric scalar, the modularity score of the given configuration.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+MEJ Newman and M Girvan: Finding and evaluating community
+structure in networks. Physical Review E 69 026113, 2004.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="walktrap.community.html">walktrap.community</a></code>,
+<code><a href="community.edge.betweenness.html">edge.betweenness.community</a></code>,
+<code><a href="fastgreedy.community.html">fastgreedy.community</a></code>,
+<code><a href="spinglass.community.html">spinglass.community</a></code> for various community detection
+methods.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+g &lt;- graph.full(5) %du% graph.full(5) %du% graph.full(5)
+g &lt;- add.edges(g, c(0,5, 0,10, 5, 10))
+wtc &lt;- walktrap.community(g)
+memb &lt;- community.to.membership(g, wtc$merges, steps=12)
+modularity(g, memb$membership)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

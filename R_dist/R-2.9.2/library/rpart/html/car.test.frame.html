@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Automobile Data from 'Consumer Reports' 1990</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for car.test.frame {rpart}"><tr><td>car.test.frame {rpart}</td><td align="right">R Documentation</td></tr></table>
+<h2>Automobile Data from 'Consumer Reports' 1990</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The <code>car.test.frame</code> data frame has 60 rows and 8 columns,
+giving data on makes of cars taken from the April, 1990 issue of
+<EM>Consumer Reports</EM>. This is part of a larger dataset, some
+columns of which are given in <code><a href="cu.summary.html">cu.summary</a></code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+car.test.frame
+</pre>
+
+
+<h3>Format</h3>
+
+<p>
+This data frame contains the following columns:
+<dl>
+<dt><code>Price</code></dt><dd>a numeric vector giving the list price in US dollars of a standard model
+</dd>
+<dt><code>Country</code></dt><dd>of origin, a factor with levels
+<code>France</code> 
+<code>Germany</code> 
+<code>Japan</code> 
+<code>Japan/USA</code> 
+<code>Korea</code> 
+<code>Mexico</code> 
+<code>Sweden</code> 
+<code>USA</code> 
+</dd>
+<dt><code>Reliability</code></dt><dd>a numeric vector coded <code>1</code> to <code>5</code>.
+</dd>
+<dt><code>Mileage</code></dt><dd>fuel consumption miles per US gallon, as tested. 
+</dd>
+<dt><code>Type</code></dt><dd>a factor with levels
+<code>Compact</code> 
+<code>Large</code> 
+<code>Medium</code> 
+<code>Small</code> 
+<code>Sporty</code> 
+<code>Van</code> 
+</dd>
+<dt><code>Weight</code></dt><dd>kerb weight in pounds.
+</dd>
+<dt><code>Disp.</code></dt><dd>the engine capacity (displacement) in litres.
+</dd>
+<dt><code>HP</code></dt><dd>the net horsepower of the vehicle.
+</dd>
+</dl>
+
+<h3>Source</h3>
+
+<p>
+<EM>Consumer Reports</EM>, April, 1990, pp. 235&ndash;288 quoted in
+</p>
+<p>
+John M. Chambers and Trevor J. Hastie eds. (1992)
+<EM>Statistical Models in S</EM>, Wadsworth and Brooks/Cole,
+Pacific Grove, CA 1992, pp. 46&ndash;47.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="cu.summary.html">cu.summary</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+z.auto &lt;- rpart(Mileage ~ Weight, car.test.frame)
+summary(z.auto)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>rpart</em> version 3.1-45 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

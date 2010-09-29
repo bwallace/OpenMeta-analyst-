@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Suspend Execution for a Time Interval</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for Sys.sleep {base}"><tr><td>Sys.sleep {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Suspend Execution for a Time Interval</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Suspend execution of <font face="Courier New,Courier" color="#666666"><b>R</b></font> expressions for a given number of seconds
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+Sys.sleep(time)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>time</code></td>
+<td>
+The time interval to suspend execution for, in seconds.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Using this function allows <font face="Courier New,Courier" color="#666666"><b>R</b></font> to be given very low priority and hence
+not to interfere with more important foreground tasks. A typical use
+is to allow a process launched from <font face="Courier New,Courier" color="#666666"><b>R</b></font> to set itself up and read its
+input files before <font face="Courier New,Courier" color="#666666"><b>R</b></font> execution is resumed.
+</p>
+<p>
+The intention is that this function suspends execution of <font face="Courier New,Courier" color="#666666"><b>R</b></font>
+expressions but wakes the process up often enough to respond to GUI
+events, typically every 0.5 seconds.
+</p>
+<p>
+There is no guarantee that the process will sleep for the whole of the
+specified interval, and it may well take slightly longer in real time
+to resume execution.  The resolution of the time interval is
+system-dependent, but will normally be down to 0.02 secs or better.
+(On modern Unix-alikes it will be better than 1ms.)
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+Invisible <code>NULL</code>.</p>
+
+<h3>Note</h3>
+
+<p>
+This function may not be implemented on all systems.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+testit &lt;- function(x)
+{
+    p1 &lt;- proc.time()
+    Sys.sleep(x)
+    proc.time() - p1 # The cpu usage should be negligible
+}
+testit(3.7)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

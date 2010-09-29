@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Pairwise comparisons for proportions</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for pairwise.prop.test {stats}"><tr><td>pairwise.prop.test {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>Pairwise comparisons for proportions</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Calculate pairwise comparisons between pairs of proportions with
+correction for multiple testing
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+pairwise.prop.test(x, n, p.adjust.method = p.adjust.methods, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+Vector of counts of successes or a matrix with 2 columns
+giving the counts of successes and failures, respectively. </td></tr>
+<tr valign="top"><td><code>n</code></td>
+<td>
+Vector of counts of trials; ignored if <code>x</code> is a matrix.</td></tr>
+<tr valign="top"><td><code>p.adjust.method</code></td>
+<td>
+Method for adjusting p values
+(see <code><a href="p.adjust.html">p.adjust</a></code>) </td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+Additional arguments to pass to <code>prop.test</code> </td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+Object of class <code>"pairwise.htest"</code></p>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="prop.test.html">prop.test</a></code>, <code><a href="p.adjust.html">p.adjust</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+smokers  &lt;- c( 83, 90, 129, 70 )
+patients &lt;- c( 86, 93, 136, 82 )
+pairwise.prop.test(smokers, patients)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

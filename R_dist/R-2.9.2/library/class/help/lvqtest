@@ -1,0 +1,43 @@
+lvqtest                package:class                R Documentation
+
+_C_l_a_s_s_i_f_y _T_e_s_t _S_e_t _f_r_o_m _L_V_Q _C_o_d_e_b_o_o_k
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Classify a test set by 1-NN from a specified LVQ codebook.
+
+_U_s_a_g_e:
+
+     lvqtest(codebk, test)
+
+_A_r_g_u_m_e_n_t_s:
+
+  codebk: codebook object returned by other LVQ software 
+
+    test: matrix of test examples 
+
+_D_e_t_a_i_l_s:
+
+     uses 1-NN to classify each test example against the codebook.
+
+_V_a_l_u_e:
+
+     factor of classification for each row of 'x'
+
+_R_e_f_e_r_e_n_c_e_s:
+
+     Ripley, B. D. (1996) _Pattern Recognition and Neural Networks._
+     Cambridge.
+
+     Venables, W. N. and Ripley, B. D. (2002) _Modern Applied
+     Statistics with S._ Fourth edition.  Springer.
+
+_S_e_e _A_l_s_o:
+
+     'lvqinit', 'olvq1'
+
+_E_x_a_m_p_l_e_s:
+
+     # The function is currently defined as
+     function(codebk, test) knn1(codebk$x, test, codebk$cl)
+

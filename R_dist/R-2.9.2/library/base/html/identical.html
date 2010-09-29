@@ -1,0 +1,134 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Test Objects for Exact Equality</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for identical {base}"><tr><td>identical {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Test Objects for Exact Equality</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The safe and reliable way to test two objects for being
+<EM>exactly</EM> equal.  It returns <code>TRUE</code> in this case,
+<code>FALSE</code> in every other case.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+identical(x, y)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x, y</code></td>
+<td>
+any <font face="Courier New,Courier" color="#666666"><b>R</b></font> objects.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+A call to <code>identical</code> is the way to test exact equality in
+<code>if</code> and <code>while</code> statements, as well as in logical
+expressions that use <code>&amp;&amp;</code> or <code>||</code>.  In all these
+applications you need to be assured of getting a single logical
+value.
+</p>
+<p>
+Users often use the comparison operators, such as <code>==</code> or
+<code>!=</code>, in these situations.  It looks natural, but it is not what
+these operators are designed to do in R.  They return an object like
+the arguments.  If you expected <code>x</code> and <code>y</code> to be of length
+1, but it happened that one of them wasn't, you will <EM>not</EM> get a
+single <code>FALSE</code>.  Similarly, if one of the arguments is <code>NA</code>,
+the result is also <code>NA</code>.  In either case, the expression
+<code>if(x == y)....</code> won't work as expected.
+</p>
+<p>
+The function <code>all.equal</code> is also sometimes used to test equality
+this way, but was intended for something different:  it allows for
+small differences in numeric results.
+</p>
+<p>
+The computations in <code>identical</code> are also reliable and usually
+fast.  There should never be an error.  The only known way to kill
+<code>identical</code> is by having an invalid pointer at the C level,
+generating a memory fault.  It will usually find inequality quickly.
+Checking equality for two large, complicated objects can take longer
+if the objects are identical or nearly so, but represent completely
+independent copies.  For most applications, however, the computational cost
+should be negligible.
+</p>
+<p>
+<code>identical</code> sees <code><a href="is.finite.html">NaN</a></code> as different from
+<code><a href="NA.html">NA_real_</a></code>, but all <code>NaN</code>s are equal (and all <code>NA</code>
+of the same type are equal).
+</p>
+<p>
+Comparison of attributes view them as a set (and not a vector, so
+order is not tested).
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A single logical value, <code>TRUE</code> or <code>FALSE</code>, never <code>NA</code>
+and never anything other than a single value.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+John Chambers and R Core
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Chambers, J. M. (1998)
+<EM>Programming with Data. A Guide to the S Language</EM>.
+Springer.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="all.equal.html">all.equal</a></code> for descriptions of how two objects differ;
+<a href="Comparison.html">Comparison</a> for operators that generate elementwise comparisons.
+<code><a href="Logic.html">isTRUE</a></code> is a simple wrapper based on <code>identical</code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+identical(1, NULL) ## FALSE -- don't try this with ==
+identical(1, 1.)   ## TRUE in R (both are stored as doubles)
+identical(1, as.integer(1)) ## FALSE, stored as different types
+
+x &lt;- 1.0; y &lt;- 0.99999999999
+## how to test for object equality allowing for numeric fuzz :
+(E &lt;- all.equal(x,y))
+isTRUE(E) # which is simply defined to just use
+identical(TRUE, E)
+## If all.equal thinks the objects are different, it returns a
+## character string, and the above expression evaluates to FALSE
+
+# even for unusual R objects :
+identical(.GlobalEnv, environment())
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

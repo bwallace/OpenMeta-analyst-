@@ -1,0 +1,84 @@
+codetools             package:codetools             R Documentation
+
+_L_o_w _L_e_v_e_l _C_o_d_e _A_n_a_l_y_s_i_s _T_o_o_l_s _f_o_r _R
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     These functions provide some tools for analysing R code.  Mainly
+     indented to support the other tools in this package and byte code
+     compilation.
+
+_U_s_a_g_e:
+
+     collectLocals(e, collect) 
+     collectUsage(fun, name = "<anonymous>", ...) 
+     constantFold(e, env = NULL, fail = NULL) 
+     findFuncLocals(formals, body) 
+     findLocals(e, envir = .BaseEnv) 
+     findLocalsList(elist, envir = .BaseEnv)
+     flattenAssignment(e) 
+     getAssignedVar(e) 
+     isConstantValue(v, w) 
+     makeCodeWalker(..., handler, call, leaf) 
+     makeLocalsCollector(..., leaf, handler, isLocal, exit, collect) 
+     makeUsageCollector(fun, ..., name, enterLocal, enterGlobal, enterInternal,
+                        startCollectLocals, finishCollectLocals, warn,
+                        signal)
+     walkCode(e, w = makeCodeWalker()) 
+
+_A_r_g_u_m_e_n_t_s:
+
+       e: R expression.
+
+   elist: list of R expressions.
+
+       v: R object.
+
+     fun: closure.
+
+ formals: formal arguments of a closure.
+
+    body: body of a closure.
+
+    name: character.
+
+     env: character.
+
+   envir: environment.
+
+       w: code walker.
+
+     ...: extra elements for code walker.
+
+ collect: function.
+
+    fail: function.
+
+ handler: function.
+
+    call: function.
+
+    leaf: function.
+
+ isLocal: function.
+
+    exit: function.
+
+enterLocal: function.
+
+enterGlobal: function.
+
+enterInternal: function.
+
+startCollectLocals: function.
+
+finishCollectLocals: function.
+
+    warn: function.
+
+  signal: function.
+
+_A_u_t_h_o_r(_s):
+
+     Luke Tierney
+

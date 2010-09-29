@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Four-parameter Logistic Model</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for SSfpl {stats}"><tr><td>SSfpl {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>Four-parameter Logistic Model</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This <code>selfStart</code> model evaluates the four-parameter logistic
+function and its gradient.  It has an <code>initial</code> attribute that
+will evaluate initial estimates of the parameters <code>A</code>, <code>B</code>,
+<code>xmid</code>, and <code>scal</code> for a given set of data.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+SSfpl(input, A, B, xmid, scal)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>input</code></td>
+<td>
+a numeric vector of values at which to evaluate the model.</td></tr>
+<tr valign="top"><td><code>A</code></td>
+<td>
+a numeric parameter representing the horizontal asymptote on
+the left side (very small values of <code>input</code>).</td></tr>
+<tr valign="top"><td><code>B</code></td>
+<td>
+a numeric parameter representing the horizontal asymptote on
+the right side (very large values of <code>input</code>).</td></tr>
+<tr valign="top"><td><code>xmid</code></td>
+<td>
+a numeric parameter representing the <code>input</code> value at the
+inflection point of the curve.  The value of <code>SSfpl</code> will be
+midway between <code>A</code> and <code>B</code> at <code>xmid</code>.</td></tr>
+<tr valign="top"><td><code>scal</code></td>
+<td>
+a numeric scale parameter on the <code>input</code> axis.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+a numeric vector of the same length as <code>input</code>.  It is the value of
+the expression <code>A+(B-A)/(1+exp((xmid-input)/scal))</code>.  If all of
+the arguments <code>A</code>, <code>B</code>, <code>xmid</code>, and <code>scal</code> are
+names of objects, the gradient matrix with respect to these names is
+attached as an attribute named <code>gradient</code>.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Jose Pinheiro and Douglas Bates
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="nls.html">nls</a></code>, <code><a href="selfStart.html">selfStart</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+Chick.1 &lt;- ChickWeight[ChickWeight$Chick == 1, ]
+SSfpl( Chick.1$Time, 13, 368, 14, 6 )  # response only
+A &lt;- 13; B &lt;- 368; xmid &lt;- 14; scal &lt;- 6
+SSfpl( Chick.1$Time, A, B, xmid, scal ) # response and gradient
+getInitial(weight ~ SSfpl(Time, A, B, xmid, scal), data = Chick.1)
+## Initial values are in fact the converged values
+fm1 &lt;- nls(weight ~ SSfpl(Time, A, B, xmid, scal), data = Chick.1)
+summary(fm1)
+
+</pre>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

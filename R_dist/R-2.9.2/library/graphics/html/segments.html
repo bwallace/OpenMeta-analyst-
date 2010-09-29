@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Add Line Segments to a Plot</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for segments {graphics}"><tr><td>segments {graphics}</td><td align="right">R Documentation</td></tr></table>
+<h2>Add Line Segments to a Plot</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Draw line segments between pairs of points.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+segments(x0, y0, x1, y1,
+         col = par("fg"), lty = par("lty"), lwd = par("lwd"),
+         ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x0, y0</code></td>
+<td>
+coordinates of points <B>from</B> which to draw.</td></tr>
+<tr valign="top"><td><code>x1, y1</code></td>
+<td>
+coordinates of points <B>to</B> which to draw.</td></tr>
+<tr valign="top"><td><code>col, lty, lwd</code></td>
+<td>
+usual graphical parameters as in
+<code><a href="par.html">par</a></code>, possibly vectors.  <code>NA</code> values in <code>col</code>
+cause the segment to be omitted.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+further graphical parameters (from <code><a href="par.html">par</a></code>),
+such as <code>xpd</code> and the line characteristics <code>lend</code>, <code>ljoin</code>
+and <code>lmitre</code>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+For each <code>i</code>, a line segment is drawn between the point
+<code>(x0[i], y0[i])</code> and the point <code>(x1[i], y1[i])</code>.  The
+coordinate vectors will be recycled to the length of the longest.
+</p>
+<p>
+The graphical parameters <code>col</code>, <code>lty</code> and <code>lwd</code> can be
+vectors of length greater than one and will be recycled if necessary.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+<EM>The New S Language</EM>.
+Wadsworth &amp; Brooks/Cole.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="arrows.html">arrows</a></code>, 
+<code><a href="polygon.html">polygon</a></code> for slightly easier and less flexible line
+drawing, and
+<code><a href="lines.html">lines</a></code> for the usual polygons.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+x &lt;- stats::runif(12); y &lt;- stats::rnorm(12)
+i &lt;- order(x,y); x &lt;- x[i]; y &lt;- y[i]
+plot(x, y, main="arrows(.) and segments(.)")
+## draw arrows from point to point :
+s &lt;- seq(length(x)-1)# one shorter than data
+arrows(x[s], y[s], x[s+1], y[s+1], col= 1:3)
+s &lt;- s[-length(s)]
+segments(x[s], y[s], x[s+2], y[s+2], col= 'pink')
+</pre>
+
+
+
+<hr><div align="center">[Package <em>graphics</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Creating a graph from LCF notation</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for graph.lcf {igraph}"><tr><td>graph.lcf {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Creating a graph from LCF notation</h2>
+
+
+<h3>Description</h3>
+
+<p>
+LCF is short for Lederberg-Coxeter-Frucht, it is a concise notation for
+3-regular Hamiltonian graphs. It constists of three parameters, the
+number of vertices in the graph, a list of shifts giving additional
+edges to a cycle backbone and another integer giving how many times
+the shifts should be performed. See
+<a href="http://mathworld.wolfram.com/LCFNotation.html">http://mathworld.wolfram.com/LCFNotation.html</a> for details.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+graph.lcf(n, shifts, repeats)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>n</code></td>
+<td>
+Integer, the number of vertices in the graph.</td></tr>
+<tr valign="top"><td><code>shifts</code></td>
+<td>
+Integer vector, the shifts.</td></tr>
+<tr valign="top"><td><code>repeats</code></td>
+<td>
+Integer constant, how many times to repeat the shifts.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+A graph object.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="graph.constructors.html">graph</a></code> can create arbitrary graphs, see also the other
+functions on the its manual page for creating special graphs.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+# This is the Franklin graph:
+g1 &lt;- graph.lcf(12, c(5,-5), 6)
+g2 &lt;- graph.famous("Franklin")
+graph.isomorphic.vf2(g1, g2)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

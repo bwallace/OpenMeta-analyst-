@@ -1,0 +1,40 @@
+bitAnd                package:bitops                R Documentation
+
+_B_i_t_w_i_s_e _A_n_d, _O_r _a_n_d _X_o_r _o_p_e_r_a_t_i_o_n_s
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     returns the bitwise operation applied to the arguments
+
+_U_s_a_g_e:
+
+     bitAnd(a, b)
+     bitOr (a, b)
+     bitXor(a, b)
+
+_A_r_g_u_m_e_n_t_s:
+
+     a,b: numeric vectors of compatible length.
+
+_D_e_t_a_i_l_s:
+
+     The bitwise operations are applied to the arguments cast as 32 bit
+     (unigned long) integers.  NA is returned wherever the magnitude of
+     the arguments is not less than 2**31, or, where either of the
+     arguments is not finite.
+
+_V_a_l_u_e:
+
+     numeric vector of maximum length of 'a' or 'b'.
+
+_A_u_t_h_o_r(_s):
+
+     Steve Dutky <sdutky@terpalum.umd.edu>
+
+_E_x_a_m_p_l_e_s:
+
+             bitAnd(15,7) == 7
+             bitOr(15,7) == 15
+             bitXor(15,7) == 8
+             bitOr(-1,0) == 4294967295
+

@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Extract System and User Information</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for Sys.info {base}"><tr><td>Sys.info {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Extract System and User Information</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Reports system and user information.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+Sys.info()
+</pre>
+
+
+<h3>Details</h3>
+
+<p>
+This function is not implemented on all <font face="Courier New,Courier" color="#666666"><b>R</b></font> platforms, and returns
+<code>NULL</code> when not available.  Where possible it is based on POSIX
+system calls.
+(Under Windows, it is obtained from Windows system calls.)
+</p>
+<p>
+<code>Sys.info()</code> returns details of the platform <font face="Courier New,Courier" color="#666666"><b>R</b></font> is running on,
+whereas <code><a href="Version.html">R.version</a></code> gives details of the platform <font face="Courier New,Courier" color="#666666"><b>R</b></font> was
+built on: they may well be different.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A character vector with fields
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>sysname</code></td>
+<td>
+The operating system.</td></tr>
+<tr valign="top"><td><code>release</code></td>
+<td>
+The OS release.</td></tr>
+<tr valign="top"><td><code>version</code></td>
+<td>
+The OS version.</td></tr>
+<tr valign="top"><td><code>nodename</code></td>
+<td>
+A name by which the machine is known on the network (if
+any).</td></tr>
+<tr valign="top"><td><code>machine</code></td>
+<td>
+A concise description of the hardware.</td></tr>
+<tr valign="top"><td><code>login</code></td>
+<td>
+The user's login name, or <code>"unknown"</code> if it cannot be
+ascertained.</td></tr>
+<tr valign="top"><td><code>user</code></td>
+<td>
+The name of the real user ID, or <code>"unknown"</code> if it
+cannot be ascertained.</td></tr>
+</table>
+
+<h3>Note</h3>
+
+<p>
+The meaning of OS &lsquo;release&rsquo; and &lsquo;version&rsquo; is
+system-dependent and there is no guarantee that the node or
+login or user names will be what you might reasonably expect.
+(In particular on some Linux distributions the login name is unknown
+from sessions with re-directed inputs.)
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="Platform.html">.Platform</a></code>, and <code><a href="Version.html">R.version</a></code>.
+<code><a href="../../utils/html/sessionInfo.html">sessionInfo</a>()</code> gives a synopsis of both your system and
+the <font face="Courier New,Courier" color="#666666"><b>R</b></font> session.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+Sys.info()
+## An alternative (and probably better) way to get the login name on Unix
+Sys.getenv("LOGNAME")
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

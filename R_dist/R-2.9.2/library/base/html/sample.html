@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Random Samples and Permutations</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for sample {base}"><tr><td>sample {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Random Samples and Permutations</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>sample</code> takes a sample of the specified size from the elements
+of <code>x</code> using either with or without replacement.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+sample(x, size, replace = FALSE, prob = NULL)
+
+sample.int(n, size, replace = FALSE, prob = NULL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+Either a (numeric, complex, character or logical) vector of
+more than one element from which to choose, or a positive integer.</td></tr>
+<tr valign="top"><td><code>n</code></td>
+<td>
+a non-negative integer, the number of items to choose from.</td></tr>
+<tr valign="top"><td><code>size</code></td>
+<td>
+positive integer giving the number of items to choose.</td></tr>
+<tr valign="top"><td><code>replace</code></td>
+<td>
+Should sampling be with replacement?</td></tr>
+<tr valign="top"><td><code>prob</code></td>
+<td>
+A vector of probability weights for obtaining the elements
+of the vector being sampled.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+If <code>x</code> has length 1, is numeric (in the sense of
+<code><a href="numeric.html">is.numeric</a></code>) and <code>x &gt;= 1</code>, sampling <EM>via</EM>
+<code>sample</code> takes place from
+<code>1:x</code>.  <EM>Note</EM> that this convenience feature may lead to
+undesired behaviour when <code>x</code> is of varying length
+<code>sample(x)</code>.  See the <code>resample()</code> example below.
+</p>
+<p>
+By default <code>size</code> is equal to <code>length(x)</code>
+so that <code>sample(x)</code> generates a random permutation
+of the elements of <code>x</code> (or <code>1:x</code>).
+</p>
+<p>
+The optional <code>prob</code> argument can be used to give a vector
+of weights for obtaining the elements of the vector being
+sampled. They need not sum to one, but they should be nonnegative
+and not all zero.  If <code>replace</code> is true, Walker's alias method
+(Ripley, 1987) is used when there are more than 250 reasonably
+probable values: this gives results incompatible with those from <font face="Courier New,Courier" color="#666666"><b>R</b></font> &lt;
+2.2.0, and there will be a warning the first time this happens in a
+session.
+</p>
+<p>
+If <code>replace</code> is false, these probabilities are applied
+sequentially, that is the probability of choosing the next item is
+proportional to the weights amongst the remaining items.  The number
+of nonzero weights must be at least <code>size</code> in this case.
+</p>
+<p>
+<code>sample.int</code> is a bare interface in which both <code>n</code> and
+<code>size</code> must be supplied as integers.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+For <code>sample</code> a vector of length <code>size</code> with elements
+drawn from either <code>x</code> or from <code>1:x</code>.
+<br>
+For <code>sample.int</code>, an integer vector of length <code>size</code> with
+elements from <code>1:n</code>,</p>
+
+<h3>References</h3>
+
+<p>
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+<EM>The New S Language</EM>.
+Wadsworth &amp; Brooks/Cole.
+</p>
+<p>
+Ripley, B. D. (1987) <EM>Stochastic Simulation</EM>. Wiley.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+Package <span class="pkg">sampling</span> for other methods of weighted sampling without
+replacement.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+x &lt;- 1:12
+# a random permutation
+sample(x)
+# bootstrap sampling -- only if length(x) &gt; 1 !
+sample(x,replace=TRUE)
+
+# 100 Bernoulli trials
+sample(c(0,1), 100, replace = TRUE)
+
+## More careful bootstrapping --  Consider this when using sample()
+## programmatically (i.e., in your function or simulation)!
+
+# sample()'s surprise -- example
+x &lt;- 1:10
+    sample(x[x &gt;  8]) # length 2
+    sample(x[x &gt;  9]) # oops -- length 10!
+try(sample(x[x &gt; 10]))# error!
+
+## This is safer, but only for sampling without replacement
+resample &lt;- function(x, size, ...)
+  if(length(x) &lt;= 1) { if(!missing(size) &amp;&amp; size == 0) x[FALSE] else x
+  } else sample(x, size, ...)
+
+resample(x[x &gt;  8])# length 2
+resample(x[x &gt;  9])# length 1
+resample(x[x &gt; 10])# length 0
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

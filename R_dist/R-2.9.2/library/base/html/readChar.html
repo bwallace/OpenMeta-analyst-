@@ -1,0 +1,159 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Transfer Character Strings To and From Connections</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for readChar {base}"><tr><td>readChar {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Transfer Character Strings To and From Connections</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Transfer character strings to and from connections, without assuming
+they are null-terminated on the connection.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+readChar(con, nchars, useBytes = FALSE)
+
+writeChar(object, con,
+          nchars = nchar(object, type="chars"), eos = "")
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>con</code></td>
+<td>
+A connection object, or a character string naming a file,
+or a raw vector.</td></tr>
+<tr valign="top"><td><code>nchars</code></td>
+<td>
+integer, giving the lengths in characters of (unterminated)
+character strings to be read or written.  Must be &gt;= 0 and not
+missing.</td></tr>
+<tr valign="top"><td><code>useBytes</code></td>
+<td>
+logical: should <code>nchars</code> be regarded as a number
+of bytes not characters in a multi-byte locale?</td></tr>
+<tr valign="top"><td><code>object</code></td>
+<td>
+A character vector to be written to the connection, at
+least as long as <code>nchars</code>.</td></tr>
+<tr valign="top"><td><code>eos</code></td>
+<td>
+&lsquo;end of string&rsquo;: character string .  The terminator
+to be written after each string, followed by an ASCII <code>nul</code>;
+use <code>NULL</code> for no terminator at all.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+These functions complement <code><a href="readBin.html">readBin</a></code> and
+<code><a href="readBin.html">writeBin</a></code> which read and write C-style zero-terminated
+character strings.  They are for strings of known length, and
+can optionally write an end-of-string mark.  They are intended only
+for character strings valid in the current locale.
+</p>
+<p>
+If <code>con</code> is a character string, the functions call
+<code><a href="connections.html">file</a></code> to obtain an file connection which is opened for
+the duration of the function call.
+</p>
+<p>
+If the connection is open it is read/written from its current
+position.  If it is not open, it is opened for the duration of the
+call in an appropriate mode (binary read or write) and then closed
+again.  An open connection must be in binary mode.
+</p>
+<p>
+If <code>readChar</code> is called with <code>con</code> a raw vector, the data in
+the vector is used as input.  If <code>writeChar</code> is called with
+<code>con</code> a raw vector, it is just an indication that a raw vector
+should be returned.  
+</p>
+<p>
+Character strings containing ASCII <code>nul</code>(s) will be read
+correctly by <code>readChar</code> but truncated at the first
+<code>nul</code> with a warning.
+</p>
+<p>
+If the character length requested for <code>readChar</code> is longer than
+the data available on the connection, what is available is
+returned.  For <code>writeChar</code> if too many characters are requested
+the output is zero-padded, with a warning.
+</p>
+<p>
+Missing strings are written as <code>NA</code>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+For <code>readChar</code>, a character vector of length the number of
+items read (which might be less than <code>length(nchars)</code>).
+<br>
+For <code>writeChar</code>, a raw vector (if <code>con</code> is a raw vector) or
+invisibly <code>NULL</code>.</p>
+
+<h3>Note</h3>
+
+<p>
+Earlier versions of <font face="Courier New,Courier" color="#666666"><b>R</b></font> allowed embedded nul bytes within character
+strings, but not <font face="Courier New,Courier" color="#666666"><b>R</b></font> &gt;= 2.8.0.  <code>readChar</code> was commonly used to
+read fixed-size zero-padded byte fields for which <code>readBin</code> was
+unsuitable.  <code>readChar</code> can still be used for such fields if
+there are no embedded nuls: otherwise <code>readBin(what="raw")</code>
+provides an alternative.
+</p>
+<p>
+<code>nchars</code> will be interpreted in bytes not characters in a
+non-UTF-8 multi-byte locale, with a warning.
+</p>
+<p>
+There is little validity checking of UTF-8 reads.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+The <EM>R Data Import/Export</EM> manual.
+</p>
+<p>
+<code><a href="connections.html">connections</a></code>, <code><a href="readLines.html">readLines</a></code>,
+<code><a href="writeLines.html">writeLines</a></code>, <code><a href="readBin.html">readBin</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## test fixed-length strings
+zz &lt;- file("testchar", "wb")
+x &lt;- c("a", "this will be truncated", "abc")
+nc &lt;- c(3, 10, 3)
+writeChar(x, zz, nc, eos=NULL)
+writeChar(x, zz, eos="\r\n")
+close(zz)
+
+zz &lt;- file("testchar", "rb")
+readChar(zz, nc)
+readChar(zz, nchar(x)+3) # need to read the terminator explicitly
+close(zz)
+unlink("testchar")
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

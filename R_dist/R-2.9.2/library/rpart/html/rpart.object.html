@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Recursive Partitioning and Regression Trees Object</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for rpart.object {rpart}"><tr><td>rpart.object {rpart}</td><td align="right">R Documentation</td></tr></table>
+<h2>Recursive Partitioning and Regression Trees Object</h2>
+
+
+<h3>Description</h3>
+
+<p>
+These are objects representing fitted <code>rpart</code> trees.
+</p>
+
+
+<h3>Value</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>frame</code></td>
+<td>
+data frame with one row for each node in the tree.
+The <code>row.names</code> of <code>frame</code> contain the (unique) node numbers that
+follow a binary ordering indexed by node depth.
+Elements of <code>frame</code> include <code>var</code>, a factor giving
+the variable used in the split at each node
+(leaf nodes are denoted by the string <code>&lt;leaf&gt;</code>), <code>n</code>, the size of each node,
+<code>wt</code>, the sum of case weights for the node,
+<code>dev</code>, the deviance of each node,
+<code>yval</code>, the fitted value of the response at each node,
+and <code>splits</code>, a two column matrix of left and right split labels
+for each node.
+All of these are the same as for an <code>rpart</code> object.
+<br>
+Extra response information is in <code>yval2</code>, which contains the number
+of events at the node (poisson), or a matrix containing the fitted
+class, the class counts for each node and the class probabilities
+(classification).  Also included in the frame are <code>complexity</code>, the
+complexity parameter at which this split will collapse, <code>ncompete</code>,
+the number of competitor splits retained, and <code>nsurrogate</code>, the
+number of surrogate splits retained.
+</td></tr>
+<tr valign="top"><td><code>where</code></td>
+<td>
+integer vector, the same length as the number of observations in the root node, 
+containing the row number of <code>frame</code> corresponding to the leaf node 
+that each observation falls into. 
+</td></tr>
+<tr valign="top"><td><code>splits</code></td>
+<td>
+a numeric matrix describing the splits.  The row label is the name of the split
+variable, and columns are <code>count</code>, the number of observations sent left
+or right by the split (for competitor splits this is the number that
+would have been sent left or right had this split been used, for surrogate
+splits it is the number missing the primary split variable which were decided
+using this surrogate), <code>ncat</code>, the number of categories or levels for the
+variable (<code>+/-1</code> for a continuous variable), <code>improve</code>, which is the improvement
+in deviance given by this split, or, for surrogates, the concordance of the
+surrogate with the primary, and <code>split</code>, the numeric split point.  
+The last column <code>adj</code> gives the adjusted concordance for surrogate splits.
+For
+a factor, the <code>split</code> column contains the row number of the csplit matrix.
+For a continuous variable, the sign of <code>ncat</code> determines whether the
+subset <code>x &lt; cutpoint</code> or <code>x &gt; cutpoint</code> is sent to the left.
+</td></tr>
+<tr valign="top"><td><code>csplit</code></td>
+<td>
+this will be present only if one of the split variables is a factor. There
+is one row for each such split, and column <code>i = 1</code> if this level of the
+factor goes to the left, <code>3</code> if it goes to the right, and 2 if that level
+is not present at this node of the tree.
+For an ordered categorical variable all levels are marked as <code>R/L</code>, 
+including levels that are not present.
+</td></tr>
+<tr valign="top"><td><code>method</code></td>
+<td>
+the method used to grow the tree. 
+</td></tr>
+<tr valign="top"><td><code>cptable</code></td>
+<td>
+the table of optimal prunings based on a complexity parameter. 
+</td></tr>
+<tr valign="top"><td><code>terms</code></td>
+<td>
+an object of mode <code>expression</code> and class <code>term</code> summarizing the formula. 
+Used by various methods, but typically not of direct relevance to users. 
+</td></tr>
+<tr valign="top"><td><code>call</code></td>
+<td>
+an image of the call that produced the object, but with the arguments 
+all named and with the actual formula included as the formula argument. 
+To re-evaluate the call, say <code>update(tree)</code>. 
+<br>
+Optional components include the matrix of predictors (<code>x</code>) and the 
+response variable (<code>y</code>) used to construct the <code>rpart</code> object. 
+</td></tr>
+</table>
+
+<h3>Structure</h3>
+
+<p>
+The following components must be included in a legitimate <code>rpart</code> object. 
+Of these, only the <code>where</code> component has the same length as  
+the data used to fit the <code>rpart</code> object.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="rpart.html">rpart</a></code>.
+</p>
+
+
+
+<hr><div align="center">[Package <em>rpart</em> version 3.1-45 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

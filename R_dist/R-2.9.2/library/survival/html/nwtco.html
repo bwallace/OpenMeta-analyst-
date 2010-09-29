@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Data from the National Wilm's Tumor Study</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for nwtco {survival}"><tr><td>nwtco {survival}</td><td align="right">R Documentation</td></tr></table>
+<h2>Data from the National Wilm's Tumor Study</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Missing data/masurement error example. Tumor histology predicts
+survival, but prediction is stronger with central lab histology than
+with the local institution determination.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>nwtco</pre>
+
+
+<h3>Format</h3>
+
+<p>
+A data frame with 4028 observations on the following 9 variables.
+<dl>
+<dt><code>seqno</code></dt><dd>id number</dd>
+<dt><code>instit</code></dt><dd>Histology from local institution</dd>
+<dt><code>histol</code></dt><dd>Histology from central lab</dd>
+<dt><code>stage</code></dt><dd>Disease stage</dd>
+<dt><code>study</code></dt><dd>study</dd>
+<dt><code>rel</code></dt><dd>indicator for relapse</dd>
+<dt><code>edrel</code></dt><dd>time to relapse</dd>
+<dt><code>age</code></dt><dd>age in months</dd>
+<dt><code>in.subcohort</code></dt><dd>Included in the subcohort for the example in the
+paper</dd>
+</dl>
+
+<h3>Source</h3>
+
+<p>
+<a href="http://faculty.washington.edu/norm/software.html">http://faculty.washington.edu/norm/software.html</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+NE Breslow and N Chatterjee (1999),
+Design and analysis of two-phase studies with binary outcome applied
+to Wilms tumour prognosis.
+<EM>Applied Statistics</EM> <B>48</B>, 457&ndash;68.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+with(nwtco, table(instit,histol))
+anova(coxph(Surv(edrel,rel)~histol+instit,data=nwtco))
+anova(coxph(Surv(edrel,rel)~instit+histol,data=nwtco))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>survival</em> version 2.35-4 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

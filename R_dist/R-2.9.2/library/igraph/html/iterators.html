@@ -1,0 +1,261 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Vertex and edge sequences and iterators</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for iterators {igraph}"><tr><td>iterators {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Vertex and edge sequences and iterators</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Vertex and edge sequences are central concepts of
+igraph.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+V(graph)
+E(graph, P=NULL, path=NULL, directed=TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>graph</code></td>
+<td>
+A graph object.</td></tr>
+<tr valign="top"><td><code>P</code></td>
+<td>
+Numeric vector for selecting edges by giving their end
+points. See details below.</td></tr>
+<tr valign="top"><td><code>path</code></td>
+<td>
+Numeric vector, this is for selecting all edges along a
+path. See also details below.</td></tr>
+<tr valign="top"><td><code>directed</code></td>
+<td>
+Logcal constant, can be supplied only if either
+<code>P</code> or <code>path</code> is also present and gives whether the pairs
+or the path are directed or not.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+It is often needed to perform an operation on a subset of vertices of
+edges in a graph.
+</p>
+<p>
+A vertex sequence is simply a vector containing vertex ids, but it has
+a special class attribute which makes it possible to perform graph
+specific operations on it, like selecting a subset of the vertices
+based on some vertex attributes.
+</p>
+<p>
+A vertex sequence is created by <code>V(g)</code> this selects are vertices
+in increasing vertex id order. A vertex sequence can be indexed by a
+numeric vector, and a subset of all vertices can be
+selected.
+</p>
+<p>
+Vertex sequences provide powerful operations for dealing with vertex
+attributes. A vertex sequence can be indexed with the
+&lsquo;<code>$</code>&rsquo; operator to select (or modify) the attributes of a
+subset of vertices. A vertex sequence can be indexed by a logical
+expression, and this expression may contain the names of the vertex
+attributes and ordinary variables as well. The return value of such a
+construct (ie. a vertex sequence indexed by a logical expression) is
+another vertex sequence containing only vertices from the original
+sequence for which the expression evaluates to TRUE.
+</p>
+<p>
+Let us see an example to make everything clear. We assign random
+numbers between 1 and 100 to the vertices, and select those vertices
+for which the number is less than 50. We set the color of these
+vertices to red.
+<pre>
+    g &lt;- graph.ring(10)
+    V(g)$number &lt;- sample(1:100, vcount(g), replace=TRUE)
+    V(g)$color &lt;- "grey"
+    V(g)[ number &lt; 50 ]$color &lt;- "red"
+    plot(g, layout=layout.circle, vertex.color=V(g)$color,
+         vertex.label=V(g)$number)
+</pre>
+</p>
+<p>
+There is a similar notation for edges. <code>E(g)</code> selects all edges
+from the &lsquo;<code>g</code>&rsquo; graph. Edge sequences can be also indexed
+with logical expressions containing edge attributes:
+<pre>
+    g &lt;- graph.ring(10)
+    E(g)$weight &lt;- runif(ecount(g))
+    E(g)$width &lt;- 1
+    E(g)[ weight &gt;= 0.5 ]$width &lt;- 3
+    plot(g, layout=layout.circle, edge.width=E(g)$width, edge.color="black")
+</pre>
+</p>
+<p>
+It is important to note that, whenever we use iterators to assign new
+attribute values, the new values are recycled. So in the following
+example half of the vertices will be black, the other half red, in an
+alternated way.
+<pre>
+    g &lt;- graph.ring(10)
+    V(g)$color &lt;- c("black", "red")
+    plot(g, layout=layout.circle)
+</pre>
+</p>
+<p>
+For the recycling, the standard R rules apply and a warning is given
+if the number of items to replace is not a multiple of the replacement
+length. E.g. the following code gives a warning, because we set the
+attribute for three vertices, but supply only two values:
+<pre>
+    g &lt;- graph.tree(10)
+    V(g)$color &lt;- "grey"
+    V(g)[0:2]$color &lt;- c("green", "blue")
+</pre>
+</p>
+<p>
+If a new vertex/edge attribute is created with an assignment, but only
+a subset of of vertices are specified, then the rest is set to
+<code>NA</code> if the new values are in a vector and to <code>NULL</code> if they
+are a list. Try the following:
+<pre>
+    V(g)[5]$foo &lt;- "foo"
+    V(g)$foo
+    V(g)[5]$bar &lt;- list(bar="bar")
+    V(g)$bar
+</pre>
+</p>
+<p>
+There are some special functions which are only defined in the
+indexing expressions of vertex and edge sequences. For vertex
+sequences these are: <code>nei</code>, <code>adj</code>, <code>from</code> and
+<code>to</code>, <code>innei</code> and <code>outnei</code>.
+</p>
+<p>
+<code>nei</code> has a mandatory and an optional argument, the first is
+another vertex sequence, the second is a mode argument similar to that
+of the <code><a href="structure.info.html">neighbors</a></code> function. <code>nei</code> returns a logical
+vector of the same length as the indexed vertex sequence and evaluates
+to <code>TRUE</code> for those vertices only which have a neighbor vertex in
+the vertex sequence supplied as a parameter. Thus for selecting all
+neighbors of vertices 0 and 1 one can write:
+<pre>
+    V(g) [ nei( 0:1 ) ]
+</pre>
+The mode argument (just like for <code><a href="structure.info.html">neighbors</a></code>) gives the
+type of the neighbors to be included, it is interpreted only in
+directed graphs, and defaults to all types of neighbors. See the
+example below. <code>innei(v)</code> is a shorthand for the &lsquo;incoming&rsquo;
+neighbors (<code>nei(v, mode="in")</code>), and <code>outnei(v)</code> is a
+shorthand for the &lsquo;outgoing&rsquo; neighbors
+(<code>nei(v,mode="out")</code>).
+</p>
+<p>
+<code>adj</code> takes an edge sequence as an argument and returns
+<code>TRUE</code> for vertices which have at least one adjacent edge in it.
+</p>
+<p>
+<code>from</code> and <code>to</code> are similar to <code>adj</code> but only edges
+originated at (<code>from</code>) or pointing to (<code>to</code>) are taken into
+account.
+</p>
+<p>
+For edge sequences the special functions are: <code>adj</code>, <code>from</code>,
+<code>to</code>, <code>%--%</code>, <code>%-&gt;%</code> and <code>%&lt;-%</code>.
+</p>
+<p>
+<code>adj</code> takes a vertex sequence as an argument and returns
+<code>NULL</code> for edges which have an adjacent vertex in it.
+</p>
+<p>
+<code>from</code> and <code>to</code> are similar to <code>adj</code>, but only vertices
+at the source (<code>from</code>) or target (<code>to</code>) of the edge.
+</p>
+<p>
+The <code>%--%</code> operator selects edges connecting two vertex
+sequences, the direction of the edges is ignored. The <code>%-&gt;%</code> is
+different only for directed graphs and only edges pointing from the
+left hand side argument to the right hand side argument are selected.
+<code>%&lt;-%</code> is exactly the opposite, it selects edges pointing from
+the right hand side to the left hand side.  
+</p>
+<p>
+<code>E</code> has two optional arguments: <code>P</code> and <code>path</code>. If
+given <code>P</code> can be used to select edges based on their end points,
+eg. <code>E(g, P=c(0,1))</code> selects edge <code>0-&gt;1</code>.
+</p>
+<p>
+<code>path</code> can be used to select all edges along a path. The path
+should be given with the visited vertex ids in the appropriate order.
+</p>
+<p>
+See also the examples below.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+# mean degree of vertices in the largest cluster in a random graph
+g &lt;- erdos.renyi.game(100, 2/100)
+c &lt;- clusters(g)
+vsl &lt;- which(which.max(c$csize)-1==c$membership)-1
+mean(degree(g, vsl))
+
+# set the color of these vertices to red, others greens
+V(g)$color &lt;- "green"
+V(g)[vsl]$color &lt;- "red"
+## Not run: 
+plot(g, vertex.size=3, labels=NA, vertex.color="a:color",
+              layout=layout.fruchterman.reingold)
+## End(Not run)
+
+# the longest geodesic within the largest cluster
+long &lt;- numeric()
+for (v in vsl) {
+  paths &lt;- get.shortest.paths(g, from=v, to=vsl)
+  fl &lt;- paths[[ which.max(sapply(paths, length)) ]]
+  if (length(fl) &gt; length(long)) {
+    long &lt;- fl
+  }
+}
+
+# the mode argument of the nei() function
+g &lt;- graph( c(0,1, 1,2, 1,3, 3,1) )
+V(g)[ nei( c(1,3) ) ]
+V(g)[ nei( c(1,3), "in") ]
+V(g)[ nei( c(1,3), "out") ]
+
+# operators for edge sequences
+g &lt;- barabasi.game(100, power=0.3)
+E(g) [ 0:2 %--% 1:5 ]
+E(g) [ 0:2 %-&gt;% 1:5 ]
+E(g) [ 0:2 %&lt;-% 1:5 ]
+
+# the edges along the diameter
+g &lt;- barabasi.game(100, directed=FALSE)
+d &lt;- get.diameter(g)
+E(g, path=d)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

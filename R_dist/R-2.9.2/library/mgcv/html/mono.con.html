@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Monotonicity constraints for a cubic regression spline</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for mono.con {mgcv}"><tr><td>mono.con {mgcv}</td><td align="right">R Documentation</td></tr></table>
+<h2>Monotonicity constraints for a cubic regression spline</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Finds linear constraints sufficient for monotonicity (and
+optionally upper and/or lower boundedness) of a cubic regression
+spline. The basis representation assumed is that given by the
+<code>gam</code>, <code>"cr"</code> basis: that is the spline has a set of knots,
+which have fixed x values, but the y values of which constitute the
+parameters of the spline.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+mono.con(x,up=TRUE,lower=NA,upper=NA)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+The array of knot locations.</td></tr>
+<tr valign="top"><td><code>up</code></td>
+<td>
+If <code>TRUE</code> then the constraints imply increase, if
+<code>FALSE</code> then decrease. </td></tr>
+<tr valign="top"><td><code>lower</code></td>
+<td>
+This specifies the lower bound on the spline unless it is
+<code>NA</code> in which case no lower bound is imposed.</td></tr>
+<tr valign="top"><td><code>upper</code></td>
+<td>
+This specifies the upper bound on the spline unless it is
+<code>NA</code> in which case no upper bound is imposed.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Consider the natural cubic spline passing through the points:
+<i>(x_i,p_i), i=1..n</i>. Then it is possible
+to find a relatively small set of linear constraints on <i>p</i>
+sufficient to ensure monotonicity (and bounds if required):
+<i>Ap&gt;=b</i>. Details are given in Wood (1994).
+This function returns a list containing <code>A</code> and <code>b</code>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+The function returns a list containing constraint matrix
+<code>A</code> and constraint vector <code>b</code>.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Simon N. Wood <a href="mailto:simon.wood@r-project.org">simon.wood@r-project.org</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Gill, P.E., Murray, W. and Wright, M.H. (1981) Practical Optimization. Academic
+Press, London. 
+</p>
+<p>
+Wood, S.N. (1994) Monotonic smoothing splines fitted by cross validation SIAM
+Journal on Scientific Computing 15(5):1126-1133
+</p>
+<p>
+<a href="http://www.maths.bath.ac.uk/~sw283/">http://www.maths.bath.ac.uk/~sw283/</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="mgcv.html">mgcv</a> </code> <code><a href="pcls.html">pcls</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## see ?pcls
+</pre>
+
+
+
+<hr><div align="center">[Package <em>mgcv</em> version 1.5-5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

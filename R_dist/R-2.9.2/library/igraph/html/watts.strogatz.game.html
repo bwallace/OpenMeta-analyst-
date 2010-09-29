@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: The Watts-Strogatz small-world model</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for watts.strogatz.game {igraph}"><tr><td>watts.strogatz.game {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>The Watts-Strogatz small-world model</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Generate a graph according to the Watts-Strogatz network
+model.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+watts.strogatz.game(dim, size, nei, p)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>dim</code></td>
+<td>
+Integer constant, the dimension of the starting lattice.</td></tr>
+<tr valign="top"><td><code>size</code></td>
+<td>
+Integer constant, the size of the lattice along each
+dimension.</td></tr>
+<tr valign="top"><td><code>nei</code></td>
+<td>
+Integer constant, the neighborhood within which the
+vertices of the lattice will be connected.</td></tr>
+<tr valign="top"><td><code>p</code></td>
+<td>
+Real constant between zero and one, the rewiring probability. </td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+First a lattice is created with the given <code>dim</code>, <code>size</code> and
+<code>nei</code> arguments. Then the edges of the lattice are rewired
+uniformly randomly with probability <code>p</code>.
+</p>
+<p>
+Note that this function might create graphs with loops and/or multiple
+edges. You can use <code><a href="simplify.html">simplify</a></code> to get rid of these.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A graph object.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Duncan J Watts and Steven H Strogatz: Collective dynamics of
+&lsquo;small world&rsquo; networks, Nature 393, 440-442, 1998.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="graph.constructors.html">graph.lattice</a></code>, <code><a href="rewire.edges.html">rewire.edges</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+g &lt;- watts.strogatz.game(1, 100, 5, 0.05)
+average.path.length(g)
+transitivity(g, type="average")
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

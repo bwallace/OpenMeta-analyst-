@@ -1,0 +1,131 @@
+Entry: ELISA
+Aliases: ELISA
+Keywords: datasets
+Description: Data from an ELISA assay
+URL: ../../../library/gtools/html/ELISA.html
+
+Entry: addLast
+Aliases: addLast
+Keywords: programming
+Description: Add a function to be executed when R exits.
+URL: ../../../library/gtools/html/addLast.html
+
+Entry: ask
+Aliases: ask
+Keywords: IO
+Description: Display a prompt and collect the user's response
+URL: ../../../library/gtools/html/ask.html
+
+Entry: binsearch
+Aliases: binsearch
+Keywords: optimize programming
+Description: Binary Search
+URL: ../../../library/gtools/html/binsearch.html
+
+Entry: capture
+Aliases: capture sprint
+Keywords: print IO
+Description: Capture printed output of an R expression in a string
+URL: ../../../library/gtools/html/capture.html
+
+Entry: checkRVersion
+Aliases: checkRVersion
+Keywords: utilities
+Description: Check if a newer version of R is available
+URL: ../../../library/gtools/html/checkRVersion.html
+
+Entry: combinations
+Aliases: combinations permutations
+Keywords: manip
+Description: Enumerate the Combinations or Permutations of the Elements of a Vector
+URL: ../../../library/gtools/html/combinations.html
+
+Entry: defmacro
+Aliases: defmacro strmacro
+Keywords: programming
+Description: Define a macro
+URL: ../../../library/gtools/html/defmacro.html
+
+Entry: rdirichlet
+Aliases: rdirichlet ddirichlet
+Keywords: distribution
+Description: Functions for the Dirichlet Distribution
+URL: ../../../library/gtools/html/dirichlet.html
+
+Entry: foldchange
+Aliases: foldchange logratio2foldchange foldchange2logratio
+Keywords: math
+Description: Compute fold-change or convert between log-ratio and fold-change.
+URL: ../../../library/gtools/html/foldchange.html
+
+Entry: gtools-deprecated
+Aliases: gtools-deprecated assert
+Keywords: misc
+Description: Deprecated Functions in the gtools package
+URL: ../../../library/gtools/html/gtools-deprecated.html
+
+Entry: invalid
+Aliases: invalid
+Keywords: programming
+Description: Test if a value is missing, empty, or contains only NA or NULL values
+URL: ../../../library/gtools/html/invalid.html
+
+Entry: keywords
+Aliases: keywords
+Keywords: documentation
+Description: List valid keywords for R man pages
+URL: ../../../library/gtools/html/keywords.html
+
+Entry: logit
+Aliases: logit inv.logit
+Keywords: math
+Description: Generalized logit and inverse logit function
+URL: ../../../library/gtools/html/logit.html
+
+Entry: mixedsort
+Aliases: mixedsort mixedorder
+Keywords: univar manip
+Description: Order or Sort strings with embedded numbers so that the numbers are in the correct order
+URL: ../../../library/gtools/html/mixedsort.html
+
+Entry: odd
+Aliases: odd even
+Keywords: arith
+Description: Detect odd/even integers
+URL: ../../../library/gtools/html/oddeven.html
+
+Entry: permute
+Aliases: permute
+Keywords: distribution
+Description: Randomly Permute the Elements of a Vector
+URL: ../../../library/gtools/html/permute.html
+
+Entry: quantcut
+Aliases: quantcut
+Keywords: manip
+Description: Create a Factor Variable Using the Quantiles of a Continuous Variable
+URL: ../../../library/gtools/html/quantcut.html
+
+Entry: running
+Aliases: running
+Keywords: misc
+Description: Apply a Function Over Adjacent Subsets of a Vector
+URL: ../../../library/gtools/html/running.html
+
+Entry: scat
+Aliases: scat
+Keywords: print
+Description: Display debugging text
+URL: ../../../library/gtools/html/scat.html
+
+Entry: setTCPNoDelay
+Aliases: setTCPNoDelay
+Keywords: programming misc utilities
+Description: Modify the TCP\_NODELAY ('de-Nagle') flag for socket objects
+URL: ../../../library/gtools/html/setTCPNoDelay.html
+
+Entry: smartbind
+Aliases: smartbind
+Keywords: manip
+Description: Efficient rbind of data framesy, even if the column names don't match
+URL: ../../../library/gtools/html/smartbind.html

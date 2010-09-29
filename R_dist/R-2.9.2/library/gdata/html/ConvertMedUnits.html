@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Convert medical measurements between International Standard (SI)
+and US 'Conventional' Units.</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for ConvertMedUnits {gdata}"><tr><td>ConvertMedUnits {gdata}</td><td align="right">R Documentation</td></tr></table>
+<h2>Convert medical measurements between International Standard (SI)
+and US 'Conventional' Units.</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Convert Medical measurements between International Standard (SI)
+and US 'Conventional' Units.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+ConvertMedUnits(x, measurement, abbreviation,
+                to = c("Conventional", "SI", "US"),
+                exact = !missing(abbreviation))
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+Vector of measurement values</td></tr>
+<tr valign="top"><td><code>measurement</code></td>
+<td>
+Name of the measurement</td></tr>
+<tr valign="top"><td><code>abbreviation</code></td>
+<td>
+Measurement abbreviation</td></tr>
+<tr valign="top"><td><code>to</code></td>
+<td>
+Target units</td></tr>
+<tr valign="top"><td><code>exact</code></td>
+<td>
+Logicial indicating whether matching should be exact</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Medical laboratories and practitioners in the United States use one
+set of units (the so-called 'Conventional' units) for reporting the
+results of clinical laboratory measurements, while the rest of the
+world uses the International Standard (SI) units.  It often becomes
+necessary to translate between these units when participating in
+international collaborations.
+</p>
+<p>
+This function converts between SI and US 'Conventional' units.
+</p>
+<p>
+If <code>exact=FALSE</code>, <code>grep</code> will be used to do a
+case-insensitive sub-string search for matching measurment names.  If
+more than one match is found, an error will be generated, along with a
+list of the matching entries.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+Returns a vector of converted values.  The attribute 'units' will
+contain the target units converted.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Gregory R. Warnes <a href="mailto:greg@random-technologies-llc.com">greg@random-technologies-llc.com</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+<a href="http://www.globalrph.com/conv_si.htm">http://www.globalrph.com/conv_si.htm</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+The data set <code><a href="MedUnits.html">MedUnits</a></code> provides the conversion
+factors.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(MedUnits)
+
+# show available conversions
+MedUnits$Measurement
+
+# Convert SI Glucose measurement to 'Conventional' units
+GlucoseSI = c(5, 5.4, 5, 5.1, 5.6, 5.1, 4.9, 5.2, 5.5) # in SI Units
+GlucoseUS = ConvertMedUnits( GlucoseSI, "Glucose", to="US" )
+cbind(GlucoseSI,GlucoseUS)
+
+## Not run: 
+# See what happens when there is more than one match
+ConvertMedUnits( 27.5, "Creatin", to="US")
+## End(Not run)
+
+# To solve the problem do:
+ConvertMedUnits( 27.5, "Creatinine", to="US", exact=TRUE)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>gdata</em> version 2.6.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

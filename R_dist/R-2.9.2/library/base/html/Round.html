@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Rounding of Numbers</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for Round {base}"><tr><td>Round {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Rounding of Numbers</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>ceiling</code> takes a single numeric argument <code>x</code> and returns a
+numeric vector containing the smallest integers not less than the
+corresponding elements of <code>x</code>.
+</p>
+<p>
+<code>floor</code> takes a single numeric argument <code>x</code> and returns a
+numeric vector containing the largest integers not greater than the
+corresponding elements of <code>x</code>.
+</p>
+<p>
+<code>trunc</code> takes a single numeric argument <code>x</code> and returns a
+numeric vector containing the integers formed by truncating the values in
+<code>x</code> toward <code>0</code>.
+</p>
+<p>
+<code>round</code> rounds the values in its first argument to the specified
+number of decimal places (default 0).
+</p>
+<p>
+<code>signif</code> rounds the values in its first argument to the specified
+number of significant digits.
+</p>
+<p>
+<code>zapsmall</code> determines a <code>digits</code> argument <code>dr</code> for
+calling <code>round(x, digits = dr)</code> such that values close to
+zero (compared with the maximal absolute value) are &lsquo;zapped&rsquo;,
+i.e., treated as <code>0</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+ceiling(x)
+floor(x)
+trunc(x, ...)
+
+round(x, digits = 0)
+signif(x, digits = 6)
+zapsmall(x, digits = getOption("digits"))
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+a numeric vector.  A complex vector is allowed for
+<code>round</code>, <code>signif</code> and <code>zapsmall</code>.</td></tr>
+<tr valign="top"><td><code>digits</code></td>
+<td>
+integer indicating the precision to be used.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+arguments to be passed to methods.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+All but <code>zapsmall</code> are generic functions: methods can be
+defined for them individually or via the
+<code><a href="groupGeneric.html">Math</a></code> group generic.
+</p>
+<p>
+Note that for rounding off a 5, the IEC 60559 standard is expected to
+be used, &lsquo;<EM>go to the even digit</EM>&rsquo;.
+Therefore <code>round(0.5)</code> is <code>0</code> and <code>round(-1.5)</code> is
+<code>-2</code>.  However, this is dependent on OS services and on
+representation error (since e.g. <code>0.15</code> is not represented
+exactly, the rounding rule applies to the represented number and not
+to the printed number, and so <code>round(0.15, 1)</code> could be either
+<code>0.1</code> or <code>0.2</code>).
+</p>
+<p>
+For <code>signif</code> the recognized values of <code>digits</code> are
+<code>1...22</code>.  Complex numbers are rounded to retain
+the specified number of digits in the larger of the components.  Each
+element of the vector is rounded individually, unlike printing.
+</p>
+<p>
+All except <code>zapsmall</code> are primitive, but arguments are matched by
+name in <code>round</code> and <code>signif</code> (whereas the default methods
+for <code>ceiling</code>, <code>floor</code> and <code>trunc</code> ignore argument
+names).
+</p>
+
+
+<h3>S4 methods</h3>
+
+<p>
+<code>ceiling</code>, <code>floor</code> and <code>trunc</code> are S4 generic and
+members of the <code><a href="../../methods/html/S4groupGeneric.html">Math</a></code> group
+generic.  As an S4 generic, <code>trunc</code> has only one argument.
+</p>
+<p>
+<code>round</code> and <code>signif</code> are S4 generic and members of the
+<code><a href="../../methods/html/S4groupGeneric.html">Math2</a></code> group generic.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+<EM>The New S Language</EM>.
+Wadsworth &amp; Brooks/Cole. (Except <code>zapsmall</code>.)
+</p>
+<p>
+Chambers, J. M. (1998)
+<EM>Programming with Data. A Guide to the S Language</EM>.
+Springer. (<code>zapsmall</code>.)
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="integer.html">as.integer</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+round(.5 + -2:4) # IEEE rounding: -2  0  0  2  2  4  4
+( x1 &lt;- seq(-2, 4, by = .5) )
+round(x1)#-- IEEE rounding !
+x1[trunc(x1) != floor(x1)]
+x1[round(x1) != floor(x1 + .5)]
+(non.int &lt;- ceiling(x1) != floor(x1))
+
+x2 &lt;- pi * 100^(-1:3)
+round(x2, 3)
+signif(x2, 3)
+
+print   (x2 / 1000, digits=4)
+zapsmall(x2 / 1000, digits=4)
+zapsmall(exp(1i*0:4*pi/2))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

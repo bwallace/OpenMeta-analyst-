@@ -1,0 +1,65 @@
+\HeaderA{CairoFonts}{Set the fonts used for all Cairo graphics devices.}{CairoFonts}
+\keyword{device}{CairoFonts}
+\begin{Description}\relax
+\code{CairoFonts} initializes the fonts used for Cairo graphics devices.
+\end{Description}
+\begin{Usage}
+\begin{verbatim}
+CairoFonts(
+        regular="Helvetica:style=Regular",
+        bold="Helvetica:style=Bold",
+        italic="Helvetica:style=Italic",
+        bolditalic="Helvetica:style=Bold Italic,BoldItalic",
+        symbol="Symbol"
+)
+\end{verbatim}
+\end{Usage}
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{regular}] character; fontconfig pattern for the 'plain text' font.
+\item[\code{bold}] character; fontconfig pattern for the 'bold face' font.
+\item[\code{italic}] character; fontconfig pattern for the 'italic' font.
+\item[\code{bolditalic}] character; fontconfig pattern for the 'bold italic' font.
+\item[\code{symbol}] character; fontconfig pattern for the 'symbol' font.
+\end{ldescription}
+\end{Arguments}
+\begin{Details}\relax
+This function sets the fonts for Cairo graphics devices globally; previously opened
+Cairo graphics devices will also use these fonts. The argument names correspond to 
+the five values of the graphical parameter 'font', i.e. regular is 1, bold is 2, italic 
+is 3, etc.
+
+For an explanation of fontconfig patterns, see \code{\LinkA{CairoFontMatch}{CairoFontMatch}}.
+\end{Details}
+\begin{Section}{Known issues}
+\Itemize{
+\item This function is only available when the cairo graphics library is configured
+with FreeType and Fontcofig support.
+\item R math symbols are supported,but require a
+"Symbol" font with the Adobe symbol encoding. At the time of this release
+the authors are unaware of a free version of this font, however they do exist on Windows
+and Mac OS X.
+}
+\end{Section}
+\begin{SeeAlso}\relax
+\code{\LinkA{CairoFontMatch}{CairoFontMatch}},
+\code{\LinkA{Cairo}{Cairo}},
+\code{\LinkA{par}{par}},
+\end{SeeAlso}
+\begin{Examples}
+\begin{ExampleCode}
+## Not run: 
+#
+# The following fontconfig patterns define the free truetype fonts 
+# available in the debian package 'ttf-freefont'.
+# 
+# Freesans is very similar to Helvetica
+CairoFonts(
+        regular="FreeSans:style=Medium",
+        bold="FreeSans:style=Bold",
+        italic="FreeSans:style=Oblique",
+        bolditalic="FreeSans:style=BoldOblique"
+)
+## End(Not run)\end{ExampleCode}
+\end{Examples}
+

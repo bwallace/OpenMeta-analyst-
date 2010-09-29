@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Robust LTS Regression Diagnostic Plots</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for plot.lts {robustbase}"><tr><td>plot.lts {robustbase}</td><td align="right">R Documentation</td></tr></table>
+<h2>Robust LTS Regression Diagnostic Plots</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Four plots (selectable by <code>which</code>) are currently provided:
+<ol>
+<li>a plot of the standardized residuals versus their index,
+<li>a plot of the standardized residuals versus fitted values,
+<li>a Normal Q-Q plot of the standardized residuals, and
+<li>a regression diagnostic plot (standardized residuals versus
+robust distances of the predictor variables).
+</ol>
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'lts':
+plot(x, which = c("all","rqq","rindex","rfit","rdiag"),
+     classic=FALSE, ask=(which=="all" &amp;&amp; dev.interactive()), id.n, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+a <code>lts</code> object, typically result of <code>ltsReg</code>.</td></tr>
+<tr valign="top"><td><code>which</code></td>
+<td>
+string indicating which plot to show.  See the
+<EM>Details</EM> section for a description of the options.  Defaults
+to <code>"all"</code>.</td></tr>
+<tr valign="top"><td><code>classic</code></td>
+<td>
+whether to plot the classical distances too. Default is
+<code>FALSE</code>.</td></tr>
+<tr valign="top"><td><code>ask</code></td>
+<td>
+logical indicating if the user should be <EM>ask</EM>ed
+before each plot, see <code><a href="../../graphics/html/par.html">par</a>(ask=.)</code>.  Defaults to
+<code>which == "all" &amp;&amp; <a href="../../grDevices/html/dev.interactive.html">dev.interactive</a>()</code>.
+</td></tr>
+<tr valign="top"><td><code>id.n</code></td>
+<td>
+number of observations to be identified by a label starting
+with the most extreme.  Default is the number of identified outliers
+(can be different for the different plots - see Details).</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+other parameters to be passed through to plotting functions.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This function produces several plots based on the robust and classical
+regression estimates.
+Which of them to select is specified by the attribute  <code>which</code>.
+The possible options are:
+<dl>
+<dt><code>rqq</code>:</dt><dd>Normal Q-Q plot of the standardized residuals;</dd>
+<dt><code>rindex</code>:</dt><dd>plot of the standardized residuals versus their
+index;</dd>
+<dt><code>rfit</code>:</dt><dd>plot of the standardized residuals versus fitted
+values;</dd>
+<dt><code>rdiag</code>:</dt><dd>regression diagnostic plot.</dd>
+</dl>
+<p>
+The normal quantile plot produces a normal Q-Q plot of the
+standardized residuals.
+A line is drawn which passes through the first and third quantile.
+The <code>id.n</code> residuals with largest distances from this line are
+identified by labels (the observation number).  The default for
+<code>id.n</code> is the number of regression outliers (lts.wt==0).
+</p>
+<p>
+In the Index plot and in the Fitted values plot the standardized
+residuals are displayed against the observation number or the fitted
+value respectively.
+A horizontal dashed line is drawn at 0 and two solid horizontal lines are
+located at +2.5 and -2.5. The id.n residuals with largest absolute values are
+identified by labels (the observation number).  The default for id.n is the
+number regression outliers (lts.wt==0).
+</p>
+<p>
+The regression diagnostic plot, introduced by Rousseeuw and van
+Zomeren (1990), displays the standardized residuals versus robust
+distances. Following Rousseeuw and van Zomeren (1990), the
+horizontal dashed lines are located at +2.5 and -2.5  and the
+vertical line is located at the upper 0.975 percent point of the
+chi-squared distribution with p degrees of freedom. The id.n residuals
+with largest absolute values and/or largest robust Mahalanobis distances are
+identified by labels (the observation number). The default for id.n is
+the number of all outliers: regression outliers (lts.wt==0) + leverage
+(bad and good) points (RD &gt; 0.975 percent point of the chi-squared
+distribution with p degrees of freedom).
+</p>
+
+
+<h3>References</h3>
+
+<p>
+P. J. Rousseeuw and van Zomeren, B. C. (1990).
+Unmasking Multivariate Outliers and Leverage Points.
+<EM>Journal of the American Statistical Association</EM> <B>85</B>, 633&ndash;639.
+</p>
+<p>
+P. J. Rousseeuw and K. van Driessen (1999)
+A fast algorithm for the minimum covariance determinant estimator.
+<EM>Technometrics</EM> <B>41</B>, 212&ndash;223.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="covPlot.html">covPlot</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(hbk)
+lts &lt;- ltsReg(Y ~ ., data = hbk)
+lts
+plot(lts, which = "rqq") 
+</pre>
+
+
+
+<hr><div align="center">[Package <em>robustbase</em> version 0.4-5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

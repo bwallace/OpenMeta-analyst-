@@ -1,0 +1,334 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: ARPACK eigenvector calculation</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for arpack {igraph}"><tr><td>arpack {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>ARPACK eigenvector calculation</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Interface to the ARPACK library for calculating
+eigenvectors of sparse matrices
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+arpack(func, extra = NULL, sym = FALSE, options = igraph.arpack.default, 
+    env = parent.frame(), complex=!sym)
+arpack.unpack.complex(vectors, values, nev)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>func</code></td>
+<td>
+The function to perform the matrix-vector
+multiplication. ARPACK requires to perform these by the user. The
+function gets the vector <i>x</i> as the first argument, and it should
+return <i>Ax</i>, where <i>A</i> is the &ldquo;input matrix&rdquo;. (The
+input matrix is never given explicitly.) The second argument is
+<code>extra</code>.</td></tr>
+<tr valign="top"><td><code>extra</code></td>
+<td>
+Extra argument to supply to <code>func</code>.</td></tr>
+<tr valign="top"><td><code>sym</code></td>
+<td>
+Logical scalar, whether the input matrix is
+symmetric. Always supply <code>TRUE</code> here if it is, since it can
+speed up the computation. </td></tr>
+<tr valign="top"><td><code>options</code></td>
+<td>
+Options to ARPACK, a named list to overwrite some of
+the default option values. See details below.</td></tr>
+<tr valign="top"><td><code>env</code></td>
+<td>
+The environment in which <code>func</code> will be evaluated.</td></tr>
+<tr valign="top"><td><code>complex</code></td>
+<td>
+Whether to convert the eigenvectors returned by ARPACK
+into R complex vectors. By default this is not done for symmetric
+problems (these only have real eigenvectors/values), but only
+non-symmetric ones. If you have a non-symmetric problem, but you're
+sure that the results will be real, then supply <code>FALSE</code> here.
+The conversion is done by calling <code>arpack.unpack.complex</code>.
+</td></tr>
+<tr valign="top"><td><code>vectors</code></td>
+<td>
+Eigenvectors, as returned by ARPACK.</td></tr>
+<tr valign="top"><td><code>values</code></td>
+<td>
+Eigenvalues, as returned by ARPACK</td></tr>
+<tr valign="top"><td><code>nev</code></td>
+<td>
+The number of eigenvectors/values to extract. This can be
+less than or equal to the number of eigenvalues requested in the
+original ARPACK call.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+ARPACK is a library for solving large scale eigenvalue problems.
+The package is designed to compute a few eigenvalues and corresponding
+eigenvectors of a general <i>n</i> by <i>n</i> matrix <i>A</i>. It is
+most appropriate for large sparse or structured matrices <i>A</i> where
+structured means that a matrix-vector product <code>w &lt;- Av</code> requires
+order <i>n</i> rather than the usual order <i>n^2</i> floating point
+operations. Please see 
+<a href="http://www.caam.rice.edu/software/ARPACK/">http://www.caam.rice.edu/software/ARPACK/</a> for details.
+</p>
+<p>
+This function is an interface to ARPACK. igraph does not contain all
+ARPACK routines, only the ones dealing with symmetric and
+non-symmetric eigenvalue problems using double precision real
+numbers.
+</p>
+<p>
+The eigenvalue calculation in ARPACK (in the simplest
+case) involves the calculation of the <i>Av</i> product where <i>A</i>
+is the matrix we work with and <i>v</i> is an arbitrary vector. The
+function supplied in the <code>fun</code> argument is expected to perform
+this product. If the product can be done efficiently, e.g. if the
+matrix is sparse, then <code>arpack</code> is usually able to calculate the
+eigenvalues very quickly.
+</p>
+<p>
+The <code>options</code> argument specifies what kind of calculation to
+perform. It is a list with the following members, they correspond
+directly to ARPACK parameters. On input it has the following fields:
+<ul>
+<dt>bmat</dt><dd>Character constant, possible values: &lsquo;<code>I</code>&rsquo;,
+stadard eigenvalue problem, <i>A*x=lambda*x</i>; and
+&lsquo;<code>G</code>&rsquo;, generalized eigenvalue problem,
+<i>A*x=lambda B*x</i>. Currently only
+&lsquo;<code>I</code>&rsquo; is supported.</dd>
+<dt>n</dt><dd>Numeric scalar. The dimension of the eigenproblem. You only
+need to set this if you call <code><a href="arpack.html">arpack</a></code>
+directly. (I.e. not needed for <code><a href="evcent.html">evcent</a></code>,
+<code><a href="page.rank.html">page.rank</a></code>, etc.)</dd>
+<dt>which</dt><dd>Specify which eigenvalues/vectors to compute, character
+constant with exactly two characters.
+</p>
+<p>
+Possible values for symmetric input matrices:
+<ul>
+<dt>&lsquo;<code>LA</code>&rsquo;</dt><dd>Compute <code>nev</code> largest (algebraic)
+eigenvalues.</dd>
+<dt>&lsquo;<code>SA</code>&rsquo;</dt><dd>Compute <code>nev</code> smallest (algebraic)
+eigenvalues.</dd>
+<dt>&lsquo;<code>LM</code>&rsquo;</dt><dd>Compute <code>nev</code> largest (in magnitude)
+eigenvalues.</dd>
+<dt>&lsquo;<code>SM</code>&rsquo;</dt><dd>Compute <code>nev</code> smallest (in magnitude)
+eigenvalues.</dd>
+<dt>&lsquo;<code>BE</code>&rsquo;</dt><dd>Compute <code>nev</code> eigenvalues, half
+from each end of the spectrum. When <code>nev</code> is odd, compute
+one more from the high end than from the low end.</dd>
+</ul>
+
+<p>
+Possible values for non-symmetric input matrices:
+<ul>
+<dt>&lsquo;<code>LM</code>&rsquo;</dt><dd>Compute <code>nev</code> eigenvalues of
+largest magnitude.</dd>
+<dt>&lsquo;<code>SM</code>&rsquo;</dt><dd>Compute <code>nev</code> eigenvalues of
+smallest magnitude.</dd>
+<dt>&lsquo;<code>LR</code>&rsquo;</dt><dd>Compute <code>nev</code> eigenvalues of
+largest real part.</dd>
+<dt>&lsquo;<code>SR</code>&rsquo;</dt><dd>Compute <code>nev</code> eigenvalues of
+smallest real part.</dd>
+<dt>&lsquo;<code>LI</code>&rsquo;</dt><dd>Compute <code>nev</code> eigenvalues of
+largest imaginary part.</dd>
+<dt>&lsquo;<code>SI</code>&rsquo;</dt><dd>Compute <code>nev</code> eigenvalues of
+smallest imaginary part.</dd>
+</ul> 
+</p>
+<p>
+This parameter is sometimes overwritten by the various functions,
+e.g. <code><a href="page.rank.html">page.rank</a></code> always sets &lsquo;<code>LM</code>&rsquo;.
+</dd>
+<dt>nev</dt><dd>Numeric scalar. The number of eigenvalues to be computed.</dd>
+<dt>tol</dt><dd>Numeric scalar. Stopping criterion: the relative accuracy
+of the Ritz value is considered acceptable if its error is less
+than <code>tol</code> times its estimated value. If this is set to zero
+then machine precision is used.</dd>
+<dt>ncv</dt><dd>Number of Lanczos vectors to be generated.</dd>
+<dt>ldv</dt><dd>Numberic scalar. It should be set to
+zero in the current implementation.</dd>
+<dt>ishift</dt><dd>Either zero or one. If zero then the shifts are
+provided by the user via reverse communication. If one then exact
+shifts with respect to the reduced tridiagonal matrix <i>T</i>.
+Please always set this to one.</dd>
+<dt>maxiter</dt><dd>Maximum number of Arnoldi update iterations allowed. </dd>
+<dt>nb</dt><dd>Blocksize to be used in the recurrence. Please always
+leave this on the default value, one.</dd>
+<dt>mode</dt><dd>The type of the eigenproblem to be solved.
+Possible values if the input matrix is symmetric:
+<ul>
+<dt>1</dt><dd><i>A*x=lambda*x</i>, <i>A</i> is symmetric.</dd>
+<dt>2</dt><dd><i>A*x=lambda*M*x</i>, <i>A</i> is
+symmetric, <i>M</i> is symmetric positive definite.</dd>
+<dt>3</dt><dd><i>K*x=lambda*M*x</i>, <i>K</i> is
+symmetric, <i>M</i> is symmetric positive semi-definite.</dd>
+<dt>4</dt><dd><i>K*x=lambda*KG*x</i>, <i>K</i> is
+symmetric positive semi-definite, <i>KG</i> is symmetric
+indefinite.</dd>
+<dt>5</dt><dd><i>A*x=lambda*M*x</i>, <i>A</i> is
+symmetric, <i>M</i> is symmetric positive
+semi-definite. (Cayley transformed mode.)</dd>
+</ul>
+<p>
+Please note that only <code>mode==1</code> was tested and other values
+might not work properly.
+</p>
+<p>
+Possible values if the input matrix is not symmetric:
+<ul>
+<dt>1</dt><dd><i>A*x=lambda*x</i>.</dd>
+<dt>2</dt><dd><i>A*x=lambda*M*x</i>, <i>M</i> is
+symmetric positive definite.</dd>
+<dt>3</dt><dd><i>A*x=lambda*M*x</i>, <i>M</i> is
+symmetric semi-definite.</dd>
+<dt>4</dt><dd><i>A*x=lambda*M*x</i>, <i>M</i> is
+symmetric semi-definite.</dd>
+</ul>
+<p>
+Please note that only <code>mode==1</code> was tested and other values
+might not work properly.
+</dd>
+<dt>start</dt><dd>Not used currently. Later it be used to set a starting
+vector.</dd>
+<dt>sigma</dt><dd>Not used currently.</dd>
+<dt>sigmai</dt><dd>Not use currently.</dd>
+
+<p>
+On output the following additional fields are added:
+<ul>
+<dt>info</dt><dd>Error flag of ARPACK. Possible values:
+<ul>
+<dt>0</dt><dd>Normal exit.</dd>
+<dt>1</dt><dd>Maximum number of iterations taken.</dd>
+<dt>3</dt><dd>No shifts could be applied during a cycle of the
+Implicitly restarted Arnoldi iteration. One possibility
+is to increase the size of <code>ncv</code> relative to <code>nev</code>.</dd>
+</ul>
+
+<p>
+ARPACK can return more error conditions than these, but they are
+converted to regular igraph errors.
+</dd>
+<dt>iter</dt><dd>Number of Arnoldi iterations taken.</dd>
+<dt>nconv</dt><dd>Number of &ldquo;converged&rdquo; Ritz values. This
+represents the number of Ritz values that satisfy the
+convergence critetion. </dd>
+<dt>numop</dt><dd>Total number of matrix-vector multiplications.</dd>
+<dt>numopb</dt><dd>Not used currently.</dd>
+<dt>numreo</dt><dd>Total number of steps of re-orthogonalization.</dd>
+</ul>
+</ul>
+<p>
+Please see the ARPACK documentation for additional details.
+</p>
+<p>
+<code>arpack.unpack.complex</code> is a (semi-)internal function that
+converts the output of the non-symmetric ARPACK solver to a more
+readable format. It is called internally by <code>arpack</code>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A named list with the following members:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>values</code></td>
+<td>
+Numeric vector, the desired eigenvalues.</td></tr>
+<tr valign="top"><td><code>vectors</code></td>
+<td>
+Numeric matrix, the desired eigenvectors as
+columns. If <code>complex=TRUE</code> (the default for non-symmetric
+problems), then the matrix is complex.</td></tr>
+<tr valign="top"><td><code>options</code></td>
+<td>
+A named list with the supplied <code>options</code> and
+some information about the performed calculation, including an
+ARPACK exit code. See the details above.
+</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Rich Lehoucq, Kristi Maschhoff, Danny Sorensen, Chao Yang for
+ARPACK, Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a> for the R interface.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+D.C. Sorensen, Implicit Application of Polynomial Filters in
+a k-Step Arnoldi Method. <EM>SIAM J. Matr. Anal. Apps.</EM>, 13 (1992),
+pp 357-385.
+</p>
+<p>
+R.B. Lehoucq, Analysis and Implementation of an Implicitly
+Restarted Arnoldi Iteration. <EM>Rice University Technical Report</EM>
+TR95-13, Department of Computational and Applied Mathematics.
+</p>
+<p>
+B.N. Parlett &amp; Y. Saad, Complex Shift and Invert Strategies for
+Real Matrices. <EM>Linear Algebra and its Applications</EM>, vol 88/89,
+pp 575-595, (1987).
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="evcent.html">evcent</a></code>, <code><a href="page.rank.html">page.rank</a></code>,
+<code><a href="kleinberg.html">hub.score</a></code>, <code><a href="leading.eigenvector.html">leading.eigenvector.community</a></code>
+are some of the functions in igraph which use ARPACK. The ARPACK
+homepage is at <a href="http://www.caam.rice.edu/software/ARPACK/">http://www.caam.rice.edu/software/ARPACK/</a>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+# Identity matrix
+f &lt;- function(x, extra=NULL) x
+arpack(f, options=list(n=10, nev=2, ncv=4), sym=TRUE)
+
+# Graph laplacian of a star graph (undirected), n&gt;=2
+# Note that this is a linear operation
+f &lt;- function(x, extra=NULL) {
+  y &lt;- x
+  y[1] &lt;- (length(x)-1)*x[1] - sum(x[-1])
+  for (i in 2:length(x)) {
+    y[i] &lt;- x[i] - x[1]
+  }
+  y
+}
+
+arpack(f, options=list(n=10, nev=1, ncv=3), sym=TRUE)
+
+# double check
+eigen(graph.laplacian(graph.star(10, mode="undirected")))
+
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

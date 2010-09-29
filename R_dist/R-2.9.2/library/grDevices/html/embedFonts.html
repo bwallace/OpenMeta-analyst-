@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Embed Fonts in PostScript and PDF</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for embedFonts {grDevices}"><tr><td>embedFonts {grDevices}</td><td align="right">R Documentation</td></tr></table>
+<h2>Embed Fonts in PostScript and PDF</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Runs Ghostscript to process a PDF or PostScript file and
+embed all fonts in the file.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+embedFonts(file, format, outfile = file, fontpaths = "",
+           options = "")
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>file</code></td>
+<td>
+a character string giving the name of the original file.</td></tr>
+<tr valign="top"><td><code>format</code></td>
+<td>
+either <code>"pswrite"</code> or <code>"pdfwrite"</code>.
+If not specified, it is guessed from the suffix of <code>file</code>.</td></tr>
+<tr valign="top"><td><code>outfile</code></td>
+<td>
+the name of the new file (with fonts embedded).</td></tr>
+<tr valign="top"><td><code>fontpaths</code></td>
+<td>
+a character vector giving directories that
+Ghostscript will search for fonts.</td></tr>
+<tr valign="top"><td><code>options</code></td>
+<td>
+a character string containing further options to
+Ghostscript.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This function is not necessary if you just use the standard
+default fonts for PostScript and PDF output.
+</p>
+<p>
+If you use a special font, this function is useful for
+embedding that font in your PostScript or PDF document
+so that it can be shared with others without them having
+to install your special font (provided the font licence allows this).
+</p>
+<p>
+If the special font is not installed for Ghostscript,
+you will need to tell Ghostscript where the font is, using
+something like <code>options="-sFONTPATH=path/to/font"</code>.
+</p>
+<p>
+This function relies on a suitable Ghostscript executable being in
+your path, or the environment variable <span class="env">R_GSCMD</span> (the same as
+<code><a href="dev2bitmap.html">bitmap</a></code>) being set as the full path to the Ghostscript
+executable.
+For Windows users, this should be the path to <code>gswin32c.exe</code>.
+If unset, environment variable <span class="env">GSC</span> is tried and then
+<code>"gswin32c.exe"</code>.
+</p>
+<p>
+Note that Ghostscript may do font substitution, so the font embedded
+may differ from that specified in the original file.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+The shell command used to invoke Ghostscript is returned
+invisibly. This may be useful for debugging purposes as
+you can run the command by hand in a shell to look for problems.</p>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="postscriptFonts.html">postscriptFonts</a></code>,
+<code><a href="Devices.html">Devices</a></code>.
+</p>
+<p>
+Paul Murrell and Brian Ripley (2006) Non-standard fonts in PostScript
+and PDF graphics. <EM>R News</EM>, 6(2):41&ndash;47.
+<a href="http://cran.r-project.org/doc/Rnews/Rnews_2006-2.pdf">http://cran.r-project.org/doc/Rnews/Rnews_2006-2.pdf</a>.
+</p>
+
+
+
+<hr><div align="center">[Package <em>grDevices</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

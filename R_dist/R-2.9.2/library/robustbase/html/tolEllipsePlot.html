@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Tolerance Ellipse Plot</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for tolEllipsePlot {robustbase}"><tr><td>tolEllipsePlot {robustbase}</td><td align="right">R Documentation</td></tr></table>
+<h2>Tolerance Ellipse Plot</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Plots the 0.975 tolerance ellipse of the bivariate data set <code>x</code>.
+The ellipse is defined by those data points whose distance
+is equal to the squareroot of the 0.975 chisquare quantile
+with 2 degrees of freedom.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+tolEllipsePlot(x, m.cov = covMcd(x), cutoff = NULL, id.n = NULL,
+               classic = FALSE, tol = 1e-07,
+               xlab = "", ylab = "",
+               main = "Tolerance ellipse (97.5%)",
+               txt.leg = c("robust", "classical"),
+               col.leg = c("red", "blue"),
+               lty.leg = c("solid","dashed"))
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+a two dimensional matrix or data frame. </td></tr>
+<tr valign="top"><td><code>m.cov</code></td>
+<td>
+an object similar to those of class <code>"mcd"</code>; however
+only its components <code>center</code> and <code>cov</code> will be used.  If
+missing, the MCD will be computed (via <code><a href="covMcd.html">covMcd</a>()</code>).</td></tr>
+<tr valign="top"><td><code>cutoff</code></td>
+<td>
+numeric distance needed to flag data points outside the
+ellipse.</td></tr>
+<tr valign="top"><td><code>id.n</code></td>
+<td>
+number of observations to be identified by a label.  If
+not supplied, the number of observations with distance larger than
+<code>cutoff</code> is used.</td></tr>
+<tr valign="top"><td><code>classic</code></td>
+<td>
+whether to plot the classical distances as well,
+<code>FALSE</code> by default.</td></tr>
+<tr valign="top"><td><code>tol</code></td>
+<td>
+tolerance to be used for computing the inverse, see
+<code><a href="../../SparseM/html/SparseM.solve.html">solve</a></code>.  Defaults to <code>1e-7</code>.</td></tr>
+<tr valign="top"><td><code>xlab, ylab, main</code></td>
+<td>
+passed to <code><a href="../../graphics/html/plotdefault.html">plot.default</a></code>.</td></tr>
+<tr valign="top"><td><code>txt.leg, col.leg, lty.leg</code></td>
+<td>
+character vectors of length 2 for the
+legend, only used if <code>classic = TRUE</code>.</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Peter Filzmoser, Valentin Todorov and Martin Maechler
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="covPlot.html">covPlot</a></code> which calls <code>tolEllipsePlot()</code> when
+desired.
+<code><a href="../../cluster/html/ellipsoidhull.html">ellipsoidhull</a></code> and
+<code><a href="../../cluster/html/predict.ellipsoid.html">predict.ellipsoid</a></code> from package <span class="pkg">cluster</span>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(hbk)
+hbk.x &lt;- data.matrix(hbk[, 1:3])
+mcd &lt;- covMcd(hbk.x)       # compute mcd in advance
+## must be a 2-dimensional data set: take the first two columns :
+tolEllipsePlot(hbk.x[,1:2])
+
+## an "impressive" example:
+data(telef)
+tolEllipsePlot(telef, classic=TRUE)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>robustbase</em> version 0.4-5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

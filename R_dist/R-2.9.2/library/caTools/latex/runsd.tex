@@ -1,0 +1,149 @@
+\HeaderA{runsd}{Standard Deviation of Moving Windows}{runsd}
+\keyword{ts}{runsd}
+\keyword{array}{runsd}
+\keyword{utilities}{runsd}
+\begin{Description}\relax
+Moving (aka running, rolling) Window's Standard Deviation 
+calculated over a vector
+\end{Description}
+\begin{Usage}
+\begin{verbatim}
+  runsd(x, k, center = runmean(x,k), 
+                 endrule=c("sd", "NA", "trim", "keep", "constant", "func"))
+\end{verbatim}
+\end{Usage}
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{x}] numeric vector of length n
+\item[\code{k}] width of moving window; must be an integer between one and n. In case
+of even k's one will have to provide different \code{center} function, since
+\code{\LinkA{runmed}{runmed}} does not take even k's.
+\item[\code{endrule}] character string indicating how the values at the beginning 
+and the end, of the data, should be treated. Only first and last \code{k2} 
+values at both ends are affected, where \code{k2} is the half-bandwidth 
+\code{k2 = k \%/\% 2}.
+\Itemize{
+\item \code{"mad"} - applies the mad function to
+smaller and smaller sections of the array. Equivalent to: 
+\code{for(i in 1:k2) out[i]=mad(x[1:(i+k2)])}. 
+\item \code{"trim"} - trim the ends; output array length is equal to 
+\code{length(x)-2*k2 (out = out[(k2+1):(n-k2)])}. This option mimics 
+output of \code{\LinkA{apply}{apply}} \code{(\LinkA{embed}{embed}(x,k),1,FUN)} and other 
+related functions.
+\item \code{"keep"} - fill the ends with numbers from \code{x} vector 
+\code{(out[1:k2] = x[1:k2])}. This option makes more sense in case of 
+smoothing functions, kept here for consistency.
+\item \code{"constant"} - fill the ends with first and last calculated 
+value in output array \code{(out[1:k2] = out[k2+1])}
+\item \code{"NA"} - fill the ends with NA's \code{(out[1:k2] = NA)}
+\item \code{"func"} - same as \code{"mad"} option except that implemented
+in R for testing purposes. Avoid since it can be very slow for large windows.
+}
+Similar to \code{endrule} in \code{\LinkA{runmed}{runmed}} function which has the 
+following options: \dQuote{\code{c("median", "keep", "constant")}} .
+
+\item[\code{center}] moving window center. Defaults 
+to running mean (\code{\LinkA{runmean}{runmean}} function). Similar to \code{center}  
+in \code{\LinkA{mad}{mad}} function. 
+\end{ldescription}
+\end{Arguments}
+\begin{Details}\relax
+Apart from the end values, the result of y = runmad(x, k) is the same as 
+\dQuote{\code{for(j=(1+k2):(n-k2)) y[j]=sd(x[(j-k2):(j+k2)], na.rm = TRUE)}}. It can handle 
+non-finite numbers like NaN's and Inf's (like \code{\LinkA{mean}{mean}(x, na.rm = TRUE)}).
+
+The main incentive to write this set of functions was relative slowness of 
+majority of moving window functions available in R and its packages.  With the 
+exception of \code{\LinkA{runmed}{runmed}}, a running window median function, all 
+functions listed in "see also" section are slower than very inefficient 
+\dQuote{\code{\LinkA{apply}{apply}(\LinkA{apply}{apply}(x,k),1,FUN)}} approach.
+\end{Details}
+\begin{Value}
+Returns a numeric vector of the same length as \code{x}. Only in case of 
+\code{endrule="trim"}.the output will be shorter.
+\end{Value}
+\begin{Author}\relax
+Jarek Tuszynski (SAIC) \email{jaroslaw.w.tuszynski@saic.com}
+\end{Author}
+\begin{SeeAlso}\relax
+Links related to:
+\Itemize{       
+\item \code{runsd} - \code{\LinkA{sd}{sd}}, \code{\LinkA{rollVar}{rollVar}} from 
+\pkg{fSeries} library
+\item Other moving window functions  from this package: \code{\LinkA{runmin}{runmin}}, 
+\code{\LinkA{runmax}{runmax}}, \code{\LinkA{runquantile}{runquantile}}, \code{\LinkA{runmad}{runmad}} and
+\code{\LinkA{runmean}{runmean}} 
+\item generic running window functions: \code{\LinkA{apply}{apply}}\code{
+     (\LinkA{embed}{embed}(x,k), 1, FUN)} (fastest), \code{\LinkA{rollFun}{rollFun}} 
+from \pkg{fSeries} (slow), \code{\LinkA{running}{running}} from \pkg{gtools} 
+package (extremely slow for this purpose), \code{\LinkA{rapply}{rapply}} from 
+\pkg{zoo} library, \code{\LinkA{subsums}{subsums}} from 
+\pkg{magic} library can perform running window operations on data with any 
+dimensions. 
+}
+\end{SeeAlso}
+\begin{Examples}
+\begin{ExampleCode}
+  # show runmed function
+  k=25; n=200;
+  x = rnorm(n,sd=30) + abs(seq(n)-n/4)
+  col = c("black", "red", "green")
+  m=runmean(x, k)
+  y=runsd(x, k, center=m)
+  plot(x, col=col[1], main = "Moving Window Analysis Functions")
+  lines(m    , col=col[2])
+  lines(m-y/2, col=col[3])
+  lines(m+y/2, col=col[3])
+  lab = c("data", "runmean", "runmean-runsd/2", "runmean+runsd/2")
+  legend(0,0.9*n, lab, col=col, lty=1 )
+
+  # basic tests against apply/embed
+  eps = .Machine$double.eps ^ 0.5
+  k=25 # odd size window
+  a = runsd(x,k, endrule="trim")
+  b = apply(embed(x,k), 1, sd)
+  stopifnot(all(abs(a-b)<eps));
+  k=24 # even size window
+  a = runsd(x,k, endrule="trim")
+  b = apply(embed(x,k), 1, sd)
+  stopifnot(all(abs(a-b)<eps));
+  
+  # test against loop approach
+  # this test works fine at the R prompt but fails during package check - need to investigate
+  k=25; n=200;
+  x = rnorm(n,sd=30) + abs(seq(n)-n/4) # create random data
+  x[seq(1,n,11)] = NaN;                # add NANs
+  k2 = k
+  k1 = k-k2-1
+  a = runsd(x, k)
+  b = array(0,n)
+  for(j in 1:n) {
+    lo = max(1, j-k1)
+    hi = min(n, j+k2)
+    b[j] = sd(x[lo:hi], na.rm = TRUE)
+  }
+  #stopifnot(all(abs(a-b)<eps));
+  
+  # compare calculation at array ends
+  k=25; n=100;
+  x = rnorm(n,sd=30) + abs(seq(n)-n/4)
+  a = runsd(x, k, endrule="sd" )   # fast C code
+  b = runsd(x, k, endrule="func")  # slow R code
+  stopifnot(all(abs(a-b)<eps));
+  
+  # test if moving windows forward and backward gives the same results
+  k=51;
+  a = runsd(x     , k)
+  b = runsd(x[n:1], k)
+  stopifnot(all(abs(a[n:1]-b)<eps));
+
+  # speed comparison
+  ## Not run: 
+  x=runif(1e5); k=51;                       # reduce vector and window sizes
+  system.time(runsd( x,k,endrule="trim"))
+  system.time(apply(embed(x,k), 1, sd)) 
+  
+## End(Not run)
+\end{ExampleCode}
+\end{Examples}
+

@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: List Vignettes in an HTML Browser</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for browseVignettes {utils}"><tr><td>browseVignettes {utils}</td><td align="right">R Documentation</td></tr></table>
+<h2>List Vignettes in an HTML Browser</h2>
+
+
+<h3>Description</h3>
+
+<p>
+List available vignettes in an HTML browser with links to PDF,
+LaTeX/noweb source, and (tangled) R code (if available).
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+browseVignettes(package = NULL, lib.loc = NULL, all = TRUE)
+
+## S3 method for class 'browseVignettes':
+print(x, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>package</code></td>
+<td>
+a character vector with the names of packages to
+search through, or <code>NULL</code> in which "all" packages (as defined
+by argument <code>all</code>) are searched.</td></tr>
+<tr valign="top"><td><code>lib.loc</code></td>
+<td>
+a character vector of directory names of <font face="Courier New,Courier" color="#666666"><b>R</b></font> libraries,
+or <code>NULL</code>.  The default value of <code>NULL</code> corresponds to all
+libraries currently known.</td></tr>
+<tr valign="top"><td><code>all</code></td>
+<td>
+logical; if <code>TRUE</code> search
+all available packages in the library trees specified by <code>lib.loc</code>, 
+and if <code>FALSE</code>, search only attached packages.</td></tr>
+<tr valign="top"><td><code>x</code></td>
+<td>
+Object of class <code>browseVignettes</code>.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+Further arguments, ignored by the <code>print</code> method. </td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Function <code>browseVignettes</code> returns an object of the same class;
+the print method displays it as an HTML page in a browser (using
+<code><a href="browseURL.html">browseURL</a></code>).
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="browseURL.html">browseURL</a></code>, <code><a href="vignette.html">vignette</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>## Not run: 
+## List vignettes from all *attached* packages
+browseVignettes(all = FALSE)
+
+## List vignettes from a specific package
+browseVignettes("grid")
+## End(Not run)</pre>
+
+
+
+<hr><div align="center">[Package <em>utils</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Dataset Cleaning</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for clean {dprep}"><tr><td>clean {dprep}</td><td align="right">R Documentation</td></tr></table>
+<h2>Dataset Cleaning</h2>
+
+
+<h3>Description</h3>
+
+<p>
+A function to eliminate rows and columns that have 
+a percentage of missing values greater than the allowed 
+tolerance.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+clean(w, tol.col = 0.5, tol.row = 0.3, name = "")
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>w</code></td>
+<td>
+the dataset to be examined and cleaned</td></tr>
+<tr valign="top"><td><code>tol.col</code></td>
+<td>
+maximum ratio of missing values allowed in columns. The
+default value is 0.5. Columns with a larger ratio of missing will be eliminated
+unless they are known to be relevant attributes. 
+</td></tr>
+<tr valign="top"><td><code>tol.row</code></td>
+<td>
+maximum ratio of missing values allowed in rows. The
+default value is 0.3. Rows with a ratio of missing that is larger that the
+established tolerance will be eliminated.
+</td></tr>
+<tr valign="top"><td><code>name</code></td>
+<td>
+name of the dataset to be used for the optional report</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This function can create an optional report on the cleaning
+process if the comment symbols are removed from the last lines of code.
+The report is returned to the workspace, where it can be reexamined
+as needed. The report object's name begins with: Clean.rep.
+</p>
+
+
+<h3>Value</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>w</code></td>
+<td>
+the original dataset, with missing values that were in
+relevant variables imputed</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Caroline Rodriguez
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Acuna, E. and Rodriguez, C. (2004). The treatment of missing values and its effect in the classifier accuracy.
+In D. Banks,  L. House, F.R. McMorris, P. Arabie, W. Gaul (Eds).
+Classification, Clustering and Data Mining Applications. Springer-Verlag Berlin-Heidelberg, 639-648.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="ce.impute.html">ce.impute</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+#-----Dataset cleaning-----
+data(hepatitis)
+hepa.cl=clean(hepatitis,0.5,0.3,name="hepatitis-clean")
+</pre>
+
+
+
+<hr><div align="center">[Package <em>dprep</em> version 2.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

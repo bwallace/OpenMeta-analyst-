@@ -1,0 +1,169 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Work with an Rd object</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for Rd2HTML {tools}"><tr><td>Rd2HTML {tools}</td><td align="right">R Documentation</td></tr></table>
+<h2>Work with an Rd object</h2>
+
+
+<h3>Description</h3>
+
+<p>
+These experimental functions take the output of the
+<code><a href="parse_Rd.html">parse_Rd</a></code> function and check it or produce a help
+page from it.  Their interfaces (and existence!) are subject to
+change.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+Rd2HTML(Rd, out = "", package = "", defines = .Platform$OS.type,
+        encoding = "unknown", Links = NULL, CHM = FALSE)
+
+Rd2txt(Rd, out = "", package = "", defines = .Platform$OS.type)
+
+Rd2latex(Rd, out = "", defines = .Platform$OS.type, encoding = "unknown")
+
+Rd2ex(Rd, out = "", defines = .Platform$OS.type, encoding = "unknown")
+
+checkRd(Rd, defines = .Platform$OS.type, encoding = "unknown",
+        unknownOK = FALSE, listOK = TRUE)
+
+findHTMLlinks(pkgDir = "", lib.loc = NULL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>Rd</code></td>
+<td>
+the <code>Rd</code> object. </td></tr>
+<tr valign="top"><td><code>out</code></td>
+<td>
+a filename or connection object to which to write the output. </td></tr>
+<tr valign="top"><td><code>package</code></td>
+<td>
+the package to list in the output. </td></tr>
+<tr valign="top"><td><code>defines</code></td>
+<td>
+string(s) to use in <code>"#ifdef"</code> tests. </td></tr>
+<tr valign="top"><td><code>encoding</code></td>
+<td>
+encoding to use if the file does not specify one. </td></tr>
+<tr valign="top"><td><code>Links</code></td>
+<td>
+<code>NULL</code> or a named (by topics) character vector of
+links, as returned by <code>findHTMLlinks</code>.</td></tr>
+<tr valign="top"><td><code>CHM</code></td>
+<td>
+logical: prepare HTML suitable for Compiled HTML?</td></tr>
+<tr valign="top"><td><code>unknownOK</code></td>
+<td>
+unrecognized macros are treated as errors if
+<code>FALSE</code>, otherwise warnings. </td></tr>
+<tr valign="top"><td><code>listOK</code></td>
+<td>
+unnecessary non-empty braces (e.g. around text, not
+as an argument) are treated as errors if <code>FALSE</code>, otherwise warnings. </td></tr>
+<tr valign="top"><td><code>pkgDir</code></td>
+<td>
+The top-level directory of an installed package.</td></tr>
+<tr valign="top"><td><code>lib.loc</code></td>
+<td>
+character vector describing the location of <font face="Courier New,Courier" color="#666666"><b>R</b></font> library trees
+to scan: the default indicates <code><a href="../../base/html/libPaths.html">.libPaths</a>()</code>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The <code>Rd2HTML</code> converter is still in development, and currently
+has the following known deficiencies:
+<ul>
+<li><code>"\enc"</code> is not supported.
+<li>Error messages are not as informative as they could be.  Often
+using <code>parse_Rd(..., verbose = TRUE)</code> will give a better idea
+of what is wrong.
+<li>Formatting is not always optimal.
+</ul>
+
+<p>
+<code>Rd2ex</code> extracts the examples in the format used by
+<code><a href="../../utils/html/example.html">example</a></code> and <font face="Courier New,Courier" color="#666666"><b>R</b></font> utilities.  it reproduces the previous
+version up to
+<ul>
+<li>The parser does not interpret markup in <font face="Courier New,Courier" color="#666666"><b>R</b></font> comments: this used
+to be done.
+<li>Small improvements in layout.
+</ul>
+
+<p>
+<code>findHTMLlinks</code> uses in decreasing priority
+<ul>
+<li>The package in <code>pkgDir</code>: this is used when converting
+HTML help for that package.
+<li>The packages that are loaded in a vanilla <font face="Courier New,Courier" color="#666666"><b>R</b></font> session.
+<li>Other packages found in the library trees specified by
+<code>lib.loc</code> in the order of the trees and alphabetically within a
+library tree.
+</ul>
+
+<h3>Value</h3>
+
+<p>
+<code>Rd2*</code> are executed mainly for the side effect of writing the
+converted help page.  Its value is the name of that page.
+<br>
+<code>checkRd</code> returns <code>TRUE</code> if the file has no errors; it
+generates an R error otherwise.
+<br>
+<code>findHTMLlinks</code> returns a named character vector of relative
+file paths, in the same package or in a package in the same library tree.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Duncan Murdoch, Brian Ripley
+</p>
+
+
+<h3>References</h3>
+
+<p>
+<a href="http://developer.r-project.org/parseRd.pdf">http://developer.r-project.org/parseRd.pdf</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="parse_Rd.html">parse_Rd</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+
+toolsRd &lt;- Rd_db("tools")
+con &lt;- textConnection(toolsRd[[grep("Rd2HTML.Rd", names(toolsRd))]], "rt")
+outfile &lt;- paste(tempfile(), ".html", sep="")
+browseURL(Rd2HTML(con, outfile, package="tools"))
+close(con)
+ 
+con &lt;- textConnection(toolsRd[["Rd2HTML.Rd"]], "rt")
+checkRd(con) # A stricter test than Rd2HTML uses
+close(con)
+
+</pre>
+
+
+
+<hr><div align="center">[Package <em>tools</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

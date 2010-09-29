@@ -1,0 +1,288 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Box Plots</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for boxplot {graphics}"><tr><td>boxplot {graphics}</td><td align="right">R Documentation</td></tr></table>
+<h2>Box Plots</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Produce box-and-whisker plot(s) of the given (grouped) values.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+boxplot(x, ...)
+
+## S3 method for class 'formula':
+boxplot(formula, data = NULL, ..., subset, na.action = NULL)
+
+## Default S3 method:
+boxplot(x, ..., range = 1.5, width = NULL, varwidth = FALSE,
+        notch = FALSE, outline = TRUE, names, plot = TRUE,
+        border = par("fg"), col = NULL, log = "",
+        pars = list(boxwex = 0.8, staplewex = 0.5, outwex = 0.5),
+        horizontal = FALSE, add = FALSE, at = NULL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>formula</code></td>
+<td>
+a formula, such as <code>y ~ grp</code>, where <code>y</code> is a
+numeric vector of data values to be split into groups according to
+the grouping variable <code>grp</code> (usually a factor).</td></tr>
+<tr valign="top"><td><code>data</code></td>
+<td>
+a data.frame (or list) from which the variables in
+<code>formula</code> should be taken.</td></tr>
+<tr valign="top"><td><code>subset</code></td>
+<td>
+an optional vector specifying a subset of observations
+to be used for plotting.</td></tr>
+<tr valign="top"><td><code>na.action</code></td>
+<td>
+a function which indicates what should happen
+when the data contain <code>NA</code>s.  The default is to ignore missing
+values in either the response or the group.</td></tr>
+<tr valign="top"><td><code>x</code></td>
+<td>
+for specifying data from which the boxplots are to be
+produced. Either a numeric vector, or a single list containing such
+vectors. Additional unnamed arguments specify further data
+as separate vectors (each corresponding to a component boxplot).
+<code><a href="../../base/html/NA.html">NA</a></code>s are allowed in the data.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+For the <code>formula</code> method, named arguments to be passed to
+the default method.
+<br>
+For the default method, unnamed arguments are additional data
+vectors (unless <code>x</code> is a list when they are ignored),
+and named arguments are arguments and graphical parameters to be
+passed to <code><a href="bxp.html">bxp</a></code> in addition to the ones
+given by argument <code>pars</code> (and override those in <code>pars</code>).
+</td></tr>
+<tr valign="top"><td><code>range</code></td>
+<td>
+this determines how far the plot whiskers extend out
+from the box.  If <code>range</code> is positive, the whiskers extend
+to the most extreme data point which is no more than
+<code>range</code> times the interquartile range from the box. A value
+of zero causes the whiskers to extend to the data extremes.</td></tr>
+<tr valign="top"><td><code>width</code></td>
+<td>
+a vector giving the relative widths of the boxes making
+up the plot.</td></tr>
+<tr valign="top"><td><code>varwidth</code></td>
+<td>
+if <code>varwidth</code> is <code>TRUE</code>, the boxes are
+drawn with widths proportional to the square-roots of the number
+of observations in the groups.</td></tr>
+<tr valign="top"><td><code>notch</code></td>
+<td>
+if <code>notch</code> is <code>TRUE</code>, a notch is drawn in
+each side of the boxes.  If the notches of two plots do not
+overlap this is &lsquo;strong evidence&rsquo; that the two medians differ
+(Chambers <EM>et al.</EM>, 1983, p. 62).  See <code><a href="../../grDevices/html/boxplot.stats.html">boxplot.stats</a></code>
+for the calculations used.</td></tr>
+<tr valign="top"><td><code>outline</code></td>
+<td>
+if <code>outline</code> is not true, the outliers are
+not drawn (as points whereas S+ uses lines).</td></tr>
+<tr valign="top"><td><code>names</code></td>
+<td>
+group labels which will be printed under each boxplot.
+Can be a character vector or an <a href="../../base/html/expression.html">expression</a> (see
+<a href="../../grDevices/html/plotmath.html">plotmath</a>).</td></tr>
+<tr valign="top"><td><code>boxwex</code></td>
+<td>
+a scale factor to be applied to all boxes.  When there
+are only a few groups, the appearance of the plot can be improved
+by making the boxes narrower.</td></tr>
+<tr valign="top"><td><code>staplewex</code></td>
+<td>
+staple line width expansion, proportional to box
+width.</td></tr>
+<tr valign="top"><td><code>outwex</code></td>
+<td>
+outlier line width expansion, proportional to box
+width.</td></tr>
+<tr valign="top"><td><code>plot</code></td>
+<td>
+if <code>TRUE</code> (the default) then a boxplot is
+produced.  If not, the summaries which the boxplots are based on
+are returned.</td></tr>
+<tr valign="top"><td><code>border</code></td>
+<td>
+an optional vector of colors for the outlines of the
+boxplots.  The values in <code>border</code> are recycled if the
+length of <code>border</code> is less than the number of plots.</td></tr>
+<tr valign="top"><td><code>col</code></td>
+<td>
+if <code>col</code> is non-null it is assumed to contain colors
+to be used to colour the bodies of the box plots. By default they
+are in the background colour.</td></tr>
+<tr valign="top"><td><code>log</code></td>
+<td>
+character indicating if x or y or both coordinates should
+be plotted in log scale.</td></tr>
+<tr valign="top"><td><code>pars</code></td>
+<td>
+a list of (potentially many) more graphical parameters,
+e.g., <code>boxwex</code> or <code>outpch</code>; these are passed to
+<code><a href="bxp.html">bxp</a></code> (if <code>plot</code> is true); for details, see there.</td></tr>
+<tr valign="top"><td><code>horizontal</code></td>
+<td>
+logical indicating if the boxplots should be
+horizontal; default <code>FALSE</code> means vertical boxes.</td></tr>
+<tr valign="top"><td><code>add</code></td>
+<td>
+logical, if true <EM>add</EM> boxplot to current plot.</td></tr>
+<tr valign="top"><td><code>at</code></td>
+<td>
+numeric vector giving the locations where the boxplots should
+be drawn, particularly when <code>add = TRUE</code>;
+defaults to <code>1:n</code> where <code>n</code> is the number of boxes.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The generic function <code>boxplot</code> currently has a default method
+(<code>boxplot.default</code>) and a formula interface (<code>boxplot.formula</code>).
+</p>
+<p>
+If multiple groups are supplied either as multiple arguments or via a
+formula, parallel boxplots will be plotted, in the order of the
+arguments or the order of the levels of the factor (see
+<code><a href="../../base/html/factor.html">factor</a></code>).
+</p>
+<p>
+Missing values are ignored when forming boxplots.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+List with the following components:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>stats</code></td>
+<td>
+a matrix, each column contains the extreme of the lower
+whisker, the lower hinge, the median, the upper hinge and the
+extreme of the upper whisker for one group/plot.  If all the inputs
+have the same class attribute, so will this component.</td></tr>
+<tr valign="top"><td><code>n</code></td>
+<td>
+a vector with the number of observations in each group.</td></tr>
+<tr valign="top"><td><code>conf</code></td>
+<td>
+a matrix where each column contains the lower and upper
+extremes of the notch.</td></tr>
+<tr valign="top"><td><code>out</code></td>
+<td>
+the values of any data points which lie beyond the
+extremes of the whiskers.</td></tr>
+<tr valign="top"><td><code>group</code></td>
+<td>
+a vector of the same length as <code>out</code> whose elements
+indicate to which group the outlier belongs.</td></tr>
+<tr valign="top"><td><code>names</code></td>
+<td>
+a vector of names for the groups.</td></tr>
+</table>
+
+<h3>References</h3>
+
+<p>
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+<EM>The New S Language</EM>.
+Wadsworth &amp; Brooks/Cole.
+</p>
+<p>
+Chambers, J. M., Cleveland, W. S., Kleiner, B. and Tukey, P. A. (1983)
+<EM>Graphical Methods for Data Analysis.</EM>  Wadsworth &amp; Brooks/Cole.
+</p>
+<p>
+Murrell, P. (2005) <EM>R Graphics</EM>. Chapman &amp; Hall/CRC Press.
+</p>
+<p>
+See also <code><a href="../../grDevices/html/boxplot.stats.html">boxplot.stats</a></code>.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../grDevices/html/boxplot.stats.html">boxplot.stats</a></code> which does the computation,
+<code><a href="bxp.html">bxp</a></code> for the plotting and more examples;
+and <code><a href="stripchart.html">stripchart</a></code> for an alternative (with small data
+sets).
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## boxplot on a formula:
+boxplot(count ~ spray, data = InsectSprays, col = "lightgray")
+# *add* notches (somewhat funny here):
+boxplot(count ~ spray, data = InsectSprays,
+        notch = TRUE, add = TRUE, col = "blue")
+
+boxplot(decrease ~ treatment, data = OrchardSprays,
+        log = "y", col = "bisque")
+
+rb &lt;- boxplot(decrease ~ treatment, data = OrchardSprays, col="bisque")
+title("Comparing boxplot()s and non-robust mean +/- SD")
+
+mn.t &lt;- tapply(OrchardSprays$decrease, OrchardSprays$treatment, mean)
+sd.t &lt;- tapply(OrchardSprays$decrease, OrchardSprays$treatment, sd)
+xi &lt;- 0.3 + seq(rb$n)
+points(xi, mn.t, col = "orange", pch = 18)
+arrows(xi, mn.t - sd.t, xi, mn.t + sd.t,
+       code = 3, col = "pink", angle = 75, length = .1)
+
+## boxplot on a matrix:
+mat &lt;- cbind(Uni05 = (1:100)/21, Norm = rnorm(100),
+             `5T` = rt(100, df = 5), Gam2 = rgamma(100, shape = 2))
+boxplot(as.data.frame(mat),
+        main = "boxplot(as.data.frame(mat), main = ...)")
+par(las=1)# all axis labels horizontal
+boxplot(as.data.frame(mat), main = "boxplot(*, horizontal = TRUE)",
+        horizontal = TRUE)
+
+## Using 'at = ' and adding boxplots -- example idea by Roger Bivand :
+
+boxplot(len ~ dose, data = ToothGrowth,
+        boxwex = 0.25, at = 1:3 - 0.2,
+        subset = supp == "VC", col = "yellow",
+        main = "Guinea Pigs' Tooth Growth",
+        xlab = "Vitamin C dose mg",
+        ylab = "tooth length",
+        xlim = c(0.5, 3.5), ylim = c(0, 35), yaxs = "i")
+boxplot(len ~ dose, data = ToothGrowth, add = TRUE,
+        boxwex = 0.25, at = 1:3 + 0.2,
+        subset = supp == "OJ", col = "orange")
+legend(2, 9, c("Ascorbic acid", "Orange juice"),
+       fill = c("yellow", "orange"))
+
+## more examples in  help(bxp)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>graphics</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

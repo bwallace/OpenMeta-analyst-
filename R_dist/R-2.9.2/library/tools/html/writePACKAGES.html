@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Generate PACKAGES files</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for write_PACKAGES {tools}"><tr><td>write_PACKAGES {tools}</td><td align="right">R Documentation</td></tr></table>
+<h2>Generate PACKAGES files</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Generate &lsquo;<span class="file">PACKAGES</span>&rsquo; and &lsquo;<span class="file">PACKAGES.gz</span>&rsquo; files for a
+repository of source or Mac/Windows binary packages.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+write_PACKAGES(dir = ".", fields = NULL,
+               type = c("source", "mac.binary", "win.binary"),
+               verbose = FALSE, unpacked = FALSE, subdirs = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>dir</code></td>
+<td>
+Character vector describing the location of the repository
+(directory including source or binary packages) to generate the
+&lsquo;<span class="file">PACKAGES</span>&rsquo; and &lsquo;<span class="file">PACKAGES.gz</span>&rsquo; files from and write them to.
+</td></tr>
+<tr valign="top"><td><code>fields</code></td>
+<td>
+a character vector giving the fields to be used in the
+&lsquo;<span class="file">PACKAGES</span>&rsquo; and &lsquo;<span class="file">PACKAGES.gz</span>&rsquo; files in addition to the
+default ones, or <code>NULL</code> (default).  The default corresponds to
+the fields needed by <code><a href="../../utils/html/update.packages.html">available.packages</a></code>:
+<code>"Package"</code>, <code>"Bundle"</code>, <code>"Priority"</code>,
+<code>"Version"</code>, <code>"Depends"</code>, <code>"Suggests"</code>,
+<code>"Imports"</code> and <code>"Contains"</code>.
+</td></tr>
+<tr valign="top"><td><code>type</code></td>
+<td>
+Type of packages: currently source &lsquo;<span class="file">.tar.gz</span>&rsquo; archives, and Mac
+or Windows binary (&lsquo;<span class="file">.tgz</span>&rsquo; or &lsquo;<span class="file">.zip</span>&rsquo;, respectively)
+packages are supported.  Defaults to <code>"win.binary"</code> on Windows
+and to <code>"source"</code> otherwise.
+</td></tr>
+<tr valign="top"><td><code>verbose</code></td>
+<td>
+logical.  Should packages be listed as they are
+processed?</td></tr>
+<tr valign="top"><td><code>unpacked</code></td>
+<td>
+a logical indicating whether the package contents are
+available in unpacked form or not (default).</td></tr>
+<tr valign="top"><td><code>subdirs</code></td>
+<td>
+either logical (to indicate if subdirectories should be
+included) or a character vector of subdirectories to include.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>type = "win.binary"</code> uses <code><a href="../../base/html/connections.html">unz</a></code> connections to read
+all &lsquo;<span class="file">DESCRIPTION</span>&rsquo; files contained in the (zipped) binary packages
+for Windows in the given directory <code>dir</code>, and builds
+&lsquo;<span class="file">PACKAGES</span>&rsquo; and &lsquo;<span class="file">PACKAGES.gz</span>&rsquo; files from this information.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+Invisibly returns the number of packages described in the resulting
+&lsquo;<span class="file">PACKAGES</span>&rsquo; and &lsquo;<span class="file">PACKAGES.gz</span>&rsquo; files.  If 0, no packages were
+found and no files were written.</p>
+
+<h3>Note</h3>
+
+<p>
+Processing &lsquo;<span class="file">.tar.gz</span>&rsquo; archives to extract the &lsquo;<span class="file">DESCRIPTION</span>&rsquo;
+files is quite slow.
+</p>
+<p>
+This function can be useful on other OSes to prepare a repository to
+be accessed by Windows machines, so <code>type = "win.binary"</code> should
+work on all OSes.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Uwe Ligges and R-core.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+See <code><a href="../../base/html/dcf.html">read.dcf</a></code> and <code><a href="../../base/html/dcf.html">write.dcf</a></code> for reading
+&lsquo;<span class="file">DESCRIPTION</span>&rsquo; files and writing the &lsquo;<span class="file">PACKAGES</span>&rsquo; and
+&lsquo;<span class="file">PACKAGES.gz</span>&rsquo; files.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## Not run: 
+write_PACKAGES("c:/myFolder/myRepository")  # on Windows
+write_PACKAGES("/pub/RWin/bin/windows/contrib/2.1",
+               type="win.binary")  # on Linux
+## End(Not run)</pre>
+
+
+
+<hr><div align="center">[Package <em>tools</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,34 @@
+\HeaderA{bitShiftL}{Bitwise Shift Operator (to the Left or Right)}{bitShiftL}
+\aliasA{bitShiftR}{bitShiftL}{bitShiftR}
+\keyword{arith}{bitShiftL}
+\keyword{utilities}{bitShiftL}
+\begin{Description}\relax
+.......
+\end{Description}
+\begin{Usage}
+\begin{verbatim}
+bitShiftL(a, b)
+bitShiftR(a, b)
+\end{verbatim}
+\end{Usage}
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{a}] numeric vector 
+\item[\code{b}] integer vector 
+\end{ldescription}
+\end{Arguments}
+\begin{Value}
+numeric vector of the maximum length as \code{a} or \code{b} containing
+the value of \code{a} shifted to the left or right by \code{b} bits.
+NA is returned wherever the value of \code{a} or \code{b} is not finite,
+or, wherever the magnitude of \code{a} is greater than or equal to 2**32.
+\end{Value}
+\begin{Examples}
+\begin{ExampleCode}
+  bitShiftR(-1,1) == 2147483647
+  bitShiftL(2147483647,1) == 4294967294
+  bitShiftL(-1,1) == 4294967294
+
+\end{ExampleCode}
+\end{Examples}
+

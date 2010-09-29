@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: RGB Color Specification</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for rgb {grDevices}"><tr><td>rgb {grDevices}</td><td align="right">R Documentation</td></tr></table>
+<h2>RGB Color Specification</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This function creates colors corresponding to the given
+intensities (between 0 and <code>max</code>) of the red, green and blue
+primaries.
+</p>
+<p>
+An alpha transparency value can also be specified
+(0 means fully transparent and <code>max</code> means opaque).
+If <code>alpha</code> is not specified, an opaque colour is generated.
+</p>
+<p>
+The names argument may be used to provide names for the
+colors.
+</p>
+<p>
+The values returned by these functions can be used with a
+<code>col=</code> specification in graphics functions or in <code><a href="../../graphics/html/par.html">par</a></code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+rgb(red, green, blue, alpha, names = NULL, maxColorValue = 1)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>red, blue, green, alpha</code></td>
+<td>
+numeric vectors with values in <i>[0, M]</i>
+where <i>M</i> is <code>maxColorValue</code>.  When this is <code>255</code>, the
+<code>red</code>, <code>blue</code>, <code>green</code>, and <code>alpha</code>
+values are coerced to integers in <code>0:255</code> and the result is
+computed most efficiently.</td></tr>
+<tr valign="top"><td><code>names</code></td>
+<td>
+character. The names for the resulting vector.</td></tr>
+<tr valign="top"><td><code>maxColorValue</code></td>
+<td>
+number giving the maximum of the color values
+range, see above.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The colors may be specified by passing a matrix or dataframe as argument
+<code>red</code>, and leaving <code>blue</code> and <code>green</code> missing.
+In this case the first three columns of <code>red</code> are taken to be
+the <code>red</code>, <code>green</code> and <code>blue</code> values.
+</p>
+<p>
+Semi-transparent colors (<code>0 &lt; alpha &lt; 1</code>) are supported only on
+some devices: at the time of writing on the <code><a href="pdf.html">pdf</a></code>,
+<code>windows</code>, <code>quartz</code> and <code>X11(type="cairo")</code> devices and
+associated bitmap devices (<code>jpeg</code>, <code>png</code>, <code>bmp</code>,
+<code>tiff</code> and <code>bitmap</code>). They are supported by several
+third-party devices such as those in packages <span class="pkg">Cairo</span>,
+<span class="pkg">cairoDevice</span> and <span class="pkg">JavaGD</span>.  Only some of these
+devices support semi-transparent backgrounds.
+</p>
+<p>
+Most other graphics devices plot semi-transparent colors as fully
+transparent, usually with a warning when first encountered.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A character vector with elements of 7 or 9 characters, <code>"#"</code>
+followed by the red, blue, green and optionally alpha values in
+hexadecimal (after rescaling to <code>0 ... 255</code>).</p>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="col2rgb.html">col2rgb</a></code>for translating <font face="Courier New,Courier" color="#666666"><b>R</b></font> colors to RGB vectors;
+<code><a href="palettes.html">rainbow</a></code>, <code><a href="hsv.html">hsv</a></code>, <code><a href="hcl.html">hcl</a></code>,
+<code><a href="gray.html">gray</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+rgb(0,1,0)
+
+rgb((0:15)/15, green=0, blue=0, names=paste("red",0:15,sep="."))
+
+rgb(0, 0:12, 0, max = 255)# integer input
+
+ramp &lt;- colorRamp(c("red", "white"))
+rgb( ramp(seq(0, 1, length = 5)), max = 255)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>grDevices</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

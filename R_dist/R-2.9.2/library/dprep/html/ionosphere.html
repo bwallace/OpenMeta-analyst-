@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: The Ionosphere dataset</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for ionosphere {dprep}"><tr><td>ionosphere {dprep}</td><td align="right">R Documentation</td></tr></table>
+<h2>The Ionosphere dataset</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The Ionosphere dataset from the UCI Machine Learning Repository
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>data(ionosphere)</pre>
+
+
+<h3>Format</h3>
+
+<p>
+A data frame with 351 observations on the following 33 variables.
+</p>
+
+
+<h3>Details</h3>
+
+<p>
+The original dataset contains 34 predictors, but we have eliminated the two first features,
+because the first feature had the same value in one of the classes and the second feature assumes
+the value 0 in all observations.
+</p>
+
+
+<h3>Source</h3>
+
+<p>
+The UCI Machine Learning Database Repository at:
+<ul>
+<li><a href="ftp://ftp.ics.uci.edu/pub/machine-learning-databases">ftp://ftp.ics.uci.edu/pub/machine-learning-databases</a>
+<li><a href="http://www.ics.uci.edu/~mlearn/MLRepository.html">http://www.ics.uci.edu/~mlearn/MLRepository.html</a>
+</ul>
+
+<h3>Examples</h3>
+
+<pre>
+#---Outlier detection in  ionosphere class-1 using the Mahalanobis distiance----
+data(ionosphere)
+mahaout(ionosphere,1)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>dprep</em> version 2.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

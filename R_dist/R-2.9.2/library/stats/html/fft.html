@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Fast Discrete Fourier Transform</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for fft {stats}"><tr><td>fft {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>Fast Discrete Fourier Transform</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Performs the Fast Fourier Transform of an array.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+fft(z, inverse = FALSE)
+mvfft(z, inverse = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>z</code></td>
+<td>
+a real or complex array containing the values to be
+transformed.</td></tr>
+<tr valign="top"><td><code>inverse</code></td>
+<td>
+if <code>TRUE</code>, the unnormalized inverse transform is
+computed (the inverse has a <code>+</code> in the exponent of <i>e</i>,
+but here, we do <EM>not</EM> divide by <code>1/length(x)</code>).</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+When <code>z</code> is a vector, the value computed and returned by
+<code>fft</code> is the unnormalized univariate Fourier transform of the
+sequence of values in <code>z</code>.
+When <code>z</code> contains an array, <code>fft</code> computes and returns the
+multivariate (spatial) transform.  If <code>inverse</code> is <code>TRUE</code>,
+the (unnormalized) inverse Fourier transform is returned, i.e.,
+if <code>y &lt;- fft(z)</code>, then <code>z</code> is
+<code>fft(y, inverse = TRUE) / length(y)</code>.
+<br>
+By contrast, <code>mvfft</code> takes a real or complex matrix as argument,
+and returns a similar shaped matrix, but with each column replaced by
+its discrete Fourier transform.  This is useful for analyzing
+vector-valued series.
+<br>
+The FFT is fastest when the length of the series being transformed
+is highly composite (i.e., has many factors).  If this is not the
+case, the transform may take a long time to compute and will use a
+large amount of memory.</p>
+
+<h3>References</h3>
+
+<p>
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+<EM>The New S Language</EM>.
+Wadsworth &amp; Brooks/Cole.
+</p>
+<p>
+Singleton, R. C. (1979)
+Mixed Radix Fast Fourier Transforms,
+in <EM>Programs for Digital Signal Processing</EM>,
+IEEE Digital Signal Processing Committee eds.
+IEEE Press.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="convolve.html">convolve</a></code>, <code><a href="nextn.html">nextn</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+x &lt;- 1:4
+fft(x)
+fft(fft(x), inverse = TRUE)/length(x)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

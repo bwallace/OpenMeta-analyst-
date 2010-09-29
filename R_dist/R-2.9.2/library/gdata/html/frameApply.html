@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Subset analysis on data frames</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for frameApply {gdata}"><tr><td>frameApply {gdata}</td><td align="right">R Documentation</td></tr></table>
+<h2>Subset analysis on data frames</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Apply a function to row subsets of a data frame.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+frameApply(x, by=NULL, on=by[1], fun=function(xi) c(Count=nrow(xi)), 
+           subset=TRUE, simplify=TRUE, byvar.sep="\\$\\@\\$", ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+a data frame</td></tr>
+<tr valign="top"><td><code>by</code></td>
+<td>
+names of columns in <code>x</code> specifying the variables to use
+to form the subgroups. 
+None of the <code>by</code> variables should have
+the name "sep" (you will get an error if one of them does; a bit of
+laziness in the code). Unused levels of 
+the <code>by</code> variables will be dropped. Use <code>by = NULL</code> (the
+default) to indicate that all of the data is to be treated as a
+single (trivial) subgroup.</td></tr>
+<tr valign="top"><td><code>on</code></td>
+<td>
+names of columns in <code>x</code> specifying columns over which
+<code>fun</code> is to be applied. These can include columns specified in
+<code>by</code>, (as with the default) although that is not usually the case.</td></tr>
+<tr valign="top"><td><code>fun</code></td>
+<td>
+a function that can operate on data frames that are row
+subsets of <code>x[on]</code>. If <code>simplify = TRUE</code>,
+the return value of the function should always be either a try-error
+(see <code><a href="../../base/html/try.html">try</a></code>), or a vector of
+fixed length (i.e. same length for every subset), preferably with
+named elements.</td></tr>
+<tr valign="top"><td><code>subset</code></td>
+<td>
+logical vector (can be specified in terms of variables
+in data). This row subset of <code>x</code> is taken before doing anything
+else.</td></tr>
+<tr valign="top"><td><code>simplify</code></td>
+<td>
+logical. If TRUE (the default), return value will
+be a data frame including the <code>by</code> columns and a column for
+each element of the return vector of <code>fun</code>. If FALSE, the
+return value will be a list, sometimes necessary for less structured
+output (see description of return value below).</td></tr>
+<tr valign="top"><td><code>byvar.sep</code></td>
+<td>
+character. This can be any character string not
+found anywhere in the values of the <code>by</code> variables. The
+<code>by</code> variables will be pasted together using this as the
+separator, and the result will be used as the index to form the
+subgroups.  </td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+additional arguments to <code>fun</code>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This function accomplishes something similar to
+<code><a href="../../emu/html/by.trackdata.html">by</a></code>. The main difference is that <code>frameApply</code> is
+designed to return data frames and lists instead of objects of class
+'by'. Also, <code>frameApply</code> works only on the unique combinations of
+the <code>by</code> that are actually present in the data, not on the entire
+cartesian product of the <code>by</code> variables. In some cases this
+results in great gains in efficiency, although <code>frameApply</code> is
+hardly an efficient function.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+a data frame if <code>simplify = TRUE</code> (the default), assuming
+there is sufficiently structured output from <code>fun</code>. If
+<code>simplify = FALSE</code> and <code>by</code> is not NULL, the return value will be a list with two
+elements. The first element, named "by", will be a data frame with the
+unique rows of <code>x[by]</code>, and the second element, named "result"
+will be a list where the ith 
+component gives the result for the ith row of the "by" element.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Jim Rogers <a href="mailto:james.a.rogers@pfizer.com">james.a.rogers@pfizer.com</a>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(ELISA, package="gtools")
+
+# Default is slightly unintuitive, but commonly useful: 
+frameApply(ELISA, by = c("PlateDay", "Read"))
+
+# Wouldn't actually recommend this model! Just a demo:
+frameApply(ELISA, on = c("Signal", "Concentration"), by = c("PlateDay", "Read"),
+           fun = function(dat) coef(lm(Signal ~ Concentration, data =
+dat)))
+
+frameApply(ELISA, on = "Signal", by = "Concentration",
+           fun = function(dat, ...) {
+                    x &lt;- dat[[1]]
+                    out &lt;- c(Mean = mean(x, ...),
+                             SD = sd(x, ...),
+                             N = sum(!is.na(x)))
+                  },
+           na.rm = TRUE,
+           subset = !is.na(Concentration))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>gdata</em> version 2.6.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

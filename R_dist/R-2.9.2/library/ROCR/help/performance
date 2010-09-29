@@ -1,0 +1,238 @@
+performance               package:ROCR               R Documentation
+
+_F_u_n_c_t_i_o_n _t_o _c_r_e_a_t_e _p_e_r_f_o_r_m_a_n_c_e _o_b_j_e_c_t_s
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     All kinds of predictor evaluations are performed using this
+     function.
+
+_U_s_a_g_e:
+
+     performance(prediction.obj, measure, x.measure="cutoff", ...)
+
+_A_r_g_u_m_e_n_t_s:
+
+prediction.obj: An object of class 'prediction'.
+
+ measure: Performance measure to use for the evaluation. A complete
+          list of the performance measures that are available for
+          'measure' and 'x.measure' is given in the 'Details' section.
+
+x.measure: A second performance measure. If different from the default,
+          a two-dimensional curve, with 'x.measure' taken to be the
+          unit in direction of the x axis, and 'measure' to be the unit
+          in direction of the y axis, is created. This curve is
+          parametrized with the cutoff.
+
+     ...: Optional arguments (specific to individual performance
+          measures).
+
+_D_e_t_a_i_l_s:
+
+     Here is the list of available performance measures. Let Y and Yhat
+     be random variables representing the class and the prediction for
+     a randomly drawn sample, respectively. We denote by + and - the
+     positive and negative class, respectively. Further, we use the
+     following abbreviations for empirical quantities: P (# positive
+     samples), N (# negative samples), TP (# true positives), TN (#
+     true negatives), FP (# false positives), FN (# false negatives).
+
+
+     '_a_c_c': Accuracy. P(Yhat = Y). Estimated as: (TP+TN)/(P+N).
+
+     '_e_r_r': Error rate. P(Yhat != Y). Estimated as: (FP+FN)/(P+N).
+
+     '_f_p_r': False positive rate. P(Yhat = + | Y = -). Estimated as:
+          FP/N.
+
+     '_f_a_l_l': Fallout. Same as 'fpr'.
+
+     '_t_p_r': True positive rate. P(Yhat = + | Y = +). Estimated as:
+          TP/P.
+
+     '_r_e_c': Recall. Same as 'tpr'.
+
+     '_s_e_n_s': Sensitivity. Same as 'tpr'.
+
+     '_f_n_r': False negative rate. P(Yhat = - | Y = +). Estimated as:
+          FN/P.
+
+     '_m_i_s_s': Miss. Same as 'fnr'.
+
+     '_t_n_r': True negative rate. P(Yhat = - | Y = -).
+
+     '_s_p_e_c': Specificity. Same as 'tnr'.
+
+     '_p_p_v': Positive predictive value. P(Y = + | Yhat = +). Estimated
+          as: TP/(TP+FP).
+
+     '_p_r_e_c': Precision. Same as 'ppv'.
+
+     '_n_p_v': Negative predictive value. P(Y = - | Yhat = -). Estimated
+          as: TN/(TN+FN).
+
+     '_p_c_f_a_l_l': Prediction-conditioned fallout. P(Y = - | Yhat = +).
+          Estimated as: FP/(TP+FP).
+
+     '_p_c_m_i_s_s': Prediction-conditioned miss. P(Y = + | Yhat = -).
+          Estimated as: FN/(TN+FN).
+
+     '_r_p_p': Rate of positive predictions. P(Yhat = +). Estimated as:
+          (TP+FP)/(TP+FP+TN+FN).
+
+     '_r_n_p': Rate of negative predictions. P(Yhat = -). Estimated as:
+          (TN+FN)/(TP+FP+TN+FN).
+
+     '_p_h_i': Phi correlation coefficient. (TP*TN -
+          FP*FN)/(sqrt((TP+FN)*(TN+FP)*(TP+FP)*(TN+FN))). Yields a
+          number between -1 and 1, with 1 indicating a perfect
+          prediction, 0 indicating a random prediction. Values below 0
+          indicate a worse than random prediction.
+
+     '_m_a_t': Matthews correlation coefficient. Same as 'phi'.
+
+     '_m_i': Mutual information. I(Yhat, Y) := H(Y) - H(Y | Yhat), where
+          H is the (conditional) entropy. Entropies are estimated
+          naively (no bias correction).
+
+     '_c_h_i_s_q': Chi square test statistic. '?chisq.test' for details.
+          Note that R might raise a warning if the sample size is too
+          small.
+
+     '_o_d_d_s': Odds ratio. (TP*TN)/(FN*FP). Note that odds ratio produces
+          Inf or NA values for all cutoffs corresponding to FN=0 or
+          FP=0. This can substantially decrease the plotted cutoff
+          region.
+
+     '_l_i_f_t': Lift value. P(Yhat = + | Y = +)/P(Yhat = +).
+
+     '_f': Precision-recall F measure (van Rijsbergen, 1979). Weighted
+          harmonic mean of precision (P) and recall (R). F = 1/
+          (alpha*1/P + (1-alpha)*1/R). If alpha=1/2, the mean is
+          balanced. A frequent equivalent formulation is F = (beta^2+1)
+          * P * R / (R + beta^2 * P). In this formulation, the mean is
+          balanced if beta=1. Currently, ROCR only accepts the alpha
+          version as input (e.g. alpha=0.5). If no value for alpha is
+          given, the mean will be balanced by default.
+
+     '_r_c_h': ROC convex hull. A ROC (='tpr' vs 'fpr') curve with
+          concavities (which represent suboptimal choices of cutoff)
+          removed (Fawcett 2001). Since the result is already a
+          parametric performance curve, it cannot be used in
+          combination with other measures.
+
+     '_a_u_c': Area under the ROC curve. This is equal to the value of the
+          Wilcoxon-Mann-Whitney test statistic and also the probability
+          that the classifier will score are randomly drawn positive
+          sample higher than a randomly drawn negative sample. Since
+          the output of 'auc' is cutoff-independent, this measure
+          cannot be combined with other measures into a parametric
+          curve. The partial area under the ROC curve up to a given
+          false positive rate can be calculated by passing the optional
+          parameter 'fpr.stop=0.5' (or any other value between 0 and 1)
+          to 'performance'.
+
+     '_p_r_b_e': Precision-recall break-even point. The cutoff(s) where
+          precision and recall are equal. At this point, positive and
+          negative predictions are made at the same rate as their
+          prevalence in the data. Since the output of 'prbe' is just a
+          cutoff-independent scalar, this measure cannot be combined
+          with other measures into a parametric curve.
+
+     '_c_a_l': Calibration error. The calibration error is the absolute
+          difference between predicted confidence and actual
+          reliability. This error is estimated at all cutoffs by
+          sliding a window across the range of possible cutoffs. The
+          default window size of 100 can be adjusted by passing the
+          optional parameter 'window.size=200' to 'performance'. E.g.,
+          if for several positive samples the output of the classifier
+          is around 0.75, you might expect from a well-calibrated
+          classifier that the fraction of them which is correctly
+          predicted as positive is also around 0.75. In a
+          well-calibrated classifier, the probabilistic confidence
+          estimates are realistic. Only for use with probabilistic
+          output (i.e. scores between 0 and 1).
+
+     '_m_x_e': Mean cross-entropy. Only for use with probabilistic output.
+          MXE := - 1/(P+N) sum_{y_i=+} ln(yhat_i) + sum_{y_i=-}
+          ln(1-yhat_i). Since the output of 'mxe' is just a
+          cutoff-independent scalar, this measure cannot be combined
+          with other measures into a parametric curve.
+
+     '_r_m_s_e': Root-mean-squared error. Only for use with numerical class
+          labels. RMSE := sqrt(1/(P+N) sum_i (y_i - yhat_i)^2). Since
+          the output of 'rmse' is just a cutoff-independent scalar,
+          this measure cannot be combined with other measures into a
+          parametric curve.
+
+     '_s_a_r': Score combinining performance measures of different
+          characteristics, in the attempt of creating a more "robust"
+          measure (cf. Caruana R., ROCAI2004): SAR = 1/3 * ( Accuracy +
+          Area under the ROC curve + Root mean-squared error ).
+
+     '_e_c_o_s_t': Expected cost. For details on cost curves, cf.
+          Drummond&Holte 2000,2004. 'ecost' has an obligatory x axis,
+          the so-called 'probability-cost function'; thus it cannot be
+          combined with other measures. While using 'ecost' one is
+          interested in the lower envelope of a set of lines, it might
+          be instructive to plot the whole set of lines in addition to
+          the lower envelope. An example is given in 'demo(ROCR)'.
+
+     '_c_o_s_t': Cost of a classifier when class-conditional
+          misclassification costs are explicitly given. Accepts the
+          optional parameters 'cost.fp' and 'cost.fn', by which the
+          costs for false positives and negatives can be adjusted,
+          respectively. By default, both are set to 1.
+
+_V_a_l_u_e:
+
+     An S4 object of class performance.
+
+_N_o_t_e:
+
+     Here is how to call 'performance' to create some standard
+     evaluation plots:
+
+
+     _R_O_C _c_u_r_v_e_s: measure="tpr", x.measure="fpr".
+
+     _P_r_e_c_i_s_i_o_n/_r_e_c_a_l_l _g_r_a_p_h_s: measure="prec", x.measure="rec".
+
+     _S_e_n_s_i_t_i_v_i_t_y/_s_p_e_c_i_f_i_c_i_t_y _p_l_o_t_s: measure="sens", x.measure="spec".
+
+     _L_i_f_t _c_h_a_r_t_s: measure="lift", x.measure="rpp".
+
+_A_u_t_h_o_r(_s):
+
+     Tobias Sing tobias.sing@mpi-sb.mpg.de, Oliver Sander
+     osander@mpi-sb.mpg.de
+
+_R_e_f_e_r_e_n_c_e_s:
+
+     A detailed list of references can be found on the ROCR homepage at
+     <URL: http://rocr.bioinf.mpi-sb.mpg.de>.
+
+_S_e_e _A_l_s_o:
+
+     'prediction', 'prediction-class', 'performance-class',
+     'plot.performance'
+
+_E_x_a_m_p_l_e_s:
+
+     ## computing a simple ROC curve (x-axis: fpr, y-axis: tpr)
+     library(ROCR)
+     data(ROCR.simple)
+     pred <- prediction( ROCR.simple$predictions, ROCR.simple$labels)
+     perf <- performance(pred,"tpr","fpr")
+     plot(perf)
+
+     ## precision/recall curve (x-axis: recall, y-axis: precision)
+     perf1 <- performance(pred, "prec", "rec")
+     plot(perf1)
+
+     ## sensitivity/specificity curve (x-axis: specificity,
+     ## y-axis: sensitivity)
+     perf1 <- performance(pred, "sens", "spec")
+     plot(perf1)
+

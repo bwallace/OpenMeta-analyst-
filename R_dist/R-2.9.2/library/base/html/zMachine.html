@@ -1,0 +1,180 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Numerical Characteristics of the Machine</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for .Machine {base}"><tr><td>.Machine {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Numerical Characteristics of the Machine</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>.Machine</code> is a variable holding information on the numerical
+characteristics of the machine <font face="Courier New,Courier" color="#666666"><b>R</b></font> is running on, such as the largest
+double or integer and the machine's precision.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+.Machine
+</pre>
+
+
+<h3>Details</h3>
+
+<p>
+The algorithm is based on Cody's (1988) subroutine MACHAR.  As almost
+all current implementations of <font face="Courier New,Courier" color="#666666"><b>R</b></font> use 32-bit integers and IEC 60059
+floating-point (double precision) arithmetic, most of these values are
+the same for almost all <font face="Courier New,Courier" color="#666666"><b>R</b></font> builds.
+</p>
+<p>
+Note that on most platforms smaller positive values than
+<code>.Machine$double.xmin</code> can occur.  On a typical <font face="Courier New,Courier" color="#666666"><b>R</b></font> platform the
+smallest positive double is about <code>5e-324</code>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A list with components (for simplicity, the prefix &lsquo;double&rsquo; is
+omitted in the explanations)
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>double.eps</code></td>
+<td>
+the smallest positive floating-point number
+<code>x</code> such that <code>1 + x != 1</code>.  It equals
+<code>base^ulp.digits</code> if either <code>base</code> is 2 or <code>rounding</code>
+is 0;  otherwise, it is <code>(base^ulp.digits) / 2</code>.  Normally
+<code>2.220446e-16</code>.</td></tr>
+<tr valign="top"><td><code>double.neg.eps</code></td>
+<td>
+a small positive floating-point number <code>x</code>
+such that <code>1 - x != 1</code>.  It equals <code>base^neg.ulp.digits</code>
+if <code>base</code> is 2 or <code>round</code> is 0;  otherwise, it is
+<code>(base^neg.ulp.digits) / 2</code>.  Normally <code>1.110223e-16</code>.
+As <code>neg.ulp.digits</code> is bounded below by <code>-(digits + 3)</code>,
+<code>neg.eps</code> may not be the smallest number that can alter 1 by
+subtraction.</td></tr>
+<tr valign="top"><td><code>double.xmin</code></td>
+<td>
+the smallest non-vanishing normalized
+floating-point power of the radix, i.e., <code>base^min.exp</code>.
+Normally <code>2.225074e-308</code>.</td></tr>
+<tr valign="top"><td><code>double.xmax</code></td>
+<td>
+the largest finite floating-point number.
+Typically, it is equal to <code>(1 - neg.eps) * base^max.exp</code>, but
+on some machines it is only the second, or perhaps third, largest
+number, being too small by 1 or 2 units in the last digit of the
+significand.  Normally <code>1.797693e+308</code>.</td></tr>
+<tr valign="top"><td><code>double.base</code></td>
+<td>
+the radix for the floating-point representation:
+normally <code>2</code>.</td></tr>
+<tr valign="top"><td><code>double.digits</code></td>
+<td>
+the number of base digits in the floating-point
+significand: normally <code>53</code>.</td></tr>
+<tr valign="top"><td><code>double.rounding</code></td>
+<td>
+the rounding action. <br>
+0 if floating-point addition chops; <br>
+1 if floating-point addition rounds, but not in the IEEE style; <br>
+2 if floating-point addition rounds in the IEEE style; <br>
+3 if floating-point addition chops, and there is partial underflow; <br>
+4 if floating-point addition rounds, but not in the IEEE style, and
+there is partial underflow; <br>
+5 if floating-point addition rounds in the IEEE style, and there is
+partial underflow.  Normally <code>5</code>.</td></tr>
+<tr valign="top"><td><code>double.guard</code></td>
+<td>
+the number of guard digits for multiplication
+with truncating arithmetic.  It is 1 if floating-point arithmetic
+truncates and more than <code>digits</code> base <code>base</code> digits
+participate in the post-normalization shift of the floating-point
+significand in multiplication, and 0 otherwise.</td></tr>
+<tr valign="top"><td><code>double.ulp.digits</code></td>
+<td>
+the largest negative integer <code>i</code> such
+that <code>1 + base^i != 1</code>, except that it is bounded below by
+<code>-(digits + 3)</code>.  Normally <code>-52</code>.</td></tr>
+<tr valign="top"><td><code>double.neg.ulp.digits</code></td>
+<td>
+the largest negative integer <code>i</code>
+such that <code>1 - base^i != 1</code>, except that it is bounded below by
+<code>-(digits + 3)</code>. Normally <code>-53</code>.</td></tr>
+<tr valign="top"><td><code>double.exponent</code></td>
+<td>
+the number of bits (decimal places if <code>base</code> is 10) reserved
+for the representation of the exponent (including the bias or sign)
+of a floating-point number.  Normally <code>11</code>.</td></tr>
+<tr valign="top"><td><code>double.min.exp</code></td>
+<td>
+the largest in magnitude negative integer <code>i</code> such that
+<code>base ^ i</code> is positive and normalized.  Normally <code>-1022</code>.</td></tr>
+<tr valign="top"><td><code>double.max.exp</code></td>
+<td>
+the smallest positive power of <code>base</code> that overflows.  Normally
+<code>1024</code>.</td></tr>
+<tr valign="top"><td><code>integer.max</code></td>
+<td>
+the largest integer which can be represented.
+Always <code>2147483647</code>.</td></tr>
+<tr valign="top"><td><code>sizeof.long</code></td>
+<td>
+the number of bytes in a C <code>long</code> type:
+<code>4</code> or <code>8</code> (most 64-bit systems, but not Windows).</td></tr>
+<tr valign="top"><td><code>sizeof.longlong</code></td>
+<td>
+the number of bytes in a C <code>long long</code>
+type.  Will be zero if there is no such type, otherwise usually
+<code>8</code>.</td></tr>
+<tr valign="top"><td><code>sizeof.longdouble</code></td>
+<td>
+the number of bytes in a C <code>long double</code>
+type.  Will be zero if there is no such type, otherwise possibly
+<code>12</code> (Windows, 32-bit Linux/Solaris) or <code>16</code> (64-bit
+Linux/Solaris, Intel Mac OS X).</td></tr>
+<tr valign="top"><td><code>sizeof.pointer</code></td>
+<td>
+the number of bytes in a C <code>SEXP</code>
+type.  Will be <code>4</code> on 32-bit builds and <code>8</code> on 64-bit
+builds of <font face="Courier New,Courier" color="#666666"><b>R</b></font>.</td></tr>
+</table>
+
+<h3>References</h3>
+
+<p>
+Cody, W. J. (1988)
+MACHAR: A subroutine to dynamically determine machine parameters.
+<EM>Transactions on Mathematical Software</EM>, <B>14</B>, 4, 303&ndash;311.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="Platform.html">.Platform</a></code> for details of the platform.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+.Machine
+## or for a neat printout
+noquote(unlist(format(.Machine)))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

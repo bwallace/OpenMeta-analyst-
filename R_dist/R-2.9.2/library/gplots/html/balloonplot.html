@@ -1,0 +1,283 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Plot a graphical matrix where each cell contains a dot whose size
+reflects the relative magnitude of the corresponding component.</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for balloonplot {gplots}"><tr><td>balloonplot {gplots}</td><td align="right">R Documentation</td></tr></table>
+<h2>Plot a graphical matrix where each cell contains a dot whose size
+reflects the relative magnitude of the corresponding component.</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Plot a graphical matrix where each cell contains a dot whose size
+reflects the relative magnitude of the corresponding component.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+balloonplot(x, ...)
+## S3 method for class 'table':
+balloonplot(x, xlab, ylab, zlab, show.zeros=FALSE,show.margins=TRUE,...)
+## Default S3 method:
+balloonplot(x,y,z,
+                                xlab,
+                                ylab,
+                                zlab=deparse(substitute(z)),
+                                dotsize=2/max(strwidth(19),strheight(19)),
+                                dotchar=19,
+                                dotcolor="skyblue",
+                                text.size=1,
+                                text.color=par("fg"),
+                                main,
+                                label=TRUE,
+                                label.digits=2,
+                                label.size=1,
+                                label.color=par("fg"),
+                                scale.method=c("volume","diameter"),
+                                scale.range=c("absolute","relative"),
+                                colsrt=par("srt"),
+                                rowsrt=par("srt"),
+                                colmar=1,
+                                rowmar=2,
+                                show.zeros=FALSE,
+                                show.margins=TRUE,
+                                cum.margins=TRUE,
+                                sorted=TRUE,
+                                label.lines=TRUE,
+                                fun=function(x)sum(x,na.rm=T),
+                                hide.duplicates=TRUE,
+                                ... )
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+A table object, or either a vector or a list of several
+categorical vectors containing grouping variables for the first 
+(x) margin of the plotted matrix.</td></tr>
+<tr valign="top"><td><code>y</code></td>
+<td>
+Vector or list of vectors for grouping variables for the
+second (y) dimension of the plotted matrix.</td></tr>
+<tr valign="top"><td><code>z</code></td>
+<td>
+Vector of values for the size of the dots in the plotted matrix.</td></tr>
+<tr valign="top"><td><code>xlab</code></td>
+<td>
+Text label for the x dimension. This will be displayed on the
+x axis and in the plot title.</td></tr>
+<tr valign="top"><td><code>ylab</code></td>
+<td>
+Text label for the y dimension. This will be displayed on the
+y axis and in the plot title.</td></tr>
+<tr valign="top"><td><code>zlab</code></td>
+<td>
+Text label for the dot size. This will be included in the
+plot title.</td></tr>
+<tr valign="top"><td><code>dotsize</code></td>
+<td>
+Maximum dot size.  You may need to adjust this value
+for different plot devices and layouts.</td></tr>
+<tr valign="top"><td><code>dotchar</code></td>
+<td>
+Plotting symbol or character used for dots.  See the help
+page for the points function for symbol codes.</td></tr>
+<tr valign="top"><td><code>dotcolor</code></td>
+<td>
+Scalar or vector specifying the color(s) of the dots in
+the plot.</td></tr>
+<tr valign="top"><td><code>text.size, text.color</code></td>
+<td>
+Character size and color for row and
+column headers</td></tr>
+<tr valign="top"><td><code>main</code></td>
+<td>
+Plot title text.</td></tr>
+<tr valign="top"><td><code>label</code></td>
+<td>
+Boolean flag indicating whether the actual value of the
+elements should be shown on the plot.</td></tr>
+<tr valign="top"><td><code>label.digits</code></td>
+<td>
+Number of digits used in formatting value labels.</td></tr>
+<tr valign="top"><td><code>label.size, label.color</code></td>
+<td>
+Character size and color for value labels.</td></tr>
+<tr valign="top"><td><code>scale.method</code></td>
+<td>
+Method of scaling the sizes of the dot, either
+"volume" or "diameter". See below.</td></tr>
+<tr valign="top"><td><code>scale.range</code></td>
+<td>
+Method for scaling original data to compute
+circle diameter.  <code>scale.range="absolute"</code> scales the data
+relative to 0 (i.e, maps [0,max(z)] &ndash;&gt; [0,1]), while
+<code>scale.range="relative"</code> scales the data relative to min(z)
+(i.e. maps [min(z), max(z)] &ndash;&gt; [0,1]).</td></tr>
+<tr valign="top"><td><code>rowsrt, colsrt</code></td>
+<td>
+Angle of rotation for row and column labels.</td></tr>
+<tr valign="top"><td><code>rowmar, colmar</code></td>
+<td>
+Space allocated for row and column labels. Each
+unit is the width/height of one cell in the table.</td></tr>
+<tr valign="top"><td><code>show.zeros</code></td>
+<td>
+boolean. If <code>FALSE</code>, entries containing zero will be left
+blank in the plotted matrix.  If <code>TRUE</code>, zeros will be
+displayed.</td></tr>
+<tr valign="top"><td><code>show.margins</code></td>
+<td>
+boolean. If <code>TRUE</code>, row and column sums are
+printed in the bottom and right margins, respectively.</td></tr>
+<tr valign="top"><td><code>cum.margins</code></td>
+<td>
+boolean. If <code>TRUE</code>, marginal fractions are
+graphically presented in grey behind the row/column label area.</td></tr>
+<tr valign="top"><td><code>sorted</code></td>
+<td>
+boolean. If <code>TRUE</code>, the rows will be
+arranged in sorted order by using the levels of the first y factor,
+then the second y factor, etc. The same process is used for the
+columns, based on the x factors</td></tr>
+<tr valign="top"><td><code>label.lines</code></td>
+<td>
+boolean. If <code>TRUE</code>, borders will be drawn for
+row and column level headers.</td></tr>
+<tr valign="top"><td><code>hide.duplicates</code></td>
+<td>
+boolean. If <code>TRUE</code>, column and row headers
+will omit duplicates within row/column to reduce clutter.  Defaults
+to <code>TRUE</code>.</td></tr>
+<tr valign="top"><td><code>fun</code></td>
+<td>
+function to be used to combine data elements with the same
+levels of the grouping variables <code>x</code> and <code>y</code>. Defaults to <code>sum</code></td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+Additional arguments passed to <code>balloonplot.default</code>
+or <code>plot</code>, as appropriate.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This function plots a visual matrix.  In each <code>x</code>,<code>y</code> cell a
+dot is plotted which reflects the relative size of the corresponding
+value of <code>z</code>.  When <code>scale.method="volume"</code> the volume of
+the dot is proportional to the relative size of <code>z</code>.  When
+<code>scale.method="diameter"</code>, the diameter of the dot is proportional to
+the the relative size of <code>z</code>.  The "volume" method is default
+because the "diameter" method visually exaggerates differences.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+Nothing of interest.</p>
+
+<h3>Note</h3>
+
+<p>
+<code>z</code> is expected to be non-negative.  The function will still
+operate correctly if there are negative values of <code>z</code>, but the
+corresponding dots will have 0 size and a warning will be generated.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Gregory R. Warnes <a href="mailto:greg@random-technologies-llc.com">greg@random-technologies-llc.com</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Function inspired by question posed on R-help by Ramon
+Alonso-Allende <a href="mailto:allende@cnb.uam.es">allende@cnb.uam.es</a>.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../graphics/html/plot.table.html">plot.table</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+
+
+# Create an Example Data Frame Containing Car x Color data
+carnames &lt;- c("bmw","renault","mercedes","seat")
+carcolors &lt;- c("red","white","silver","green")
+datavals &lt;- round(rnorm(16, mean=100, sd=60),1)
+data &lt;- data.frame(Car=rep(carnames,4),
+                   Color=rep(carcolors, c(4,4,4,4) ),
+                   Value=datavals )
+# show the data
+data
+
+# generate balloon plot with default scaling
+balloonplot( data$Car, data$Color, data$Value)
+
+# show margin label rotation &amp; space expansion, using some long labels
+levels(data$Car) &lt;- c("BMW: High End, German","Renault: Medium End, French",
+ "Mercedes: High End, German", "Seat: Imaginary, Unknown Producer")
+
+# generate balloon plot with default scaling
+balloonplot( data$Car, data$Color, data$Value, colmar=3, colsrt=90)
+
+# Create an example using table
+xnames &lt;- sample( letters[1:3], 50, replace=2)
+ynames &lt;- sample( 1:5, 50, replace=2)
+
+tab &lt;- table(xnames, ynames)
+
+balloonplot(tab)
+
+# Example of multiple classification variabls using the Titanic data
+library(datasets)
+data(Titanic)
+
+dframe &lt;- as.data.frame(Titanic) # convert to 1 entry per row format
+attach(dframe)
+balloonplot(x=Class, y=list(Survived, Age, Sex), z=Freq, sort=TRUE)
+
+# colorize: surviors lightblue, non-survivors: grey
+Colors &lt;- Titanic
+Colors[,,,"Yes"] &lt;- "skyblue"
+Colors[,,,"No"] &lt;- "grey"
+colors &lt;- as.character(as.data.frame(Colors)$Freq)
+
+balloonplot(x=list(Age,Sex),
+            y=list(Class=Class,
+            Survived=gdata::reorder.factor(Survived,c(2,1))),
+            z=Freq,
+            zlab="Number of Passengers",
+            sort=TRUE,
+            dotcol = colors,
+            show.zeros=TRUE,
+            show.margins=TRUE)
+
+</pre>
+
+
+
+<hr><div align="center">[Package <em>gplots</em> version 2.7.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

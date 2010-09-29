@@ -1,0 +1,83 @@
+### Name: fillin.cont.1spell
+
+### Aliases: fillin.cont.1spell
+### Keywords: ~kwd1 ~kwd2
+
+### ** Examples
+
+##---- Should be DIRECTLY executable !! ----
+##-- ==>  Define data, use random,
+##--    or do  help(data=index)  for the standard data sets.
+
+## The function is currently defined as
+function (n = NA, mean = NA, sd = NA, se = NA, var = NA, low = NA, 
+    high = NA, pval = NA, alpha = 0.05) 
+{
+    succeeded <- FALSE
+    comment <- ""
+    res <- list(succeeded = succeeded)
+    z <- abs(qnorm(alpha/2))
+    input.vector <- c(n, mean, sd, se, var, low, high, pval)
+    input.pattern <- !(is.na(input.vector))
+    if (is.na(mean)) {
+        mean = try((high + low)/2, silent = TRUE)
+    }
+    if (is.na(mean)) {
+        comment <- paste(comment, "no info on mean", sep = "|")
+        return(c(res, comment = comment))
+    }
+    if (is.na(se)) {
+        se = try(sqrt(var), silent = TRUE)
+    }
+    if (is.na(se)) {
+        se = try(sqrt(sd^2)/(n - 1), silent = TRUE)
+    }
+    if (is.na(se)) {
+        se = try(abs(high - low)/(2 * z), silent = TRUE)
+    }
+    if (is.na(se)) {
+        se = try((mean - low)/z, silent = TRUE)
+    }
+    if (is.na(se)) {
+        se = try((high - mean)/z, silent = TRUE)
+    }
+    if (is.na(se)) {
+        se = try(-mean/qnorm(pval/2), silent = TRUE)
+    }
+    if (is.na(se)) {
+        comment <- paste(comment, "no info on dispersion", sep = "|")
+        return(c(res, comment = comment))
+    }
+    if (is.na(var)) {
+        var = se^2
+    }
+    if (is.na(low)) {
+        low = mean - z * se
+    }
+    if (is.na(high)) {
+        high = mean + z * se
+    }
+    if (is.na(pval)) {
+        pval = 2 * pnorm(-abs(mean/se))
+    }
+    if (is.na(sd)) {
+        sd = try(var * (n - 1), silent = TRUE)
+    }
+    if (is.na(sd)) {
+        comment <- paste(comment, "{n & sd} missing")
+    }
+    if (is.na(n)) {
+        n = try(round(sd/var + 1), silent = TRUE)
+    }
+    succeeded <- check.1spell.res(n = n, se = se)$succeeded
+    output.vector <- c(n, mean, sd, se, var, low, high, pval)
+    output.names <- c("n", "mean", "sd", "se", "var", "low", 
+        "high", "pval")
+    names(output.vector) <- output.names
+    res <- list(succeeded = succeeded, input.pattern = input.pattern, 
+        output = output.vector, comment = comment)
+    return(res)
+  }
+
+
+

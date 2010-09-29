@@ -1,0 +1,1774 @@
+2009-05-08 22:01  warnes
+
+	* [r1319] man/balloonplot.Rd, man/bandplot.Rd, man/boxplot.n.Rd,
+	  man/colorpanel.Rd, man/hist2d.Rd, man/ooplot.Rd, man/overplot.Rd,
+	  man/plot.lm2.Rd, man/plotCI.Rd, man/plotmeans.Rd,
+	  man/residplot.Rd, man/sinkplot.Rd, man/smartlegend.Rd,
+	  man/space.Rd, man/textplot.Rd, man/wapply.Rd: Update Greg's email
+	  address to 'greg@random-technologies-llc.com'
+
+2009-05-08 21:56  warnes
+
+	* [r1318] R/plotCI.R, man/plotCI.Rd: plotCI now properly handles
+	  'NULL' and 'NA' values for ui, li, uiw, and liw.
+
+2009-05-08 21:55  warnes
+
+	* [r1317] R/heatmap.2.R, man/heatmap.2.Rd,
+	  tests/heatmap2Test.Rout.save: heatmap.2: Add option to create
+	  breakpoints symmetric around 0, provide additional information in
+	  the return value
+
+2009-05-08 21:27  warnes
+
+	* [r1316] man/space.Rd: Fix Rd syntax error
+
+2009-04-22 17:15  warnes
+
+	* [r1315] man/barplot2.Rd, man/ooplot.Rd: VADeaths data set has
+	  move to dataset package
+
+2008-08-14 20:06  warnes
+
+	* [r1302] R/balloonplot.R: balloonpot() was incorrectly displaying
+	  warning about z values below 0 when scale.method="relative".
+	  Fixed.
+
+2008-08-07 13:40  warnes
+
+	* [r1301] DESCRIPTION, NAMESPACE, inst/ChangeLog, inst/NEWS: Update
+	  DESCRIPTION NAMESPACE and NEWS for 2.7.0 release
+
+2008-06-16 14:18  warnes
+
+	* [r1296] TODO, inst/TODO: Add TODO list to gplots
+
+2008-05-20 01:13  warnes
+
+	* [r1274] DESCRIPTION, man/plot.lm2.Rd: Update man page to match
+	  recent changes to plot.lm2()
+
+2008-05-20 01:08  warnes
+
+	* [r1273] man/venn.Rd: More work on documentation for venn()
+
+2008-05-20 01:07  warnes
+
+	* [r1272] R/bandplot.R, man/bandplot.Rd: Fix code/doc mismatch due
+	  to recent changes to bandplot()
+
+2008-05-20 00:14  warnes
+
+	* [r1271] DESCRIPTION, NAMESPACE, R/venn.R, man/venn.Rd: Add Venn
+	  Diagram plot submitted by Steffen Moeller
+
+2008-05-07 18:59  warnes
+
+	* [r1264] DESCRIPTION, R/bandplot.R: Improve performance of
+	  bandplot by calculating running standard deviation using
+	  caTools::runsd() instead of (ver slow) window() call. In addtion,
+	  the standard deviations are now only calculated once, rather than
+	  once for each band.
+
+2008-05-07 18:57  warnes
+
+	* [r1263] R/plot.lm.R: Improve performance of plot.lm for large lm
+	  objects by using fitted() instead of predict() to get y-hat
+
+2008-05-05 20:28  warnes
+
+	* [r1262] DESCRIPTION, R/bandplot.R: Use caTools's runsd in
+	  bandplot for a dramatic speedup for large data
+
+2008-05-05 20:28  warnes
+
+	* [r1261] NAMESPACE: Add import of gtools::reorder.factor for
+	  ballonplot man page
+
+2008-05-05 20:27  warnes
+
+	* [r1260] R/balloonplot.R, man/balloonplot.Rd: balloonplot: Add
+	  option to scale balloons so [min,max]->[0,1] (relative) or so
+	  [0,max] <- [0,1] (absolute)
+
+2008-04-07 17:09  warnes
+
+	* [r1254] man/barplot2.Rd: Fix typo in barplot2() man page
+
+2008-04-07 16:52  warnes
+
+	* [r1253] DESCRIPTION, inst/ChangeLog, inst/NEWS: Updates for
+	  gplots 2.6.0
+
+2008-04-07 16:47  warnes
+
+	* [r1252] R/heatmap.2.R, man/heatmap.2.Rd: Add ability to control
+	  location of individual heatmap.2 components
+
+2008-03-27 22:36  warnes
+
+	* [r1251] R/heatmap.2.R: Fix bug in handling rowsep, per suggestion
+	  by Steven Paugh
+
+2008-01-04 18:59  warnes
+
+	* [r1238] man/overplot.Rd: Fix examples for overplot()
+
+2008-01-02 16:58  warnes
+
+	* [r1237] man/barplot2.Rd: Update Marc's email address
+
+2007-12-20 22:48  warnes
+
+	* [r1235] man/heatmap.2.Rd: Two letter clarification of help text
+	  for heatmap.2()
+
+2007-12-20 22:24  warnes
+
+	* [r1234] man/ooplot.Rd: Restore plot layout at end of ooplot()
+	  example
+
+2007-11-06 16:24  warnes
+
+	* [r1222] man/hist2d.Rd: Remove extraneous closing brace in the
+	  hist2d documentation file
+
+2007-11-05 15:32  warnes
+
+	* [r1221] inst/NEWS: Fix typo in NEWS: col2hex() is the new
+	  function, not col2rgb() which is part of grDevices
+
+2007-11-02 19:32  warnes
+
+	* [r1219] DESCRIPTION, NAMESPACE, inst/ChangeLog, inst/NEWS:
+	  Updates for gplots 2.5.0
+
+2007-11-02 19:32  warnes
+
+	* [r1218] tests/heatmap2Test.Rout.save: Update saved test output
+	  due to changes in how R reports warnings
+
+2007-11-02 18:22  warnes
+
+	* [r1217] ChangeLog, NEWS: Create soft links of gmodels/ChangeLog
+	  -> gmodels/inst/ChangeLog, and gmodels/NEWS -> gmodels/inst/NEWS
+	  for my convenience
+
+2007-11-02 18:21  warnes
+
+	* [r1216] ChangeLog, NEWS, inst/ChangeLog, inst/NEWS: Move actual
+	  ChangeLog and NEWS files to gmodels/inst so they will be copied
+	  into the installed R package area
+
+2007-11-02 18:18  warnes
+
+	* [r1215] man/bandplot.Rd, man/textplot.Rd: Fix code/doc mismatches
+
+2007-11-02 18:18  warnes
+
+	* [r1214] R/plot.lm.R: Update plot.lm2 to match changes made to
+	  bandplot
+
+2007-11-01 20:20  warnes
+
+	* [r1213] ChangeLog, DESCRIPTION, R/replaceTabs.R, R/textplot.R: in
+	  textplot(), convert tab characters to spaces before processing to
+	  avoid problems with computing height and width of text including
+	  tabs when using pdf()
+
+2007-11-01 20:18  warnes
+
+	* [r1212] R/overplot.R, man/overplot.Rd: Minor reformatting of
+	  overplot code and docs
+
+2007-10-22 02:24  warnes
+
+	* [r1196]
+	  branches/GenerateFORMATSfromFactorObjects/SASxport/DESCRIPTION,
+	  trunk/MSOfficeUtil/DESCRIPTION, trunk/RMCMC/DESCRIPTION,
+	  trunk/Rlsf/DESCRIPTION, trunk/SASxport/DESCRIPTION,
+	  trunk/bwRF/DESCRIPTION, trunk/exp.ssize/DESCRIPTION,
+	  trunk/fork/DESCRIPTION, trunk/gdata/DESCRIPTION,
+	  trunk/gmodels/DESCRIPTION, DESCRIPTION,
+	  trunk/gregmisc/DESCRIPTION, trunk/ssize/DESCRIPTION: Clarify GPL
+	  version
+
+2007-08-14 19:14  warnes
+
+	* [r1141] R/balloonplot.R: Correct error in balloonplot when z
+	  contains NA values.
+
+2007-08-14 18:48  warnes
+
+	* [r1140] R/balloonplot.R, man/balloonplot.Rd: Augment
+	  balloonplot() with control of character size and color for text
+	  and label items
+
+2007-08-14 18:11  warnes
+
+	* [r1139] R/balloonplot.R: Correct balloonplot.default to properly
+	  show specified x and y axis labels when explicitly provided
+
+2007-03-09 09:05  ggorjan
+
+	* [r1073] man/ooplot.Rd: use of \method in Rd markup - issues a
+	  warning with _R_CHECK_RD_STYLE_=TRUE env. variable with R 2.5.0
+
+2007-02-08 23:05  warnes
+
+	* [r1052] DESCRIPTION: Bump version number
+
+2007-02-08 22:03  warnes
+
+	* [r1051] man/textplot.Rd: Update documentation for textplot()
+
+2007-02-08 21:56  warnes
+
+	* [r1050] R/col2hex.R, man/col2hex.Rd: Add col2rgb() function to
+	  convert color names to rgb hex codes
+
+2007-02-08 21:32  warnes
+
+	* [r1049] R/textplot.R: Add paramaeters 'col.data', 'col.rows', and
+	  'col.columns' to textplot.matrix to allow specification of the
+	  color of the matrix data, rows, and columns.
+
+2007-02-08 16:56  warnes
+
+	* [r1048] R/bandplot.R: Add parameters to control line width and
+	  line type.
+
+2006-11-14 22:25  ggorjan
+
+	* [r1012] trunk/gdata/man/combine.Rd,
+	  trunk/gdata/man/frameApply.Rd, trunk/gmodels/R/ci.R,
+	  trunk/gmodels/R/fast.prcomp.R, trunk/gmodels/man/ci.Rd,
+	  R/bandplot.R, R/boxplot.n.R, R/lowess.R, R/plot.lm.R, R/plotCI.R,
+	  R/plotmeans.R, R/residplot.R, R/wapply.R, man/boxplot.n.Rd,
+	  man/plotCI.Rd, man/plotmeans.Rd, trunk/gtools/R/combinations.R,
+	  trunk/gtools/R/running.R, trunk/gtools/man/ELISA.Rd,
+	  trunk/gtools/man/combinations.Rd: Removed executable property
+
+2006-11-14 18:29  warnes
+
+	* [r1010] tests/heatmap2Test.Rout.save: Update output file to match
+	  (trivial) changes in the test code.
+
+2006-11-14 18:07  warnes
+
+	* [r1008] ChangeLog, NEWS: Update ChangeLog and NEWS files for
+	  release 2.3.2.
+
+2006-11-14 17:59  warnes
+
+	* [r1007] DESCRIPTION: Update version number
+
+2006-11-14 17:57  warnes
+
+	* [r1006] DESCRIPTION: Update version number and maintainer
+
+2006-11-14 17:56  warnes
+
+	* [r1005] man/heatmap.2.Rd: Correct problem with labeled
+	  correlation matrix example. Thanks to Jean Vidal for reporting
+	  the error..
+
+2006-08-02 22:21  warnes
+
+	* [r977] trunk/BalloonPlotPaper/BalloonPlot.pdf,
+	  trunk/BalloonPlotPaper/BalloonPlot.tex,
+	  trunk/MSOfficeUtil/DESCRIPTION,
+	  trunk/PathwayModeling/thesispaper/slides.tex,
+	  trunk/RMCMC/DESCRIPTION, trunk/RMCMC/man/make.density.Rd,
+	  trunk/Rlsf/DESCRIPTION, trunk/Rlsf/man/lsf.numcpu.Rd,
+	  trunk/Rlsf/man/lsf.parRapply.Rd, trunk/Rlsf/man/scat.Rd,
+	  trunk/bwRF/DESCRIPTION, trunk/bwRF/man/RF.Rd,
+	  trunk/exp.ssize/inst/doc/ssize.pdf,
+	  trunk/exp.ssize/inst/doc/ssize.tex, trunk/fork/DESCRIPTION,
+	  trunk/fork/man/exit.Rd, trunk/fork/man/fork.Rd,
+	  trunk/fork/man/getpid.Rd, trunk/fork/man/kill.Rd,
+	  trunk/fork/man/signame.Rd, trunk/fork/man/wait.Rd,
+	  trunk/gdata/inst/doc/gregmisc.tex,
+	  trunk/gdata/man/ConvertMedUnits.Rd,
+	  trunk/gdata/man/aggregate.table.Rd, trunk/gdata/man/combine.Rd,
+	  trunk/gdata/man/interleave.Rd, trunk/gdata/man/matchcols.Rd,
+	  trunk/gdata/man/nobs.Rd, trunk/gdata/man/read.xls.Rd,
+	  trunk/gdata/man/rename.vars.Rd, trunk/gdata/man/reorder.Rd,
+	  trunk/gdata/man/trim.Rd, trunk/gdata/man/unmatrix.Rd,
+	  trunk/gdata/man/upperTriangle.Rd,
+	  trunk/gmodels/man/fast.prcomp.Rd,
+	  trunk/gmodels/man/fit.contrast.Rd, trunk/gmodels/man/glh.test.Rd,
+	  trunk/gmodels/man/make.contrasts.Rd, inst/doc/BalloonPlot.pdf,
+	  man/balloonplot.Rd, man/bandplot.Rd, man/boxplot.n.Rd,
+	  man/colorpanel.Rd, man/hist2d.Rd, man/ooplot.Rd, man/overplot.Rd,
+	  man/plot.lm2.Rd, man/plotCI.Rd, man/plotmeans.Rd,
+	  man/residplot.Rd, man/sinkplot.Rd, man/smartlegend.Rd,
+	  man/space.Rd, man/textplot.Rd, man/wapply.Rd,
+	  trunk/gregmisc/DESCRIPTION,
+	  trunk/gregmisc/gregmisc/DESCRIPTION.standalone,
+	  trunk/gregmisc/inst/doc/gregmisc.tex,
+	  trunk/gtools/man/addLast.Rd, trunk/gtools/man/assert.Rd,
+	  trunk/gtools/man/capture.Rd, trunk/gtools/man/combinations.Rd,
+	  trunk/gtools/man/defmacro.Rd, trunk/gtools/man/dirichlet.Rd,
+	  trunk/gtools/man/foldchange.Rd, trunk/gtools/man/invalid.Rd,
+	  trunk/gtools/man/logit.Rd, trunk/gtools/man/mixedsort.Rd,
+	  trunk/gtools/man/oddeven.Rd, trunk/gtools/man/permute.Rd,
+	  trunk/gtools/man/quantcut.Rd, trunk/gtools/man/running.Rd,
+	  trunk/gtools/man/scat.Rd, trunk/gtools/man/setTCPNoDelay.Rd,
+	  trunk/nws/DESCRIPTION, trunk/qvalue/DESCRIPTION,
+	  trunk/qvalue/man/print.qvalue.Rd, trunk/ssize/DESCRIPTION,
+	  trunk/ssize/man/pow.Rd: Update my email address
+
+2006-06-26 21:08  nj7w
+
+	* [r967] R/heatmap.2.R: Fixed a bug which displayed warnings when
+	  Rowv and Colv were specified as dendrograms
+
+2006-03-10 17:24  warnes
+
+	* [r937] tests/heatmap2Test.R: Remove code that added a local path
+
+2006-03-09 22:53  nj7w
+
+	* [r935] tests/heatmap2Test.R, tests/heatmap2Test.Rout.save: Added
+	  the correct library path where gplots is installed locally and
+	  corresponding .save file
+
+2006-03-09 22:40  nj7w
+
+	* [r934] tests/heatmap2Test.R: Updated the tests file
+
+2006-03-09 22:39  nj7w
+
+	* [r933] R/heatmap.2.R: Removed the condition Colv != Rowv as it
+	  has already been taken care of
+
+2006-03-09 22:17  nj7w
+
+	* [r932] rtPCR.rda: Deleted rtPCR.rda from the main directory
+
+2006-03-09 22:09  nj7w
+
+	* [r931] ChangeLog: Added ChangeLog
+
+2006-03-07 18:18  nj7w
+
+	* [r919] DESCRIPTION, NEWS: Updated ChangeLog and NEWS
+
+2006-03-07 18:10  nj7w
+
+	* [r918] tests, tests/heatmap2Test.R, tests/heatmap2Test.Rout.save:
+	  Added the tests and fixed corrupted files
+
+2006-03-07 16:22  nj7w
+
+	* [r917] data/rtPCR.rda: Replaced the corrupted rtPCR.rda file in
+	  data directory
+
+2006-03-07 16:14  nj7w
+
+	* [r916] tests: Removed the corrputed tests directory
+
+2006-03-07 16:12  nj7w
+
+	* [r915] data/rtPCR.rda, rtPCR.rda: Replaced the corrupted
+	  rtPCR.rda file in data directory
+
+2006-03-03 21:03  nj7w
+
+	* [r914] R/heatmap.2.R, man/heatmap.2.Rd: Updated the code and man
+	  page to make sure the Rowv and Colv values are properly handled
+
+2006-03-02 21:43  warnes
+
+	* [r908] R/balloonplot.R: Adjust row total placement to adjust for
+	  width of the totals
+
+2006-03-02 21:26  warnes
+
+	* [r907] DESCRIPTION, R/balloonplot.R, man/1: Row totals in
+	  ballonplot were in reverse order. Fixed.
+
+2006-02-23 22:00  nj7w
+
+	* [r899] R/heatmap.2.R, tests/heatmap2Test.R: Add ability to scale
+	  the color key using the new 'keysize' argument.
+
+2006-02-23 21:34  nj7w
+
+	* [r898] tests, tests/heatmap2Test.R, tests/heatmap2Test.Rout.save:
+	  Add tests for heatmap.2
+
+2006-02-23 21:25  nj7w
+
+	* [r897] inst/doc/Figure1.eps, inst/doc/Table.eps,
+	  inst/doc/bka.bst, inst/doc/heatmap2.R, inst/doc/heatmap2.tex,
+	  inst/doc/regression_rank_image.Rda,
+	  inst/doc/regression_rank_image_II.Rda: Move heatmap and
+	  ballonplot paper source materials to their respective cvs modules
+
+2006-02-23 21:20  nj7w
+
+	* [r896] inst/doc/BalloonPlot.R, inst/doc/BalloonPlot.tex,
+	  inst/doc/Figure1.pdf, inst/doc/Figure2.pdf, inst/doc/Figure3.pdf,
+	  inst/doc/Figure4.pdf, inst/doc/Rnews.sty,
+	  inst/doc/SurvivedPop.pdf, inst/doc/SurvivedPopWhite.pdf,
+	  inst/doc/SurvivedProp.pdf, inst/doc/TotalPop.pdf: Moved
+	  balloonplot paper materials to BallonPlotPaper cvs module
+
+2006-02-23 21:18  nj7w
+
+	* [r891] inst/doc/colSeparator.pdf, inst/doc/logData.pdf,
+	  inst/doc/logDataColDendrogram.pdf, inst/doc/logDataColOrd.pdf,
+	  inst/doc/logDataColOrdNo.pdf, inst/doc/logDataRowDendrogram.pdf,
+	  inst/doc/origScale.pdf, inst/doc/rowSeparator.pdf,
+	  inst/doc/scaled.pdf: Remove heatmap paper files and move them to
+	  the HeatmapPaper cvs module.
+
+2006-02-23 19:57  nj7w
+
+	* [r888] inst/doc/colSeparator.pdf, inst/doc/logData.pdf,
+	  inst/doc/logDataColDendrogram.pdf, inst/doc/logDataColOrd.pdf,
+	  inst/doc/logDataColOrdNo.pdf, inst/doc/logDataRowDendrogram.pdf,
+	  inst/doc/origScale.pdf, inst/doc/rowSeparator.pdf,
+	  inst/doc/scaled.pdf: Added figures for heatmap2 paper
+
+2006-02-23 19:54  nj7w
+
+	* [r887] inst/doc/regression_rank_image.Rda,
+	  inst/doc/regression_rank_image_II.Rda: Added the .Rda files for
+	  the heatmap2 paper
+
+2006-02-23 19:52  nj7w
+
+	* [r886] inst/doc/heatmap2.tex: Added the source - (tex file) of
+	  the heatmap paper
+
+2006-02-23 19:51  nj7w
+
+	* [r885] inst/doc/heatmap2.R: Added the code for the figures of
+	  heatmap paper
+
+2006-02-21 22:19  nj7w
+
+	* [r884] R/heatmap.2.R, man/heatmap.2.Rd: Minor updates to
+	  heatmap.2 - fixed Rowv, Colv and dendrogram behaviour. Now
+	  Rowv=NULL or FALSE both imply no dendrogram computation.
+
+2006-01-12 23:10  warnes
+
+	* [r844] inst/doc/BalloonPlot.R, inst/doc/BalloonPlot.pdf,
+	  inst/doc/BalloonPlot.tex, inst/doc/Figure1.pdf,
+	  inst/doc/Figure2.pdf, inst/doc/Figure3.pdf, inst/doc/Figure4.pdf:
+	  more updates
+
+2006-01-12 23:01  warnes
+
+	* [r843] inst/doc/bka.bst: Add Biometrica bibliography style file
+
+2006-01-12 22:34  warnes
+
+	* [r842] inst/doc/BalloonPlot.tex: A little more.
+
+2006-01-12 22:32  warnes
+
+	* [r841] inst/doc/BalloonPlot.tex: Updates to respond to referee.
+
+2006-01-12 19:59  nj7w
+
+	* [r840] inst/doc/BalloonPlot.tex: Added references
+
+2005-12-13 17:01  nj7w
+
+	* [r811] inst/doc/BalloonPlot.tex: Fixed Nitin's company name
+
+2005-12-13 16:18  nj7w
+
+	* [r809] ChangeLog, NEWS, trunk/gtools/NEWS: Updated NEWS and
+	  removed ChangeLog
+
+2005-12-12 22:20  nj7w
+
+	* [r802] R/plotmeans.R: Fixed bug in plotmeans - based on Stefano
+	  Calza's suggestion
+
+2005-12-07 18:52  nj7w
+
+	* [r787] DESCRIPTION: Updated version number
+
+2005-12-07 18:50  nj7w
+
+	* [r786] NAMESPACE, R/plot.lm.R, man/plot.lm2.Rd: Added plot.lm
+
+2005-12-07 18:48  nj7w
+
+	* [r785] man/barplot2.Rd: Changed the default grey colors to heat
+	  colors, if height is matrix
+
+2005-12-07 18:48  nj7w
+
+	* [r784] R/barplot2.R: Changed the default greay colors to heat
+	  colors, if height is matrix
+
+2005-12-06 22:41  nj7w
+
+	* [r783] man/barplot2.Rd: Fixed minor error in documentation of
+	  barplot2
+
+2005-12-02 21:11  warnes
+
+	* [r777] R/plot.lm.R: Remove .Alias calls, since .Alias is defunct.
+
+2005-12-01 16:54  nj7w
+
+	* [r776] trunk/gmodels/man/ci.Rd, trunk/gmodels/man/coefFrame.Rd,
+	  trunk/gmodels/man/estimable.Rd,
+	  trunk/gmodels/man/fit.contrast.Rd,
+	  trunk/gmodels/man/make.contrasts.Rd, man/balloonplot.Rd,
+	  man/bandplot.Rd, man/boxplot.n.Rd, man/colorpanel.Rd,
+	  man/overplot.Rd, man/plotmeans.Rd, man/textplot.Rd,
+	  man/wapply.Rd, trunk/gtools/man/combinations.Rd,
+	  trunk/gtools/man/foldchange.Rd, trunk/gtools/man/invalid.Rd,
+	  trunk/gtools/man/logit.Rd, trunk/gtools/man/mixedsort.Rd,
+	  trunk/gtools/man/oddeven.Rd, trunk/gtools/man/quantcut.Rd,
+	  trunk/gtools/man/running.Rd: Updated Greg's email address
+
+2005-11-23 22:05  nj7w
+
+	* [r764] inst/doc/BalloonPlot.R, inst/doc/BalloonPlot.pdf,
+	  inst/doc/BalloonPlot.tex, inst/doc/Figure2.pdf: Updated Figure 2
+	  colors
+
+2005-11-18 20:40  warnes
+
+	* [r743] inst/doc/BalloonPlot.pdf, inst/doc/Figure1.pdf,
+	  inst/doc/Figure2.pdf, inst/doc/Figure3.pdf, inst/doc/Figure4.pdf:
+	  Latest version of the pdf files
+
+2005-11-18 20:37  warnes
+
+	* [r742] inst/doc/BalloonPlot.tex: Nitin works for the Cambrige
+	  Group, not Pfizer.
+
+2005-11-18 20:34  warnes
+
+	* [r741] inst/doc/BalloonPlot.tex: Minor text rewording.
+
+2005-11-18 20:31  warnes
+
+	* [r740] inst/doc/BalloonPlot.R, inst/doc/BalloonPlot.tex: More
+	  edits.
+
+2005-11-18 19:50  warnes
+
+	* [r739] R/balloonplot.R: Recent changes to align row totals with
+	  the overall total broke how the marginal cumulative fractions
+	  were displayed. This patch fixes the problem.
+
+2005-11-18 01:17  warnes
+
+	* [r737] DESCRIPTION, R/balloonplot.R, R/plot.lm.R,
+	  inst/doc/BalloonPlot.pdf, man/balloonplot.Rd: - Update
+	  documentation for balloonplot to match the latest code. - Correct
+	  spelling of 'show.zeroes' to 'show.zeros'
+
+2005-11-18 00:16  warnes
+
+	* [r736] R/colorpanel.R: More changes: colorpanel now allows only 2
+	  colors to be specified if no 'middle' color is desired.
+
+2005-11-17 22:08  warnes
+
+	* [r735] R/balloonplot.R: Allow user to control removal of
+	  duplicate entries in balloonplot.
+
+2005-11-17 22:06  warnes
+
+	* [r734] R/colorpanel.R, man/colorpanel.Rd: Extend colorpanel to
+	  handle just two-colors in addition to three.
+
+2005-11-09 22:39  nj7w
+
+	* [r733] inst/doc/BalloonPlot.pdf: Updated the pdf file
+
+2005-11-09 22:38  nj7w
+
+	* [r732] inst/doc/BalloonPlot.R, inst/doc/BalloonPlot.tex: Updated
+	  the changes
+
+2005-11-09 22:29  nj7w
+
+	* [r731] inst/doc/Figure4.pdf: Modified figure 4
+
+2005-11-09 22:29  nj7w
+
+	* [r730] inst/doc/BalloonPlot.R: Updated code
+
+2005-11-09 22:20  nj7w
+
+	* [r729] inst/doc/Figure3.pdf: Modified figure 3
+
+2005-11-09 22:20  nj7w
+
+	* [r728] inst/doc/Figure2.pdf: Modified figure 2
+
+2005-11-09 22:19  nj7w
+
+	* [r727] inst/doc/Figure1.pdf: Modified figure 1
+
+2005-11-08 16:19  nj7w
+
+	* [r726] man/plotCI.Rd: Updated Greg's email
+
+2005-11-07 16:58  nj7w
+
+	* [r725] inst/doc/BalloonPlot.pdf, inst/doc/BalloonPlot.tex: Minor
+	  modifications to fit the code properly on pdf
+
+2005-11-07 14:22  warnes
+
+	* [r724] inst/doc/BalloonPlot.R: Add R code that generates plots
+
+2005-11-07 14:18  warnes
+
+	* [r723] inst/doc/Figure2.pdf, inst/doc/Figure3.pdf,
+	  inst/doc/Figure4.pdf: Add figures to CVS
+
+2005-11-07 14:18  warnes
+
+	* [r722] inst/doc/BalloonPlot.pdf, inst/doc/BalloonPlot.tex,
+	  inst/doc/Figure1.pdf: Text changes
+
+2005-11-04 21:48  warnes
+
+	* [r721] R/balloonplot.R: Fix some alignment issues.
+
+2005-11-04 19:05  warnes
+
+	* [r720] inst/doc/BalloonPlot.pdf, inst/doc/Table.pdf: Remove
+	  Table.pdf since it is no longer needed
+
+2005-11-04 19:04  warnes
+
+	* [r719] inst/doc/BalloonPlot.pdf, inst/doc/BalloonPlot.tex,
+	  inst/doc/Figure1.pdf: Nitin's Changes
+
+2005-11-04 19:00  warnes
+
+	* [r718] inst/doc/SurvivedPop.pdf, inst/doc/SurvivedPopWhite.pdf,
+	  inst/doc/SurvivedProp.pdf, inst/doc/TotalPop.pdf: Add figure
+	  plots
+
+2005-11-04 18:59  warnes
+
+	* [r717] inst/doc/BalloonPlot.pdf, inst/doc/BalloonPlot.tex: Fix
+	  paths
+
+2005-10-20 18:36  nj7w
+
+	* [r705] inst/doc/Figure1.eps, inst/doc/Table.eps: added the eps
+	  version of figures
+
+2005-10-20 18:35  nj7w
+
+	* [r704] inst/doc/BalloonPlot.pdf: Updated BallonPlot.pdf
+
+2005-10-20 18:34  nj7w
+
+	* [r703] inst/doc/SurvivedPop.pdf, inst/doc/SurvivedPopWhite.pdf,
+	  inst/doc/SurvivedProp.pdf, inst/doc/TotalPop.pdf: Removed Old
+	  Figure
+
+2005-10-20 18:31  nj7w
+
+	* [r702] inst/doc/Figure1.pdf, inst/doc/Table.pdf: Added the new
+	  figure - for total popluation - Balloonplot
+
+2005-10-20 18:29  nj7w
+
+	* [r701] inst/doc/BalloonPlot.tex: Modified the BallonPlot article
+
+2005-10-20 14:12  nj7w
+
+	* [r700] inst/doc/BalloonPlot.tex: Added references
+
+2005-10-19 16:57  arnima
+
+	* [r697] man/rich.color.Rd: The last example now displays the
+	  correct heat.colors. Default 'palette' argument is now a single
+	  string, not a vector.
+
+2005-10-19 16:56  arnima
+
+	* [r696] R/rich.color.R: Default 'palette' argument is now a single
+	  string, not a vector.
+
+2005-10-14 19:13  warnes
+
+	* [r694] DESCRIPTION, R/balloonplot.R, man/balloonplot.Rd:
+	  Formatting fixes: - Handle multiple row or column category
+	  variables - Separate rows/columns of category labels by lines -
+	  Fix handling of 'cumsum' plots on row/column labels - Improve
+	  display of row/column sums
+
+2005-10-13 20:00  warnes
+
+	* [r693] man/balloonplot.Rd: Add example using Titanic data that
+	  exercises the multi-factor display.
+
+2005-10-11 21:20  warnes
+
+	* [r692] R/balloonplot.R: Initial changes to allow multiple x and y
+	  factor variables. Yet to be done: 1) remove extra 'boxes'. 2)
+	  omit duplicated values
+
+2005-10-04 19:39  warnes
+
+	* [r691] inst/doc/BalloonPlot.pdf, inst/doc/BalloonPlot.tex: more
+	  minor fixes
+
+2005-10-04 19:29  warnes
+
+	* [r690] inst/doc/BalloonPlot.pdf, inst/doc/BalloonPlot.tex: fix
+	  spacing
+
+2005-10-04 19:08  warnes
+
+	* [r689] inst/doc/Rnews.sty: Inlcude Rnews.sty
+
+2005-10-04 19:07  warnes
+
+	* [r688] inst/doc/BalloonPlot.pdf, inst/doc/BalloonPlot.tex: Some
+	  textual edits.
+
+2005-10-03 16:23  nj7w
+
+	* [r687] inst/doc/SurvivedPop.pdf, inst/doc/SurvivedPopWhite.pdf,
+	  inst/doc/SurvivedProp.pdf, inst/doc/TotalPop.pdf: Added figures
+	  for the R-News Article
+
+2005-09-29 21:02  nj7w
+
+	* [r680] inst/doc/BalloonPlot.pdf, inst/doc/BalloonPlot.tex:
+	  Updated the documentation - added the name of the person who
+	  asked the question
+
+2005-09-29 20:29  nj7w
+
+	* [r679] inst, inst/doc, inst/doc/BalloonPlot.pdf,
+	  inst/doc/BalloonPlot.tex: Added R-news article
+
+2005-09-12 15:44  nj7w
+
+	* [r671] trunk/gdata/man/aggregate.table.Rd,
+	  trunk/gdata/man/interleave.Rd, trunk/gdata/man/matchcols.Rd,
+	  trunk/gdata/man/nobs.Rd, trunk/gdata/man/read.xls.Rd,
+	  trunk/gdata/man/rename.vars.Rd, trunk/gdata/man/trim.Rd,
+	  trunk/gdata/man/unmatrix.Rd, trunk/gmodels/man/fast.prcomp.Rd,
+	  trunk/gmodels/man/glh.test.Rd, man/hist2d.Rd, man/ooplot.Rd,
+	  man/residplot.Rd, man/sinkplot.Rd, man/smartlegend.Rd,
+	  man/space.Rd, trunk/gtools/man/assert.Rd,
+	  trunk/gtools/man/dirichlet.Rd, trunk/gtools/man/permute.Rd,
+	  trunk/gtools/man/scat.Rd: Updated Greg's email
+
+2005-09-12 14:45  nj7w
+
+	* [r670] R/balloonplot.R: Updated version of balloonplot - by
+	  Romain Francois <francoisromain@free.fr>
+
+2005-09-09 20:34  nj7w
+
+	* [r669] ChangeLog, DESCRIPTION: Updated the version and ChangeLog
+
+2005-09-09 20:32  nj7w
+
+	* [r668] R/balloonplot.R, man/balloonplot.Rd: Changes in ballon
+	  plot based on Romain Francois (francoisromain@free.fr)
+	  suggestions
+
+2005-09-06 21:41  nj7w
+
+	* [r666] DESCRIPTION: Updated package dependencies
+
+2005-09-06 21:41  nj7w
+
+	* [r665] NEWS: Added NEWS
+
+2005-09-02 23:10  nj7w
+
+	* [r655] trunk/gmodels/ChangeLog, ChangeLog: Added ChangeLog
+
+2005-08-31 16:28  nj7w
+
+	* [r644] trunk/gdata/DESCRIPTION, trunk/gmodels/DESCRIPTION,
+	  DESCRIPTION: Added DESCRIPTION file
+
+2005-08-31 16:27  nj7w
+
+	* [r643] trunk/gdata/DESCRIPTION.in, trunk/gmodels/DESCRIPTION.in,
+	  DESCRIPTION.in: removed DESCRIPTION.in
+
+2005-06-09 14:20  nj7w
+
+	* [r625] trunk/gdata/R/Args.R, trunk/gdata/R/aggregate.table.R,
+	  trunk/gdata/R/combine.R, trunk/gdata/R/elem.R,
+	  trunk/gdata/R/env.R, trunk/gdata/R/frameApply.R,
+	  trunk/gdata/R/interleave.R, trunk/gdata/R/is.what.R,
+	  trunk/gdata/R/keep.R, trunk/gdata/R/ll.R,
+	  trunk/gdata/R/matchcols.R, trunk/gdata/R/nobs.R,
+	  trunk/gdata/R/read.xls.R, trunk/gdata/R/rename.vars.R,
+	  trunk/gdata/R/reorder.R, trunk/gdata/R/trim.R,
+	  trunk/gdata/R/unmatrix.R, trunk/gdata/inst/perl/IO/AtomicFile.pm,
+	  trunk/gdata/inst/perl/IO/InnerFile.pm,
+	  trunk/gdata/inst/perl/IO/Lines.pm,
+	  trunk/gdata/inst/perl/IO/Scalar.pm,
+	  trunk/gdata/inst/perl/IO/Scalar.pm.html,
+	  trunk/gdata/inst/perl/IO/ScalarArray.pm,
+	  trunk/gdata/inst/perl/IO/Stringy.pm,
+	  trunk/gdata/inst/perl/IO/Wrap.pm,
+	  trunk/gdata/inst/perl/IO/WrapTie.pm,
+	  trunk/gdata/man/aggregate.table.Rd, trunk/gdata/man/combine.Rd,
+	  trunk/gdata/man/drop.levels.Rd, trunk/gdata/man/interleave.Rd,
+	  trunk/gdata/man/nobs.Rd, trunk/gdata/man/rename.vars.Rd,
+	  trunk/gdata/man/reorder.Rd, trunk/gmodels/R/ci.R,
+	  trunk/gmodels/R/coefFrame.R, trunk/gmodels/R/estimable.R,
+	  trunk/gmodels/R/fast.prcomp.R, trunk/gmodels/R/fit.contrast.R,
+	  trunk/gmodels/R/glh.test.R, trunk/gmodels/R/make.contrasts.R,
+	  trunk/gmodels/man/CrossTable.Rd, trunk/gmodels/man/ci.Rd,
+	  trunk/gmodels/man/coefFrame.Rd, trunk/gmodels/man/estimable.Rd,
+	  trunk/gmodels/man/fast.prcomp.Rd,
+	  trunk/gmodels/man/fit.contrast.Rd, trunk/gmodels/man/glh.test.Rd,
+	  trunk/gmodels/man/make.contrasts.Rd, R/balloonplot.R,
+	  R/bandplot.R, R/boxplot.n.R, R/colorpanel.R, R/heatmap.2.R,
+	  R/hist2d.R, R/lowess.R, R/ooplot.R, R/overplot.R, R/plotCI.R,
+	  R/plotmeans.R, R/qqnorm.aov.R, R/residplot.R, R/rich.color.R,
+	  R/sinkplot.R, R/smartlegend.R, R/space.R, R/textplot.R,
+	  R/wapply.R, man/1, man/bandplot.Rd, man/barplot2.Rd,
+	  man/boxplot.n.Rd, man/hist2d.Rd, man/lowess.Rd, man/plotCI.Rd,
+	  man/plotmeans.Rd, man/residplot.Rd, man/space.Rd, man/wapply.Rd,
+	  trunk/gtools/R/RSCompat.S, trunk/gtools/R/combinations.R,
+	  trunk/gtools/R/dirichlet.R, trunk/gtools/R/foldchange.R,
+	  trunk/gtools/R/invalid.R, trunk/gtools/R/logit.R,
+	  trunk/gtools/R/mixedsort.R, trunk/gtools/R/oddeven.R,
+	  trunk/gtools/R/permute.R, trunk/gtools/R/quantcut.R,
+	  trunk/gtools/R/running.R, trunk/gtools/R/scat.R,
+	  trunk/gtools/man/ELISA.Rd, trunk/gtools/man/combinations.Rd,
+	  trunk/gtools/man/dirichlet.Rd, trunk/gtools/man/foldchange.Rd,
+	  trunk/gtools/man/invalid.Rd, trunk/gtools/man/logit.Rd,
+	  trunk/gtools/man/mixedsort.Rd, trunk/gtools/man/oddeven.Rd,
+	  trunk/gtools/man/permute.Rd, trunk/gtools/man/quantcut.Rd,
+	  trunk/gtools/man/running.Rd, trunk/gtools/man/scat.Rd: Updating
+	  the version number, and various help files to synchronize
+	  splitting of gregmisc bundle in 4 individual components.
+
+2005-06-09 14:15  nj7w
+
+	* [r624] R/barplot2.R: Changes based on Marc Schwartz's suggestions
+	  to handel 0's and NA's appropriately.
+
+2005-05-13 18:59  nj7w
+
+	* [r621] trunk/gdata/R/read.xls.R, trunk/gmodels/man/CrossTable.Rd,
+	  man/heatmap.2.Rd: 1) Using dQuote.ascii function in read.xls as
+	  the new version of dQuote doesn't work proprly with UTF-8 locale.
+	  2) Modified CrossTable.Rd usage in gmodels 3) Modified heatmap.2
+	  usage in gplots.
+
+2005-04-04 14:23  warnes
+
+	* [r603] R/overplot.R: Explicitly reference package containing
+	  lowess.formula in panel.overplot(). This should fix the error
+	  reported by Troels Ring <tring@gvdnet.dk>.
+
+2005-02-26 01:15  nj7w
+
+	* [r565] trunk/gdata/NAMESPACE, trunk/gdata/man/elem.Rd,
+	  trunk/gdata/man/env.Rd, trunk/gdata/man/ll.Rd,
+	  trunk/gdata/man/read.xls.Rd, R/heatmap.2.R, man/heatmap.2.Rd,
+	  man/rich.color.Rd, man/sinkplot.Rd, man/textplot.Rd: *** empty
+	  log message ***
+
+2005-02-25 23:22  warnes
+
+	* [r563] trunk/gdata/R/elem.R, trunk/gdata/R/env.R,
+	  trunk/gdata/R/ll.R, trunk/gdata/man/Args.Rd,
+	  trunk/gdata/man/env.Rd, trunk/gdata/man/ll.Rd, man/rich.color.Rd:
+	  Integrate changes submitted by Arni Magnusson
+
+2005-02-25 22:31  warnes
+
+	* [r559] NAMESPACE: Add dependency imports from 'stats' package.
+
+2005-02-22 21:01  warnes
+
+	* [r555] R/bandplot.R: Fix problem in passing graphical parameters
+	  (xlim,etc).@
+
+2005-02-08 16:41  warnes
+
+	* [r541] DESCRIPTION.in: Improve package title.
+
+2005-02-08 16:40  warnes
+
+	* [r540] R/heatmap.2.R: Ignore missing values when computing
+	  symmetric range.
+
+2005-02-02 19:25  warnes
+
+	* [r530] man/plotmeans.Rd: Add more extensive example.
+
+2005-01-14 19:05  warnes
+
+	* [r516] R/textplot.R: Code can be simplified because R now
+	  supports selecting a fixed width font.
+
+2005-01-12 20:50  warnes
+
+	* [r515] trunk/gdata/DESCRIPTION.in, trunk/gmodels/DESCRIPTION.in,
+	  DESCRIPTION.in, trunk/gtools/DESCRIPTION.in: Add dependency on R
+	  1.9.0+ to prevent poeple from installing on old versions of R
+	  which don't support namespaces.
+
+2004-11-30 01:06  warnes
+
+	* [r495] R/heatmap.2.R, man/heatmap.2.Rd: 1. Add new parameters for
+	  controlling color key: - If `symkey==TRUE', the color key will be
+	  made symmetric about 0. - The `densadj' parameter can be used to
+	  modify the smoother width (see the `adjust' parameter under
+	  `help(density)') for the density plotted in the key.
+	  
+	  2. Fix handling of rowsep/colsep.
+	  
+	  3. Vector of length 2 giving the width (colsep) or height
+	  (rowsep) the separator box drawn by colsep and rowsep as a
+	  function of the width (colsep) or height (rowsep) of a cell.
+	  
+	  4. Appropriate changes to the corresponding help page, plus some
+	  minor formatting changes.
+
+2004-11-03 19:43  warnes
+
+	* [r474] R/heatmap.2.R: Fix bugs in layout of cell notes. They were
+	  being plotted top down rather than bottom up. Further reordering
+	  of the x matrix didn't also reorder the notes. Both issues should
+	  now be resolved.
+
+2004-09-27 21:01  warneg
+
+	* [r461] trunk/gdata/DESCRIPTION, trunk/gdata/DESCRIPTION.in,
+	  trunk/gdata/NAMESPACE, trunk/gdata/man/.Rhistory,
+	  trunk/gmodels/DESCRIPTION, trunk/gmodels/DESCRIPTION.in,
+	  DESCRIPTION, DESCRIPTION.in, man/sinkplot.Rd, man/textplot.Rd,
+	  trunk/gregmisc/.Rhistory, trunk/gregmisc/DESCRIPTION,
+	  trunk/gtools/DESCRIPTION, trunk/gtools/DESCRIPTION.in,
+	  trunk/gtools/man/running.Rd: Updated to pass R CMD check.
+
+2004-09-03 22:50  warneg
+
+	* [r453] man/textplot.Rd: Provide explicit package for call to
+	  nobs.
+
+2004-09-03 22:50  warneg
+
+	* [r452] man/heatmap.2.Rd: Fix typos.
+
+2004-09-03 17:27  warneg
+
+	* [r446] trunk/gdata/DESCRIPTION, trunk/gdata/DESCRIPTION.in,
+	  trunk/gdata/NAMESPACE, trunk/gdata/R/Args.R,
+	  trunk/gdata/R/aggregate.table.R, trunk/gdata/R/combine.R,
+	  trunk/gdata/R/elem.R, trunk/gdata/R/env.R,
+	  trunk/gdata/R/interleave.R, trunk/gdata/R/is.what.R,
+	  trunk/gdata/R/keep.R, trunk/gdata/R/ll.R,
+	  trunk/gdata/R/matchcols.R, trunk/gdata/R/nobs.R,
+	  trunk/gdata/R/read.xls.R, trunk/gdata/R/rename.vars.R,
+	  trunk/gdata/R/reorder.R, trunk/gdata/R/trim.R,
+	  trunk/gdata/man/reorder.Rd, trunk/gmodels/DESCRIPTION,
+	  trunk/gmodels/NAMESPACE, trunk/gmodels/R/CrossTable.R,
+	  trunk/gmodels/R/ci.R, trunk/gmodels/R/estimable.R,
+	  trunk/gmodels/R/fast.prcomp.R, trunk/gmodels/R/fit.contrast.R,
+	  trunk/gmodels/R/glh.test.R, trunk/gmodels/R/make.contrasts.R,
+	  trunk/gmodels/man/estimable.Rd,
+	  trunk/gmodels/man/fit.contrast.Rd, trunk/gmodels/man/glh.test.Rd,
+	  trunk/gmodels/man/make.contrasts.Rd, DESCRIPTION, NAMESPACE,
+	  R/balloonplot.R, R/bandplot.R, R/barplot2.R, R/boxplot.n.R,
+	  R/colorpanel.R, R/heatmap.2.R, R/hist2d.R, R/lowess.R,
+	  R/ooplot.R, R/overplot.R, R/plotCI.R, R/plotmeans.R,
+	  R/qqnorm.aov.R, R/residplot.R, R/rich.color.R, R/sinkplot.R,
+	  R/smartlegend.R, R/space.R, R/textplot.R, R/wapply.R,
+	  trunk/gtools/DESCRIPTION, trunk/gtools/NAMESPACE,
+	  trunk/gtools/R/dirichlet.R, trunk/gtools/R/foldchange.R,
+	  trunk/gtools/R/invalid.R, trunk/gtools/R/mixedsort.R,
+	  trunk/gtools/R/oddeven.R, trunk/gtools/R/permute.R,
+	  trunk/gtools/R/quantcut.R, trunk/gtools/R/running.R,
+	  trunk/gtools/man/running.Rd: initial bundle checkin
+
+2004-09-02 17:14  warneg
+
+	* [r442] trunk/gdata/DESCRIPTION, trunk/gdata/DESCRIPTION.in,
+	  trunk/gdata/NAMESPACE, trunk/gdata/man/.Rhistory,
+	  trunk/gmodels/DESCRIPTION, trunk/gmodels/DESCRIPTION.in,
+	  trunk/gmodels/NAMESPACE, DESCRIPTION, DESCRIPTION.in, NAMESPACE,
+	  man/1, man/residplot.Rd, trunk/gregmisc/.Rhistory,
+	  trunk/gtools/DESCRIPTION, trunk/gtools/DESCRIPTION.in,
+	  trunk/gtools/NAMESPACE: Initial revision
+
+2004-07-29 14:49  warnes
+
+	* [r426] R/plotCI.R, man/plotCI.Rd: Integrate changes from the
+	  version of plotCI maintained by Martin Maechler.
+
+2004-06-30 19:32  warnes
+
+	* [r393] R/textplot.R: Remove commented-out code.
+
+2004-06-30 19:26  warnes
+
+	* [r392] R/textplot.R: Fixed text size calculations
+
+2004-06-28 20:16  warnes
+
+	* [r391] R/barplot2.R, man/barplot2.Rd: - Default 2-d color set to
+	  grey as in (v2.0.0) r-devel - The default (v1.9.1) barplot method
+	  now handles vectors and 1-d arrays (e.g., obtained by table())
+	  the same, and uses grey instead of heat color palettes in these
+	  cases. (Also fixes PR#6776.) - Updated to reflect the addition of
+	  'offset' argument in base - Fix bug in stacked barplots, which
+	  would not be plotted properly
+
+2004-06-24 16:57  warnes
+
+	* [r385] R/heatmap.2.R, man/heatmap.2.Rd: Add ability to specify
+	  color of NA cells.
+
+2004-05-27 15:11  warnes
+
+	* [r349] man/plotCI.Rd: Fix spelling error.
+
+2004-05-26 14:56  warnes
+
+	* [r347] R/overplot.R: One more fix to get it right.
+
+2004-05-26 13:50  warnes
+
+	* [r346] R/overplot.R: Use triple-colon operator ':::' to access
+	  plot.formula from the graphics package.
+
+2004-05-26 13:19  warnes
+
+	* [r344] man/rich.color.Rd: Replace 'F' by 'FALSE' to pass R CMD
+	  check.
+
+2004-05-25 18:32  warnes
+
+	* [r338] R/overplot.R: Work around bug in R 1.9.X due to
+	  plot.formula() not having the same arguments as plot().
+
+2004-05-25 17:33  warnes
+
+	* [r336] R/rich.color.R, man/rich.color.Rd: Add rich.colors()
+	  submitted by Arni Magnusson <arnima@u.washington.edu>.
+
+2004-05-25 02:58  warnes
+
+	* [r328] R/ooplot.R, man/ooplot.Rd: ??
+
+2004-05-24 23:43  warnes
+
+	* [r324] R/plotCI.R, R/plotmeans.R: Modified to use invalid() to
+	  check arguments instead of missing(). This fixes some build
+	  errors under R-1.9.0-Patched.
+
+2004-04-22 15:44  warnes
+
+	* [r319] R/ooplot.R, man/ooplot.Rd: Integrate changes from Lodewijk
+	  Bonebakker <bonebakker@comcast.net>
+
+2004-04-13 13:42  warnes
+
+	* [r318] R/space.R, man/space.Rd: Add ability to space points along
+	  'y' direction.
+
+2004-04-02 19:06  warnes
+
+	* [r313] R/smartlegend.R: Fixed smartlegend() positioning when x
+	  and/or y axis are log-scale.
+
+2004-03-30 19:04  warnes
+
+	* [r311] R/textplot.R, trunk/gregmisc/DESCRIPTION: - Fix bug in
+	  textplot() reported by Wright, Kevin
+	  <kevin.d.wright@pioneer.com>.
+
+2004-03-26 22:27  warnes
+
+	* [r305] man/textplot.Rd: Update to match changes in textplot()
+	  code.
+
+2004-03-26 22:25  warnes
+
+	* [r304] man/ooplot.Rd: Remove Windows EOL characters.
+
+2004-03-26 22:20  warnes
+
+	* [r302] man/barplot2.Rd: - Remove some commented-out code. -
+	  Remove cvs log tag.
+
+2004-03-26 22:16  warnes
+
+	* [r300] R/textplot.R: Misc changes.
+
+2004-02-17 22:22  warnes
+
+	* [r290] man/ooplot.Rd: Minor fix to ooplot documentation.
+
+2004-02-17 22:21  warnes
+
+	* [r289] R/ooplot.R, man/ooplot.Rd: Integrate ooplot updates
+	  provided by Lodewijk Bonebakker <bonebakker@comcast.net>
+
+2004-02-02 16:26  warnes
+
+	* [r287] R/colorpanel.R, man/colorpanel.Rd: - Add colorpanel
+	  function, which generates a smoothly varying band of colors over
+	  a three color range (lo, mid, high).
+
+2004-01-21 12:07  warnes
+
+	* [r283] man/textplot.Rd: - Correct arguments to halign to match
+	  code.
+
+2004-01-21 05:17  warnes
+
+	* [r281] R/lowess.R: Track R 1.9.0's move of 'lowess' from the base
+	  package to the (new) stats package.
+
+2004-01-21 04:44  warnes
+
+	* [r279] man/sinkplot.Rd: - Fix sinkplot() example by replacing 'T'
+	  with 'TRUE'.
+
+2004-01-21 04:42  warnes
+
+	* [r278] man/ooplot.Rd: - Add some more details to the ooplot()
+	  documentation. The documentation is *not* complete.
+
+2004-01-21 04:31  warnes
+
+	* [r277] R/textplot.R, trunk/gtools/R/capture.R: - Mark sprint() as
+	  depreciated. - Replace references to sprint with capture.output()
+	  - Use match.arg for halign and valign arguments to
+	  textplot.default. - Fix textplot.character so that a vector of
+	  characters is properly displayed. Previouslt, character vectors
+	  were plotted on top of each other.
+
+2004-01-19 23:43  warnes
+
+	* [r276] R/sinkplot.R, man/sinkplot.Rd: New function sinkplot(), as
+	  requested on R-devel by Kevin Wright <kwright@eskimo.com> in
+	  https://www.stat.math.ethz.ch/pipermail/r-devel/2004-January/028483.html.
+
+2004-01-15 05:14  warnes
+
+	* [r274] R/ooplot.R, man/ooplot.Rd: Add initial code and docs for
+	  ooplot() function submitted by Lodewijk Bonebakker
+	  <bonebakker@comcast.net>.
+
+2003-12-03 02:46  warnes
+
+	* [r253] trunk/gdata/man/elem.Rd, trunk/gdata/man/ll.Rd,
+	  man/lowess.Rd, man/textplot.Rd, man/wapply.Rd,
+	  trunk/gtools/man/foldchange.Rd: - match function argument
+	  defaults with 'usage'
+
+2003-12-03 02:42  warnes
+
+	* [r252] R/heatmap.2.R, man/heatmap.2.Rd: - Fix buglets in heatmap
+	  function - Make a slight enhancement to the example code.
+
+2003-12-02 22:49  warnes
+
+	* [r251] R/heatmap.2.R: Integrated some suggestions from Sean Davis
+	  <sdavis2@mail.nih.gov>.
+
+2003-12-02 18:22  warnes
+
+	* [r250] man/heatmap.2.Rd: - Make final example use 16 colors
+	  instead of 8. This looks nicer.
+
+2003-12-02 16:58  warnes
+
+	* [r248] man/barplot2.Rd: - Remove '%' character from example code
+	  to avoid errors.
+
+2003-12-02 16:54  warnes
+
+	* [r247] R/plotCI.R: - Add '...' parameter to call to text to allow
+	  user to control size/color/etc.
+
+2003-12-01 16:00  warnes
+
+	* [r246] man/barplot2.Rd: - updated to match changes to barplot()
+	  in base.
+
+2003-12-01 15:59  warnes
+
+	* [r245] data, data/rtPCR.rda: - Renamed rtPCR.Rda to rtPCR.rda so
+	  that R will properly load the file when data(rtPCR) is executed.
+
+2003-12-01 15:55  warnes
+
+	* [r243] R/barplot2.R: - Follow patches applied to barplot() in
+	  base.
+
+2003-11-24 21:32  warnes
+
+	* [r242] man/heatmap.2.Rd: Fix unbalanced braces.
+
+2003-11-24 15:09  warnes
+
+	* [r240] R/overplot.R, man/overplot.Rd: Fix errors reported by R
+	  CMD check.
+
+2003-11-21 23:13  warnes
+
+	* [r239] man/overplot.Rd: Added missing closing brace.
+
+2003-11-21 23:08  warnes
+
+	* [r238] man/rtPCR.Rd: Initial addition of these files. Used in
+	  examples of overplot().
+
+2003-11-21 22:59  warnes
+
+	* [r236] R/heatmap.2.R, man/heatmap.2.Rd: Applied my enhancements
+	  to the heatmap() code from R 1.8.0, and added documentation of
+	  these changes.
+
+2003-11-21 22:58  warnes
+
+	* [r235] R/overplot.R, man/overplot.Rd: - Discovered that axis(N)
+	  does the right thing without needing to be given location for
+	  tick marks. This allowed simplification of the code.
+	  
+	  - Minor other changes for distribution
+	  
+	  - Addition of overplot.Rd documentation.
+
+2003-11-21 19:50  warnes
+
+	* [r231] R/heatmap.2.R, man/heatmap.2.Rd: - Integrated my
+	  extensions into the R 1.8.0 version of heatmap. - Add Rd
+	  documentation.
+
+2003-11-19 14:52  warnes
+
+	* [r228] man/bandplot.Rd: Remove extranious NULL that confused R
+	  CMD check.
+
+2003-11-18 18:59  warnes
+
+	* [r226] man/barplot2.Rd: - Tiny fix to remove R CMD check error.
+
+2003-11-18 18:58  warnes
+
+	* [r225] man/smartlegend.Rd: - Added missing closing brace.
+
+2003-11-18 18:45  warnes
+
+	* [r224] trunk/gdata/R/elem.R, trunk/gdata/R/env.R,
+	  trunk/gdata/R/is.what.R, trunk/gdata/R/keep.R,
+	  trunk/gdata/R/ll.R, R/overplot.R: - Convert from MS-Dos to Unix
+	  line endings. - Reformat to 80 columns.
+
+2003-11-10 22:11  warnes
+
+	* [r220] trunk/gdata/R/elem.R, trunk/gdata/R/env.R,
+	  trunk/gdata/R/is.what.R, trunk/gdata/R/keep.R,
+	  trunk/gdata/R/ll.R, trunk/gdata/man/elem.Rd,
+	  trunk/gdata/man/env.Rd, trunk/gdata/man/is.what.Rd,
+	  trunk/gdata/man/keep.Rd, trunk/gdata/man/ll.Rd, R/heatmap.2.R,
+	  R/overplot.R, R/plotmeans.R, R/space.R, R/wapply.R,
+	  trunk/gregmisc/DESCRIPTION, trunk/gtools/R/capture.R,
+	  trunk/gtools/man/capture.Rd: - Add files contributed by Arni
+	  Magnusson <arnima@u.washington.edu>. As well as some of my own.
+
+2003-08-19 14:58  warnes
+
+	* [r219] R/heatmap.2.R: - Copy of local changes.
+
+2003-08-19 14:57  warnes
+
+	* [r218] R/heatmap.2.R: - Checkin before re-integrating local
+	  changes.
+
+2003-06-19 21:23  warnes
+
+	* [r201] R/heatmap.2.R: - Added enhanced heatmap function.
+
+2003-06-09 15:10  warnes
+
+	* [r200] man/smartlegend.Rd: - Add help text for smartlegend.
+
+2003-06-09 14:57  warnes
+
+	* [r199] R/smartlegend.R: - New function smartlegend().
+
+2003-04-22 17:28  warnes
+
+	* [r191] R/plotmeans.R: - Fixeed warning messing caused when
+	  'connect' is a vector.
+
+2003-04-22 15:34  warnes
+
+	* [r187] R/barplot2.R: Update from Marc Schwartz, modified by
+	  Gregory Warnes:
+	  
+	  - Modified dim() checks for 'ci.l' and 'ci.u' against 'height' to
+	  remove R v1.7.0 if() based error msgs for vector conditions.
+
+2003-04-04 13:49  warnes
+
+	* [r182] R/balloonplot.R, man/qqnorm.aov.Rd,
+	  trunk/gtools/R/dirichlet.R: - Change occurences of 'T' to 'TRUE'
+
+2003-04-04 13:44  warnes
+
+	* [r179] man/textplot.Rd: - Updated to match changes in textplot
+	  function: - Added textplot.character - Renamed arguments
+	  "col.margin" and "row.margin" to "cmar", and "rmar" so that
+	  specifying "col='red'" is possible. - Fixed R CMD check errors -
+	  Improve comments in example - Add textplot.matrix example
+
+2003-04-04 13:41  warnes
+
+	* [r178] R/textplot.R: - Added textplot.character to handle
+	  character strings. - Moved test for vector and matrix arguments
+	  to textplot.default. - Renamed arguments "col.margin" and
+	  "row.margin" to "cmar", and "rmar" so that specifying "col='red'"
+	  is possible.
+
+2003-04-02 22:29  warnes
+
+	* [r175] R/textplot.R, man/textplot.Rd: - Added textplot function
+	  and friends, as well as documentation.
+
+2003-03-08 16:30  warnes
+
+	* [r171] man/balloonplot.Rd: - Forgot to update arglist in \usage
+	  section.
+
+2003-03-08 16:22  warnes
+
+	* [r169] R/balloonplot.R, man/balloonplot.Rd: - Added parameters
+	  for rotation of and amount of space allocated for the row and
+	  column labels.
+
+2003-03-07 15:48  warnes
+
+	* [r168] trunk/gmodels/R/fast.prcomp.R, R/hist2d.R, R/qqnorm.aov.R,
+	  trunk/gregmisc/DESCRIPTION, trunk/gtools/R/RSCompat.S: - Minor
+	  changes to code to allow the package to be provided as an S-Plus
+	  chapter.
+
+2003-03-07 15:43  warnes
+
+	* [r167] R/lowess.R: - Add 'NULL' as the last element of if
+	  statement that defines lowess.default so that when the file is
+	  sourced, S-Plus doesn't display the function definition.
+
+2003-03-07 15:41  warnes
+
+	* [r166] R/lowess.R: - Specify where the defualt lowess function
+	  should be found. - Use getFunction in S-Plus instead of 'get'
+
+2003-01-30 21:43  warnes
+
+	* [r159] R/barplot2.R, man/barplot2.Rd: - Added argument 'add' to
+	  allow for the addition of a barplot to an existing graphic.
+	  Default is FALSE
+
+2003-01-20 18:35  warnes
+
+	* [r156] R/balloonplot.R, man/balloonplot.Rd: - Updated balloonplot
+	  help page.
+
+2003-01-20 17:13  warnes
+
+	* [r155] R/wapply.R, man/wapply.Rd: - Updated wapply.R to allow
+	  specification of evaluation points when method is 'width' or
+	  'range' using the 'pts' argument. - Updated wapply.Rd to add
+	  'pts' argument - Fixed typos, spelling errors, gramatical errors
+	  and lack of clarity in wapply.Rd help text.
+
+2003-01-03 21:34  warnes
+
+	* [r154] R/balloonplot.R, man/balloonplot.Rd: - Initial checkin of
+	  balloonplot functions and documentation.
+
+2003-01-03 19:23  warnes
+
+	* [r153] man/space.Rd: - Added reference to and comparison example
+	  of sunflowerplot. - Added code to put example plots on same plot
+	  window using par(mfrow=...).
+
+2003-01-02 16:09  warnes
+
+	* [r150] R/barplot2.R: - Changed assignment statements that used
+	  "=" to "<-" to avoid syntax errors in older versions of the S
+	  language.
+
+2003-01-02 16:07  warnes
+
+	* [r149] R/lowess.R: - Added wrapper code so that R-specific
+	  fiddling won't be executed under S-Plus.
+
+2003-01-02 15:40  warnes
+
+	* [r147] R/qqnorm.aov.R, man/qqnorm.aov.Rd: - Renamed first
+	  parameter to match qqnorm generic.
+
+2003-01-02 15:14  warnes
+
+	* [r146] man/qqnorm.aov.Rd: Added additional help text from Kjeitl.
+
+2002-12-31 19:50  warnes
+
+	* [r145] R/qqnorm.aov.R, man/qqnorm.aov.Rd: Initial checkin of
+	  qqnorm.aov function and documentation submitted by Kjetil
+	  Halvorsen <kjetilh@jupiter.umsanet.edu.bo>.
+
+2002-11-04 14:21  warnes
+
+	* [r143] R/barplot2.R, man/barplot2.Rd: Updates from Marc Schwartz:
+	  
+	  - Updated underlying code to be based upon the new barplot() in R
+	  v1.6.1 - This now uses the 'axis.lty' and 'border' arguments - In
+	  R v1.6.0, R Core introduced a new function called axTicks(). This
+	  is an R equivalent of the C code for CreateAtVector in plot.c.
+	  This now enables me to get the axis tick mark positions
+	  consistently when the 'height' related axis is either linear or
+	  log. Thus, I can now have consistent tick marks and can plot grid
+	  lines in either situation. If 'plot.grid = TRUE' and 'grid.inc'
+	  is specified, then I still use pretty() to determine the tick
+	  marks and lines. - This code now depends on R 1.6.0 or later.
+
+2002-10-30 02:21  warnes
+
+	* [r139] R/plot.lm.R: - Commented out plot.lm() code since recent
+	  changes in R have broken it.
+
+2002-10-11 18:02  warnes
+
+	* [r131] R/barplot2.R: - Fixed log scale errors in legend() call
+
+2002-10-01 18:16  warnes
+
+	* [r130] man/hist2d.Rd: - Added examples of using 'contour' and
+	  'filled.contour' for display.
+
+2002-09-24 14:53  warnes
+
+	* [r121] R/plotmeans.R: - Changed digits=options("digits") which
+	  produces a list of length 1 to digits=getOption("digits") which
+	  returns a vector of length one. The former was causing an error
+	  when passed to round().
+
+2002-09-23 14:27  warnes
+
+	* [r119] trunk/gmodels/man/CrossTable.Rd,
+	  trunk/gmodels/man/glh.test.Rd, man/barplot2.Rd: - Fixed syntax
+	  errors in barplot2.Rd and CrossTable.Rd - Fixed incorrect
+	  translation of 'F' (distribution) to 'FALSE' in glh.test.Rd
+
+2002-09-23 13:59  warnes
+
+	* [r117] trunk/gdata/R/aggregate.table.R, trunk/gdata/R/combine.R,
+	  trunk/gdata/R/interleave.R, trunk/gdata/R/nobs.R,
+	  trunk/gdata/man/aggregate.table.Rd, trunk/gdata/man/combine.Rd,
+	  trunk/gdata/man/interleave.Rd, trunk/gdata/man/nobs.Rd,
+	  trunk/gdata/man/rename.vars.Rd, trunk/gdata/man/reorder.Rd,
+	  trunk/gmodels/R/ci.R, trunk/gmodels/man/estimable.Rd,
+	  trunk/gmodels/man/glh.test.Rd, R/boxplot.n.R, R/hist2d.R,
+	  R/lowess.R, R/residplot.R, man/bandplot.Rd, man/hist2d.Rd,
+	  man/lowess.Rd, man/plotCI.Rd, man/space.Rd,
+	  trunk/gtools/man/combinations.Rd, trunk/gtools/man/quantcut.Rd: -
+	  Modified all files to include CVS Id and Log tags.
+
+2002-09-23 13:38  warnes
+
+	* [r116] trunk/gmodels/R/CrossTable.R,
+	  trunk/gmodels/man/CrossTable.Rd, R/barplot2.R, man/barplot2.Rd,
+	  trunk/gregmisc/DESCRIPTION, trunk/gtools/R/combinations.R: -
+	  Added CrossTable() and barplot2() code and docs contributed by
+	  Marc Schwartz. - Permit combinations() to be used when r>n
+	  provided repeat.allowed=TRUE - Bumped up version number
+
+2002-08-01 19:37  warnes
+
+	* [r114] trunk/gmodels/R/ci.R, trunk/gmodels/man/ci.Rd,
+	  trunk/gmodels/man/estimable.Rd, trunk/gmodels/man/glh.test.Rd,
+	  R/hist2d.R, R/wapply.R, trunk/gregmisc/DESCRIPTION,
+	  trunk/gtools/R/running.R: - Corrected documentation mismatch for
+	  ci, ci.default.
+	  
+	  - Replaced all occurences of '_' for assignment with '<-'.
+	  
+	  - Replaced all occurences of 'T' or 'F' for 'TRUE' and 'FALSE'
+	  with the spelled out version.
+	  
+	  - Updaded version number and date.
+
+2002-04-09 00:51  warneg
+
+	* [r109] trunk/gdata/R/rename.vars.R,
+	  trunk/gdata/man/aggregate.table.Rd,
+	  trunk/gdata/man/interleave.Rd, trunk/gdata/man/reorder.Rd,
+	  trunk/gmodels/R/ci.R, trunk/gmodels/R/estimable.R,
+	  trunk/gmodels/R/glh.test.R, trunk/gmodels/man/glh.test.Rd,
+	  R/bandplot.R, R/boxplot.n.R, R/hist2d.R, R/plot.lm.R, R/plotCI.R,
+	  R/plotmeans.R, R/residplot.R, R/space.R, R/wapply.R,
+	  man/bandplot.Rd, man/boxplot.n.Rd, man/hist2d.Rd,
+	  man/plotmeans.Rd, man/space.Rd, man/wapply.Rd,
+	  trunk/gregmisc/DESCRIPTION, trunk/gtools/R/combinations.R,
+	  trunk/gtools/man/combinations.Rd, trunk/gtools/man/running.Rd:
+	  Checkin for version 0.5.3
+
+2002-03-27 20:51  warneg
+
+	* [r107] man/lowess.Rd: Added "..." argument to lowess.default.
+
+2002-03-27 19:48  warneg
+
+	* [r106] R/lowess.R: - Added code to append "..." to the argument
+	  list of lowess.default.
+	  
+	  - Fixed a wrong default for f in lowess.formula. Was 3, but
+	  should have been 2/3.
+
+2002-03-26 21:22  warneg
+
+	* [r104] trunk/gdata/man/reorder.Rd, trunk/gmodels/R/ci.R,
+	  trunk/gmodels/R/glh.test.R, trunk/gmodels/man/ci.Rd,
+	  trunk/gmodels/man/glh.test.Rd, R/lowess.R, man/lowess.Rd: -
+	  Changed methods to include '...' to match the generic. - Updated
+	  for version 0.5.1
+
+2002-03-26 19:24  warneg
+
+	* [r100] man/hist2d.Rd: Initial checkin.
+
+2002-03-20 04:17  warneg
+
+	* [r94] R/plotmeans.R: - Changes to add compatibility with S-Plus
+	  2000
+
+2002-03-20 04:16  warneg
+
+	* [r93] R/plotCI.R: - Changes to add compatibility with S-Plus
+	  2000.
+
+2002-03-20 03:48  warneg
+
+	* [r92] R/boxplot.n.R: - Updated to work in S-Plus 2000 as well as
+	  R.
+
+2002-03-05 16:44  warneg
+
+	* [r88] R/plotmeans.R: - Replace "T" with "TRUE". Problems arrive
+	  when there is a variable named "T".
+
+2002-02-20 20:09  warneg
+
+	* [r81] trunk/gdata/man/rename.vars.Rd, trunk/gmodels/man/ci.Rd,
+	  trunk/gmodels/man/estimable.Rd, trunk/gmodels/man/glh.test.Rd,
+	  man/lowess.Rd, man/plotCI.Rd, man/space.Rd: Minor changes, typo
+	  and formatting fixes.
+
+2002-02-20 20:06  warneg
+
+	* [r80] R/bandplot.R, man/bandplot.Rd: - Generalized to allow
+	  specification of the multiples of the standard deviation levels
+	  to be plotted (0=mean, 1=1 sd, ..). - Now (invisibly) returnes
+	  computed smooths.
+
+2002-02-16 18:16  warneg
+
+	* [r78] man/bandplot.Rd: Added bandplot documentation.
+
+2002-02-16 17:58  warneg
+
+	* [r77] R/wapply.R: - Fixed Bug: When method=="range", the absolute
+	  range of x was being used to compute the relative width instead
+	  of the (correct) relative range.
+
+2002-02-16 17:23  warneg
+
+	* [r76] R/wapply.R: - Corrected problem removing missing values:
+	  The missing values of $x and $y were being removed
+	  indepdendently, leaving an uneven number of points in the result.
+
+2002-02-04 23:20  warneg
+
+	* [r74] R/space.R: - Add na.rm parameter and make the default TRUE.
+
+2002-02-04 23:19  warneg
+
+	* [r73] R/hist2d.R: Initial checkin.
+
+2002-02-04 19:12  warneg
+
+	* [r72] R/plotCI.R: - When err="x", 'col' was being used to plot
+	  bars, rather than 'barcol'.
+
+2002-02-04 19:09  warneg
+
+	* [r71] R/plotCI.R: - fixed typo, when err="x", lty was 'slty'
+	  causing an error.
+
+2001-12-12 01:41  warneg
+
+	* [r54] man/space.Rd: - Quoted underscore character in my email
+	  address. - Added correct keyword.
+
+2001-12-12 01:37  warneg
+
+	* [r52] man/plotmeans.Rd: Added documentation for xaxt parameter.
+
+2001-12-12 01:34  warneg
+
+	* [r51] R/lowess.R: Updated to explicitly list control arguments to
+	  lowess.formula.
+
+2001-12-12 01:34  warneg
+
+	* [r50] man/lowess.Rd: Initial checkin. Code copied from R source
+	  package and extended.
+
+2001-12-07 23:34  warneg
+
+	* [r46] man/wapply.Rd: Fixed an problem where \code was incorrectly
+	  delimited by parens rather than curly brackets.
+
+2001-12-07 22:33  warneg
+
+	* [r42] R/lowess.R, R/plot.lm.R, R/residplot.R, man/space.Rd:
+	  Initial checkin.
+
+2001-12-07 22:24  warneg
+
+	* [r41] R/space.R: - Added cvs tags.
+
+2001-12-07 22:23  warneg
+
+	* [r40] R/space.R: - Leave first point at center, rather than
+	  shifting by s/2 to the left. This looks better when there are
+	  more than 2 'spaced' points.
+
+2001-12-05 19:49  warneg
+
+	* [r33] R/plotmeans.R: - Added ability to use the t-distribution to
+	  compute confidence intervals. This is controlled using the
+	  'use.t' parameter.
+
+2001-12-05 19:41  warneg
+
+	* [r31] man/plotmeans.Rd: - Added documentation of use.t parameter.
+
+2001-12-05 19:36  warneg
+
+	* [r30] man/wapply.Rd: - Clarified how the width of the window is
+	  computed when method="nobs".
+
+2001-12-05 19:29  warneg
+
+	* [r29] R/wapply.R: - Added a better default for "width" when
+	  method="nobs". For this case, width=max(5, length(x)/10).
+	  
+	  - Allow omission of x values which result in missing y values via
+	  'drop.na' parameter.
+
+2001-10-26 02:48  warneg
+
+	* [r28] R/plotmeans.R: Added correct handling of 'xaxt="n"'.
+
+2001-10-16 23:15  warneg
+
+	* [r27] trunk/gmodels/man/ci.Rd, man/wapply.Rd: Fixed unbalanced
+	  brace.
+
+2001-10-16 23:06  warneg
+
+	* [r26] man/plotCI.Rd: Added minbar and maxbar parameters.
+
+2001-10-16 23:04  warneg
+
+	* [r25] man/plotmeans.Rd: Forgot to add minbar and maxbar to usage
+	  section.
+
+2001-10-16 23:03  warneg
+
+	* [r24] man/plotmeans.Rd: Added description of minbar and maxbar.
+
+2001-10-16 23:00  warneg
+
+	* [r23] R/plotCI.R: - Added minbar and maxbar parameters - Added
+	  cvs id and log tags to header
+
+2001-10-16 22:59  warneg
+
+	* [r22] R/plotmeans.R: Added cvs id and log tag to file header
+
+2001-10-16 22:57  warneg
+
+	* [r21] R/plotmeans.R: Added minbar and maxbar parameters.
+
+2001-10-16 22:35  warneg
+
+	* [r20] man/plotmeans.Rd: Added description of minsd parameter.
+
+2001-10-16 22:35  warneg
+
+	* [r19] R/plotmeans.R: Added minsd parameter.
+
+2001-09-18 14:15  warneg
+
+	* [r18] R/plotCI.R, R/plotmeans.R, trunk/gregmisc/DESCRIPTION,
+	  trunk/gtools/R/RSCompat.S: Release 0.3.2
+
+2001-09-01 00:01  warneg
+
+	* [r16] man/wapply.Rd, trunk/gregmisc/DESCRIPTION,
+	  trunk/gtools/R/running.R, trunk/gtools/man/running.Rd: Release
+	  0.3.0
+
+2001-08-31 23:45  warneg
+
+	* [r15] R/wapply.R: Used wrong character in header (% instead of
+	  #). Fixed.
+
+2001-08-31 23:41  warneg
+
+	* [r14] R/bandplot.R: Used wrong comment character (% instead of #)
+	  in header. Fixed.
+
+2001-08-25 05:48  warneg
+
+	* [r10] R/wapply.R: Initial checkin.
+
+2001-08-25 05:46  warneg
+
+	* [r9] man/boxplot.n.Rd, man/plotmeans.Rd: Added CVS header.
+
+2001-08-25 05:45  warneg
+
+	* [r8] man/wapply.Rd: Initial Checkin
+
+2001-05-30 13:23  warneg
+
+	* [r2] trunk/gmodels, trunk/gmodels/R, trunk/gmodels/R/ci.R,
+	  trunk/gmodels/man, trunk/gmodels/man/ci.Rd, ., R, R/boxplot.n.R,
+	  R/plotCI.R, R/plotmeans.R, man, man/boxplot.n.Rd, man/plotCI.Rd,
+	  man/plotmeans.Rd, trunk/gregmisc, trunk/gregmisc/DESCRIPTION:
+	  Initial revision
+

@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Summary Method for &lsquo;clara&rsquo; Objects</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for summary.clara {cluster}"><tr><td>summary.clara {cluster}</td><td align="right">R Documentation</td></tr></table>
+<h2>Summary Method for &lsquo;clara&rsquo; Objects</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Returns (and prints) a summary list for a <code>clara</code> object.
+Printing gives more output than the corresponding
+<code><a href="print.clara.html">print.clara</a></code> method.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'clara':
+summary(object, ...)
+## S3 method for class 'summary.clara':
+print(x, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x, object</code></td>
+<td>
+a <code><a href="clara.html">clara</a></code> object.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+potential further arguments (require by generic).</td></tr>
+</table>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="clara.object.html">clara.object</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## generate 2000 objects, divided into 5 clusters.
+set.seed(47)
+x &lt;- rbind(cbind(rnorm(400, 0,4), rnorm(400, 0,4)),
+           cbind(rnorm(400,10,8), rnorm(400,40,6)),
+           cbind(rnorm(400,30,4), rnorm(400, 0,4)),
+           cbind(rnorm(400,40,4), rnorm(400,20,2)),
+           cbind(rnorm(400,50,4), rnorm(400,50,4))
+)
+clx5 &lt;- clara(x, 5)
+## Mis`classification' table:
+table(rep(1:5, rep(400,5)), clx5$clust) # -&gt; 1 "error"
+summary(clx5)
+
+## Graphically:
+par(mfrow = c(3,1), mgp = c(1.5, 0.6, 0), mar = par("mar") - c(0,0,2,0))
+plot(x, col = rep(2:6, rep(400,5)))
+plot(clx5)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>cluster</em> version 1.12.0 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

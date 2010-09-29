@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Plot a Venn diagram</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for venn {gplots}"><tr><td>venn {gplots}</td><td align="right">R Documentation</td></tr></table>
+<h2>Plot a Venn diagram</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Plot Venn diagrams for up to 5 sets
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+venn(data, universe=NA, small=0.7, showSetLogicLabel=FALSE,
+     simplify=FALSE, show.plot=TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>data</code></td>
+<td>
+data to be plotted (see below)</td></tr>
+<tr valign="top"><td><code>universe</code></td>
+<td>
+??</td></tr>
+<tr valign="top"><td><code>small</code></td>
+<td>
+Character size of group labels</td></tr>
+<tr valign="top"><td><code>showSetLogicLabel</code></td>
+<td>
+Logical flag indicating whether the internal
+group label should be displayed</td></tr>
+<tr valign="top"><td><code>simplify</code></td>
+<td>
+Logical flag indicating whether unobserved group
+should be omitted.</td></tr>
+<tr valign="top"><td><code>show.plot</code></td>
+<td>
+Logical flag indicating whether the plot should be
+displayed.  If false, simply returns the group count matrix.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>data</code> should be either a named list of vectors containing
+indexes of group members (1, 2, 3,..) , or a data frame containing indicator
+variables (TRUE, FALSE, TRUE, ..) for group membership.  Group names
+will be taken from the component vector or column names.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A matrix of all possible sets of groups, and the observed numer of
+items beloinging to each set of groups is returned invisibly.
+The fist column contains observed counts, subsequent columns contain
+0-1 indicators of group membership.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Steffen Moeller <a href="mailto:steffen_moeller@gmx.de">steffen_moeller@gmx.de</a>,
+with cleanup and packaging by Gregory R. Warnes
+<a href="mailto:greg@random-technologies-llc.com">greg@random-technologies-llc.com</a>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+
+##
+## Example using a list of item indexes  belonging to the
+## specified group.
+##
+A&lt;- 1:20
+B&lt;- 1:20
+C&lt;- 2:20
+D&lt;- 3:21
+input&lt;-list(A,B,C,D)
+input
+
+venn(input)
+
+##
+## Example using a data frame of indicator columns
+##
+A&lt;- as.logical(rbinom(100, 1, 0.2))
+B&lt;- as.logical(rbinom(100, 1, 0.7))
+C&lt;- as.logical(rbinom(100, 1, 0.2))
+D&lt;- as.logical(rbinom(100, 1, 0.1))
+input&lt;-data.frame(A,B,C,D)
+venn(input)
+
+## Omit un-observed groupings
+tmp &lt;- venn(input, simplify=TRUE)
+
+## show details
+tmp
+
+## Show internal binary group labels
+venn(input, showSetLogicLabel=TRUE)
+
+## Specify universe
+venn(input, universe=NULL, showSetLogicLabel=TRUE)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>gplots</em> version 2.7.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

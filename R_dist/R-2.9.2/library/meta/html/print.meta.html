@@ -1,0 +1,267 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Print and summary method for objects of class meta</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for print.meta {meta}"><tr><td>print.meta {meta}</td><td align="right">R Documentation</td></tr></table>
+<h2>Print and summary method for objects of class meta</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Print and summary method for objects of class <code>meta</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'meta':
+print(x, sortvar, level=x$level, level.comb=x$level.comb,
+        comb.fixed=x$comb.fixed, comb.random=x$comb.random,
+        details=FALSE, ma=TRUE, digits=max(4, .Options$digits - 3), ...)
+
+## S3 method for class 'metabias':
+print(x, ...)
+
+## S3 method for class 'meta':
+summary(object, byvar=object$byvar,
+        bylab=object$bylab, print.byvar=object$print.byvar,
+        bystud=FALSE,
+        level=object$level, level.comb=object$level.comb,
+        comb.fixed=object$comb.fixed, comb.random=object$comb.random,
+        warn=TRUE, ...)
+
+## S3 method for class 'summary.meta':
+print(x, digits = max(3, .Options$digits - 3),
+        print.byvar,
+        comb.fixed=x$comb.fixed, comb.random=x$comb.random,
+        header=TRUE, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+An object of class <code>meta</code>, <code>metabias</code>, or
+<code>summary.meta</code>.</td></tr>
+<tr valign="top"><td><code>object</code></td>
+<td>
+An object of class <code>meta</code>.</td></tr>
+<tr valign="top"><td><code>sortvar</code></td>
+<td>
+An optional vector used to sort the individual studies
+(must be of same length as <code>x$TE</code>).</td></tr>
+<tr valign="top"><td><code>level</code></td>
+<td>
+The level used to calculate confidence intervals for
+individual studies.</td></tr>
+<tr valign="top"><td><code>level.comb</code></td>
+<td>
+The level used to calculate confidence intervals for
+pooled estimates.</td></tr>
+<tr valign="top"><td><code>comb.fixed</code></td>
+<td>
+A logical indicating whether a fixed effect
+meta-analysis should be conducted.</td></tr>
+<tr valign="top"><td><code>comb.random</code></td>
+<td>
+A logical indicating whether a random effects
+meta-analysis should be conducted.</td></tr>
+<tr valign="top"><td><code>header</code></td>
+<td>
+A logical indicating whether information on title of
+meta-analysis, comparison and outcome should be printed at the
+beginning of the printout.</td></tr>
+<tr valign="top"><td><code>details</code></td>
+<td>
+A logical indicating whether further details of
+individual studies should be printed.</td></tr>
+<tr valign="top"><td><code>ma</code></td>
+<td>
+A logical indicating whether the summary results of the
+meta-analysis should be printed.</td></tr>
+<tr valign="top"><td><code>byvar</code></td>
+<td>
+An optional vector containing grouping information (must
+be of same length as <code>x$TE</code>).</td></tr>
+<tr valign="top"><td><code>bylab</code></td>
+<td>
+A character string with a label for the grouping variable.</td></tr>
+<tr valign="top"><td><code>bystud</code></td>
+<td>
+A logical indicating whether results of individual
+studies should be printed by grouping variable.</td></tr>
+<tr valign="top"><td><code>digits</code></td>
+<td>
+Minimal number of significant digits, see <code>print.default</code>.</td></tr>
+<tr valign="top"><td><code>print.byvar</code></td>
+<td>
+A logical indicating whether the name of the grouping
+variable should be printed in front of the group labels. By default,
+the value of <code>print.byvar</code> is set to <code>TRUE</code>.</td></tr>
+<tr valign="top"><td><code>warn</code></td>
+<td>
+A logical indicating whether the use of
+<code>summary.meta</code> in connection with <code>metacum</code> or
+<code>metainf</code> should result in a warning.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+other arguments</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Review Manager 5 (RevMan 5) is the current software used for
+preparing and maintaining Cochrane Reviews
+(<a href="http://www.cc-ims.net/revman/">http://www.cc-ims.net/revman/</a>). In RevMan 5, subgroup analyses
+can be defined and data from a Cochrane review can be imported to R
+using the function <code>read.rm5</code>. If a meta-analysis is then
+conducted using function <code>metacr</code>, information on subgroups is
+available in R (components <code>byvar</code>, <code>bylab</code>, and
+<code>print.byvar</code>, <code>byvar</code> in an object of class
+<code>"meta"</code>). Accordingly, by using function <code>metacr</code> there is
+no need to define subgroups in order to redo the statistical analysis
+conducted in the Cochrane review.
+</p>
+<p>
+For subgroups (argument <code>byvar</code> not <code>NULL</code>), results for the
+fixed effect model will be printed if both arguments <code>comb.fixed</code>
+and <code>comb.random</code> are <code>TRUE</code>. In order to get results for
+the random effects model within subgroups, use
+<code>comb.fixed==FALSE</code> and <code>comb.random==TRUE</code>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A list is returned by the function <code>summary.meta</code> with the
+following elements:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>study</code></td>
+<td>
+Results for individual studies (a list with elements TE,
+seTE, lower, upper, z, p, level).</td></tr>
+<tr valign="top"><td><code>fixed</code></td>
+<td>
+Results for fixed effect model (a list with elements TE,
+seTE, lower, upper, z, p, level).</td></tr>
+<tr valign="top"><td><code>random</code></td>
+<td>
+Results for random effects model (a list with elements
+TE, seTE, lower, upper, z, p, level).</td></tr>
+<tr valign="top"><td><code>k</code></td>
+<td>
+Number of studies combined in meta-analysis.</td></tr>
+<tr valign="top"><td><code>Q</code></td>
+<td>
+Heterogeneity statistic Q.</td></tr>
+<tr valign="top"><td><code>tau</code></td>
+<td>
+Square-root of between-study variance (moment estimator of
+DerSimonian-Laird).</td></tr>
+<tr valign="top"><td><code>H</code></td>
+<td>
+Heterogeneity statistic H  (a list with elements TE, lower, upper).</td></tr>
+<tr valign="top"><td><code>I2</code></td>
+<td>
+Heterogeneity statistic I2 (a list with elements TE, lower,
+upper), see Higgins &amp; Thompson (2002).</td></tr>
+<tr valign="top"><td><code>k.all</code></td>
+<td>
+Total number of trials.</td></tr>
+<tr valign="top"><td><code>Q.CMH</code></td>
+<td>
+Cochrane-Mantel-Haenszel heterogeneity statistic.</td></tr>
+<tr valign="top"><td><code>sm</code></td>
+<td>
+A character string indicating underlying summary measure.</td></tr>
+<tr valign="top"><td><code>method</code></td>
+<td>
+A character string with the pooling method.</td></tr>
+<tr valign="top"><td><code>call</code></td>
+<td>
+Function call.</td></tr>
+<tr valign="top"><td><code>ci.lab</code></td>
+<td>
+Label for confidence interval.</td></tr>
+<tr valign="top"><td><code>within.fixed</code></td>
+<td>
+Result for fixed effect model within groups (a
+list with elements TE, seTE, lower, upper, z, p, level) - if
+<code>byvar</code> is not missing.</td></tr>
+<tr valign="top"><td><code>within.random</code></td>
+<td>
+Result for random effects model within groups (a
+list with elements TE, seTE, lower, upper, z, p, level) - if
+<code>byvar</code> is not missing.</td></tr>
+<tr valign="top"><td><code>k.w</code></td>
+<td>
+Number of studies combined within groups - if <code>byvar</code>
+is not missing.</td></tr>
+<tr valign="top"><td><code>Q.w</code></td>
+<td>
+Heterogeneity statistic Q within groups - if <code>byvar</code>
+is not missing.</td></tr>
+<tr valign="top"><td><code>bylab</code></td>
+<td>
+Label for grouping variable - if <code>byvar</code> is not
+missing.</td></tr>
+<tr valign="top"><td><code>by.levs</code></td>
+<td>
+Levels of grouping variable - if <code>byvar</code> is not
+missing.</td></tr>
+<tr valign="top"><td><code>comb.fixed, comb.random</code></td>
+<td>
+As defined above.</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Guido Schwarzer <a href="mailto:sc@imbi.uni-freiburg.de">sc@imbi.uni-freiburg.de</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Cooper H &amp; Hedges LV (1994),
+<EM>The Handbook of Research Synthesis</EM>.
+Newbury Park, CA: Russell Sage Foundation.
+</p>
+<p>
+Higgins JPT &amp; Thompson SG (2002),
+Quantifying heterogeneity in a meta-analysis.
+<EM>Statistics in Medicine</EM>, <B>21</B>, 1539&ndash;1558.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="metabin.html">metabin</a></code>, <code><a href="metacont.html">metacont</a></code>, <code><a href="metagen.html">metagen</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(Fleiss93cont)
+meta1 &lt;- metacont(n.e, mean.e, sd.e, n.c, mean.c, sd.c, data=Fleiss93cont, sm="SMD")
+summary(meta1)
+summary(meta1, byvar=c(1,2,1,1,2), bylab="group")
+</pre>
+
+
+
+<hr><div align="center">[Package <em>meta</em> version 1.1-8 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

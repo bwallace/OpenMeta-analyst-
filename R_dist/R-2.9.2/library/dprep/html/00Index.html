@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Data preprocessing and visualization functions for
+classification</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+<h1>Data preprocessing and visualization functions for
+classification <img class="toplogo" src="../../../doc/html/logo.jpg" alt="[R logo]"></h1>
+
+<hr>
+
+<div align="center">
+<a href="../../../doc/html/packages.html"><img src="../../../doc/html/left.jpg"
+alt="[Package List]" width="30" height="30" border="0"></a>
+<a href="../../../doc/html/index.html"><img src="../../../doc/html/up.jpg"
+alt="[Top]" width="30" height="30" border="0"></a>
+</div>
+
+<h2>Documentation for package &lsquo;dprep&rsquo; version 2.1</h2>
+
+<h2>Help Pages</h2>
+
+
+<table width="100%">
+<tr><td width="25%"><a href="dprep-package.html">dprep-package</a></td>
+<td>Data Preprocessing for Supervised Classification</td></tr>
+<tr><td width="25%"><a href="assig.html">assig</a></td>
+<td>Auxiliary function for computing the minimun entropy discretization</td></tr>
+<tr><td width="25%"><a href="baysout.html">baysout</a></td>
+<td>Outlier detection using Bay and Schwabacher's algorithm.</td></tr>
+<tr><td width="25%"><a href="breastw.html">breastw</a></td>
+<td>The Breast Wisconsin dataset</td></tr>
+<tr><td width="25%"><a href="bupa.html">bupa</a></td>
+<td>The Bupa dataset</td></tr>
+<tr><td width="25%"><a href="ce.impute.html">ce.impute</a></td>
+<td>Imputation in supervised classification</td></tr>
+<tr><td width="25%"><a href="ce.knn.imp.html">ce.knn.imp</a></td>
+<td>Function that calls ec.knnimp to perform knn imputation</td></tr>
+<tr><td width="25%"><a href="ce.mimp.html">ce.mimp</a></td>
+<td>Mean or median imputation</td></tr>
+<tr><td width="25%"><a href="censusn.html">censusn</a></td>
+<td>The census dataset</td></tr>
+<tr><td width="25%"><a href="chiMerge.html">chiMerge</a></td>
+<td>Discretization using the Chi-Merge method</td></tr>
+<tr><td width="25%"><a href="circledraw.html">circledraw</a></td>
+<td>circledraw</td></tr>
+<tr><td width="25%"><a href="clean.html">clean</a></td>
+<td>Dataset Cleaning</td></tr>
+<tr><td width="25%"><a href="closest.html">closest</a></td>
+<td>Auxiliary function used in the function baysout</td></tr>
+<tr><td width="25%"><a href="colon.html">colon</a></td>
+<td>Alon et al.'s colon dataset</td></tr>
+<tr><td width="25%"><a href="combinations.html">combinations</a></td>
+<td>Constructing distinct permutations</td></tr>
+<tr><td width="25%"><a href="crossval.html">crossval</a></td>
+<td>Cross validation estimation of the misclassification error</td></tr>
+<tr><td width="25%"><a href="cv10knn2.html">cv10knn2</a></td>
+<td>Auxiliary function for sequential feature selection</td></tr>
+<tr><td width="25%"><a href="cv10lda2.html">cv10lda2</a></td>
+<td>Auxiliary function for sequential forward selection</td></tr>
+<tr><td width="25%"><a href="cv10log.html">cv10log</a></td>
+<td>10-fold cross validation estimation error for the classifier based on logistic regression</td></tr>
+<tr><td width="25%"><a href="cv10mlp.html">cv10mlp</a></td>
+<td>10-fold cross validation error estimation for the multilayer perceptron classifier</td></tr>
+<tr><td width="25%"><a href="cv10rpart2.html">cv10rpart2</a></td>
+<td>Auxiliary function for sequential feature selection</td></tr>
+<tr><td width="25%"><a href="decscale.html">decscale</a></td>
+<td>Decimal Scaling</td></tr>
+<tr><td width="25%"><a href="diabetes.html">diabetes</a></td>
+<td>The Pima Indian Diabetes dataset</td></tr>
+<tr><td width="25%"><a href="disc.1r.html">disc.1r</a></td>
+<td>Discretization using the Holte's 1R method</td></tr>
+<tr><td width="25%"><a href="disc.ef.html">disc.ef</a></td>
+<td>Discretization using the method of equal frequencies</td></tr>
+<tr><td width="25%"><a href="disc.ew.html">disc.ew</a></td>
+<td>Discretization using the equal width method</td></tr>
+<tr><td width="25%"><a href="disc.mentr.html">disc.mentr</a></td>
+<td>Discretization using the minimum entropy criterion</td></tr>
+<tr><td width="25%"><a href="disc2.html">disc2</a></td>
+<td>Auxiliary function for performing discretization using equal frequency</td></tr>
+<tr><td width="25%"><a href="discretevar.html">discretevar</a></td>
+<td>Performs Minimum Entropy discretization for a given attribute</td></tr>
+<tr><td width="25%"><a href="dist.to.knn.html">dist.to.knn</a></td>
+<td>Auxiliary function for the LOF algorithm.</td></tr>
+<tr><td width="25%"><a href="distan2.html">distan2</a></td>
+<td>Auxiliary function used by the RELIEF function in the dprep library.</td></tr>
+<tr><td width="25%"><a href="distancia.html">distancia</a></td>
+<td>Vector-Vector Euclidiean Distance Function</td></tr>
+<tr><td width="25%"><a href="dprep-package.html">dprep</a></td>
+<td>Data Preprocessing for Supervised Classification</td></tr>
+<tr><td width="25%"><a href="ec.knnimp.html">ec.knnimp</a></td>
+<td>KNN Imputation</td></tr>
+<tr><td width="25%"><a href="eje1dis.html">eje1dis</a></td>
+<td>Basic example for discriminant analysis</td></tr>
+<tr><td width="25%"><a href="finco.html">finco</a></td>
+<td>FINCO Feature Selection Algorithm</td></tr>
+<tr><td width="25%"><a href="hawkins.html">hawkins</a></td>
+<td>The Hawkins-Bradu-Kass dataset</td></tr>
+<tr><td width="25%"><a href="heartc.html">heartc</a></td>
+<td>The Heart Cleveland dataset</td></tr>
+<tr><td width="25%"><a href="hepatitis.html">hepatitis</a></td>
+<td>The hepatitis dataset</td></tr>
+<tr><td width="25%"><a href="imagmiss.html">imagmiss</a></td>
+<td>Visualization of Missing Data</td></tr>
+<tr><td width="25%"><a href="inconsist.html">inconsist</a></td>
+<td>Computing the inconsistency measure</td></tr>
+<tr><td width="25%"><a href="ionosphere.html">ionosphere</a></td>
+<td>The Ionosphere dataset</td></tr>
+<tr><td width="25%"><a href="knneigh.vect.html">knneigh.vect</a></td>
+<td>Auxiliary function for computing the LOF measure.</td></tr>
+<tr><td width="25%"><a href="lofactor.html">lofactor</a></td>
+<td>Local Outlier Factor</td></tr>
+<tr><td width="25%"><a href="lvf.html">lvf</a></td>
+<td>Las Vegas Filter</td></tr>
+<tr><td width="25%"><a href="mahaout.html">mahaout</a></td>
+<td>Multivariate outlier detection through the boxplot of the Mahalanobis distance</td></tr>
+<tr><td width="25%"><a href="mardia.html">mardia</a></td>
+<td>The Mardia's test of normality</td></tr>
+<tr><td width="25%"><a href="maxdist.html">maxdist</a></td>
+<td>Auxiliary function used when executing the Bay's algorithm for outlier detection</td></tr>
+<tr><td width="25%"><a href="maxlof.html">maxlof</a></td>
+<td>Detection of multivariate outliers using the LOF algorithm</td></tr>
+<tr><td width="25%"><a href="midpoints.html">midpoints</a></td>
+<td>Auxiliary function for computing minimun entropy discretization</td></tr>
+<tr><td width="25%"><a href="mmnorm.html">mmnorm</a></td>
+<td>Min-max normalization</td></tr>
+<tr><td width="25%"><a href="mo3.html">mo3</a></td>
+<td>The third moment of a multivariate distribution</td></tr>
+<tr><td width="25%"><a href="mo4.html">mo4</a></td>
+<td>The fourth moment of a multivariate distribution</td></tr>
+<tr><td width="25%"><a href="moda.html">moda</a></td>
+<td>Calculating the Mode</td></tr>
+<tr><td width="25%"><a href="my.iris.html">my.iris</a></td>
+<td>The Iris dataset</td></tr>
+<tr><td width="25%"><a href="near1.html">near1</a></td>
+<td>Auxiliary function for the reliefcont function</td></tr>
+<tr><td width="25%"><a href="near2.html">near2</a></td>
+<td>Auxiliary function for the reliefcat function</td></tr>
+<tr><td width="25%"><a href="nnmiss.html">nnmiss</a></td>
+<td>Auxiliary function for knn imputation</td></tr>
+<tr><td width="25%"><a href="outbox.html">outbox</a></td>
+<td>Detecting outliers through boxplots of the features.</td></tr>
+<tr><td width="25%"><a href="parallelplot.html">parallelplot</a></td>
+<td>Parallel Coordinate Plot</td></tr>
+<tr><td width="25%"><a href="pp.golub.html">pp.golub</a></td>
+<td>The preprocessed Golub's dataset</td></tr>
+<tr><td width="25%"><a href="radviz2d.html">radviz2d</a></td>
+<td>Radial Coordinate Visualization</td></tr>
+<tr><td width="25%"><a href="rangenorm.html">rangenorm</a></td>
+<td>range normalization</td></tr>
+<tr><td width="25%"><a href="reachability.html">reachability</a></td>
+<td>Function for computing the reachability measure in the LOF algortihm</td></tr>
+<tr><td width="25%"><a href="redundancy.html">redundancy</a></td>
+<td>Finding the unique observations in a dataset along with their fequencies</td></tr>
+<tr><td width="25%"><a href="relief.html">relief</a></td>
+<td>RELIEF Feature Selection</td></tr>
+<tr><td width="25%"><a href="reliefcat.html">reliefcat</a></td>
+<td>Feature selection by the Relief Algorithm for datasets with only nominal features</td></tr>
+<tr><td width="25%"><a href="reliefcont.html">reliefcont</a></td>
+<td>Feature selection by the Relief Algorithm for datasets with only continuous features</td></tr>
+<tr><td width="25%"><a href="robout.html">robout</a></td>
+<td>Outlier Detection with Robust Mahalonobis distance</td></tr>
+<tr><td width="25%"><a href="row.matches.html">row.matches</a></td>
+<td>Finding rows in a matrix equal to a given vector</td></tr>
+<tr><td width="25%"><a href="sbs1.html">sbs1</a></td>
+<td>One-step sequential backward selection</td></tr>
+<tr><td width="25%"><a href="score.html">score</a></td>
+<td>Score function used in Bay's algorithm for outlier detection</td></tr>
+<tr><td width="25%"><a href="sffs.html">sffs</a></td>
+<td>Sequential Floating Forward Method</td></tr>
+<tr><td width="25%"><a href="sfs.html">sfs</a></td>
+<td>Sequential Forward Selection</td></tr>
+<tr><td width="25%"><a href="sfs1.html">sfs1</a></td>
+<td>One-step sequential forward selection</td></tr>
+<tr><td width="25%"><a href="signorm.html">signorm</a></td>
+<td>Sigmoidal Normalization</td></tr>
+<tr><td width="25%"><a href="softmaxnorm.html">softmaxnorm</a></td>
+<td>Softmax Normalization</td></tr>
+<tr><td width="25%"><a href="sonar.html">sonar</a></td>
+<td>The Sonar dataset</td></tr>
+<tr><td width="25%"><a href="srbct.html">srbct</a></td>
+<td>Khan et al.'s small round blood cells dataset</td></tr>
+<tr><td width="25%"><a href="starcoord.html">starcoord</a></td>
+<td>The star coordinates plot</td></tr>
+<tr><td width="25%"><a href="surveyplot.html">surveyplot</a></td>
+<td>Surveyplot</td></tr>
+<tr><td width="25%"><a href="tchisq.html">tchisq</a></td>
+<td>Auxiliary function for the Chi-Merge discretization</td></tr>
+<tr><td width="25%"><a href="top.html">top</a></td>
+<td>Auxiliary function for Bay's Ouylier Detection Algorithm</td></tr>
+<tr><td width="25%"><a href="vehicle.html">vehicle</a></td>
+<td>The Vehicle dataset</td></tr>
+<tr><td width="25%"><a href="vvalen.html">vvalen</a></td>
+<td>The Van Valen test for equal covariance matrices</td></tr>
+<tr><td width="25%"><a href="vvalen1.html">vvalen1</a></td>
+<td>Auxiliary function for computing the Van Valen's homocedasticity test</td></tr>
+<tr><td width="25%"><a href="znorm.html">znorm</a></td>
+<td>Z-score normalization</td></tr>
+</table>
+</body></html>

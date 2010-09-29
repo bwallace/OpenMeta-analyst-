@@ -1,0 +1,254 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Regression Deletion Diagnostics</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for influence.measures {stats}"><tr><td>influence.measures {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>Regression Deletion Diagnostics</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This suite of functions can be used to compute some of the regression
+(leave-one-out deletion) diagnostics for linear and generalized linear
+models discussed in Belsley, Kuh and Welsch (1980), Cook and Weisberg (1982),
+etc.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+influence.measures(model)
+
+rstandard(model, ...)
+## S3 method for class 'lm':
+rstandard(model, infl = lm.influence(model, do.coef = FALSE),
+          sd = sqrt(deviance(model)/df.residual(model)), ...)
+## S3 method for class 'glm':
+rstandard(model, infl = lm.influence(model, do.coef = FALSE),
+          ...)
+
+rstudent(model, ...)
+## S3 method for class 'lm':
+rstudent(model, infl = lm.influence(model, do.coef = FALSE),
+         res = infl$wt.res, ...)
+## S3 method for class 'glm':
+rstudent(model, infl = influence(model, do.coef = FALSE), ...)
+
+dffits(model, infl = , res = )
+
+dfbeta(model, ...)
+## S3 method for class 'lm':
+dfbeta(model, infl = lm.influence(model, do.coef = TRUE), ...)
+
+dfbetas(model, ...)
+## S3 method for class 'lm':
+dfbetas(model, infl = lm.influence(model, do.coef = TRUE), ...)
+
+covratio(model, infl = lm.influence(model, do.coef = FALSE),
+         res = weighted.residuals(model))
+
+cooks.distance(model, ...)
+## S3 method for class 'lm':
+cooks.distance(model, infl = lm.influence(model, do.coef = FALSE),
+               res = weighted.residuals(model),
+               sd = sqrt(deviance(model)/df.residual(model)),
+               hat = infl$hat, ...)
+## S3 method for class 'glm':
+cooks.distance(model, infl = influence(model, do.coef = FALSE),
+               res = infl$pear.res,
+               dispersion = summary(model)$dispersion,
+               hat = infl$hat, ...)
+
+hatvalues(model, ...)
+## S3 method for class 'lm':
+hatvalues(model, infl = lm.influence(model, do.coef = FALSE), ...)
+
+hat(x, intercept = TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>model</code></td>
+<td>
+an <font face="Courier New,Courier" color="#666666"><b>R</b></font> object, typically returned by <code><a href="lm.html">lm</a></code> or
+<code><a href="glm.html">glm</a></code>.</td></tr>
+<tr valign="top"><td><code>infl</code></td>
+<td>
+influence structure as returned by
+<code><a href="lm.influence.html">lm.influence</a></code> or <code><a href="lm.influence.html">influence</a></code> (the latter
+only for the <code>glm</code> method of <code>rstudent</code> and
+<code>cooks.distance</code>).</td></tr>
+<tr valign="top"><td><code>res</code></td>
+<td>
+(possibly weighted) residuals, with proper default.</td></tr>
+<tr valign="top"><td><code>sd</code></td>
+<td>
+standard deviation to use, see default.</td></tr>
+<tr valign="top"><td><code>dispersion</code></td>
+<td>
+dispersion (for <code><a href="glm.html">glm</a></code> objects) to use,
+see default.</td></tr>
+<tr valign="top"><td><code>hat</code></td>
+<td>
+hat values <i>H[i,i]</i>, see default.</td></tr>
+<tr valign="top"><td><code>x</code></td>
+<td>
+the <i>X</i> or design matrix.</td></tr>
+<tr valign="top"><td><code>intercept</code></td>
+<td>
+should an intercept column be prepended to <code>x</code>?</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+further arguments passed to or from other methods.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The primary high-level function is <code>influence.measures</code> which produces a
+class <code>"infl"</code> object tabular display showing the DFBETAS for
+each model variable, DFFITS, covariance ratios, Cook's distances and
+the diagonal elements of the hat matrix.  Cases which are influential
+with respect to any of these measures are marked with an asterisk.
+</p>
+<p>
+The functions <code>dfbetas</code>, <code>dffits</code>,
+<code>covratio</code> and <code>cooks.distance</code> provide direct access to the
+corresponding diagnostic quantities.  Functions <code>rstandard</code> and
+<code>rstudent</code> give the standardized and Studentized residuals
+respectively. (These re-normalize the residuals to have unit variance,
+using an overall and leave-one-out measure of the error variance
+respectively.)
+</p>
+<p>
+Values for generalized linear models are approximations, as described
+in Williams (1987) (except that Cook's distances are scaled as
+<i>F</i> rather than as chi-square values).  The approximations can be
+poor when some cases have large influence.
+</p>
+<p>
+The optional <code>infl</code>, <code>res</code> and <code>sd</code> arguments are there
+to encourage the use of these direct access functions, in situations
+where, e.g., the underlying basic influence measures (from
+<code><a href="lm.influence.html">lm.influence</a></code> or the generic <code><a href="lm.influence.html">influence</a></code>) are
+already available.
+</p>
+<p>
+Note that cases with <code>weights == 0</code> are <EM>dropped</EM> from all
+these functions, but that if a linear model has been fitted with
+<code>na.action = na.exclude</code>, suitable values are filled in for the
+cases excluded during fitting.
+</p>
+<p>
+The function <code>hat()</code> exists mainly for S (version 2)
+compatibility; we recommend using <code>hatvalues()</code> instead.
+</p>
+
+
+<h3>Note</h3>
+
+<p>
+For <code>hatvalues</code>, <code>dfbeta</code>, and <code>dfbetas</code>, the method
+for linear models also works for generalized linear models.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Several R core team members and John Fox, originally in his &lsquo;<span class="file">car</span>&rsquo;
+package.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Belsley, D. A., Kuh, E. and Welsch, R. E. (1980)
+<EM>Regression Diagnostics</EM>.
+New York: Wiley.
+</p>
+<p>
+Cook, R. D. and Weisberg, S. (1982)
+<EM>Residuals and Influence in Regression</EM>.
+London: Chapman and Hall.
+</p>
+<p>
+Williams, D. A. (1987)
+Generalized linear model diagnostics using the deviance and single
+case deletions. <EM>Applied Statistics</EM> <B>36</B>, 181&ndash;191.
+</p>
+<p>
+Fox, J. (1997)
+<EM>Applied Regression, Linear Models, and Related Methods</EM>. Sage.
+</p>
+<p>
+Fox, J. (2002)
+<EM>An R and S-Plus Companion to Applied Regression</EM>.
+Sage Publ.; <a href="http://www.socsci.mcmaster.ca/jfox/Books/Companion/">http://www.socsci.mcmaster.ca/jfox/Books/Companion/</a>.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="lm.influence.html">influence</a></code> (containing <code><a href="lm.influence.html">lm.influence</a></code>).
+</p>
+<p>
+&lsquo;<a href="../../grDevices/html/plotmath.html">plotmath</a>&rsquo; for the use of <code>hat</code> in plot annotation.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+require(graphics)
+
+## Analysis of the life-cycle savings data
+## given in Belsley, Kuh and Welsch.
+lm.SR &lt;- lm(sr ~ pop15 + pop75 + dpi + ddpi, data = LifeCycleSavings)
+
+inflm.SR &lt;- influence.measures(lm.SR)
+which(apply(inflm.SR$is.inf, 1, any))
+# which observations 'are' influential
+summary(inflm.SR) # only these
+inflm.SR          # all
+plot(rstudent(lm.SR) ~ hatvalues(lm.SR)) # recommended by some
+
+## The 'infl' argument is not needed, but avoids recomputation:
+rs &lt;- rstandard(lm.SR)
+iflSR &lt;- influence(lm.SR)
+identical(rs, rstandard(lm.SR, infl = iflSR))
+## to "see" the larger values:
+1000 * round(dfbetas(lm.SR, infl = iflSR), 3)
+
+## Huber's data [Atkinson 1985]
+xh &lt;- c(-4:0, 10)
+yh &lt;- c(2.48, .73, -.04, -1.44, -1.32, 0)
+summary(lmH &lt;- lm(yh ~ xh))
+(im &lt;- influence.measures(lmH))
+plot(xh,yh, main = "Huber's data: L.S. line and influential obs.")
+abline(lmH); points(xh[im$is.inf], yh[im$is.inf], pch=20, col=2)
+
+## Irwin's data [Williams 1987]
+xi &lt;- 1:5
+yi &lt;- c(0,2,14,19,30) # number of mice responding to does xi
+mi &lt;- rep(40, 5)      # number of mice exposed
+summary(lmI &lt;- glm(cbind(yi, mi -yi) ~ xi, family = binomial))
+signif(cooks.distance(lmI), 3)# ~= Ci in Table 3, p.184
+(imI &lt;- influence.measures(lmI))
+stopifnot(all.equal(imI$infmat[,"cook.d"],
+          cooks.distance(lmI)))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

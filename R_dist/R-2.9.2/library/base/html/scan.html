@@ -1,0 +1,349 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Read Data Values</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for scan {base}"><tr><td>scan {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Read Data Values</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Read data into a vector or list from the console or file.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+scan(file = "", what = double(0), nmax = -1, n = -1, sep = "",
+     quote = if(identical(sep, "\n")) "" else "'\"", dec = ".",
+     skip = 0, nlines = 0, na.strings = "NA",
+     flush = FALSE, fill = FALSE, strip.white = FALSE,
+     quiet = FALSE, blank.lines.skip = TRUE, multi.line = TRUE,
+     comment.char = "", allowEscapes = FALSE,
+     encoding = "unknown")
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>file</code></td>
+<td>
+the name of a file to read data values from.  If the
+specified file is <code>""</code>, then input is taken from the keyboard
+(or whatever <code><a href="showConnections.html">stdin</a>()</code> reads if input is redirected or
+<font face="Courier New,Courier" color="#666666"><b>R</b></font> is embedded).
+(In this case input can be terminated by a blank line or an EOF
+signal, <span class="samp">Ctrl-D</span> on Unix and <span class="samp">Ctrl-Z</span> on Windows.)
+<br>
+Otherwise, the file name is interpreted <EM>relative</EM> to the
+current working directory (given by <code><a href="getwd.html">getwd</a>()</code>),
+unless it specifies an <EM>absolute</EM> path.
+Tilde-expansion is performed where supported.
+When running <font face="Courier New,Courier" color="#666666"><b>R</b></font> from a script, <code>file="stdin"</code> can be used to
+refer to the process's <code>stdin</code> file stream.
+<br>
+Alternatively, <code>file</code> can be a <code><a href="connections.html">connection</a></code>,
+which will be opened if necessary, and if so closed at the end of
+the function call.  Whatever mode the connection is opened in,
+any of LF, CRLF or CR will be accepted as the EOL marker for a line
+and so will match <code>sep = "\n"</code>.
+<br>
+<code>file</code> can also be a complete URL.
+<br>
+To read a data file not in the current encoding (for example a
+Latin-1 file in a UTF-8 locale or conversely) use a
+<code><a href="connections.html">file</a></code> connection setting the <code>encoding</code> argument.
+</td></tr>
+<tr valign="top"><td><code>what</code></td>
+<td>
+the type of <code>what</code> gives the type of data to be read.
+The supported types are <code>logical</code>, <code>integer</code>, <code>numeric</code>,
+<code>complex</code>, <code>character</code>, <code>raw</code> and <code><a href="list.html">list</a></code>.
+If <code>what</code> is a list, it is assumed that the lines of the data file
+are records each containing <code>length(what)</code> items
+(&lsquo;fields&rsquo;) and the list components should have elements which
+are one of the first six types listed or <code>NULL</code>, see section
+&lsquo;Details&rsquo; below.</td></tr>
+<tr valign="top"><td><code>nmax</code></td>
+<td>
+integer: the maximum number of data values to be read, or if
+<code>what</code> is a list, the maximum number of records to be read.  If
+omitted or not positive or an invalid value for an integer
+(and <code>nlines</code> is not set to a positive value), <code>scan</code> will
+read to the end of <code>file</code>.</td></tr>
+<tr valign="top"><td><code>n</code></td>
+<td>
+integer: the maximum number of data values to be read, defaulting to
+no limit.  Invalid values will be ignored.</td></tr>
+<tr valign="top"><td><code>sep</code></td>
+<td>
+by default, scan expects to read white-space delimited
+input fields.  Alternatively, <code>sep</code> can be used to specify a
+character which delimits fields.  A field is always delimited by an
+end-of-line marker unless it is quoted.
+<br>
+If specified this should be the empty character string (the default)
+or <code>NULL</code> or a character string containing just one single-byte
+character.
+</td></tr>
+<tr valign="top"><td><code>quote</code></td>
+<td>
+the set of quoting characters as a single character
+string or <code>NULL</code>.  In a multibyte locale the quoting characters
+must be ASCII (single-byte).</td></tr>
+<tr valign="top"><td><code>dec</code></td>
+<td>
+decimal point character.  This should be a character string
+containing just one single-byte character.  (<code>NULL</code> and a
+zero-length character vector are also accepted, and taken as the
+default.)</td></tr>
+<tr valign="top"><td><code>skip</code></td>
+<td>
+the number of  lines of the input file to skip before
+beginning to read data values.</td></tr>
+<tr valign="top"><td><code>nlines</code></td>
+<td>
+if positive, the maximum number of lines of data to be read.</td></tr>
+<tr valign="top"><td><code>na.strings</code></td>
+<td>
+character vector.  Elements of this vector are to be
+interpreted as missing (<code><a href="NA.html">NA</a></code>) values. Blank fields are
+also considered to be missing values in logical, integer, numeric
+and complex fields.</td></tr>
+<tr valign="top"><td><code>flush</code></td>
+<td>
+logical: if <code>TRUE</code>, <code>scan</code> will flush to the
+end of the line after reading the last of the fields requested.
+This allows putting comments after the last field, but precludes
+putting more that one record on a line.</td></tr>
+<tr valign="top"><td><code>fill</code></td>
+<td>
+logical: if <code>TRUE</code>, <code>scan</code> will implicitly add
+empty fields to any lines with fewer fields than implied by
+<code>what</code>.</td></tr>
+<tr valign="top"><td><code>strip.white</code></td>
+<td>
+vector of logical value(s) corresponding to items
+in the <code>what</code> argument. It is used only when <code>sep</code> has
+been specified, and allows the stripping of leading and trailing
+white space from <code>character</code> fields (<code>numeric</code> fields
+are always stripped).
+<br>
+If <code>strip.white</code> is of length 1, it applies to all fields;
+otherwise, if <code>strip.white[i]</code> is <code>TRUE</code> <EM>and</EM> the
+<code>i</code>-th field is of mode character (because <code>what[i]</code> is)
+then the leading and trailing white space from field <code>i</code> is
+stripped.</td></tr>
+<tr valign="top"><td><code>quiet</code></td>
+<td>
+logical: if <code>FALSE</code> (default), scan() will print a
+line, saying how many items have been read.</td></tr>
+<tr valign="top"><td><code>blank.lines.skip</code></td>
+<td>
+logical: if <code>TRUE</code> blank lines in the
+input are ignored, except when counting <code>skip</code> and <code>nlines</code>.</td></tr>
+<tr valign="top"><td><code>multi.line</code></td>
+<td>
+logical. Only used if <code>what</code> is a list.
+If <code>FALSE</code>, all of a record must appear on one line (but more
+than one record can appear on a single line).  Note that using
+<code>fill = TRUE</code> implies that a record will terminated at the end
+of a line.</td></tr>
+<tr valign="top"><td><code>comment.char</code></td>
+<td>
+character: a character vector of length one
+containing a single character or an empty string.  Use <code>""</code> to
+turn off the interpretation of comments altogether (the default).</td></tr>
+<tr valign="top"><td><code>allowEscapes</code></td>
+<td>
+logical.  Should C-style escapes such as
+<span class="samp">\n</span> be processed (the default) or read verbatim?   Note that if
+not within quotes these could be interpreted as a delimiter (but not
+as a comment character).
+<br>
+The escapes which are interpreted are the control characters
+<span class="samp">\a, \b, \f, \n, \r, \t, \v</span> and octal and
+hexadecimal representations like <span class="samp">\040</span> and <span class="samp">\0x2A</span>.  Any
+other escaped character is treated as itself, including backslash.
+</td></tr>
+<tr valign="top"><td><code>encoding</code></td>
+<td>
+encoding to be assumed for input strings.  If the
+value is <code>"latin1"</code> or <code>"UTF-8"</code> it is used to mark
+character strings as known to be in Latin-1 or UTF-8: it is not used
+to re-encode the input.  To do the latter, specify the encoding as
+part of the connection <code>con</code> or <EM>via</EM>
+<code><a href="options.html">options</a>(encoding=)</code>: see the example under
+<code><a href="connections.html">file</a></code>.
+See also &lsquo;Details&rsquo;.
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The value of <code>what</code> can be a list of types, in which case
+<code>scan</code> returns a list of vectors with the types given by the
+types of the elements in <code>what</code>.  This provides a way of reading
+columnar data.  If any of the types is <code>NULL</code>, the corresponding
+field is skipped (but a <code>NULL</code> component appears in the result).
+</p>
+<p>
+The type of <code>what</code> or its components can be one of the six
+atomic vector types or <code>NULL</code> (see <code><a href="is.recursive.html">is.atomic</a></code>).
+</p>
+<p>
+&lsquo;White space&rsquo; is defined for the purposes of this function as
+one or more contiguous characters from the set space, horizontal tab,
+carriage return and line feed.  It does not include form feed or
+vertical tab, but in Latin-1 and Windows 8-bit locales 'space'
+includes non-breaking space.
+</p>
+<p>
+Empty numeric fields are always regarded as missing values.
+Empty character fields are scanned as empty character vectors, unless
+<code>na.strings</code> contains <code>""</code> when they are regarded as missing
+values.
+</p>
+<p>
+The allowed input for a numeric field is optional whitespace followed
+either <code>NA</code> or an optional sign followed by a decimal or
+hexadecimal constant (see <a href="NumericConstants.html">NumericConstants</a>), or <code>NaN</code>,
+<code>Inf</code> or <code>infinity</code> (ignoring case).  Out-of-range values
+are recorded as <code>Inf</code>, <code>-Inf</code> or <code>0</code>.
+</p>
+<p>
+For an integer field the allowed input is optional whitespace,
+followed by either <code>NA</code> or an optional sign and one or more
+digits (<span class="samp">0-9</span>): all out-of-range values are converted to
+<code>NA_integer_</code>.
+</p>
+<p>
+If <code>sep</code> is the default (<code>""</code>), the character <span class="samp">\</span>
+in a quoted string escapes the following character, so quotes may be
+included in the string by escaping them.
+</p>
+<p>
+If <code>sep</code> is non-default, the fields may be quoted in the style of
+&lsquo;<span class="file">.csv</span>&rsquo; files where separators inside quotes (<code>''</code> or
+<code>""</code>) are ignored and quotes may be put inside strings by
+doubling them.  However, if <code>sep = "\n"</code> it is assumed
+by default that one wants to read entire lines verbatim.
+</p>
+<p>
+Quoting is only interpreted in character fields and in <code>NULL</code>
+fields (which might be skipping character fields).
+</p>
+<p>
+Note that since <code>sep</code> is a separator and not a terminator,
+reading a file by <code>scan("foo", sep="\n", blank.lines.skip=FALSE)</code>
+will give an empty final line if the file ends in a linefeed and not if
+it does not.  This might not be what you expected; see also
+<code><a href="readLines.html">readLines</a></code>.
+</p>
+<p>
+If <code>comment.char</code> occurs (except inside a quoted character
+field), it signals that the rest of the line
+should be regarded as a comment and be discarded.  Lines beginning
+with a comment character (possibly after white space with the default
+separator) are treated as blank lines.
+</p>
+<p>
+There is a check for a user interrupt every 1000 lines if <code>what</code>
+is a list, otherwise every 10000 items.
+</p>
+<p>
+If <code>con</code> is a not-already-open <a href="connections.html">connection</a> with a non-default
+<code>encoding</code> argument, the text is converted to UTF-8 and declared
+as such (and the encoding argument to <code>scan</code> is ignored).
+See the examples of <code><a href="readLines.html">readLines</a></code>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+if <code>what</code> is a list, a list of the same length and same names (as
+any) as <code>what</code>.
+<br>
+Otherwise, a vector of the type of <code>what</code>.
+<br>
+Character strings in the result will have a declared encoding if
+<code>encoding</code> is <code>"latin1"</code> or <code>"UTF-8"</code>.</p>
+
+<h3>Note</h3>
+
+<p>
+The default for <code>multi.line</code> differs from S.  To read one record
+per line, use <code>flush = TRUE</code> and <code>multi.line = FALSE</code>.
+(Note that quoted character strings can still include embedded newlines.)
+</p>
+<p>
+If number of items is not specified, the internal
+mechanism re-allocates memory in powers of two and so could use up
+to three times as much memory as needed.  (It needs both old and new
+copies.)  If you can, specify either <code>n</code> or <code>nmax</code> whenever
+inputting a large vector, and <code>nmax</code> or <code>nlines</code> when
+inputting a large list.
+</p>
+<p>
+Using <code>scan</code> on an open connection to read partial lines can lose
+chars: use an explicit separator to avoid this.
+</p>
+<p>
+Having <code>nul</code> bytes in fields (including <span class="samp">\0</span> if
+<code>allowEscapes = TRUE</code>) may lead to interpretation of the
+field being terminated at the <code>nul</code>.  They not normally present
+in text files &ndash; see <code><a href="readBin.html">readBin</a></code>.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+<EM>The New S Language</EM>.
+Wadsworth &amp; Brooks/Cole.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../utils/html/read.table.html">read.table</a></code> for more user-friendly reading of data
+matrices;
+<code><a href="readLines.html">readLines</a></code> to read a file a line at a time.
+<code><a href="write.html">write</a></code>.
+</p>
+<p>
+<code>Quotes</code> for the details of C-style escape sequences.
+</p>
+<p>
+<code><a href="readChar.html">readChar</a></code> and <code><a href="readBin.html">readBin</a></code> to read fixed or
+variable length character strings or binary representations of numbers
+a few at a time from a connection.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+cat("TITLE extra line", "2 3 5 7", "11 13 17", file="ex.data", sep="\n")
+pp &lt;- scan("ex.data", skip = 1, quiet= TRUE)
+scan("ex.data", skip = 1)
+scan("ex.data", skip = 1, nlines=1) # only 1 line after the skipped one
+scan("ex.data", what = list("","","")) # flush is F -&gt; read "7"
+scan("ex.data", what = list("","",""), flush = TRUE)
+unlink("ex.data") # tidy up
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

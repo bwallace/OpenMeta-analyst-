@@ -1,0 +1,9 @@
+This file documents changes and updates to the ROCR package.
+
+Version 1.0-2 (Jan 27, 2007)
+- fixed minor bug in 'prediction' function concerning the optional
+  parameter 'label.ordering' (thanks to Robert Perdisci for notifying us).
+- added an optional parameter 'fpr.stop' to the performance measure 'auc',
+  allowing to calculate the partial area under the ROC curve
+  up to the false positive rate given by 'fpr.stop'.
+

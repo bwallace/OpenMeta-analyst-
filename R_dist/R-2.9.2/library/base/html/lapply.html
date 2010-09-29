@@ -1,0 +1,190 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Apply a Function over a List or Vector</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for lapply {base}"><tr><td>lapply {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Apply a Function over a List or Vector</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>lapply</code> returns a list of the same length as <code>X</code>, each
+element of which is the result of applying <code>FUN</code> to the
+corresponding element of <code>X</code>.
+</p>
+<p>
+<code>sapply</code> is a user-friendly version of <code>lapply</code>
+by default returning a vector or matrix if appropriate.
+</p>
+<p>
+<code>replicate</code> is a wrapper for the common use of <code>sapply</code> for
+repeated evaluation of an expression (which will usually involve
+random number generation).
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+lapply(X, FUN, ...)
+
+sapply(X, FUN, ..., simplify = TRUE, USE.NAMES = TRUE)
+
+replicate(n, expr, simplify = TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>X</code></td>
+<td>
+a vector (atomic or list) or an expressions vector.  Other
+objects (including classed objects) will be coerced by
+<code><a href="list.html">as.list</a></code>.</td></tr>
+<tr valign="top"><td><code>FUN</code></td>
+<td>
+the function to be applied to each element of <code>X</code>:
+see &lsquo;Details&rsquo;.  In the case of functions like
+<code>+</code>, <code>%*%</code>, etc.,
+the function name must be backquoted or quoted.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+optional arguments to <code>FUN</code>.</td></tr>
+<tr valign="top"><td><code>simplify</code></td>
+<td>
+logical; should the result be simplified to a vector
+or matrix if possible?</td></tr>
+<tr valign="top"><td><code>USE.NAMES</code></td>
+<td>
+logical; if <code>TRUE</code> and if <code>X</code> is character,
+use <code>X</code> as <code><a href="names.html">names</a></code> for the result unless it had names
+already.</td></tr>
+<tr valign="top"><td><code>n</code></td>
+<td>
+number of replications.</td></tr>
+<tr valign="top"><td><code>expr</code></td>
+<td>
+expression (language object, usually a call)
+to evaluate repeatedly.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>FUN</code> is found by a call to <code><a href="match.fun.html">match.fun</a></code> and typically
+is specified as a function or a symbol (e.g. a backquoted name) or a
+character string specifying a function to be searched for from the
+environment of the call to <code>lapply</code>.
+</p>
+<p>
+Function <code>FUN</code> must be able to accept as input any of the
+elements of <code>X</code>.  If the latter is an atomic vector, <code>FUN</code>
+will always be passed a length-one vector of the same type as <code>X</code>.
+</p>
+<p>
+Simplification in <code>sapply</code> is only attempted if <code>X</code> has
+length greater than zero and if the return values from all elements
+of <code>X</code> are all of the same (positive) length.  If the common
+length is one the result is a vector, and if greater than one is a
+matrix with a column corresponding to each element of <code>X</code>.
+</p>
+<p>
+Users of S4 classes should pass a list to <code>lapply</code>: the internal
+coercion is done by the system <code>as.list</code> in the base namespace
+and not one defined by a user (e.g. by setting S4 methods on the
+system function).
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+For <code>lapply</code> and <code>sapply(simplify=FALSE)</code>, a list.
+<br>
+For <code>sapply(simplify=TRUE)</code> and <code>replicate</code>: if <code>X</code> has
+length zero or <code>n = 0</code>, an empty list.  Otherwise an atomic
+vector or matrix or list of the same length as <code>X</code> (of length
+<code>n</code> for <code>replicate</code>).  If simplification occurs, the output
+type is determined from the highest type of the return values in the
+hierarchy NULL &lt; raw &lt; logical &lt; integer &lt; real &lt; complex &lt; character
+&lt; list &lt; expression, after coercion of pairlists to lists.</p>
+
+<h3>Note</h3>
+
+<p>
+<code>sapply(*, simplify = FALSE, USE.NAMES = FALSE)</code> is
+equivalent to <code>lapply(*)</code>.
+</p>
+<p>
+For historical reasons, the calls created by <code>lapply</code> are
+unevaluated, and code has been written (e.g. <code>bquote</code>) that
+relies on this.  This means that the recorded call is always of the
+form <code>FUN(X[[0L]], ...)</code>, with <code>0L</code> replaced by the current
+integer index.  This not normally a problem, but it can be if
+<code>FUN</code> uses <code><a href="sys.parent.html">sys.call</a></code> or <code><a href="match.call.html">match.call</a></code> or
+if it is a primitive function that makes use of the call.  This means
+that it is often safer to call primitive functions with a wrapper, so
+that e.g. <code>lapply(ll, function(x) is.numeric(x))</code> is required in
+<font face="Courier New,Courier" color="#666666"><b>R</b></font> 2.7.1 to ensure that method dispatch for <code>is.numeric</code> occurs
+correctly.
+</p>
+<p>
+If <code>expr</code> is a function call, be aware of assumptions about where
+it is evaluated, and in particular what <code>...</code> might refer to.
+You can pass additional named arguments to a function call as
+additional named arguments to <code>replicate</code>: see &lsquo;Examples&rsquo;.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+<EM>The New S Language</EM>.
+Wadsworth &amp; Brooks/Cole.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="apply.html">apply</a></code>, <code><a href="tapply.html">tapply</a></code>,
+<code><a href="mapply.html">mapply</a></code> for applying a function to <B>m</B>ultiple
+arguments, and <code><a href="rapply.html">rapply</a></code> for a <B>r</B>ecursive version of
+<code>lapply()</code>, <code><a href="eapply.html">eapply</a></code> for applying a function to each
+entry in an <code><a href="environment.html">environment</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+require(stats); require(graphics)
+
+x &lt;- list(a = 1:10, beta = exp(-3:3), logic = c(TRUE,FALSE,FALSE,TRUE))
+# compute the list mean for each list element
+lapply(x,mean)
+# median and quartiles for each list element
+lapply(x, quantile, probs = 1:3/4)
+sapply(x, quantile)
+i39 &lt;- sapply(3:9, seq) # list of vectors
+sapply(i39, fivenum)
+
+hist(replicate(100, mean(rexp(10))))
+
+## use of replicate() with parameters:
+foo &lt;- function(x=1, y=2) c(x,y)
+# does not work: bar &lt;- function(n, ...) replicate(n, foo(...))
+bar &lt;- function(n, x) replicate(n, foo(x=x))
+bar(5, x=3)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

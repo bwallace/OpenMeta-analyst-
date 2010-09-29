@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Prediction Based on LogitBoost Classification Algorithm</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for predict.LogitBoost {caTools}"><tr><td>predict.LogitBoost {caTools}</td><td align="right">R Documentation</td></tr></table>
+<h2>Prediction Based on LogitBoost Classification Algorithm</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Prediction or Testing using logitboost classification algorithm
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>predict.LogitBoost(object, xtest, type = c("class", "raw"), nIter=NA, ...)</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>object</code></td>
+<td>
+An object of class "LogitBoost" see "Value" section of 
+<code><a href="LogitBoost.html">LogitBoost</a></code> for details</td></tr>
+<tr valign="top"><td><code>xtest</code></td>
+<td>
+A matrix or data frame with test data. Rows contain samples 
+and columns contain features</td></tr>
+<tr valign="top"><td><code>type</code></td>
+<td>
+See "Value" section</td></tr>
+<tr valign="top"><td><code>nIter</code></td>
+<td>
+An optional integer, used to lower number of iterations 
+(decision stumps) used in the decision making. If not provided than the 
+number will be the same as the one provided in <code><a href="LogitBoost.html">LogitBoost</a></code>. 
+If provided than the results will be the same as running 
+<code><a href="LogitBoost.html">LogitBoost</a></code> with fewer iterations. </td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+not used but needed for compatibility with generic predict 
+method</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Logitboost algorithm relies on a voting scheme to make classifications. Many
+(<code>nIter</code> of them) week classifiers are applied to each sample and their
+findings are used as votes to make the final classification. The class with 
+the most votes "wins". However, with this scheme it is common for two cases 
+have a tie (the same number of votes), especially if number of iterations is 
+even. In that case NA is returned, instead of a label.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+If type = "class" (default) label of the class with maximal probability is 
+returned for each sample. If type = "raw", the a-posterior probabilities for 
+each class are returned.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Jarek Tuszynski (SAIC) <a href="mailto:jaroslaw.w.tuszynski@saic.com">jaroslaw.w.tuszynski@saic.com</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="LogitBoost.html">LogitBoost</a></code> has training half of LogitBoost code
+</p>
+
+
+<h3>Examples</h3>
+
+<pre># See LogitBoost example</pre>
+
+
+
+<hr><div align="center">[Package <em>caTools</em> version 1.9 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

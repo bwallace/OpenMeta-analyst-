@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Multiedit for k-NN Classifier</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for multiedit {class}"><tr><td>multiedit {class}</td><td align="right">R Documentation</td></tr></table>
+<h2>Multiedit for k-NN Classifier</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Multiedit for k-NN classifier
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+multiedit(x, class, k = 1, V = 3, I = 5, trace = TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+matrix of training set.
+</td></tr>
+<tr valign="top"><td><code>class</code></td>
+<td>
+vector of classification of training set.
+</td></tr>
+<tr valign="top"><td><code>k</code></td>
+<td>
+number of neighbours used in k-NN.
+</td></tr>
+<tr valign="top"><td><code>V</code></td>
+<td>
+divide training set into V parts.
+</td></tr>
+<tr valign="top"><td><code>I</code></td>
+<td>
+number of null passes before quitting.
+</td></tr>
+<tr valign="top"><td><code>trace</code></td>
+<td>
+logical for statistics at each pass.
+</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+index vector of cases to be retained.</p>
+
+<h3>References</h3>
+
+<p>
+P. A. Devijver and J. Kittler (1982)
+<EM>Pattern Recognition. A Statistical Approach.</EM>
+Prentice-Hall, p. 115.
+</p>
+<p>
+Ripley, B. D. (1996)
+<EM>Pattern Recognition and Neural Networks.</EM> Cambridge.
+</p>
+<p>
+Venables, W. N. and Ripley, B. D. (2002)
+<EM>Modern Applied Statistics with S.</EM> Fourth edition.  Springer.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="condense.html">condense</a></code>, <code><a href="reduce.nn.html">reduce.nn</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+tr &lt;- sample(1:50, 25)
+train &lt;- rbind(iris3[tr,,1], iris3[tr,,2], iris3[tr,,3])
+test &lt;- rbind(iris3[-tr,,1], iris3[-tr,,2], iris3[-tr,,3])
+cl &lt;- factor(c(rep(1,25),rep(2,25), rep(3,25)), labels=c("s", "c", "v"))
+table(cl, knn(train, test, cl, 3))
+ind1 &lt;- multiedit(train, cl, 3)
+length(ind1)
+table(cl, knn(train[ind1, , drop=FALSE], test, cl[ind1], 1))
+ntrain &lt;- train[ind1,]; ncl &lt;- cl[ind1]
+ind2 &lt;- condense(ntrain, ncl)
+length(ind2)
+table(cl, knn(ntrain[ind2, , drop=FALSE], test, ncl[ind2], 1))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>class</em> version 7.2-48 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Subgraph of a graph</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for subgraph {igraph}"><tr><td>subgraph {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Subgraph of a graph</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>subgraph</code> creates a subgraph of a graph, containing
+only the specified vertices and all the edges among them.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+subgraph(graph, v)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>graph</code></td>
+<td>
+The original graph.</td></tr>
+<tr valign="top"><td><code>v</code></td>
+<td>
+Numeric vector, the vertices of the original graph which
+will form the subgraph.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The ids of the vertices will change in the subgraph of course since
+these are always consecutive.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A new graph object.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+g &lt;- graph.ring(10)
+g2 &lt;- subgraph(g, 1:7)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

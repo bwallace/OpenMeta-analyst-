@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Conditional Element Selection</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for ifelse {base}"><tr><td>ifelse {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Conditional Element Selection</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>ifelse</code> returns a value with the same shape as
+<code>test</code> which is filled with elements selected
+from either <code>yes</code> or <code>no</code>
+depending on whether the element of <code>test</code>
+is <code>TRUE</code> or <code>FALSE</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+ifelse(test, yes, no)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>test</code></td>
+<td>
+an object which can be coerced to logical mode.</td></tr>
+<tr valign="top"><td><code>yes</code></td>
+<td>
+return values for true elements of <code>test</code>.</td></tr>
+<tr valign="top"><td><code>no</code></td>
+<td>
+return values for false elements of <code>test</code>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+If <code>yes</code> or <code>no</code> are too short, their elements are recycled.
+<code>yes</code> will be evaluated if and only if any element of <code>test</code>
+is true, and analogously for <code>no</code>.
+</p>
+<p>
+Missing values in <code>test</code> give missing values in the result.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A vector of the same length and attributes (including
+class) as <code>test</code> and data values from the values of
+<code>yes</code> or <code>no</code>.  The mode of the answer will be coerced from
+logical to accommodate first any values taken from <code>yes</code> and then
+any values taken from <code>no</code>.</p>
+
+<h3>Warning</h3>
+
+<p>
+The mode of the result may depend on the value of <code>test</code>, and the
+class attribute of the result is taken from <code>test</code> and may be
+inappropriate for the values selected from <code>yes</code> and <code>no</code>.
+</p>
+<p>
+Sometimes it is better to use a construction such as
+<code>(tmp &lt;- yes; tmp[!test] &lt;- no[!test]; tmp)</code>, possibly extended
+to handle missing values in <code>test</code>.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+<EM>The New S Language</EM>.
+Wadsworth &amp; Brooks/Cole.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="Control.html">if</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+x &lt;- c(6:-4)
+sqrt(x)#- gives warning
+sqrt(ifelse(x &gt;= 0, x, NA))# no warning
+
+## Note: the following also gives the warning !
+ifelse(x &gt;= 0, sqrt(x), NA)
+
+## example of different return modes:
+yes &lt;- 1:3
+no &lt;- pi^(0:3)
+typeof(ifelse(NA, yes, no))   # logical
+typeof(ifelse(TRUE, yes, no)) # integer
+typeof(ifelse(FALSE, yes, no))# double
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

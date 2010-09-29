@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Evaluate Kriging Surface over a Grid</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for prmat {spatial}"><tr><td>prmat {spatial}</td><td align="right">R Documentation</td></tr></table>
+<h2>Evaluate Kriging Surface over a Grid</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Evaluate Kriging surface over a grid.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+prmat(obj, xl, xu, yl, yu, n)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>obj</code></td>
+<td>
+object returned by <code>surf.gls</code>
+</td></tr>
+<tr valign="top"><td><code>xl</code></td>
+<td>
+limits of the rectangle for grid
+</td></tr>
+<tr valign="top"><td><code>xu</code></td>
+<td>
+</td></tr>
+<tr valign="top"><td><code>yl</code></td>
+<td>
+</td></tr>
+<tr valign="top"><td><code>yu</code></td>
+<td>
+</td></tr>
+<tr valign="top"><td><code>n</code></td>
+<td>
+use <code>n</code>  x  <code>n</code> grid within the rectangle
+</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+list with components <code>x</code>, <code>y</code> and <code>z</code> suitable for <code>contour</code> and <code>image</code>.</p>
+
+<h3>References</h3>
+
+<p>
+Ripley, B. D. (1981) <EM>Spatial Statistics.</EM> Wiley.
+</p>
+<p>
+Venables, W. N. and Ripley, B. D. (2002)
+<EM>Modern Applied Statistics with S.</EM> Fourth edition.  Springer.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="surf.gls.html">surf.gls</a></code>, <code><a href="trmat.html">trmat</a></code>, <code><a href="semat.html">semat</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(topo, package="MASS")
+topo.kr &lt;- surf.gls(2, expcov, topo, d=0.7)
+prsurf &lt;- prmat(topo.kr, 0, 6.5, 0, 6.5, 50)
+contour(prsurf, levels=seq(700, 925, 25))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>spatial</em> version 7.2-48 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

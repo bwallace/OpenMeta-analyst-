@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Create a Viewport with Scales based on Data</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for dataViewport {grid}"><tr><td>dataViewport {grid}</td><td align="right">R Documentation</td></tr></table>
+<h2>Create a Viewport with Scales based on Data</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This is a convenience function for producing a viewport with
+x- and/or y-scales based on numeric values passed to the function.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+dataViewport(xData = NULL, yData = NULL, xscale = NULL,
+             yscale = NULL, extension = 0.05, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>xData</code></td>
+<td>
+A numeric vector of data. </td></tr>
+<tr valign="top"><td><code>yData</code></td>
+<td>
+A numeric vector of data. </td></tr>
+<tr valign="top"><td><code>xscale</code></td>
+<td>
+A numeric vector (length 2). </td></tr>
+<tr valign="top"><td><code>yscale</code></td>
+<td>
+A numeric vector (length 2). </td></tr>
+<tr valign="top"><td><code>extension</code></td>
+<td>
+A numeric.  If length greater than 1, then
+first value is used to extend the xscale and second value
+is used to extend the yscale.
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+All other arguments will be passed to a call to
+the <code>viewport()</code> function. </td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+If <code>xscale</code> is not specified then the values in <code>x</code> are
+used to generate an x-scale based on the range of <code>x</code>, extended
+by the proportion specified in <code>extension</code>.  Similarly for the
+y-scale.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A grid viewport object.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Paul Murrell
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="viewport.html">viewport</a></code> and
+<code><a href="plotViewport.html">plotViewport</a></code>.
+</p>
+
+
+
+<hr><div align="center">[Package <em>grid</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

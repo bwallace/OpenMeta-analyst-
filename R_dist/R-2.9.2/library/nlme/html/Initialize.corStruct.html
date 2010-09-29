@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Initialize corStruct Object</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for Initialize.corStruct {nlme}"><tr><td>Initialize.corStruct {nlme}</td><td align="right">R Documentation</td></tr></table>
+<h2>Initialize corStruct Object</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This method initializes <code>object</code> by evaluating its associated
+covariate(s) and grouping factor, if any is present, in <code>data</code>,
+calculating various dimensions and constants used by optimization
+algorithms involving <code>corStruct</code> objects (see the appropriate
+<code>Dim</code> method documentation), and assigning initial values for
+the coefficients in <code>object</code>, if none were present.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'corStruct':
+Initialize(object, data, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>object</code></td>
+<td>
+an object inheriting from class <code>corStruct</code>
+representing a correlation structure.</td></tr>
+<tr valign="top"><td><code>data</code></td>
+<td>
+a data frame in which to evaluate the variables defined in
+<code>formula(object)</code>.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+this argument is included to make this method compatible
+with the generic.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+an initialized object with the same class as <code>object</code>
+representing a correlation structure.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Jose Pinheiro <a href="mailto:Jose.Pinheiro@pharma.novartis.com">Jose.Pinheiro@pharma.novartis.com</a> and Douglas Bates <a href="mailto:bates@stat.wisc.edu">bates@stat.wisc.edu</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Pinheiro, J.C., and Bates, D.M. (2000) "Mixed-Effects Models
+in S and S-PLUS", Springer.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="Dim.corStruct.html">Dim.corStruct</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+cs1 &lt;- corAR1(form = ~ 1 | Subject)
+cs1 &lt;- Initialize(cs1, data = Orthodont)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>nlme</em> version 3.1-93 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

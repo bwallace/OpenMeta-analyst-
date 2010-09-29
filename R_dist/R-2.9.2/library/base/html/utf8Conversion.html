@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Convert to or from UTF-8-encoded Character Vectors</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for utf8Conversion {base}"><tr><td>utf8Conversion {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Convert to or from UTF-8-encoded Character Vectors</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Conversion of UTF-8 encoded character vectors to and from integer vectors.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+utf8ToInt(x)
+intToUtf8(x, multiple = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+object to be converted.</td></tr>
+<tr valign="top"><td><code>multiple</code></td>
+<td>
+logical: should the conversion be to a single
+character string or multiple individual characters?</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+These will work in any locale, including on machines that do not
+otherwise support multi-byte character sets.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>utf8ToInt</code> converts a length-one character string encoded in
+UTF-8 to an integer vector of (numeric) UTF-8 code points.
+<br>
+<code>intToUtf8</code> converts a vector of (numeric) UTF-8 code points
+either to a single character string or a character vector of single
+characters.  (For a single character string <code>0</code> is silently
+omitted: otherwise <code>0</code> is mapped to <code>""</code>.  Non-integral
+numeric values are truncated to integers.)  The
+<code><a href="Encoding.html">Encoding</a></code> is declared as <code>"UTF-8"</code>.</p>
+
+<h3>Examples</h3>
+
+<pre>## Not run: 
+## will only display in some locales and fonts
+intToUtf8(0x03B2L) # Greek beta
+## End(Not run)</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

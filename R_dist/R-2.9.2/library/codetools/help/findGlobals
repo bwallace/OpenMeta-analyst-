@@ -1,0 +1,38 @@
+findGlobals            package:codetools            R Documentation
+
+_F_i_n_d _G_l_o_b_a_l _F_u_n_c_t_i_o_n_s _a_n_d _V_a_r_i_a_b_l_e_s _U_s_e_d _b_y _a _C_l_o_s_u_r_e
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Finds global functions and variables used by a closure.
+
+_U_s_a_g_e:
+
+     findGlobals(fun, merge = TRUE) 
+
+_A_r_g_u_m_e_n_t_s:
+
+     fun: closure.
+
+   merge: logical
+
+_D_e_t_a_i_l_s:
+
+     The result is an approximation. R semantics only allow variables
+     that might be local to be identified (and event that assumes no
+     use of 'assign' and 'rm').
+
+_V_a_l_u_e:
+
+     Character vector if 'merge' is true; otherwise, a list with
+     'functions' and 'variables' components.
+
+_A_u_t_h_o_r(_s):
+
+     Luke Tierney
+
+_E_x_a_m_p_l_e_s:
+
+     findGlobals(findGlobals)
+     findGlobals(findGlobals, merge = FALSE)
+

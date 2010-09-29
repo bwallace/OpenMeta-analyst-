@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: x-y coordinates of ellipse</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for getellipse {shape}"><tr><td>getellipse {shape}</td><td align="right">R Documentation</td></tr></table>
+<h2>x-y coordinates of ellipse</h2>
+
+
+<h3>Description</h3>
+
+<p>
+calculates x-y values for (part of) an ellipse; the ellipse can be rotated
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+getellipse(rx=1, ry=rx, mid=c(0,0), dr=0.01, 
+  angle=0, from=-pi, to=pi)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>rx </code></td>
+<td>
+long radius of ellipse.
+</td></tr>
+<tr valign="top"><td><code>ry </code></td>
+<td>
+short radius of ellipse.
+</td></tr>
+<tr valign="top"><td><code>mid </code></td>
+<td>
+midpoint of ellipse.
+</td></tr>
+<tr valign="top"><td><code>dr </code></td>
+<td>
+size of segments, in radians, to specify ellipse
+(decrease for smoother).
+</td></tr>
+<tr valign="top"><td><code>angle </code></td>
+<td>
+rotation angle, degrees.
+</td></tr>
+<tr valign="top"><td><code>from </code></td>
+<td>
+starting angle for ellipse segment, radians.
+</td></tr>
+<tr valign="top"><td><code>to </code></td>
+<td>
+final angle for ellipse segment, radians.
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>rx</code> and <code>ry</code> are the horizontal and vertical radiusses of the
+ellipses.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+a 2-column matrix with  x-y values of the ellipse</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Karline Soetaert &lt;k.soetaert@nioo.knaw.nl&gt;
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="plotellipse.html">plotellipse</a></code>, <code><a href="filledellipse.html">filledellipse</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+  plot(getellipse(1,from=0,to=pi/2),type="l",col="red",lwd=2,main="getellipse")
+  lines(getellipse(0.5,0.25,mid=c(0.5,0.5)),type="l",col="blue",lwd=2)
+  lines(getellipse(0.5,0.25,mid=c(0.5,0.5),angle=45),type="l",
+        col="green",lwd=2)
+  emptyplot(main="getellipse")
+  col &lt;-femmecol(90)
+  for (i in seq(0,180,by=2)) 
+      lines(getellipse(0.5,0.25,mid=c(0.5,0.5),angle=i),
+            type="l",col=col[(i/2)+1],lwd=2)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>shape</em> version 1.2.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

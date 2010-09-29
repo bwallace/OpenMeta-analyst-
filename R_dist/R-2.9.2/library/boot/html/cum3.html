@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Calculate Third Order Cumulants</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for cum3 {boot}"><tr><td>cum3 {boot}</td><td align="right">R Documentation</td></tr></table>
+<h2>Calculate Third Order Cumulants</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Calculates an estimate of the third cumulant, or skewness, of a vector. 
+Also, if more than one vector is specified, a product-moment of order 3 is
+estimated.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+cum3(a, b=a, c=a, unbiased=TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>a</code></td>
+<td>
+A vector of observations.
+</td></tr>
+<tr valign="top"><td><code>b</code></td>
+<td>
+Another vector of observations,  if not supplied it is set to the value of <code>a</code>.
+If supplied then it must be the same length as <code>a</code>.
+</td></tr>
+<tr valign="top"><td><code>c</code></td>
+<td>
+Another vector of observations,  if not supplied it is set to the value of <code>a</code>.
+If supplied then it must be the same length as <code>a</code>.
+</td></tr>
+<tr valign="top"><td><code>unbiased</code></td>
+<td>
+A logical value indicating whether the unbiased estimator should be used.  
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The unbiased estimator uses a multiplier of <code>n/((n-1)*(n-2))</code> where <code>n</code> is
+the sample size, if <code>unbiased</code> is <code>FALSE</code> then a multiplier of <code>1/n</code> is used.
+This is multiplied by <code>sum((a-mean(a))*(b-mean(b))*(c-mean(c)))</code> to give the
+required estimate.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+The required estimate.</p>
+
+
+<hr><div align="center">[Package <em>boot</em> version 1.2-38 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

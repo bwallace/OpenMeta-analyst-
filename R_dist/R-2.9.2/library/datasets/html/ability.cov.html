@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Ability and Intelligence Tests</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for ability.cov {datasets}"><tr><td>ability.cov {datasets}</td><td align="right">R Documentation</td></tr></table>
+<h2>Ability and Intelligence Tests</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Six tests were given to 112 individuals. The covariance matrix is
+given in this object.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>ability.cov</pre>
+
+
+<h3>Details</h3>
+
+<p>
+The tests are described as
+<dl>
+<dt>general:</dt><dd>a non-verbal measure of general intelligence using
+Cattell's culture-fair test.</dd>
+<dt>picture:</dt><dd>a picture-completion test</dd>
+<dt>blocks:</dt><dd>block design</dd>
+<dt>maze:</dt><dd>mazes</dd>
+<dt>reading:</dt><dd>reading comprehension</dd>
+<dt>vocab:</dt><dd>vocabulary</dd>
+</dl>
+
+<p>
+Bartholomew gives both covariance and correlation matrices,
+but these are inconsistent.  Neither are in the original paper.
+</p>
+
+
+<h3>Source</h3>
+
+<p>
+Bartholomew, D. J. (1987) <EM>Latent Variable Analysis and Factor
+Analysis.</EM> Griffin.  
+</p>
+<p>
+Bartholomew, D. J.  and Knott, M. (1990) <EM>Latent Variable Analysis
+and Factor Analysis.</EM> Second Edition, Arnold.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Smith, G. A. and Stanley G. (1983)
+Clocking <i>g</i>: relating intelligence and measures of timed
+performance. <EM>Intelligence</EM>, <B>7</B>, 353&ndash;368.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+require(stats)
+(ability.FA &lt;- factanal(factors = 1, covmat=ability.cov))
+update(ability.FA, factors=2)
+update(ability.FA, factors=2, rotation="promax")
+</pre>
+
+
+
+<hr><div align="center">[Package <em>datasets</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

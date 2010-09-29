@@ -1,0 +1,359 @@
+Entry: addpoly
+Aliases: addpoly
+Keywords: methods
+Description: Add Polygons to Forest Plot
+URL: ../../../library/metafor/html/addpoly.html
+
+Entry: addpoly.default
+Aliases: addpoly.default
+Keywords: aplot
+Description: Add Polygons to Forest Plot
+URL: ../../../library/metafor/html/addpoly.default.html
+
+Entry: addpoly.rma
+Aliases: addpoly.rma
+Keywords: aplot
+Description: Add Summary Estimate Polygon to Forest Plot
+URL: ../../../library/metafor/html/addpoly.rma.html
+
+Entry: anova.rma.uni
+Aliases: anova.rma.uni
+Keywords: models
+Description: Compare Fit Statistics and Likelihoods of rma.uni Objects
+URL: ../../../library/metafor/html/anova.rma.uni.html
+
+Entry: blup
+Aliases: blup
+Keywords: methods
+Description: Best Linear Unbiased Predictions
+URL: ../../../library/metafor/html/blup.html
+
+Entry: blup.rma.uni
+Aliases: blup.rma.uni
+Keywords: models
+Description: Best Linear Unbiased Predictions for rma.uni Objects
+URL: ../../../library/metafor/html/blup.rma.uni.html
+
+Entry: cint
+Aliases: cint
+Keywords: methods
+Description: Confidence Intervals for Model Parameters
+URL: ../../../library/metafor/html/cint.html
+
+Entry: cint.rma.uni
+Aliases: cint.rma.uni
+Keywords: models
+Description: Confidence Intervals for rma.uni Objects
+URL: ../../../library/metafor/html/cint.rma.uni.html
+
+Entry: coef.rma
+Aliases: coef.rma
+Keywords: models
+Description: Model Coefficients for rma Objects
+URL: ../../../library/metafor/html/coef.rma.html
+
+Entry: cumul
+Aliases: cumul
+Keywords: methods
+Description: Cumulative Meta-Analysis
+URL: ../../../library/metafor/html/cumul.html
+
+Entry: cumul.rma.mh
+Aliases: cumul.rma.mh cumul.rma.peto
+Keywords: methods
+Description: Cumulative Meta-Analysis for rma.mh and rma.peto Objects
+URL: ../../../library/metafor/html/cumul.rma.mh.html
+
+Entry: cumul.rma.uni
+Aliases: cumul.rma.uni
+Keywords: methods
+Description: Cumulative Meta-Analysis for rma.uni Objects
+URL: ../../../library/metafor/html/cumul.rma.uni.html
+
+Entry: dat.bcg
+Aliases: dat.bcg
+Keywords: datasets
+Description: Data for BCG Vaccine Studies
+URL: ../../../library/metafor/html/dat.bcg.html
+
+Entry: escalc
+Aliases: escalc
+Keywords: datagen
+Description: Calculate Effect Size and Outcome Measures
+URL: ../../../library/metafor/html/escalc.html
+
+Entry: fitstats
+Aliases: fitstats
+Keywords: methods
+Description: Fit Statistics and Information Criteria
+URL: ../../../library/metafor/html/fitstats.html
+
+Entry: fitstats.rma
+Aliases: fitstats.rma
+Keywords: models
+Description: Fit Statistics and Information Criteria for rma Objects
+URL: ../../../library/metafor/html/fitstats.rma.html
+
+Entry: fitted.rma
+Aliases: fitted.rma
+Keywords: models
+Description: Fitted Values for rma Objects
+URL: ../../../library/metafor/html/fitted.rma.html
+
+Entry: forest
+Aliases: forest
+Keywords: hplot
+Description: Forest Plots
+URL: ../../../library/metafor/html/forest.html
+
+Entry: forest.default
+Aliases: forest.default
+Keywords: hplot
+Description: Forest Plots
+URL: ../../../library/metafor/html/forest.default.html
+
+Entry: forest.rma
+Aliases: forest.rma
+Keywords: hplot
+Description: Forest Plots for rma Objects
+URL: ../../../library/metafor/html/forest.rma.html
+
+Entry: forest.cumul.rma
+Aliases: forest.cumul.rma
+Keywords: hplot
+Description: Forest Plots for cumul.rma Objects
+URL: ../../../library/metafor/html/forest.rma.cumul.html
+
+Entry: fsn
+Aliases: fsn
+Keywords: htest
+Description: Fail-Safe N
+URL: ../../../library/metafor/html/fsn.html
+
+Entry: funnel
+Aliases: funnel
+Keywords: hplot
+Description: Funnel Plots
+URL: ../../../library/metafor/html/funnel.html
+
+Entry: funnel.rma
+Aliases: funnel.rma
+Keywords: hplot
+Description: Funnel Plots for rma Objects
+URL: ../../../library/metafor/html/funnel.rma.html
+
+Entry: hatvalues.rma.uni
+Aliases: hatvalues.rma.uni
+Keywords: models
+Description: Diagonal Elements of the Hat Matrix for rma.uni Objects
+URL: ../../../library/metafor/html/hatvalues.rma.uni.html
+
+Entry: influence.rma.uni
+Aliases: influence.rma.uni
+Keywords: models
+Description: Case Diagnostics for rma.uni Objects
+URL: ../../../library/metafor/html/influence.rma.uni.html
+
+Entry: leave1out
+Aliases: leave1out
+Keywords: methods
+Description: Leave-One-Out Diagnostics
+URL: ../../../library/metafor/html/leave1out.html
+
+Entry: leave1out.rma.mh
+Aliases: leave1out.rma.mh leave1out.rma.peto
+Keywords: methods
+Description: Leave-One-Out Diagnostics for rma.mh and rma.peto Objects
+URL: ../../../library/metafor/html/leave1out.rma.mh.html
+
+Entry: leave1out.rma.uni
+Aliases: leave1out.rma.uni
+Keywords: methods
+Description: Leave-One-Out Diagnostics for rma.uni Objects
+URL: ../../../library/metafor/html/leave1out.rma.uni.html
+
+Entry: logLik.rma
+Aliases: logLik.rma
+Keywords: models
+Description: Log-Likelihood of rma Objects
+URL: ../../../library/metafor/html/logLik.rma.html
+
+Entry: metafor-package
+Aliases: metafor-package metafor
+Keywords: package
+Description: Metafor: A Meta-Analysis Package for R
+URL: ../../../library/metafor/html/metafor-package.html
+
+Entry: metafor.news
+Aliases: metafor.news
+Keywords: IO
+Description: Read News File of the Metafor Package
+URL: ../../../library/metafor/html/metafor.news.html
+
+Entry: permutest
+Aliases: permutest
+Keywords: methods
+Description: Permutation Tests
+URL: ../../../library/metafor/html/permutest.html
+
+Entry: permutest.rma.uni
+Aliases: permutest.rma.uni
+Keywords: models
+Description: Permutation Tests for rma.uni Objects
+URL: ../../../library/metafor/html/permutest.rma.uni.html
+
+Entry: plot.infl.rma.uni
+Aliases: plot.infl.rma.uni
+Keywords: hplot
+Description: Plot Method for infl.rma.uni Objects
+URL: ../../../library/metafor/html/plot.infl.rma.uni.html
+
+Entry: plot.rma.uni
+Aliases: plot.rma.uni plot.rma.mh plot.rma.peto
+Keywords: hplot
+Description: Plot Method for rma Objects
+URL: ../../../library/metafor/html/plot.rma.uni.html
+
+Entry: predict.rma.uni
+Aliases: predict.rma.uni
+Keywords: models
+Description: Predicted Values for rma.uni Objects
+URL: ../../../library/metafor/html/predict.rma.uni.html
+
+Entry: print.anova.rma.uni
+Aliases: print.anova.rma.uni
+Keywords: print
+Description: Print Method for anova.rma.uni Objects
+URL: ../../../library/metafor/html/print.anova.rma.uni.html
+
+Entry: print.fsn
+Aliases: print.fsn
+Keywords: print
+Description: Print Method for fsn Objects
+URL: ../../../library/metafor/html/print.fsn.html
+
+Entry: print.infl.rma.uni
+Aliases: print.infl.rma.uni
+Keywords: print
+Description: Print Method for infl.rma.uni Objects
+URL: ../../../library/metafor/html/print.infl.rma.uni.html
+
+Entry: print.list.rma
+Aliases: print.list.rma
+Keywords: print
+Description: Print Method for list.rma Objects
+URL: ../../../library/metafor/html/print.list.rma.html
+
+Entry: print.permutest.rma.uni
+Aliases: print.permutest.rma.uni
+Keywords: print
+Description: Print Method for permutest.rma.uni Objects
+URL: ../../../library/metafor/html/print.permutest.rma.uni.html
+
+Entry: print.ranktest.rma
+Aliases: print.ranktest.rma
+Keywords: print
+Description: Print Method for ranktest.rma Objects
+URL: ../../../library/metafor/html/print.ranktest.rma.html
+
+Entry: print.regtest.rma
+Aliases: print.regtest.rma
+Keywords: print
+Description: Print Method for regtest.rma Objects
+URL: ../../../library/metafor/html/print.regtest.rma.html
+
+Entry: print.rma.uni
+Aliases: print.rma.uni print.rma.mh print.rma.peto summary.rma
+Keywords: print
+Description: Print Methods for rma Objects
+URL: ../../../library/metafor/html/print.rma.uni.html
+
+Entry: qqnorm.rma.uni
+Aliases: qqnorm.rma.uni qqnorm.rma.mh qqnorm.rma.peto
+Keywords: hplot
+Description: Normal QQ Plot for rma Objects
+URL: ../../../library/metafor/html/qqnorm.rma.uni.html
+
+Entry: radial
+Aliases: radial galbraith
+Keywords: hplot
+Description: Radial Plots
+URL: ../../../library/metafor/html/radial.html
+
+Entry: radial.rma
+Aliases: radial.rma
+Keywords: hplot
+Description: Radial Plots for rma Objects
+URL: ../../../library/metafor/html/radial.rma.html
+
+Entry: ranktest
+Aliases: ranktest
+Keywords: htest
+Description: Rank Correlation Test for Funnel Plot Asymmetry
+URL: ../../../library/metafor/html/ranktest.html
+
+Entry: ranktest.rma
+Aliases: ranktest.rma
+Keywords: htest
+Description: Rank Correlation Test for Funnel Plot Asymmetry for rma Objects
+URL: ../../../library/metafor/html/ranktest.rma.html
+
+Entry: regtest
+Aliases: regtest
+Keywords: htest
+Description: Regression Tests for Funnel Plot Asymmetry
+URL: ../../../library/metafor/html/regtest.html
+
+Entry: regtest.rma
+Aliases: regtest.rma
+Keywords: htest
+Description: Regression Tests for Funnel Plot Asymmetry for rma Objects
+URL: ../../../library/metafor/html/regtest.rma.html
+
+Entry: residuals.rma
+Aliases: residuals.rma rstandard.rma.uni rstandard.rma.mh rstandard.rma.peto rstudent.rma.uni rstudent.rma.mh rstudent.rma.peto
+Keywords: models
+Description: Residual Values based on rma Objects
+URL: ../../../library/metafor/html/residuals.rma.html
+
+Entry: rma.mh
+Aliases: rma.mh
+Keywords: models
+Description: Meta-Analysis via the Mantel-Haenszel Method
+URL: ../../../library/metafor/html/rma.mh.html
+
+Entry: rma.peto
+Aliases: rma.peto
+Keywords: models
+Description: Meta-Analysis via Peto's Method
+URL: ../../../library/metafor/html/rma.peto.html
+
+Entry: rma.uni
+Aliases: rma.uni rma
+Keywords: models
+Description: Meta-Analysis via the General Linear (Mixed-Effects) Model
+URL: ../../../library/metafor/html/rma.uni.html
+
+Entry: transf
+Aliases: transf.rtoz transf.ztor transf.logit transf.ilogit transf.ztor.int transf.exp.int
+Keywords: manip
+Description: Transformation Functions
+URL: ../../../library/metafor/html/transf.html
+
+Entry: trimfill
+Aliases: trimfill
+Keywords: methods
+Description: Trim and Fill Method
+URL: ../../../library/metafor/html/trimfill.html
+
+Entry: trimfill.rma.uni
+Aliases: trimfill.rma.uni
+Keywords: models
+Description: Trim and Fill Method for rma.uni Objects
+URL: ../../../library/metafor/html/trimfill.rma.uni.html
+
+Entry: vcov.rma
+Aliases: vcov.rma
+Keywords: models
+Description: Variance-Covariance Matrix of Parameter Estimates for rma Objects
+URL: ../../../library/metafor/html/vcov.rma.html

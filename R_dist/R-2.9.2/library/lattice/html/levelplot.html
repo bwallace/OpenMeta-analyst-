@@ -1,0 +1,333 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Level plots and contour plots</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for levelplot {lattice}"><tr><td>levelplot {lattice}</td><td align="right">R Documentation</td></tr></table>
+<h2>Level plots and contour plots</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Draw Level Plots and Contour plots.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+levelplot(x, data, ...)
+contourplot(x, data, ...)
+
+## S3 method for class 'formula':
+levelplot(x,
+          data,
+          allow.multiple = is.null(groups) || outer,
+          outer = TRUE,
+          aspect = "fill",
+          panel = lattice.getOption("panel.levelplot"),
+          prepanel = NULL,
+          scales = list(),
+          strip = TRUE,
+          groups = NULL,
+          xlab,
+          xlim,
+          ylab,
+          ylim,
+          at,
+          cuts = 15,
+          pretty = FALSE,
+          region = TRUE,
+          drop.unused.levels = lattice.getOption("drop.unused.levels"),
+          ...,
+          lattice.options = NULL,
+          default.scales = list(),
+          colorkey = region,
+          col.regions,
+          alpha.regions,
+          subset = TRUE)
+
+## S3 method for class 'formula':
+contourplot(x,
+            data,
+            panel = lattice.getOption("panel.contourplot"),
+            cuts = 7,
+            labels = TRUE,
+            contour = TRUE,
+            pretty = TRUE,
+            region = FALSE,
+            ...)
+
+## S3 method for class 'table':
+levelplot(x, data = NULL, aspect = "iso", ..., xlim, ylim)
+
+## S3 method for class 'table':
+contourplot(x, data = NULL, aspect = "iso", ..., xlim, ylim)
+
+## S3 method for class 'matrix':
+levelplot(x, data = NULL, aspect = "iso",
+          ..., xlim, ylim,
+          row.values = seq_len(nrow(x)),
+          column.values = seq_len(ncol(x)))
+
+## S3 method for class 'matrix':
+contourplot(x, data = NULL, aspect = "iso",
+            ..., xlim, ylim,
+            row.values = seq_len(nrow(x)),
+            column.values = seq_len(ncol(x)))
+
+## S3 method for class 'array':
+levelplot(x, data = NULL, ...)
+
+## S3 method for class 'array':
+contourplot(x, data = NULL, ...)
+
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+for the <code>formula</code> method, a formula of the form <code>z ~ x * y
+      | g1 * g2 * ...</code>, where <code>z</code> is a numeric response, and
+<code>x</code>, <code>y</code> are numeric values evaluated on a rectangular
+grid.  <code>g1, g2, ...</code> are optional conditional variables, and
+must be either factors or shingles if present.
+<br>
+Calculations are based on the assumption that all x and y values are
+evaluated on a grid (defined by their unique values). The function
+will not return an error if this is not true, but the display might
+not be meaningful.  However, the x and y values need not be equally
+spaced.
+<br>
+Both <code>levelplot</code> and <code>wireframe</code> have methods for
+<code>matrix</code>, <code>array</code>, and <code>table</code> objects, in which case
+<code>x</code> provides the <code>z</code> vector described above, while its
+rows and columns are interpreted as the <code>x</code> and <code>y</code>
+vectors respectively.  This is similar to the form used in
+<code>filled.contour</code> and <code>image</code>.  For higher-dimensional
+arrays and tables, further dimensions are used as conditioning
+variables.  Note that the dimnames may be duplicated; this is
+handled by calling <code><a href="../../base/html/make.unique.html">make.unique</a></code> to make the names
+unique (although the original labels are used for the x- and
+y-axes).
+</td></tr>
+<tr valign="top"><td><code>data</code></td>
+<td>
+For the <code>formula</code> methods, an optional data frame in which
+variables in the formula (as well as <code>groups</code> and
+<code>subset</code>, if any) are to be evaluated.  Usually ignored with a
+warning in other cases.
+</td></tr>
+<tr valign="top"><td><code>row.values, column.values</code></td>
+<td>
+Optional vectors of values that
+define the grid when <code>x</code> is a matrix.  <code>row.values</code> and
+<code>column.values</code> must have the same lengths as <code>nrow(x)</code>
+and <code>ncol(x)</code> respectively.  By default, row and column
+numbers. </td></tr>
+<tr valign="top"><td><code>panel</code></td>
+<td>
+panel function used to create the display, as described in
+<code><a href="xyplot.html">xyplot</a></code>
+</td></tr>
+<tr valign="top"><td><code>aspect</code></td>
+<td>
+For the <code>matrix</code> methods, the default aspect ratio is chosen to
+make each cell square.  The usual default is <code>aspect="fill"</code>,
+as described in <code><a href="xyplot.html">xyplot</a></code>.
+</td></tr>
+<tr valign="top"><td><code>at</code></td>
+<td>
+numeric vector giving breakpoints along the range of
+<code>z</code>. Contours (if any) will be drawn at these heights, and the
+regions in between would be colored using <code>col.regions</code>.  In
+the latter case, values outside the range of <code>at</code> will not be
+drawn at all.  This serves as a way to limit the range of the data
+shown, similar to what a <code>zlim</code> argument might have been used
+for.  However, this also means that when supplying <code>at</code>
+explicitly, one has to be careful to include values outside the
+range of <code>z</code> to ensure that all the data are shown.
+</td></tr>
+<tr valign="top"><td><code>col.regions</code></td>
+<td>
+color vector to be used if regions is TRUE. The
+general idea is that this should be a color vector of moderately
+large length (longer than the number of regions. By default this is
+100). It is expected that this vector would be gradually varying in
+color (so that nearby colors would be similar). When the colors are
+actually chosen, they are chosen to be equally spaced along this
+vector.  When there are more regions than colors in
+<code>col.regions</code>, the colors are recycled.  The actual color
+assignment is performed by <code><a href="level.colors.html">level.colors</a></code>, which is
+documented separately.
+</td></tr>
+<tr valign="top"><td><code>alpha.regions</code></td>
+<td>
+numeric, specifying alpha transparency (works only on some devices)
+</td></tr>
+<tr valign="top"><td><code>colorkey</code></td>
+<td>
+logical specifying whether a color key is to be drawn
+alongside the plot, or a list describing the color key. The list may
+contain the following components:
+<br>
+<dl>
+<br>
+<dt><code>space</code>:</dt><dd>location of the colorkey, can be one of <code>"left"</code>,
+<code>"right"</code>, <code>"top"</code> and <code>"bottom"</code>.  Defaults to
+<code>"right"</code>.
+</dd>
+<br>
+<dt><code>x</code>, <code>y</code>:</dt><dd>location, currently unused </dd>
+<br>
+<dt><code>col</code>:</dt><dd>vector of colors </dd>
+<br>
+<dt><code>at</code>:</dt><dd>numeric vector specifying where the colors change. must be of
+length 1 more than the col vector.
+</dd>
+<br>
+<dt><code>labels</code>:</dt><dd>a character vector for labelling the <code>at</code> values, or more
+commonly, a list describing characteristics of the labels.  This
+list may include components <code>labels</code>, <code>at</code>,
+<code>cex</code>, <code>col</code>, <code>rot</code>, <code>font</code>, <code>fontface</code>
+and <code>fontfamily</code>.
+</dd>
+<br>
+<dt><code>tick.number</code>:</dt><dd>approximate number of ticks. </dd>
+<br>
+<dt><code>corner</code>:</dt><dd>interacts with x, y; unimplemented </dd>
+<br>
+<dt><code>width</code>:</dt><dd>width of the key </dd>
+<br>
+<dt><code>height</code>:</dt><dd>length of key w.r.t side of plot. </dd>
+</dl>
+</td></tr>
+<tr valign="top"><td><code>contour</code></td>
+<td>
+logical, whether to draw contour lines.
+</td></tr>
+<tr valign="top"><td><code>cuts</code></td>
+<td>
+number of levels the range of <code>z</code> would be divided into
+</td></tr>
+<tr valign="top"><td><code>labels</code></td>
+<td>
+typically a logical indicating whether contour lines should be
+labelled, but other possibilities for more sophisticated control
+exists.  Details are documented in the help page for
+<code><a href="panel.levelplot.html">panel.levelplot</a></code>, to which this argument is passed on
+unchanged.  That help page also documents the <code>label.style</code>
+argument, which affects how the labels are rendered.
+</td></tr>
+<tr valign="top"><td><code>pretty</code></td>
+<td>
+logical, whether to use pretty cut locations and labels
+</td></tr>
+<tr valign="top"><td><code>region</code></td>
+<td>
+logical, whether regions between contour lines should be filled
+</td></tr>
+<tr valign="top"><td><code>allow.multiple, outer, prepanel, scales, strip, groups, xlab,
+xlim, ylab, ylim, drop.unused.levels, lattice.options,
+default.scales, subset</code></td>
+<td>
+these arguments are described in the help page for
+<code><a href="xyplot.html">xyplot</a></code>.
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+other arguments.  Some are processed by <code>levelplot</code>
+or <code>contourplot</code>, and those unrecognized are passed on to the
+panel function.  </td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+These and all other high level Trellis functions have several
+arguments in common. These are extensively documented only in the
+help page for <code>xyplot</code>, which should be consulted to learn more
+detailed usage.
+</p>
+<p>
+Other useful arguments are mentioned in the help page for the default
+panel function <code><a href="panel.levelplot.html">panel.levelplot</a></code> (these are formally
+arguments to the panel function, but can be specified in the high
+level calls directly).
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+An object of class <code>"trellis"</code>. The
+<code><a href="update.trellis.html">update</a></code> method can be used to
+update components of the object and the
+<code><a href="print.trellis.html">print</a></code> method (usually called by
+default) will plot it on an appropriate plotting device.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Deepayan Sarkar <a href="mailto:Deepayan.Sarkar@R-project.org">Deepayan.Sarkar@R-project.org</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Sarkar, Deepayan (2008) "Lattice: Multivariate Data Visualization with
+R", Springer. <a href="http://lmdvr.r-forge.r-project.org/">http://lmdvr.r-forge.r-project.org/</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="xyplot.html">xyplot</a></code>, <code><a href="Lattice.html">Lattice</a></code>,
+<code><a href="panel.levelplot.html">panel.levelplot</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+x &lt;- seq(pi/4, 5 * pi, length.out = 100)
+y &lt;- seq(pi/4, 5 * pi, length.out = 100)
+r &lt;- as.vector(sqrt(outer(x^2, y^2, "+")))
+grid &lt;- expand.grid(x=x, y=y)
+grid$z &lt;- cos(r^2) * exp(-r/(pi^3))
+levelplot(z~x*y, grid, cuts = 50, scales=list(log="e"), xlab="",
+          ylab="", main="Weird Function", sub="with log scales",
+          colorkey = FALSE, region = TRUE)
+
+#S-PLUS example
+require(stats)
+attach(environmental)
+ozo.m &lt;- loess((ozone^(1/3)) ~ wind * temperature * radiation,
+       parametric = c("radiation", "wind"), span = 1, degree = 2)
+w.marginal &lt;- seq(min(wind), max(wind), length.out = 50)
+t.marginal &lt;- seq(min(temperature), max(temperature), length.out = 50)
+r.marginal &lt;- seq(min(radiation), max(radiation), length.out = 4)
+wtr.marginal &lt;- list(wind = w.marginal, temperature = t.marginal,
+        radiation = r.marginal)
+grid &lt;- expand.grid(wtr.marginal)
+grid[, "fit"] &lt;- c(predict(ozo.m, grid))
+contourplot(fit ~ wind * temperature | radiation, data = grid,
+            cuts = 10, region = TRUE,
+            xlab = "Wind Speed (mph)",
+            ylab = "Temperature (F)",
+            main = "Cube Root Ozone (cube root ppb)")
+detach()
+</pre>
+
+
+
+<hr><div align="center">[Package <em>lattice</em> version 0.17-25 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

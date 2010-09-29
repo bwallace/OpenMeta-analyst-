@@ -1,0 +1,40 @@
+which.is.max              package:nnet              R Documentation
+
+_F_i_n_d _M_a_x_i_m_u_m _P_o_s_i_t_i_o_n _i_n _V_e_c_t_o_r
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Find the maximum position in a vector, breaking ties at random.
+
+_U_s_a_g_e:
+
+     which.is.max(x)
+
+_A_r_g_u_m_e_n_t_s:
+
+       x: a vector 
+
+_D_e_t_a_i_l_s:
+
+     Ties are broken at random.
+
+_V_a_l_u_e:
+
+     index of a maximal value.
+
+_R_e_f_e_r_e_n_c_e_s:
+
+     Venables, W. N. and Ripley, B. D. (2002) _Modern Applied
+     Statistics with S._ Fourth edition.  Springer.
+
+_S_e_e _A_l_s_o:
+
+     'max.col', 'which.max' which takes the first of ties.
+
+_E_x_a_m_p_l_e_s:
+
+     ## Not run: 
+     pred <- predict(nnet, test)
+     table(true, apply(pred,1,which.is.max))
+     ## End(Not run)
+

@@ -1,0 +1,337 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Enhanced Bar Plots</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for barplot2 {gplots}"><tr><td>barplot2 {gplots}</td><td align="right">R Documentation</td></tr></table>
+<h2>Enhanced Bar Plots</h2>
+
+
+<h3>Description</h3>
+
+<p>
+An enhancement of the standard barplot() function. Creates a bar plot
+with vertical or horizontal bars. Can plot confidence intervals for each
+bar, a lined grid behind the bars, change plot area color and
+logarithmic axes may be used.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## Default S3 method:
+barplot2(height, width = 1, space = NULL,
+        names.arg = NULL, legend.text = NULL, beside = FALSE,
+        horiz = FALSE, density = NULL, angle = 45,
+        col = NULL, prcol = NULL, border = par("fg"),
+        main = NULL, sub = NULL, xlab = NULL, ylab = NULL,
+        xlim = NULL, ylim = NULL, xpd = TRUE, log = "",
+        axes = TRUE, axisnames = TRUE,
+        cex.axis = par("cex.axis"), cex.names = par("cex.axis"),
+        inside = TRUE, plot = TRUE, axis.lty = 0, offset = 0,
+        plot.ci = FALSE, ci.l = NULL,
+        ci.u = NULL, ci.color = "black", ci.lty = "solid", ci.lwd = 1,
+        plot.grid = FALSE, grid.inc = NULL,
+        grid.lty = "dotted", grid.lwd = 1, grid.col = "black",
+        add = FALSE, panel.first = NULL, panel.last = NULL, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>height</code></td>
+<td>
+either a vector or matrix of values describing the
+bars which make up the plot.  If <code>height</code> is a vector, the
+plot consists of a sequence of rectangular bars with heights
+given by the values in the vector.  If <code>height</code> is a matrix
+and <code>beside</code> is <code>FALSE</code> then each bar of the plot
+corresponds to a column of <code>height</code>, with the values in the
+column giving the heights of stacked ``sub-bars'' making up the
+bar.  If <code>height</code> is a matrix and <code>beside</code> is
+<code>TRUE</code>, then the values in each column are juxtaposed
+rather than stacked.</td></tr>
+<tr valign="top"><td><code>width</code></td>
+<td>
+optional vector of bar widths. Re-cycled to length the
+number of bars drawn.  Specifying a single value will no visible
+effect unless <code>xlim</code> is specified.</td></tr>
+<tr valign="top"><td><code>space</code></td>
+<td>
+the amount of space (as a fraction of the average bar
+width) left before each bar.  May be given as a single number or
+one number per bar.  If <code>height</code> is a matrix and
+<code>beside</code> is <code>TRUE</code>, <code>space</code> may be specified by
+two numbers, where the first is the space between bars in the
+same group, and the second the space between the groups.  If not
+given explicitly, it defaults to <code>c(0,1)</code> if <code>height</code>
+is a matrix and <code>beside</code> is <code>TRUE</code>, and to 0.2
+otherwise.</td></tr>
+<tr valign="top"><td><code>names.arg</code></td>
+<td>
+a vector of names to be plotted below each bar or
+group of bars.  If this argument is omitted, then the names are
+taken from the <code>names</code> attribute of <code>height</code> if this
+is a vector, or the column names if it is a matrix.</td></tr>
+<tr valign="top"><td><code>legend.text</code></td>
+<td>
+a vector of text used to construct a legend for
+the plot, or a logical indicating whether a legend should be
+included.  This is only useful when <code>height</code> is a matrix.
+In that case given legend labels should correspond to the rows of
+<code>height</code>; if <code>legend.text</code> is true, the row names of
+<code>height</code> will be used as labels if they are non-null.</td></tr>
+<tr valign="top"><td><code>beside</code></td>
+<td>
+a logical value.  If <code>FALSE</code>, the columns of
+<code>height</code> are portrayed as stacked bars, and if <code>TRUE</code>
+the columns are portrayed as juxtaposed bars.</td></tr>
+<tr valign="top"><td><code>horiz</code></td>
+<td>
+a logical value.  If <code>FALSE</code>, the bars are drawn
+vertically with the first bar to the left.  If <code>TRUE</code>, the
+bars are drawn horizontally with the first at the bottom.</td></tr>
+<tr valign="top"><td><code>density</code></td>
+<td>
+a vector giving the the density of shading lines, in
+lines per inch, for the bars or bar components.
+The default value of <code>NULL</code> means that no shading lines
+are drawn. Non-positive values of <code>density</code> also inhibit the
+drawing of shading lines.</td></tr>
+<tr valign="top"><td><code>angle</code></td>
+<td>
+the slope of shading lines, given as an angle in
+degrees (counter-clockwise), for the bars or bar components.</td></tr>
+<tr valign="top"><td><code>col</code></td>
+<td>
+a vector of colors for the bars or bar components.
+By default, grey is used if <code>height</code> is a vector, and
+<code>heat.colors(nrow(height))</code> if <code>height</code> is a matrix.</td></tr>
+<tr valign="top"><td><code>prcol</code></td>
+<td>
+the color to be used for the plot region.</td></tr>
+<tr valign="top"><td><code>border</code></td>
+<td>
+the color to be used for the border of the bars.</td></tr>
+<tr valign="top"><td><code>main, sub</code></td>
+<td>
+overall and sub titles for the plot.</td></tr>
+<tr valign="top"><td><code>xlab</code></td>
+<td>
+a label for the x axis.</td></tr>
+<tr valign="top"><td><code>ylab</code></td>
+<td>
+a label for the y axis.</td></tr>
+<tr valign="top"><td><code>xlim</code></td>
+<td>
+limits for the x axis.</td></tr>
+<tr valign="top"><td><code>ylim</code></td>
+<td>
+limits for the y axis.</td></tr>
+<tr valign="top"><td><code>xpd</code></td>
+<td>
+logical. Should bars be allowed to go outside region?</td></tr>
+<tr valign="top"><td><code>log</code></td>
+<td>
+a character string which contains `"x"' if the x axis is
+to be logarithmic, `"y"' if the y axis is to be logarithmic and
+`"xy"' or `"yx"' if both axes are to be logarithmic.</td></tr>
+<tr valign="top"><td><code>axes</code></td>
+<td>
+logical.  If <code>TRUE</code>, a vertical (or horizontal, if
+<code>horiz</code> is true) axis is drawn.</td></tr>
+<tr valign="top"><td><code>axisnames</code></td>
+<td>
+logical.  If <code>TRUE</code>, and if there are
+<code>names.arg</code> (see above), the
+other axis is drawn (with <code>lty = 0</code>) and labeled.</td></tr>
+<tr valign="top"><td><code>cex.axis</code></td>
+<td>
+expansion factor for numeric axis labels.</td></tr>
+<tr valign="top"><td><code>cex.names</code></td>
+<td>
+expansion factor for names.</td></tr>
+<tr valign="top"><td><code>inside</code></td>
+<td>
+logical.  If <code>TRUE</code>, the lines which divide
+adjacent (non-stacked!) bars will be drawn.  Only applies when
+<code>space = 0</code> (which it partly is when <code>beside = TRUE</code>).</td></tr>
+<tr valign="top"><td><code>plot</code></td>
+<td>
+logical.  If <code>FALSE</code>, nothing is plotted.</td></tr>
+<tr valign="top"><td><code>axis.lty</code></td>
+<td>
+the graphics parameter <code>lty</code> applied to the axis
+and tick marks of the categorical (default horzontal) axis.  Note
+that by default the axis is suppressed.</td></tr>
+<tr valign="top"><td><code>offset</code></td>
+<td>
+a vector indicating how much the bars should be shifted
+relative to the x axis.</td></tr>
+<tr valign="top"><td><code>plot.ci</code></td>
+<td>
+logical. If <code>TRUE</code>, confidence intervals are plotted
+over the bars. Note that if a stacked bar plot is generated, confidence
+intervals will not be plotted even if <code>plot.ci = TRUE</code></td></tr>
+<tr valign="top"><td><code>ci.l,ci.u</code></td>
+<td>
+The confidence intervals (ci.l = lower bound, ci.u =
+upper bound) to be plotted if <code>plot.ci</code> = <code>TRUE</code>. Values must have
+the same dim structure as <code>height</code>.</td></tr>
+<tr valign="top"><td><code>ci.color</code></td>
+<td>
+the color for the confidence interval line segments</td></tr>
+<tr valign="top"><td><code>ci.lty</code></td>
+<td>
+the line type for the confidence interval line segments</td></tr>
+<tr valign="top"><td><code>ci.lwd</code></td>
+<td>
+the line width for the confidence interval line segments</td></tr>
+<tr valign="top"><td><code>plot.grid</code></td>
+<td>
+if <code>TRUE</code> a lined grid will be plotted behind the bars</td></tr>
+<tr valign="top"><td><code>grid.inc</code></td>
+<td>
+the number of grid increments to be plotted</td></tr>
+<tr valign="top"><td><code>grid.lty</code></td>
+<td>
+the line type for the grid</td></tr>
+<tr valign="top"><td><code>grid.lwd</code></td>
+<td>
+the line width for the grid</td></tr>
+<tr valign="top"><td><code>grid.col</code></td>
+<td>
+the line color for the grid</td></tr>
+<tr valign="top"><td><code>add</code></td>
+<td>
+logical, if <code>TRUE</code> add barplot to current plot.</td></tr>
+<tr valign="top"><td><code>panel.first</code></td>
+<td>
+An expression to be evaluated after the plot region
+coordinates have been set up, but prior to the drawing of the bars
+and other plot region contents. This can be useful to add additional
+plot region content behind the bars. This will also work if
+<code>add</code> = <code>TRUE</code></td></tr>
+<tr valign="top"><td><code>panel.last</code></td>
+<td>
+An expression to be evaluated after the bars have
+been drawn, but prior to the addition of confidence intervals, a
+legend and the axis annotation</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+further graphical parameters (<code><a href="../../graphics/html/par.html">par</a></code>) are
+passed to <code><a href="../../graphics/html/plot.window.html">plot.window</a>()</code>, <code><a href="../../roxygen/html/make.Rd.roclet.html">title</a>()</code> and
+<code><a href="../../graphics/html/axis.html">axis</a></code>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This is a generic function, it currently only has a default method.
+A formula interface may be added eventually.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A numeric vector (or matrix, when <code>beside = TRUE</code>), say
+<code>mp</code>, giving the coordinates of <EM>all</EM> the bar midpoints
+drawn, useful for adding to the graph.
+<br>
+If <code>beside</code> is true, use <code>colMeans(mp)</code> for the
+midpoints of each <EM>group</EM> of bars, see example.</p>
+
+<h3>Note</h3>
+
+<p>
+Prior to <font face="Courier New,Courier" color="#666666"><b>R</b></font> 1.6.0, <code>barplot</code> behaved as if <code>axis.lty = 1</code>,
+unintentionally.
+0 (zero) and NA values in <code>height</code> will not be plotted if
+using logarithmic scales.
+If there are NA values in <code>height</code> and <code>beside = FALSE</code>,
+values after the NA will not be plotted in stacked bars.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Original barplot() by R-Core. Enhancements by Marc
+Schwartz <a href="mailto:marc_schwartz@comcast.net">marc_schwartz@comcast.net</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../Zelig/html/plot.zelig.html">plot</a>(..., type = "h")</code>, <code><a href="../../survey/html/barplot.svystat.html">dotchart</a></code>,
+<code><a href="../../xps/html/hist-methods.html">hist</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+tN &lt;- table(Ni &lt;- rpois(100, lambda = 5))
+r &lt;- barplot2(tN, col = 'gray')
+
+#- type = "h" plotting *is* `bar'plot
+lines(r, tN, type = 'h', col = 'red', lwd = 2)
+
+barplot2(tN, space = 1.5, axisnames = FALSE,
+        sub = "barplot2(..., space = 1.5, axisnames = FALSE)")
+
+data(VADeaths, package = "datasets")
+barplot2(VADeaths, plot = FALSE)
+barplot2(VADeaths, plot = FALSE, beside = TRUE)
+
+mp &lt;- barplot2(VADeaths) # default
+tot &lt;- colMeans(VADeaths)
+text(mp, tot + 3, format(tot), xpd = TRUE, col = "blue")
+barplot2(VADeaths, beside = TRUE,
+        col = c("lightblue", "mistyrose", "lightcyan",
+                "lavender", "cornsilk"),
+        legend = rownames(VADeaths), ylim = c(0, 100))
+title(main = "Death Rates in Virginia", font.main = 4)
+
+# Example with confidence intervals and grid
+hh &lt;- t(VADeaths)[, 5:1]
+mybarcol &lt;- "gray20"
+ci.l &lt;- hh * 0.85
+ci.u &lt;- hh * 1.15
+mp &lt;- barplot2(hh, beside = TRUE,
+        col = c("lightblue", "mistyrose",
+                "lightcyan", "lavender"),
+        legend = colnames(VADeaths), ylim = c(0, 100),
+        main = "Death Rates in Virginia", font.main = 4,
+        sub = "Faked 95 percent error bars", col.sub = mybarcol,
+        cex.names = 1.5, plot.ci = TRUE, ci.l = ci.l, ci.u = ci.u,
+        plot.grid = TRUE)
+mtext(side = 1, at = colMeans(mp), line = -2,
+      text = paste("Mean", formatC(colMeans(hh))), col = "red")
+box()
+
+# Example with horizontal bars, grid and logarithmic x axis
+barplot2(1:10 , log = "x", plot.grid = TRUE, grid.inc = 10,
+        xlim = c(0.5, 20), horiz = TRUE, cex.axis = 0.9,
+        prcol = "gray95")
+box()
+
+# Bar shading example
+barplot2(VADeaths, angle = 15 + 10 * 1:5, density = 20, col = "black",
+        legend = rownames(VADeaths))
+title(main = list("Death Rates in Virginia", font = 4))
+
+# border :
+barplot2(VADeaths, border = "dark blue") 
+</pre>
+
+
+
+<hr><div align="center">[Package <em>gplots</em> version 2.7.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,90 @@
+jjplot                package:jjplot                R Documentation
+
+_T_h_e _w_o_r_k_h_o_r_s_e _p_l_o_t_t_i_n_g _f_u_n_c_t_i_o_n _f_o_r _t_h_e _j_j_p_l_o_t _p_l_o_t_t_i_n_g _l_i_b_r_a_r_y.
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     This is the main entry point for generating plots via the jjplot
+     library.   It is called by specifying a data frame on which to
+     operate, along with a formula which defines aesthetic mappings
+     along with a tree of statistic and geometry commands.
+
+_U_s_a_g_e:
+
+     jjplot(f, data = NULL, color = NULL,
+            fill = NULL, size = NULL, alpha = 1.0,
+            log.x = FALSE, log.y = FALSE,
+            xlab = NULL, ylab = NULL,
+            expand = c(0.04, 0.04),
+            color.scale = NULL)
+
+_A_r_g_u_m_e_n_t_s:
+
+       f: A formula specifying mappings for x and y aesthetics, as well
+          as the statistic and geometry commands.  See details.  
+
+    data: A data frame in whose scope the data expressions (i.e., 'f')
+          should be evaluated.  
+
+   color: The expression to map to the color aesthetic. 
+
+    fill: The expression to map to the fill aesthetic. 
+
+    size: The expression to map to the size aesthetic. 
+
+   alpha: A constant numeric value with which to specify the alpha
+          blending used on color and fill scales. 
+
+   log.x: Use a logarithmic x scale. 
+
+   log.y: Use a logarithmic y scale. 
+
+    xlab: When specified, this overrides the default label for the x
+          axis. 
+
+    ylab: When specified, this overrides the default label for the y
+          axis. 
+
+  expand: A length-2 numeric vector.  The axes are guaranteed to
+          contain the range of the data plus a fraction of the data
+          range specified by this parameter.  The default simulates the
+          default behavior of R's base plotting functions.  
+
+color.scale: A function which maps values between 0 and 1 to colors. 
+          If specified this color scale will override the default
+          automatically generated color scale. 
+
+_D_e_t_a_i_l_s:
+
+     The formula is specified by placing the optional y aesthetic to
+     the left of the '~' and the x aesthetic as  the first term
+     (rightmost) of the formula.  Layers are subsequently evaluated
+     from right to left, separated by '+'.  Parentheses are grouping
+     operators for layers.  Statistics can be applied using the ':'
+     operator, with the statistic on the right hand side and operations
+     depending on the statistic on the left hand side.
+
+     Full up-to-date documentation with examples can be found at: <URL:
+     http://code.google.com/p/jjplot/wiki/Documentation>
+
+_V_a_l_u_e:
+
+     The function is called only for its side effect (namely, a plot!).
+
+_A_u_t_h_o_r(_s):
+
+     Jonathan Chang <jcone@princeton.edu> Eytan Bakshy
+     <ebakshy@gmail.com>
+
+_R_e_f_e_r_e_n_c_e_s:
+
+     <URL: http://code.google.com/p/jjplot/wiki/Documentation>
+
+_E_x_a_m_p_l_e_s:
+
+      ## See the demos for example usages.
+      ## Not run: demo(jjplot)
+
+      ## See the following demo for speed tests.
+      ## Not run: demo(jjplot.performance)
+

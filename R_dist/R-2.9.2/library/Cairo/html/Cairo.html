@@ -1,0 +1,275 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Create a new Cairo-based graphics device</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for Cairo {Cairo}"><tr><td>Cairo {Cairo}</td><td align="right">R Documentation</td></tr></table>
+<h2>Create a new Cairo-based graphics device</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>Cairo</code> initializes a new graphics device that uses the cairo
+graphics library for rendering. The current implementation produces
+high-quality PNG, JPEG, TIFF bitmap files, high resolution PDF files
+with embedded fonts, SVG graphics and PostScript files. It also
+provides X11 and Windows interactive graphics devices. Unlike other
+devices it supports all graphics features including alpha blending,
+anti-aliasing etc.
+</p>
+<p>
+<code>CairoX11</code>, <code>CairoPNG</code>, <code>CairoPDF</code>, <code>CairoPS</code> and
+<code>CairoSVG</code> are convenience wrappers of <code>Cairo</code> that take the
+same arguments as the corresponding device it replaces such as
+<code>X11</code>, <code>png</code>, <code>pdf</code>, etc. Use of the <code>Cairo</code>
+function is encouraged as it is more flexible than the wrappers.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+Cairo(width = 640, height = 480, file="", type="png", pointsize=12, 
+      bg = "transparent", canvas = "white", units = "px", dpi = "auto",
+      ...)
+
+CairoX11(display=Sys.getenv("DISPLAY"), width = 7, height = 7,
+         pointsize = 12, gamma = getOption("gamma"), bg = "transparent",
+         canvas = "white", xpos = NA, ypos = NA, ...)
+CairoPNG(filename = "Rplot%03d.png", width = 480, height = 480,
+         pointsize = 12, bg = "white",  res = NA, ...)
+CairoJPEG(filename = "Rplot%03d.jpeg", width = 480, height = 480,
+         pointsize = 12, quality = 75, bg = "white", res = NA, ...)
+CairoTIFF(filename = "Rplot%03d.tiff", width = 480, height = 480,
+         pointsize = 12, bg = "white", res = NA, ...)
+CairoPDF(file = ifelse(onefile, "Rplots.pdf","Rplot%03d.pdf"),
+         width = 6, height = 6, onefile = TRUE, family = "Helvetica",
+         title = "R Graphics Output", fonts = NULL, version = "1.1",
+         paper = "special", encoding, bg, fg, pointsize, pagecentre)
+CairoSVG(file = ifelse(onefile, "Rplots.svg", "Rplot%03d.svg"),
+         width = 6, height = 6, onefile = TRUE, bg = "transparent",
+         pointsize = 12, ...)
+CairoWin(width = 7, height = 7, pointsize = 12,
+         record = getOption("graphics.record"),
+         rescale = c("R", "fit", "fixed"), xpinch, ypinch, bg =
+         "transparent", canvas = "white", gamma = getOption("gamma"),
+         xpos = NA, ypos = NA, buffered = getOption("windowsBuffered"),
+         restoreConsole = FALSE, ...)
+CairoPS(file = ifelse(onefile, "Rplots.ps", "Rplot%03d.ps"),
+        onefile = TRUE, family, title = "R Graphics Output", fonts = NULL,
+        encoding, bg, fg, width, height, horizontal, pointsize, paper,
+        pagecentre, print.it, command, colormodel)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>width</code></td>
+<td>
+width of the plot area (also see <code>units</code>).</td></tr>
+<tr valign="top"><td><code>height</code></td>
+<td>
+height of the plot area (also see <code>units</code>).</td></tr>
+<tr valign="top"><td><code>file</code></td>
+<td>
+name of the file to be created or connection to write
+to. Only PDF, PS and PNG types support connections. For X11
+type <code>file</code> specifies the display name. If <code>NULL</code> or
+<code>""</code> a reasonable default will be chosen which is
+<code>"plot.type"</code> for file-oriented types and value of the
+<code>DISPLAY</code> environment variable for X11. For image types
+the file name can contain printf-style formatting expecting
+one integer parameter which is the page number, such as
+<code>"Rplot%03d.png"</code>. The page numbers start at one.</td></tr>
+<tr valign="top"><td><code>type</code></td>
+<td>
+output type. This version of Cario supports "png", "jpeg"
+and "tiff" bitmaps (png/tiff with transparent background), "pdf"
+PDF-file with embedded fonts, "svg" SVG-file, "ps" PostScript-file,
+"x11" X11 interactive window and "win" Windows graphics.
+Depending on the support of various backends in cairo graphics some
+of the options may not be available for your system. See
+<code><a href="Cairo.capabilities.html">Cairo.capabilities</a></code> function.</td></tr>
+<tr valign="top"><td><code>pointsize</code></td>
+<td>
+initial text size (in points).</td></tr>
+<tr valign="top"><td><code>canvas</code></td>
+<td>
+canvas color (must be opaque). The canvas is only used
+by devices that display graphics on a screen and the canvas is only
+visible only if bg is transparent.</td></tr>
+<tr valign="top"><td><code>bg</code></td>
+<td>
+plot background color (can include alpha-component or be
+transparent alltogether).</td></tr>
+<tr valign="top"><td><code>units</code></td>
+<td>
+units for of the <code>width</code> and <code>height</code>
+specifications. It can be any of <code>"px"</code> (pixels),
+<code>"in"</code> (inches), <code>"pt"</code> (points), <code>"cm"</code>
+(centimeters) or <code>"mm"</code> (millimeters).</td></tr>
+<tr valign="top"><td><code>dpi</code></td>
+<td>
+DPI used for the conversion of units to pixels. If set to
+<code>"auto"</code> the DPI resolution will be determined by the
+back-end.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+additional backend specific parameters (e.g. <code>quality</code>
+setting for JPEG (0..100) and <code>compression</code> for TIFF
+(0,1=none, 5=LZW (default), 7=JPEG, 8=Adobe Deflate))   
+<br>
+All parameters
+listed below are defined by the other devices are are used by
+the wrappers to make it easier replace other devices by
+<code>Cairo</code>. They are described in detail in the documentation
+corresponding to the device that is being replaced.</td></tr>
+<tr valign="top"><td><code>display</code></td>
+<td>
+X11 display, see <code><a href="../../grDevices/html/windows.html">X11</a></code></td></tr>
+<tr valign="top"><td><code>gamma</code></td>
+<td>
+gamma correction</td></tr>
+<tr valign="top"><td><code>xpos</code></td>
+<td>
+see <code><a href="../../grDevices/html/windows.html">X11</a></code></td></tr>
+<tr valign="top"><td><code>ypos</code></td>
+<td>
+see <code><a href="../../grDevices/html/windows.html">X11</a></code></td></tr>
+<tr valign="top"><td><code>filename</code></td>
+<td>
+same as <code>file</code> in <code>Cairo</code></td></tr>
+<tr valign="top"><td><code>res</code></td>
+<td>
+see <code><a href="../../grDevices/html/png.html">png</a></code>, will be mapped to <code>dpi</code>
+for <code>Cairo</code></td></tr>
+<tr valign="top"><td><code>quality</code></td>
+<td>
+quality of the jpeg, see <code><a href="../../grDevices/html/png.html">jpeg</a></code></td></tr>
+<tr valign="top"><td><code>onefile</code></td>
+<td>
+logical: if true (the default) allow multiple
+figures in one file (see <code><a href="../../grDevices/html/pdf.html">pdf</a></code>). false is currently
+not supported by vector devices</td></tr>
+<tr valign="top"><td><code>family</code></td>
+<td>
+font family, see <code><a href="../../grDevices/html/pdf.html">pdf</a></code></td></tr>
+<tr valign="top"><td><code>title</code></td>
+<td>
+see <code><a href="../../grDevices/html/pdf.html">pdf</a></code> (ignored)</td></tr>
+<tr valign="top"><td><code>fonts</code></td>
+<td>
+see <code><a href="../../grDevices/html/pdf.html">pdf</a></code>, ignored, <code>Cairo</code>
+automatically detects and embeds fonts</td></tr>
+<tr valign="top"><td><code>version</code></td>
+<td>
+PDF version, see <code><a href="../../grDevices/html/pdf.html">pdf</a></code> (ignored)</td></tr>
+<tr valign="top"><td><code>paper</code></td>
+<td>
+see <code><a href="../../grDevices/html/pdf.html">pdf</a></code> (ignored, <code>Cairo</code> uses device dimensions)</td></tr>
+<tr valign="top"><td><code>encoding</code></td>
+<td>
+see <code><a href="../../grDevices/html/pdf.html">pdf</a></code> (ignored, <code>Cairo</code> uses
+native enconding except for symbols)</td></tr>
+<tr valign="top"><td><code>fg</code></td>
+<td>
+see <code><a href="../../grDevices/html/pdf.html">pdf</a></code> (ignored)</td></tr>
+<tr valign="top"><td><code>pagecentre</code></td>
+<td>
+see <code><a href="../../grDevices/html/pdf.html">pdf</a></code> (ignored, <code>Cairo</code>
+uses device dimensions and thus it is irrelevant)</td></tr>
+<tr valign="top"><td><code>record</code></td>
+<td>
+see <code><a href="../../grDevices/html/windows.html">windows</a></code> (ignored)</td></tr>
+<tr valign="top"><td><code>rescale</code></td>
+<td>
+see <code><a href="../../grDevices/html/windows.html">windows</a></code> (ignored)</td></tr>
+<tr valign="top"><td><code>xpinch</code></td>
+<td>
+see <code><a href="../../grDevices/html/windows.html">windows</a></code> (ignored)</td></tr>
+<tr valign="top"><td><code>ypinch</code></td>
+<td>
+see <code><a href="../../grDevices/html/windows.html">windows</a></code> (ignored)</td></tr>
+<tr valign="top"><td><code>buffered</code></td>
+<td>
+see <code><a href="../../grDevices/html/windows.html">windows</a></code> (ignored, <code>Cairo</code>
+always uses cache buffer)</td></tr>
+<tr valign="top"><td><code>restoreConsole</code></td>
+<td>
+see <code><a href="../../grDevices/html/windows.html">windows</a></code> (ignored)</td></tr>
+<tr valign="top"><td><code>horizontal</code></td>
+<td>
+see <code><a href="../../grDevices/html/postscript.html">postscript</a></code> (ignored)</td></tr>
+<tr valign="top"><td><code>print.it</code></td>
+<td>
+see <code><a href="../../grDevices/html/postscript.html">postscript</a></code> (ignored)</td></tr>
+<tr valign="top"><td><code>command</code></td>
+<td>
+see <code><a href="../../grDevices/html/postscript.html">postscript</a></code> (ignored)</td></tr>
+<tr valign="top"><td><code>colormodel</code></td>
+<td>
+see <code><a href="../../grDevices/html/postscript.html">postscript</a></code> (ignored,
+<code>Cairo</code> always uses <code>RGB</code> or <code>ARGB</code>)</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+The (invisible) return value is NULL if the device couldn't be created
+or a <code>Cairo</code> object if successful. The vaule of the object is the
+device number.</p>
+
+<h3>Known issues</h3>
+
+<ul>
+<li>The X11 backend is quite slow. The reason is the cairographics
+implementation of the backend, so we can't do much about
+it. It should be possible to drop cairographics' Xlib
+backend entirely and use image backend copied into an X11
+window instead. We may try that in future releases.
+<li>TrueType (and OpenType) fonts are supported when this package is compiled
+against a cairo graphics library configured with FreeType and
+Fontconfig support. Therefore make sure have a cairo grpahics
+library with all bell and whistles to get a good result.
+<li>R math symbols are supported, but require a TrueType "Symbol" font accessible
+to Cairo under that name.
+</ul>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="CairoFonts.html">CairoFonts</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+# very simple KDE
+Cairo(600, 600, file="plot.png", type="png", bg="white")
+plot(rnorm(4000),rnorm(4000),col="#ff000018",pch=19,cex=2) # semi-transparent red
+dev.off() # creates a file "plot.png" with the above plot
+
+# you can use any Cairo backend and get the same result
+# vector, bitmap or on-screen
+CairoPDF("plot.pdf", 6, 6, bg="transparent")
+data(iris)
+attach(iris)
+plot(Petal.Length, rep(-0.03,length(Species)), xlim=c(1,7),
+     ylim=c(0,1.7), xlab="Petal.Length", ylab="Density",
+     pch=21, cex=1.5, col="#00000001", main = "Iris (yet again)",
+     bg=c("#ff000020","#00ff0020","#0000ff20")[unclass(Species)])
+for (i in 1:3)
+  polygon(density(Petal.Length[unclass(Species)==i],bw=0.2),
+    col=c("#ff000040","#00ff0040","#0000ff40")[i])
+dev.off()
+</pre>
+
+
+
+<hr><div align="center">[Package <em>Cairo</em> version 1.4-5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

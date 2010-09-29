@@ -1,0 +1,176 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Creating (small) graphs via a simple interface</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for graph.formula {igraph}"><tr><td>graph.formula {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Creating (small) graphs via a simple interface</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This function is useful if you want to create a small (named) graph
+quickly, it works for both directed and undirected graphs.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+graph.formula(...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>...</code></td>
+<td>
+The formulae giving the structure of the graph, see details
+below.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>graph.formula</code> is very handy for creating small graphs quickly.
+You need to supply one or more R expressions giving the structure of
+the graph. The expressions consist of vertex names and edge
+operators. An edge operator is a sequence of &lsquo;<code>-</code>&rsquo; and
+&lsquo;<code>+</code>&rsquo; characters, the former is for the edges and the
+latter is used for arrow heads. The edges can be arbitrarily long,
+ie. you may use as many &lsquo;<code>-</code>&rsquo; characters to &ldquo;draw&rdquo;
+them as you like.
+</p>
+<p>
+If all edge operators consist of only &lsquo;<code>-</code>&rsquo; characters
+then the graph will be undirected, whereas a single &lsquo;<code>+</code>&rsquo;
+character implies a directed graph.
+</p>
+<p>
+Let us see some simple examples. Without arguments the function
+creates an empty graph:
+<pre>
+    graph.formula()
+</pre>
+</p>
+<p>
+A simple undirected graph with two vertices called &lsquo;A&rsquo; and
+&lsquo;B&rsquo; and one edge only:
+<pre>
+    graph.formula(A-B)
+</pre>
+</p>
+<p>
+Remember that the length of the edges does not matter, so we could
+have written the following, this creates the same graph:
+<pre>
+    graph.formula( A-----B )
+</pre>
+</p>
+<p>
+If you have many disconnected components in the graph, separate them
+with commas. You can also give isolate vertices.
+<pre>
+    graph.formula( A--B, C--D, E--F, G--H, I, J, K )
+</pre>
+</p>
+<p>
+The &lsquo;<code>:</code>&rsquo; operator can be used to define vertex sets. If
+an edge operator connects two vertex sets then every edge from the
+first set will be connected to every edge in the second set. The
+following form creates a full graph, including loop edges:
+<pre>
+    graph.formula( A:B:C:D -- A:B:C:D )
+</pre>
+</p>
+<p>
+In directed graphs, edges will be created only if the edge operator
+includes a arrow head (&lsquo;+&rsquo;) <EM>at the end</EM> of the edge:
+<pre>
+    graph.formula( A -+ B -+ C )
+    graph.formula( A +- B -+ C )
+    graph.formula( A +- B -- C )
+</pre>
+Thus in the third example no edge is created between vertices <code>B</code>
+and <code>C</code>.
+</p>
+<p>
+Mutual edges can be also created with a simple edge operator:
+<pre>
+    graph.formula( A +-+ B +---+ C ++ D + E)
+</pre>
+Note again that the length of the edge operators is arbitrary,
+&lsquo;<code>+</code>&rsquo;, &lsquo;<code>++</code>&rsquo; and &lsquo;<code>+-----+</code>&rsquo; have
+exactly the same meaning.
+</p>
+<p>
+If the vertex names include spaces or other special characters then
+you need to quote them:
+<pre>
+    graph.formula( "this is" +- "a silly" -+ "graph here" )
+</pre>
+You can include any character in the vertex names this way, even
+&lsquo;+&rsquo; and &lsquo;-&rsquo; characters.
+</p>
+<p>
+See more examples below.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A new graph object.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="graph.constructors.html">graph</a></code> for more general graph creation methods.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+# A simple undirected graph
+g &lt;- graph.formula( Alice-Bob-Cecil-Alice, Daniel-Cecil-Eugene, Cecil-Gordon )
+g
+
+# Another undirected graph, ":" notation
+g2 &lt;- graph.formula( Alice-Bob:Cecil:Daniel, Cecil:Daniel-Eugene:Gordon )
+g2
+
+# A directed graph
+g3 &lt;- graph.formula( Alice +-+ Bob --+ Cecil +-- Daniel,
+                     Eugene --+ Gordon:Helen )
+g3
+
+# A graph with isolate vertices
+g4 &lt;- graph.formula( Alice -- Bob -- Daniel, Cecil:Gordon, Helen )
+g4
+V(g4)$name
+
+# "Arrows" can be arbitrarily long
+g5 &lt;- graph.formula( Alice +---------+ Bob )
+g5
+
+# Special vertex names
+g6 &lt;- graph.formula( "+" -- "-", "*" -- "/", "%%" -- "%/%" )
+g6
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,54 @@
+somgrid                package:class                R Documentation
+
+_P_l_o_t _S_O_M _F_i_t_s
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Plotting functions for SOM results.
+
+_U_s_a_g_e:
+
+     somgrid(xdim = 8, ydim = 6, topo = c("rectangular", "hexagonal"))
+
+     ## S3 method for class 'somgrid':
+     plot(x, type = "p", ...)
+
+     ## S3 method for class 'SOM':
+     plot(x, ...)
+
+_A_r_g_u_m_e_n_t_s:
+
+xdim, ydim: dimensions of the grid
+
+    topo: the topology of the grid.
+
+       x: an object inheriting from class '"somgrid"' or '"SOM"'.
+
+type, ...: graphical parameters.
+
+_D_e_t_a_i_l_s:
+
+     The class '"somgrid"' records the coordinates of the grid to be
+     used for (batch or on-line) SOM: this has a plot method.
+
+     The plot method for class '"SOM"' plots a 'stars' plot of the
+     representative at each grid point.
+
+_V_a_l_u_e:
+
+     For 'somgrid', an object of class '"somgrid"', a list with
+     components 
+
+     pts: a two-column matrix giving locations for the grid points.
+
+xdim, ydim, topo: as in the arguments to 'somgrid'.
+
+_R_e_f_e_r_e_n_c_e_s:
+
+     Venables, W. N. and Ripley, B. D. (2002) _Modern Applied
+     Statistics with S._ Fourth edition.  Springer.
+
+_S_e_e _A_l_s_o:
+
+     'batchSOM', 'SOM'
+

@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Surveyplot</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for surveyplot {dprep}"><tr><td>surveyplot {dprep}</td><td align="right">R Documentation</td></tr></table>
+<h2>Surveyplot</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This function creates and displays a surveyplot of a dataset for a classification matrix
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+surveyplot(datos, dataname = "", orderon = 0, class = 0, 
+obs = rep(0, 0), lwd = 1)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>datos</code></td>
+<td>
+A matrix of values for supervised classification</td></tr>
+<tr valign="top"><td><code>dataname</code></td>
+<td>
+<code>dataname</code> Name of data set to appear in plot title</td></tr>
+<tr valign="top"><td><code>orderon</code></td>
+<td>
+<code>orderon</code> Column number by which to order the dataset</td></tr>
+<tr valign="top"><td><code>class</code></td>
+<td>
+<code>class</code> Class for which to limit plotting</td></tr>
+<tr valign="top"><td><code>obs</code></td>
+<td>
+<code>obs</code> List of observations to be highlighted</td></tr>
+<tr valign="top"><td><code>lwd</code></td>
+<td>
+<code>lwd</code> Value to control width of the line</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This plot is not recommended for a large number of features (say more than 50)
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+Returns a surveyplot of the data matrix</p>
+
+<h3>Note</h3>
+
+<p>
+This plot is a mix between the survey plot presented in Fayyad and a permutation matrix.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Caroline Rodriguez
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Fayyad, et al. (2001) Information Visualization in Data Mining and Knowledge Discovery
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="parallelplot.html">parallelplot</a></code>,  <code><a href="starcoord.html">starcoord</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+#----Surveyplot examples
+data(bupa)
+surveyplot(bupa,"Bupa Dataset")
+surveyplot(bupa,"Bupa Dataset",orderon=1,obs=c(6,74,121))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>dprep</em> version 2.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

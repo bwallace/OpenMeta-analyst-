@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Control for Rpart Models</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for rpart.control {rpart}"><tr><td>rpart.control {rpart}</td><td align="right">R Documentation</td></tr></table>
+<h2>Control for Rpart Models</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Various parameters that control aspects of the <code>rpart</code> fit.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+rpart.control(minsplit=20, minbucket=round(minsplit/3), cp=0.01, 
+              maxcompete=4, maxsurrogate=5, usesurrogate=2, xval=10,
+              surrogatestyle=0, maxdepth=30, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>minsplit</code></td>
+<td>
+the minimum number of observations that must exist in a node, in order for 
+a split to be attempted. 
+</td></tr>
+<tr valign="top"><td><code>minbucket</code></td>
+<td>
+the minimum number of observations in any terminal <code>&lt;leaf&gt;</code> node.
+If only one of <code>minbucket</code> or <code>minsplit</code> is specified,
+the code either sets <code>minsplit</code> to <code>minbucket*3</code>
+or <code>minbucket</code> to <code>minsplit/3</code>, as appropriate.
+</td></tr>
+<tr valign="top"><td><code>cp</code></td>
+<td>
+complexity parameter.  Any split that does not decrease the overall
+lack of fit by a factor of <code>cp</code> is not attempted.  For instance,
+with <code>anova</code> splitting, this means that the overall Rsquare must
+increase by <code>cp</code> at each step. The main role of this parameter
+is to save computing time by pruning off splits that are obviously
+not worthwhile. Essentially,the user informs the program that any
+split which does not improve the fit by <code>cp</code> will likely be
+pruned off by cross-validation, and that hence the program need
+not pursue it.
+</td></tr>
+<tr valign="top"><td><code>maxcompete</code></td>
+<td>
+the number of competitor splits retained in the output.  It is useful to
+know not just which split was chosen, but which variable came in second,
+third, etc.
+</td></tr>
+<tr valign="top"><td><code>maxsurrogate</code></td>
+<td>
+the number of surrogate splits retained in the output.  If this is set to
+zero the compute time will be shortened, since approximately half of the
+computational time (other than setup) is used in the search for surrogate
+splits.
+</td></tr>
+<tr valign="top"><td><code>usesurrogate</code></td>
+<td>
+how to use surrogates in the splitting process.  0= display only; an
+observation with a missing value for the primary split rule is not sent
+further down the tree.  1= use surrogates, in order, to split subjects
+missing the primary variable; if all surrogates are missing the observation
+is not split.  2= if all surrogates are missing, then send the observation
+in the majority direction.  A value of 0 corresponds to the action of
+<code>tree</code>, and 2 to the recommendations of Breiman, et.al.
+</td></tr>
+<tr valign="top"><td><code>xval</code></td>
+<td>
+number of cross-validations 
+</td></tr>
+<tr valign="top"><td><code>surrogatestyle</code></td>
+<td>
+controls the selection of a best surrogate.
+If set to 0 (default) the program uses the total number of correct
+classification for a potential surrogate variable,
+if set to 1 it uses the percent correct, calculated over the non-missing
+values of the surrogate.
+The first option more severely penalizes covariates with a large number of
+missing values.
+</td></tr>
+<tr valign="top"><td><code>maxdepth</code></td>
+<td>
+Set the maximum depth of any node of the final tree, with the root
+node counted as depth 0 (past 30 <code>rpart</code> will give nonsense results on
+32-bit machines).
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+mop up other arguments.
+</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+a list containing the options.</p>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="rpart.html">rpart</a></code>
+</p>
+
+
+
+<hr><div align="center">[Package <em>rpart</em> version 3.1-45 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

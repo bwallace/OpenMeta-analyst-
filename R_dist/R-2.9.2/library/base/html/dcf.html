@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Read and Write Data in DCF Format</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for dcf {base}"><tr><td>dcf {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Read and Write Data in DCF Format</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Reads or writes an <font face="Courier New,Courier" color="#666666"><b>R</b></font> object from/to a file in Debian Control File
+format.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+read.dcf(file, fields = NULL, all = FALSE)
+
+write.dcf(x, file = "", append = FALSE,
+          indent = 0.1 * getOption("width"),
+          width = 0.9 * getOption("width"))
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>file</code></td>
+<td>
+either a character string naming a file or a connection.
+<code>""</code> indicates output to the console.  For <code>read.dcf</code> this
+can name a <code>gzip</code>-compressed file.</td></tr>
+<tr valign="top"><td><code>fields</code></td>
+<td>
+Fields to read from the DCF file.  Default is to read all
+fields.</td></tr>
+<tr valign="top"><td><code>all</code></td>
+<td>
+a logical indicating whether in case of multiple
+occurrences of a field in a record, all these should be gathered.
+If <code>all</code> is false (default), only the last such occurrence is
+used.</td></tr>
+<tr valign="top"><td><code>x</code></td>
+<td>
+the object to be written, typically a data frame.  If not, it
+is attempted to coerce <code>x</code> to a data frame.</td></tr>
+<tr valign="top"><td><code>append</code></td>
+<td>
+logical.  If <code>TRUE</code>, the output is appended to the
+file.  If <code>FALSE</code>, any existing file of the name is destroyed.</td></tr>
+<tr valign="top"><td><code>indent</code></td>
+<td>
+a positive integer specifying the indentation for
+continuation lines in output entries.</td></tr>
+<tr valign="top"><td><code>width</code></td>
+<td>
+a positive integer giving the target column for wrapping
+lines in the output.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+DCF is a simple format for storing databases in plain text files that
+can easily be directly read and written by humans.  DCF is used in
+various places to store <font face="Courier New,Courier" color="#666666"><b>R</b></font> system information, like descriptions and
+contents of packages.
+</p>
+<p>
+The DCF rules as implemented in <font face="Courier New,Courier" color="#666666"><b>R</b></font> are:
+<ol>
+<li>A database consists of one or more records, each with one or
+more named fields.  Not every record must contain each field.
+Fields may appear more than once in a record.
+<li>Regular lines start with a non-whitespace character.
+<li>Regular lines are of form <code>tag:value</code>, i.e., have a name
+tag and a value for the field, separated by <code>:</code> (only the first
+<code>:</code> counts).  The value can be empty (=whitespace only).
+<li>Lines starting with whitespace are continuation lines (to the
+preceding field) if at least one character in the line is
+non-whitespace.  Continuation lines where the only non-whitespace
+character is a <span class="samp">.</span> are taken as blank lines (allowing for
+multi-paragraph field values).
+<li>Records are separated by one or more empty (=whitespace only)
+lines.
+</ol>
+
+<p>
+By default, <code>read.dcf</code> returns a character matrix with one row
+per record and one column per field.  Leading and trailing whitespace
+of field values is ignored.  If a tag name is specified, but the
+corresponding value is empty, then an empty string is returned.  If
+the tag name of a field is never used in a record, then <code>NA</code> is
+returned.  If fields are repeated within a record, the last one
+encountered is returned.  Malformed lines lead to an error.  If
+<code>all</code> is true, a data frame is returned, again with one row per
+record and one column per field, and columns lists of character
+vectors for fields with multiple occurrences, and character vectors
+otherwise.
+</p>
+<p>
+<code>write.dcf</code> does not write <code>NA</code> fields.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../utils/html/write.table.html">write.table</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## Create a reduced version of the 'CONTENTS' file in package 'splines'
+x &lt;- read.dcf(file = system.file("CONTENTS", package = "splines"),
+              fields = c("Entry", "Description"))
+write.dcf(x)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

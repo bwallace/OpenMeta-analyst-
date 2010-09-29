@@ -1,0 +1,99 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Tukey's Bi-square Score (Psi) Function and Derivative</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for tukeyPsi1 {robustbase}"><tr><td>tukeyPsi1 {robustbase}</td><td align="right">R Documentation</td></tr></table>
+<h2>Tukey's Bi-square Score (Psi) Function and Derivative</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Compute Tukey's bi-square score (psi) function, its first
+derivative or it's integral/&ldquo;principal function&rdquo;.  This is
+scaled such that <i>psi'(0) = 1</i>, i.e.,
+<i>psi(x) ~= x</i> around 0.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+tukeyPsi1(x, cc, deriv = 0)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+numeric vector.</td></tr>
+<tr valign="top"><td><code>cc</code></td>
+<td>
+tuning constant </td></tr>
+<tr valign="top"><td><code>deriv</code></td>
+<td>
+integer in <i>{-1,0,1}</i> specifying the order of the
+derivative; the default, <code>deriv = 0</code> computes the psi-function.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+a numeric vector of the same length as <code>x</code>.</p>
+
+<h3>Note</h3>
+
+<p>
+<code>tukeyPsi1(x, d)</code> and <code><a href="tukeyChi.html">tukeyChi</a>(x, d+1)</code> are just
+re-scaled versions of each other (for <code>d in -1:1</code>), i.e.,
+</p><p align="center"><i>chi^{(nu)}(x, c) = (6/c^2) psi^{(nu-1)}(x,c),</i></p><p>
+for <i>nu = 0,1,2</i>.
+</p>
+<p>
+We use the name &lsquo;tukeyPsi<B>1</B>&rsquo;, because <code>tukeyPsi</code> is
+reserved for a future &ldquo;Psi Function&rdquo; class object, see
+<code><a href="psiFunc.html">psiFunc</a></code>.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Matias Salibian-Barrera, Martin Maechler and Andreas Ruckstuhl
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="lmrob.html">lmrob</a></code> and <code><a href="tukeyChi.html">tukeyChi</a></code>; further
+<code><a href="anova.lmrob.html">anova.lmrob</a></code> which needs the <code>deriv = -1</code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+op &lt;- par(mfrow = c(3,1), oma = c(0,0, 2, 0),
+          mgp = c(1.5, 0.6, 0), mar= .1+c(3,4,1,1))
+x &lt;- seq(-5, 5, length = 201)
+cc &lt;- 4.69 # as set by default in lmrob.control()
+plot. &lt;- function(...) { plot(..., asp = 1); abline(h=0,v=0, col="gray", lty=3)}
+plot.(x, tukeyPsi1(x, cc), type = "l", col = 2)
+abline(0:1, lty = 3, col = "light blue")
+plot.(x, tukeyPsi1(x, cc, deriv = -1), type = "l", col = 2)
+plot.(x, tukeyPsi1(x, cc, deriv =  1), type = "l", col = 2); abline(h=1,lty=3)
+mtext(sprintf("tukeyPsi1(x, c = %g, deriv),  deriv = 0, -1, 1", cc),
+      outer = TRUE, font = par("font.main"), cex = par("cex.main"))
+par(op)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>robustbase</em> version 0.4-5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

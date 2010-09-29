@@ -1,0 +1,100 @@
+locpoly              package:KernSmooth              R Documentation
+
+_E_s_t_i_m_a_t_e _F_u_n_c_t_i_o_n_s _U_s_i_n_g _L_o_c_a_l _P_o_l_y_n_o_m_i_a_l_s
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Estimates a probability density function,   regression function or
+     their derivatives using local polynomials. A fast binned
+     implementation over an equally-spaced grid is used.
+
+_U_s_a_g_e:
+
+     locpoly(x, y, drv = 0L, degree, kernel = "normal", 
+             bandwidth, gridsize = 401L, bwdisc = 25, 
+             range.x, binned = FALSE, truncate = TRUE)
+
+_A_r_g_u_m_e_n_t_s:
+
+       x: vector of x data. Missing values are not accepted. 
+
+bandwidth: the kernel bandwidth smoothing parameter. It may be a single
+          number or an array having length 'gridsize', representing a
+          bandwidth that varies according to the location of
+          estimation. 
+
+       y: vector of y data. This must be same length as 'x', and
+          missing values are not accepted. 
+
+     drv: order of derivative to be estimated. 
+
+  degree: degree of local polynomial used. Its value must be greater
+          than or equal to the value of 'drv'. The default value is of
+          'degree' is 'drv' + 1. 
+
+  kernel: '"normal"' - the Gaussian density function.  Currently
+          ignored. 
+
+gridsize: number of equally-spaced grid points over which the  function
+          is to be estimated. 
+
+  bwdisc: number of logarithmically-equally-spaced bandwidths on which
+          'bandwidth' is discretised, to speed up computation. 
+
+ range.x: vector containing the minimum and maximum values of 'x' at
+          which to compute the estimate. 
+
+  binned: logical flag: if 'TRUE', then 'x' and 'y' are taken to be
+          grid counts rather than raw data.  
+
+truncate: logical flag: if 'TRUE', data with 'x' values outside the
+          range specified by 'range.x' are ignored. 
+
+_V_a_l_u_e:
+
+     if 'y' is specified, a local polynomial regression estimate of 
+     E[Y|X] (or its derivative) is computed. If 'y' is missing, a local
+     polynomial estimate of the density of 'x' (or its derivative) is
+     computed.
+
+     a list containing the following components:
+
+       x: vector of sorted x values at which the estimate was computed. 
+
+       y: vector of smoothed estimates for either the density or the
+          regression at the corresponding 'x'. 
+
+_D_e_t_a_i_l_s:
+
+     Local polynomial fitting with a kernel weight is used to estimate
+     either a density, regression function or their derivatives. In the
+     case of density estimation, the  data are binned and the local
+     fitting procedure is applied to  the bin counts. In either case,
+     binned approximations over an equally-spaced grid is used for fast
+     computation. The bandwidth may be either scalar or a vector of
+     length 'gridsize'.
+
+_R_e_f_e_r_e_n_c_e_s:
+
+     Wand, M. P. and Jones, M. C. (1995). _Kernel Smoothing._ Chapman
+     and Hall, London.
+
+_S_e_e _A_l_s_o:
+
+     'bkde', 'density', 'dpill', 'ksmooth', 'loess', 'smooth',
+     'supsmu'.
+
+_E_x_a_m_p_l_e_s:
+
+     data(geyser, package = "MASS")
+     # local linear density estimate
+     x <- geyser$duration
+     est <- locpoly(x, bandwidth = 0.25)
+     plot(est, type = "l")
+
+     # local linear regression estimate
+     y <- geyser$waiting
+     plot(x, y)
+     fit <- locpoly(x, y, bandwidth = 0.25)
+     lines(fit)
+

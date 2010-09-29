@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Lazy Load a Database of R Objects</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for lazyLoad {base}"><tr><td>lazyLoad {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Lazy Load a Database of R Objects</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Lazy load a database of <font face="Courier New,Courier" color="#666666"><b>R</b></font> objects.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+lazyLoad(filebase, envir = parent.frame(), filter)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>filebase</code></td>
+<td>
+The file path to the database, with no extension.</td></tr>
+<tr valign="top"><td><code>envir</code></td>
+<td>
+The environment into which objects are loaded.</td></tr>
+<tr valign="top"><td><code>filter</code></td>
+<td>
+An optional function which when called on a a character
+vector of object names returns a logical vector: only objects for
+which this is true will be loaded.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This is the workhorse function called by the package loader to load
+the code for a package from a database.  The database consists of two
+binary files, &lsquo;<span class="file"><VAR>filebase</VAR>.rdb</span>&rsquo; (the objects) and
+&lsquo;<span class="file"><VAR>filebase</VAR>.rdx</span>&rsquo; (an index).
+</p>
+<p>
+The objects are not themselves loaded into <code>envir</code>: rather
+promises are created that will load the object from the database on
+first access. (See <code><a href="delayedAssign.html">delayedAssign</a></code>.)
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Luke Tierney
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../tools/html/makeLazyLoading.html">makeLazyLoading</a></code>
+</p>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

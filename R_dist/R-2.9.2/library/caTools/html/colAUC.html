@@ -1,0 +1,237 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Column-wise Area Under ROC Curve (AUC)</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for colAUC {caTools}"><tr><td>colAUC {caTools}</td><td align="right">R Documentation</td></tr></table>
+<h2>Column-wise Area Under ROC Curve (AUC)</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Calculate Area Under the ROC Curve (AUC) for every column of a 
+matrix. Also, can be used to plot the ROC curves.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+  auc = colAUC(X, y, plotROC=FALSE, alg=c("Wilcoxon","ROC"))
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>X</code></td>
+<td>
+A matrix or data frame. Rows contain samples 
+and columns contain features/variables.</td></tr>
+<tr valign="top"><td><code>y</code></td>
+<td>
+Class labels for the <code>X</code> data samples. 
+A response vector with one label for each row/component of <code>X</code>.
+Can be either a factor, string or a numeric vector.</td></tr>
+<tr valign="top"><td><code>plotROC</code></td>
+<td>
+Plot ROC curves. Use only for small number of features. 
+If <code>TRUE</code>, will set <code>alg</code> to "ROC".</td></tr>
+<tr valign="top"><td><code>alg</code></td>
+<td>
+Algorithm to use: "ROC" integrates ROC curves, while "Wilcoxon"
+uses Wilcoxon Rank Sum Test to get the same results. Default "Wilcoxon" is
+faster. This argument is mostly provided for verification.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+AUC is a very useful measure of similarity between two classes measuring area
+under "Receiver Operating Characteristic" or ROC curve.
+In case of data with no ties all sections of ROC curve are either horizontal
+or vertical, in case of data with ties diagonal 
+sections can also occur. Area under the ROC curve is calculated using 
+<code><a href="trapz.html">trapz</a></code> function. AUC is always in between 0.5 
+(two classes are statistically identical) and 1.0 (there is a threshold value
+that can achieve a perfect separation between the classes).
+</p>
+<p>
+Area under ROC Curve (AUC) measure is very similar to Wilcoxon Rank Sum Test 
+(see <code><a href="../../stats/html/wilcox.test.html">wilcox.test</a></code>) and Mann-Whitney U Test. 
+</p>
+<p>
+There are numerous other functions for calculating AUC in other packages. 
+Unfortunately none of them had all the properties that were needed for 
+classification preprocessing, to lower the dimensionality of the data (from 
+tens of thousands to hundreds) before applying standard classification 
+algorithms. 
+</p>
+<p>
+The main properties of this code are: 
+<ul>
+<li>Ability to work with multi-dimensional data (<code>X</code> can have many 
+columns).
+<li>Ability to work with multi-class datasets (<code>y</code> can have more 
+than 2 different values).
+<li>Speed - this code was written to calculate AUC's of large number of 
+features, fast.
+<li>Returned AUC is always bigger than 0.5, which is equivalent of 
+testing for each feature <code>colAUC(x,y)</code> and <code>colAUC(-x,y)</code> and
+returning the value of the bigger one.
+</ul>
+<p>
+If those properties do not fit your problem, see "See Also" and "Examples" 
+sections for AUC 
+functions in other packages that might be a better fit for your needs.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+An output is a single matrix with the same number of columns as <code>X</code> and 
+"n choose 2" ( <i>frac{n!}{(n-2)! 2!} = n(n-1)/2</i>
+{n!/((n-2)! 2!) = n(n-1)/2} ) number of rows, 
+where n is number of unique labels in <code>y</code> list. For example, if <code>y</code> 
+contains only two unique class labels ( <code>length(unique(lab))==2</code> ) than
+output 
+matrix will  have a single row containing AUC of each column. If more than 
+two unique labels are present than AUC is calculated for every possible 
+pairing of classes ("n choose 2" of them).
+<br>
+For multi-class AUC "Total AUC" as defined by Hand &amp; Till (2001) can be 
+calculated by <code><a href="../../slam/html/sums.html">colMeans</a>(auc)</code>.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Jarek Tuszynski (SAIC) <a href="mailto:jaroslaw.w.tuszynski@saic.com">jaroslaw.w.tuszynski@saic.com</a>
+</p>
+
+
+<h3>References</h3>
+
+<ul>
+<li>Mason, S.J. and Graham, N.E. (1982) <EM>Areas beneath the relative 
+operating characteristics (ROC) and relative operating levels (ROL) 
+curves: Statistical significance and interpretation</EM>,  Q. J. R. 
+Meteorol. Soc. textbf{30} 291-303. 
+<li>Fawcett, Tom (2004) <EM>ROC Graphs: Notes and Practical 
+Considerations for Researchers</EM>, 
+<a href="http://home.comcast.net/~tom.fawcett/public_html/papers/ROC101.pdf">http://home.comcast.net/~tom.fawcett/public_html/papers/ROC101.pdf</a>
+and <a href="http://home.comcast.net/~tom.fawcett/public_html/ROCCH/">http://home.comcast.net/~tom.fawcett/public_html/ROCCH/</a>
+<li>Hand, David and Till, Robert (2001) <EM>A Simple 
+Generalization of the Area Under the ROC Curve for Multiple Class 
+Classification Problems</EM>;  Machine Learning 45(2): 171-186
+<li>See 
+<a href="http://www.medicine.mcgill.ca/epidemiology/hanley/software/">http://www.medicine.mcgill.ca/epidemiology/hanley/software/</a> 
+to find articles below: 
+<ul>
+<li>Hanley and McNeil (1982), <EM>The Meaning and Use of the Area 
+under a Receiver Operating Characteristic (ROC) Curve</EM>, 
+Radiology 143: 29-36.
+<li>Hanley and McNeil (1983), <EM>A Method of Comparing the Areas  
+under ROC curves derived from same cases</EM>, Radiology 148: 839-843.
+<li>McNeil and Hanley (1984), <EM>Statistical Approaches to the  
+Analysis of ROC curves</EM>, Medical Decision Making 4(2): 136-149.
+</ul>
+<li>See <a href="http://rocr.bioinf.mpi-sb.mpg.de/evaluation_literature.html">http://rocr.bioinf.mpi-sb.mpg.de/evaluation_literature.html</a>
+for bibliography of <span class="pkg">ROCR</span> package. 
+</ul>
+
+<h3>See Also</h3>
+
+<ul>
+<li><code><a href="../../stats/html/wilcox.test.html">wilcox.test</a></code> and <code><a href="../../stats/html/Wilcoxon.html">pwilcox</a></code>
+<li><code><a href="../../exactRankTests/html/wilcox.exact.html">wilcox.exact</a></code> from <span class="pkg">exactRankTests</span> package
+<li><code><a href="../../coin/html/wilcox_test.html">wilcox_test</a></code> from <span class="pkg">coin</span> package
+<li><code><a href="../../ROC/html/AUC.html">AUC</a></code> from <span class="pkg">ROC</span> package
+<li><code><a href="../../ROCR/html/performance.html">performance</a></code> from <span class="pkg">ROCR</span> package
+<li><code><a href="../../limma/html/auROC.html">auROC</a></code> from <span class="pkg">limma</span> package 
+<li><code><a href="../../Epi/html/ROC.html">ROC</a></code> from <span class="pkg">Epi</span> package
+<li><code><a href="../../verification/html/roc.area.html">roc.area</a></code> from <span class="pkg">verification</span> package
+<li><code><a href="../../Hmisc/html/rcorr.cens.html">rcorr.cens</a></code> from <span class="pkg">Hmisc</span> package
+</ul>
+
+<h3>Examples</h3>
+
+<pre>
+# Load MASS library with "cats" data set that have following columns: sex, body
+# weight, hart weight. Calculate how good weights are in predicting sex of cats.
+# 2 classes; 2 features; 144 samples
+library(MASS); data(cats);
+colAUC(cats[,2:3], cats[,1], plotROC=TRUE) 
+
+# Load rpart library with "kyphosis" data set that records if kyphosis
+# deformation was present after corrective surgery. Calculate how good age, 
+# number and position of vertebrae are in predicting successful operation. 
+# 2 classes; 3 features; 81 samples
+library(rpart); data(kyphosis);
+colAUC(kyphosis[,2:4], kyphosis[,1], plotROC=TRUE)
+
+# Example of 3-class 4-feature 150-sample iris data
+data(iris)
+colAUC(iris[,-5], iris[,5], plotROC=TRUE)
+cat("Total AUC: \n"); 
+colMeans(colAUC(iris[,-5], iris[,5]))
+
+# Test plots in case of data without column names
+Iris = as.matrix(iris[,-5])
+dim(Iris) = c(600,1)
+dim(Iris) = c(150,4)
+colAUC(Iris, iris[,5], plotROC=TRUE)
+
+# Compare calAUC with other functions designed for similar purpose
+auc = matrix(NA,12,3)
+rownames(auc) = c("colAUC(alg='ROC')", "colAUC(alg='Wilcox')", "sum(rank)",
+    "wilcox.test", "wilcox_test", "wilcox.exact", "roc.area", "AUC", 
+    "performance", "ROC", "auROC", "rcorr.cens")
+colnames(auc) = c("AUC(x)", "AUC(-x)", "AUC(x+noise)")
+X = cbind(cats[,2], -cats[,2], cats[,2]+rnorm(nrow(cats)) )
+y = ifelse(cats[,1]=='F',0,1)
+for (i in 1:3) {
+  x = X[,i]
+  x1 = x[y==1]; n1 = length(x1);                 # prepare input data ...
+  x2 = x[y==0]; n2 = length(x2);                 # ... into required format
+  data = data.frame(x=x,y=factor(y))
+  auc[1,i] = colAUC(x, y, alg="ROC") 
+  auc[2,i] = colAUC(x, y, alg="Wilcox")
+  r = rank(c(x1,x2))
+  auc[3,i] = (sum(r[1:n1]) - n1*(n1+1)/2) / (n1*n2)
+  auc[4,i] = wilcox.test(x1, x2, exact=0)$statistic / (n1*n2) 
+  ## Not run: 
+  if (require("coin"))
+    auc[5,i] = statistic(wilcox_test(x~y, data=data)) / (n1*n2) 
+  if (require("exactRankTests"))  
+    auc[6,i] = wilcox.exact(x, y, exact=0)$statistic / (n1*n2) 
+  if (require("verification"))
+    auc[7,i] = roc.area(y, x)$A.tilda 
+  if (require("ROC")) 
+    auc[8,i] = AUC(rocdemo.sca(y, x, dxrule.sca))    
+  if (require("ROCR")) 
+    auc[9,i] = performance(prediction( x, y),"auc")@y.values[[1]]
+  if (require("Epi"))   auc[10,i] = ROC(x,y,grid=0)$AUC
+  if (require("limma")) auc[11,i] = auROC(y, x)
+  if (require("Hmisc")) auc[12,i] = rcorr.cens(x, y)[1]
+  
+## End(Not run)
+}
+print(auc)
+stopifnot(auc[1, ]==auc[2, ])   # results of 2 alg's in colAUC must be the same
+stopifnot(auc[1,1]==auc[3,1])   # compare with wilcox.test results
+
+# time trials
+x = matrix(runif(100*1000),100,1000)
+y = (runif(100)&gt;0.5)
+system.time(colAUC(x,y,alg="ROC"   ))
+system.time(colAUC(x,y,alg="Wilcox"))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>caTools</em> version 1.9 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

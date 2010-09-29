@@ -1,0 +1,534 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Enhanced Heat Map</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for heatmap.2 {gplots}"><tr><td>heatmap.2 {gplots}</td><td align="right">R Documentation</td></tr></table>
+<h2>Enhanced Heat Map</h2>
+
+
+<h3>Description</h3>
+
+<p>
+A heat map is a false color image (basically
+<code><a href="../../xps/html/image-methods.html">image</a>(t(x))</code>) with a dendrogram added to the left side 
+and/or to the top.  Typically, reordering of the rows and columns
+according to some set of values (row or column means) within the
+restrictions imposed by the dendrogram is carried out.
+</p>
+<p>
+This heatmap provides a number of extensions to the standard R
+<code><a href="../../stats/html/heatmap.html">heatmap</a></code> function.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+heatmap.2 (x,
+
+           # dendrogram control
+           Rowv = TRUE,
+           Colv=if(symm)"Rowv" else TRUE,
+           distfun = dist,
+           hclustfun = hclust,
+           dendrogram = c("both","row","column","none"),
+           symm = FALSE,
+
+           # data scaling
+           scale = c("none","row", "column"),
+           na.rm=TRUE,
+
+           # image plot
+           revC = identical(Colv, "Rowv"),
+           add.expr,
+
+           # mapping data to colors
+           breaks,
+           symbreaks=min(x &lt; 0, na.rm=TRUE) || scale!="none",
+
+           # colors
+           col="heat.colors",
+
+           # block sepration
+           colsep,
+           rowsep,
+           sepcolor="white",
+           sepwidth=c(0.05,0.05),
+
+           # cell labeling
+           cellnote,
+           notecex=1.0,
+           notecol="cyan",
+           na.color=par("bg"),
+
+           # level trace
+           trace=c("column","row","both","none"),
+           tracecol="cyan",
+           hline=median(breaks),
+           vline=median(breaks),
+           linecol=tracecol,
+
+           # Row/Column Labeling
+           margins = c(5, 5),
+           ColSideColors,
+           RowSideColors,
+           cexRow = 0.2 + 1/log10(nr),
+           cexCol = 0.2 + 1/log10(nc),
+           labRow = NULL,
+           labCol = NULL,
+
+           # color key + density info
+           key = TRUE,
+           keysize = 1.5,
+           density.info=c("histogram","density","none"),
+           denscol=tracecol,
+           symkey = min(x &lt; 0, na.rm=TRUE) || symbreaks,
+           densadj = 0.25,
+
+           # plot labels
+           main = NULL,
+           xlab = NULL,
+           ylab = NULL,
+
+           # plot layout
+           lmat = NULL,
+           lhei = NULL,
+           lwid = NULL,
+
+           # extras
+           ...
+           )
+           </pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+numeric matrix of the values to be plotted. </td></tr>
+<tr valign="top"><td><code>Rowv</code></td>
+<td>
+determines if and how the <EM>row</EM> dendrogram should be
+reordered.  By default, it is TRUE, which implies dendrogram is
+computed and reordered based on row means. If NULL or FALSE, then no
+dendrogram is computed and no reordering is done. If a
+<code><a href="../../stats/html/dendrogram.html">dendrogram</a></code>, then it is used "as-is", ie
+without any reordering. If a vector of integers, then dendrogram is
+computed and reordered based on the order of the vector.</td></tr>
+<tr valign="top"><td><code>Colv</code></td>
+<td>
+determines if and how the <EM>column</EM> dendrogram should be
+reordered.  Has the options as the <code>Rowv</code> argument above and
+<EM>additionally</EM> when <code>x</code> is a square matrix, <code>Colv =
+      "Rowv"</code> means that columns should be treated identically to the rows.</td></tr>
+<tr valign="top"><td><code>distfun</code></td>
+<td>
+function used to compute the distance (dissimilarity)
+between both rows and columns.  Defaults to <code><a href="../../stats/html/dist.html">dist</a></code>.</td></tr>
+<tr valign="top"><td><code>hclustfun</code></td>
+<td>
+function used to compute the hierarchical clustering
+when <code>Rowv</code> or <code>Colv</code> are not dendrograms.  Defaults to
+<code><a href="../../stats/html/hclust.html">hclust</a></code>.</td></tr>
+<tr valign="top"><td><code>dendrogram</code></td>
+<td>
+character string indicating whether to draw 'none', 
+'row', 'column' or 'both' dendrograms.  Defaults to 'both'. However,
+if Rowv (or Colv) is FALSE or NULL and dendrogram is 'both', then a
+warning is issued and Rowv (or Colv) arguments are honoured.</td></tr>
+<tr valign="top"><td><code>symm</code></td>
+<td>
+logical indicating if <code>x</code> should be treated
+<B>symm</B>etrically; can only be true when <code>x</code> is a square matrix.</td></tr>
+<tr valign="top"><td><code>scale</code></td>
+<td>
+character indicating if the values should be centered and
+scaled in either the row direction or the column direction, or
+none.  The default is <code>"row"</code> if <code>symm</code> false, and
+<code>"none"</code> otherwise.</td></tr>
+<tr valign="top"><td><code>na.rm</code></td>
+<td>
+logical indicating whether <code>NA</code>'s should be removed.</td></tr>
+<tr valign="top"><td><code>revC</code></td>
+<td>
+logical indicating if the column order should be
+<code><a href="../../timeDate/html/rev.html">rev</a></code>ersed for plotting, such that e.g., for the
+symmetric case, the symmetry axis is as usual.</td></tr>
+<tr valign="top"><td><code>add.expr</code></td>
+<td>
+expression that will be evaluated after the call to
+<code>image</code>.  Can be used to add components to the plot.</td></tr>
+<tr valign="top"><td><code>breaks</code></td>
+<td>
+(optional) Either a numeric vector indicating the
+splitting points for binning <code>x</code> into colors, or a integer
+number of break points to be used, in which case the break points
+will be spaced equally between <code>min(x)</code> and <code>max(x)</code>.</td></tr>
+<tr valign="top"><td><code>symbreaks</code></td>
+<td>
+Boolean indicating whether breaks should be
+made symmetric about 0. Defaults to <code>TRUE</code> if the data includes
+negative values, and to <code>FALSE</code> otherwise.</td></tr>
+<tr valign="top"><td><code>col</code></td>
+<td>
+colors used for the image. Defaults to heat colors
+(<code>heat.colors</code>).</td></tr>
+<tr valign="top"><td><code>colsep, rowsep, sepcolor</code></td>
+<td>
+(optional) vector of integers indicating
+which columns or rows should be separated from the preceding columns
+or rows by a narrow space of color <code>sepcolor</code>.</td></tr>
+<tr valign="top"><td><code>sepwidth</code></td>
+<td>
+(optional)  Vector of length 2 giving the width (colsep) or height (rowsep) the separator box
+drawn by colsep and rowsep as a function of the width (colsep) or
+height (rowsep) of a cell. Defaults to <code>c(0.05, 0.05)</code></td></tr>
+<tr valign="top"><td><code>cellnote</code></td>
+<td>
+(optional) matrix of character strings which will be
+placed within each color cell, e.g. p-value symbols.</td></tr>
+<tr valign="top"><td><code>notecex</code></td>
+<td>
+(optional) numeric scaling factor for <code>cellnote</code>
+items.</td></tr>
+<tr valign="top"><td><code>notecol</code></td>
+<td>
+(optional) character string specifying the color for
+<code>cellnote</code> text.  Defaults to "green".</td></tr>
+<tr valign="top"><td><code>na.color</code></td>
+<td>
+Color to use for missing value (<code>NA</code>). Defaults
+to the plot background color.</td></tr>
+<tr valign="top"><td><code>trace</code></td>
+<td>
+character string indicating whether a solid "trace" line
+should be drawn across 'row's or down 'column's, 'both' or 'none'.
+The distance of the line from the center of each color-cell is
+proportional to the size of the measurement. Defaults to 'column'.</td></tr>
+<tr valign="top"><td><code>tracecol</code></td>
+<td>
+character string giving the color for "trace"
+line. Defaults to "cyan".</td></tr>
+<tr valign="top"><td><code>hline, vline, linecol</code></td>
+<td>
+Vector of values within cells where a
+horizontal or vertical dotted line should be drawn.  The color of
+the line is controlled by <code>linecol</code>.  Horizontal  lines are only
+plotted if <code>trace</code> is 'row' or 'both'.  Vertical lines are only
+drawn if <code>trace</code> 'column' or 'both'.   <code>hline</code> and
+<code>vline</code> default to the median of the breaks, <code>linecol</code>
+defaults to the value of <code>tracecol</code>.</td></tr>
+<tr valign="top"><td><code>margins</code></td>
+<td>
+numeric vector of length 2 containing the margins
+(see <code><a href="../../graphics/html/par.html">par</a>(mar= *)</code>) for column and row names, respectively.</td></tr>
+<tr valign="top"><td><code>ColSideColors</code></td>
+<td>
+(optional) character vector of length <code>ncol(x)</code>
+containing the color names for a horizontal side bar that may be used to
+annotate the columns of <code>x</code>.</td></tr>
+<tr valign="top"><td><code>RowSideColors</code></td>
+<td>
+(optional) character vector of length <code>nrow(x)</code>
+containing the color names for a vertical side bar that may be used to
+annotate the rows of <code>x</code>.</td></tr>
+<tr valign="top"><td><code>cexRow, cexCol</code></td>
+<td>
+positive numbers, used as <code>cex.axis</code> in
+for the row or column axis labeling.  The defaults currently only
+use number of rows or columns, respectively.</td></tr>
+<tr valign="top"><td><code>labRow, labCol</code></td>
+<td>
+character vectors with row and column labels to
+use; these default to <code>rownames(x)</code> or <code>colnames(x)</code>, 
+respectively.</td></tr>
+<tr valign="top"><td><code>key</code></td>
+<td>
+logical indicating whether a color-key should be shown.</td></tr>
+<tr valign="top"><td><code>keysize</code></td>
+<td>
+numeric value indicating the size of the key</td></tr>
+<tr valign="top"><td><code>density.info</code></td>
+<td>
+character string indicating whether to superimpose
+a 'histogram', a 'density' plot, or no plot ('none') on the
+color-key.</td></tr>
+<tr valign="top"><td><code>denscol</code></td>
+<td>
+character string giving the color for the density
+display specified by <code>density.info</code>, defaults to the same value
+as <code>tracecol</code>.</td></tr>
+<tr valign="top"><td><code>symkey</code></td>
+<td>
+Boolean indicating whether the color key should be
+made symmetric about 0. Defaults to <code>TRUE</code> if the data includes
+negative values, and to <code>FALSE</code> otherwise.</td></tr>
+<tr valign="top"><td><code>densadj</code></td>
+<td>
+Numeric scaling value for tuning the kernel width when
+a density plot is drawn on the color key.  (See the <code>adjust</code>
+parameter for the <code>density</code> function for details.)  Defaults to
+0.25.</td></tr>
+<tr valign="top"><td><code>main, xlab, ylab</code></td>
+<td>
+main, x- and y-axis titles; defaults to none.</td></tr>
+<tr valign="top"><td><code>lmat, lhei, lwid</code></td>
+<td>
+visual layout: position matrix, column height,
+column width.  See below for details</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+additional arguments passed on to <code><a href="../../xps/html/image-methods.html">image</a></code> </td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+If either <code>Rowv</code> or <code>Colv</code> are dendrograms they are honored
+(and not reordered).  Otherwise, dendrograms are computed as
+<code>dd &lt;- as.dendrogram(hclustfun(distfun(X)))</code> where <code>X</code> is
+either <code>x</code> or <code>t(x)</code>.<br>
+</p>
+<p>
+If either is a vector (of &ldquo;weights&rdquo;) then the appropriate
+dendrogram is reordered according to the supplied values subject to
+the constraints imposed by the dendrogram, by <code><a href="../../stats/html/reorder.factor.html">reorder</a>(dd, 
+    Rowv)</code>, in the row case.
+If either is missing, as by default, then the ordering of the
+corresponding dendrogram is by the mean value of the rows/columns, 
+i.e., in the case of rows, <code>Rowv &lt;- rowMeans(x, na.rm=na.rm)</code>.
+If either is <code><a href="../../base/html/NULL.html">NULL</a></code>, <EM>no reordering</EM> will be done for
+the corresponding side.
+</p>
+<p>
+If <code>scale="row"</code> the rows are scaled to have mean
+zero and standard deviation one.  There is some empirical evidence
+from genomic plotting that this is useful.
+</p>
+<p>
+The default colors range from red to white (<code>heat.colors</code>) and
+are not pretty.  Consider using enhancements such
+as the <span class="pkg">RColorBrewer</span> package, 
+<a href="http://cran.r-project.org/src/contrib/PACKAGES.html#RColorBrewer">http://cran.r-project.org/src/contrib/PACKAGES.html#RColorBrewer</a>
+to select better colors.
+</p>
+<p>
+By default four components will be displayed in the plot.  At the top
+left is the color key, top right is the column dendogram, bottom left
+is the row dendogram, bottom right is the image plot.  When
+RowSideColor or ColSideColor are provided, an additional row or column
+is inserted in the appropriate location.   This layout can be
+overriden by specifiying appropriate values for <code>lmat</code>,
+<code>lwid</code>, and <code>lhei</code>.  <code>lmat</code> controls the relative
+postition of each element, while <code>lwid</code> controls the column
+width, and <code>lhei</code> controls the row height. See the help page for
+<code><a href="../../graphics/html/layout.html">layout</a></code> for details on how to use these
+arguments.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+Invisibly, a list with components
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>rowInd</code></td>
+<td>
+row index permutation vector as returned by
+<code><a href="../../stats/html/order.dendrogram.html">order.dendrogram</a></code>.</td></tr>
+<tr valign="top"><td><code>colInd</code></td>
+<td>
+column index permutation vector.</td></tr>
+<tr valign="top"><td><code>call</code></td>
+<td>
+the matched call</td></tr>
+<tr valign="top"><td><code>rowMeans, rowSDs</code></td>
+<td>
+mean and standard deviation of each row: only
+present if <code>scale="row"</code></td></tr>
+<tr valign="top"><td><code>colMeans, colSDs</code></td>
+<td>
+mean and standard deviation of each column: only
+present if <code>scale="column"</code></td></tr>
+<tr valign="top"><td><code>carpet</code></td>
+<td>
+reordered and scaled 'x' values used generate the main
+'carpet'</td></tr>
+<tr valign="top"><td><code>rowDendrogram</code></td>
+<td>
+row dendrogram, if present</td></tr>
+<tr valign="top"><td><code>colDendrogram</code></td>
+<td>
+column dendrogram, if present</td></tr>
+<tr valign="top"><td><code>breaks</code></td>
+<td>
+values used for color break points</td></tr>
+<tr valign="top"><td><code>col</code></td>
+<td>
+colors used</td></tr>
+<tr valign="top"><td><code>vline</code></td>
+<td>
+center-line value used for column trace, present only if
+<code>trace="both"</code> or <code>trace="column"</code> </td></tr>
+<tr valign="top"><td><code>hline</code></td>
+<td>
+center-line value used for row trace, present only if
+<code>trace="both"</code> or <code>trace="row"</code> </td></tr>
+<tr valign="top"><td><code>colorTable</code></td>
+<td>
+A three-column data frame providing the lower and upper
+bound and color for each bin</td></tr>
+</table>
+
+<h3>Note</h3>
+
+<p>
+The original rows and columns are reordered <EM>in any case</EM> to
+match the dendrogram, e.g., the rows by
+<code><a href="../../stats/html/order.dendrogram.html">order.dendrogram</a>(Rowv)</code> where <code>Rowv</code> is the
+(possibly <code><a href="../../stats/html/reorder.factor.html">reorder</a>()</code>ed) row dendrogram.
+</p>
+<p>
+<code>heatmap.2()</code> uses <code><a href="../../igraph/html/layout.html">layout</a></code> and draws the
+<code><a href="../../xps/html/image-methods.html">image</a></code> in the lower right corner of a 2x2 layout.
+Consequentially, it can <B>not</B> be used in a multi column/row
+layout, i.e., when <code><a href="../../graphics/html/par.html">par</a>(mfrow= *)</code> or <code>(mfcol= *)</code>
+has been called.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Andy Liaw, original; R. Gentleman, M. Maechler, W. Huber, 
+G. Warnes, revisions.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../xps/html/image-methods.html">image</a></code>, <code><a href="../../stats/html/hclust.html">hclust</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+ library(gplots)
+ data(mtcars)
+ x  &lt;- as.matrix(mtcars)
+ rc &lt;- rainbow(nrow(x), start=0, end=.3)
+ cc &lt;- rainbow(ncol(x), start=0, end=.3)
+
+ ##
+ ## demonstrate the effect of row and column dendogram options
+ ##
+ heatmap.2(x)  ## default - dendrogram plotted and reordering done. 
+ heatmap.2(x, dendrogram="none") ##  no dendrogram plotted, but reordering done.
+ heatmap.2(x, dendrogram="row") ## row dendrogram plotted and row reordering done.
+ heatmap.2(x, dendrogram="col") ## col dendrogram plotted and col reordering done.
+
+ heatmap.2(x, keysize=2)  ## default - dendrogram plotted and reordering done.
+
+ heatmap.2(x, Rowv=FALSE, dendrogram="both") ## generate warning!
+ heatmap.2(x, Rowv=NULL, dendrogram="both")  ## generate warning!
+ heatmap.2(x, Colv=FALSE, dendrogram="both") ## generate warning!
+
+ ## 
+ ## Show effect of z-score scaling within columns, blue-red color scale
+ ##
+ hv &lt;- heatmap.2(x, col=bluered, scale="column", tracecol="#303030")
+
+ ###
+ ## Look at the return values
+ ###
+ names(hv)
+
+ ## Show the mapping of z-score values to color bins
+ hv$colorTable
+
+ ## Extract the range associated with white
+ hv$colorTable[hv$colorTable[,"color"]=="#FFFFFF",]
+
+ ## Determine the original data values that map to white
+ whiteBin &lt;- unlist(hv$colorTable[hv$colorTable[,"color"]=="#FFFFFF",1:2])
+ rbind(whiteBin[1] * hv$colSDs + hv$colMeans,
+       whiteBin[2] * hv$colSDs + hv$colMeans )
+ ##
+ ## A more decorative heatmap, with z-score scaling along columns
+ ##
+ hv &lt;- heatmap.2(x, col=cm.colors(255), scale="column", 
+               RowSideColors=rc, ColSideColors=cc, margin=c(5, 10), 
+               xlab="specification variables", ylab= "Car Models", 
+               main="heatmap(&lt;Mtcars data&gt;, ..., scale=\"column\")", 
+               tracecol="green", density="density")
+ ## Note that the breakpoints are now symmetric about 0
+
+ 
+
+
+
+ data(attitude)
+ round(Ca &lt;- cor(attitude), 2)
+ symnum(Ca) # simple graphic
+
+ # with reorder
+ heatmap.2(Ca,           symm=TRUE, margin=c(6, 6), trace="none" )
+
+ # without reorder
+ heatmap.2(Ca, Rowv=FALSE, symm=TRUE, margin=c(6, 6), trace="none" )
+
+ ## Place the color key below the image plot
+ heatmap.2(x, lmat=rbind( c(0, 3), c(2,1), c(0,4) ), lhei=c(1.5, 4, 2 ) )
+
+ ## Place the color key to the top right of the image plot
+ heatmap.2(x, lmat=rbind( c(0, 3, 4), c(2,1,0 ) ), lwid=c(1.5, 4, 2 ) )
+
+ ## For variable clustering, rather use distance based on cor():
+ data(USJudgeRatings)
+ symnum( cU &lt;- cor(USJudgeRatings) )
+
+ hU &lt;- heatmap.2(cU, Rowv=FALSE, symm=TRUE, col=topo.colors(16), 
+              distfun=function(c) as.dist(1 - c), trace="none")
+
+ ## The Correlation matrix with same reordering:
+ hM &lt;- format(round(cU, 2))
+ hM
+
+ # now with the correlation matrix on the plot itself
+
+ heatmap.2(cU, Rowv=FALSE, symm=TRUE, col=rev(heat.colors(16)), 
+             distfun=function(c) as.dist(1 - c), trace="none", 
+             cellnote=hM)
+
+ ## genechip data examples
+ ## Not run: 
+ library(affy)
+ data(SpikeIn)
+ pms &lt;- SpikeIn@pm
+
+ # just the data, scaled across rows
+ heatmap.2(pms, col=rev(heat.colors(16)), main="SpikeIn@pm", 
+              xlab="Relative Concentration", ylab="Probeset", 
+              scale="row")
+
+ # fold change vs "12.50" sample
+ data &lt;- pms / pms[, "12.50"]
+ data &lt;- ifelse(data&gt;1, data, -1/data)
+ heatmap.2(data, breaks=16, col=redgreen, tracecol="blue", 
+               main="SpikeIn@pm Fold Changes\nrelative to 12.50 sample", 
+               xlab="Relative Concentration", ylab="Probeset")
+ ## End(Not run)
+
+</pre>
+
+
+
+<hr><div align="center">[Package <em>gplots</em> version 2.7.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

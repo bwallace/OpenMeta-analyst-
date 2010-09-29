@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: FINCO Feature Selection Algorithm</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for finco {dprep}"><tr><td>finco {dprep}</td><td align="right">R Documentation</td></tr></table>
+<h2>FINCO Feature Selection Algorithm</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This function selects features using the FINCO algorithm. The dataset
+must contain only discretized values.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+finco(data,level)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>data</code></td>
+<td>
+Name of the dataset containing the discretized values</td></tr>
+<tr valign="top"><td><code>level</code></td>
+<td>
+Minimum inconsistency level</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The level value must be greater than the inconsistency of the whole dataset, which first
+must be discretized. The function inconsist included in this library computes inconsistencies.
+A small value for level yields a greater number of selected features.
+</p>
+
+
+<h3>Value</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>varselec</code></td>
+<td>
+Index of selected features</td></tr>
+<tr valign="top"><td><code>inconsis</code></td>
+<td>
+Inconsistency rates of the selected features</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Edgar Acuna
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Acuna, E , (2003) A comparison of filters and wrappers for feature selection in supervised classification.
+Proceedings of  the Interface 2003 Computing Science and Statistics. Vol 34.
+</p>
+<p>
+Acuna, E., Coaquira, F. and Gonzalez, M. (2003). A comparison of feature selection 
+procedures for classifiers based on kernel density estimation. Proc. of the Int. Conf. on Computer, 
+Communication and Control technologies, CCCT03. VolI. p. 468-472. Orlando, Florida.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="inconsist.html">inconsist</a></code>,<code><a href="lvf.html">lvf</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+#---- Feature Selection with FINCO
+data(my.iris)
+iris.discew=disc.ew(my.iris,1:6)
+inconsist(iris.discew)
+finco(iris.discew,0.05)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>dprep</em> version 2.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

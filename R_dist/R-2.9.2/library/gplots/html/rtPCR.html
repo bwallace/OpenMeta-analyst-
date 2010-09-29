@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Teratogenesis rtPCR data</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for rtPCR {gplots}"><tr><td>rtPCR {gplots}</td><td align="right">R Documentation</td></tr></table>
+<h2>Teratogenesis rtPCR data</h2>
+
+
+<h3>Description</h3>
+
+<p>
+rtPCR data for experiments investigating a variety of markers for
+characterizing teratogenicity.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>data(rtPCR)</pre>
+
+
+<h3>Format</h3>
+
+<p>
+A data frame with 1672 observations on the following 21 variables.
+<dl>
+<dt>PlateID</dt><dd>a factor with levels <code>A0027002</code> through
+<code>A0054019</code></dd>
+<dt>Test.Substance</dt><dd>a factor with levels <code>Compound A</code> through
+<code>Compound H</code></dd>
+<dt>Teratogenicity.in.vivo</dt><dd>a factor with levels <code>Non</code>
+<code>Strong</code> <code>Weak / Moderate</code></dd>
+<dt>Sample</dt><dd>a factor with levels <code>Sample 1</code> - <code>Sample 152</code></dd>
+<dt>Rep..</dt><dd>a factor with levels <code>Rep 1</code> - <code>Rep 21</code></dd>
+<dt>Label</dt><dd>a factor with levels <code>Ctrl</code>, <code>Neg. Ctrl</code>
+<code>P1</code> - <code>P9</code>, <code>No Vehicle Ctrl</code>, and <code>Pos. Ctrl</code></dd>
+<dt>Conc..ug.ml.</dt><dd>a numeric vector</dd>
+<dt>Detector</dt><dd>a factor with levels <code>ProbeType 1</code> -
+<code>ProbeType 17</code></dd>
+<dt>Avg.delta.Ct</dt><dd>a numeric vector</dd>
+<dt>delta.Ct.SD</dt><dd>a numeric vector</dd>
+<dt>delta.delta.Ct</dt><dd>a numeric vector</dd>
+<dt>RQ</dt><dd>a numeric vector</dd>
+<dt>X..RQ</dt><dd>a numeric vector</dd>
+<dt>X100..Custom..</dt><dd>a numeric vector</dd>
+<dt>X100...Custom..</dt><dd>a numeric vector</dd>
+<dt>Custom..</dt><dd>a numeric vector</dd>
+<dt>Custom...1</dt><dd>a numeric vector</dd>
+<dt>RQ.Min</dt><dd>a numeric vector</dd>
+<dt>RQ.Max</dt><dd>a numeric vector</dd>
+<dt>Threshold</dt><dd>a numeric vector</dd>
+</dl>
+
+<h3>Details</h3>
+
+<p>
+TBA
+</p>
+
+
+<h3>Source</h3>
+
+<p>
+Anonymized data.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(rtPCR)
+
+# same scale
+overplot( RQ ~ Conc..ug.ml. | Test.Substance,
+         data=rtPCR,
+         subset=Detector=="ProbeType 7" &amp; Conc..ug.ml. &gt; 0,
+         same.scale=TRUE,
+         log="xy",
+         f=3/4,
+         main="Detector=ProbeType 7",
+         xlab="Concentration (ug/ml)",
+         ylab="Relative Gene Quantification"
+         )
+
+# different scales, but force lower limit to 0.01 
+overplot( RQ ~ Conc..ug.ml. | Test.Substance,
+         data=rtPCR,
+         subset=Detector=="ProbeType 7" &amp; Conc..ug.ml. &gt; 0,
+         log="xy",
+         f=3/4,
+         main="Detector=ProbeType 7",
+         xlab="Concentration (ug/ml)",
+         ylab="Relative Gene Quantification",
+         min.y=0.01
+         )
+</pre>
+
+
+
+<hr><div align="center">[Package <em>gplots</em> version 2.7.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

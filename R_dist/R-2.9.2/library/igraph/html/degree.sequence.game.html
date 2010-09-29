@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Generate random graphs with a given degree sequence</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for degree.sequence.game {igraph}"><tr><td>degree.sequence.game {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Generate random graphs with a given degree sequence</h2>
+
+
+<h3>Description</h3>
+
+<p>
+It is often useful to create a graph with given vertex
+degrees. This is exactly what <code>degree.sequence.game</code> does.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+degree.sequence.game(out.deg, in.deg = numeric(0),
+     method = c("simple", "vl"), ...) 
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>out.deg</code></td>
+<td>
+Numeric vector, the sequence of degrees (for undirected
+graphs) or out-degrees (for directed graphs). For undirected graphs
+its sum should be even. For directed graphs its sum should be the same
+as the sum of <code>in.deg</code>.</td></tr>
+<tr valign="top"><td><code>in.deg</code></td>
+<td>
+For directed graph, the in-degree sequence.</td></tr>
+<tr valign="top"><td><code>method</code></td>
+<td>
+Character, the method for generating the graph. Right
+now the &ldquo;simple&rdquo; and &ldquo;vl&rdquo; methods are implemented.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+Additional arguments, these are used as graph
+attributes.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The &ldquo;simple&rdquo; method connects the out-stubs of the
+edges (undirected graphs) or the out-stubs and in-stubs
+(directed graphs) together. This way loop edges and also multiple
+edges may be generated.
+</p>
+<p>
+This method is not adequate if one needs to
+generate simple graphs with a given degree sequence. The multiple and
+loop edges can be deleted, but then the degree sequence is distorted
+and there is nothing to ensure that the graphs are sampled uniformly.
+</p>
+<p>
+THe &ldquo;vl&rdquo; method is a more sophisticated generator. The
+algorithm and the implementation was done by Fabien Viger and Matthieu
+Latapy. This generator always generates undirected, connected simple
+graphs, it is an error to pass the <code>in.deg</code> argument to it.
+The algorithm relies on first creating an initial (possibly
+unconnected) simple undirected graph with the given degree sequence
+(if this is possible at all). Then some rewiring is done to make the
+graph connected. Finally a Monte-Carlo algorithm is used to randomize
+the graph. The &ldquo;vl&rdquo; samples from the undirected, connected
+simple graphs unformly. See
+<a href="http://www-rp.lip6.fr/~latapy/FV/generation.html">http://www-rp.lip6.fr/~latapy/FV/generation.html</a> for details.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+The new graph object.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="erdos.renyi.game.html">erdos.renyi.game</a></code>, <code><a href="ba.game.html">barabasi.game</a></code>,
+<code><a href="simplify.html">simplify</a></code> to get rid of the multiple and/or loops edges.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## The simple generator
+g &lt;- degree.sequence.game(rep(2,100))
+degree(g)
+is.simple(g)   # sometimes TRUE, but can be FALSE
+g2 &lt;- degree.sequence.game(1:10, 10:1)
+degree(g2, mode="out")
+degree(g2, mode="in")
+
+## The vl generator
+g3 &lt;- degree.sequence.game(rep(2,100), method="vl")
+degree(g3)
+is.simple(g3)  # always TRUE
+
+## Exponential degree distribution
+## Note, that we correct the degree sequence if its sum is odd
+degs &lt;- sample(1:100, 100, replace=TRUE, prob=exp(-0.5*(1:100)))
+if (sum(degs) %% 2 != 0) { degs[1] &lt;- degs[1] + 1 }
+g4 &lt;- degree.sequence.game(degs, method="vl")
+all(degree(g4) == degs)
+
+## Power-law degree distribution
+## Note, that we correct the degree sequence if its sum is odd
+degs &lt;- sample(1:100, 100, replace=TRUE, prob=(1:100)^-2)
+if (sum(degs) %% 2 != 0) { degs[1] &lt;- degs[1] + 1 }
+g5 &lt;- degree.sequence.game(degs, method="vl")
+all(degree(g5) == degs)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

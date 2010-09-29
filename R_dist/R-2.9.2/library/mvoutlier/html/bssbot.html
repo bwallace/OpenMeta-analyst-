@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Bottom Layer of the BSS Data</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for bssbot {mvoutlier}"><tr><td>bssbot {mvoutlier}</td><td align="right">R Documentation</td></tr></table>
+<h2>Bottom Layer of the BSS Data</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The BSS data were collected in agrigultural soils from Northern
+Europe. from an area of about 1,800,000 km2.
+769 samples on an iregular grid were taken in two different
+layers, the top layer (0-20cm) and the bottom layer.
+This dataset contains the bottom layer of the BSS data.
+It has 46 variables, including x and y coordinates.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>data(bssbot)</pre>
+
+
+<h3>Format</h3>
+
+<p>
+A data frame with 768 observations on the following 46 variables.
+<dl>
+<dt>ID</dt><dd>a numeric vector</dd>
+<dt>CNo</dt><dd>a numeric vector</dd>
+<dt>XCOO</dt><dd>x coordinates: a numeric vector</dd>
+<dt>YCOO</dt><dd>y coordinates: a numeric vector</dd>
+<dt>SiO2_B</dt><dd>a numeric vector</dd>
+<dt>TiO2_B</dt><dd>a numeric vector</dd>
+<dt>Al2O3_B</dt><dd>a numeric vector</dd>
+<dt>Fe2O3_B</dt><dd>a numeric vector</dd>
+<dt>MnO_B</dt><dd>a numeric vector</dd>
+<dt>MgO_B</dt><dd>a numeric vector</dd>
+<dt>CaO_B</dt><dd>a numeric vector</dd>
+<dt>Na2O_B</dt><dd>a numeric vector</dd>
+<dt>K2O_B</dt><dd>a numeric vector</dd>
+<dt>P2O5_B</dt><dd>a numeric vector</dd>
+<dt>SO3_B</dt><dd>a numeric vector</dd>
+<dt>Cl_B</dt><dd>a numeric vector</dd>
+<dt>F_B</dt><dd>a numeric vector</dd>
+<dt>LOI_B</dt><dd>a numeric vector</dd>
+<dt>As_B</dt><dd>a numeric vector</dd>
+<dt>Ba_B</dt><dd>a numeric vector</dd>
+<dt>Bi_B</dt><dd>a numeric vector</dd>
+<dt>Ce_B</dt><dd>a numeric vector</dd>
+<dt>Co_B</dt><dd>a numeric vector</dd>
+<dt>Cr_B</dt><dd>a numeric vector</dd>
+<dt>Cs_B</dt><dd>a numeric vector</dd>
+<dt>Cu_B</dt><dd>a numeric vector</dd>
+<dt>Ga_B</dt><dd>a numeric vector</dd>
+<dt>Hf_B</dt><dd>a numeric vector</dd>
+<dt>La_B</dt><dd>a numeric vector</dd>
+<dt>Mo_B</dt><dd>a numeric vector</dd>
+<dt>Nb_B</dt><dd>a numeric vector</dd>
+<dt>Ni_B</dt><dd>a numeric vector</dd>
+<dt>Pb_B</dt><dd>a numeric vector</dd>
+<dt>Rb_B</dt><dd>a numeric vector</dd>
+<dt>Sb_B</dt><dd>a numeric vector</dd>
+<dt>Sc_B</dt><dd>a numeric vector</dd>
+<dt>Sn_B</dt><dd>a numeric vector</dd>
+<dt>Sr_B</dt><dd>a numeric vector</dd>
+<dt>Ta_B</dt><dd>a numeric vector</dd>
+<dt>Th_B</dt><dd>a numeric vector</dd>
+<dt>U_B</dt><dd>a numeric vector</dd>
+<dt>V_B</dt><dd>a numeric vector</dd>
+<dt>W_B</dt><dd>a numeric vector</dd>
+<dt>Y_B</dt><dd>a numeric vector</dd>
+<dt>Zn_B</dt><dd>a numeric vector</dd>
+<dt>Zr_B</dt><dd>a numeric vector</dd>
+</dl>
+
+<h3>Source</h3>
+
+<p>
+BSS Project in Northern Europe
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Reimann C, Siewers U, Tarvainen T, Bityukova L, Eriksson J, Gilucis A,
+Gregorauskiene V, Lukashev VK, Matinian NN, Pasieczna A.
+Agricultural Soils in Northern Europe: A Geochemical Atlas.
+Geologisches Jahrbuch, Sonderhefte, Reihe D, Heft SD 5,
+Schweizerbart'sche Verlagsbuchhandlung, Stuttgart, 2003.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(bssbot)
+# classical versus robust correlation
+cor.plot(log(bssbot[, "Al2O3_B"]), log(bssbot[, "Na2O_B"]))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>mvoutlier</em> version 1.4 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Similarity measures of two vertices</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for similarity {igraph}"><tr><td>similarity {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Similarity measures of two vertices</h2>
+
+
+<h3>Description</h3>
+
+<p>
+These functions calculates similarity scores for vertices based on
+their connection patterns.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+similarity.jaccard(graph, vids = V(graph), mode = c("all", "out", "in",
+      "total"), loops = FALSE) 
+similarity.dice(graph, vids = V(graph), mode = c("all", "out", "in",
+      "total"), loops = FALSE)
+similarity.invlogweighted(graph, vids = V(graph),
+       mode = c("all", "out", "in", "total"))
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>graph</code></td>
+<td>
+The input graph.</td></tr>
+<tr valign="top"><td><code>vids</code></td>
+<td>
+The vertex ids for which the similarity is calculated.</td></tr>
+<tr valign="top"><td><code>mode</code></td>
+<td>
+The type of neighboring vertices to use for the
+calculation, possible values: &lsquo;<code>out</code>&rsquo;,
+&lsquo;<code>in</code>&rsquo;, &lsquo;<code>all</code>&rsquo;.</td></tr>
+<tr valign="top"><td><code>loops</code></td>
+<td>
+Whether to include vertices themselves in the neighbor
+sets.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The Jaccard similarity coefficient of two vertices is the number of common
+neighbors divided by the number of vertices that are neighbors of at
+least one of the two vertices being
+considered. <code>similarity.jaccard</code> calculates
+the pairwise Jaccard similarities for some (or all) of the vertices.
+</p>
+<p>
+The Dice similarity coefficient of two vertices is twice the number of common
+neighbors divided by the sum of the degrees of the
+vertices. <code>similarity.dice</code> calculates the pairwise Dice
+similarities for some (or all) of the vertices.
+</p>
+<p>
+The inverse log-weighted similarity of two vertices is the number of
+their common neighbors, weighted by the inverse logarithm of their degrees.
+It is based on the assumption that two vertices should be considered
+more similar if they share a low-degree common neighbor, since high-degree
+common neighbors are more likely to appear even by pure chance.
+Isolated vertices will have zero similarity to any other vertex.
+Self-similarities are not calculated.
+See the following paper for more details: Lada A. Adamic and Eytan Adar:
+Friends and neighbors on the Web. Social Networks, 25(3):211-230, 2003.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A <code>length(vids)</code> by <code>length(vids)</code> numeric matrix containing
+the similarity scores.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Tamas Nepusz <a href="mailto:ntamas@rmki.kfki.hu">ntamas@rmki.kfki.hu</a> and Gabor Csardi
+<a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a> for the manual page.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Lada A. Adamic and Eytan Adar:
+Friends and neighbors on the Web. <EM>Social Networks</EM>, 25(3):211-230, 2003.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="cocitation.html">cocitation</a></code> and <code><a href="cocitation.html">bibcoupling</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+g &lt;- graph.ring(5)
+similarity.dice(g)
+similarity.jaccard(g)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Detection of multivariate outliers using the LOF algorithm</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for maxlof {dprep}"><tr><td>maxlof {dprep}</td><td align="right">R Documentation</td></tr></table>
+<h2>Detection of multivariate outliers using the LOF algorithm</h2>
+
+
+<h3>Description</h3>
+
+<p>
+A function that detects multivariate outliers using the local outlier factor for a matrix
+over a range of neighbors called minpts.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+maxlof(data, name = "", minptsl = 10, minptsu = 20)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>data</code></td>
+<td>
+Dataset for outlier detection</td></tr>
+<tr valign="top"><td><code>name</code></td>
+<td>
+Name of dataset used in the graph title.</td></tr>
+<tr valign="top"><td><code>minptsl</code></td>
+<td>
+Lower bound for the number of neighbors</td></tr>
+<tr valign="top"><td><code>minptsu</code></td>
+<td>
+Upper bound for the number of neighbors</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Calls on the function "lofactor" to compute the local
+outlier factor for each integer number of neighbors in the range
+[minptsl, minptsu]. Also displays a plot of the factors for
+each observation of the dataset. In the plot, the user should
+seek to identify observations with large gaps between outlyingness
+measures. These would be candidates for outliers.
+</p>
+
+
+<h3>Value</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>maxlofactor</code></td>
+<td>
+A vector containing the index of each observation
+of the dataset and the corresponding local outlier factor.</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Caroline Rodriguez
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Breuning, M., Kriegel, H., Ng, R.T, and Sander. J. (2000). 
+LOF: Identifying density-based local outliers. In Proceedings of the 
+ACM SIGMOD International Conference on Management of Data.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+#Detecting top 10 outliers in class number 1 of Breastw using the LOF algorithm
+data(breastw)
+breastw1.lof=maxlof(breastw[breastw[,10]==1,],name="Breast-Wisconsin",30,40)
+breastw1.lof[order(breastw1.lof,decreasing=TRUE)][1:10]
+</pre>
+
+
+
+<hr><div align="center">[Package <em>dprep</em> version 2.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,90 @@
+sum.exact, cumsum.exact & runsum.exactpackage:caToolsR Documentation
+
+_B_a_s_i_c _S_u_m _O_p_e_r_a_t_i_o_n_s _w_i_t_h_o_u_t _R_o_u_n_d-_o_f_f _E_r_r_o_r_s
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Functions for performing basic sum operations without round-off
+     errors
+
+_U_s_a_g_e:
+
+       sum.exact(..., na.rm = FALSE)
+       cumsum.exact(x)
+       runsum.exact(x,k)
+
+_A_r_g_u_m_e_n_t_s:
+
+       x: numeric vector
+
+     ...: numeric vector(s), numbers or other objects to be summed
+
+   na.rm: logical. Should missing values be removed?
+
+       k: width of moving window; must be an odd integer between one
+          and n 
+
+_D_e_t_a_i_l_s:
+
+     All three functions use full precision summation using multiple
+     doubles for  intermediate values. The sum of numbers x & y is
+     a=x+y with error term  b=error(a+b). That way a+b is equal exactly
+     x+y, so sum of 2 numbers is stored as 2 or fewer values, which
+     when added would under-flow. By extension sum of n  numbers is
+     calculated with intermediate results stored as array of numbers 
+     that can not be added without introducing an error. Only final
+     result is  converted to a single number
+
+_V_a_l_u_e:
+
+     Function 'sum.exact' returns single number. Function
+     'cumsum.exact'  returns vector of the same length as 'x'. Function
+     'runsum.exact'  returns vector of length 'length(x)-k' and
+     attribute "count" containing number of finite (as in 'is.finite')
+     elements in each window.
+
+_A_u_t_h_o_r(_s):
+
+     Jarek Tuszynski (SAIC) jaroslaw.w.tuszynski@saic.com based on code
+     by Vadim Ogranovich, which is based on algorithms described in 
+     references, pointed out by Gabor Grothendieck.
+
+_R_e_f_e_r_e_n_c_e_s:
+
+     Round-off error correction is based on: Shewchuk, Jonathan,
+     _Adaptive Precision Floating-Point Arithmetic and   Fast Robust
+     Geometric Predicates_,   <URL:
+     http://www-2.cs.cmu.edu/afs/cs/project/quake/public/papers/robust-arithmetic.ps>
+     and its implementation found at: <URL:
+     http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/393090> 
+
+     McCullough, D.B., (1998) _Assessing the Reliability of Statistical
+      Software, Part I_, The American Statistician, Vol. 52 No 4, 
+     <URL: http://www.amstat.org/publications/tas/mccull-1.pdf>
+
+     McCullough, D.B., (1999) _Assessing the Reliability of Statistical
+      Software, Part II_, The American Statistician, Vol. 53 No 2 <URL:
+     http://www.amstat.org/publications/tas/mccull.pdf>
+
+     NIST Statistical Reference Datasets (StRD) website  <URL:
+     http://www.nist.gov/itl/div898/strd>
+
+_S_e_e _A_l_s_o:
+
+
+        *  'sum' is faster but not error-save version of  'sum.exact'
+
+        *  'cumsum' is equivalent to 'cumsum.exact'
+
+        *  'runmean(x,k,endrule="trim")' is similar to  'runsum.exact'.
+
+_E_x_a_m_p_l_e_s:
+
+       x = c(1, 1e20, 1e40, -1e40, -1e20, -1)
+       a = sum(x);          print(a)
+       b = sum.exact(x);    print(b)
+       stopifnot(b==0)
+       a = cumsum(x);       print(a)
+       b = cumsum.exact(x); print(b)
+       stopifnot(b[6]==0)
+

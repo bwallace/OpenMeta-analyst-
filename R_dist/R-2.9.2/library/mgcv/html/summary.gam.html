@@ -1,0 +1,304 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Summary for a GAM fit</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for summary.gam {mgcv}"><tr><td>summary.gam {mgcv}</td><td align="right">R Documentation</td></tr></table>
+<h2>Summary for a GAM fit</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Takes a fitted <code>gam</code> object produced by <code>gam()</code> and produces various useful
+summaries from it. (See <code><a href="../../base/html/sink.html">sink</a></code> to divert output to a file.)
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'gam':
+summary(object, dispersion=NULL, freq=FALSE, alpha=0, ...)
+
+## S3 method for class 'summary.gam':
+print(x,digits = max(3, getOption("digits") - 3), 
+                  signif.stars = getOption("show.signif.stars"),...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>object</code></td>
+<td>
+a fitted <code>gam</code> object as produced by <code>gam()</code>.</td></tr>
+<tr valign="top"><td><code>x</code></td>
+<td>
+a <code>summary.gam</code> object produced by <code>summary.gam()</code>.</td></tr>
+<tr valign="top"><td><code>dispersion</code></td>
+<td>
+A known dispersion parameter. <code>NULL</code> to use estimate or
+default (e.g. 1 for Poisson).</td></tr>
+<tr valign="top"><td><code>freq</code></td>
+<td>
+By default p-values for individual terms are calculated using the frequentist estimated
+covariance matrix of the parameter estimators. If this is set to FALSE then
+the Bayesian covariance matrix of the parameters is used instead. See details. </td></tr>
+<tr valign="top"><td><code>alpha</code></td>
+<td>
+adjustment to reference distribution per estimated smoothing parameter. 
+</td></tr>
+<tr valign="top"><td><code>digits</code></td>
+<td>
+controls number of digits printed in output.</td></tr>
+<tr valign="top"><td><code>signif.stars</code></td>
+<td>
+Should significance stars be printed alongside output.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+other arguments.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Model degrees of freedom are taken as the trace of the influence (or
+hat) matrix <i>A</i> for the model fit.
+Residual degrees of freedom are taken as number of data minus model degrees of
+freedom. 
+Let <i>P_i</i> be the matrix 
+giving the parameters of the ith smooth when applied to the data (or pseudodata in the generalized case) and let <i>X</i> 
+be the design matrix of the model. Then <i>tr(XP_i)</i> is the edf for the ith term. Clearly this definition causes the edf's to add up properly! 
+</p>
+<p>
+<code>print.summary.gam</code> tries to print various bits of summary information useful for term selection in a pretty way.
+</p>
+<p>
+If <code>freq=TRUE</code> then the frequentist approximation for p-values of smooth terms described in section
+4.8.5 of Wood (2006) is used. The approximation is not great.  If <i>p_i</i> 
+is the parameter vector for the ith smooth term, and this term has estimated
+covariance matrix <i>V_i</i> then the 
+statistic is <i>p_i'V_i^{k-}p_i</i>, where <i>V_i^{k-}</i> is the rank k 
+pseudo-inverse of <i>V_i</i>, and k is estimated rank of  
+<i>V_i</i>. p-values are obtained as follows. In the case of
+known dispersion parameter, they are obtained by comparing the chi.sq statistic to the 
+chi-squared distribution with k degrees of freedom, where k is the estimated
+rank of  <i>V_i</i>. If the dispersion parameter is unknown (in 
+which case it will have been estimated) the statistic is compared
+to an F distribution with k upper d.f.  and lower d.f. given by the residual degrees of freedom for the model. 
+Typically the p-values will be somewhat too low.
+</p>
+<p>
+If <code>freq=FALSE</code> then `Bayesian p-values' are returned for the smooth terms, based on a test statistic motivated
+by Nychka's (1988) analysis of the frequentist properties of Bayesian confidence intervals for smooths. 
+These appear to have better frequentist performance (in terms of power and distribution under the null) 
+than the alternative strictly frequentist approximation. Let <i>f</i> denote the vector of 
+values of a smooth term evaluated at the original 
+covariate values and let <i>V_f</i> denote the corresponding Bayesian covariance matrix. Let 
+<i>V*_f</i> denote the rank <i>r</i> pseudoinverse of <i>V_f</i>, where <i>r</i> is the 
+EDF for the term. The statistic used is then 
+</p><p align="center"><i>T = f'V*_f f</i></p><p>
+(this can be calculated efficiently without forming the pseudoinverse explicitly). <i>T</i> is compared to a 
+chi-squared distribution with degrees of freedom given by the EDF for the term + <code>alpha</code> * (number of 
+estimated smoothing parameters), or <i>T</i> is used as a component in an F ratio statistic if the 
+scale parameter has been estimated. There is some simulation evidence that the adjustment per 
+smoothing parameter improves p-values when using GCV or AIC type smoothing parameter selection (<code>alpha=0.5</code>
+seems to be best). The default <code>alpha=0</code> seems to be appropriate when smoothing 
+parameters are selected by REML/ML/PQL. The non-integer rank truncated inverse is constructed to give an 
+approximation varying smoothly between the bounding integer rank approximations, while yielding test statistics with the 
+correct mean and variance. 
+</p>
+<p>
+The definition of Bayesian p-value used is: 
+the probability of observing an <i>f</i> less probable than <i>bf 0</i>, under the approximation for the posterior 
+for <i>f</i> implied by the truncation used in the test statistic.
+</p>
+<p>
+Note that the p-values distributional approximations start to break down below one effective degree of freedom, and 
+p-values are not reported below 0.5 degrees of freedom. 
+</p>
+<p>
+Also note that increasing the <code>gamma</code> parameter of <code><a href="gam.html">gam</a></code> tends to mean that <code>alpha</code> should be decreased, 
+to get close to uniform p-value distribution under the null.  
+</p>
+<p>
+For best p-value performance it seems to be best to use ML or REML smoothness selection.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>summary.gam</code> produces a list of summary information for a fitted <code>gam</code> object. 
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>p.coeff</code></td>
+<td>
+is an array of estimates of the strictly parametric model coefficients.</td></tr>
+<tr valign="top"><td><code>p.t</code></td>
+<td>
+is an array of the <code>p.coeff</code>'s divided by their standard errors.</td></tr>
+<tr valign="top"><td><code>p.pv</code></td>
+<td>
+is an array of p-values for the null hypothesis that the corresponding parameter is zero. 
+Calculated with reference to the t distribution with the estimated residual
+degrees of freedom for the model fit if the dispersion parameter has been
+estimated, and the standard normal if not.</td></tr>
+<tr valign="top"><td><code>m</code></td>
+<td>
+The number of smooth terms in the model.</td></tr>
+<tr valign="top"><td><code>chi.sq</code></td>
+<td>
+An array of test statistics for assessing the significance of
+model smooth terms. See details.</td></tr>
+<tr valign="top"><td><code>s.pv</code></td>
+<td>
+An array of approximate p-values for the null hypotheses that each
+smooth term is zero. Be warned, these are only approximate.</td></tr>
+<tr valign="top"><td><code>se</code></td>
+<td>
+array of standard error estimates for all parameter estimates.</td></tr>
+<tr valign="top"><td><code>r.sq</code></td>
+<td>
+The adjusted r-squared for the model. Defined as the proportion of variance explained, where original variance and 
+residual variance are both estimated using unbiased estimators. This quantity can be negative if your model is worse than a one 
+parameter constant model, and can be higher for the smaller of two nested models! Note that proportion null deviance 
+explained is probably more appropriate for non-normal errors.</td></tr>
+<tr valign="top"><td><code>dev.expl</code></td>
+<td>
+The proportion of the null deviance explained by the model.</td></tr>
+<tr valign="top"><td><code>edf</code></td>
+<td>
+array of estimated degrees of freedom for the model terms.</td></tr>
+<tr valign="top"><td><code>residual.df</code></td>
+<td>
+estimated residual degrees of freedom.</td></tr>
+<tr valign="top"><td><code>n</code></td>
+<td>
+number of data.</td></tr>
+<tr valign="top"><td><code>gcv</code></td>
+<td>
+minimized GCV score for the model, if GCV used.</td></tr>
+<tr valign="top"><td><code>ubre</code></td>
+<td>
+minimized UBRE score for the model, if UBRE used.</td></tr>
+<tr valign="top"><td><code>scale</code></td>
+<td>
+estimated (or given) scale parameter.</td></tr>
+<tr valign="top"><td><code>family</code></td>
+<td>
+the family used.</td></tr>
+<tr valign="top"><td><code>formula</code></td>
+<td>
+the original GAM formula.</td></tr>
+<tr valign="top"><td><code>dispersion</code></td>
+<td>
+the scale parameter.</td></tr>
+<tr valign="top"><td><code>pTerms.df</code></td>
+<td>
+the degrees of freedom associated with each parameteric term
+(excluding the constant).</td></tr>
+<tr valign="top"><td><code>pTerms.chi.sq</code></td>
+<td>
+a Wald statistic for testing the null hypothesis that the
+each parametric term is zero.</td></tr>
+<tr valign="top"><td><code>pTerms.pv</code></td>
+<td>
+p-values associated with the tests that each term is
+zero. For penalized fits these are approximate. The reference distribution 
+is an appropriate chi-squared when the
+scale parameter is known, and is based on an F when it is not.</td></tr>
+<tr valign="top"><td><code>cov.unscaled</code></td>
+<td>
+The estimated covariance matrix of the parameters (or
+estimators if <code>freq=TRUE</code>), divided
+by scale parameter.</td></tr>
+<tr valign="top"><td><code>cov.scaled</code></td>
+<td>
+The estimated covariance matrix of the parameters
+(estimators if <code>freq=TRUE</code>).</td></tr>
+<tr valign="top"><td><code>p.table</code></td>
+<td>
+significance table for parameters</td></tr>
+<tr valign="top"><td><code>s.table</code></td>
+<td>
+significance table for smooths</td></tr>
+<tr valign="top"><td><code>p.Terms</code></td>
+<td>
+significance table for parametric model terms</td></tr>
+</table>
+
+<h3>WARNING</h3>
+
+<p>
+The p-values are approximate: do read the details section.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Simon N. Wood <a href="mailto:simon.wood@r-project.org">simon.wood@r-project.org</a> with substantial
+improvements by Henric Nilsson.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Nychka (1988) Bayesian Confidence Intervals for Smoothing Splines. 
+Journal of the American Statistical Association 83:1134-1143.
+</p>
+<p>
+Wood S.N. (2006) Generalized Additive Models: An Introduction with R. Chapman
+and Hall/CRC Press.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="gam.html">gam</a></code>, <code><a href="predict.gam.html">predict.gam</a></code>,
+<code><a href="gam.check.html">gam.check</a></code>, <code><a href="anova.gam.html">anova.gam</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+library(mgcv)
+set.seed(0)
+dat &lt;- gamSim(1,n=200,scale=2) ## simulate data
+
+b &lt;- gam(y~s(x0)+s(x1)+s(x2)+s(x3),data=dat)
+plot(b,pages=1)
+summary(b)
+
+## now check the p-values by using a pure regression spline.....
+b.d &lt;- round(summary(b)$edf)+1 ## get edf per smooth
+b.d &lt;- pmax(b.d,3) # can't have basis dimension less than 3!
+bc&lt;-gam(y~s(x0,k=b.d[1],fx=TRUE)+s(x1,k=b.d[2],fx=TRUE)+
+        s(x2,k=b.d[3],fx=TRUE)+s(x3,k=b.d[4],fx=TRUE),data=dat)
+plot(bc,pages=1)
+summary(bc)
+
+## p-value check - increase k to make this useful!
+k&lt;-20;n &lt;- 200;p &lt;- rep(NA,k)
+for (i in 1:k)
+{ b&lt;-gam(y~te(x,z),data=data.frame(y=rnorm(n),x=runif(n),z=runif(n)),
+         method="ML")
+  p[i]&lt;-summary(b)$s.p[1]
+}
+plot(((1:k)-0.5)/k,sort(p))
+abline(0,1,col=2)
+ks.test(p,"punif") ## how close to uniform are the p-values?
+
+</pre>
+
+
+
+<hr><div align="center">[Package <em>mgcv</em> version 1.5-5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

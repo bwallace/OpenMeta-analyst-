@@ -1,0 +1,333 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Generate coordinates for plotting graphs</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for layout {igraph}"><tr><td>layout {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Generate coordinates for plotting graphs</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Some simple and not so simple functions determining the
+placement of the vertices for drawing a graph.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+layout.random(graph, params, dim=2)
+layout.circle(graph, params)
+layout.sphere(graph, params)
+layout.fruchterman.reingold(graph, ..., dim=2,
+      verbose=igraph.par("verbose"), params)
+layout.kamada.kawai(graph, ..., dim=2,
+      verbose=igraph.par("verbose"), params)
+layout.spring(graph, ..., params)
+layout.reingold.tilford(graph, ..., params)
+layout.fruchterman.reingold.grid(graph, ...,
+      verbose=igraph.par("verbose"), params)
+layout.lgl(graph, ..., params)
+layout.graphopt(graph, ..., verbose = igraph.par("verbose"), params = list())
+layout.mds(graph, d=shortest.paths(graph), ...)
+layout.svd(graph, d=shortest.paths(graph), ...)
+layout.norm(layout, xmin = NULL, xmax = NULL, ymin = NULL, ymax = NULL,
+      zmin = NULL, zmax = NULL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>graph</code></td>
+<td>
+The graph to place.</td></tr>
+<tr valign="top"><td><code>params</code></td>
+<td>
+The list of function dependent parameters.</td></tr>
+<tr valign="top"><td><code>dim</code></td>
+<td>
+Numeric constant, either 2 or 3. Some functions are able
+to generate 2d and 3d layouts as well, supply this argument to
+change the default behavior.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+Function dependent parameters, this is an alternative
+notation to the <code>params</code> argument.</td></tr>
+<tr valign="top"><td><code>verbose</code></td>
+<td>
+Logial constant, whether to show a progress bar while
+calculating the layout.</td></tr>
+<tr valign="top"><td><code>d</code></td>
+<td>
+The matrix used for multidimansional scaling. By default it
+is the distance matrix of the graph.</td></tr>
+<tr valign="top"><td><code>layout</code></td>
+<td>
+A matrix with two or three columns, the layout to
+normalize.</td></tr>
+<tr valign="top"><td><code>xmin,xmax</code></td>
+<td>
+The limits for the first coordinate, if one of them
+or both are <code>NULL</code> then no normalization is performed along
+this direction.</td></tr>
+<tr valign="top"><td><code>ymin,ymax</code></td>
+<td>
+The limits for the second coordinate, if one of them
+or both are <code>NULL</code> then no normalization is performed along
+this direction.</td></tr>
+<tr valign="top"><td><code>zmin,zmax</code></td>
+<td>
+The limits for the third coordinate, if one of them
+or both are <code>NULL</code> then no normalization is performed along
+this direction.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+These functions calculate the coordinates of the vertices for a graph
+usually based on some optimality criterion.
+</p>
+<p>
+<code>layout.random</code> simply places the vertices randomly on a
+square. It has no parameters.
+</p>
+<p>
+<code>layout.circle</code> places the vertices on a unit circle
+equidistantly. It has no paramaters.
+</p>
+<p>
+<code>layout.sphere</code> places the vertices (approximately) uniformly on
+the surface of a sphere, this is thus a 3d layout. It is not clear
+however what &ldquo;uniformly on a sphere&rdquo; means.
+</p>
+<p>
+<code>layout.fruchterman.reingold</code> uses a force-based algorithm
+proposed by Fruchterman and Reingold, see references. Parameters and
+their default values:
+<ul>
+<dt>niter</dt><dd>Numeric, the number of iterations to perform (500).</dd>
+<dt>coolexp</dt><dd>Numeric, the cooling exponent for the simulated
+annealing (3).</dd>
+<dt>maxdelta</dt><dd>Maximum change (<code>vcount(graph)</code>).</dd>
+<dt>area</dt><dd>Area parameter (<code>vcount(graph)^2</code>).</dd>
+<dt>repulserad</dt><dd>Cancellation radius (<code>area</code>*vcount(graph)).</dd>
+<dt>weights</dt><dd>A vector giving edge weights or <code>NULL</code>. If not
+<code>NULL</code> then the attraction along the edges will be multiplied
+by the given edge weights (<code>NULL</code>).</dd>
+</ul>
+<p>
+This function was ported from the SNA package.
+</p>
+<p>
+<code>layout.kamada.kawai</code> is another force based algorithm. 
+Parameters and default values:
+<ul>
+<dt>niter</dt><dd>Number of iterations to perform (1000).</dd>
+<dt>sigma</dt><dd>Sets the base standard deviation of position change
+proposals (vcount(graph)/4).</dd>
+<dt>initemp</dt><dd>The initial temperature (10).</dd>
+<dt>coolexp</dt><dd>The cooling exponent (0.99).</dd>
+<dt>kkconst</dt><dd>Sets the Kamada-Kawai vertex attraction
+constant (vcount(graph)**2).</dd>
+</ul>
+<p>
+This function performs very well for connected graphs, but it gives
+poor results for unconnected ones.
+This function was ported from the SNA package.
+</p>
+<p>
+<code>layout.spring</code> is a spring embedder algorithm.
+Parameters and default values:
+<ul>
+<dt>mass</dt><dd>The vertex mass (in &lsquo;quasi-kilograms&rsquo;). (Defaults to 0.1.)</dd>
+<dt>equil</dt><dd>The equilibrium spring extension (in
+&lsquo;quasi-meters&rsquo;). (Defaults to 1.)</dd>
+<dt>k</dt><dd>The spring coefficient (in &lsquo;quasi-Newtons per
+quasi-meter&rsquo;). (Defaults to 0.001.)</dd>
+<dt>repeqdis</dt><dd>The point at which repulsion (if employed) balances
+out the spring extension force (in &lsquo;quasi-meters&rsquo;). (Defaults to
+0.1.)</dd>
+<dt>kfr</dt><dd>The base coefficient of kinetic friction (in
+&lsquo;quasi-Newton quasi-kilograms&rsquo;). (Defaults to 0.01.)</dd>
+<dt>repulse</dt><dd>Should repulsion be used? (Defaults to FALSE.)</dd>
+</ul>
+<p>
+This function was ported from the SNA package.
+</p>
+<p>
+<code>layout.reingold.tilford</code> generates a tree-like layout, so it is
+mainly for trees. Parameters and default values:
+<ul>
+<dt>root</dt><dd>The id of the root vertex, defaults to 0.</dd>
+<dt>circular</dt><dd>Logical scalar, whether to plot the tree in a
+circular fashion, defaults to <code>FALSE</code>.</dd>
+</ul>
+
+<p>
+<code>layout.fruchterman.reingold.grid</code> is similar to
+<code>layout.fruchterman.reingold</code> but repelling force is calculated
+only between vertices that are closer to each other than a limit, so
+it is faster. Patameters and default values:
+<ul>
+<dt>niter</dt><dd>Numeric, the number of iterations to perform (500).</dd>
+<dt>maxdelta</dt><dd>Maximum change for one vertex in one iteration. (The
+number of vertices in the graph.)</dd>
+<dt>area</dt><dd>The area of the surface on which the vertices are placed.
+(The square of the number of vertices.)</dd>
+<dt>coolexp</dt><dd>The cooling exponent of the simulated annealing
+(1.5).</dd>
+<dt>repulserad</dt><dd>Cancellation radius for the repulsion (the
+<code>area</code> times the number of vertices).</dd>
+<dt>cellsize</dt><dd>The size of the cells for the grid. When calculating
+the repulsion forces between vertices only vertices in the same or
+neighboring grid cells are taken into account (the fourth root of
+the number of <code>area</code>.</dd>
+</ul>
+
+<p>
+<code>layout.lgl</code> is for large connected graphs, it is similar to the
+layout generator of the Large Graph Layout software
+(<a href="http://bioinformatics.icmb.utexas.edu/lgl">http://bioinformatics.icmb.utexas.edu/lgl</a>). Parameters and
+default values:
+<ul>
+<dt>maxiter</dt><dd>The maximum number of iterations to perform (150).</dd>
+<dt>maxdelta</dt><dd>The maximum change for a vertex during an iteration
+(the number of vertices).</dd>
+<dt>area</dt><dd>The area of the surface on which the vertices are placed
+(square of the number of vertices). </dd>
+<dt>coolexp</dt><dd>The cooling exponent of the simulated annealing (1.5).</dd>
+<dt>repulserad</dt><dd>Cancellation radius for the repulsion (the
+<code>area</code> times the number of vertices).</dd>
+<dt>cellsize</dt><dd>The size of the cells for the grid. When calculating
+the repulsion forces between vertices only vertices in the same or
+neighboring grid cells are taken into account (the fourth root of
+the number of <code>area</code>.</dd>
+<dt>root</dt><dd>The id of the vertex to place at the middle of the
+layout. The default value is -1 which means that a random vertex
+is selected.</dd>
+</ul>
+
+<p>
+<code>layout.graphopt</code> is a port of the graphopt layout algorithm by
+Michael Schmuhl. graphopt version 0.4.1 was rewritten in C and the
+support for layers was removed (might be added later) and a code was a
+bit reorganized to avoid some unneccessary steps is the node charge
+(see below) is zero.
+</p>
+<p>
+graphopt uses physical analogies for defining attracting and repelling 
+forces among the vertices and then the physical system is simulated 
+until it reaches an equilibrium. (There is no simulated annealing or 
+anything like that, so a stable fixed point is not guaranteed.)
+</p>
+<p>
+See also <a href="http://www.schmuhl.org/graphopt/">http://www.schmuhl.org/graphopt/</a> for the original
+graphopt.
+</p>
+<p>
+Parameters and default values:
+<ul>
+<dt>niter</dt><dd>Integer scalar, the number of iterations to perform.
+Should be a couple of hundred in general. If you have a large graph 
+then you might want to only do a few iterations and then check the 
+result. If it is not good enough you can feed it in again in 
+the <code>start</code> argument. The default value is 500.
+</dd>
+<dt>charge</dt><dd>The charge of the vertices, used to calculate electric
+repulsion. The default is 0.001.</dd>
+<dt>mass</dt><dd>The mass of the vertices, used for the spring
+forces. The default is 30.</dd>
+<dt>spring.length</dt><dd>The length of the springs, an integer
+number. The default value is zero.</dd>
+<dt>spring.constant</dt><dd>The spring constant, the default value is one.</dd>
+<dt>max.sa.movement</dt><dd>Real constant, it gives the maximum amount of
+movement allowed in a single step along a single axis. The default
+value is 5.</dd>
+<dt>start</dt><dd>If given, then it should be a matrix with two columns
+and one line for each vertex. This matrix will be used as starting
+positions for the algorithm. If not given, then a random starting
+matrix is used.</dd>
+</ul>
+
+<p>
+<code>layout.mds</code> uses metric multidimensional scaling for generating
+the coordinates. This function does not have the usual <code>params</code>
+argument. It can just take a single argument, the distance matrix used
+for multidimensional scaling. This function generates the layout
+separately for each graph component and then merges them via
+<code><a href="layout.merge.html">layout.merge</a></code>. <code>layout.mds</code> is an <EM>experimental</EM>
+function currently.
+</p>
+<p>
+<code>layout.svd</code> is a currently <EM>experimental</EM> layout function based on
+singular value decomposition. It does not have the usual <code>params</code>
+argument, but take a single argument, the distance matrix of the
+graph. This function generates the layout separately for each graph
+component and then merges them via <code><a href="layout.merge.html">layout.merge</a></code>.
+</p>
+<p>
+<code>layout.norm</code> normalizes a layout, it linearly transforms each
+coordinate separately to fit into the given limits.
+</p>
+<p>
+<code>layout.drl</code> is another force-driven layout generator, it is
+suitable for quite large graphs. See <code><a href="layout.drl.html">layout.drl</a></code> for
+details.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+All these functions return a numeric matrix with at least two
+columns and the same number of lines as the number of vertices.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Fruchterman, T.M.J. and Reingold, E.M. (1991). Graph Drawing by
+Force-directed Placement. <EM>Software - Practice and Experience</EM>,
+21(11):1129-1164. 
+</p>
+<p>
+Kamada, T. and Kawai, S. (1989). An Algorithm for Drawing General
+Undirected Graphs. <EM>Information Processing Letters</EM>, 31(1):7-15. 
+</p>
+<p>
+Reingold, E and Tilford, J (1981). Tidier drawing of trees.
+<EM>IEEE Trans. on Softw. Eng.</EM>, SE-7(2):223&ndash;228.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="layout.drl.html">layout.drl</a></code>, <code><a href="plot.graph.html">plot.igraph</a></code>, <code><a href="tkplot.html">tkplot</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+g &lt;- graph.ring(10)
+layout.random(g)
+layout.kamada.kawai(g)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

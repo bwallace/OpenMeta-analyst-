@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Various vertex shapes when plotting igraph graphs</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for Vertex shapes {igraph}"><tr><td>Vertex shapes {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Various vertex shapes when plotting igraph graphs</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Starting from version 0.5.1 igraph supports different
+vertex shapes when plotting graphs.
+</p>
+
+
+<h3>Details</h3>
+
+<p>
+Note that the current vertex shape implementation is experimental and
+it might change in the future. Currently vertex shapes are implemented
+only for <code><a href="plot.graph.html">plot.igraph</a></code>.
+</p>
+<p>
+In igraph a vertex shape is defined by a function that 1) provides
+information about the size of the shape for clipping the edges and 2)
+plots the shape if requested. These functions are called &ldquo;shape
+functions&rdquo; in the rest of this manual page.
+</p>
+<p>
+Shape functions have a &lsquo;<code>mode</code>&rsquo; argument that decides in
+which mode they should operate. &lsquo;<code>clip</code>&rsquo; selects clipping
+mode and &lsquo;<code>plot</code>&rsquo; selects plotting mode.
+</p>
+<p>
+In clipping mode a shape function has the following arguments:
+<ul>
+<dt>coords</dt><dd>A matrix with four columns, it contains the
+coordinates of the vertices for the edge list supplied in the
+<code>el</code> argument.</dd>
+<dt>el</dt><dd>A matrix with two columns, the edges of which some end
+points will be clipped. It should have the same number of rows as
+<code>coords</code>.</dd>
+<dt>mode</dt><dd>&ldquo;<code>clip</code>&rdquo; for choosing clipping mode.</dd>
+<dt>params</dt><dd>This is a function object that can be called to query
+vertex/edge/plot graphical parameters. The first argument of the
+function is &ldquo;<code>vertex</code>&rdquo;, &ldquo;<code>edge</code>&rdquo; or
+&ldquo;<code>plot</code>&rdquo; to decide the type of the parameter, the
+second is a character string giving the name of the
+parameter. E.g.
+<pre>
+        params("vertex", "size")
+</pre>
+</dd>
+<dt>end</dt><dd>Character string, it gives which end points will be
+used. Possible values are &ldquo;<code>both</code>&rdquo;,
+&ldquo;<code>from</code>&rdquo; and &ldquo;<code>to</code>&rdquo;. If
+&ldquo;<code>from</code>&rdquo; the function is expected to clip the
+first column in the <code>el</code> edge list, &ldquo;<code>to</code>&rdquo;
+selects the second column, &ldquo;<code>both</code>&rdquo; selects both.</dd>
+</ul>
+
+<p>
+In &lsquo;clipping&rsquo; mode, a shape function should return a matrix
+with the same number of rows as the <code>el</code> arguments.
+If <code>end</code> is <code>both</code> then the matrix must have four
+columns, otherwise two. The matrix contains the modified coordinates,
+with the clipping applied.
+</p>
+<p>
+In plotting mode the following arguments are supplied to the shape
+function:
+<ul>
+<dt>coords</dt><dd>The coordinates of the vertices, a matrix with two
+columns.</dd>
+<dt>v</dt><dd>The ids of the vertices to plot. It should match the number
+of rows in the <code>coords</code> argument.</dd>
+<dt>mode</dt><dd>&ldquo;<code>plot</code>&rdquo; for choosing plotting mode.</dd>
+<dt>params</dt><dd>The same as in clipping mode, see above.</dd>
+</ul>
+
+<p>
+In &lsquo;plotting&rsquo; mode the return value of the shape function is
+not used.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="plot.common.html">igraph.plotting</a></code>, <code><a href="plot.graph.html">plot.igraph</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## Not run: 
+g &lt;- graph.ring(10, dir=TRUE, mut=TRUE)
+plot(g, vertex.shape="rectangle", layout=layout.circle)
+## End(Not run)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

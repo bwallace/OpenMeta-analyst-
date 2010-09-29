@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Create Diagonal Matrix Object</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for Diagonal {Matrix}"><tr><td>Diagonal {Matrix}</td><td align="right">R Documentation</td></tr></table>
+<h2>Create Diagonal Matrix Object</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Create a diagonal matrix object, i.e., an object inheriting from
+<code><a href="diagonalMatrix-class.html">diagonalMatrix</a></code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+Diagonal(n, x = NULL)
+.symDiagonal(n, x = rep.int(1,n), uplo = "U")
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>n</code></td>
+<td>
+integer specifying the dimension of the (square) matrix.  If
+missing, <code>length(x)</code> is used.</td></tr>
+<tr valign="top"><td><code>x</code></td>
+<td>
+numeric or logical; if missing, a <EM>unit</EM> diagonal
+<i>n x n</i> matrix is created.</td></tr>
+<tr valign="top"><td><code>uplo</code></td>
+<td>
+for <code>.symDiagonal</code>, the resulting sparse
+<code><a href="symmetricMatrix-class.html">symmetricMatrix</a></code> will have slot <code>uplo</code> set
+from this argument, either <code>"U"</code> or <code>"L"</code>.  Only rarely
+will it make sense to change this from the default.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+<code>Diagonal()</code> returns an object of class
+<code><a href="ddiMatrix-class.html">ddiMatrix</a></code> or <code><a href="ldiMatrix-class.html">ldiMatrix</a></code>
+(with &ldquo;superclass&rdquo; <code><a href="diagonalMatrix-class.html">diagonalMatrix</a></code>).
+<br>
+<code>.symDiagonal()</code> returns an object of class
+<code><a href="dsCMatrix-class.html">dsCMatrix</a></code> or <code><a href="lsparseMatrix-classes.html">lsCMatrix</a></code>,
+i.e., a <EM>sparse</EM> <EM>symmetric</EM> matrix.  This can be
+more efficient than <code>Diagonal(n)</code> when the result is combined
+with further symmetric (sparse) matrices, however <EM>not</EM> for
+matrix multiplications where <code>Diagonal()</code> is clearly preferred.</p>
+
+<h3>See Also</h3>
+
+<p>
+the generic function <code><a href="../../base/html/diag.html">diag</a></code> for <EM>extraction</EM>
+of the diagonal from a matrix works for all &ldquo;Matrices&rdquo;.
+</p>
+<p>
+<code><a href="bandSparse.html">bandSparse</a></code> constructs a <EM>banded</EM> sparse matrix from
+its non-zero sub-/super - diagonals.
+</p>
+<p>
+<code><a href="Matrix.html">Matrix</a></code> for general matrix construction;
+further, class <code><a href="diagonalMatrix-class.html">diagonalMatrix</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+Diagonal(3)
+Diagonal(x = 10^(3:1))
+Diagonal(x = (1:4) &gt;= 2)#-&gt; "ldiMatrix"
+
+## Use Diagonal() + kronecker() for "repeated-block" matrices:
+M1 &lt;- Matrix(0+0:5, 2,3)
+(M &lt;- kronecker(Diagonal(3), M1))
+
+(S &lt;- crossprod(Matrix(rbinom(60, size=1, prob=0.1), 10,6)))
+(SI &lt;- S + 10*.symDiagonal(6)) # sparse symmetric still
+stopifnot(is(SI, "dsCMatrix"))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>Matrix</em> version 0.999375-30 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

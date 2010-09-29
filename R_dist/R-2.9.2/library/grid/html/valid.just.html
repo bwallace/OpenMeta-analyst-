@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Validate a Justification</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for valid.just {grid}"><tr><td>valid.just {grid}</td><td align="right">R Documentation</td></tr></table>
+<h2>Validate a Justification</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This utility function is useful for determining
+whether a justification specification is valid.
+An error is given if the justification is not valid.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+valid.just(just)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>just</code></td>
+<td>
+A justification either as a character value,
+e.g., <code>"left"</code>, or as a numeric value, e.g., 0.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This function is useful within a <code>validDetails</code> method
+when writing a new grob class.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A numeric representation of the justification (e.g.,
+<code>"left"</code> becomes 0, <code>"right"</code> becomes 1, etc, ...).</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Paul Murrell
+</p>
+
+
+
+<hr><div align="center">[Package <em>grid</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

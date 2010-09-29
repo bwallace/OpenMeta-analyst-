@@ -1,0 +1,173 @@
+\HeaderA{runmad}{Median Absolute Deviation of Moving Windows}{runmad}
+\keyword{ts}{runmad}
+\keyword{array}{runmad}
+\keyword{utilities}{runmad}
+\begin{Description}\relax
+Moving (aka running, rolling) Window MAD (Median Absolute 
+Deviation) calculated over a vector
+\end{Description}
+\begin{Usage}
+\begin{verbatim}
+   runmad(x, k, center = runmed(x,k), constant = 1.4826,
+         endrule=c("mad", "NA", "trim", "keep", "constant", "func"))
+\end{verbatim}
+\end{Usage}
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{x}] numeric vector of length n
+\item[\code{k}] width of moving window; must be an integer between one and n. In case
+of even k's one will have to provide different \code{center} function, since
+\code{\LinkA{runmed}{runmed}} does not take even k's.
+\item[\code{endrule}] character string indicating how the values at the beginning 
+and the end, of the data, should be treated. Only first and last \code{k2} 
+values at both ends are affected, where \code{k2} is the half-bandwidth 
+\code{k2 = k \%/\% 2}.
+\Itemize{
+\item \code{"mad"} - applies the mad function to
+smaller and smaller sections of the array. Equivalent to: 
+\code{for(i in 1:k2) out[i]=mad(x[1:(i+k2)])}. 
+\item \code{"trim"} - trim the ends; output array length is equal to 
+\code{length(x)-2*k2 (out = out[(k2+1):(n-k2)])}. This option mimics 
+output of \code{\LinkA{apply}{apply}} \code{(\LinkA{embed}{embed}(x,k),1,FUN)} and other 
+related functions.
+\item \code{"keep"} - fill the ends with numbers from \code{x} vector 
+\code{(out[1:k2] = x[1:k2])}. This option makes more sense in case of 
+smoothing functions, kept here for consistency.
+\item \code{"constant"} - fill the ends with first and last calculated 
+value in output array \code{(out[1:k2] = out[k2+1])}
+\item \code{"NA"} - fill the ends with NA's \code{(out[1:k2] = NA)}
+\item \code{"func"} - same as \code{"mad"} option except that implemented
+in R for testing purposes. Avoid since it can be very slow for large windows.
+}
+Similar to \code{endrule} in \code{\LinkA{runmed}{runmed}} function which has the 
+following options: \dQuote{\code{c("median", "keep", "constant")}} .
+
+\item[\code{center}] moving window center. Defaults 
+to running median (\code{\LinkA{runmed}{runmed}} function). Similar to \code{center}  
+in \code{\LinkA{mad}{mad}} function. For best acuracy at the edges use 
+\code{\LinkA{runquantile}{runquantile}(x,k,0.5,type=2)}, which is slower than default
+\code{\LinkA{runmed}{runmed}(x,k,endrule="med")}
+
+\item[\code{constant}] scale factor such that for Gaussian 
+distribution X, \code{\LinkA{mad}{mad}}(X) is the same as \code{\LinkA{sd}{sd}}(X). 
+Same as \code{constant} in \code{\LinkA{mad}{mad}} function.
+\end{ldescription}
+\end{Arguments}
+\begin{Details}\relax
+Apart from the end values, the result of y = runmad(x, k) is the same as 
+\dQuote{\code{for(j=(1+k2):(n-k2)) y[j]=mad(x[(j-k2):(j+k2)], na.rm = TRUE)}}. It can handle 
+non-finite numbers like NaN's and Inf's (like \code{\LinkA{mad}{mad}(x, na.rm = TRUE)}).
+
+The main incentive to write this set of functions was relative slowness of 
+majority of moving window functions available in R and its packages.  With the 
+exception of \code{\LinkA{runmed}{runmed}}, a running window median function, all 
+functions listed in "see also" section are slower than very inefficient 
+\dQuote{\code{\LinkA{apply}{apply}(\LinkA{apply}{apply}(x,k),1,FUN)}} approach. 
+
+Functions \code{runquantile} and \code{runmad} are using insertion sort to 
+sort the moving window, but gain speed by remembering results of the previous 
+sort. Since each time the window is moved, only one point changes, all but one 
+points in the window are already sorted. Insertion sort can fix that in O(k) 
+time.
+\end{Details}
+\begin{Value}
+Returns a numeric vector of the same length as \code{x}. Only in case of 
+\code{endrule="trim"}.the output will be shorter.
+\end{Value}
+\begin{Author}\relax
+Jarek Tuszynski (SAIC) \email{jaroslaw.w.tuszynski@saic.com}
+\end{Author}
+\begin{References}\relax
+About insertion sort used in \code{runmad} function see: 
+R. Sedgewick (1988): \emph{Algorithms}. Addison-Wesley (page 99)
+\end{References}
+\begin{SeeAlso}\relax
+Links related to:
+\Itemize{       
+\item \code{runmad} - \code{\LinkA{mad}{mad}}, \code{\LinkA{rollVar}{rollVar}} from 
+\pkg{fSeries} library
+\item Other moving window functions  from this package: \code{\LinkA{runmin}{runmin}}, 
+\code{\LinkA{runmax}{runmax}}, \code{\LinkA{runquantile}{runquantile}}, \code{\LinkA{runmean}{runmean}} and
+\code{\LinkA{runsd}{runsd}}
+\item generic running window functions: \code{\LinkA{apply}{apply}}\code{
+     (\LinkA{embed}{embed}(x,k), 1, FUN)} (fastest), \code{\LinkA{rollFun}{rollFun}} 
+from \pkg{fSeries} (slow), \code{\LinkA{running}{running}} from \pkg{gtools} 
+package (extremely slow for this purpose), \code{\LinkA{rapply}{rapply}} from 
+\pkg{zoo} library, \code{\LinkA{subsums}{subsums}} from 
+\pkg{magic} library can perform running window operations on data with any 
+dimensions. 
+}
+\end{SeeAlso}
+\begin{Examples}
+\begin{ExampleCode}
+  # show runmed function
+  k=25; n=200;
+  x = rnorm(n,sd=30) + abs(seq(n)-n/4)
+  col = c("black", "red", "green")
+  m=runmed(x, k)
+  y=runmad(x, k, center=m)
+  plot(x, col=col[1], main = "Moving Window Analysis Functions")
+  lines(m    , col=col[2])
+  lines(m-y/2, col=col[3])
+  lines(m+y/2, col=col[3])
+  lab = c("data", "runmed", "runmed-runmad/2", "runmed+runmad/2")
+  legend(0,0.9*n, lab, col=col, lty=1 )
+
+  # basic tests against apply/embed
+  eps = .Machine$double.eps ^ 0.5
+  k=25 # odd size window
+  a = runmad(x,k, center=runmed(x,k), endrule="trim")
+  b = apply(embed(x,k), 1, mad)
+  stopifnot(all(abs(a-b)<eps));
+  k=24 # even size window
+  a = runmad(x,k, center=runquantile(x,k,0.5,type=2), endrule="trim")
+  b = apply(embed(x,k), 1, mad)
+  stopifnot(all(abs(a-b)<eps));
+  
+  # test against loop approach
+  # this test works fine at the R prompt but fails during package check - need to investigate
+  k=24; n=200;
+  x = rnorm(n,sd=30) + abs(seq(n)-n/4) # create random data
+  x = rep(1:5,40)
+  #x[seq(1,n,11)] = NaN;               # commented out for time beeing - on to do list
+  #x[5] = NaN;                         # commented out for time beeing - on to do list
+  k2 = k
+  k1 = k-k2-1
+  ac = array(runquantile(x,k,0.5))
+  a  = runmad(x, k, center=ac)
+  bc = array(0,n)
+  b  = array(0,n)
+  for(j in 1:n) {
+    lo = max(1, j-k1)
+    hi = min(n, j+k2)
+    bc[j] = median(x[lo:hi], na.rm = TRUE)
+    b [j] = mad   (x[lo:hi], na.rm = TRUE, center=bc[j])
+  }
+  eps = .Machine$double.eps ^ 0.5
+  #stopifnot(all(abs(ac-bc)<eps)); # commented out for time beeing - on to do list
+  #stopifnot(all(abs(a-b)<eps));   # commented out for time beeing - on to do list
+  
+  # compare calculation at array ends
+  k=25; n=200;
+  x = rnorm(n,sd=30) + abs(seq(n)-n/4)
+  c = runquantile(x,k,0.5,type=2)             # find the center
+  a = runmad(x, k, center=c, endrule="mad" )  # fast C code
+  b = runmad(x, k, center=c, endrule="func")  # slow R code
+  stopifnot(all(abs(a-b)<eps));
+  
+  # test if moving windows forward and backward gives the same results
+  k=51;
+  a = runmad(x     , k)
+  b = runmad(x[n:1], k)
+  stopifnot(all(a[n:1]==b, na.rm=TRUE));
+
+  # speed comparison
+  ## Not run: 
+  x=runif(1e5); k=51;                       # reduce vector and window sizes
+  system.time(runmad( x,k,endrule="trim"))
+  system.time(apply(embed(x,k), 1, mad))  
+  
+## End(Not run)
+\end{ExampleCode}
+\end{Examples}
+

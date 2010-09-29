@@ -1,0 +1,183 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: The Page Rank algorithm</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for page.rank {igraph}"><tr><td>page.rank {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>The Page Rank algorithm</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Calculates the Google PageRank for the specified
+vertices.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+page.rank (graph, vids = V(graph), directed = TRUE, damping = 0.85, 
+    weights = NULL, options = igraph.arpack.default) 
+page.rank.old (graph, vids = V(graph), directed = TRUE, niter = 1000, 
+    eps = 0.001, damping = 0.85, old = FALSE) 
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>graph</code></td>
+<td>
+The graph object. </td></tr>
+<tr valign="top"><td><code>vids</code></td>
+<td>
+The vertices of interest.</td></tr>
+<tr valign="top"><td><code>directed</code></td>
+<td>
+Logical, if true directed paths will be considered for
+directed graphs. It is ignored for undirected graphs.</td></tr>
+<tr valign="top"><td><code>damping</code></td>
+<td>
+The damping factor (&lsquo;d&rsquo; in the original paper).</td></tr>
+<tr valign="top"><td><code>weights</code></td>
+<td>
+A numerical vector or <code>NULL</code>. This argument can be
+used to give edge weights for calculating the weighted PageRank of
+vertices. If this is <code>NULL</code> and the graph has a <code>weight</code>
+edge attribute then that is used. If <code>weights</code> is a numerical
+vector then it used, even if the graph has a <code>weights</code> edge
+attribute. If this is <code>NA</code>, then no edge weights are used (even
+if the graph has a <code>weight</code> edge attribute.</td></tr>
+<tr valign="top"><td><code>options</code></td>
+<td>
+A named list, to override some ARPACK options. See
+<code><a href="arpack.html">arpack</a></code> for details.</td></tr>
+<tr valign="top"><td><code>niter</code></td>
+<td>
+The maximum number of iterations to perform.</td></tr>
+<tr valign="top"><td><code>eps</code></td>
+<td>
+The algorithm will consider the calculation as complete if
+the difference of PageRank values between iterations change less
+than this value for every node.</td></tr>
+<tr valign="top"><td><code>old</code></td>
+<td>
+A logical scalar, whether the old style (pre igraph 0.5)
+normalization to use. See details below.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+For the explanation of the PageRank algorithm, see the following
+webpage: <a href="http://www-db.stanford.edu/~backrub/google.html">http://www-db.stanford.edu/~backrub/google.html</a>, or the
+following reference: 
+</p>
+<p>
+Sergey Brin and Larry Page: The Anatomy of a Large-Scale Hypertextual
+Web Search Engine. Proceedings of the 7th World-Wide Web Conference,
+Brisbane, Australia, April 1998.  
+</p>
+<p>
+igraph 0.5 (and later) contains two PageRank calculation
+implementations. The <code>page.rank</code> function uses ARPACK to perform
+the calculation, see also <code><a href="arpack.html">arpack</a></code>.
+</p>
+<p>
+The <code>page.rank.old</code> function performs a simple power method, this
+is the implementation that was available under the name
+<code>page.rank</code> in pre 0.5 igraph versions. Note that
+<code>page.rank.old</code> has an argument called <code>old</code>. If this
+argument is <code>FALSE</code> (the default), then the proper PageRank
+algorithm is used, i.e. <i>(1-d)/n</i> is added to the weighted
+PageRank of vertices to calculate the next iteration. If this
+argument is <code>TRUE</code> then <i>(1-d)</i> is added, just like in the
+PageRank paper; <i>d</i> is the damping factor, and <i>n</i> is the
+total number of vertices.
+A further difference is that the old implementation does not
+renormalize the page rank vector after each iteration.
+Note that the <code>old=FALSE</code> method is not stable,
+is does not necessarily converge to a fixed point. It should be
+avoided for new code, it is only included for compatibility with old
+igraph versions.
+</p>
+<p>
+Please note that the PageRank of a given vertex depends on the PageRank
+of all other vertices, so even if you want to calculate the PageRank for
+only some of the vertices, all of them must be calculated. Requesting
+the PageRank for only some of the vertices does not result in any
+performance increase at all. 
+</p>
+<p>
+Since the calculation is an iterative process, the algorithm is
+stopped after a given count of iterations or if the PageRank value
+differences between iterations are less than a predefined value.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+For <code>page.rank</code> a named list with entries:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>vector</code></td>
+<td>
+A numeric vector with the PageRank scores.</td></tr>
+<tr valign="top"><td><code>value</code></td>
+<td>
+The eigenvalue corresponding to the eigenvector with
+the page rank scores. It should be always exactly one.</td></tr>
+<tr valign="top"><td><code>options</code></td>
+<td>
+Some information about the underlying ARPACK
+calculation. See <code><a href="arpack.html">arpack</a></code> for details.</td></tr>
+</table>
+<p>
+
+<br>
+For <code>page.rank.old</code> a numeric vector of Page Rank scores.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Tamas Nepusz <a href="mailto:ntamas@rmki.kfki.hu">ntamas@rmki.kfki.hu</a> and
+Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Sergey Brin and Larry Page: The Anatomy of a Large-Scale Hypertextual
+Web Search Engine. Proceedings of the 7th World-Wide Web Conference,
+Brisbane, Australia, April 1998.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+Other centrality scores: <code><a href="closeness.html">closeness</a></code>,
+<code><a href="betweenness.html">betweenness</a></code>, <code><a href="degree.html">degree</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+g &lt;- random.graph.game(20, 5/20, directed=TRUE)
+page.rank(g)$vector
+
+g2 &lt;- graph.star(10)
+page.rank(g2)$vector
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

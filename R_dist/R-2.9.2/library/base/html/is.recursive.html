@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Is an Object Atomic or Recursive?</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for is.recursive {base}"><tr><td>is.recursive {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Is an Object Atomic or Recursive?</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>is.atomic</code> returns <code>TRUE</code> if <code>x</code> is an atomic vector
+(or <code>NULL</code>) and <code>FALSE</code> otherwise.
+</p>
+<p>
+<code>is.recursive</code> returns <code>TRUE</code> if <code>x</code> has a recursive
+(list-like) structure and <code>FALSE</code> otherwise.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+is.atomic(x)
+is.recursive(x)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+object to be tested.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>is.atomic</code> is true for the atomic vector types
+(<code>"logical"</code>, <code>"integer"</code>, <code>"numeric"</code>,
+<code>"complex"</code>, <code>"character"</code> and <code>"raw"</code>) and <code>NULL</code>.
+</p>
+<p>
+Most types of language objects are regarded as recursive: those which
+are not are the atomic vector types, <code>NULL</code> and symbols (as given
+by <code><a href="name.html">as.name</a></code>).
+</p>
+<p>
+These are <a href="Primitive.html">primitive</a> functions.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+<EM>The New S Language</EM>.
+Wadsworth &amp; Brooks/Cole.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="list.html">is.list</a></code>,
+<code><a href="is.language.html">is.language</a></code>, etc,
+and the <code>demo("is.things")</code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+require(stats)
+
+is.a.r &lt;- function(x) c(is.atomic(x), is.recursive(x))
+
+is.a.r(c(a=1,b=3))      # TRUE FALSE
+is.a.r(list())          # FALSE TRUE ??
+is.a.r(list(2))         # FALSE TRUE
+is.a.r(lm)              # FALSE TRUE
+is.a.r(y ~ x)           # FALSE TRUE
+is.a.r(expression(x+1)) # FALSE TRUE (not in 0.62.3!)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

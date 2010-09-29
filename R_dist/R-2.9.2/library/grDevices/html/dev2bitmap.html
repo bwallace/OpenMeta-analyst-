@@ -1,0 +1,186 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Graphics Device for Bitmap Files via GhostScript</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for dev2bitmap {grDevices}"><tr><td>dev2bitmap {grDevices}</td><td align="right">R Documentation</td></tr></table>
+<h2>Graphics Device for Bitmap Files via GhostScript</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>bitmap</code> generates a graphics file.
+<code>dev2bitmap</code> copies the current graphics device to a file in a
+graphics format.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+bitmap(file, type = "png16m", height = 7, width = 7, res = 72,
+       units = "in", pointsize, taa = NA, gaa = NA, ...)
+
+dev2bitmap(file, type = "png16m", height = 7, width = 7, res = 72,
+           units = "in", pointsize, ...,
+           method = c("postscript", "pdf"), taa = NA, gaa = NA)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>file</code></td>
+<td>
+The output file name, with an appropriate extension.</td></tr>
+<tr valign="top"><td><code>type</code></td>
+<td>
+The type of bitmap. the default is <code>"png256"</code>.</td></tr>
+<tr valign="top"><td><code>width, height</code></td>
+<td>
+Dimensions of the display region.</td></tr>
+<tr valign="top"><td><code>res</code></td>
+<td>
+Resolution, in dots per inch.</td></tr>
+<tr valign="top"><td><code>units</code></td>
+<td>
+The units in which <code>height</code> and <code>width</code> are
+given.  Can be <code>in</code> (inches), <code>px</code> (pixels), <code>cm</code> or
+<code>mm</code>.</td></tr>
+<tr valign="top"><td><code>pointsize</code></td>
+<td>
+The pointsize to be used for text: defaults to
+something reasonable given the width and height</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+Other parameters passed to <code><a href="postscript.html">postscript</a></code> or
+<code><a href="pdf.html">pdf</a></code>.</td></tr>
+<tr valign="top"><td><code>method</code></td>
+<td>
+Should the plot be done by <code><a href="postscript.html">postscript</a></code> or
+<code><a href="pdf.html">pdf</a></code>?</td></tr>
+<tr valign="top"><td><code>taa, gaa</code></td>
+<td>
+Number of bits of antialiasing for text and for graphics
+respectively.  Usually 4 (for best effect) or 2.  Not supported on
+all types.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>dev2bitmap</code> works by copying the current device to a
+<code><a href="postscript.html">postscript</a></code> or <code><a href="pdf.html">pdf</a></code> device, and
+post-processing the output file using <code>ghostscript</code>.
+<code>bitmap</code> works in the same way using a <code>postscript</code> device
+and post-processing the output as &lsquo;printing&rsquo;.
+</p>
+<p>
+You will need <code>ghostscript</code>: the full path to the executable can
+be set by the environment variable <span class="env">R_GSCMD</span>.
+(If this is unset the setting of <span class="env">GSC</span> is used, otherwise command
+<code>"gswin32c.exe"</code>, which will work if it is in your <span class="env">PATH</span>.)
+</p>
+<p>
+The types available will depend on the version of <code>ghostscript</code>,
+but are likely to include
+<code>"pcxmono"</code>, <code>"pcxgray"</code>, <code>"pcx16"</code>, <code>"pcx256"</code>,
+<code>"pcx24b"</code>, <code>"pcxcmyk"</code>, <code>"pbm"</code>, <code>"pbmraw"</code>,
+<code>"pgm"</code>, <code>"pgmraw"</code>, <code>"pgnm"</code>, <code>"pgnmraw"</code>,
+<code>"pnm"</code>, <code>"pnmraw"</code>, <code>"ppm"</code>, <code>"ppmraw"</code>,
+<code>"pkm"</code>, <code>"pkmraw"</code>, <code>"tiffcrle"</code>, <code>"tiffg3"</code>,
+<code>"tiffg32d"</code>, <code>"tiffg4"</code>, <code>"tifflzw"</code>,
+<code>"tiffpack"</code>, <code>"tiff12nc"</code>, <code>"tiff24nc"</code>,
+<code>"psmono"</code>, <code>"psgray"</code>, <code>"psrgb"</code>, <code>"bit"</code>,
+<code>"bitrgb"</code>, <code>"bitcmyk"</code>, <code>"pngmono"</code>, <code>"pnggray"</code>,
+<code>"pngalpha"</code>, <code>"png16"</code>, <code>"png256"</code>, <code>"png16m"</code>,
+<code>"png48"</code>, <code>"jpeg"</code>, <code>"jpeggray"</code>, <code>"pdfwrite"</code>.
+</p>
+<p>
+The default type, <code>"png16m"</code> supports 24-bit colour and
+anti-aliasing.  Versions of <font face="Courier New,Courier" color="#666666"><b>R</b></font> prior to 2.7.0 defaulted to
+<code>"png256"</code>, which uses a palette of 256 colours and could be a
+more compact representation.  Monochrome graphs can use
+<code>"pngmono"</code>, or <code>"pnggray"</code> if anti-aliasing is desired.
+</p>
+<p>
+Note that for a colour TIFF image you probably want <code>"tiff24nc"</code>,
+which is 8-bit per channel RGB (the most common TIFF format).  None of
+the listed TIFF types support transparency.
+</p>
+<p>
+For formats which contain a single image, a file specification like
+<code>Rplots%03d.png</code> can be used: this is interpreted by GhostScript.
+</p>
+<p>
+For <code>dev2bitmap</code> if just one of <code>width</code> and <code>height</code> is
+specified, the other is chosen to preserve aspect ratio of the
+device being copied.  The main reason to prefer <code>method = "pdf"</code>
+over the default would be to allow semi-transparent colours to be used.
+</p>
+<p>
+For graphics parameters such as <code>"cra"</code> that need to work in
+pixels, the default resolution of 72dpi is always used.
+</p>
+<p>
+Paths for <code>file</code> and <span class="env">R_GSCMD</span> which contain spaces are
+mapped to short names <EM>via</EM> <code><a href="../../utils/html/shortPathName.html">shortPathName</a></code>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+None.</p>
+
+<h3>Conventions</h3>
+
+<p>
+This section describes the implementation of the conventions for
+graphics devices set out in the &ldquo;R Internals Manual&rdquo;.  These
+devices follow the underlying device, so when viewed at the stated
+<code>res</code>:
+</p>
+
+<ul>
+<li>The default device size is 7 inches square.
+<li>Font sizes are in big points.
+<li>The default font family is (for the standard GhostScript
+setup) URW Nimbus Sans.
+<li>Line widths are as a multiple of 1/96 inch, with no minimum. 
+<li>Circle of any radius are allowed.
+<li>Colours are interpreted by the viewing/printing application.
+</ul>
+
+<h3>Note</h3>
+
+<p>
+Use of <code>bitmap</code> will leave a temporary file (with file name
+starting <code>Rbit</code>).  Use of the <code><a href="pdf.html">pdf</a></code>, <code><a href="png.html">bmp</a></code>,
+<code><a href="png.html">png</a></code> and <code><a href="png.html">jpeg</a></code> devices may be preferred to
+using these functions.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="savePlot.html">savePlot</a></code>, which for <code>windows</code> and
+<code>X11(type = "Cairo")</code> provides a simple way to record a PNG
+record of the current plot.
+</p>
+<p>
+<code><a href="postscript.html">postscript</a></code>, <code><a href="pdf.html">pdf</a></code>, <code><a href="png.html">png</a></code> and
+<code><a href="png.html">jpeg</a></code> and on Windows <code>bmp</code>.
+</p>
+<p>
+To display an array of data, see <code><a href="../../graphics/html/image.html">image</a></code>.
+</p>
+
+
+
+<hr><div align="center">[Package <em>grDevices</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

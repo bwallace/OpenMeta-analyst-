@@ -1,0 +1,32 @@
+AnalysisSpecification-class
+                        Class "AnalysisSpecification" ~~~
+BinaryData-class        Class "BinaryData" ~~~
+ContinuousData-class    Class "ContinuousData" ~~~
+OMData-class            Class "OMData" ~~~
+binary.fixed.inv.var    
+binary.fixed.inv.var.parameters
+                        
+binary.fixed.mh         
+binary.fixed.mh.is.feasible
+                        
+binary.fixed.mh.parameters
+                        
+binary.fixed.peto       
+binary.fixed.peto.is.feasible
+                        
+binary.fixed.peto.parameters
+                        
+binary.random           
+binary.random.parameters
+                        
+check.1spell.res        
+continuous.random       
+continuous.random.parameters
+                        
+fillin.2x2.simple       
+fillin.cont.1spell      
+fillin.cont.AminusB     
+impute.bin.data         
+isnt.null               
+openmetar-package       What the package does (short line) ~~ package
+                        title ~~

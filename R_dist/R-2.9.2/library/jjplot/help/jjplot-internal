@@ -1,0 +1,12 @@
+jjplot-internal            package:jjplot            R Documentation
+
+_I_n_t_e_r_n_a_l _j_j_p_l_o_t _o_b_j_e_c_t_s
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Internal jjplot objects.
+
+_D_e_t_a_i_l_s:
+
+     These are not to be called by the user.
+

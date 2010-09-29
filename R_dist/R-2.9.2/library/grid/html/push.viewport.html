@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Push a Viewport onto the Grid Viewport Stack</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for push.viewport {grid}"><tr><td>push.viewport {grid}</td><td align="right">R Documentation</td></tr></table>
+<h2>Push a Viewport onto the Grid Viewport Stack</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Grid maintains a viewport stack &mdash; a list of nested drawing
+contexts.
+</p>
+<p>
+This function makes the specified viewport the default viewport
+and makes its parent the previous default viewport (i.e.,
+nests the specified context within the previous default context).
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+push.viewport(..., recording=TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>...</code></td>
+<td>
+One or more objects of class <code>"viewport"</code>, or
+<code>NULL</code>.</td></tr>
+<tr valign="top"><td><code>recording</code></td>
+<td>
+A logical value to indicate whether the set-viewport
+operation should be recorded on the Grid display list.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+None.</p>
+
+<h3>Warning</h3>
+
+<p>
+This function has been deprecated.  Please use <code>pushViewport</code>
+instead.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Paul Murrell
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="pop.viewport.html">pop.viewport</a></code>.
+</p>
+
+
+
+<hr><div align="center">[Package <em>grid</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

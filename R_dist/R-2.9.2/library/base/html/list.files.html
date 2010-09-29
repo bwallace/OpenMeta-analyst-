@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: List the Files in a Directory/Folder</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for list.files {base}"><tr><td>list.files {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>List the Files in a Directory/Folder</h2>
+
+
+<h3>Description</h3>
+
+<p>
+These functions produce a character vector of the names of files
+in the named directory.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+list.files(path = ".", pattern = NULL, all.files = FALSE,
+           full.names = FALSE, recursive = FALSE,
+           ignore.case = FALSE)
+
+       dir(path = ".", pattern = NULL, all.files = FALSE,
+           full.names = FALSE, recursive = FALSE,
+           ignore.case = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>path</code></td>
+<td>
+a character vector of full path names; the default
+corresponds to the working directory <code><a href="getwd.html">getwd</a>()</code>.  Missing
+values will be ignored.</td></tr>
+<tr valign="top"><td><code>pattern</code></td>
+<td>
+an optional <a href="regex.html">regular expression</a>.  Only file names
+which match the regular expression will be returned.</td></tr>
+<tr valign="top"><td><code>all.files</code></td>
+<td>
+a logical value. If <code>FALSE</code>, only the
+names of visible files are returned.  If <code>TRUE</code>,
+all file names will be returned.</td></tr>
+<tr valign="top"><td><code>full.names</code></td>
+<td>
+a logical value.  If <code>TRUE</code>, the directory
+path is prepended to the file names.  If <code>FALSE</code>, only
+the file names are returned.</td></tr>
+<tr valign="top"><td><code>recursive</code></td>
+<td>
+logical. Should the listing recurse into directories?</td></tr>
+<tr valign="top"><td><code>ignore.case</code></td>
+<td>
+logical. Should pattern-matching be case-insensitive?</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+A character vector containing the names of the files in the
+specified directories, or <code>""</code> if there were no files. If a
+path does not exist or is not a directory or is unreadable it
+is skipped, with a warning.
+<br>
+The files are sorted in alphabetical order, on the full path
+if <code>full.names = TRUE</code>.  Directories are included only if
+<code>recursive = FALSE</code>.</p>
+
+<h3>Note</h3>
+
+<p>
+File naming conventions are platform dependent.
+</p>
+<p>
+<code>recursive = TRUE</code> is not supported on all platforms and may be
+ignored (with a warning).
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Ross Ihaka, Brian Ripley
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="file.info.html">file.info</a></code>, <code><a href="file.access.html">file.access</a></code>
+and <code><a href="files.html">files</a></code> for many more file handling functions and 
+<code><a href="file.choose.html">file.choose</a></code> 
+and <code><a href="../../utils/html/choose.files.html">choose.files</a></code>
+for interactive selection.
+</p>
+<p>
+<code><a href="../../utils/html/glob2rx.html">glob2rx</a></code> to convert wildcards (as used by system file
+commands and shells) to regular expressions.
+</p>
+<p>
+<code><a href="Sys.glob.html">Sys.glob</a></code> for wildcard expansion on file paths.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+list.files(R.home())
+## Only files starting with a-l or r
+## Note that a-l is locale-dependent, but using case-insensitive
+## matching makes it unambiguous in English locales
+dir("../..", pattern = "^[a-lr]",full.names=TRUE, ignore.case = TRUE)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

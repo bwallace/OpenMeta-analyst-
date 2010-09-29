@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Discretization using the Chi-Merge method</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for chiMerge {dprep}"><tr><td>chiMerge {dprep}</td><td align="right">R Documentation</td></tr></table>
+<h2>Discretization using the Chi-Merge method</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This function performs supervised discretization using the Chi Merge method.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+chiMerge(data, varcon, alpha = 0.1)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>data</code></td>
+<td>
+The name of the dataset to be discretized</td></tr>
+<tr valign="top"><td><code>varcon</code></td>
+<td>
+Vector of continuous variables</td></tr>
+<tr valign="top"><td><code>alpha</code></td>
+<td>
+The significance level</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+In case of datasets containing negative values apply first a range normalization
+to change the range of the attributes values to an interval containing positive values.
+The discretization process becomes slow when the number of variables increases (say for more 
+than 100 variables).
+</p>
+
+
+<h3>Value</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>discdata </code></td>
+<td>
+A new data matrix containing the discretized features</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Edgar Acuna, Jaime Porras, and  Carlos Lopez
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Kantardzic M. (2003). Data Mining: Concepts, Models, methods, and Algorithms. 
+John Wiley. New York.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="disc.ef.html">disc.ef</a></code>, <code><a href="disc.ew.html">disc.ew</a></code>,<code><a href="disc.1r.html">disc.1r</a></code>,<code><a href="disc.mentr.html">disc.mentr</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+#-----Discretization using the ChiMerge method
+data(my.iris)
+iris.disc=chiMerge(my.iris,1:4,alpha=0.05)
+#-----Applying chiMerge a dataset containing negative values 
+#data(ionosphere)
+#normionos=rangenorm(ionosphere,"mmnorm")
+#ionos.disc=chiMerge(normionos,1:32)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>dprep</em> version 2.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

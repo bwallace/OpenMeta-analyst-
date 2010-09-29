@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Are we using R, rather than S?</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for is.R {base}"><tr><td>is.R {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Are we using R, rather than S?</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Test if running under <font face="Courier New,Courier" color="#666666"><b>R</b></font>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+is.R()
+</pre>
+
+
+<h3>Details</h3>
+
+<p>
+The function has been written such as to correctly run in all versions
+of <font face="Courier New,Courier" color="#666666"><b>R</b></font>, S and S-PLUS.
+In order for code to be runnable in both <font face="Courier New,Courier" color="#666666"><b>R</b></font> and S dialects previous to
+S-PLUS 8.0, your code must either define <code>is.R</code> or use it as
+</p>
+<p>
+<code>if (exists("is.R") &amp;&amp; is.function(is.R) &amp;&amp; is.R()) {</code><br>
+<code>    </code><EM>## R-specific code</EM><br>
+<code>} else {</code><br>
+<code>    </code><EM>## S-version of code</EM><br>
+<code>}</code>
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>is.R</code> returns <code>TRUE</code> if we are using <font face="Courier New,Courier" color="#666666"><b>R</b></font> and <code>FALSE</code>
+otherwise.</p>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="Version.html">R.version</a></code>, <code><a href="system.html">system</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+x &lt;- stats::runif(20); small &lt;- x &lt; 0.4
+## In the early years of R, 'which()' only existed in R:
+if(is.R()) which(small) else seq(along=small)[small]
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

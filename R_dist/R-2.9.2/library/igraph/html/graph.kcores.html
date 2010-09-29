@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: K-core decomposition of graphs</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for graph.coreness {igraph}"><tr><td>graph.coreness {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>K-core decomposition of graphs</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The k-core of graph is a maximal subgraph in which each
+vertex has at least degree k. The coreness of a vertex is k if it
+belongs to the k-core but not to the (k+1)-core.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+graph.coreness(graph, mode=c("all", "out", "in"))
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>graph</code></td>
+<td>
+The input graph, it can be directed or undirected</td></tr>
+<tr valign="top"><td><code>mode</code></td>
+<td>
+The type of the core in directed graphs. Character
+constant, possible values: <code>in</code>: in-cores are computed,
+<code>out</code>: out-cores are computed, <code>all</code>: the corresponding
+undirected graph is considered. This argument is ignored for
+undirected graphs.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The k-core of a graph is the maximal subgraph in which every vertex
+has at least degree k. The cores of a graph form layers: the (k+1)-core
+is always a subgraph of the k-core.
+</p>
+<p>
+This function calculates the coreness for each vertex.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+Numeric vector of integer numbers giving the coreness of each vertex.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Vladimir Batagelj, Matjaz Zaversnik: An O(m)
+Algorithm for Cores Decomposition of Networks, 2002
+</p>
+<p>
+Seidman S. B. (1983) Network structure and minimum degree, <EM>Social
+Networks</EM>, 5, 269&ndash;287.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="degree.html">degree</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+g &lt;- graph.ring(10)
+g &lt;- add.edges(g, c(0,1, 1,2, 0,2))
+graph.coreness(g)               
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

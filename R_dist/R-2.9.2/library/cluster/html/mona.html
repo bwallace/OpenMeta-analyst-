@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: MONothetic Analysis Clustering of Binary Variables</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for mona {cluster}"><tr><td>mona {cluster}</td><td align="right">R Documentation</td></tr></table>
+<h2>MONothetic Analysis Clustering of Binary Variables</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Returns a list representing a divisive hierarchical clustering of
+a dataset with binary variables only.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+mona(x)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+data matrix or data frame in which each row corresponds to an
+observation, and each column corresponds to a variable.  All
+variables must be binary.  A limited number of missing values (NAs)
+is allowed. Every observation must have at least one value different
+from NA.  No variable should have half of its values missing. There
+must be at least one variable which has no missing values.  A
+variable with all its non-missing values identical, is not allowed.
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>mona</code> is fully described in chapter 7 of Kaufman and Rousseeuw (1990).
+It is "monothetic" in the sense that each division is based on a
+single (well-chosen) variable, whereas most other hierarchical methods
+(including <code>agnes</code> and <code>diana</code>) are "polythetic", i.e. they use
+all variables together.
+</p>
+<p>
+The <code>mona</code>-algorithm constructs a hierarchy of clusterings,
+starting with one large
+cluster. Clusters are divided until all observations in the same cluster have
+identical values for all variables.<br>
+At each stage, all clusters are divided according to the values of one
+variable. A cluster is divided into one cluster with all observations having
+value 1 for that variable, and another cluster with all observations having
+value 0 for that variable.
+</p>
+<p>
+The variable used for splitting a cluster is the variable with the maximal
+total association to the other variables, according to the observations in the
+cluster to be splitted. The association between variables f and g
+is given by a(f,g)*d(f,g) - b(f,g)*c(f,g), where a(f,g), b(f,g), c(f,g),
+and d(f,g) are the numbers in the contingency table of f and g.
+[That is, a(f,g) (resp. d(f,g)) is the number of observations for which f and g
+both have value 0 (resp. value 1); b(f,g) (resp. c(f,g)) is the number of
+observations for which f has value 0 (resp. 1) and g has value 1 (resp. 0).]
+The total association of a variable f is the sum of its associations to all
+variables.
+</p>
+<p>
+This algorithm does not work with missing values, therefore the data are
+revised, e.g. all missing values are filled in. To do this, the same measure
+of association between variables is used as in the algorithm. When variable
+f has missing values, the variable g with the largest absolute association
+to f is looked up. When the association between f and g is positive,
+any missing value of f is replaced by the value of g for the same
+observation. If the association between f and g is negative, then any missing
+value of f is replaced by the value of 1-g for the same
+observation.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+an object of class <code>"mona"</code> representing the clustering.
+See <code>mona.object</code> for details.</p>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="agnes.html">agnes</a></code> for background and references;
+<code><a href="mona.object.html">mona.object</a></code>, <code><a href="plot.mona.html">plot.mona</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(animals)
+ma &lt;- mona(animals)
+ma
+## Plot similar to Figure 10 in Struyf et al (1996)
+plot(ma)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>cluster</em> version 1.12.0 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

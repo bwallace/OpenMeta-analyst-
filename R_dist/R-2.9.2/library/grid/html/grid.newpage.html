@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Move to a New Page on a Grid Device</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for grid.newpage {grid}"><tr><td>grid.newpage {grid}</td><td align="right">R Documentation</td></tr></table>
+<h2>Move to a New Page on a Grid Device</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This function erases the current device or moves to a new page.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+grid.newpage(recording = TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>recording</code></td>
+<td>
+A logical value to indicate whether the new-page
+operation should be saved onto the Grid display list.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The new page is painted with the fill colour
+(<code><a href="gpar.html">gpar</a>("fill")</code>), which is often transparent.  For devices
+with a <EM>canvas</EM> colour (the on-screen devices <code>X11</code>,
+<code>windows</code> and <code>quartz</code>), the page is first painted with the
+canvas colour and then the background colour.
+</p>
+<p>
+There is a hook called <code>"grid.newpage"</code> (see <code><a href="../../base/html/userhooks.html">setHook</a></code>)
+which is used in the testing code to annotate the new page.  The hook
+function(s) are called with no argument.  (If the value is a character
+string, <code>get</code> is called on it from within the <span class="pkg">grid</span>
+name space.)
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+None.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Paul Murrell
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<a href="Grid.html">Grid</a>
+</p>
+
+
+
+<hr><div align="center">[Package <em>grid</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Test for funnel plot asymmetry</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for metabias {meta}"><tr><td>metabias {meta}</td><td align="right">R Documentation</td></tr></table>
+<h2>Test for funnel plot asymmetry</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Test for funnel plot asymmetry, based on rank correlation or linear
+regression method.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+metabias(x, seTE, TE.fixed, seTE.fixed,
+         method = "rank",
+         plotit = FALSE, correct = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+An object of class <code>meta</code> or estimated treatment
+effect in individual studies.</td></tr>
+<tr valign="top"><td><code>seTE</code></td>
+<td>
+Standard error of estimated treatment effect (mandatory if
+<code>x</code> not of class <code>meta</code>).</td></tr>
+<tr valign="top"><td><code>TE.fixed</code></td>
+<td>
+Overall treatment estimate (mandatory if <code>x</code> not
+of class <code>meta</code> and <code>method</code> = <code>"rank"</code>).</td></tr>
+<tr valign="top"><td><code>seTE.fixed</code></td>
+<td>
+Standard error of overall treatment estimate
+(mandatory if <code>x</code> not of class <code>meta</code> and <code>method</code> =
+<code>"rank"</code>).</td></tr>
+<tr valign="top"><td><code>method</code></td>
+<td>
+A character string indicating which test is to be
+used. Either <code>"rank"</code>, <code>"linreg"</code>, <code>"mm"</code>,
+<code>"count"</code>, <code>"score"</code>, or <code>"peters"</code>, can be
+abbreviated.</td></tr>
+<tr valign="top"><td><code>plotit</code></td>
+<td>
+A logical indicating whether a plot should be produced
+for method <code>"rank"</code>, <code>"linreg"</code>, <code>"mm"</code>, or
+<code>"score"</code>.</td></tr>
+<tr valign="top"><td><code>correct</code></td>
+<td>
+A logical indicating whether a continuity corrected
+statistic is used for rank correlation methods <code>"rank"</code> and <code>"count"</code>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+If <code>method</code> is <code>"rank"</code>, the test statistic is based on the
+rank correlation between standardised treatment estimates and variance
+estimates of estimated treatment effects; Kendall's tau is used as
+correlation measure (Begg &amp; Mazumdar, 1994). The test statistic
+follows a standard normal distribution. By default (if <code>correct</code>
+is FALSE), no continuity correction is utilised (Kendall &amp; Gibbons,
+1990).
+</p>
+<p>
+If <code>method</code> is <code>"linreg"</code>, the test statistic is based on a
+weighted linear regression of the treatment effect on its standard
+error (Egger et al., 1997). The test statistic follows a t
+distribution with <code>number of studies - 2</code> degrees of freedom.
+</p>
+<p>
+If <code>method</code> is <code>"mm"</code>, the test statistic is based on a
+weighted linear regression of the treatment effect on its standard
+error using the method of moments estimator for the additive
+between-study variance component (method 3a in Thompson, Sharp,
+1999). The test statistic follows a t distribution with <code>number
+  of studies - 2</code> degrees of freedom.
+</p>
+<p>
+If <code>method</code> is <code>"count"</code>, the test statistic is based on
+the rank correlation between a standardised cell frequency and the
+inverse of the variance of the cell frequency; Kendall's tau is used
+as correlation measure (Schwarzer et al., 2007). The test statistic
+follows a standard normal distribution. By default (if <code>correct</code>
+is FALSE), no continuity correction is utilised (Kendall &amp; Gibbons,
+1990).
+</p>
+<p>
+If <code>method</code> is <code>"score"</code>, the test statistic is based on a
+weighted linear regression utilising efficient score and score
+variance (Harbord et al., 2006). The test statistic follows a t
+distribution with <code>number of studies - 2</code> degrees of freedom.
+</p>
+<p>
+If <code>method</code> is <code>"peters"</code>, the test statistic is based on a
+weighted linear regression of the treatment effect on the inverse of
+the total sample size using the variance of the average event rate as
+weights (Peters et al., 2006). The test statistic follows a t
+distribution with <code>number of studies - 2</code> degrees of freedom.
+</p>
+<p>
+In order to calculate an arcsine test for funnel plot asymmetry
+(Ruecker et al., 2008), one has to use the <code>metabin</code> function
+with parameter <code>sm="AS"</code> as input to the <code>metabias</code>
+command. The three arcsine tests described in Ruecker et al. (2008)
+can be calculated by setting <code>method</code> to <code>"rank"</code>,
+<code>"linreg"</code> and <code>"mm"</code>, respectively.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A list with class <code>"htest"</code> containing the following components:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>estimate</code></td>
+<td>
+The estimated degree of funnel plot asymmetry, with
+name <code>"ks"</code> or <code>"bias"</code> corresponding to the method
+employed, i.e., rank correlation or regression method.</td></tr>
+<tr valign="top"><td><code>statistic</code></td>
+<td>
+The value of the test statistic.</td></tr>
+<tr valign="top"><td><code>parameter</code></td>
+<td>
+The degrees of freedom of the test statistic in the
+case that it follows a t distribution.</td></tr>
+<tr valign="top"><td><code>p.value</code></td>
+<td>
+The p-value for the test.</td></tr>
+<tr valign="top"><td><code>alternative</code></td>
+<td>
+A character string describing the alternative
+hypothesis.</td></tr>
+<tr valign="top"><td><code>method</code></td>
+<td>
+A character string indicating what type of test was used.</td></tr>
+<tr valign="top"><td><code>data.name</code></td>
+<td>
+A character string giving the names of the data.</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Guido Schwarzer <a href="mailto:sc@imbi.uni-freiburg.de">sc@imbi.uni-freiburg.de</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Begg CB &amp; Mazumdar M (1994), Operating characteristics of a
+rank correlation test for publication bias. <EM>Biometrics</EM>,
+<B>50</B>, 1088&ndash;1101.
+</p>
+<p>
+Egger M, Smith GD, Schneider M &amp; Minder C (1997),
+Bias in meta-analysis detected by a simple,
+graphical test. <EM>British Medical Journal</EM>, <B>315</B>, 629&ndash;634.
+</p>
+<p>
+Harbord RM, Egger M &amp; Sterne J (2006),
+A modified test for small-study effects in meta-analyses of controlled
+trials with binary endpoints.
+<EM>Statistics in Medicine</EM>, <B>25</B>, 3443&ndash;3457.
+</p>
+<p>
+Kendall M &amp; Gibbons JD (1990),
+<EM>Rank Correlation Methods</EM>.
+London: Edward Arnold.
+</p>
+<p>
+Peters JL, Sutton AJ, Jones DR,  Abrams KR &amp; Rushton L (2006),
+Comparison of two methods to detect publication bias in meta-analysis.
+<EM>Journal of the American Medical Association</EM>,
+<B>295</B>, 676&ndash;680.
+</p>
+<p>
+Ruecker G, Schwarzer G, Carpenter JR (2008)
+Arcsine test for publication bias in meta-analyses with binary
+outcomes. <EM>Statistics in Medicine</EM>, <B>27</B>,746&ndash;763.
+</p>
+<p>
+Schwarzer G, Antes G &amp; Schumacher M (2007),
+A test for publication bias in meta-analysis with sparse binary data.
+<EM>Statistics in Medicine</EM>, <B>26</B>, 721&ndash;733.
+</p>
+<p>
+Thompson SG &amp; Sharp, SJ (1999),
+Explaining heterogeneity in meta-analysis: A comparison of methods,
+<EM>Statistics in Medicine</EM>, <B>18</B>, 2693&ndash;2708.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="funnel.html">funnel</a></code>, <code><a href="funnel.meta.html">funnel.meta</a></code>, <code><a href="metabin.html">metabin</a></code>, <code><a href="metacont.html">metacont</a></code>, <code><a href="metagen.html">metagen</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(Olkin95)
+meta1 &lt;- metabin(event.e, n.e, event.c, n.c,
+                 data=Olkin95, subset=c(41,47,51,59),
+                 sm="RR", meth="I")
+
+metabias(meta1)
+metabias(meta1, correct=TRUE)
+
+metabias(meta1, method="linreg")
+metabias(meta1, method="linreg", plotit=TRUE)
+
+metabias(meta1, method="count")
+
+##
+## Same result:
+##
+metabias(meta1, method="linreg")$p.value
+metabias(meta1$TE, meta1$seTE, method="linreg")$p.value
+
+##
+## Arcsine test:
+##
+meta1.as &lt;- metabin(event.e, n.e, event.c, n.c,
+                    data=Olkin95, subset=c(41,47,51,59),
+                    sm="AS", meth="I")
+metabias(meta1.as, method="linreg")
+
+</pre>
+
+
+
+<hr><div align="center">[Package <em>meta</em> version 1.1-8 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Find Bonacich alpha centrality scores of network positions</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for alpha.centrality {igraph}"><tr><td>alpha.centrality {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Find Bonacich alpha centrality scores of network positions</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>alpha.centrality</code> calculates the alpha centrality of
+some (or all) vertices in a graph.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+alpha.centrality(graph, nodes=V(graph), alpha=1, loops=FALSE,
+                 exo=1, weights=NULL, tol=1e-7)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>graph</code></td>
+<td>
+The input graph, can be directed or undirected</td></tr>
+<tr valign="top"><td><code>nodes</code></td>
+<td>
+Vertex sequence, the vertices for which the alpha
+centrality values are returned. (For technical reasons they
+will be calculated for all vertices first, anyway.)</td></tr>
+<tr valign="top"><td><code>alpha</code></td>
+<td>
+Parameter specifying the relative importance of
+endogenous versus exogenous factors in the determination of
+centrality. See details below.</td></tr>
+<tr valign="top"><td><code>loops</code></td>
+<td>
+Whether to eliminate loop edges from the graph before the
+calculation.</td></tr>
+<tr valign="top"><td><code>exo</code></td>
+<td>
+The exogenous factors, in most cases this is either a
+constant &ndash; the same factor for every node, or a vector giving the
+factor for every vertex. Note that long vectors will be truncated and
+short vectors will be replicated.</td></tr>
+<tr valign="top"><td><code>weights</code></td>
+<td>
+Optional positive weight vector for calculating
+weighted closeness. If the graph has a <code>weight</code> edge
+attribute, then this is used by default.</td></tr>
+<tr valign="top"><td><code>tol</code></td>
+<td>
+Tolerance for near-singularities during matrix inversion,
+see <code><a href="../../SparseM/html/SparseM.solve.html">solve</a></code>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The alpha centrality measure can be considered as a generalization of
+eigenvector centerality to directed graphs. It was proposed by
+Bonacich in 2001 (see reference below).
+</p>
+<p>
+The alpha centrality of the vertices in a graph is defined as the
+solution of the following matrix equation:
+</p><p align="center"><i>x=alpha t(A)x+e,</i></p><p>
+where <i>A</i> is the (not neccessarily symmetric) adjacency matrix of
+the graph, <i>e</i> is the vector of exogenous sources of status of the
+vertices and <i>alpha</i> is the relative importance of the endogenous
+versus exogenous factors.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A numeric vector contaning the centrality scores for the selected
+vertices.</p>
+
+<h3>Warning</h3>
+
+<p>
+Singular adjacency matrices cause problems for this
+algorithm, the routine may fail is certain cases.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Bonacich, P. and Paulette, L. (2001). ``Eigenvector-like measures of
+centrality for asymmetric relations'' <EM>Social Networks</EM>, 23,
+191-201.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="evcent.html">evcent</a></code> and <code><a href="bonpow.html">bonpow</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+# The examples from Bonacich's paper
+g.1 &lt;- graph( c(1,3,2,3,3,4,4,5)-1 )
+g.2 &lt;- graph( c(2,1,3,1,4,1,5,1)-1 )
+g.3 &lt;- graph( c(1,2,2,3,3,4,4,1,5,1)-1 )
+alpha.centrality(g.1)
+alpha.centrality(g.2)
+alpha.centrality(g.3,alpha=0.5)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

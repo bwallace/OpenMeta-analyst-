@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Wait for a mouse or keyboard event from a graphics window</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for getGraphicsEvent {grDevices}"><tr><td>getGraphicsEvent {grDevices}</td><td align="right">R Documentation</td></tr></table>
+<h2>Wait for a mouse or keyboard event from a graphics window</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This function waits for input from a graphics window in the
+form of a mouse or keyboard event.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+getGraphicsEvent(prompt = "Waiting for input", 
+                 onMouseDown = NULL, onMouseMove = NULL,
+                 onMouseUp = NULL, onKeybd = NULL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>prompt</code></td>
+<td>
+prompt to be displayed to the user</td></tr>
+<tr valign="top"><td><code>onMouseDown</code></td>
+<td>
+a function to respond to mouse clicks</td></tr>
+<tr valign="top"><td><code>onMouseMove</code></td>
+<td>
+a function to respond to mouse movement</td></tr>
+<tr valign="top"><td><code>onMouseUp</code></td>
+<td>
+a function to respond to mouse button releases</td></tr>
+<tr valign="top"><td><code>onKeybd</code></td>
+<td>
+a function to respond to key presses</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This function allows user input from some graphics devices (currently
+only the Windows screen display).  When called, event handlers may be 
+installed to respond to events involving the mouse or keyboard.  
+</p>
+<p>
+The mouse event handlers should be functions with header 
+<code>function(buttons, x, y)</code>.  The coordinates <code>x</code>
+and <code>y</code> will be passed to mouse event handlers in device independent
+coordinates (i.e. the lower left corner of the window is <code>(0,0)</code>, 
+the upper right is <code>(1,1)</code>).  The <code>buttons</code> argument 
+will be a vector listing the buttons
+that are pressed at the time of the event, with 0 for left, 1 for middle, and 2 
+for right.
+</p>
+<p>
+The keyboard event handler should be a function with header
+<code>function(key)</code>.  A single element character vector will be passed
+to this handler, corresponding to the key press.  Shift and other modifier
+keys will have been processed, so <code>shift-a</code> will be passed as
+<code>"A"</code>.  The following special keys may also be passed to the handler:
+<ul>
+<li>Control keys, passed as <code>"Ctrl-A"</code>, etc.
+<li>Navigation keys, passed as one of <code>"Left", "Up", "Right", "Down",
+     "PgUp", "PgDn", "End", "Home"</code>
+<li>Edit keys, passed as one of <code>"Ins", "Del"</code>
+<li>Function keys, passed as one of <code>"F1", "F2", ...</code>
+</ul>
+
+<p>
+The event handlers are standard R functions, and will be executed in
+an environment as though they had been called directly from <code>getGraphicsEvent</code>.
+</p>
+<p>
+Events will be processed until
+<ul>
+<li>one of the event handlers returns
+a non-<code>NULL</code> value which will be returned as the value of
+<code>getGraphicsEvent</code>, or 
+<li>the user interrupts the function from the
+console.
+</ul>
+
+<h3>Value</h3>
+
+<p>
+A non-<code>NULL</code> value returned from one of the event handlers.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Duncan Murdoch
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## Not run: 
+    mousedown &lt;- function(buttons, x, y) {
+        plx &lt;- grconvertX(x, "ndc", "user")
+        ply &lt;- grconvertY(y, "ndc", "user")    
+        cat("Buttons ", paste(buttons, collapse=" "), " at ndc",
+            x, y, "user", plx, ply, "\n")
+        points(plx, ply, col="red", pch=19, cex=2)
+        if (x &gt; 0.85 &amp;&amp; y &gt; 0.85) "Done"
+        else NULL
+    }
+    
+    mousemove &lt;- function(buttons, x, y) {
+        plx &lt;- grconvertX(x, "ndc", "user")
+        ply &lt;- grconvertY(y, "ndc", "user")    
+        points(plx, ply)
+        NULL
+    }
+    
+    keybd &lt;- function(key) {
+        cat("Key &lt;", key, "&gt;\n", sep = "")
+    }
+    
+    plot(0:1, 0:1, type='n')
+    getGraphicsEvent("Click on upper right to quit",
+                     onMouseDown = mousedown,
+                     onMouseMove = mousemove,
+                     onKeybd = keybd)
+## End(Not run)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>grDevices</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

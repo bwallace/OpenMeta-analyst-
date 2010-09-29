@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Dimnames of an Object</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for dimnames {base}"><tr><td>dimnames {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Dimnames of an Object</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Retrieve or set the dimnames of an object.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+dimnames(x)
+dimnames(x) &lt;- value
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+an <font face="Courier New,Courier" color="#666666"><b>R</b></font> object, for example a matrix, array or data frame.</td></tr>
+<tr valign="top"><td><code>value</code></td>
+<td>
+a possible value for <code>dimnames(x)</code>: see the
+&lsquo;Value&rsquo; section.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The functions <code>dimnames</code> and <code>dimnames&lt;-</code> are generic.
+</p>
+<p>
+For an <code><a href="array.html">array</a></code> (and hence in particular, for a
+<code><a href="matrix.html">matrix</a></code>), they retrieve or set the <code>dimnames</code>
+attribute (see <a href="attributes.html">attributes</a>) of the object.  A list
+<code>value</code> can have names, and these will be used to label the
+dimensions of the array where appropriate.
+</p>
+<p>
+The replacement method for arrays/matrices coerces vector and factor
+elements of <code>value</code> to character, but does not dispatch methods for
+<code>as.character</code>.  It coerces zero-length elements to <code>NULL</code>,
+and a zero-length list to <code>NULL</code>.  If <code>value</code> is a list
+shorter than the number of dimensions, as from <font face="Courier New,Courier" color="#666666"><b>R</b></font> 2.8.0 it is extended
+with <code>NULL</code>s to the needed length.
+</p>
+<p>
+Both have methods for data frames.  The dimnames of a data frame are
+its <code><a href="row.names.html">row.names</a></code> and its <code><a href="names.html">names</a></code>.  For the
+replacement method each component of <code>value</code> will be coerced by
+<code><a href="character.html">as.character</a></code>.
+</p>
+<p>
+For a 1D matrix the <code><a href="names.html">names</a></code> are the same thing as the
+(only) component of the <code>dimnames</code>.
+</p>
+<p>
+These functions are <a href="Primitive.html">primitive</a>, so argument names are ignored
+(but this might not be true of their methods).
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+The dimnames of a matrix or array can be <code>NULL</code> or a list of the
+same length as <code>dim(x)</code>.  If a list, its components are either
+<code>NULL</code> or a character vector with positive length of the
+appropriate dimension of <code>x</code>.  The list can be named.
+<br>
+For the <code>"data.frame"</code> method both dimnames are character
+vectors, and the rownames must contain no duplicates nor missing values.</p>
+
+<h3>Note</h3>
+
+<p>
+Setting components of the dimnames, e.g.
+<code>dimnames(A)[[1]] &lt;- value</code> is a common paradigm, but note that
+it will not work if the value assigned is <code>NULL</code>.  Use
+<code><a href="colnames.html">rownames</a></code> instead, or (as it does) manipulate the whole
+dimnames list.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+<EM>The New S Language</EM>.
+Wadsworth &amp; Brooks/Cole.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="colnames.html">rownames</a></code>, <code><a href="colnames.html">colnames</a></code>;
+<code><a href="array.html">array</a></code>, <code><a href="matrix.html">matrix</a></code>, <code><a href="data.frame.html">data.frame</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## simple versions of rownames and colnames
+## could be defined as follows
+rownames0 &lt;- function(x) dimnames(x)[[1]]
+colnames0 &lt;- function(x) dimnames(x)[[2]]
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

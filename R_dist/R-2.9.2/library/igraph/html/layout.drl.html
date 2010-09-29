@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: The DrL graph layout generator</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for layout.drl {igraph}"><tr><td>layout.drl {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>The DrL graph layout generator</h2>
+
+
+<h3>Description</h3>
+
+<p>
+DrL is a force-directed graph layout toolbox focused on
+real-world large-scale graphs, developed by Shawn Martin and
+colleagues at Sandia National Laboratories.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+layout.drl (graph, use.seed = FALSE, seed = matrix(runif(vcount(graph) * 
+    2), nc = 2), options = igraph.drl.default, weights = E(graph)$weight, 
+    fixed = NULL, dim = 2) 
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>graph</code></td>
+<td>
+The input graph, in can be directed or undirected.</td></tr>
+<tr valign="top"><td><code>use.seed</code></td>
+<td>
+Logical scalar, whether to use the coordinates given
+in the <code>seed</code> argument as a starting point.</td></tr>
+<tr valign="top"><td><code>seed</code></td>
+<td>
+A matrix with two columns, the starting coordinates for
+the vertices is <code>use.seed</code> is <code>TRUE</code>. It is ignored
+otherwise.</td></tr>
+<tr valign="top"><td><code>options</code></td>
+<td>
+Options for the layout generator, a named list. See
+details below.</td></tr>
+<tr valign="top"><td><code>weights</code></td>
+<td>
+Optional edge weights. Supply <code>NULL</code> here if you
+want to weight edges equally. By default the <code>weight</code> edge
+attribute is used if the graph has one.</td></tr>
+<tr valign="top"><td><code>fixed</code></td>
+<td>
+Logical vector, it can be used to fix some vertices. All
+vertices for which it is <code>TRUE</code> are kept at the coordinates
+supplied in the <code>seed</code> matrix. It is ignored it <code>NULL</code> or
+if <code>use.seed</code> is <code>FALSE</code>. </td></tr>
+<tr valign="top"><td><code>dim</code></td>
+<td>
+Either &lsquo;2&rsquo; or &lsquo;3&rsquo;, it specifies whether we
+want a two dimensional or a three dimensional layout. Note that
+because of the nature of the DrL algorithm, the three dimensional
+layout takes significantly longer to compute.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This function implements the force-directed DrL layout generator.
+</p>
+<p>
+The generator has the following parameters:
+<ul>
+<dt>edge.cut</dt><dd>Edge cutting is done in the late stages of the
+algorithm in order to achieve less dense layouts.  Edges are cut
+if there is a lot of stress on them (a large value in the
+objective function sum). The edge cutting parameter is a value
+between 0 and 1 with 0 representing no edge cutting and 1
+representing maximal edge cutting. </dd> 
+<dt>init.iterations</dt><dd>Number of iterations in the first phase.</dd>
+<dt>init.temperature</dt><dd>Start temperature, first phase.</dd>
+<dt>init.attraction</dt><dd>Attraction, first phase.</dd>
+<dt>init.damping.mult</dt><dd>Damping, first phase.</dd>
+<dt>liquid.iterations</dt><dd>Number of iterations, liquid phase.</dd>
+<dt>liquid.temperature</dt><dd>Start temperature, liquid phase.</dd>
+<dt>liquid.attraction</dt><dd>Attraction, liquid phase.</dd>
+<dt>liquid.damping.mult</dt><dd>Damping, liquid phase.</dd>
+<dt>expansion.iterations</dt><dd>Number of iterations, expansion phase.</dd>
+<dt>expansion.temperature</dt><dd>Start temperature, expansion phase.</dd>
+<dt>expansion.attraction</dt><dd>Attraction, expansion phase.</dd>
+<dt>expansion.damping.mult</dt><dd>Damping, expansion phase.</dd>
+<dt>cooldown.iterations</dt><dd>Number of iterations, cooldown phase.</dd>
+<dt>cooldown.temperature</dt><dd>Start temperature, cooldown phase.</dd>
+<dt>cooldown.attraction</dt><dd>Attraction, cooldown phase.</dd>
+<dt>cooldown.damping.mult</dt><dd>Damping, cooldown phase.</dd>
+<dt>crunch.iterations</dt><dd>Number of iterations, crunch phase.</dd>
+<dt>crunch.temperature</dt><dd>Start temperature, crunch phase.</dd>
+<dt>crunch.attraction</dt><dd>Attraction, crunch phase.</dd>
+<dt>crunch.damping.mult</dt><dd>Damping, crunch phase.</dd>
+<dt>simmer.iterations</dt><dd>Number of iterations, simmer phase.</dd>
+<dt>simmer.temperature</dt><dd>Start temperature, simmer phase.</dd>
+<dt>simmer.attraction</dt><dd>Attraction, simmer phase.</dd>
+<dt>simmer.damping.mult</dt><dd>Damping, simmer phase.</dd>
+
+<p>
+There are five pre-defined parameter settings as well, these are
+called <code>igraph.drl.default</code>, <code>igraph.drl.coarsen</code>,
+<code>igraph.drl.coarsest</code>, <code>igraph.drl.refine</code> and
+<code>igraph.drl.final</code>.
+</ul>
+
+<h3>Value</h3>
+
+<p>
+A numeric matrix with two columns.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Shawn Martin <a href="mailto:google@for.it">google@for.it</a> and Gabor Csardi
+<a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a> for the R/igraph interface and the three
+dimensional version.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+<a href="http://www.cs.sandia.gov/~smartin/software.html">http://www.cs.sandia.gov/~smartin/software.html</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="layout.html">layout</a></code> for other layout generators.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+g &lt;- as.undirected(ba.game(100, m=1))
+l &lt;- layout.drl(g, options=list(simmer.attraction=0))
+## Not run: 
+plot(g, layout=l, vertex.size=3, vertex.label=NA)
+## End(Not run)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

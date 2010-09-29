@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Control Flow</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for Control {base}"><tr><td>Control {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Control Flow</h2>
+
+
+<h3>Description</h3>
+
+<p>
+These are the basic control-flow constructs of the <font face="Courier New,Courier" color="#666666"><b>R</b></font> language.  They
+function in much the same way as control statements in any Algol-like
+language.  They are all <a href="Reserved.html">reserved</a> words.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+if(cond) expr
+if(cond) cons.expr  else  alt.expr
+
+for(var in seq) expr
+while(cond) expr
+repeat expr
+break
+next
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>cond</code></td>
+<td>
+A length-one logical vector that is not <code>NA</code>.
+Conditions of length greater than one are accepted with a warning, but
+only the first element is used.  Other types are coerced to logical
+if possible, ignoring any class.
+</td></tr>
+<tr valign="top"><td><code>var</code></td>
+<td>
+A syntactical name for a variable.</td></tr>
+<tr valign="top"><td><code>seq</code></td>
+<td>
+An expression evaluating to a vector (including a list and
+an <a href="expression.html">expression</a>) or to a <a href="list.html">pairlist</a> or <code>NULL</code>.  A
+factor value will be coerced to a character vector.</td></tr>
+<tr valign="top"><td><code>expr, cons.expr, alt.expr</code></td>
+<td>
+An <EM>expression</EM> in a formal sense.  This is either a
+simple expression or a so called <EM>compound expression</EM>, usually
+of the form <code>{ expr1 ; expr2 }</code>.
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>break</code> breaks out of a <code>for</code>, <code>while</code> or <code>repeat</code>
+loop; control is transferred to the first statement outside the
+inner-most loop. <code>next</code> halts the processing of the current
+iteration and advances the looping index.  Both <code>break</code> and
+<code>next</code> apply only to the innermost of nested loops.
+</p>
+<p>
+Note that it is a common mistake to forget to put braces (<code>{ .. }</code>)
+around your statements, e.g., after <code>if(..)</code> or <code>for(....)</code>.
+In particular, you should not have a newline between <code>}</code> and 
+<code>else</code> to avoid a syntax error in entering a <code>if ... else</code>
+construct at the keyboard or via <code>source</code>.
+For that reason, one (somewhat extreme) attitude of defensive programming
+is to always use braces, e.g., for <code>if</code> clauses.
+</p>
+<p>
+The <code>seq</code> in a <code>for</code> loop is evaluated at the start of
+the loop; changing it subsequently does not affect the loop. If
+<code>seq</code> is <code>NULL</code> the body of the loop is skipped. Otherwise the
+variable <code>var</code> is assigned in turn the value of each element of
+<code>seq</code>. You can assign to <code>var</code> within the body of the loop,
+but this will not affect the next iteration. When the loop terminates,
+<code>var</code> remains as a variable containing its latest value.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>if</code> returns the value of the expression evaluated, or
+<code>NULL</code> if none was (which may happen if there is no <code>else</code>).
+<br>
+<code>for</code>, <code>while</code> and <code>repeat</code> return the value of the
+last expression evaluated (or <code>NULL</code> if none was), invisibly.
+<code>for</code> sets <code>var</code> to the last used element of <code>seq</code>,
+or to <code>NULL</code> if it was of length zero.
+<br>
+<code>break</code> and <code>next</code> have value <code>NULL</code>, although it would
+be strange to look for a return value.</p>
+
+<h3>References</h3>
+
+<p>
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+<EM>The New S Language</EM>.
+Wadsworth &amp; Brooks/Cole.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="Syntax.html">Syntax</a></code> for the basic <font face="Courier New,Courier" color="#666666"><b>R</b></font> syntax and operators,
+<code><a href="Paren.html">Paren</a></code> for parentheses and braces; further,
+<code><a href="ifelse.html">ifelse</a></code>, <code><a href="switch.html">switch</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+for(i in 1:5) print(1:i)
+for(n in c(2,5,10,20,50)) {
+   x &lt;- stats::rnorm(n)
+   cat(n,":", sum(x^2),"\n")
+}
+f = factor(sample(letters[1:5], 10, replace=TRUE))
+for( i in unique(f) ) print(i)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

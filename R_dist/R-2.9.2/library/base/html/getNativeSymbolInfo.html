@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Obtain a Description of one or more Native (C/Fortran) Symbols</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for getNativeSymbolInfo {base}"><tr><td>getNativeSymbolInfo {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Obtain a Description of one or more Native (C/Fortran) Symbols</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This finds and returns as comprehensive a description of one or more
+dynamically loaded or &lsquo;exported&rsquo; built-in native symbols.  For
+each name, it returns information about the name of the symbol, the
+library in which it is located and, if available, the number of
+arguments it expects and by which interface it should be called (i.e
+<code><a href="Foreign.html">.Call</a></code>, <code><a href="Foreign.html">.C</a></code>, <code><a href="Foreign.html">.Fortran</a></code>, or
+<code><a href="Foreign.html">.External</a></code>). Additionally, it returns the address of the
+symbol and this can be passed to other C routines which can
+invoke. Specifically, this provides a way to explicitly share symbols
+between different dynamically loaded package libraries. Also, it
+provides a way to query where symbols were resolved, and aids
+diagnosing strange behavior associated with dynamic resolution.
+</p>
+<p>
+This is vectorized in the <code>name</code> argument so can process
+multiple symbols in a single call.  The result is a list that can be
+indexed by the given symbol names.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+getNativeSymbolInfo(name, PACKAGE, unlist = TRUE,
+                    withRegistrationInfo = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>name</code></td>
+<td>
+the name(s) of the native symbol(s) as used in a call
+to <code><a href="dynload.html">is.loaded</a></code>, etc.  Note that Fortran symbols should be
+supplied as-is, not wrapped in <code>symbol.For</code>.
+</td></tr>
+<tr valign="top"><td><code>PACKAGE</code></td>
+<td>
+an optional argument that specifies to which
+DLL we restrict the search for this symbol.  If this is
+<code>"base"</code>, we search in the <font face="Courier New,Courier" color="#666666"><b>R</b></font> executable itself.</td></tr>
+<tr valign="top"><td><code>unlist</code></td>
+<td>
+a logical value which controls how the result is
+returned if the function is called with the name of a single symbol.
+If <code>unlist</code> is <code>TRUE</code> and the number of symbol names in
+<code>name</code> is one, then the <code>NativeSymbolInfo</code> object
+is returned.  If it is <code>FALSE</code>, then a list
+of <code>NativeSymbolInfo</code> objects is returned.
+This is ignored if the number of symbols passed in <code>name</code> is
+more than one. 
+To be compatible with earlier versions of this function, this
+defaults to <code>TRUE</code>.
+</td></tr>
+<tr valign="top"><td><code>withRegistrationInfo</code></td>
+<td>
+a logical value indicating whether, if
+<code>TRUE</code>, to return information that was registered with <font face="Courier New,Courier" color="#666666"><b>R</b></font> about
+the symbol and its parameter types if such information is available,
+or if <code>FALSE</code> to return the address of the symbol.
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This uses the same mechanism for resolving symbols as is used
+in all the native interfaces (<code><a href="Foreign.html">.Call</a></code>, etc.).
+If the symbol has been explicitly registered by the DLL
+in which it is contained, information about the number of arguments
+and the interface by which it should be called will be returned.
+Otherwise, a generic native symbol object is returned.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+Generally, a list of <code>NativeSymbolInfo</code> elements whose elements
+can be indexed by the elements of <code>name</code>  in the call.  Each
+<code>NativeSymbolInfo</code> object is a list containing the following
+elements:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>name</code></td>
+<td>
+the name of the symbol, as given by the
+<code>name</code> argument.</td></tr>
+<tr valign="top"><td><code>address</code></td>
+<td>
+if <code>withRegistrationInfo</code> is <code>FALSE</code>,
+this is the native memory address of the symbol which can
+be used to invoke the routine, and also to
+compare with other symbol addresses.  This is an external pointer
+object and of class <code>NativeSymbol</code>.
+If <code>withRegistrationInfo</code> is <code>TRUE</code> and registration
+information is available for the symbol, then this is
+an object of class <code>RegisteredNativeSymbol</code> and is a reference
+to an internal data type that has access to the routine pointer and
+registration information. This too can be used in calls to
+<code><a href="Foreign.html">.Call</a></code>, <code><a href="Foreign.html">.C</a></code>, <code><a href="Foreign.html">.Fortran</a></code> and
+<code><a href="Foreign.html">.External</a></code>.
+</td></tr>
+<tr valign="top"><td><code>package</code></td>
+<td>
+a list containing 3 elements:
+<dl>
+<dt>name</dt><dd>the short form of the library name which can be used
+as the value of the <code>PACKAGE</code> argument in
+the different native interface functions.</dd>
+<dt>path</dt><dd>the fully qualified name of the DLL.</dd>
+<dt>dynamicLookup</dt><dd>a logical value indicating whether dynamic
+resolution is used when looking for symbols in this library,
+or only registered routines can be located.</dd>
+</dl>    
+</td></tr>
+<tr valign="top"><td><code>numParameters</code></td>
+<td>
+the number of arguments that should be passed in
+a call to this routine.</td></tr>
+</table>
+<p>
+
+Additionally, the list will have an additional class,
+being <code>CRoutine</code>, <code>CallRoutine</code>, <code>FortranRoutine</code> or
+<code>ExternalRoutine</code> corresponding to the R interface by which it
+should be invoked.
+<br>
+If any of the symbols is not found, an error is immediately raised.
+<br>
+If <code>name</code> contains only one symbol name and <code>unlist</code> is
+<code>TRUE</code>, then the single <code>NativeSymbolInfo</code> is returned
+rather than the list containing that one element.</p>
+
+<h3>Note</h3>
+
+<p>
+One motivation for accessing this reflectance information is to be
+able to pass native routines to C routines as function pointers in C.
+This allows us to treat native routines and <font face="Courier New,Courier" color="#666666"><b>R</b></font> functions in a similar
+manner, such as when passing an <font face="Courier New,Courier" color="#666666"><b>R</b></font> function to C code that makes
+callbacks to that function at different points in its computation
+(e.g., <code><a href="../../stats/html/nls.html">nls</a></code>).  Additionally, we can resolve the symbol
+just once and avoid resolving it repeatedly or using the internal
+cache.  In the future, one may be able to treat <code>NativeSymbol</code>
+objects directly as callback objects.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Duncan Temple Lang
+</p>
+
+
+<h3>References</h3>
+
+<p>
+For information about registering native routines,
+see &ldquo;In Search of C/C++ &amp; FORTRAN Routines&rdquo;,
+R-News, volume 1, number 3, 2001, p20&ndash;23
+(<a href="http://CRAN.R-project.org/doc/Rnews/">http://CRAN.R-project.org/doc/Rnews/</a>).
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="getDLLRegisteredRoutines.html">getDLLRegisteredRoutines</a></code>,
+<code><a href="dynload.html">is.loaded</a></code>,
+<code><a href="Foreign.html">.C</a></code>,
+<code><a href="Foreign.html">.Fortran</a></code>,
+<code><a href="Foreign.html">.External</a></code>,
+<code><a href="Foreign.html">.Call</a></code>,
+<code><a href="dynload.html">dyn.load</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+library(stats) # normally loaded
+getNativeSymbolInfo("dansari")
+
+getNativeSymbolInfo("hcass2")  # a Fortran symbol
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

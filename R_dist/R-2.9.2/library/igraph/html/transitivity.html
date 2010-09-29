@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Transitivity of a graph</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for transitivity {igraph}"><tr><td>transitivity {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Transitivity of a graph</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Transitivity measures the probability that the adjacent
+vertices of a vertex are connected. This is sometimes also called the
+clustering coefficient.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+transitivity(graph, type=c("undirected", "global", "globalundirected",
+       "localundirected", "local", "average", "localaverage",
+       "localaverageundirected"), vids=NULL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>graph</code></td>
+<td>
+The graph to analyze.</td></tr>
+<tr valign="top"><td><code>type</code></td>
+<td>
+The type of the transitivity to calculate. Possible
+values:
+<ul>
+<dt><code>global</code></dt><dd>The global transitivity of an
+undirected graph (directed graphs are considered as undirected ones
+as well). This is simply the ratio of the triangles and the
+connected triples in the graph. For directed graph the direction
+of the edges is ignored. </dd>
+<dt><code>local</code></dt><dd>The local transitivity of an undirected graph,
+this is calculated for each vertex given in the <code>vids</code>
+argument. The local transitivity of a vertex is the ratio of the
+triangles connected to the vertex and the triples centered on
+the vertex. For directed graph the direction of the edges is
+ignored. </dd>
+<dt><code>undirected</code></dt><dd>This is the same as <code>global</code>.</dd>
+<dt><code>globalundirected</code></dt><dd>This is the same as <code>global</code>.</dd>
+<dt><code>localundirected</code></dt><dd>This is the same as <code>local</code>.</dd>
+</ul>
+</td></tr>
+<tr valign="top"><td><code>vids</code></td>
+<td>
+The vertex ids for the local transitivity will be
+calculated. This will be ignored for global transitivity types.
+The default value is <code>NULL</code>, in this case all vertices are
+considered. It is slightly faster to supply <code>NULL</code> here than
+<code>V(graph)</code>.
+</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+For &lsquo;<code>global</code>&rsquo; a single number, or <code>NaN</code> if there are no
+connected triples in the graph.
+<br>
+For &lsquo;<code>local</code>&rsquo; a vector of transitivity scores, one for
+each vertex in &lsquo;<code>vids</code>&rsquo;.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Wasserman, S., and Faust, K. (1994). <EM>Social Network
+Analysis: Methods and Applications.</EM> Cambridge: Cambridge University
+Press.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+g &lt;- graph.ring(10)
+transitivity(g)
+g2 &lt;- erdos.renyi.game(1000, 10/1000)
+transitivity(g2)   # this is about 10/1000
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

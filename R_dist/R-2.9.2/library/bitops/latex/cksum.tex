@@ -1,0 +1,44 @@
+\HeaderA{cksum}{Compute Check Sum}{cksum}
+\keyword{arith}{cksum}
+\keyword{utilities}{cksum}
+\begin{Description}\relax
+return a cyclic redundancy checksum for each element in the argument.
+\end{Description}
+\begin{Usage}
+\begin{verbatim}
+cksum(a)
+\end{verbatim}
+\end{Usage}
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{a}] coerced to character vector
+\end{ldescription}
+\end{Arguments}
+\begin{Details}\relax
+NA's appearing in the argument are returned as NA's.
+
+The default calculation is identical to that given in pseudo-code in the
+ACM article (in the References).
+\end{Details}
+\begin{Value}
+numeric vector of length \code{a}.
+\end{Value}
+\begin{Author}\relax
+Steve Dutky \email{sdutky@terpalum.umd.edu}
+\end{Author}
+\begin{References}\relax
+Fashioned from \code{cksum(1)} UNIX command line utility, i.e.,
+\code{man cksum}.
+
+Dilip V. Sarwate (1988).
+Computation of Cyclic Redundancy Checks Via Table Lookup,
+\emph{Communications of the ACM}, August 1988.
+\bold{vol} 31, No.8  page 1008-1013
+\end{References}
+\begin{Examples}
+\begin{ExampleCode}
+   b <- "I would rather have a bottle in front of me than frontal lobotomy\n"
+   cksum(b) == 1342168430 ## -> TRUE
+\end{ExampleCode}
+\end{Examples}
+

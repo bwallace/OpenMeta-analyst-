@@ -1,0 +1,182 @@
+Release 2.7.0 - 2009-05-08
+--------------------------
+
+New Features:
+
+
+- Enhancements to heatmap.2()
+
+    - New arguments 'lmat', 'lhei', and 'lwid' that allow controlling
+      component plot layout.  Users can now resize and rearrange plot
+      components.
+
+    - heatmap.2() will now compute color breakpoints that are
+      symmetric about 0 when the new 'symbreak' parameter is TRUE.  This
+      parameter, as well as the symkey parameter now default to TRUE
+      whenever negative values of x are present, and to FALSE othewise.
+
+    - the heatmap.2() return value now includes additional useful
+      information, including: call, rowMeans, rowSDs, colMeans,
+      colSDs, carpet (reordered and scaled 'x' values), rowDendrogram,
+      colDendrogram, breaks, col, vline, hline, and colorTable. Of
+      these, the most useful are breaks, col, and colorTable.  The
+      latter is a three-column data frame providing the lower and
+      upper bound and color for each bin.  
+
+  See the manual page for complete details and examples.
+
+
+- New function venn(), contributed by Steffen Moeller (Thanks
+  Steffen!) to generate Venn diagrams for up to 5 sets. See ?venn for
+  details. 
+
+- Performance of bandplot() has been dramatically improved, in part by
+  using runsd() and runmean() from the caTools package.  As a
+  consequence, gplots now depends on the caTools package.
+
+- Improved performance of gplots::plot.lm for large lm objects by
+  using the new bandplot() and by using fitted() instead of predict()
+  to obtain y-hat.
+
+- Add 'scale.range' argument to balloonplot(), option to scale
+  balloons so [min,max]->[0,1] ('relative') or [0,max] -> [0,1]
+  ('absolute').
+
+
+Bug Fixes:
+
+- balloonplot() now properly handles dimension labels provided by
+  'xlab' and 'ylab' 
+
+- plotCI now properly handles 'NULL' and 'NA' values for ui, li, uiw,
+  and liw. 
+
+- Corrections of minor typos in man pages
+
+- Update Greg's email address to 'greg@random-technologies-llc.com'
+
+
+Release 2.6.0 - 2008-04-07
+--------------------------
+
+New Features: 
+
+- heatmap() now allows control of the location of individual plot components
+   (e.g. color key)
+
+Bug Fixes:
+
+- Fix bug in handling rowsep, per suggestion by Steven Paugh
+
+- Fix examples for overplot()
+
+- Two letter clarification of help text for heatmap.2()
+
+- Restore plot layout settings to default state at end of ooplot() example
+
+- Various typo fixes 
+
+Release 2.5.0 - 2007-11-02
+--------------------------
+
+New Features:
+
+- textplot() now converts tab characters to spaces before processing to
+  avoid problems with computing height and width of text that includes 
+  tabs.
+
+- Add col2hex() function to convert color names to rgb hex codes
+
+Bug Fixes:
+
+- Correct balloonplot.default to properly show specified x and y axis
+  labels when explicitly provided 
+
+- R/balloonplot.R: Correct error in balloonplot when z contains NA values.
+
+- Fix typos and code/doc mismatches identified by the latest R CMD check
+
+Other:
+
+- Clarify GPL version
+  
+Release 2.4.0 - 2007-02-08
+--------------------------
+
+New Features:
+
+- Add parameters to bandplot() to control line width and type.
+
+- Add paramaeters to textplot.matrix() to allow specification of the
+   color of the matrix data, rows, and column
+
+Bug Fixes:
+
+
+Other: 
+
+
+Release 2.3.2 - 2006-11-14
+--------------------------
+
+- heatmap.2.Rd: Fix example that was broken by changes in 2.3.0.
+
+
+Release 2.3.1
+-------------
+
+- Changed maintainer back to Greg Warnes
+
+- Updated Greg's email address
+
+- heatmap.2.R: Fixed a bug which displayed warnings when Rowv and Colv
+  were specified as dendrograms
+
+
+Release 2.3.0
+-------------
+
+ - heatmap.2.R, heatmap.2.Rd:
+
+          Updated the code and man page to make sure the Rowv and Colv
+          values are properly handled
+
+ - Added the tests directory
+
+
+
+Release 2.2.0
+-------------
+
+ - plotmeans.R: Fixed bug in plotmeans - based on Stefano Calza's
+	        suggestion (the function didn't account for factors 
+		unused levels, returning an error.)
+ 
+ - exported plot.lm to NAMESPACE, Remove .Alias calls in plot.lm.R
+ 		since .Alias is defunct.
+
+ - barplot2.R: Changed the default grey colors to heat colors, if
+	       height is matrix
+
+ - Updated Greg's email address
+
+ - balloonplot.R: Recent changes to align row totals with the
+	  	  overall total broke how the marginal cumulative
+	  	  fractions were displayed. Added example using
+	  	  Titanic data that exercises the multi-factor display.
+ 		  Added -.tex, .pdf files and figuers, and RNEWS article
+		  in inst/doc
+
+ - colorpanel.R: colorpanel now allows only 2 colors to be specified
+		 if no 'middle' color is desired.
+
+
+Release 2.0.8
+-------------
+
+ - Added DESCRIPTION and removed DESCRIPTION.in
+
+ - Updated barplot2
+
+ - Updated heatmap.2
+

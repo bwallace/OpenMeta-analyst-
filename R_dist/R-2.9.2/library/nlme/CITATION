@@ -1,0 +1,22 @@
+citHeader("To cite package 'nlme' in publications use:")
+
+desc <- packageDescription("nlme")
+year <- sub(".*(2[[:digit:]]{3})-.*", "\\1", desc$Date)
+vers <- paste("R package version", desc$Version)
+
+citEntry(entry="Manual",
+         title = "nlme: Linear and Nonlinear Mixed Effects Models",
+         author = personList(as.person("Jose Pinheiro"),
+                             as.person("Douglas Bates"),
+                             as.person("Saikat DebRoy"),
+                             as.person("Deepayan Sarkar"),
+                             as.person("the R Core team")),
+         year = year,
+         note = vers,
+
+         textVersion =
+         paste("Jose Pinheiro, Douglas Bates, Saikat DebRoy, Deepayan Sarkar and the R Core team (",
+               year,
+               "). nlme: Linear and Nonlinear Mixed Effects Models. ",
+               vers, ".", sep=""))
+

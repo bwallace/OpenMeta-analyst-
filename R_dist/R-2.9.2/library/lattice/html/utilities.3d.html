@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Utility functions for 3-D plots</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for utilities.3d {lattice}"><tr><td>utilities.3d {lattice}</td><td align="right">R Documentation</td></tr></table>
+<h2>Utility functions for 3-D plots</h2>
+
+
+<h3>Description</h3>
+
+<p>
+These are (related to) the default panel functions for <code>cloud</code>
+and <code>wireframe</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+ltransform3dMatrix(screen, R.mat)
+ltransform3dto3d(x, R.mat, dist)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+<code>x</code> can be a numeric matrix with 3 rows for
+<code>ltransform3dto3d</code>
+</td></tr>
+<tr valign="top"><td><code>screen</code></td>
+<td>
+list, as described in <code><a href="panel.cloud.html">panel.cloud</a></code></td></tr>
+<tr valign="top"><td><code>R.mat</code></td>
+<td>
+4x4 transformation matrix in homogeneous
+coordinates</td></tr>
+<tr valign="top"><td><code>dist</code></td>
+<td>
+controls transformation to account for
+perspective viewing</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>ltransform3dMatrix</code> and <code>ltransform3dto3d</code> are utility
+functions to help in computation of projections. These functions are
+used inside the panel functions for <code>cloud</code> and
+<code>wireframe</code>. They may be useful in user-defined panel functions
+as well.
+</p>
+<p>
+The first function takes a list of the form of the <code>screen</code>
+argument in <code>cloud</code> and <code>wireframe</code> and a <code>R.mat</code>, a
+4x4 transformation matrix in homogeneous coordinates, to return a new
+4x4 transformation matrix that is the result of applying <code>R.mat</code>
+followed by the rotations in <code>screen</code>. The second function
+applies a 4x4 transformation matrix in homogeneous coordinates to a
+3xn matrix representing points in 3-D space, and optionally does some
+perspective computations. (There has been no testing with non-trivial
+transformation matrices, and my knowledge of the homogeneous
+coordinate system is very limited, so there may be bugs here.)
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Deepayan Sarkar <a href="mailto:Deepayan.Sarkar@R-project.org">Deepayan.Sarkar@R-project.org</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="cloud.html">cloud</a></code>, <code><a href="panel.cloud.html">panel.cloud</a></code>
+</p>
+
+
+
+<hr><div align="center">[Package <em>lattice</em> version 0.17-25 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

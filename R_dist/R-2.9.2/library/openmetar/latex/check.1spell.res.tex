@@ -1,0 +1,40 @@
+\HeaderA{check.1spell.res}{}{check.1spell.res}
+\keyword{~kwd1}{check.1spell.res}
+\keyword{~kwd2}{check.1spell.res}
+\begin{Usage}
+\begin{verbatim}
+check.1spell.res(n, se)
+\end{verbatim}
+\end{Usage}
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{n}] 
+\item[\code{se}] 
+\end{ldescription}
+\end{Arguments}
+\begin{Examples}
+\begin{ExampleCode}
+##---- Should be DIRECTLY executable !! ----
+##-- ==>  Define data, use random,
+##--    or do  help(data=index)  for the standard data sets.
+
+## The function is currently defined as
+function (n, se) 
+{
+    succeeded <- TRUE
+    comment <- ""
+    if (!is.na(n)) {
+        if (n <= 1) {
+            comment <- "n<=1"
+            succeeded <- FALSE
+        }
+    }
+    if (se <= 0) {
+        comment <- paste("se<=0", comment, sep = ", ")
+        succeeded <- FALSE
+    }
+    return(list(succeeded = succeeded, comment = comment))
+  }
+\end{ExampleCode}
+\end{Examples}
+

@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Describe arrows to add to a line.</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for arrow {grid}"><tr><td>arrow {grid}</td><td align="right">R Documentation</td></tr></table>
+<h2>Describe arrows to add to a line.</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Produces a description of what arrows to add to a line.
+The result can be passed to a function that draws a line,
+e.g., <code>grid.lines</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+arrow(angle = 30, length = unit(0.25, "inches"),
+      ends = "last", type = "open")
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>angle</code></td>
+<td>
+The angle of the arrow head in degrees (smaller numbers
+produce narrower, pointier arrows).  Essentially describes
+the width of the arrow head.</td></tr>
+<tr valign="top"><td><code>length</code></td>
+<td>
+A unit specifying the length of the arrow head (from tip
+to base).</td></tr>
+<tr valign="top"><td><code>ends</code></td>
+<td>
+One of <code>"last"</code>, <code>"first"</code>, or <code>"both"</code>,
+indicating which ends of the line to draw arrow heads.</td></tr>
+<tr valign="top"><td><code>type</code></td>
+<td>
+One of <code>"open"</code> or <code>"closed"</code> indicating
+whether the arrow head should be a closed triangle.</td></tr>
+</table>
+
+<h3>Examples</h3>
+
+<pre>
+arrow()
+</pre>
+
+
+
+<hr><div align="center">[Package <em>grid</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

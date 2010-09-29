@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Data from an ELISA assay</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for ELISA {gtools}"><tr><td>ELISA {gtools}</td><td align="right">R Documentation</td></tr></table>
+<h2>Data from an ELISA assay</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Observed signals and (for some observations) nominal
+concentrations for samples that were aliquoted to multiple assay plates,
+which were read multiple times on multiple days.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+data(ELISA)
+</pre>
+
+
+<h3>Format</h3>
+
+<p>
+a data frame with the following columns:
+<ul>
+<dt>PlateDay</dt><dd>factor. Specifies one of four physically disctinct
+96 well plates</dd>
+<dt>Read</dt><dd>factor. The signal was read 3 times for each plate.</dd>
+<dt>Description</dt><dd>character. Indicates contents of sample.</dd>
+<dt>Concentration</dt><dd>numeric. Nominal concentration of standards (NA
+for all other samples).</dd>
+<dt>Signal</dt><dd>numeric. Assay signal. Specifically, optical density
+(a colorimetric assay).</dd>
+</ul>
+
+<h3>Source</h3>
+
+<p>
+Anonymized data.
+</p>
+
+
+
+<hr><div align="center">[Package <em>gtools</em> version 2.6.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

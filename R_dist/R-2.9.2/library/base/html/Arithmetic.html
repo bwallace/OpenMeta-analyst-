@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Arithmetic Operators</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for Arithmetic {base}"><tr><td>Arithmetic {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Arithmetic Operators</h2>
+
+
+<h3>Description</h3>
+
+<p>
+These binary operators perform arithmetic on numeric or complex vectors
+(or objects which can be coerced to them).
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+x + y
+x - y
+x * y
+x / y
+x ^ y
+x %% y
+x %/% y
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x, y</code></td>
+<td>
+numeric or complex vectors or objects which can be
+coerced to such, or other objects for which methods have been written.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The binary arithmetic operators are generic functions: methods can be
+written for them individually or via the
+<code><a href="groupGeneric.html">Ops</a></code> group generic function.  (See
+<code><a href="groupGeneric.html">Ops</a></code> for how dispatch is computed.)
+</p>
+<p>
+If applied to arrays the result will be an array if this is sensible
+(for example it will not if the recycling rule has been invoked).
+</p>
+<p>
+Logical vectors will be coerced to integer or numeric vectors,
+<code>FALSE</code> having value zero and <code>TRUE</code> having value one.
+</p>
+<p>
+<code>1 ^ y</code> and <code>y ^ 0</code> are <code>1</code>, <EM>always</EM>.
+<code>x ^ y</code> should also give the proper limit result when
+either argument is infinite (i.e., <code>+- <a href="is.finite.html">Inf</a></code>).
+</p>
+<p>
+Objects such as arrays or time-series can be operated on this
+way provided they are conformable.
+</p>
+<p>
+For real arguments, <code>%%</code> can be subject to catastrophic loss of
+accuracy if <code>x</code> is much larger than <code>y</code>, and a warning is
+given if this is detected.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+These operators return vectors containing the result of the element
+by element operations.  The elements of shorter vectors are recycled
+as necessary (with a <code><a href="warning.html">warning</a></code> when they are recycled only
+<EM>fractionally</EM>).  The operators are <code>+</code> for addition,
+<code>-</code> for subtraction, <code>*</code> for multiplication, <code>/</code> for
+division and <code>^</code> for exponentiation.
+<br>
+<code>%%</code> indicates <code>x mod y</code> and <code>%/%</code> indicates
+integer division.  It is guaranteed that <code>x == (x %% y) + y * ( x
+    %/% y )</code> (up to rounding error) unless <code>y == 0</code> where the
+result is <code><a href="NA.html">NA_integer_</a></code> or <code><a href="is.finite.html">NaN</a></code> (depending on
+the <code><a href="typeof.html">typeof</a></code> of the arguments).  See
+<a href="http://en.wikipedia.org/wiki/Modulo_operation">http://en.wikipedia.org/wiki/Modulo_operation</a> for the
+rationale.
+<br>
+If either argument is complex the result will be complex, and if one
+or both arguments are numeric, the result will be numeric.  If both
+arguments are integer, the result of <code>/</code> and <code>^</code> is numeric
+and of the other operators integer (with overflow returned as
+<code>NA</code> with a warning).
+<br>
+The rules for determining the attributes of the result are rather
+complicated.  Most attributes are taken from the longer argument, the
+first if they are of the same length.  Names will be copied from the
+first if it is the same length as the answer, otherwise from the
+second if that is.  For time series, these operations are allowed only
+if the series are compatible, when the class and <code><a href="../../stats/html/tsp.html">tsp</a></code>
+attribute of whichever is a time series (the same, if both are) are
+used.  For arrays (and an array result) the dimensions and dimnames
+are taken from first argument if it is an array, otherwise the second.</p>
+
+<h3>S4 methods</h3>
+
+<p>
+These operators are members of the S4 <code><a href="../../methods/html/S4groupGeneric.html">Arith</a></code> group generic,
+and so methods can be written for them individually as well as for the
+group generic (or the <code>Ops</code> group generic), with arguments
+<code>c(e1, e2)</code>.
+</p>
+
+
+<h3>Note</h3>
+
+<p>
+<code>**</code> is translated in the parser to <code>^</code>, but this was
+undocumented for many years.  It appears as an index entry in Becker
+<EM>et al</EM> (1988), pointing to the help for <code>Deprecated</code> but
+is not actually mentioned on that page.  Even though it has been
+deprecated in S for 20 years, it is still accepted.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+<EM>The New S Language</EM>.
+Wadsworth &amp; Brooks/Cole.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="MathFun.html">sqrt</a></code> for miscellaneous and <code><a href="Special.html">Special</a></code> for special
+mathematical functions.
+</p>
+<p>
+<code><a href="Syntax.html">Syntax</a></code> for operator precedence.
+</p>
+<p>
+<code><a href="matmult.html">%*%</a></code> for matrix multiplication.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+x &lt;- -1:12
+x + 1
+2 * x + 3
+x %% 2 #-- is periodic
+x %/% 5
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

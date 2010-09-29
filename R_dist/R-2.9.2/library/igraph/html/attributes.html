@@ -1,0 +1,201 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Graph, vertex and edge attributes</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for attributes {igraph}"><tr><td>attributes {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Graph, vertex and edge attributes</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Attributes are associated values belonging to a graph,
+vertices or edges. These can represent some property, like data
+about how the graph was constructed, the color of the vertices when
+the graph is plotted, or simply the weights of the edges in a weighted
+graph.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+get.graph.attribute(graph, name)
+graph &lt;- set.graph.attribute(graph, attrname, value)
+graph &lt;- remove.graph.attribute(graph, attrname)
+get.vertex.attribute(graph, name, index=V(graph))
+graph &lt;- set.vertex.attribute(graph, attrname, index=V(graph), value)
+graph &lt;- remove.vertex.attribute(graph, attrname)
+get.edge.attribute(graph, name, index=E(graph))
+graph &lt;- set.edge.attribute(graph, attrname, index=E(graph), value)
+graph &lt;- remove.edge.attribute(graph, attrname)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>graph</code></td>
+<td>
+The graph object to work on. Note that the original graph
+is never modified, a new graph object is returned instead; if you don't
+assign it to a variable your modifications will be lost! See examples
+below.</td></tr>
+<tr valign="top"><td><code>name</code></td>
+<td>
+Character constant, the name of the attribute.</td></tr>
+<tr valign="top"><td><code>index</code></td>
+<td>
+Numeric vector, the ids of the vertices or edges.
+It is not recycled, even if <code>value</code> is longer.</td></tr>
+<tr valign="top"><td><code>value</code></td>
+<td>
+Numeric vector, the new value(s) of the attributes, it
+will be recycled if needed.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+There are three types of attributes in igraph: graph, vertex and edge
+attributes. Graph attributes are associated with graph, vertex
+attributes with vertices and edge attributes with edges.
+</p>
+<p>
+Examples for graph attributes are the date when the graph data was
+collected or other types of memos like the type of the data, or
+whether the graph is a simple graph, ie. one without loops and
+multiple edges.
+</p>
+<p>
+Examples of vertex attributes are vertex properties, like the
+vertex coordinates for the visualization of the graph, or other
+visualization parameters, or meta-data associated with the vertices,
+like the gender and the age of the individuals in a friendship
+network, the type of the neurons in a graph representing neural
+circuitry or even some pre-computed structual properties, like the
+betweenness centrality of the vertices.
+</p>
+<p>
+Examples of edge attributes are data associated with edges: most
+commonly edge weights, or visualization parameters.
+</p>
+<p>
+In recent igraph versions, arbitrary R objects can be assigned as
+graph, vertex or edge attributes.
+</p>
+<p>
+Some igraph functions use the values or graph, vertex and edge
+attributes if they are present but this is not done in the current
+version very extensively. Expect more in the (near) future.
+</p>
+<p>
+Graph attributes can be created with the <code>set.graph.attribute</code>
+function, and removed with <code>remove.graph.attribute</code>. Graph
+attributes are queried with <code>get.graph.attribute</code> and the
+assigned graph attributes are listed with
+<code>list.graph.attributes</code>.
+</p>
+<p>
+There is a simpler notation for using graph attributes: the
+&lsquo;<code>$</code>&rsquo; operator. It can be used both to query and set graph
+attributes, see an example below.
+</p>
+<p>
+The functions for vertex attributes are
+<code>set.vertex.attribute</code>, <code>get.vertex.attribute</code>,
+<code>remove.vertex.attribute</code> and <code>list.vertex.attributes</code> and
+for edge attributes they are <code>set.edge.attribute</code>,
+<code>get.edge.attribute</code>, <code>remove.edge.attribute</code> and
+<code>list.edge.attributes</code>.
+</p>
+<p>
+There is however a (syntactically) much simpler way to handle vertex
+and edge attribute by using vertex and edge selectors, it works like this:
+<code>V(g)</code> selects all vertices in a graph, and <code>V(g)$name</code>
+queries the <code>name</code> attribute for all vertices. Similarly is
+<code>vs</code> is a vertex set <code>vs$name</code> gives the values of the
+<code>name</code> attribute for the vertices in the vertex set.
+</p>
+<p>
+This form can also be used to set the values of the attributes, like
+the regular R convention:
+<pre>V(g)$color &lt;- "red"</pre>
+It works for vertex subsets as well:
+<pre>V(g)[0:5]$color &lt;- "green"</pre>
+</p>
+<p>
+The notation for edges is similar: <code>E(g)</code> means all edges
+<code>E(g)$weight</code> is the <code>weight</code> attribute for all edges, etc.
+</p>
+<p>
+See also the manual page for <code>iterators</code> about how to create
+various vertex and edge sets.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>get.graph.attribute</code>, <code>get.vertex.attribute</code> and
+<code>get.edge.attribute</code> return an R object, or a list of R objects
+if attributes of more vertices/edges are requested.
+<br>
+<code>set.graph.attribute</code>, <code>set.vertex.attribute</code>,
+<code>set.edge.attribute</code>, and also <code>remove.graph.attribute</code>,
+<code>remove.vertex.attribute</code> and <code>remove.edge.attribute</code> return
+a new graph object with the updates/removes performed.
+<br>
+<code>list.graph.attributes</code>, <code>list.vertex.attributes</code> and
+<code>list.edge.attributes</code> return a character vector, the names of
+the attributes present.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="print.graph.html">print.igraph</a></code> can also print attributes
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+g &lt;- graph.ring(10)
+g &lt;- set.graph.attribute(g, "name", "RING")
+# It is the same as
+g$name &lt;- "RING"
+g$name
+
+g &lt;- set.vertex.attribute(g, "color", value=c("red", "green"))
+get.vertex.attribute(g, "color")
+
+g &lt;- set.edge.attribute(g, "weight", value=runif(ecount(g)))
+get.edge.attribute(g, "weight")
+
+# The following notation is more convenient
+
+g &lt;- graph.star(10)
+
+V(g)$color &lt;- c("red", "green")
+V(g)$color
+
+E(g)$weight &lt;- runif(ecount(g))
+E(g)$weight
+
+print(g, g=TRUE, v=TRUE, e=TRUE)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Date-time Conversion Functions</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for as.POSIX* {base}"><tr><td>as.POSIX* {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Date-time Conversion Functions</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Functions to manipulate objects of classes <code>"POSIXlt"</code> and
+<code>"POSIXct"</code> representing calendar dates and times.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+as.POSIXct(x, tz = "", ...)
+as.POSIXlt(x, tz = "", ...)
+
+## S3 method for class 'character':
+as.POSIXlt(x, tz = "", format, ...)
+
+## S3 method for class 'numeric':
+as.POSIXlt(x, tz = "", origin, ...)
+
+## S3 method for class 'POSIXlt':
+as.double(x, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+An object to be converted.</td></tr>
+<tr valign="top"><td><code>tz</code></td>
+<td>
+A timezone specification to be used for the conversion,
+<EM>if one is required</EM>.  System-specific (see <a href="timezones.html">time zones</a>),
+but <code>""</code> is the current timezone, and <code>"GMT"</code> is UTC
+(Universal Time, Coordinated).</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+further arguments to be passed to or from other methods.</td></tr>
+<tr valign="top"><td><code>format</code></td>
+<td>
+character string giving a date-time format as used
+by <code><a href="strptime.html">strptime</a></code>.</td></tr>
+<tr valign="top"><td><code>origin</code></td>
+<td>
+a date-time object, or something which can be coerced by
+<code>as.POSIXct(tz="GMT")</code> to such an object.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The <code>as.POSIX*</code> functions convert an object to one of the two
+classes used to represent date/times (calendar dates plus time to the
+nearest second).  They can convert a wide variety of objects,
+including objects of the other class and of classes <code>"Date"</code>,
+<code>"date"</code> (from package <span class="pkg"><a href="../../date/html/as.date.html">date</a></span> or
+<span class="pkg"><a href="../../survival/html/as.date.html">survival</a></span>), <code>"chron"</code> and
+<code>"dates"</code> (from package <span class="pkg"><a href="../../chron/html/chron.html">chron</a></span>) to these
+classes.  Dates without times are treated as being at midnight UTC.
+</p>
+<p>
+They can also convert character strings of the formats
+<code>"2001-02-03"</code> and <code>"2001/02/03"</code> optionally followed by
+white space and a time in the format <code>"14:52"</code> or
+<code>"14:52:03"</code>.  (Formats such as <code>"01/02/03"</code> are ambiguous
+but can be converted via a format specification by
+<code><a href="strptime.html">strptime</a></code>.)  Fractional seconds are allowed.
+Alternatively, <code>format</code> can be specified for character vectors or
+factors: if it is not specified and no standard format works for the
+first non-<code>NA</code> input an error is thrown.
+</p>
+<p>
+Logical <code>NA</code>s can be converted to either of the classes, but no
+other logical vectors can be.
+</p>
+<p>
+The <code>as.double</code> method converts <code>"POSIXlt"</code> objects to
+<code>"POSIXct"</code>.
+</p>
+<p>
+If you are given a numeric time as the number of seconds since an
+epoch, see the examples.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>as.POSIXct</code> and <code>as.POSIXlt</code> return an object of the
+appropriate class.  If <code>tz</code> was specified, <code>as.POSIXlt</code>
+will give an appropriate <code>"tzone"</code> attribute.</p>
+
+<h3>Note</h3>
+
+<p>
+If you want to extract specific aspects of a time (such as the day of
+the week) just convert it to class <code>"POSIXlt"</code> and extract the
+relevant component(s) of the list, or if you want a character
+representation (such as a named day of the week) use
+<code><a href="strptime.html">format.POSIXlt</a></code> or <code><a href="strptime.html">format.POSIXct</a></code>.
+</p>
+<p>
+If a timezone is needed and that specified is invalid on your system,
+what happens is system-specific but it will probably be ignored.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<a href="DateTimeClasses.html">DateTimeClasses</a> for details of the classes;
+<code><a href="strptime.html">strptime</a></code> for conversion to and from character
+representations. <code><a href="timezones.html">Sys.timezone</a></code> for details of the
+(system-specific)naming of time zones.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+(z &lt;- Sys.time())             # the current datetime, as class "POSIXct"
+unclass(z)                    # a large integer
+floor(unclass(z)/86400)       # the number of days since 1970-01-01
+(z &lt;- as.POSIXlt(Sys.time())) # the current datetime, as class "POSIXlt"
+unlist(unclass(z))            # a list shown as a named vector
+
+## suppose we have a time in seconds since 1960-01-01 00:00:00 GMT
+z &lt;- 1472562988
+# ways to convert this
+as.POSIXct(z, origin="1960-01-01")                # local
+as.POSIXct(z, origin="1960-01-01", tz="GMT")      # in UTC
+as.POSIXct(z, origin=ISOdatetime(1960,1,1,0,0,0)) # local
+ISOdatetime(1960,1,1,0,0,0) + z                   # local
+
+## SPSS dates (R-help 2006-02-16)
+z &lt;- c(10485849600, 10477641600, 10561104000, 10562745600)
+as.Date(as.POSIXct(z, origin="1582-10-14", tz="GMT"))
+
+as.POSIXlt(Sys.time(), "GMT") # the current time in UTC
+## Not run: 
+## These may not be correct names on your system
+as.POSIXlt(Sys.time(), "America/New_York")  # in New York
+as.POSIXlt(Sys.time(), "EST5EDT")           # alternative.
+as.POSIXlt(Sys.time(), "EST" )   # somewhere in Eastern Canada
+as.POSIXlt(Sys.time(), "HST")    # in Hawaii
+as.POSIXlt(Sys.time(), "Australia/Darwin")
+## End(Not run)
+
+cols &lt;- c("code", "coordinates", "TZ", "comments")
+tmp &lt;- read.delim(file.path(R.home("share"), "zoneinfo", "zone.tab"),
+                  header = FALSE, comment.char="#", col.names = cols)
+if(interactive()) View(tmp)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

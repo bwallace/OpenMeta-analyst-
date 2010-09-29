@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Kola background Plot</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for pkb {mvoutlier}"><tr><td>pkb {mvoutlier}</td><td align="right">R Documentation</td></tr></table>
+<h2>Kola background Plot</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Plots the Kola background map
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+pkb(map = "kola.background", which.map = c(1, 2, 3, 4), map.col = c(5, 1, 3, 4), map.lwd = c(2, 1, 2, 1), add.plot = FALSE, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>map</code></td>
+<td>
+List of coordinates. For the correct format see also help(kola.background)</td></tr>
+<tr valign="top"><td><code>which.map</code></td>
+<td>
+which==1 ... plot project boundary # which==2 ... plot coast line # which==3 ... plot country borders # which==4 ... plot lakes and rivers</td></tr>
+<tr valign="top"><td><code>map.col</code></td>
+<td>
+Map colors to be used</td></tr>
+<tr valign="top"><td><code>map.lwd</code></td>
+<td>
+Defines linestyle of the background</td></tr>
+<tr valign="top"><td><code>add.plot</code></td>
+<td>
+logical. if true background is added to an existing plot</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+additional plot parameters, see help(par)</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Is used by map.plot()
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Peter Filzmoser &lt;<a href="mailto:P.Filzmoser@tuwien.ac.at">P.Filzmoser@tuwien.ac.at</a>&gt;
+<a href="http://www.statistik.tuwien.ac.at/public/filz/">http://www.statistik.tuwien.ac.at/public/filz/</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Reimann C, Äyräs M, Chekushin V, Bogatyrev I, Boyd R, Caritat P de, Dutter R,
+Finne TE, Halleraker JH, Jæger Ø, Kashulina G, Lehto O, Niskavaara H, Pavlov V,
+Räisänen ML, Strand T, Volden T. Environmental Geochemical Atlas of the Central
+Barents Region. NGU-GTK-CKE Special Publication, Geological Survey of Norway,
+Trondheim, Norway, 1998.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+example(map.plot)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>mvoutlier</em> version 1.4 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

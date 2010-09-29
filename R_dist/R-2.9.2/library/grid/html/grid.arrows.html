@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Draw Arrows</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for grid.arrows {grid}"><tr><td>grid.arrows {grid}</td><td align="right">R Documentation</td></tr></table>
+<h2>Draw Arrows</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Functions to create and draw arrows at either end of a line, or at
+either end of a 
+line.to, lines, or segments grob.
+</p>
+<p>
+These functions have been deprecated in favour of <code>arrow</code>
+arguments to the line-related primitives.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+grid.arrows(x = c(0.25, 0.75), y = 0.5, default.units = "npc",
+            grob = NULL,
+            angle = 30, length = unit(0.25, "inches"),
+            ends = "last", type = "open", name = NULL,
+            gp = gpar(), draw = TRUE, vp = NULL)
+
+arrowsGrob(x = c(0.25, 0.75), y = 0.5, default.units = "npc",
+            grob = NULL,
+            angle = 30, length = unit(0.25, "inches"),
+            ends = "last", type = "open", name = NULL,
+            gp = gpar(), vp = NULL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+A numeric vector or unit object specifying x-values.</td></tr>
+<tr valign="top"><td><code>y</code></td>
+<td>
+A numeric vector or unit object specifying y-values.</td></tr>
+<tr valign="top"><td><code>default.units</code></td>
+<td>
+A string indicating the default units to use
+if <code>x</code> or <code>y</code> are only given as numeric vectors.</td></tr>
+<tr valign="top"><td><code>grob</code></td>
+<td>
+A grob to add arrows to;  currently can only be
+a line.to, lines, or segments grob. </td></tr>
+<tr valign="top"><td><code>angle</code></td>
+<td>
+A numeric specifying (half) the width of the arrow head
+(in degrees). </td></tr>
+<tr valign="top"><td><code>length</code></td>
+<td>
+A unit object specifying the length of the arrow head. </td></tr>
+<tr valign="top"><td><code>ends</code></td>
+<td>
+One of <code>"first"</code>, <code>"last"</code>, or <code>"both"</code>,
+indicating which end of the line to add arrow heads. </td></tr>
+<tr valign="top"><td><code>type</code></td>
+<td>
+Either <code>"open"</code> or <code>"closed"</code> to indicate
+the type of arrow head.   </td></tr>
+<tr valign="top"><td><code>name</code></td>
+<td>
+A character identifier. </td></tr>
+<tr valign="top"><td><code>gp</code></td>
+<td>
+An object of class <code>gpar</code>, typically the output
+from a call to the function <code>gpar</code>.  This is basically
+a list of graphical parameter settings.</td></tr>
+<tr valign="top"><td><code>draw</code></td>
+<td>
+A logical value indicating whether graphics output
+should be produced.</td></tr>
+<tr valign="top"><td><code>vp</code></td>
+<td>
+A Grid viewport object (or NULL).</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Both functions create an arrows grob (a graphical object describing 
+arrows), but only <code>grid.arrows()</code>
+draws the arrows (and then only if <code>draw</code> is <code>TRUE</code>).
+</p>
+<p>
+If the grob argument is specified, this overrides any x
+and/or y arguments.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+An arrows grob.  <code>grid.arrows()</code> returns the value invisibly.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Paul Murrell
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<a href="Grid.html">Grid</a>,
+<code><a href="viewport.html">viewport</a></code>,
+<code><a href="grid.move.to.html">grid.line.to</a></code>,
+<code><a href="grid.lines.html">grid.lines</a></code>,
+<code><a href="grid.segments.html">grid.segments</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## Not run: 
+## to avoid lots of deprecation warnings
+pushViewport(viewport(layout=grid.layout(2, 4)))
+pushViewport(viewport(layout.pos.col=1,
+                       layout.pos.row=1))
+grid.rect(gp=gpar(col="grey"))
+grid.arrows()
+popViewport()
+pushViewport(viewport(layout.pos.col=2,
+                       layout.pos.row=1))
+grid.rect(gp=gpar(col="grey"))
+grid.arrows(angle=15, type="closed")
+popViewport()
+pushViewport(viewport(layout.pos.col=3,
+                       layout.pos.row=1))
+grid.rect(gp=gpar(col="grey"))
+grid.arrows(angle=5, length=unit(0.1, "npc"),
+            type="closed", gp=gpar(fill="white"))
+popViewport()
+pushViewport(viewport(layout.pos.col=4,
+                       layout.pos.row=1))
+grid.rect(gp=gpar(col="grey"))
+grid.arrows(x=unit(0:80/100, "npc"),
+            y=unit(1 - (0:80/100)^2, "npc"))
+popViewport()
+pushViewport(viewport(layout.pos.col=1,
+                       layout.pos.row=2))
+grid.rect(gp=gpar(col="grey"))
+grid.arrows(ends="both")
+popViewport()
+pushViewport(viewport(layout.pos.col=2,
+                       layout.pos.row=2))
+grid.rect(gp=gpar(col="grey"))
+# Recycling arguments
+grid.arrows(x=unit(1:10/11, "npc"), y=unit(1:3/4, "npc"))
+popViewport()
+pushViewport(viewport(layout.pos.col=3,
+                       layout.pos.row=2))
+grid.rect(gp=gpar(col="grey"))
+# Drawing arrows on a segments grob
+gs &lt;- segmentsGrob(x0=unit(1:4/5, "npc"),
+                   x1=unit(1:4/5, "npc"))
+grid.arrows(grob=gs, length=unit(0.1, "npc"),
+            type="closed", gp=gpar(fill="white"))
+popViewport()
+pushViewport(viewport(layout.pos.col=4,
+                       layout.pos.row=2))
+grid.rect(gp=gpar(col="grey"))
+# Arrows on a lines grob
+# Name these because going to grid.edit them later
+gl &lt;- linesGrob(name="curve", x=unit(0:80/100, "npc"),
+                y=unit((0:80/100)^2, "npc"))
+grid.arrows(name="arrowOnLine", grob=gl, angle=15, type="closed",
+            gp=gpar(fill="black"))
+popViewport()
+pushViewport(viewport(layout.pos.col=1,
+                       layout.pos.row=2))
+grid.move.to(x=0.5, y=0.8)
+popViewport()
+pushViewport(viewport(layout.pos.col=4,
+                       layout.pos.row=1))
+# Arrows on a line.to grob
+glt &lt;- lineToGrob(x=0.5, y=0.2, gp=gpar(lwd=3))
+grid.arrows(grob=glt, ends="first", gp=gpar(lwd=3))
+popViewport(2)
+grid.edit(gPath("arrowOnLine", "curve"), y=unit((0:80/100)^3, "npc"))
+## End(Not run)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>grid</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Memory Available for Data Storage</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for Memory {base}"><tr><td>Memory {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Memory Available for Data Storage</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Use command line options to control the memory available for <font face="Courier New,Courier" color="#666666"><b>R</b></font>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+Rgui --min-vsize=vl --max-vsize=vu --min-nsize=nl --max-nsize=nu --max-ppsize=N
+Rterm --min-vsize=vl --max-vsize=vu --min-nsize=nl --max-nsize=nu --max-ppsize=N
+
+mem.limits(nsize = NA, vsize = NA)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>vl, vu, vsize</code></td>
+<td>
+Heap memory in bytes.</td></tr>
+<tr valign="top"><td><code>nl, nu, nsize</code></td>
+<td>
+Number of cons cells.</td></tr>
+<tr valign="top"><td><code>N</code></td>
+<td>
+Number of nested <code>PROTECT</code> calls.</td></tr>
+</table>
+<p>
+.</p>
+
+<h3>Details</h3>
+
+<p>
+<font face="Courier New,Courier" color="#666666"><b>R</b></font> has a variable-sized workspace.  There is
+much less need to set memory options than prior to <font face="Courier New,Courier" color="#666666"><b>R</b></font> 1.2.0, and most
+users will never need to set these.  They are provided both as a way
+to control the overall memory usage (which can also be done
+using the command-line option <span class="option">--max-mem-size</span> on Windows),
+and since setting larger values of the minima will make <font face="Courier New,Courier" color="#666666"><b>R</b></font> slightly
+more efficient on large tasks.
+</p>
+<p>
+(On Windows the <span class="option">--max-mem-size</span> option sets the maximum memory
+allocation: it has a minimum allowed value of 32M.  This is intended
+to catch attempts to allocate excessive amounts of memory which may
+cause other processes to run out of resources.  The default is the
+smaller of the amount of physical RAM in the machine and 1.5Gb (or
+2.5Gb if the version of Windows in use allows 3Gb per user process).
+See also <code><a href="../../utils/html/memory.size.html">memory.limit</a></code>.)
+</p>
+<p>
+To understand the options, one needs to know that <font face="Courier New,Courier" color="#666666"><b>R</b></font> maintains
+separate areas for fixed and variable sized objects.  The first of these
+is allocated as an array of <EM>cons cells</EM> (Lisp programmers will
+know what they are, others may think of them as the building blocks of
+the language itself, parse trees, etc.), and the second are thrown on a
+<EM>heap</EM> of &lsquo;Vcells&rsquo; of 8 bytes each.  Effectively,
+the inputs <code>vl</code> and <code>vu</code> are rounded up to the next
+multiple of 8.
+</p>
+<p>
+Each cons cell occupies 28 bytes on a 32-bit machine, (usually) 56 bytes
+on a 64-bit machine.
+</p>
+<p>
+The <span class="option">--*-nsize</span> options can be used to specify the number of
+cons cells and the <span class="option">--*-vsize</span> options specify the size of the
+vector heap in bytes.  Both options must be integers or integers
+followed by <code>G</code>, <code>M</code>, <code>K</code>, or <code>k</code> meaning
+<EM>Giga</EM> (<i>2^{30} = 1073741824</i>) <EM>Mega</EM> (<i>2^{20} =
+1048576</i>), (computer) <EM>Kilo</EM> (<i>2^{10} = 1024</i>), or regular
+<EM>kilo</EM> (1000).
+</p>
+<p>
+The <span class="option">--min-*</span> options set the minimal sizes for the number of
+cons cells and for the vector heap.  These values are also the initial
+values, but thereafter <font face="Courier New,Courier" color="#666666"><b>R</b></font> will grow or shrink the areas depending on
+usage, but never exceeding the limits set by the <span class="option">--max-*</span>
+options nor decreasing below the initial values.
+</p>
+<p>
+The default values are currently minima of 350k cons cells,
+6Mb of vector heap
+and no maxima (other than machine resources).  The maxima can be
+changed during an <font face="Courier New,Courier" color="#666666"><b>R</b></font> session by calling <code>mem.limits</code>. (If this is
+called with the default values, it reports the current settings.)
+</p>
+<p>
+You can find out the current memory consumption (the heap and cons
+cells used as numbers and megabytes) by typing <code><a href="gc.html">gc</a>()</code> at the
+<font face="Courier New,Courier" color="#666666"><b>R</b></font> prompt.  Note that following <code><a href="gc.html">gcinfo</a>(TRUE)</code>, automatic
+garbage collection always prints memory use statistics.  Maxima will
+never be reduced below the current values for triggering garbage
+collection, and attempts to do so will be silently ignored.
+</p>
+<p>
+The command-line option <span class="option">--max-ppsize</span> controls the maximum
+size of the pointer protection stack.  This defaults to 50000, but can
+be increased to allow deep recursion or large and complicated
+calculations to be done. <EM>Note</EM> that parts of the garbage
+collection process goes through the full reserved pointer protection
+stack and hence becomes slower when the size is increased.  Currently
+the maximum value accepted is 500000.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>mem.limits()</code> returns an integer vector giving the current
+settings of the maxima, possibly <code>NA</code>.</p>
+
+<h3>See Also</h3>
+
+<p>
+<EM>An Introduction to R</EM> for more command-line options
+</p>
+<p>
+<code><a href="Memory-limits.html">Memory-limits</a></code> for the design limitations.
+</p>
+<p>
+<code><a href="gc.html">gc</a></code> for information on the garbage collector and total
+memory usage,  <code><a href="../../utils/html/object.size.html">object.size</a>(a)</code> for the (approximate)
+size of <font face="Courier New,Courier" color="#666666"><b>R</b></font> object <code>a</code>.  <code><a href="memory.profile.html">memory.profile</a></code> for
+profiling the usage of cons cells.
+</p>
+<p>
+<code><a href="../../utils/html/memory.size.html">memory.size</a></code> to monitor total memory usage,
+<code><a href="../../utils/html/memory.size.html">memory.limit</a></code> for the current limit.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+# Start R with 10MB of heap memory and 500k cons cells, limit to
+# 100Mb and 1M cells
+## Not run: 
+## Unix
+R --min-vsize=10M --max-vsize=100M --min-nsize=500k --max-nsize=1M
+## End(Not run)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

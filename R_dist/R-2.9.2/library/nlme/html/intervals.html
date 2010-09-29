@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Confidence Intervals on Coefficients</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for intervals {nlme}"><tr><td>intervals {nlme}</td><td align="right">R Documentation</td></tr></table>
+<h2>Confidence Intervals on Coefficients</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Confidence intervals on the parameters associated with the model
+represented by <code>object</code> are obtained. This function is generic;
+method functions can be written to handle specific classes of
+objects. Classes which already have methods for this function include:
+<code>gls</code>, <code>lme</code>, and <code>lmList</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+intervals(object, level, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>object</code></td>
+<td>
+a fitted model object from which parameter estimates can
+be extracted.</td></tr>
+<tr valign="top"><td><code>level</code></td>
+<td>
+an optional numeric value for the interval confidence
+level. Defaults to 0.95.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+some methods for the generic may require additional
+arguments.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+will depend on the method function used; see the appropriate documentation.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Jose Pinheiro <a href="mailto:Jose.Pinheiro@pharma.novartis.com">Jose.Pinheiro@pharma.novartis.com</a> and Douglas Bates <a href="mailto:bates@stat.wisc.edu">bates@stat.wisc.edu</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Pinheiro, J.C., and Bates, D.M. (2000) "Mixed-Effects Models
+in S and S-PLUS", Springer.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="intervals.lme.html">intervals.lme</a></code>,
+<code><a href="intervals.lmList.html">intervals.lmList</a></code>,
+<code><a href="intervals.gls.html">intervals.gls</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## see the method documentation
+</pre>
+
+
+
+<hr><div align="center">[Package <em>nlme</em> version 3.1-93 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Convert to or from Raw Vectors</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for rawConversion {base}"><tr><td>rawConversion {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Convert to or from Raw Vectors</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Conversion and manipulation of  objects of type <code>"raw"</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+charToRaw(x)
+rawToChar(x, multiple = FALSE)
+
+rawShift(x, n)
+
+rawToBits(x)
+intToBits(x)
+packBits(x, type = c("raw", "integer"))
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+object to be converted or shifted.</td></tr>
+<tr valign="top"><td><code>multiple</code></td>
+<td>
+logical: should the conversion be to a single
+character string or multiple individual characters?</td></tr>
+<tr valign="top"><td><code>n</code></td>
+<td>
+the number of bits to shift.  Positive numbers shift right
+and negative numbers shift left: allowed values are <code>-8 ... 8</code>.</td></tr>
+<tr valign="top"><td><code>type</code></td>
+<td>
+the result type.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>packBits</code> accepts raw, integer or logical inputs, the last two
+without any NAs.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>charToRaw</code> converts a length-one character string to raw bytes.
+It does so without taking into account any declared encoding (see
+<code><a href="Encoding.html">Encoding</a></code>).
+<br>
+<code>rawToChar</code> converts raw bytes either to a single character
+string or a character vector of single bytes (with <code>""</code> for
+<code>0</code>).  (Note that a single character string could contain
+embedded nuls, in which case it will be truncated at the first nul
+with a warning.)  In either case it is possible to create a result
+which is invalid in a multibyte locale, e.g. one using UTF-8.
+<br>
+<code>rawToBits</code> returns a raw vector of 8 times the length of a raw
+vector with entries 0 or 1.  <code>intToBits</code> returns a raw vector
+of 32 times the length of an integer vector with entries 0 or 1. 
+(Non-integral numeric values are truncated to integers.) In
+both cases the unpacking is least-significant bit first.
+<br>
+<code>packBits</code> packs its input (using only the lowest bit for raw or
+integer vectors) least-significant bit first to a raw or integer vector.</p>
+
+<h3>Examples</h3>
+
+<pre>
+x &lt;- "A test string"
+(y &lt;- charToRaw(x))
+is.vector(y) # TRUE
+
+rawToChar(y)
+rawToChar(y, multiple = TRUE)
+(xx &lt;- c(y, as.raw(0), charToRaw("more")))
+rawToChar(xx)
+xxx &lt;- xx
+xxx[length(y)+1] &lt;- charToRaw("&amp;")
+xxx
+rawToChar(xxx)
+
+rawShift(y, 1)
+rawShift(y, -2)
+
+rawToBits(y)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

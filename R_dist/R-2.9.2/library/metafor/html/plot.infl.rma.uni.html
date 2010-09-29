@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Plot Method for infl.rma.uni Objects</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for plot.infl.rma.uni {metafor}"><tr><td>plot.infl.rma.uni {metafor}</td><td align="right">R Documentation</td></tr></table>
+<h2>Plot Method for infl.rma.uni Objects</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Plot method for objects of class <code>"infl.rma.uni"</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'infl.rma.uni':
+plot(x, plotdfb=FALSE, dfbnew=FALSE, logcov=TRUE, las=0,
+     pch=21, bg="black", bg.infl="red", col.na="lightgray", ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+an object of class <code>"infl.rma.uni"</code>.</td></tr>
+<tr valign="top"><td><code>plotdfb</code></td>
+<td>
+logical indicating whether the DFBETAS values should be plotted (default is <code>FALSE</code>).</td></tr>
+<tr valign="top"><td><code>dfbnew</code></td>
+<td>
+logical indicating whether a new device should be opened for plotting the DFBETAS values (default is <code>FALSE</code>). If set to <code>TRUE</code>, then <code>plotdfb</code> is automatically set to <code>TRUE</code> as well.</td></tr>
+<tr valign="top"><td><code>logcov</code></td>
+<td>
+logical indicating whether the covariance ratios should be plotted on a log scale (default is <code>FALSE</code>).</td></tr>
+<tr valign="top"><td><code>las</code></td>
+<td>
+numeric (<code>0,1,2,3</code>). Defines style of axis labels (see <code><a href="../../graphics/html/par.html">par</a></code>). The most useful alternative to 0 is 3, so that the x axis labels are drawn vertical to the axis.</td></tr>
+<tr valign="top"><td><code>pch</code></td>
+<td>
+plotting symbol to use. By default, a filled circle is used. See <code><a href="../../graphics/html/points.html">points</a></code> for other options.</td></tr>
+<tr valign="top"><td><code>bg</code></td>
+<td>
+color to use for filling the plotting symbol (default is <code>"black"</code>).</td></tr>
+<tr valign="top"><td><code>bg.infl</code></td>
+<td>
+color to use for filling the plotting symbol when the point is considered influential (default is <code>"red"</code>).</td></tr>
+<tr valign="top"><td><code>col.na</code></td>
+<td>
+color to use for lines connecting two points with NAs in between (default is <code>"lightgray"</code>).</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+other arguments.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The function plots the externally standardized residuals, DFFITS values, Cook's distances, covariance ratios, leave-one-out <i>tau^2</i> estimates, leave-one-out (residual) heterogeneity test statistics, hat values, and weights. If <code>plotdfb=TRUE</code>, the DFBETAS values are also plotted either after confirming the page change (if <code>newdfb=FALSE</code>) or on a separate device (if <code>newdfb=TRUE</code>). Points are considered &lsquo;influential&rsquo; if at least one of the following is true:
+<ul>
+<li>The absolute DFFITS value is larger than <i>3sqrt(p/(k-p))</i>, where <i>p</i> is the number of model coefficients and <i>k</i> the number of studies.
+<li>The lower tail area of a chi-square distribution with <i>p</i> degrees of freedom cut off by the Cook's distance is larger than 50%.
+<li>The hat value is larger than <i>3(p/k)</i>.
+<li>Any DFBETAS value is larger than <i>1</i>.
+</ul>
+
+<p>
+These cut-offs are also indicated in the plot with horizontal reference lines. In addition, on the plot of the externally standardized residuals, horizontal reference lines are drawn at -1.96, 0, and 1.96. On the plot of the hat values, a horizontal reference line is drawn at <i>p/k</i>. Since the sum of the hat values is equal to <i>p</i>, the value <i>p/k</i> indicates equal hat values for all <i>k</i> studies. Finally, on the plot of weights, a horizontal reference line is drawn at <i>100/k</i>, corresponding to the value for equal weights (in %) for all <i>k</i> studies. Note that all weights will automatically be equal to each other when using unweighted model fitting. Also, except for their scaling, the hat values and weights will be equal to each other in models without moderators.
+</p>
+<p>
+The chosen cut-offs are (somewhat) arbitrary. Substantively informed judgment should always be used when examining the influence of each study on the results.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Wolfgang Viechtbauer; <a href="mailto:wvb@www.wvbauer.com">wvb@www.wvbauer.com</a>; <a href="http://www.wvbauer.com/">http://www.wvbauer.com/</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="influence.rma.uni.html">influence.rma.uni</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+### load BCG vaccine data
+data(dat.bcg)
+
+### meta-analysis of the log risk ratios using a mixed-effects model
+### with two moderators (absolute latitude and publication year)
+res &lt;- rma(ai=tpos, bi=tneg, ci=cpos, di=cneg, mods=cbind(ablat, year),
+           data=dat.bcg, measure="RR", method="REML")
+plot(influence(res))
+plot(influence(res), plotdfb=TRUE)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>metafor</em> version 0.5-7 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

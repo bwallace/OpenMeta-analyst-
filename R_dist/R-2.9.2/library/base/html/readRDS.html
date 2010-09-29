@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Internal Serialization Interface</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for readRDS {base}"><tr><td>readRDS {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Internal Serialization Interface</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Internal functions for serialization.  See <code><a href="serialize.html">serialize</a></code> for
+public (but experimental) versions.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+.saveRDS(object, file = "", ascii = FALSE, version = NULL,
+         compress = TRUE, refhook = NULL)
+
+.readRDS(file, refhook = NULL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>object</code></td>
+<td>
+<font face="Courier New,Courier" color="#666666"><b>R</b></font> object to serialize.</td></tr>
+<tr valign="top"><td><code>file</code></td>
+<td>
+a connection or the name of the file where the R object
+is saved to or read from.</td></tr>
+<tr valign="top"><td><code>ascii</code></td>
+<td>
+a logical.  If <code>TRUE</code>, an ASCII representation is
+written; otherwise (default except for text-mode connections), a
+more compact binary one is used.</td></tr>
+<tr valign="top"><td><code>version</code></td>
+<td>
+the workspace format version to use.  <code>NULL</code>
+specifies the current default format.  The version used from <font face="Courier New,Courier" color="#666666"><b>R</b></font>
+0.99.0 to <font face="Courier New,Courier" color="#666666"><b>R</b></font> 1.3.1 was version 1.  The default format as from <font face="Courier New,Courier" color="#666666"><b>R</b></font>
+1.4.0 is version 2.</td></tr>
+<tr valign="top"><td><code>compress</code></td>
+<td>
+a logical specifying whether saving to a named file is
+to use compression.  Ignored when <code>file</code> is a connection and for
+workspace format version 1.</td></tr>
+<tr valign="top"><td><code>refhook</code></td>
+<td>
+a hook function for handling reference objects.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+For <code>.readRDS</code>, an <font face="Courier New,Courier" color="#666666"><b>R</b></font> object.
+<br>
+For <code>.saveRDS</code>, <code>NULL</code> invisibly.</p>
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Update HTML documentation files</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for link.html.help {utils}"><tr><td>link.html.help {utils}</td><td align="right">R Documentation</td></tr></table>
+<h2>Update HTML documentation files</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Functions to re-create the HTML documentation files to reflect all
+installed packages. <code>make.packages.html</code> creates
+the list of packages and <code>make.search.html</code> creates the
+database used by the Java search engine. <code>link.html.help</code> runs
+both, as well as <code>fixup.libraries.URLs</code> which attempts to
+fix up cross-library links.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+link.html.help(verbose = FALSE, lib.loc = .libPaths())
+make.packages.html(lib.loc = .libPaths())
+make.search.html(lib.loc = .libPaths())
+
+fixup.package.URLs(pkg, force = FALSE)
+fixup.libraries.URLs(lib.loc = .libPaths())
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>verbose</code></td>
+<td>
+logical. If true, print out a message. For use to
+explain a delay when called from other functions.</td></tr>
+<tr valign="top"><td><code>lib.loc</code></td>
+<td>
+character vector. List of libraries to be included.</td></tr>
+<tr valign="top"><td><code>pkg</code></td>
+<td>
+character vector. The full path to a package.</td></tr>
+<tr valign="top"><td><code>force</code></td>
+<td>
+logical. Should the links be fixed even if the stamp is
+present?</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Cross-library links do not work on this platform.
+<code>fixup.package.URLs</code> attempts to correct links in the
+named package to the <code>doc</code> directory (usually to icons) and to the
+<code>base</code>, <code>datasets</code>, <code>utils</code>, <code>grDevices</code>,
+<code>graphics</code> and <code>stats</code> packages,
+and then stamps a file &lsquo;<span class="file">fixedHTMLlinks</span>&rsquo; in the package directory.
+If that file is found, no correction is attempted unless <code>force =
+    TRUE</code> or the <font face="Courier New,Courier" color="#666666"><b>R</b></font> installation directory (recorded in the stamp) has been
+changed.
+</p>
+<p>
+<code>fixup.libraries.URLs</code> calls <code>fixup.package.URLs</code> on all
+packages in current library trees except the standard one.
+</p>
+<p>
+The functions will give a warning if the files are not writable.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>make.packages.html</code> and <code>fixup.package.URLs</code> return a
+logical showing if they succeeded.
+<br>
+The files
+&lsquo;<span class="file"><VAR><a href="../../base/html/Rhome.html">R_HOME</a></VAR>\doc\html\packages.html</span>&rsquo; and
+&lsquo;<span class="file"><VAR><a href="../../base/html/Rhome.html">R_HOME</a></VAR>\doc\html\search\index.txt</span>&rsquo; are (re-)created by
+<code>make.packages.html</code> and <code>make.search.html</code> respectively.</p>
+
+<h3>Note</h3>
+
+<p>
+You will need write permission in the
+&lsquo;<span class="file"><VAR><a href="../../base/html/Rhome.html">R_HOME</a></VAR>\doc\html</span>&rsquo;
+directory to use any of the first three functions, and in the
+appropriate library trees to use the last two.
+</p>
+
+
+
+<hr><div align="center">[Package <em>utils</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

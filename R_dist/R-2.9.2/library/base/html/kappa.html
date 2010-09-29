@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Compute or Estimate the Condition Number of a Matrix</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for kappa {base}"><tr><td>kappa {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Compute or Estimate the Condition Number of a Matrix</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The condition number of a regular (square) matrix is the product of
+the <EM>norm</EM> of the matrix and the norm of its inverse (or
+pseudo-inverse), and hence depends on the kind of matrix-norm.
+</p>
+<p>
+<code>kappa()</code> computes an estimate of the 2-norm condition number of
+a   matrix or of the <i>R</i> matrix of a  <i>QR</i> decomposition,
+perhaps of a linear fit.  The 2-norm condition number can be shown to
+be the ratio of the largest to the smallest <EM>non-zero</EM> singular
+value of the matrix.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+kappa(z, ...)
+## Default S3 method:
+kappa(z, exact = FALSE,
+      norm = NULL, method = c("qr", "direct"), ...)
+## S3 method for class 'lm':
+kappa(z, ...)
+## S3 method for class 'qr':
+kappa(z, ...)
+
+kappa.tri(z, exact = FALSE, LINPACK = TRUE, norm=NULL, ...)
+
+rcond(x, norm = c("O","I","1"), triangular = FALSE, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>z,x</code></td>
+<td>
+A matrix or a the result of <code><a href="qr.html">qr</a></code> or a fit from a class
+inheriting from <code>"lm"</code>.</td></tr>
+<tr valign="top"><td><code>exact</code></td>
+<td>
+logical. Should the result be exact?</td></tr>
+<tr valign="top"><td><code>norm</code></td>
+<td>
+character string, specifying the matrix norm with respect to which
+the condition number is to be computed.  <code>"O"</code>, the default,
+means the <B>O</B>ne- or 1-norm.  The (currently only) other
+possible value is <code>"I"</code> for the infinity norm.</td></tr>
+<tr valign="top"><td><code>method</code></td>
+<td>
+character string, specifying the method to be used;
+<code>"qr"</code> is default for back-compatibility, mainly.</td></tr>
+<tr valign="top"><td><code>triangular</code></td>
+<td>
+logical.  If true, the matrix used is just the lower
+triangular part of <code>z</code>.</td></tr>
+<tr valign="top"><td><code>LINPACK</code></td>
+<td>
+logical.  If true and <code>z</code> is not complex, the
+Linpack routine <code>dtrco()</code> is called; otherwise the relevant
+Lapack routine is.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+further arguments passed to or from other methods.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+For <code>kappa()</code>, if <code>exact = FALSE</code> (the default) the
+2-norm condition number is estimated by a cheap approximation.
+Following S, by default, this uses the LINPACK routine <code>dtrco()</code>.
+However, in <font face="Courier New,Courier" color="#666666"><b>R</b></font> (or S) the exact calculation (via <code><a href="svd.html">svd</a></code>) is
+also likely to be quick enough.
+</p>
+<p>
+Note that the 1- and Inf-norm condition numbers are much faster to
+calculate, and <code>rcond()</code> computes these <EM><B>r</B>eciprocal</EM>
+condition numbers, also for complex matrices, using standard Lapack
+routines.
+</p>
+<p>
+<code>kappa.tri</code> is an internal function called by <code>kappa.qr</code>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+The condition number, <i>kappa</i>, or an approximation if
+<code>exact = FALSE</code>.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+The design was inspired by (but differs considerably from)
+the S function of the same name described in Chambers (1992).
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Chambers, J. M. (1992)
+<EM>Linear models.</EM>
+Chapter 4 of <EM>Statistical Models in S</EM>
+eds J. M. Chambers and T. J. Hastie, Wadsworth &amp; Brooks/Cole.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="svd.html">svd</a></code> for the singular value decomposition and
+<code><a href="qr.html">qr</a></code> for the <i>QR</i> one.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+kappa(x1 &lt;- cbind(1,1:10))# 15.71
+kappa(x1, exact = TRUE)        # 13.68
+kappa(x2 &lt;- cbind(x1,2:11))# high! [x2 is singular!]
+
+hilbert &lt;- function(n) { i &lt;- 1:n; 1 / outer(i - 1, i, "+") }
+sv9 &lt;- svd(h9 &lt;- hilbert(9))$ d
+kappa(h9)# pretty high!
+kappa(h9, exact = TRUE) == max(sv9) / min(sv9)
+kappa(h9, exact = TRUE) / kappa(h9) # .677 (i.e., rel.error = 32%)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

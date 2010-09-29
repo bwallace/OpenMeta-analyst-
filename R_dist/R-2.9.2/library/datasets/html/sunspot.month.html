@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Monthly Sunspot Data, 1749&ndash;1997</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for sunspot.month {datasets}"><tr><td>sunspot.month {datasets}</td><td align="right">R Documentation</td></tr></table>
+<h2>Monthly Sunspot Data, 1749&ndash;1997</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Monthly numbers of sunspots.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+sunspot.month
+</pre>
+
+
+<h3>Format</h3>
+
+<p>
+The univariate time series <code>sunspot.year</code> and
+<code>sunspot.month</code> contain 289 and 2988 observations, respectively.
+The objects are of class <code>"ts"</code>.
+</p>
+
+
+<h3>Source</h3>
+
+<p>
+World Data Center-C1 For Sunspot Index
+Royal Observatory of Belgium, Av. Circulaire, 3, B-1180 BRUSSELS
+<a href="http://www.oma.be/KSB-ORB/SIDC/sidc_txt.html">http://www.oma.be/KSB-ORB/SIDC/sidc_txt.html</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code>sunspot.month</code> is a longer version of <code><a href="sunspots.html">sunspots</a></code>
+that runs until 1988 rather than 1983.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+require(stats); require(graphics)
+## Compare the monthly series 
+plot (sunspot.month, main = "sunspot.month [stats]", col = 2)
+lines(sunspots) # "very barely" see something
+
+## Now look at the difference :
+all(tsp(sunspots)     [c(1,3)] ==
+    tsp(sunspot.month)[c(1,3)]) ## Start &amp; Periodicity are the same
+n1 &lt;- length(sunspots)
+table(eq &lt;- sunspots == sunspot.month[1:n1]) #&gt;  132  are different !
+i &lt;- which(!eq) 
+rug(time(eq)[i])
+s1 &lt;- sunspots[i] ; s2 &lt;- sunspot.month[i]
+cbind(i = i, sunspots = s1, ss.month = s2,
+      perc.diff = round(100*2*abs(s1-s2)/(s1+s2), 1))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>datasets</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

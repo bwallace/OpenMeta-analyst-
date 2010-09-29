@@ -1,0 +1,170 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Create a Survival Object</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for Surv {survival}"><tr><td>Surv {survival}</td><td align="right">R Documentation</td></tr></table>
+<h2>Create a Survival Object</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Create a survival object, usually used as a response variable in a model 
+formula. Argument matching is special for this function, see Details below.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+Surv(time, time2, event,
+    type=c('right', 'left', 'interval', 'counting', 'interval2'),
+    origin=0)
+is.Surv(x)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>time</code></td>
+<td>
+for right censored data, this is the follow up time.  For interval
+data, the first argument is the starting time for the interval. 
+</td></tr>
+<tr valign="top"><td><code>event</code></td>
+<td>
+The status indicator, normally 0=alive, 1=dead.  Other choices are
+<code>TRUE</code>/<code>FALSE</code> (<code>TRUE</code> = death) or 1/2 (2=death). For
+interval censored data, the status indicator is 0=right censored,
+1=event at <code>time</code>, 2=left censored, 3=interval censored.
+Although unusual, the event indicator can be omitted, in which case
+all subjects are assumed to have an event.
+</td></tr>
+<tr valign="top"><td><code>time2</code></td>
+<td>
+ending time of the interval for interval censored  or counting
+process data only.  Intervals are assumed to be open on the left and
+closed on the right, <code>(start, end]</code>.  For counting process
+data, <code>event</code> indicates whether an event occurred at the end of
+the interval.
+</td></tr>
+<tr valign="top"><td><code>type</code></td>
+<td>
+character string specifying the type of censoring. Possible values
+are <code>"right"</code>, <code>"left"</code>, <code>"counting"</code>,
+<code>"interval"</code>, or <code>"interval2"</code>.  The default is
+<code>"right"</code> or <code>"counting"</code> depending on whether the
+<code>time2</code> argument is absent or present, respectively.
+</td></tr>
+<tr valign="top"><td><code>origin</code></td>
+<td>
+for counting process data, the hazard function origin.  This option
+was intended to be used in conjunction with a model containing
+time dependent
+strata in order to align the subjects properly when they cross over
+from one strata to another, but it has rarely proven useful.</td></tr>
+<tr valign="top"><td><code>x</code></td>
+<td>
+any R object.
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Typical usages are
+<pre>
+Surv(time, event)
+Surv(time, time2, event, type= )
+</pre>
+The <code>time</code>,<code>time2</code> and <code>event</code> arguments are matched by
+position, not by name, so use, eg, <code>Surv(time, dead)</code> rather than
+<code>Surv(time, event=dead)</code>
+</p>
+<p>
+In theory it is possible to represent interval censored data without a 
+third column containing the explicit status.  Exact, right censored, 
+left censored and interval censored observation would be represented as 
+intervals of [a,a], (a, infinity), (-infinity,b), and [a,b]  
+respectively; each interval is a pair of time points 
+within which the event is  
+known to have occurred. 
+</p>
+<p>
+If <code>type="interval2"</code> then the representation given above is 
+assumed, with <code>NA</code> taking the place of infinity.  
+If <code>type="interval"</code> then <code>event</code> must be given.  
+If <code>event</code> is <code>0</code>, <code>1</code>, or <code>2</code>, 
+the relevant 
+information is assumed to be contained in <code>time</code>,
+the value in <code>time2</code> is ignored,
+and the second column of the internal representation contains a 
+placeholder value.
+</p>
+<p>
+Presently, the only methods allowing interval censored data are the 
+parametric models computed by <code>survreg</code> and survival curves
+computed by <code>survfit</code>; for both of these, 
+the distinction between open and closed intervals
+is unimportant.  
+The distinction is important for counting process data and 
+the Cox model. 
+</p>
+<p>
+The function tries to distinguish between the use of 0/1 and 1/2 coding for 
+left and right censored data using 
+<code>if (max(status)==2)</code>. 
+If 1/2 coding is used and all the subjects are censored, it will 
+guess wrong.
+In any questionable case it is safer to use logical coding,
+e.g., <code>Surv(time, status==3)</code> would indicate that a <code>3</code> is
+the code for an event.
+</p>
+<p>
+Surv objects can be subscripted either as an object, e.g.
+<code>x[1:3]</code> using a single subscript;
+in which case the <code>drop</code> argument is ignored;
+or as a matrix, using two arguments.
+If the second subscript is missing and <code>drop=F</code>
+(the default),
+the result of the subscripting will be a Surv object, e.g., 
+<code>x[1:3,,drop=F]</code>,
+otherwise the result will be a matrix (or vector), in accordance with
+the default behavior for subscripting matrices.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+An object of class <code>Surv</code>.  There are methods for <code>print</code>,
+<code>is.na</code>, and subscripting survival objects.   <code>Surv</code> objects
+are implemented as a matrix of 2 or 3 columns.
+<br>
+In the case of <code>is.Surv</code>, a logical value <code>TRUE</code> if <code>x</code>
+inherits from class <code>"Surv"</code>, otherwise an <code>FALSE</code>.</p>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="coxph.html">coxph</a></code>,  
+<code><a href="survfit.html">survfit</a></code>,  
+<code><a href="survreg.html">survreg</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+with(lung, Surv(time, status))
+Surv(heart$start, heart$stop, heart$event) 
+</pre>
+
+
+
+<hr><div align="center">[Package <em>survival</em> version 2.35-4 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

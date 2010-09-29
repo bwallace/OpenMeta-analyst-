@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Detect linear dependencies of one matrix on another</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for fixDependence {mgcv}"><tr><td>fixDependence {mgcv}</td><td align="right">R Documentation</td></tr></table>
+<h2>Detect linear dependencies of one matrix on another</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Identifies columns of a matrix <code>X2</code> which are linearly
+dependent on columns of a matrix <code>X1</code>. Primarily of use in setting up 
+identifiability constraints for nested GAMs.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+fixDependence(X1,X2,tol=.Machine$double.eps^.5)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>X1</code></td>
+<td>
+A matrix.</td></tr>
+<tr valign="top"><td><code>X2</code></td>
+<td>
+A matrix, the columns of which may be partially linearly
+dependent on the columns of <code>X1</code>.</td></tr>
+<tr valign="top"><td><code>tol</code></td>
+<td>
+The tolerance to use when assessing linear dependence.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The algorithm uses a simple approach based on QR decomposition: see
+Wood (2006, section 4.10.2) for details.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+An array of the columns of <code>X2</code> which are linearly dependent on
+columns of <code>X1</code>. <code>NULL</code> if the two matrices are independent.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Simon N. Wood <a href="mailto:simon.wood@r-project.org">simon.wood@r-project.org</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Wood S.N. (2006) Generalized Additive Models: An Introduction with R. Chapman
+and Hall/CRC Press.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+n&lt;-20;c1&lt;-4;c2&lt;-7
+X1&lt;-matrix(runif(n*c1),n,c1)
+X2&lt;-matrix(runif(n*c2),n,c2)
+X2[,3]&lt;-X1[,2]+X2[,4]*.1
+X2[,5]&lt;-X1[,1]*.2+X1[,2]*.04
+fixDependence(X1,X2)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>mgcv</em> version 1.5-5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

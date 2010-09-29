@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Character Vectors</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for character {base}"><tr><td>character {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Character Vectors</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Create or test for objects of type <code>"character"</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+character(length = 0)
+as.character(x, ...)
+is.character(x)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>length</code></td>
+<td>
+desired length.</td></tr>
+<tr valign="top"><td><code>x</code></td>
+<td>
+object to be coerced or tested.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+further arguments passed to or from other methods.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>as.character</code> and <code>is.character</code> are generic: you can
+write methods to handle specific classes of objects,
+see <a href="zMethods.html">InternalMethods</a>.  Further, for <code>as.character</code> the
+default method calls <code><a href="vector.html">as.vector</a></code>, so dispatch is first on
+methods for <code>as.character</code> and then for methods for <code>as.vector</code>.
+</p>
+<p>
+<code>as.character</code> represents real and complex numbers to 15 significant
+digits (technically the compiler's setting of the ISO C constant
+<code>DBL_DIG</code>, which will be 15 on machines supporting IEC60559
+arithmetic according to the C99 standard).  This ensures that all the
+digits in the result will be reliable (and not the result of
+representation error), but does mean that conversion to character and
+back to numeric may change the number.  If you want to convert numbers
+to character with the maximum possible precision, use
+<code><a href="format.html">format</a></code>.
+</p>
+<p>
+<code>as.character</code> and <code>is.character</code> are <a href="Primitive.html">primitive</a>, so
+positional matching is used and any names of supplied arguments are
+ignored.  This may not be true of their methods.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>character</code> creates a character vector of the specified length.
+The elements of the vector are all equal to <code>""</code>.
+<br>
+<code>as.character</code> attempts to coerce its argument to character type;
+like <code><a href="vector.html">as.vector</a></code> it strips attributes including names.
+For lists it deparses the elements individually, except that it
+extracts the first element of length-one character vectors.
+<br>
+<code>is.character</code> returns <code>TRUE</code> or <code>FALSE</code> depending on
+whether its argument is of character type or not.</p>
+
+<h3>Note</h3>
+
+<p>
+<code>as.character</code> truncates components of language objects to 500
+characters (was about 70 before 1.3.1).
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+<EM>The New S Language</EM>.
+Wadsworth &amp; Brooks/Cole.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="paste.html">paste</a></code>, <code><a href="substr.html">substr</a></code> and <code><a href="strsplit.html">strsplit</a></code>
+for character concatenation and splitting,
+<code><a href="chartr.html">chartr</a></code> for character translation and casefolding (e.g.,
+upper to lower case) and <code><a href="grep.html">sub</a></code>, <code><a href="grep.html">grep</a></code> etc for
+string matching and substitutions.  Note that
+<code>help.search(keyword = "character")</code> gives even more links.
+<code><a href="deparse.html">deparse</a></code>, which is normally preferable to
+<code>as.character</code> for language objects.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+form &lt;- y ~ a + b + c
+as.character(form)  ## length 3
+deparse(form)       ## like the input
+
+a0 &lt;- 11/999          # has a repeating decimal representation
+(a1 &lt;- as.character(a0))
+format(a0, digits=16) # shows one more digit
+a2 &lt;- as.numeric(a1)
+a2 - a0               # normally around -1e-17
+as.character(a2)      # normally different from a1
+print(c(a0, a2), digits = 16)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

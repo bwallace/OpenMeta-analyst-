@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Imputation in supervised classification</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for ce.impute {dprep}"><tr><td>ce.impute {dprep}</td><td align="right">R Documentation</td></tr></table>
+<h2>Imputation in supervised classification</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This function performs data imputation in datasets for supervised classification by using
+mean, median or knn imputation methods.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+ce.impute(data, method = c("mean", "median", "knn"), atr,
+ nomatr = rep(0, 0), k1 = 10)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>data</code></td>
+<td>
+the name of the dataset </td></tr>
+<tr valign="top"><td><code>method</code></td>
+<td>
+the name of the method to be used </td></tr>
+<tr valign="top"><td><code>atr</code></td>
+<td>
+a vector identifying the attributes where imputations will be performed </td></tr>
+<tr valign="top"><td><code>nomatr</code></td>
+<td>
+a vector identifying the nominal attributes</td></tr>
+<tr valign="top"><td><code>k1</code></td>
+<td>
+the number of neighbors to be used for the knn imputation</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+Returns a matrix without missing values.</p>
+
+<h3>Note</h3>
+
+<p>
+A description of all the imputations carried out may be stored in a report
+that is later saved to the current workspace. To produce the report, lines
+at the end of the code must be uncommented. The report objects name starts
+with Imput.rep.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Caroline Rodriguez
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Acuna, E. and Rodriguez, C. (2004). The treatment of missing values and its effect in the classifier accuracy. In D. Banks,  L. House, F.R. McMorris, P. Arabie, W. Gaul (Eds).
+Classification, Clustering and Data Mining Applications. Springer-Verlag Berlin-Heidelberg, 639-648.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="clean.html">clean</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(hepatitis)
+#--------Median Imputation-----------
+#ce.impute(hepatitis,"median",1:19)
+#--------knn Imputation--------------
+hepa.imputed=ce.impute(hepatitis,"knn",k1=10)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>dprep</em> version 2.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

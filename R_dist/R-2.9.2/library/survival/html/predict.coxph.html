@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Predictions for a Cox model</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for predict.coxph {survival}"><tr><td>predict.coxph {survival}</td><td align="right">R Documentation</td></tr></table>
+<h2>Predictions for a Cox model</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Compute fitted values and regression terms for a model fitted by
+<code><a href="coxph.html">coxph</a></code>
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'coxph':
+predict(object, newdata,
+type=c("lp", "risk", "expected", "terms"),
+se.fit=FALSE, terms=names(object$assign), collapse,
+safe=FALSE, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>object</code></td>
+<td>
+the results of a coxph fit. 
+</td></tr>
+<tr valign="top"><td><code>newdata</code></td>
+<td>
+Optional new data at which to do predictions.
+If absent predictions are for the 
+data frame used in the original fit. 
+</td></tr>
+<tr valign="top"><td><code>type</code></td>
+<td>
+the type of predicted value. 
+Choices are the linear predictor (<code>"lp"</code>), the risk score exp(lp)
+(<code>"risk"</code>), 
+the expected number of events given the covariates and follow-up time 
+(<code>"expected"</code>), and the terms of the linear predictor (<code>"terms"</code>). 
+</td></tr>
+<tr valign="top"><td><code>se.fit</code></td>
+<td>
+if TRUE, pointwise standard errors are produced for the predictions. 
+</td></tr>
+<tr valign="top"><td><code>terms</code></td>
+<td>
+if type="terms", this argument can be used to specify which terms should be 
+included; the default is all. 
+</td></tr>
+<tr valign="top"><td><code>collapse</code></td>
+<td>
+optional vector of subject identifiers.  
+If specified, the output will contain one entry per subject rather than one 
+entry per observation. 
+</td></tr>
+<tr valign="top"><td><code>safe</code></td>
+<td>
+not used in R</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+For future methods</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+a vector or matrix of predictions, or a list containing the predictions 
+(element "fit") and their standard errors (element "se.fit") if the se.fit 
+option is TRUE.</p>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../stats/html/predict.html">predict</a></code>,<code><a href="coxph.html">coxph</a></code>,<code><a href="../../stats/html/termplot.html">termplot</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+fit &lt;- coxph(Surv(time, status) ~ age + ph.ecog + strata(inst), lung) 
+mresid &lt;- lung$status - predict(fit, type='expected') #Martingale resid 
+predict(fit,type="lp")
+predict(fit,type="risk")
+predict(fit,type="expected")
+predict(fit,type="terms")
+predict(fit,type="lp",se.fit=TRUE)
+predict(fit,type="risk",se.fit=TRUE)
+predict(fit,type="expected",se.fit=TRUE)
+predict(fit,type="terms",se.fit=TRUE)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>survival</em> version 2.35-4 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

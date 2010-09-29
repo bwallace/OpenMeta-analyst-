@@ -1,0 +1,232 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Minimum and Maximum of Moving Windows</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for runmin & runmax {caTools}"><tr><td>runmin & runmax {caTools}</td><td align="right">R Documentation</td></tr></table>
+<h2>Minimum and Maximum of Moving Windows</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Moving (aka running, rolling) Window Minimum and Maximum 
+calculated over a vector
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+  runmin(x, k, alg=c("C", "R"),
+         endrule=c("min", "NA", "trim", "keep", "constant", "func"))
+  runmax(x, k, alg=c("C", "R"),
+         endrule=c("max", "NA", "trim", "keep", "constant", "func"))
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+numeric vector of length n</td></tr>
+<tr valign="top"><td><code>k</code></td>
+<td>
+width of moving window; must be an integer between one and n </td></tr>
+<tr valign="top"><td><code>endrule</code></td>
+<td>
+character string indicating how the values at the beginning 
+and the end, of the array, should be treated. Only first and last <code>k2</code> 
+values at both ends are affected, where <code>k2</code> is the half-bandwidth 
+<code>k2 = k %/% 2</code>.
+<ul>
+<li><code>"min"</code> &amp; <code>"max"</code> - applies the underlying function to 
+smaller and smaller sections of the array. In case of min equivalent to: 
+<code>for(i in 1:k2) out[i]=min(x[1:(i+k2)])</code>. Default.
+<li><code>"trim"</code> - trim the ends; output array length is equal to 
+<code>length(x)-2*k2 (out = out[(k2+1):(n-k2)])</code>. This option mimics 
+output of <code><a href="../../msProcess/html/apply.html">apply</a></code> <code>(<a href="../../stats/html/embed.html">embed</a>(x,k),1,FUN)</code> and other 
+related functions.
+<li><code>"keep"</code> - fill the ends with numbers from <code>x</code> vector 
+<code>(out[1:k2] = x[1:k2])</code>
+<li><code>"constant"</code> - fill the ends with first and last calculated 
+value in output array <code>(out[1:k2] = out[k2+1])</code>
+<li><code>"NA"</code> - fill the ends with NA's <code>(out[1:k2] = NA)</code>
+<li><code>"func"</code> - same as <code>"min"</code> &amp; <code>"max"</code> but implimented
+in R. This option could be very slow, and is included mostly for testing
+</ul>
+Similar to <code>endrule</code> in <code><a href="../../stats/html/runmed.html">runmed</a></code> function which has the 
+following options: &ldquo;<code>c("median", "keep", "constant")</code>&rdquo; .
+</td></tr>
+<tr valign="top"><td><code>alg</code></td>
+<td>
+an option allowing to choose different algorithms or 
+implementations. Default is to use of code written in C (option <code>alg="C"</code>).
+Option <code>alg="R"</code> will use slower code written in R. Useful for 
+debugging and studying the algorithm.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Apart from the end values, the result of y = runFUN(x, k) is the same as 
+&ldquo;<code>for(j=(1+k2):(n-k2)) y[j]=FUN(x[(j-k2):(j+k2)], na.rm = TRUE)</code>&rdquo;, where FUN 
+stands for min or max functions.  Both functions can handle non-finite 
+numbers like NaN's and Inf's the same way as <code><a href="../../spam/html/summary.html">min</a>(x, na.rm = TRUE)</code>).
+</p>
+<p>
+The main incentive to write this set of functions was relative slowness of 
+majority of moving window functions available in R and its packages.  With the 
+exception of <code><a href="../../stats/html/runmed.html">runmed</a></code>, a running window median function, all 
+functions listed in "see also" section are slower than very inefficient 
+&ldquo;<code><a href="../../msProcess/html/apply.html">apply</a>(<a href="../../stats/html/embed.html">embed</a>(x,k),1,FUN)</code>&rdquo; approach. Relative 
+speeds <code>runmin</code> and <code>runmax</code> functions is O(n) in best and average 
+case and O(n*k) in worst case.
+</p>
+<p>
+Both functions work with infinite numbers (<code>NA</code>,<code>NaN</code>,<code>Inf</code>,
+<code>-Inf</code>). Also default <code>endrule</code> is hardwired in C for speed.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+Returns a numeric vector of the same length as <code>x</code>. Only in case of 
+<code>endrule="trim"</code> the output will be shorter.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Jarek Tuszynski (SAIC) <a href="mailto:jaroslaw.w.tuszynski@saic.com">jaroslaw.w.tuszynski@saic.com</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+Links related to:
+<ul>       
+<li>Other moving window functions  from this package: <code><a href="runmean.html">runmean</a></code>, 
+<code><a href="runquantile.html">runquantile</a></code>, <code><a href="runmad.html">runmad</a></code> and <code><a href="runsd.html">runsd</a></code>  
+<li>R functions: <code><a href="../../stats/html/runmed.html">runmed</a></code>, <code><a href="../../spam/html/summary.html">min</a></code>, <code><a href="../../spam/html/summary.html">max</a></code>
+<li>Similar functions in other packages: <code><a href="../../fSeries/html/rollMin.html">rollMin</a></code> 
+and <code><a href="../../fSeries/html/rollMax.html">rollMax</a></code> from <span class="pkg">fSeries</span> library
+<code><a href="../../zoo/html/rollmax.html">rollmax</a></code> from <span class="pkg">zoo</span> library
+<li>Generic running window functions: <code><a href="../../msProcess/html/apply.html">apply</a></code><code>
+     (<a href="../../stats/html/embed.html">embed</a>(x,k), 1, FUN)</code> (fastest), <code><a href="../../fSeries/html/rollFun.html">rollFun</a></code> 
+from <span class="pkg">fSeries</span> (slow), <code><a href="../../gtools/html/running.html">running</a></code> from <span class="pkg">gtools</span> 
+package (extremely slow for this purpose), <code><a href="../../zoo/html/rapply.html">rapply</a></code> from 
+<span class="pkg">zoo</span> library, <code><a href="../../magic/html/subsums.html">subsums</a></code> from 
+<span class="pkg">magic</span> library can perform running window operations on data with any 
+dimensions. 
+</ul>
+
+<h3>Examples</h3>
+
+<pre>
+  # show plot using runmin, runmax and runmed
+  k=25; n=200;
+  x = rnorm(n,sd=30) + abs(seq(n)-n/4)
+  col = c("black", "red", "green", "blue", "magenta", "cyan")
+  plot(x, col=col[1], main = "Moving Window Analysis Functions")
+  lines(runmin(x,k), col=col[2])
+  lines(runmean(x,k), col=col[3])
+  lines(runmax(x,k), col=col[4])
+  legend(0,.9*n, c("data", "runmin", "runmean", "runmax"), col=col, lty=1 )
+
+  # basic tests against standard R approach
+  a = runmin(x,k, endrule="trim") # test only the inner part 
+  b = apply(embed(x,k), 1, min)   # Standard R running min
+  stopifnot(all(a==b));
+  a = runmax(x,k, endrule="trim") # test only the inner part
+  b = apply(embed(x,k), 1, max)   # Standard R running min
+  stopifnot(all(a==b));
+  
+  # test against loop approach
+  # this test works fine at the R prompt but fails during package check - need to investigate
+  k=25; 
+  data(iris)
+  x = iris[,1]
+  n = length(x)
+  x[seq(1,n,11)] = NaN;                # add NANs
+  k2 = k
+  k1 = k-k2-1
+  a1 = runmin(x, k)
+  a2 = runmax(x, k)
+  b1 = array(0,n)
+  b2 = array(0,n)
+  for(j in 1:n) {
+    lo = max(1, j-k1)
+    hi = min(n, j+k2)
+    b1[j] = min(x[lo:hi], na.rm = TRUE)
+    b2[j] = max(x[lo:hi], na.rm = TRUE)
+  }
+  #stopifnot(all(a1==b1), na.rm=TRUE);
+  #stopifnot(all(a2==b2), na.rm=TRUE);
+  
+  # Test if moving windows forward and backward gives the same results
+  # Two data sets also corespond to best and worst-case scenatio data-sets
+  k=51; n=200;
+  a = runmin(n:1, k) 
+  b = runmin(1:n, k)
+  stopifnot(all(a[n:1]==b, na.rm=TRUE));
+  a = runmax(n:1, k)
+  b = runmax(1:n, k)
+  stopifnot(all(a[n:1]==b, na.rm=TRUE));
+
+  # Compare C and R algorithms to each other for extreme window sizes
+  numeric.test = function (x, k) {
+    a = runmin( x, k, alg="C")
+    b = runmin( x, k, alg="R")
+    c =-runmax(-x, k, alg="C")
+    d =-runmax(-x, k, alg="R")
+    stopifnot(all(a==b, na.rm=TRUE));
+    #stopifnot(all(c==d, na.rm=TRUE)); 
+    #stopifnot(all(a==c, na.rm=TRUE));
+    stopifnot(all(b==d, na.rm=TRUE));
+  }
+  n=200;                               # n is an even number
+  x = rnorm(n,sd=30) + abs(seq(n)-n/4) # random data
+  for(i in 1:5) numeric.test(x, i)     # test for small window size
+  for(i in 1:5) numeric.test(x, n-i+1) # test for large window size
+  n=201;                               # n is an odd number
+  x = rnorm(n,sd=30) + abs(seq(n)-n/4) # random data
+  for(i in 1:5) numeric.test(x, i)     # test for small window size
+  for(i in 1:5) numeric.test(x, n-i+1) # test for large window size
+  n=200;                               # n is an even number
+  x = rnorm(n,sd=30) + abs(seq(n)-n/4) # random data
+  x[seq(1,200,10)] = NaN;              # with some NaNs
+  for(i in 1:5) numeric.test(x, i)     # test for small window size
+  for(i in 1:5) numeric.test(x, n-i+1) # test for large window size
+  n=201;                               # n is an odd number
+  x = rnorm(n,sd=30) + abs(seq(n)-n/4) # random data
+  x[seq(1,200,2)] = NaN;               # with some NaNs
+  for(i in 1:5) numeric.test(x, i)     # test for small window size
+  for(i in 1:5) numeric.test(x, n-i+1) # test for large window size
+
+  # speed comparison
+  ## Not run: 
+  n = 1e7;  k=991; 
+  x1 = runif(n);                       # random data - average case scenario
+  x2 = 1:n;                            #  best-case scenario data for runmax
+  x3 = n:1;                            # worst-case scenario data for runmax
+  system.time( runmax( x1,k,alg="C"))  # C alg on average data O(n)
+  system.time( runmax( x2,k,alg="C"))  # C alg on  best-case data O(n)
+  system.time( runmax( x3,k,alg="C"))  # C alg on worst-case data O(n*k)
+  system.time(-runmin(-x1,k,alg="C"))  # use runmin to do runmax work
+  system.time( runmax( x1,k,alg="R"))  # R version of the function
+  x=runif(1e5); k=1e2;                 # reduce vector and window sizes
+  system.time(runmax(x,k,alg="R"))     # R version of the function
+  system.time(apply(embed(x,k), 1, max)) # standard R approach 
+  
+## End(Not run)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>caTools</em> version 1.9 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

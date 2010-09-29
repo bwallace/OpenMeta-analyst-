@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Plot Method for Data Frames</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for plot.data.frame {graphics}"><tr><td>plot.data.frame {graphics}</td><td align="right">R Documentation</td></tr></table>
+<h2>Plot Method for Data Frames</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>plot.data.frame</code>, a method for the <code><a href="plot.html">plot</a></code> generic.
+It is designed for a quick look at numeric data frames.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'data.frame':
+plot(x, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+object of class <code>data.frame</code>.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+further arguments to <code><a href="stripchart.html">stripchart</a></code>,
+<code><a href="plotdefault.html">plot.default</a></code> or <code><a href="pairs.html">pairs</a></code>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This is intended for data frames with <EM>numeric</EM> columns. For more
+than two columns it first calls <code><a href="../../base/html/data.matrix.html">data.matrix</a></code> to convert
+the data frame to a numeric matrix and then calls <code><a href="pairs.html">pairs</a></code>
+to produce a scatterplot matrix).  This can fail and may well be
+inappropriate: for example numerical conversion of dates will lose
+their special meaning and a warning will be given.
+</p>
+<p>
+For a two-column data frame it plots the second column against the
+first by the most appropriate method for the first column.
+</p>
+<p>
+For a single numeric column it uses <code><a href="stripchart.html">stripchart</a></code>, and for
+other single-column data frames tries to find a plot method for the
+single column.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../base/html/data.frame.html">data.frame</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+plot(OrchardSprays[1], method="jitter")
+plot(OrchardSprays[c(4,1)])
+plot(OrchardSprays)
+
+plot(iris)
+plot(iris[5:4])
+plot(women)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>graphics</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

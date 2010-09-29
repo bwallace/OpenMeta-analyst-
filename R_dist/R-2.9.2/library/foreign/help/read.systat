@@ -1,0 +1,65 @@
+read.systat             package:foreign             R Documentation
+
+_O_b_t_a_i_n _a _D_a_t_a _F_r_a_m_e _f_r_o_m _a _S_y_s_t_a_t _F_i_l_e
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     'read.systat' reads a rectangular data file stored by the Systat
+     'SAVE' command as (legacy) '*.sys' or more recently '*.syd' files.
+
+_U_s_a_g_e:
+
+     read.systat(file, to.data.frame = TRUE)
+
+_A_r_g_u_m_e_n_t_s:
+
+    file: character variable with the name of the file to read
+
+to.data.frame: return a data frame (otherwise a list)
+
+_D_e_t_a_i_l_s:
+
+     The function only reads those Systat files that are rectangular
+     data files ('mtype = 1'), and warns when files have non-standard
+     variable name codings.  The files tested were produced on MS-DOS
+     and Windows: files for the Mac version of Systat have a completely
+     different format.
+
+     The C code was originally written for an add-on module for Systat
+     described in Bivand (1992 paper).  Variable names retain the
+     trailing dollar in the list returned when 'to.data.frame' is
+     'FALSE', and in that case character variables are returned as is
+     and filled up to 12 characters with blanks on the right.  The
+     original function was limited to reading Systat files with up to
+     256 variables (a Systat limitation); it will now read up to 8192
+     variables.
+
+     If there is a user comment in the header this is returned as
+     attribute '"comment"'.  Such comments are always a multiple of 72
+     characters (with a maximum of 720 chars returned), normally padded
+     with trailing spaces.
+
+_V_a_l_u_e:
+
+     A data frame (or list) with one component for each variable in the
+     saved data set.
+
+_A_u_t_h_o_r(_s):
+
+     Roger Bivand
+
+_R_e_f_e_r_e_n_c_e_s:
+
+     Systat Manual, 1987, 1989
+
+     Bivand, R. S. (1992) SYSTAT-compatible software for modelling
+     spatial dependence among observations. _Computers and Geosciences_
+     *18*, 951-963.
+
+_E_x_a_m_p_l_e_s:
+
+     summary(iris)
+     iris.s <- read.systat(system.file("files/Iris.syd", package="foreign")[1])
+     str(iris.s)
+     summary(iris.s)
+

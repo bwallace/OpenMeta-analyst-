@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Quinidine Kinetics</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for Quinidine {nlme}"><tr><td>Quinidine {nlme}</td><td align="right">R Documentation</td></tr></table>
+<h2>Quinidine Kinetics</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The <code>Quinidine</code> data frame has 1471 rows and 14 columns.
+</p>
+
+
+<h3>Format</h3>
+
+<p>
+This data frame contains the following columns:
+<dl>
+<dt>Subject</dt><dd>a factor identifying the patient on whom the data were collected.
+</dd>
+<dt>time</dt><dd>a numeric vector giving the time (hr) at which the drug was
+administered or the blood sample drawn.  This is measured
+from the time the patient entered the study.
+</dd>
+<dt>conc</dt><dd>a numeric vector giving the serum quinidine concentration (mg/L).
+</dd>
+<dt>dose</dt><dd>a numeric vector giving the dose of drug administered (mg).
+Although there were two different forms of quinidine
+administered, the doses were adjusted for differences in
+salt content by conversion to milligrams of quinidine base.
+</dd>
+<dt>interval</dt><dd>a numeric vector giving the when the drug has been given at
+regular intervals for a sufficiently long period of time to
+assume steady state behavior, the interval is recorded.
+</dd>
+<dt>Age</dt><dd>a numeric vector giving the age of the subject on entry to
+the study (yr).
+</dd>
+<dt>Height</dt><dd>a numeric vector giving the height of the subject on entry
+to the study (in.).
+</dd>
+<dt>Weight</dt><dd>a numeric vector giving the body weight of the subject (kg).
+</dd>
+<dt>Race</dt><dd>a factor with levels
+<code>Caucasian</code>, 
+<code>Latin</code>, and
+<code>Black</code> identifying the race of the subject.
+</dd>
+<dt>Smoke</dt><dd>a factor with levels
+<code>no</code> and
+<code>yes</code> giving smoking status at the time of the
+measurement.
+</dd>
+<dt>Ethanol</dt><dd>a factor with levels
+<code>none</code>, 
+<code>current</code>,
+<code>former</code> giving ethanol (alcohol) abuse status at the
+time of the measurement.
+</dd>
+<dt>Heart</dt><dd>a factor with levels
+<code>No/Mild</code>, 
+<code>Moderate</code>, and 
+<code>Severe</code> indicating congestive heart failure for the subject.
+</dd>
+<dt>Creatinine</dt><dd>an ordered factor with levels
+<code>&lt; 50</code> &lt; <code>&gt;= 50</code> indicating the creatine clearance (mg/min).
+</dd>
+<dt>glyco</dt><dd>a numeric vector giving the alpha-1 acid glycoprotein
+concentration (mg/dL).  Often measured at the same time as
+the quinidine concentration.
+</dd>
+</dl>
+
+<h3>Details</h3>
+
+<p>
+Verme et al. (1992) analyze routine clinical data on
+patients receiving the drug quinidine as a treatment for cardiac
+arrythmia (atrial fibrillation of ventricular arrythmias).  All
+patients were receiving oral quinidine doses.  At irregular intervals
+blood samples were drawn and serum concentrations of quinidine were
+determined.  These data are
+analyzed in several publications, including Davidian and Giltinan (1995,
+section 9.3).
+</p>
+
+
+<h3>Source</h3>
+
+<p>
+Pinheiro, J. C. and Bates, D. M. (2000), <EM>Mixed-Effects Models in S
+and S-PLUS</EM>, Springer, New York.  (Appendix A.25)
+</p>
+<p>
+Davidian, M. and Giltinan, D. M. (1995), <EM>Nonlinear Models for
+Repeated Measurement Data</EM>,  Chapman and Hall, London.
+</p>
+<p>
+Verme, C. N., Ludden,  T. M., Clementi, W. A. and Harris,
+S. C. (1992), Pharmacokinetics of quinidine in male patients: A
+population analysis, <EM>Clinical Pharmacokinetics</EM>, <B>22</B>,
+468-480.
+</p>
+
+
+
+<hr><div align="center">[Package <em>nlme</em> version 3.1-93 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

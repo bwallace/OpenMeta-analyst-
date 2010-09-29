@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Find Names of R System Files</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for system.file {base}"><tr><td>system.file {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Find Names of R System Files</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Finds the full file names of files in packages etc.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+system.file(..., package = "base", lib.loc = NULL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>...</code></td>
+<td>
+character strings, specifying subdirectory and file(s)
+within some package.  The default, none, returns the
+root of the package.  Wildcards are not supported.</td></tr>
+<tr valign="top"><td><code>package</code></td>
+<td>
+a character string with the name of a single package.
+An error occurs if more than one package name is given.</td></tr>
+<tr valign="top"><td><code>lib.loc</code></td>
+<td>
+a character vector with path names of <font face="Courier New,Courier" color="#666666"><b>R</b></font> libraries, or
+<code>NULL</code>.  The default value of <code>NULL</code> corresponds to all
+libraries currently known.  If the default is used, the loaded
+packages are searched before the libraries.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+A character vector of positive length, containing the file names
+that matched <code>...</code>, or the empty string, <code>""</code>, if none
+matched.  If matching the root of a package, there is no trailing
+separator.
+<br>
+As a special case, <code>system.file()</code> gives the root of the
+<span class="pkg">base</span> package only.</p>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="Rhome.html">R.home</a></code> for the root directory of the <font face="Courier New,Courier" color="#666666"><b>R</b></font>
+installation, <code><a href="list.files.html">list.files</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+system.file()                  # The root of the 'base' package
+system.file(package = "stats") # The root of package 'stats'
+system.file("INDEX")
+system.file("help", "AnIndex", package = "splines")
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

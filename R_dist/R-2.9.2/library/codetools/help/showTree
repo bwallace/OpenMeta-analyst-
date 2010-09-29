@@ -1,0 +1,29 @@
+showTree              package:codetools              R Documentation
+
+_P_r_i_n_t _L_i_s_p-_S_t_y_l_e _R_e_p_r_e_s_e_n_t_a_t_i_o_n _o_f _R _E_x_p_r_e_s_s_i_o_n
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Prints a Lisp-style representation of R expression.  This can be
+     useful for understanding how some things are parsed.
+
+_U_s_a_g_e:
+
+     showTree(e, write = cat)
+
+_A_r_g_u_m_e_n_t_s:
+
+       e: R expression.
+
+   write: function of one argument to write the result.
+
+_A_u_t_h_o_r(_s):
+
+     Luke Tierney
+
+_E_x_a_m_p_l_e_s:
+
+     showTree(quote(-3))
+     showTree(quote("x"<-1))
+     showTree(quote("f"(x)))
+

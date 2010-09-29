@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Generic function to add an Axis to a Plot</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for Axis {graphics}"><tr><td>Axis {graphics}</td><td align="right">R Documentation</td></tr></table>
+<h2>Generic function to add an Axis to a Plot</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Generic function to add a suitable axis to the current plot.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+Axis(x = NULL, at = NULL, ..., side, labels = NULL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+an object which indicates the range over which an axis should
+be drawn</td></tr>
+<tr valign="top"><td><code>at</code></td>
+<td>
+the points at which tick-marks are to be drawn.</td></tr>
+<tr valign="top"><td><code>side</code></td>
+<td>
+an integer specifying which side of the plot the axis is
+to be drawn on.  The axis is placed as follows: 1=below,
+2=left, 3=above and 4=right.</td></tr>
+<tr valign="top"><td><code>labels</code></td>
+<td>
+this can either be a logical value specifying whether
+(numerical) annotations are to be made at the tickmarks, or a
+character or expression vector of labels to be placed at the
+tickpoints. If this is specified as a character or expression
+vector, <code>at</code> should be supplied and they should be the same
+length.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+Arguments to be passed to methods and perhaps then to
+<code><a href="axis.html">axis</a></code>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This is a generic function.  It works in a slightly non-standard way:
+if <code>x</code> is supplied and non-NULL it dispatches on <code>x</code>,
+otherwise if <code>at</code> is supplied and non-NULL it dispatches on <code>at</code>,
+and the default action is to call <code><a href="axis.html">axis</a></code>, omitting argument
+<code>x</code>.
+</p>
+<p>
+The idea is that for plots for which either or both of the axes are
+numerical but with a special interpretation, the standard plotting
+functions (including <code><a href="boxplot.html">boxplot</a></code>, <code><a href="contour.html">contour</a></code>,
+<code><a href="coplot.html">coplot</a></code>, <code><a href="filled.contour.html">filled.contour</a></code>,
+<code><a href="pairs.html">pairs</a></code>, <code><a href="plotdefault.html">plot.default</a></code>, <code><a href="rug.html">rug</a></code> and
+<code><a href="stripchart.html">stripchart</a></code>) will set up user coordinates and <code>Axis</code>
+will be called to label them appropriately.
+</p>
+<p>
+There are <code>"Date"</code>, <code>"POSIXct"</code> and <code>"POSIXlt"</code>
+methods which can pass an argument <code>format</code> onto the
+appropriate <code>axis</code> method (see <code><a href="axis.POSIXct.html">axis.POSIXct</a></code>).
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+The numeric locations on the axis scale at which tick marks were drawn
+when the plot was first drawn (see &lsquo;Details&rsquo;).
+<br>
+This function is usually invoked for its side effect, which is to add
+an axis to an already existing plot.</p>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="axis.html">axis</a></code>.
+</p>
+
+
+
+<hr><div align="center">[Package <em>graphics</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

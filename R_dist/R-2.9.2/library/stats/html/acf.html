@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Auto- and Cross- Covariance and -Correlation Function Estimation</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for acf {stats}"><tr><td>acf {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>Auto- and Cross- Covariance and -Correlation Function Estimation</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The function <code>acf</code> computes (and by default plots) estimates of
+the autocovariance or autocorrelation function.  Function <code>pacf</code>
+is the function used for the partial autocorrelations.  Function
+<code>ccf</code> computes the cross-correlation or cross-covariance of two
+univariate series.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+acf(x, lag.max = NULL,
+    type = c("correlation", "covariance", "partial"),
+    plot = TRUE, na.action = na.fail, demean = TRUE, ...)
+
+pacf(x, lag.max, plot, na.action, ...)
+
+## Default S3 method:
+pacf(x, lag.max = NULL, plot = TRUE, na.action = na.fail,
+    ...)
+
+ccf(x, y, lag.max = NULL, type = c("correlation", "covariance"),
+    plot = TRUE, na.action = na.fail, ...)
+
+## S3 method for class 'acf':
+x[i, j]
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x, y</code></td>
+<td>
+a univariate or multivariate (not <code>ccf</code>) numeric time
+series object or a numeric vector or matrix, or an <code>"acf"</code> object.</td></tr>
+<tr valign="top"><td><code>lag.max</code></td>
+<td>
+maximum lag at which to calculate the acf.
+Default is <i>10*log10(N/m)</i> where <i>N</i> is the
+number of observations and <i>m</i> the number of series.  Will
+be automatically limited to one less than the number of observations
+in the series.</td></tr>
+<tr valign="top"><td><code>type</code></td>
+<td>
+character string giving the type of acf to be computed.
+Allowed values are
+<code>"correlation"</code> (the default), <code>"covariance"</code> or
+<code>"partial"</code>.</td></tr>
+<tr valign="top"><td><code>plot</code></td>
+<td>
+logical. If <code>TRUE</code> (the default) the acf is plotted.</td></tr>
+<tr valign="top"><td><code>na.action</code></td>
+<td>
+function to be called to handle missing
+values. <code>na.pass</code> can be used.</td></tr>
+<tr valign="top"><td><code>demean</code></td>
+<td>
+logical.  Should the covariances be about the sample
+means?</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+further arguments to be passed to <code>plot.acf</code>.</td></tr>
+<tr valign="top"><td><code>i</code></td>
+<td>
+a set of lags (time differences) to retain.</td></tr>
+<tr valign="top"><td><code>j</code></td>
+<td>
+a set of series (names or numbers) to retain.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+For <code>type</code> = <code>"correlation"</code> and <code>"covariance"</code>, the
+estimates are based on the sample covariance. (The lag 0 autocorrelation
+is fixed at 1 by convention.)
+</p>
+<p>
+By default, no missing values are allowed.  If the <code>na.action</code>
+function passes through missing values (as <code>na.pass</code> does), the
+covariances are computed from the complete cases.  This means that the
+estimate computed may well not be a valid autocorrelation sequence,
+and may contain missing values.  Missing values are not allowed when
+computing the PACF of a multivariate time series.
+</p>
+<p>
+The partial correlation coefficient is estimated by fitting
+autoregressive models of successively higher orders up to
+<code>lag.max</code>.
+</p>
+<p>
+The generic function <code>plot</code> has a method for objects of class
+<code>"acf"</code>.
+</p>
+<p>
+The lag is returned and plotted in units of time, and not numbers of
+observations.
+</p>
+<p>
+There are <code>print</code> and subsetting methods for objects of class
+<code>"acf"</code>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+An object of class <code>"acf"</code>, which is a list with the following
+elements:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>lag</code></td>
+<td>
+A three dimensional array containing the lags at which
+the acf is estimated.</td></tr>
+<tr valign="top"><td><code>acf</code></td>
+<td>
+An array with the same dimensions as <code>lag</code> containing
+the estimated acf.</td></tr>
+<tr valign="top"><td><code>type</code></td>
+<td>
+The type of correlation (same as the <code>type</code>
+argument).</td></tr>
+<tr valign="top"><td><code>n.used</code></td>
+<td>
+The number of observations in the time series.</td></tr>
+<tr valign="top"><td><code>series</code></td>
+<td>
+The name of the series <code>x</code>.</td></tr>
+<tr valign="top"><td><code>snames</code></td>
+<td>
+The series names for a multivariate time series.</td></tr>
+</table>
+<p>
+
+<br>
+The lag <code>k</code> value returned by <code>ccf(x,y)</code> estimates the
+correlation between <code>x[t+k]</code> and <code>y[t]</code>.
+<br>
+The result is returned invisibly if <code>plot</code> is <code>TRUE</code>.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Original: Paul Gilbert, Martyn Plummer.
+Extensive modifications and univariate case of <code>pacf</code> by
+B. D. Ripley.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Venables, W. N. and Ripley, B. D. (2002)
+<EM>Modern Applied Statistics with S</EM>.  Fourth Edition.
+Springer-Verlag.
+</p>
+<p>
+(This contains the exact definitions used.)
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="plot.acf.html">plot.acf</a></code>, <code><a href="ARMAacf.html">ARMAacf</a></code> for the exact
+autocorrelations of a given ARMA process.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+require(graphics)
+
+## Examples from Venables &amp; Ripley
+acf(lh)
+acf(lh, type = "covariance")
+pacf(lh)
+
+acf(ldeaths)
+acf(ldeaths, ci.type = "ma")
+acf(ts.union(mdeaths, fdeaths))
+ccf(mdeaths, fdeaths, ylab = "cross-correlation")
+# (just the cross-correlations)
+
+presidents # contains missing values
+acf(presidents, na.action = na.pass)
+pacf(presidents, na.action = na.pass)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

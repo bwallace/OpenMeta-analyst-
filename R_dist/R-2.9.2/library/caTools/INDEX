@@ -1,0 +1,18 @@
+LogitBoost              LogitBoost Classification Algorithm
+base64encode            Convert R vectors to/from the Base64 format
+caTools-package         Tools: moving window statistics, GIF, Base64,
+                        ROC AUC, etc.
+colAUC                  Column-wise Area Under ROC Curve (AUC)
+combs                   All Combinations of k Elements from Vector v
+predict.LogitBoost      Prediction Based on LogitBoost Classification
+                        Algorithm
+read.ENVI               Read and Write Binary Data in ENVI Format
+read.gif                Read and Write Images in GIF format
+runmad                  Median Absolute Deviation of Moving Windows
+runmean                 Mean of a Moving Window
+runmin                  Minimum and Maximum of Moving Windows
+runquantile             Quantile of Moving Window
+runsd                   Standard Deviation of Moving Windows
+sample.split            Split Data into Test and Train Set
+sum.exact               Basic Sum Operations without Round-off Errors
+trapz                   Trapezoid Rule Numerical Integration

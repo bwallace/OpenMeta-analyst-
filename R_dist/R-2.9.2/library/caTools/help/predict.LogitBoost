@@ -1,0 +1,60 @@
+predict.LogitBoost          package:caTools          R Documentation
+
+_P_r_e_d_i_c_t_i_o_n _B_a_s_e_d _o_n _L_o_g_i_t_B_o_o_s_t _C_l_a_s_s_i_f_i_c_a_t_i_o_n _A_l_g_o_r_i_t_h_m
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Prediction or Testing using logitboost classification algorithm
+
+_U_s_a_g_e:
+
+     predict.LogitBoost(object, xtest, type = c("class", "raw"), nIter=NA, ...)
+
+_A_r_g_u_m_e_n_t_s:
+
+  object: An object of class "LogitBoost" see "Value" section of 
+          'LogitBoost' for details
+
+   xtest: A matrix or data frame with test data. Rows contain samples 
+          and columns contain features
+
+    type: See "Value" section
+
+   nIter: An optional integer, used to lower number of iterations 
+          (decision stumps) used in the decision making. If not
+          provided than the  number will be the same as the one
+          provided in 'LogitBoost'.  If provided than the results will
+          be the same as running  'LogitBoost' with fewer iterations. 
+
+     ...: not used but needed for compatibility with generic predict 
+          method
+
+_D_e_t_a_i_l_s:
+
+     Logitboost algorithm relies on a voting scheme to make
+     classifications. Many ('nIter' of them) week classifiers are
+     applied to each sample and their findings are used as votes to
+     make the final classification. The class with  the most votes
+     "wins". However, with this scheme it is common for two cases  have
+     a tie (the same number of votes), especially if number of
+     iterations is  even. In that case NA is returned, instead of a
+     label.
+
+_V_a_l_u_e:
+
+     If type = "class" (default) label of the class with maximal
+     probability is  returned for each sample. If type = "raw", the
+     a-posterior probabilities for  each class are returned.
+
+_A_u_t_h_o_r(_s):
+
+     Jarek Tuszynski (SAIC) jaroslaw.w.tuszynski@saic.com
+
+_S_e_e _A_l_s_o:
+
+     'LogitBoost' has training half of LogitBoost code
+
+_E_x_a_m_p_l_e_s:
+
+     # See LogitBoost example
+

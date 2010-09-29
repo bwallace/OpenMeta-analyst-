@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Record and Replay Plots</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for recordPlot {grDevices}"><tr><td>recordPlot {grDevices}</td><td align="right">R Documentation</td></tr></table>
+<h2>Record and Replay Plots</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Functions to save the current plot in an <font face="Courier New,Courier" color="#666666"><b>R</b></font> variable, and to replay it.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+recordPlot()
+replayPlot(x)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+A saved plot.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+These functions record and replay the displaylist of the current
+graphics device.  The returned object is of class
+<code>"recordedplot"</code>, and <code>replayPlot</code> acts as a <code>print</code>
+method for that class.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>recordPlot</code> returns an object of class <code>"recordedplot"</code>.
+<br>
+<code>replayPlot</code> has no return value.</p>
+
+<h3>Warning</h3>
+
+<p>
+The format of recorded plots may change between <font face="Courier New,Courier" color="#666666"><b>R</b></font> versions.
+Recorded plots should <STRONG>not</STRONG> be used as a permanent
+storage format for <font face="Courier New,Courier" color="#666666"><b>R</b></font> plots.
+</p>
+<p>
+<font face="Courier New,Courier" color="#666666"><b>R</b></font> will always attempt to replay a recorded plot, but if the plot was 
+recorded with a different <font face="Courier New,Courier" color="#666666"><b>R</b></font> version then bad things may happen.
+</p>
+
+
+
+<hr><div align="center">[Package <em>grDevices</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

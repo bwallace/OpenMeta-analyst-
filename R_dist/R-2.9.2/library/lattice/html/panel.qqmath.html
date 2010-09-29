@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Default Panel and Prepanel Function for qqmath</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for panel.qqmath {lattice}"><tr><td>panel.qqmath {lattice}</td><td align="right">R Documentation</td></tr></table>
+<h2>Default Panel and Prepanel Function for qqmath</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This is the default panel function for <code>qqmath</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+panel.qqmath(x, f.value = NULL,
+             distribution = qnorm,
+             qtype = 7,
+             groups = NULL, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+vector (typically numeric, coerced if not) of data values to be used
+in the panel.
+</td></tr>
+<tr valign="top"><td><code>f.value, distribution</code></td>
+<td>
+Defines how quantiles are calculated.  See <code><a href="qqmath.html">qqmath</a></code> for
+details.
+</td></tr>
+<tr valign="top"><td><code>qtype</code></td>
+<td>
+The <code>type</code> argument to be used in <code><a href="../../stats/html/quantile.html">quantile</a></code>
+</td></tr>
+<tr valign="top"><td><code>groups</code></td>
+<td>
+An optional grouping variable.  Within each panel, one Q-Q plot is
+produced for every level of this grouping variable, differentiated
+by different graphical parameters.
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+further arguments, often graphical parameters.
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Creates a Q-Q plot of the data and the theoretical distribution given
+by <code>distribution</code>.  Note that most of the arguments controlling
+the display can be supplied directly to the high-level <code>qqmath</code>
+call.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Deepayan Sarkar <a href="mailto:Deepayan.Sarkar@R-project.org">Deepayan.Sarkar@R-project.org</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="qqmath.html">qqmath</a></code>
+</p>
+
+
+
+<hr><div align="center">[Package <em>lattice</em> version 0.17-25 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

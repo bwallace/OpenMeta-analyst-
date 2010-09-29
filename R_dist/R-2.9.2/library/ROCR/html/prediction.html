@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Function to create prediction objects</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for prediction {ROCR}"><tr><td>prediction {ROCR}</td><td align="right">R Documentation</td></tr></table>
+<h2>Function to create prediction objects</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Every classifier evaluation using ROCR starts with
+creating a <code>prediction</code> object. This function is used to
+transform the input data (which can be in vector, matrix, data frame, or
+list form) into a standardized format.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+prediction(predictions, labels, label.ordering = NULL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>predictions</code></td>
+<td>
+A vector, matrix, list, or data frame containing
+the predictions.</td></tr>
+<tr valign="top"><td><code>labels</code></td>
+<td>
+A vector, matrix, list, or data frame containing the
+true class labels. Must have the same dimensions as 'predictions'.</td></tr>
+<tr valign="top"><td><code>label.ordering</code></td>
+<td>
+The default
+ordering (cf.details)  of the classes can be changed by supplying a vector
+containing the negative and the positive class label.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+'predictions' and 'labels' can simply be vectors of the same
+length. However, in the case of cross-validation data, different
+cross-validation runs can be provided as the *columns* of a matrix or
+data frame, or as the entries of a list. In the case of a matrix or
+data frame, all cross-validation runs must have the same length, whereas
+in the case of a list, the lengths can vary across the cross-validation
+runs. Internally, as described in section 'Value', all of these input
+formats are converted to list representation.
+</p>
+<p>
+Since scoring classifiers give relative tendencies towards a negative
+(low scores) or positive (high scores) class, it has to be declared
+which class label denotes the negative, and which the positive class.
+Ideally, labels should be supplied as ordered factor(s), the lower
+level corresponding to the negative class, the upper level to the
+positive class. If the labels are factors (unordered), numeric,
+logical or characters, ordering of the labels is inferred from
+R's built-in <code>&lt;</code> relation (e.g. 0 &lt; 1, -1 &lt; 1, 'a' &lt; 'b',
+FALSE &lt; TRUE). Use <code>label.ordering</code> to override this default
+ordering. Please note that the ordering can be locale-dependent
+e.g. for character labels '-1' and '1'.
+</p>
+<p>
+Currently, ROCR supports only binary classification (extensions toward
+multiclass classification are scheduled for the next release,
+however). If there are more than two distinct label symbols, execution
+stops with an error message. If all predictions use the same two
+symbols that are used for the labels, categorical predictions are
+assumed. If there are more than two predicted values, but all numeric,
+continuous predictions are assumed (i.e. a scoring
+classifier). Otherwise, if more than two symbols occur in the
+predictions, and not all of them are numeric, execution stops with an
+error message.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+An S4 object of class <code>prediction</code>.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Tobias Sing <a href="mailto:tobias.sing@mpi-sb.mpg.de">tobias.sing@mpi-sb.mpg.de</a>,
+Oliver Sander <a href="mailto:osander@mpi-sb.mpg.de">osander@mpi-sb.mpg.de</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+A detailed list of references can be found on the ROCR
+homepage at <a href="http://rocr.bioinf.mpi-sb.mpg.de">http://rocr.bioinf.mpi-sb.mpg.de</a>.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="prediction-class.html">prediction-class</a></code>, <code><a href="performance.html">performance</a></code>,
+<code><a href="performance-class.html">performance-class</a></code>, <code><a href="plot-methods.html">plot.performance</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+# create a simple prediction object
+library(ROCR)
+data(ROCR.simple)
+pred &lt;- prediction(ROCR.simple$predictions,ROCR.simple$labels)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>ROCR</em> version 1.0-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

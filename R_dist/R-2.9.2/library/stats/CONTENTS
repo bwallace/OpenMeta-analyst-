@@ -1,0 +1,1829 @@
+Entry: AIC
+Aliases: AIC
+Keywords: models
+Description: Akaike's An Information Criterion
+URL: ../../../library/stats/html/AIC.html
+
+Entry: ARMAacf
+Aliases: ARMAacf
+Keywords: ts
+Description: Compute Theoretical ACF for an ARMA Process
+URL: ../../../library/stats/html/ARMAacf.html
+
+Entry: ARMAtoMA
+Aliases: ARMAtoMA
+Keywords: ts
+Description: Convert ARMA Process to Infinite MA Process
+URL: ../../../library/stats/html/ARMAtoMA.html
+
+Entry: Beta
+Aliases: Beta dbeta pbeta qbeta rbeta
+Keywords: distribution
+Description: The Beta Distribution
+URL: ../../../library/stats/html/Beta.html
+
+Entry: Binomial
+Aliases: Binomial dbinom pbinom qbinom rbinom
+Keywords: distribution
+Description: The Binomial Distribution
+URL: ../../../library/stats/html/Binomial.html
+
+Entry: Cauchy
+Aliases: Cauchy dcauchy pcauchy qcauchy rcauchy
+Keywords: distribution
+Description: The Cauchy Distribution
+URL: ../../../library/stats/html/Cauchy.html
+
+Entry: Chisquare
+Aliases: Chisquare dchisq pchisq qchisq rchisq
+Keywords: distribution
+Description: The (non-central) Chi-Squared Distribution
+URL: ../../../library/stats/html/Chisquare.html
+
+Entry: Exponential
+Aliases: Exponential dexp pexp qexp rexp
+Keywords: distribution
+Description: The Exponential Distribution
+URL: ../../../library/stats/html/Exponential.html
+
+Entry: FDist
+Aliases: FDist df pf qf rf
+Keywords: distribution
+Description: The F Distribution
+URL: ../../../library/stats/html/Fdist.html
+
+Entry: GammaDist
+Aliases: GammaDist dgamma pgamma qgamma rgamma
+Keywords: distribution
+Description: The Gamma Distribution
+URL: ../../../library/stats/html/GammaDist.html
+
+Entry: Geometric
+Aliases: Geometric dgeom pgeom qgeom rgeom
+Keywords: distribution
+Description: The Geometric Distribution
+URL: ../../../library/stats/html/Geometric.html
+
+Entry: HoltWinters
+Aliases: HoltWinters print.HoltWinters residuals.HoltWinters
+Keywords: ts
+Description: Holt-Winters Filtering
+URL: ../../../library/stats/html/HoltWinters.html
+
+Entry: Hypergeometric
+Aliases: Hypergeometric dhyper phyper qhyper rhyper
+Keywords: distribution
+Description: The Hypergeometric Distribution
+URL: ../../../library/stats/html/Hypergeometric.html
+
+Entry: IQR
+Aliases: IQR
+Keywords: univar robust distribution
+Description: The Interquartile Range
+URL: ../../../library/stats/html/IQR.html
+
+Entry: KalmanLike
+Aliases: KalmanLike KalmanRun KalmanSmooth KalmanForecast makeARIMA
+Keywords: ts
+Description: Kalman Filtering
+URL: ../../../library/stats/html/KalmanLike.html
+
+Entry: Logistic
+Aliases: Logistic dlogis plogis qlogis rlogis
+Keywords: distribution
+Description: The Logistic Distribution
+URL: ../../../library/stats/html/Logistic.html
+
+Entry: Lognormal
+Aliases: Lognormal dlnorm plnorm qlnorm rlnorm
+Keywords: distribution
+Description: The Log Normal Distribution
+URL: ../../../library/stats/html/Lognormal.html
+
+Entry: Multinomial
+Aliases: Multinomial rmultinom dmultinom
+Keywords: distribution
+Description: The Multinomial Distribution
+URL: ../../../library/stats/html/Multinom.html
+
+Entry: NLSstAsymptotic
+Aliases: NLSstAsymptotic NLSstAsymptotic.sortedXyData
+Keywords: manip
+Description: Fit the Asymptotic Regression Model
+URL: ../../../library/stats/html/NLSstAsymptotic.html
+
+Entry: NLSstClosestX
+Aliases: NLSstClosestX NLSstClosestX.sortedXyData
+Keywords: manip
+Description: Inverse Interpolation
+URL: ../../../library/stats/html/NLSstClosestX.html
+
+Entry: NLSstLfAsymptote
+Aliases: NLSstLfAsymptote NLSstLfAsymptote.sortedXyData
+Keywords: manip
+Description: Horizontal Asymptote on the Left Side
+URL: ../../../library/stats/html/NLSstLfAsymptote.html
+
+Entry: NLSstRtAsymptote
+Aliases: NLSstRtAsymptote NLSstRtAsymptote.sortedXyData
+Keywords: manip
+Description: Horizontal Asymptote on the Right Side
+URL: ../../../library/stats/html/NLSstRtAsymptote.html
+
+Entry: NegBinomial
+Aliases: NegBinomial dnbinom pnbinom qnbinom rnbinom
+Keywords: distribution
+Description: The Negative Binomial Distribution
+URL: ../../../library/stats/html/NegBinomial.html
+
+Entry: Normal
+Aliases: Normal dnorm pnorm qnorm rnorm
+Keywords: distribution
+Description: The Normal Distribution
+URL: ../../../library/stats/html/Normal.html
+
+Entry: Poisson
+Aliases: Poisson dpois ppois qpois rpois
+Keywords: distribution
+Description: The Poisson Distribution
+URL: ../../../library/stats/html/Poisson.html
+
+Entry: SSD
+Aliases: SSD estVar
+Keywords: models multivariate
+Description: SSD Matrix and Estimated Variance Matrix in Multivariate Models
+URL: ../../../library/stats/html/SSD.html
+
+Entry: SSasymp
+Aliases: SSasymp
+Keywords: models
+Description: Asymptotic Regression Model
+URL: ../../../library/stats/html/SSasymp.html
+
+Entry: SSasympOff
+Aliases: SSasympOff
+Keywords: models
+Description: Asymptotic Regression Model with an Offset
+URL: ../../../library/stats/html/SSasympOff.html
+
+Entry: SSasympOrig
+Aliases: SSasympOrig
+Keywords: models
+Description: Asymptotic Regression Model through the Origin
+URL: ../../../library/stats/html/SSasympOrig.html
+
+Entry: SSbiexp
+Aliases: SSbiexp
+Keywords: models
+Description: Biexponential model
+URL: ../../../library/stats/html/SSbiexp.html
+
+Entry: SSfol
+Aliases: SSfol
+Keywords: models
+Description: First-order Compartment Model
+URL: ../../../library/stats/html/SSfol.html
+
+Entry: SSfpl
+Aliases: SSfpl
+Keywords: models
+Description: Four-parameter Logistic Model
+URL: ../../../library/stats/html/SSfpl.html
+
+Entry: SSgompertz
+Aliases: SSgompertz
+Keywords: models
+Description: Gompertz Growth Model
+URL: ../../../library/stats/html/SSgompertz.html
+
+Entry: SSlogis
+Aliases: SSlogis
+Keywords: models
+Description: Logistic Model
+URL: ../../../library/stats/html/SSlogis.html
+
+Entry: SSmicmen
+Aliases: SSmicmen
+Keywords: models
+Description: Michaelis-Menten Model
+URL: ../../../library/stats/html/SSmicmen.html
+
+Entry: SSweibull
+Aliases: SSweibull
+Keywords: models
+Description: Weibull growth curve model
+URL: ../../../library/stats/html/SSweibull.html
+
+Entry: SignRank
+Aliases: SignRank dsignrank psignrank qsignrank rsignrank
+Keywords: distribution
+Description: Distribution of the Wilcoxon Signed Rank Statistic
+URL: ../../../library/stats/html/SignRank.html
+
+Entry: StructTS
+Aliases: StructTS print.StructTS predict.StructTS
+Keywords: ts
+Description: Fit Structural Time Series
+URL: ../../../library/stats/html/StructTS.html
+
+Entry: TDist
+Aliases: TDist dt pt qt rt
+Keywords: distribution
+Description: The Student t Distribution
+URL: ../../../library/stats/html/TDist.html
+
+Entry: Tukey
+Aliases: Tukey ptukey qtukey
+Keywords: distribution
+Description: The Studentized Range Distribution
+URL: ../../../library/stats/html/Tukey.html
+
+Entry: TukeyHSD
+Aliases: TukeyHSD TukeyHSD.aov print.TukeyHSD plot.TukeyHSD
+Keywords: models design
+Description: Compute Tukey Honest Significant Differences
+URL: ../../../library/stats/html/TukeyHSD.html
+
+Entry: Uniform
+Aliases: Uniform dunif punif qunif runif
+Keywords: distribution
+Description: The Uniform Distribution
+URL: ../../../library/stats/html/Uniform.html
+
+Entry: Weibull
+Aliases: Weibull dweibull pweibull qweibull rweibull
+Keywords: distribution
+Description: The Weibull Distribution
+URL: ../../../library/stats/html/Weibull.html
+
+Entry: Wilcoxon
+Aliases: Wilcoxon dwilcox pwilcox qwilcox rwilcox
+Keywords: distribution
+Description: Distribution of the Wilcoxon Rank Sum Statistic
+URL: ../../../library/stats/html/Wilcoxon.html
+
+Entry: acf
+Aliases: acf ccf pacf pacf.default [.acf
+Keywords: ts
+Description: Auto- and Cross- Covariance and -Correlation Function Estimation
+URL: ../../../library/stats/html/acf.html
+
+Entry: acf2AR
+Aliases: acf2AR
+Keywords: ts
+Description: Compute an AR Process Exactly Fitting an ACF
+URL: ../../../library/stats/html/acf2AR.html
+
+Entry: add1
+Aliases: add1 add1.default add1.lm add1.glm drop1 drop1.default drop1.lm drop1.glm
+Keywords: models
+Description: Add or Drop All Possible Single Terms to a Model
+URL: ../../../library/stats/html/add1.html
+
+Entry: addmargins
+Aliases: addmargins
+Keywords: manip array
+Description: Puts Arbitrary Margins on Multidimensional Tables or Arrays
+URL: ../../../library/stats/html/addmargins.html
+
+Entry: aggregate
+Aliases: aggregate aggregate.default aggregate.data.frame aggregate.ts
+Keywords: category array
+Description: Compute Summary Statistics of Data Subsets
+URL: ../../../library/stats/html/aggregate.html
+
+Entry: alias
+Aliases: alias alias.formula alias.lm
+Keywords: models
+Description: Find Aliases (Dependencies) in a Model
+URL: ../../../library/stats/html/alias.html
+
+Entry: anova
+Aliases: anova print.anova
+Keywords: regression models
+Description: Anova Tables
+URL: ../../../library/stats/html/anova.html
+
+Entry: anova.glm
+Aliases: anova.glm anova.glmlist
+Keywords: models regression
+Description: Analysis of Deviance for Generalized Linear Model Fits
+URL: ../../../library/stats/html/anova.glm.html
+
+Entry: anova.lm
+Aliases: anova.lm anova.lmlist
+Keywords: regression models
+Description: ANOVA for Linear Model Fits
+URL: ../../../library/stats/html/anova.lm.html
+
+Entry: anova.mlm
+Aliases: anova.mlm anova.mlmlist
+Keywords: regression models multivariate
+Description: Comparisons between Multivariate Linear Models
+URL: ../../../library/stats/html/anova.mlm.html
+
+Entry: ansari.test
+Aliases: ansari.test ansari.test.default ansari.test.formula
+Keywords: htest
+Description: Ansari-Bradley Test
+URL: ../../../library/stats/html/ansari.test.html
+
+Entry: aov
+Aliases: aov print.aov print.aovlist Error
+Keywords: models regression
+Description: Fit an Analysis of Variance Model
+URL: ../../../library/stats/html/aov.html
+
+Entry: approxfun
+Aliases: approx approxfun
+Keywords: arith dplot
+Description: Interpolation Functions
+URL: ../../../library/stats/html/approxfun.html
+
+Entry: ar
+Aliases: ar ar.burg ar.burg.default ar.burg.mts ar.yw ar.yw.default ar.yw.mts ar.mle print.ar predict.ar
+Keywords: ts
+Description: Fit Autoregressive Models to Time Series
+URL: ../../../library/stats/html/ar.html
+
+Entry: ar.ols
+Aliases: ar.ols
+Keywords: ts
+Description: Fit Autoregressive Models to Time Series by OLS
+URL: ../../../library/stats/html/ar.ols.html
+
+Entry: arima
+Aliases: arima
+Keywords: ts
+Description: ARIMA Modelling of Time Series
+URL: ../../../library/stats/html/arima.html
+
+Entry: arima.sim
+Aliases: arima.sim
+Keywords: ts
+Description: Simulate from an ARIMA Model
+URL: ../../../library/stats/html/arima.sim.html
+
+Entry: arima0
+Aliases: arima0 print.arima0 predict.arima0
+Keywords: ts
+Description: ARIMA Modelling of Time Series -- Preliminary Version
+URL: ../../../library/stats/html/arima0.html
+
+Entry: as.hclust
+Aliases: as.hclust as.hclust.default as.hclust.twins
+Keywords: multivariate cluster
+Description: Convert Objects to Class hclust
+URL: ../../../library/stats/html/as.hclust.html
+
+Entry: asOneSidedFormula
+Aliases: asOneSidedFormula
+Keywords: models
+Description: Convert to One-Sided Formula
+URL: ../../../library/stats/html/asOneSidedFormula.html
+
+Entry: ave
+Aliases: ave
+Keywords: univar
+Description: Group Averages Over Level Combinations of Factors
+URL: ../../../library/stats/html/ave.html
+
+Entry: bandwidth
+Aliases: bw.nrd0 bw.nrd bw.ucv bw.bcv bw.SJ
+Keywords: distribution smooth
+Description: Bandwidth Selectors for Kernel Density Estimation
+URL: ../../../library/stats/html/bandwidth.html
+
+Entry: bartlett.test
+Aliases: bartlett.test bartlett.test.default bartlett.test.formula
+Keywords: htest
+Description: Bartlett Test of Homogeneity of Variances
+URL: ../../../library/stats/html/bartlett.test.html
+
+Entry: binom.test
+Aliases: binom.test
+Keywords: htest
+Description: Exact Binomial Test
+URL: ../../../library/stats/html/binom.test.html
+
+Entry: biplot
+Aliases: biplot biplot.default
+Keywords: hplot multivariate
+Description: Biplot of Multivariate Data
+URL: ../../../library/stats/html/biplot.html
+
+Entry: biplot.princomp
+Aliases: biplot.princomp biplot.prcomp
+Keywords: multivariate hplot
+Description: Biplot for Principal Components
+URL: ../../../library/stats/html/biplot.princomp.html
+
+Entry: birthday
+Aliases: qbirthday pbirthday
+Keywords: distribution
+Description: Probability of coincidences
+URL: ../../../library/stats/html/birthday.html
+
+Entry: Box.test
+Aliases: Box.test
+Keywords: ts
+Description: Box-Pierce and Ljung-Box Tests
+URL: ../../../library/stats/html/box.test.html
+
+Entry: cancor
+Aliases: cancor
+Keywords: multivariate
+Description: Canonical Correlations
+URL: ../../../library/stats/html/cancor.html
+
+Entry: case/variable.names
+Aliases: case.names case.names.lm variable.names variable.names.lm
+Keywords: regression models
+Description: Case and Variable Names of Fitted Models
+URL: ../../../library/stats/html/case.names.html
+
+Entry: .checkMFClasses
+Aliases: .checkMFClasses .MFclass .getXlevels
+Keywords: utilities
+Description: Functions to Check the Type of Variables passed to Model Frames
+URL: ../../../library/stats/html/checkMFClasses.html
+
+Entry: chisq.test
+Aliases: chisq.test
+Keywords: htest distribution
+Description: Pearson's Chi-squared Test for Count Data
+URL: ../../../library/stats/html/chisq.test.html
+
+Entry: clearNames
+Aliases: clearNames
+Keywords: list
+Description: Remove the Names from an Object
+URL: ../../../library/stats/html/clearNames.html
+
+Entry: cmdscale
+Aliases: cmdscale
+Keywords: multivariate
+Description: Classical (Metric) Multidimensional Scaling
+URL: ../../../library/stats/html/cmdscale.html
+
+Entry: coef
+Aliases: coef coefficients
+Keywords: regression models
+Description: Extract Model Coefficients
+URL: ../../../library/stats/html/coef.html
+
+Entry: complete.cases
+Aliases: complete.cases
+Keywords: NA logic
+Description: Find Complete Cases
+URL: ../../../library/stats/html/complete.cases.html
+
+Entry: confint
+Aliases: confint confint.default
+Keywords: models
+Description: Confidence Intervals for Model Parameters
+URL: ../../../library/stats/html/confint.html
+
+Entry: constrOptim
+Aliases: constrOptim
+Keywords: optimize
+Description: Linearly constrained optimisation
+URL: ../../../library/stats/html/constrOptim.html
+
+Entry: contrast
+Aliases: contr.helmert contr.poly contr.sum contr.treatment contr.SAS
+Keywords: design regression array
+Description: Contrast Matrices
+URL: ../../../library/stats/html/contrast.html
+
+Entry: contrasts
+Aliases: contrasts contrasts<-
+Keywords: design regression
+Description: Get and Set Contrast Matrices
+URL: ../../../library/stats/html/contrasts.html
+
+Entry: convolve
+Aliases: convolve
+Keywords: math dplot
+Description: Fast Convolution
+URL: ../../../library/stats/html/convolve.html
+
+Entry: cophenetic
+Aliases: cophenetic cophenetic.default cophenetic.dendrogram
+Keywords: cluster multivariate
+Description: Cophenetic Distances for a Hierarchical Clustering
+URL: ../../../library/stats/html/cophenetic.html
+
+Entry: cor
+Aliases: var cov cor cov2cor
+Keywords: univar multivariate array
+Description: Correlation, Variance and Covariance (Matrices)
+URL: ../../../library/stats/html/cor.html
+
+Entry: cor.test
+Aliases: cor.test cor.test.default cor.test.formula
+Keywords: htest
+Description: Test for Association/Correlation Between Paired Samples
+URL: ../../../library/stats/html/cor.test.html
+
+Entry: cov.wt
+Aliases: cov.wt
+Keywords: multivariate
+Description: Weighted Covariance Matrices
+URL: ../../../library/stats/html/cov.wt.html
+
+Entry: cpgram
+Aliases: cpgram
+Keywords: ts hplot
+Description: Plot Cumulative Periodogram
+URL: ../../../library/stats/html/cpgram.html
+
+Entry: cutree
+Aliases: cutree
+Keywords: multivariate cluster
+Description: Cut a tree into groups of data
+URL: ../../../library/stats/html/cutree.html
+
+Entry: decompose
+Aliases: decompose plot.decomposed.ts
+Keywords: ts
+Description: Classical Seasonal Decomposition by Moving Averages
+URL: ../../../library/stats/html/decompose.html
+
+Entry: delete.response
+Aliases: reformulate drop.terms delete.response [.terms
+Keywords: programming
+Description: Modify Terms Objects
+URL: ../../../library/stats/html/delete.response.html
+
+Entry: dendrapply
+Aliases: dendrapply
+Keywords: iteration
+Description: Apply a Function to All Nodes of a Dendrogram
+URL: ../../../library/stats/html/dendrapply.html
+
+Entry: dendrogram
+Aliases: dendrogram as.dendrogram as.dendrogram.dendrogram as.dendrogram.hclust cut.dendrogram [[.dendrogram print.dendrogram rev.dendrogram str.dendrogram plot.dendrogram is.leaf
+Keywords: multivariate tree hplot
+Description: General Tree Structures
+URL: ../../../library/stats/html/dendrogram.html
+
+Entry: density
+Aliases: density density.default print.density
+Keywords: distribution smooth
+Description: Kernel Density Estimation
+URL: ../../../library/stats/html/density.html
+
+Entry: deriv
+Aliases: D deriv deriv.default deriv.formula deriv3 deriv3.default deriv3.formula
+Keywords: math nonlinear
+Description: Symbolic and Algorithmic Derivatives of Simple Expressions
+URL: ../../../library/stats/html/deriv.html
+
+Entry: deviance
+Aliases: deviance
+Keywords: models
+Description: Model Deviance
+URL: ../../../library/stats/html/deviance.html
+
+Entry: df.residual
+Aliases: df.residual
+Keywords: models regression
+Description: Residual Degrees-of-Freedom
+URL: ../../../library/stats/html/df.residual.html
+
+Entry: diffinv
+Aliases: diffinv diffinv.default diffinv.ts
+Keywords: ts
+Description: Discrete Integration: Inverse of Differencing
+URL: ../../../library/stats/html/diffinv.html
+
+Entry: dist
+Aliases: dist print.dist format.dist labels.dist as.matrix.dist as.dist as.dist.default
+Keywords: multivariate cluster
+Description: Distance Matrix Computation
+URL: ../../../library/stats/html/dist.html
+
+Entry: dummy.coef
+Aliases: dummy.coef dummy.coef.lm dummy.coef.aovlist
+Keywords: models
+Description: Extract Coefficients in Original Coding
+URL: ../../../library/stats/html/dummy.coef.html
+
+Entry: ecdf
+Aliases: ecdf plot.ecdf print.ecdf summary.ecdf
+Keywords: dplot hplot
+Description: Empirical Cumulative Distribution Function
+URL: ../../../library/stats/html/ecdf.html
+
+Entry: eff.aovlist
+Aliases: eff.aovlist
+Keywords: models
+Description: Compute Efficiencies of Multistratum Analysis of Variance
+URL: ../../../library/stats/html/eff.aovlist.html
+
+Entry: effects
+Aliases: effects effects.lm effects.glm
+Keywords: models regression
+Description: Effects from Fitted Model
+URL: ../../../library/stats/html/effects.html
+
+Entry: embed
+Aliases: embed
+Keywords: ts
+Description: Embedding a Time Series
+URL: ../../../library/stats/html/embed.html
+
+Entry: expand.model.frame
+Aliases: expand.model.frame
+Keywords: manip regression
+Description: Add new variables to a model frame
+URL: ../../../library/stats/html/expand.model.frame.html
+
+Entry: extractAIC
+Aliases: extractAIC
+Keywords: models
+Description: Extract AIC from a Fitted Model
+URL: ../../../library/stats/html/extractAIC.html
+
+Entry: factanal
+Aliases: factanal
+Keywords: multivariate
+Description: Factor Analysis
+URL: ../../../library/stats/html/factanal.html
+
+Entry: factor.scope
+Aliases: add.scope drop.scope factor.scope
+Keywords: models
+Description: Compute Allowed Changes in Adding to or Dropping from a Formula
+URL: ../../../library/stats/html/factor.scope.html
+
+Entry: family
+Aliases: family binomial gaussian Gamma inverse.gaussian poisson quasi quasibinomial quasipoisson print.family
+Keywords: models
+Description: Family Objects for Models
+URL: ../../../library/stats/html/family.html
+
+Entry: fft
+Aliases: fft mvfft
+Keywords: math dplot
+Description: Fast Discrete Fourier Transform
+URL: ../../../library/stats/html/fft.html
+
+Entry: filter
+Aliases: filter
+Keywords: ts
+Description: Linear Filtering on a Time Series
+URL: ../../../library/stats/html/filter.html
+
+Entry: fisher.test
+Aliases: fisher.test
+Keywords: htest
+Description: Fisher's Exact Test for Count Data
+URL: ../../../library/stats/html/fisher.test.html
+
+Entry: fitted
+Aliases: fitted.values fitted fitted.default
+Keywords: models regression
+Description: Extract Model Fitted Values
+URL: ../../../library/stats/html/fitted.values.html
+
+Entry: fivenum
+Aliases: fivenum
+Keywords: univar robust distribution
+Description: Tukey Five-Number Summaries
+URL: ../../../library/stats/html/fivenum.html
+
+Entry: fligner.test
+Aliases: fligner.test fligner.test.default fligner.test.formula
+Keywords: htest
+Description: Fligner-Killeen Test of Homogeneity of Variances
+URL: ../../../library/stats/html/fligner.test.html
+
+Entry: formula
+Aliases: formula formula.default formula.formula formula.terms formula.data.frame as.formula print.formula [.formula
+Keywords: models
+Description: Model Formulae
+URL: ../../../library/stats/html/formula.html
+
+Entry: formula.nls
+Aliases: formula.nls
+Keywords: models
+Description: Extract Model Formula from nls Object
+URL: ../../../library/stats/html/formula.nls.html
+
+Entry: friedman.test
+Aliases: friedman.test friedman.test.default friedman.test.formula
+Keywords: htest
+Description: Friedman Rank Sum Test
+URL: ../../../library/stats/html/friedman.test.html
+
+Entry: ftable
+Aliases: ftable ftable.default print.ftable
+Keywords: category
+Description: Flat Contingency Tables
+URL: ../../../library/stats/html/ftable.html
+
+Entry: ftable.formula
+Aliases: ftable.formula
+Keywords: category
+Description: Formula Notation for Flat Contingency Tables
+URL: ../../../library/stats/html/ftable.formula.html
+
+Entry: getInitial
+Aliases: getInitial getInitial.default getInitial.formula getInitial.selfStart
+Keywords: models nonlinear manip
+Description: Get Initial Parameter Estimates
+URL: ../../../library/stats/html/getInitial.html
+
+Entry: glm
+Aliases: glm glm.fit weights.glm print.glm
+Keywords: models regression
+Description: Fitting Generalized Linear Models
+URL: ../../../library/stats/html/glm.html
+
+Entry: glm.control
+Aliases: glm.control
+Keywords: optimize models
+Description: Auxiliary for Controlling GLM Fitting
+URL: ../../../library/stats/html/glm.control.html
+
+Entry: glm.summaries
+Aliases: family.glm residuals.glm
+Keywords: models regression
+Description: Accessing Generalized Linear Model Fits
+URL: ../../../library/stats/html/glm.summaries.html
+
+Entry: hclust
+Aliases: hclust plot.hclust plclust print.hclust
+Keywords: multivariate cluster
+Description: Hierarchical Clustering
+URL: ../../../library/stats/html/hclust.html
+
+Entry: heatmap
+Aliases: heatmap
+Keywords: hplot
+Description: Draw a Heat Map
+URL: ../../../library/stats/html/heatmap.html
+
+Entry: identify.hclust
+Aliases: identify.hclust
+Keywords: cluster iplot
+Description: Identify Clusters in a Dendrogram
+URL: ../../../library/stats/html/identify.hclust.html
+
+Entry: influence.measures
+Aliases: influence.measures print.infl summary.infl hat hatvalues hatvalues.lm rstandard rstandard.lm rstandard.glm rstudent rstudent.lm rstudent.glm dfbeta dfbeta.lm dfbetas dfbetas.lm dffits covratio cooks.distance cooks.distance.lm cooks.distance.glm
+Keywords: regression
+Description: Regression Deletion Diagnostics
+URL: ../../../library/stats/html/influence.measures.html
+
+Entry: integrate
+Aliases: integrate print.integrate
+Keywords: math utilities
+Description: Integration of One-Dimensional Functions
+URL: ../../../library/stats/html/integrate.html
+
+Entry: interaction.plot
+Aliases: interaction.plot
+Keywords: hplot
+Description: Two-way Interaction Plot
+URL: ../../../library/stats/html/interaction.plot.html
+
+Entry: is.empty.model
+Aliases: is.empty.model
+Keywords: models
+Description: Check if a Model is Empty
+URL: ../../../library/stats/html/is.empty.html
+
+Entry: isoreg
+Aliases: isoreg
+Keywords: regression smooth
+Description: Isotonic / Monotone Regression
+URL: ../../../library/stats/html/isoreg.html
+
+Entry: kernapply
+Aliases: kernapply kernapply.default kernapply.ts kernapply.tskernel kernapply.vector
+Keywords: ts
+Description: Apply Smoothing Kernel
+URL: ../../../library/stats/html/kernapply.html
+
+Entry: kernel
+Aliases: kernel bandwidth.kernel df.kernel is.tskernel plot.tskernel
+Keywords: ts
+Description: Smoothing Kernel Objects
+URL: ../../../library/stats/html/kernel.html
+
+Entry: kmeans
+Aliases: kmeans print.kmeans
+Keywords: multivariate cluster
+Description: K-Means Clustering
+URL: ../../../library/stats/html/kmeans.html
+
+Entry: kruskal.test
+Aliases: kruskal.test kruskal.test.default kruskal.test.formula
+Keywords: htest
+Description: Kruskal-Wallis Rank Sum Test
+URL: ../../../library/stats/html/kruskal.test.html
+
+Entry: ks.test
+Aliases: ks.test
+Keywords: htest
+Description: Kolmogorov-Smirnov Tests
+URL: ../../../library/stats/html/ks.test.html
+
+Entry: ksmooth
+Aliases: ksmooth
+Keywords: smooth
+Description: Kernel Regression Smoother
+URL: ../../../library/stats/html/ksmooth.html
+
+Entry: lag
+Aliases: lag lag.default
+Keywords: ts
+Description: Lag a Time Series
+URL: ../../../library/stats/html/lag.html
+
+Entry: lag.plot
+Aliases: lag.plot
+Keywords: hplot ts
+Description: Time Series Lag Plots
+URL: ../../../library/stats/html/lag.plot.html
+
+Entry: line
+Aliases: line residuals.tukeyline
+Keywords: robust regression
+Description: Robust Line Fitting
+URL: ../../../library/stats/html/line.html
+
+Entry: lm
+Aliases: lm print.lm
+Keywords: regression
+Description: Fitting Linear Models
+URL: ../../../library/stats/html/lm.html
+
+Entry: lm.influence
+Aliases: lm.influence influence influence.lm influence.glm
+Keywords: regression
+Description: Regression Diagnostics
+URL: ../../../library/stats/html/lm.influence.html
+
+Entry: lm.summaries
+Aliases: family.lm formula.lm residuals.lm labels.lm weights weights.default
+Keywords: regression models
+Description: Accessing Linear Model Fits
+URL: ../../../library/stats/html/lm.summaries.html
+
+Entry: lm.fit
+Aliases: lm.fit lm.wfit
+Keywords: regression array
+Description: Fitter Functions for Linear Models
+URL: ../../../library/stats/html/lmfit.html
+
+Entry: loadings
+Aliases: loadings print.loadings print.factanal
+Keywords: multivariate print
+Description: Print Loadings in Factor Analysis
+URL: ../../../library/stats/html/loadings.html
+
+Entry: loess
+Aliases: loess
+Keywords: smooth loess
+Description: Local Polynomial Regression Fitting
+URL: ../../../library/stats/html/loess.html
+
+Entry: loess.control
+Aliases: loess.control
+Keywords: smooth loess
+Description: Set Parameters for Loess
+URL: ../../../library/stats/html/loess.control.html
+
+Entry: logLik
+Aliases: logLik print.logLik str.logLik logLik.lm
+Keywords: models
+Description: Extract Log-Likelihood
+URL: ../../../library/stats/html/logLik.html
+
+Entry: loglin
+Aliases: loglin
+Keywords: category models
+Description: Fitting Log-Linear Models
+URL: ../../../library/stats/html/loglin.html
+
+Entry: lowess
+Aliases: lowess
+Keywords: smooth
+Description: Scatter Plot Smoothing
+URL: ../../../library/stats/html/lowess.html
+
+Entry: ls.diag
+Aliases: ls.diag
+Keywords: regression
+Description: Compute Diagnostics for 'lsfit' Regression Results
+URL: ../../../library/stats/html/ls.diag.html
+
+Entry: ls.print
+Aliases: ls.print
+Keywords: regression
+Description: Print 'lsfit' Regression Results
+URL: ../../../library/stats/html/ls.print.html
+
+Entry: lsfit
+Aliases: lsfit
+Keywords: regression
+Description: Find the Least Squares Fit
+URL: ../../../library/stats/html/lsfit.html
+
+Entry: mad
+Aliases: mad
+Keywords: univar robust
+Description: Median Absolute Deviation
+URL: ../../../library/stats/html/mad.html
+
+Entry: mahalanobis
+Aliases: mahalanobis
+Keywords: multivariate
+Description: Mahalanobis Distance
+URL: ../../../library/stats/html/mahalanobis.html
+
+Entry: make.link
+Aliases: make.link
+Keywords: models
+Description: Create a Link for GLM Families
+URL: ../../../library/stats/html/make.link.html
+
+Entry: makepredictcall
+Aliases: makepredictcall makepredictcall.default SafePrediction
+Keywords: models
+Description: Utility Function for Safe Prediction
+URL: ../../../library/stats/html/makepredictcall.html
+
+Entry: manova
+Aliases: manova
+Keywords: models
+Description: Multivariate Analysis of Variance
+URL: ../../../library/stats/html/manova.html
+
+Entry: mantelhaen.test
+Aliases: mantelhaen.test
+Keywords: htest
+Description: Cochran-Mantel-Haenszel Chi-Squared Test for Count Data
+URL: ../../../library/stats/html/mantelhaen.test.html
+
+Entry: mauchly.test
+Aliases: mauchly.test mauchly.test.SSD mauchly.test.mlm
+Keywords: htest models multivariate
+Description: Mauchly's Test of Sphericity
+URL: ../../../library/stats/html/mauchly.test.html
+
+Entry: mcnemar.test
+Aliases: mcnemar.test
+Keywords: htest
+Description: McNemar's Chi-squared Test for Count Data
+URL: ../../../library/stats/html/mcnemar.test.html
+
+Entry: median
+Aliases: median median.default
+Keywords: univar robust
+Description: Median Value
+URL: ../../../library/stats/html/median.html
+
+Entry: medpolish
+Aliases: medpolish
+Keywords: robust
+Description: Median Polish of a Matrix
+URL: ../../../library/stats/html/medpolish.html
+
+Entry: model.extract
+Aliases: model.extract model.offset model.response model.weights
+Keywords: manip programming models
+Description: Extract Components from a Model Frame
+URL: ../../../library/stats/html/model.extract.html
+
+Entry: model.frame
+Aliases: model.frame model.frame.default model.frame.lm model.frame.glm model.frame.aovlist get_all_vars
+Keywords: models
+Description: Extracting the "Environment" of a Model Formula
+URL: ../../../library/stats/html/model.frame.html
+
+Entry: model.matrix
+Aliases: model.matrix model.matrix.default model.matrix.lm
+Keywords: models
+Description: Construct Design Matrices
+URL: ../../../library/stats/html/model.matrix.html
+
+Entry: model.tables
+Aliases: model.tables model.tables.aov model.tables.aovlist
+Keywords: models
+Description: Compute Tables of Results from an Aov Model Fit
+URL: ../../../library/stats/html/model.tables.html
+
+Entry: monthplot
+Aliases: monthplot monthplot.default monthplot.ts monthplot.stl monthplot.StructTS
+Keywords: hplot ts
+Description: Plot a Seasonal or other Subseries from a Time Series
+URL: ../../../library/stats/html/monthplot.html
+
+Entry: mood.test
+Aliases: mood.test mood.test.default mood.test.formula
+Keywords: htest
+Description: Mood Two-Sample Test of Scale
+URL: ../../../library/stats/html/mood.test.html
+
+Entry: na.action
+Aliases: na.action na.action.default
+Keywords: NA methods
+Description: NA Action
+URL: ../../../library/stats/html/na.action.html
+
+Entry: na.contiguous
+Aliases: na.contiguous na.contiguous.default
+Keywords: ts
+Description: Find Longest Contiguous Stretch of non-NAs
+URL: ../../../library/stats/html/na.contiguous.html
+
+Entry: na.fail
+Aliases: na.fail na.fail.default na.omit na.omit.data.frame na.omit.default na.exclude na.exclude.data.frame na.exclude.default na.pass
+Keywords: NA
+Description: Handle Missing Values in Objects
+URL: ../../../library/stats/html/na.fail.html
+
+Entry: naresid
+Aliases: naresid naresid.default naresid.exclude napredict napredict.default napredict.exclude
+Keywords: NA models
+Description: Adjust for Missing Values
+URL: ../../../library/stats/html/nafns.html
+
+Entry: naprint
+Aliases: naprint naprint.default naprint.exclude naprint.omit
+Keywords: NA models
+Description: Adjust for Missing Values
+URL: ../../../library/stats/html/naprint.html
+
+Entry: nextn
+Aliases: nextn
+Keywords: math
+Description: Highly Composite Numbers
+URL: ../../../library/stats/html/nextn.html
+
+Entry: nlm
+Aliases: nlm
+Keywords: nonlinear optimize
+Description: Non-Linear Minimization
+URL: ../../../library/stats/html/nlm.html
+
+Entry: nlminb
+Aliases: nlminb
+Keywords: optimize
+Description: Optimization using PORT routines
+URL: ../../../library/stats/html/nlminb.html
+
+Entry: nls
+Aliases: nls
+Keywords: nonlinear regression models
+Description: Nonlinear Least Squares
+URL: ../../../library/stats/html/nls.html
+
+Entry: nls.control
+Aliases: nls.control
+Keywords: nonlinear regression models
+Description: Control the Iterations in nls
+URL: ../../../library/stats/html/nls.control.html
+
+Entry: numericDeriv
+Aliases: numericDeriv
+Keywords: models
+Description: Evaluate derivatives numerically
+URL: ../../../library/stats/html/numericDeriv.html
+
+Entry: offset
+Aliases: offset
+Keywords: models
+Description: Include an Offset in a Model Formula
+URL: ../../../library/stats/html/offset.html
+
+Entry: oneway.test
+Aliases: oneway.test
+Keywords: htest
+Description: Test for Equal Means in a One-Way Layout
+URL: ../../../library/stats/html/oneway.test.html
+
+Entry: optim
+Aliases: optim
+Keywords: nonlinear optimize
+Description: General-purpose Optimization
+URL: ../../../library/stats/html/optim.html
+
+Entry: optimize
+Aliases: optimize optimise
+Keywords: optimize
+Description: One Dimensional Optimization
+URL: ../../../library/stats/html/optimize.html
+
+Entry: order.dendrogram
+Aliases: order.dendrogram labels.dendrogram
+Keywords: manip
+Description: Ordering or Labels of the Leaves in a Dendrogram
+URL: ../../../library/stats/html/order.dendrogram.html
+
+Entry: p.adjust
+Aliases: p.adjust p.adjust.methods
+Keywords: htest
+Description: Adjust P-values for Multiple Comparisons
+URL: ../../../library/stats/html/p.adjust.html
+
+Entry: pairwise.prop.test
+Aliases: pairwise.prop.test
+Keywords: htest
+Description: Pairwise comparisons for proportions
+URL: ../../../library/stats/html/pairwise.prop.test.html
+
+Entry: pairwise.t.test
+Aliases: pairwise.t.test
+Keywords: htest
+Description: Pairwise t tests
+URL: ../../../library/stats/html/pairwise.t.test.html
+
+Entry: pairwise.table
+Aliases: pairwise.table
+Keywords: htest
+Description: Tabulate p values for pairwise comparisons
+URL: ../../../library/stats/html/pairwise.table.html
+
+Entry: pairwise.wilcox.test
+Aliases: pairwise.wilcox.test
+Keywords: htest
+Description: Pairwise Wilcoxon rank sum tests
+URL: ../../../library/stats/html/pairwise.wilcox.test.html
+
+Entry: plot.HoltWinters
+Aliases: plot.HoltWinters
+Keywords: ts
+Description: Plot function for HoltWinters objects
+URL: ../../../library/stats/html/plot.HoltWinters.html
+
+Entry: plot.acf
+Aliases: plot.acf
+Keywords: hplot ts
+Description: Plot Autocovariance and Autocorrelation Functions
+URL: ../../../library/stats/html/plot.acf.html
+
+Entry: plot.density
+Aliases: plot.density
+Keywords: dplot
+Description: Plot Method for Kernel Density Estimation
+URL: ../../../library/stats/html/plot.density.html
+
+Entry: plot.isoreg
+Aliases: plot.isoreg lines.isoreg
+Keywords: hplot print
+Description: Plot Method for isoreg Objects
+URL: ../../../library/stats/html/plot.isoreg.html
+
+Entry: plot.lm
+Aliases: plot.lm plot.mlm
+Keywords: hplot regression
+Description: Plot Diagnostics for an lm Object
+URL: ../../../library/stats/html/plot.lm.html
+
+Entry: plot.ppr
+Aliases: plot.ppr
+Keywords: hplot
+Description: Plot Ridge Functions for Projection Pursuit Regression Fit
+URL: ../../../library/stats/html/plot.ppr.html
+
+Entry: plot.profile.nls
+Aliases: plot.profile.nls
+Keywords: nonlinear regression models
+Description: Plot a profile.nls Object
+URL: ../../../library/stats/html/plot.profile.nls.html
+
+Entry: plot.spec
+Aliases: plot.spec plot.spec.coherency plot.spec.phase
+Keywords: hplot ts
+Description: Plotting Spectral Densities
+URL: ../../../library/stats/html/plot.spec.html
+
+Entry: plot.stepfun
+Aliases: plot.stepfun lines.stepfun
+Keywords: hplot
+Description: Plot Step Functions
+URL: ../../../library/stats/html/plot.stepfun.html
+
+Entry: plot.ts
+Aliases: plot.ts lines.ts
+Keywords: hplot ts
+Description: Plotting Time-Series Objects
+URL: ../../../library/stats/html/plot.ts.html
+
+Entry: poisson.test
+Aliases: poisson.test
+Keywords: htest
+Description: Exact Poisson tests
+URL: ../../../library/stats/html/poisson.test.html
+
+Entry: poly
+Aliases: poly polym predict.poly makepredictcall.poly
+Keywords: math
+Description: Compute Orthogonal Polynomials
+URL: ../../../library/stats/html/poly.html
+
+Entry: power
+Aliases: power
+Keywords: models
+Description: Create a Power Link Object
+URL: ../../../library/stats/html/power.html
+
+Entry: power.anova.test
+Aliases: power.anova.test
+Keywords: htest
+Description: Power calculations for balanced one-way analysis of variance tests
+URL: ../../../library/stats/html/power.anova.test.html
+
+Entry: power.prop.test
+Aliases: power.prop.test
+Keywords: htest
+Description: Power calculations two sample test for proportions
+URL: ../../../library/stats/html/power.prop.test.html
+
+Entry: power.t.test
+Aliases: power.t.test
+Keywords: htest
+Description: Power calculations for one and two sample t tests
+URL: ../../../library/stats/html/power.t.test.html
+
+Entry: PP.test
+Aliases: PP.test
+Keywords: ts
+Description: Phillips-Perron Test for Unit Roots
+URL: ../../../library/stats/html/pp.test.html
+
+Entry: ppoints
+Aliases: ppoints
+Keywords: dplot arith distribution
+Description: Ordinates for Probability Plotting
+URL: ../../../library/stats/html/ppoints.html
+
+Entry: ppr
+Aliases: ppr ppr.default ppr.formula
+Keywords: regression
+Description: Projection Pursuit Regression
+URL: ../../../library/stats/html/ppr.html
+
+Entry: prcomp
+Aliases: prcomp prcomp.formula prcomp.default plot.prcomp predict.prcomp print.prcomp summary.prcomp print.summary.prcomp
+Keywords: multivariate
+Description: Principal Components Analysis
+URL: ../../../library/stats/html/prcomp.html
+
+Entry: predict.HoltWinters
+Aliases: predict.HoltWinters
+Keywords: ts
+Description: prediction function for fitted Holt-Winters models
+URL: ../../../library/stats/html/predict.HoltWinters.html
+
+Entry: predict
+Aliases: predict
+Keywords: methods
+Description: Model Predictions
+URL: ../../../library/stats/html/predict.html
+
+Entry: predict.Arima
+Aliases: predict.Arima
+Keywords: ts
+Description: Forecast from ARIMA fits
+URL: ../../../library/stats/html/predict.arima.html
+
+Entry: predict.glm
+Aliases: predict.glm
+Keywords: models regression
+Description: Predict Method for GLM Fits
+URL: ../../../library/stats/html/predict.glm.html
+
+Entry: predict.lm
+Aliases: predict.lm predict.mlm
+Keywords: regression
+Description: Predict method for Linear Model Fits
+URL: ../../../library/stats/html/predict.lm.html
+
+Entry: predict.loess
+Aliases: predict.loess
+Keywords: smooth
+Description: Predict Loess Curve or Surface
+URL: ../../../library/stats/html/predict.loess.html
+
+Entry: predict.nls
+Aliases: predict.nls
+Keywords: nonlinear regression models
+Description: Predicting from Nonlinear Least Squares Fits
+URL: ../../../library/stats/html/predict.nls.html
+
+Entry: predict.smooth.spline
+Aliases: predict.smooth.spline
+Keywords: smooth
+Description: Predict from Smoothing Spline Fit
+URL: ../../../library/stats/html/predict.smooth.spline.html
+
+Entry: preplot
+Aliases: preplot
+Keywords: models
+Description: Pre-computations for a Plotting Objeect
+URL: ../../../library/stats/html/preplot.html
+
+Entry: princomp
+Aliases: princomp princomp.formula princomp.default plot.princomp print.princomp predict.princomp
+Keywords: multivariate
+Description: Principal Components Analysis
+URL: ../../../library/stats/html/princomp.html
+
+Entry: print.power.htest
+Aliases: print.power.htest
+Keywords: htest
+Description: Print method for power calculation object
+URL: ../../../library/stats/html/print.power.htest.html
+
+Entry: print.ts
+Aliases: print.ts
+Keywords: ts
+Description: Printing Time-Series Objects
+URL: ../../../library/stats/html/print.ts.html
+
+Entry: printCoefmat
+Aliases: printCoefmat
+Keywords: print
+Description: Print Coefficient Matrices
+URL: ../../../library/stats/html/printCoefmat.html
+
+Entry: profile
+Aliases: profile
+Keywords: models
+Description: Generic Function for Profiling Models
+URL: ../../../library/stats/html/profile.html
+
+Entry: profile.nls
+Aliases: profile.nls
+Keywords: nonlinear regression models
+Description: Method for Profiling nls Objects
+URL: ../../../library/stats/html/profile.nls.html
+
+Entry: proj
+Aliases: proj proj.default proj.lm proj.aov proj.aovlist
+Keywords: models
+Description: Projections of Models
+URL: ../../../library/stats/html/proj.html
+
+Entry: prop.test
+Aliases: prop.test
+Keywords: htest
+Description: Test of Equal or Given Proportions
+URL: ../../../library/stats/html/prop.test.html
+
+Entry: prop.trend.test
+Aliases: prop.trend.test
+Keywords: htest
+Description: Test for trend in proportions
+URL: ../../../library/stats/html/prop.trend.test.html
+
+Entry: qqnorm
+Aliases: qqnorm qqnorm.default qqplot qqline
+Keywords: hplot distribution
+Description: Quantile-Quantile Plots
+URL: ../../../library/stats/html/qqnorm.html
+
+Entry: quade.test
+Aliases: quade.test quade.test.default quade.test.formula
+Keywords: htest
+Description: Quade Test
+URL: ../../../library/stats/html/quade.test.html
+
+Entry: quantile
+Aliases: quantile quantile.default
+Keywords: univar
+Description: Sample Quantiles
+URL: ../../../library/stats/html/quantile.html
+
+Entry: r2dtable
+Aliases: r2dtable
+Keywords: distribution
+Description: Random 2-way Tables with Given Marginals
+URL: ../../../library/stats/html/r2dtable.html
+
+Entry: read.ftable
+Aliases: read.ftable write.ftable format.ftable
+Keywords: category
+Description: Manipulate Flat Contingency Tables
+URL: ../../../library/stats/html/read.ftable.html
+
+Entry: rect.hclust
+Aliases: rect.hclust
+Keywords: aplot cluster
+Description: Draw Rectangles Around Hierarchical Clusters
+URL: ../../../library/stats/html/rect.hclust.html
+
+Entry: relevel
+Aliases: relevel relevel.default relevel.factor relevel.ordered
+Keywords: utilities models
+Description: Reorder Levels of Factor
+URL: ../../../library/stats/html/relevel.html
+
+Entry: reorder.dendrogram
+Aliases: reorder.dendrogram
+Keywords: manip
+Description: Reorder a Dendrogram
+URL: ../../../library/stats/html/reorder.dendrogram.html
+
+Entry: reorder.factor
+Aliases: reorder reorder.factor reorder.character
+Keywords: utilities
+Description: Reorder Levels of a Factor
+URL: ../../../library/stats/html/reorder.factor.html
+
+Entry: replications
+Aliases: replications
+Keywords: models
+Description: Number of Replications of Terms
+URL: ../../../library/stats/html/replications.html
+
+Entry: reshape
+Aliases: reshape
+Keywords: manip
+Description: Reshape Grouped Data
+URL: ../../../library/stats/html/reshape.html
+
+Entry: residuals
+Aliases: residuals resid residuals.default
+Keywords: models regression
+Description: Extract Model Residuals
+URL: ../../../library/stats/html/residuals.html
+
+Entry: runmed
+Aliases: runmed
+Keywords: smooth robust
+Description: Running Medians -- Robust Scatter Plot Smoothing
+URL: ../../../library/stats/html/runmed.html
+
+Entry: scatter.smooth
+Aliases: scatter.smooth loess.smooth
+Keywords: smooth
+Description: Scatter Plot with Smooth Curve Fitted by Loess
+URL: ../../../library/stats/html/scatter.smooth.html
+
+Entry: screeplot
+Aliases: screeplot screeplot.default
+Keywords: multivariate
+Description: Screeplots
+URL: ../../../library/stats/html/screeplot.html
+
+Entry: sd
+Aliases: sd
+Keywords: univar
+Description: Standard Deviation
+URL: ../../../library/stats/html/sd.html
+
+Entry: se.contrast
+Aliases: se.contrast se.contrast.aov se.contrast.aovlist
+Keywords: models
+Description: Standard Errors for Contrasts in Model Terms
+URL: ../../../library/stats/html/se.contrast.html
+
+Entry: selfStart
+Aliases: selfStart selfStart.default selfStart.formula
+Keywords: models
+Description: Construct Self-starting Nonlinear Models
+URL: ../../../library/stats/html/selfStart.html
+
+Entry: setNames
+Aliases: setNames
+Keywords: list
+Description: Set the Names in an Object
+URL: ../../../library/stats/html/setNames.html
+
+Entry: shapiro.test
+Aliases: shapiro.test
+Keywords: htest
+Description: Shapiro-Wilk Normality Test
+URL: ../../../library/stats/html/shapiro.test.html
+
+Entry: simulate
+Aliases: simulate
+Keywords: models datagen
+Description: Simulate Responses
+URL: ../../../library/stats/html/simulate.html
+
+Entry: smooth
+Aliases: smooth
+Keywords: robust smooth
+Description: Tukey's (Running Median) Smoothing
+URL: ../../../library/stats/html/smooth.html
+
+Entry: smooth.spline
+Aliases: smooth.spline
+Keywords: smooth
+Description: Fit a Smoothing Spline
+URL: ../../../library/stats/html/smooth.spline.html
+
+Entry: smoothEnds
+Aliases: smoothEnds
+Keywords: smooth robust
+Description: End Points Smoothing (for Running Medians)
+URL: ../../../library/stats/html/smoothEnds.html
+
+Entry: sortedXyData
+Aliases: sortedXyData sortedXyData.default
+Keywords: manip
+Description: Create a sortedXyData object
+URL: ../../../library/stats/html/sortedXyData.html
+
+Entry: spec.ar
+Aliases: spec.ar
+Keywords: ts
+Description: Estimate Spectral Density of a Time Series from AR Fit
+URL: ../../../library/stats/html/spec.ar.html
+
+Entry: spec.pgram
+Aliases: spec.pgram
+Keywords: ts
+Description: Estimate Spectral Density of a Time Series by a Smoothed Periodogram
+URL: ../../../library/stats/html/spec.pgram.html
+
+Entry: spec.taper
+Aliases: spec.taper
+Keywords: ts
+Description: Taper a Time Series by a Cosine Bell
+URL: ../../../library/stats/html/spec.taper.html
+
+Entry: spectrum
+Aliases: spectrum spec
+Keywords: ts
+Description: Spectral Density Estimation
+URL: ../../../library/stats/html/spectrum.html
+
+Entry: splinefun
+Aliases: spline splinefun splinefunH
+Keywords: math dplot
+Description: Interpolating Splines
+URL: ../../../library/stats/html/splinefun.html
+
+Entry: start
+Aliases: start end
+Keywords: ts
+Description: Encode the Terminal Times of Time Series
+URL: ../../../library/stats/html/start.html
+
+Entry: stat.anova
+Aliases: stat.anova
+Keywords: regression models
+Description: GLM Anova Statistics
+URL: ../../../library/stats/html/stat.anova.html
+
+Entry: stats-defunct
+Aliases: stats-defunct dnchisq pnchisq qnchisq rnchisq reshapeLong reshapeWide plot.mts print.coefmat anovalist.lm lm.fit.null lm.wfit.null glm.fit.null mauchley.test
+Keywords: internal
+Description: Defunct Functions in Package stats
+URL: ../../../library/stats/html/stats-defunct.html
+
+Entry: stats-deprecated
+Aliases: stats-deprecated
+Keywords: misc
+Description: Deprecated Functions in Stats package
+URL: ../../../library/stats/html/stats-deprecated.html
+
+Entry: stats-package
+Aliases: stats-package stats
+Keywords: package
+Description: The R Stats Package
+URL: ../../../library/stats/html/stats-package.html
+
+Entry: step
+Aliases: step
+Keywords: models
+Description: Choose a model by AIC in a Stepwise Algorithm
+URL: ../../../library/stats/html/step.html
+
+Entry: stepfun
+Aliases: stepfun is.stepfun as.stepfun print.stepfun summary.stepfun knots
+Keywords: dplot
+Description: Step Function Class
+URL: ../../../library/stats/html/stepfun.html
+
+Entry: stl
+Aliases: stl
+Keywords: ts
+Description: Seasonal Decomposition of Time Series by Loess
+URL: ../../../library/stats/html/stl.html
+
+Entry: stlmethods
+Aliases: plot.stl
+Keywords: ts
+Description: Methods for STL Objects
+URL: ../../../library/stats/html/stlmethods.html
+
+Entry: summary.aov
+Aliases: summary.aov summary.aovlist print.summary.aov print.summary.aovlist
+Keywords: models regression
+Description: Summarize an Analysis of Variance Model
+URL: ../../../library/stats/html/summary.aov.html
+
+Entry: summary.glm
+Aliases: summary.glm print.summary.glm
+Keywords: models regression
+Description: Summarizing Generalized Linear Model Fits
+URL: ../../../library/stats/html/summary.glm.html
+
+Entry: summary.lm
+Aliases: summary.lm summary.mlm print.summary.lm
+Keywords: regression models
+Description: Summarizing Linear Model Fits
+URL: ../../../library/stats/html/summary.lm.html
+
+Entry: summary.manova
+Aliases: summary.manova print.summary.manova
+Keywords: models
+Description: Summary Method for Multivariate Analysis of Variance
+URL: ../../../library/stats/html/summary.manova.html
+
+Entry: summary.nls
+Aliases: summary.nls print.summary.nls
+Keywords: regression models
+Description: Summarizing Non-Linear Least-Squares Model Fits
+URL: ../../../library/stats/html/summary.nls.html
+
+Entry: summary.princomp
+Aliases: summary.princomp print.summary.princomp
+Keywords: multivariate
+Description: Summary method for Principal Components Analysis
+URL: ../../../library/stats/html/summary.princomp.html
+
+Entry: supsmu
+Aliases: supsmu
+Keywords: smooth
+Description: Friedman's SuperSmoother
+URL: ../../../library/stats/html/supsmu.html
+
+Entry: symnum
+Aliases: symnum
+Keywords: utilities character
+Description: Symbolic Number Coding
+URL: ../../../library/stats/html/symnum.html
+
+Entry: t.test
+Aliases: t.test t.test.default t.test.formula
+Keywords: htest
+Description: Student's t-Test
+URL: ../../../library/stats/html/t.test.html
+
+Entry: termplot
+Aliases: termplot
+Keywords: hplot regression
+Description: Plot regression terms
+URL: ../../../library/stats/html/termplot.html
+
+Entry: terms
+Aliases: terms terms.terms terms.aovlist terms.default print.terms labels.terms
+Keywords: models
+Description: Model Terms
+URL: ../../../library/stats/html/terms.html
+
+Entry: terms.formula
+Aliases: terms.formula
+Keywords: models
+Description: Construct a terms Object from a Formula
+URL: ../../../library/stats/html/terms.formula.html
+
+Entry: terms.object
+Aliases: terms.object
+Keywords: models
+Description: Description of Terms Objects
+URL: ../../../library/stats/html/terms.object.html
+
+Entry: time
+Aliases: time cycle frequency deltat time.default
+Keywords: ts
+Description: Sampling Times of Time Series
+URL: ../../../library/stats/html/time.html
+
+Entry: toeplitz
+Aliases: toeplitz
+Keywords: ts
+Description: Form Symmetric Toeplitz Matrix
+URL: ../../../library/stats/html/toeplitz.html
+
+Entry: ts-defunct
+Aliases: arima0.diag
+Keywords: ts internal
+Description: Defunct functions in Package ts
+URL: ../../../library/stats/html/ts-defunct.html
+
+Entry: ts-methods
+Aliases: diff.ts na.omit.ts
+Keywords: ts
+Description: Methods for Time Series Objects
+URL: ../../../library/stats/html/ts-methods.html
+
+Entry: ts
+Aliases: ts as.ts as.ts.default is.ts Ops.ts cbind.ts is.mts [.ts t.ts
+Keywords: ts
+Description: Time-Series Objects
+URL: ../../../library/stats/html/ts.html
+
+Entry: ts.plot
+Aliases: ts.plot
+Keywords: ts
+Description: Plot Multiple Time Series
+URL: ../../../library/stats/html/ts.plot.html
+
+Entry: ts.union
+Aliases: ts.union ts.intersect
+Keywords: ts
+Description: Bind Two or More Time Series
+URL: ../../../library/stats/html/ts.union.html
+
+Entry: tsSmooth
+Aliases: tsSmooth tsSmooth.StructTS
+Keywords: ts
+Description: Use Fixed-Interval Smoothing on Time Series
+URL: ../../../library/stats/html/tsSmooth.html
+
+Entry: tsdiag
+Aliases: tsdiag tsdiag.arima0 tsdiag.Arima tsdiag.StructTS
+Keywords: ts
+Description: Diagnostic Plots for Time-Series Fits
+URL: ../../../library/stats/html/tsdiag.html
+
+Entry: tsp
+Aliases: tsp tsp<- hasTsp
+Keywords: ts
+Description: Tsp Attribute of Time-Series-like Objects
+URL: ../../../library/stats/html/tsp.html
+
+Entry: uniroot
+Aliases: uniroot
+Keywords: optimize
+Description: One Dimensional Root (Zero) Finding
+URL: ../../../library/stats/html/uniroot.html
+
+Entry: update
+Aliases: update update.default
+Keywords: models
+Description: Update and Re-fit a Model Call
+URL: ../../../library/stats/html/update.html
+
+Entry: update.formula
+Aliases: update.formula
+Keywords: models
+Description: Model Updating
+URL: ../../../library/stats/html/update.formula.html
+
+Entry: var.test
+Aliases: var.test var.test.default var.test.formula
+Keywords: htest
+Description: F Test to Compare Two Variances
+URL: ../../../library/stats/html/var.test.html
+
+Entry: varimax
+Aliases: promax varimax
+Keywords: multivariate
+Description: Rotation Methods for Factor Analysis
+URL: ../../../library/stats/html/varimax.html
+
+Entry: vcov
+Aliases: vcov vcov.lm vcov.glm vcov.lme vcov.gls
+Keywords: models nonlinear
+Description: Calculate Variance-Covariance Matrix for a Fitted Model Object
+URL: ../../../library/stats/html/vcov.html
+
+Entry: weighted.mean
+Aliases: weighted.mean
+Keywords: univar
+Description: Weighted Arithmetic Mean
+URL: ../../../library/stats/html/weighted.mean.html
+
+Entry: weighted.residuals
+Aliases: weighted.residuals
+Keywords: regression
+Description: Compute Weighted Residuals
+URL: ../../../library/stats/html/weighted.residuals.html
+
+Entry: wilcox.test
+Aliases: wilcox.test wilcox.test.default wilcox.test.formula
+Keywords: htest
+Description: Wilcoxon Rank Sum and Signed Rank Tests
+URL: ../../../library/stats/html/wilcox.test.html
+
+Entry: window
+Aliases: window window.default window.ts window<- window<-.ts
+Keywords: ts
+Description: Time Windows
+URL: ../../../library/stats/html/window.html
+
+Entry: xtabs
+Aliases: xtabs print.xtabs
+Keywords: category
+Description: Cross Tabulation
+URL: ../../../library/stats/html/xtabs.html
+
+Entry: C
+Aliases: C
+Keywords: models
+Description: Sets Contrasts for a Factor
+URL: ../../../library/stats/html/zC.html

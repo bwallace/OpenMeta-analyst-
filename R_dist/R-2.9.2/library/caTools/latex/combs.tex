@@ -1,0 +1,44 @@
+\HeaderA{combs}{All Combinations of k Elements from Vector v}{combs}
+\keyword{models}{combs}
+\begin{Description}\relax
+Finds all unordered combinations of \code{k} elements from vector 
+\code{v}.
+\end{Description}
+\begin{Usage}
+\begin{verbatim}combs(v,k)\end{verbatim}
+\end{Usage}
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{v}] Any numeric vector
+\item[\code{k}] Number of elements to choose from vector \code{v}. Integer smaller 
+or equal than length of \code{v}.  
+\end{ldescription}
+\end{Arguments}
+\begin{Value}
+\code{combs(v,k)} (where \code{v} has length \code{n}) creates a matrix with 
+\eqn{\frac{n!}{(n-k)! k!}}{} (\code{n} choose \code{k}) rows
+and \code{k} columns containing all possible combinations of \code{n} elements 
+taken \code{k} at a time.
+\end{Value}
+\begin{Author}\relax
+Jarek Tuszynski (SAIC) \email{jaroslaw.w.tuszynski@saic.com}
+\end{Author}
+\begin{SeeAlso}\relax
+I discovered recently that R packages already have two functions with 
+similar capabilities:
+\code{\LinkA{combinations}{combinations}} from \pkg{gTools} package and
+\code{\LinkA{nchoosek}{nchoosek}} from \pkg{vsn} package.
+Also similar to Matlab's \code{nchoosek} function (\url{
+http://www.mathworks.com/access/helpdesk/help/techdoc/ref/nchoosek.html})
+\end{SeeAlso}
+\begin{Examples}
+\begin{ExampleCode}
+  combs(2:5, 3) # display examples
+  combs(c("cats", "dogs", "mice"), 2)
+  
+  a = combs(1:4, 2)
+  b = matrix( c(1,1,1,2,2,3,2,3,4,3,4,4), 6, 2)
+  stopifnot(a==b)
+\end{ExampleCode}
+\end{Examples}
+

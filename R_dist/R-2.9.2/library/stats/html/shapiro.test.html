@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Shapiro-Wilk Normality Test</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for shapiro.test {stats}"><tr><td>shapiro.test {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>Shapiro-Wilk Normality Test</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Performs the Shapiro-Wilk test of normality.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+shapiro.test(x)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+a numeric vector of data values. Missing values are allowed,
+but the number of non-missing values must be between 3 and 5000.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+A list with class <code>"htest"</code> containing the following components:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>statistic</code></td>
+<td>
+the value of the Shapiro-Wilk statistic.</td></tr>
+<tr valign="top"><td><code>p.value</code></td>
+<td>
+an approximate p-value for the test.  This is
+said in Royston (1995) to be adequate for <code>p.value &lt; 0.1</code>.</td></tr>
+<tr valign="top"><td><code>method</code></td>
+<td>
+the character string <code>"Shapiro-Wilk normality test"</code>.</td></tr>
+<tr valign="top"><td><code>data.name</code></td>
+<td>
+a character string giving the name(s) of the data.</td></tr>
+</table>
+
+<h3>Source</h3>
+
+<p>
+The algorithm used is a C translation of the Fortran code described in
+Royston (1995) and found at <a href="http://lib.stat.cmu.edu/apstat/R94">http://lib.stat.cmu.edu/apstat/R94</a>.
+The calculation of the p value is exact for <i>n = 3</i>, otherwise
+approximations are used, separately for <i>4 &lt;= n &lt;= 11</i> and
+<i>n &gt;= 12</i>.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Patrick Royston (1982)
+An extension of Shapiro and Wilk's <i>W</i> test for normality to large
+samples.
+<EM>Applied Statistics</EM>, <B>31</B>, 115&ndash;124.
+</p>
+<p>
+Patrick Royston (1982)
+Algorithm AS 181: The <i>W</i> test for Normality.
+<EM>Applied Statistics</EM>, <B>31</B>, 176&ndash;180.
+</p>
+<p>
+Patrick Royston (1995)
+Remark AS R94: A remark on Algorithm AS 181: The <i>W</i> test for normality.
+<EM>Applied Statistics</EM>, <B>44</B>, 547&ndash;551.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../base/html/qqnorm.html">qqnorm</a></code> for producing a normal quantile-quantile plot.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+shapiro.test(rnorm(100, mean = 5, sd = 3))
+shapiro.test(runif(100, min = 2, max = 4))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Rational Approximation</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for rational {MASS}"><tr><td>rational {MASS}</td><td align="right">R Documentation</td></tr></table>
+<h2>Rational Approximation</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Find rational approximations to the components of a real numeric
+object using a standard continued fraction method.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+rational(x, cycles = 10, max.denominator = 2000, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+Any object of mode numeric. Missing values are now allowed.
+</td></tr>
+<tr valign="top"><td><code>cycles</code></td>
+<td>
+The maximum number of steps to be used in the continued fraction
+approximation process.
+</td></tr>
+<tr valign="top"><td><code>max.denominator</code></td>
+<td>
+An early termination criterion.  If any partial denominator
+exceeds <code>max.denominator</code> the continued fraction stops at that point.
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+arguments passed to or from other methods.
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Each component is first expanded in a continued fraction of the
+form
+</p>
+<p>
+<code>x = floor(x) + 1/(p1 + 1/(p2 + ...)))</code>
+</p>
+<p>
+where <code>p1</code>, <code>p2</code>, ... are positive integers, terminating either
+at <code>cycles</code> terms or when a <code>pj &gt; max.denominator</code>.  The
+continued fraction is then re-arranged to retrieve the numerator
+and denominator as integers and the ratio returned as the value.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A numeric object with the same attributes as <code>x</code> but with entries
+rational approximations to the values.  This effectively rounds
+relative to the size of the object and replaces very small
+entries by zero.</p>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="fractions.html">fractions</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+X &lt;- matrix(runif(25), 5, 5)
+zapsmall(solve(X, X/5)) # print near-zeroes as zero
+rational(solve(X, X/5))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>MASS</em> version 7.2-48 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

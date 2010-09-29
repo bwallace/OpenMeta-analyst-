@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Change unknown values to NA and vice versa</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for unknownToNA {gdata}"><tr><td>unknownToNA {gdata}</td><td align="right">R Documentation</td></tr></table>
+<h2>Change unknown values to NA and vice versa</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Unknown or missing values (<code>NA</code> in <font face="Courier New,Courier" color="#666666"><b>R</b></font>) can be represented in
+various ways (as 0, 999, etc.) in different programs. <code>isUnknown</code>,
+<code>unknownToNA</code>, and <code>NAToUnknown</code> can help to change unknown
+values to <code>NA</code> and vice versa.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+
+isUnknown(x, unknown=NA, ...)
+unknownToNA(x, unknown, warning=FALSE, ...)
+NAToUnknown(x, unknown, force=FALSE, call.=FALSE, ...)
+
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+generic, object with unknown value(s)</td></tr>
+<tr valign="top"><td><code>unknown</code></td>
+<td>
+generic, value used instead of <code>NA</code></td></tr>
+<tr valign="top"><td><code>warning</code></td>
+<td>
+logical, issue warning if <code>x</code> already has <code>NA</code></td></tr>
+<tr valign="top"><td><code>force</code></td>
+<td>
+logical, force to apply already existing value in <code>x</code></td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+arguments pased to other methods (as.character for POSIXlt
+in case of isUnknown)</td></tr>
+<tr valign="top"><td><code>call.</code></td>
+<td>
+logical, look in <code><a href="../../base/html/warning.html">warning</a></code></td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This functions were written to handle different variants of
+&ldquo;other <code>NA</code>&rdquo; like representations that are usually used in
+various external data sources. <code>unknownToNA</code> can help to change
+unknown values to <code>NA</code> for work in <font face="Courier New,Courier" color="#666666"><b>R</b></font>, while <code>NAToUnknown</code> is
+meant for the opposite and would usually be used prior to export of data
+from <font face="Courier New,Courier" color="#666666"><b>R</b></font>. <code>isUnknown</code> is utility function for testing for unknown
+values.
+</p>
+<p>
+All functions are generic and the following classes were tested to work
+with latest version: &ldquo;integer&rdquo;, &ldquo;numeric&rdquo;,
+&ldquo;character&rdquo;, &ldquo;factor&rdquo;, &ldquo;Date&rdquo;, &ldquo;POSIXct&rdquo;,
+&ldquo;POSIXlt&rdquo;, &ldquo;list&rdquo;, &ldquo;data.frame&rdquo; and
+&ldquo;matrix&rdquo;. For others default method might work just fine.
+</p>
+<p>
+<code>unknownToNA</code> and <code>isUnknown</code> can cope with multiple values in
+<code>unknown</code>, but those should be given as a &ldquo;vector&rdquo;. If not,
+coercing to vector is applied. Argument <code>unknown</code> can be feed also
+with &ldquo;list&rdquo; in &ldquo;list&rdquo; and &ldquo;data.frame&rdquo; methods.
+</p>
+<p>
+If named &ldquo;list&rdquo; or &ldquo;vector&rdquo; is passed to argument
+<code>unknown</code> and <code>x</code> is also named, matching of names will occur.
+</p>
+<p>
+Recycling occurs in all &ldquo;list&rdquo; and &ldquo;data.frame&rdquo; methods,
+when <code>unknown</code> argument is not of the same length as <code>x</code> and
+<code>unknown</code> is not named.
+</p>
+<p>
+Argument <code>unknown</code> in <code>NAToUnknown</code> should hold value that is
+not already present in <code>x</code>. If it does, error is produced and one
+can bypass that with <code>force=TRUE</code>, but be warned that there is no
+way to distinguish values after this action. Use at your own risk!
+Anyway, warning is issued about new value in <code>x</code>. Additionally,
+caution should be taken when using <code>NAToUnknown</code> on factors as
+additional level (value of <code>unknown</code>) is introduced. Then, as
+expected, <code>unknownToNA</code> removes defined level in <code>unknown</code>. If
+<code>unknown="NA"</code>, then <code>"NA"</code> is removed from factor levels in
+<code>unknownToNA</code> due to consistency with conversions back and forth.
+</p>
+<p>
+Unknown representation in <code>unknown</code> should have the same class as
+<code>x</code> in <code>NAToUnknown</code>, except in factors, where <code>unknown</code>
+value is coerced to character anyway. Silent coercing is also applied,
+when &ldquo;integer&rdquo; and &ldquo;numeric&rdquo; are in question. Otherwise
+warning is issued and coercing is tried. If that fails, <font face="Courier New,Courier" color="#666666"><b>R</b></font> introduces
+<code>NA</code> and the goal of <code>NAToUnknown</code> is not reached.
+</p>
+<p>
+<code>NAToUnknown</code> accepts only single value in <code>unknown</code> if
+<code>x</code> is atomic, while &ldquo;list&rdquo; and &ldquo;data.frame&rdquo; methods
+accept also &ldquo;vector&rdquo; and &ldquo;list&rdquo;.
+</p>
+<p>
+&ldquo;list/data.frame&rdquo; methods can work on many components/columns. To
+reduce the number of needed specifications in <code>unknown</code> argument,
+default unknown value can be specified with component ".default". This
+matches component/column ".default" as well as all other undefined
+components/columns! Look in examples.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>unknownToNA</code> and <code>NAToUnknown</code> return modified
+<code>x</code>. <code>isUnknown</code> returns logical values for object <code>x</code>.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Gregor Gorjanc
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../base/html/NA.html">is.na</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+
+xInt &lt;- c(0, 1, 0, 5, 6, 7, 8, 9, NA)
+isUnknown(x=xInt, unknown=0)
+isUnknown(x=xInt, unknown=c(0, NA))
+(xInt &lt;- unknownToNA(x=xInt, unknown=0))
+(xInt &lt;- NAToUnknown(x=xInt, unknown=0))
+
+xFac &lt;- factor(c("0", 1, 2, 3, NA, "NA"))
+isUnknown(x=xFac, unknown=0)
+isUnknown(x=xFac, unknown=c(0, NA))
+isUnknown(x=xFac, unknown=c(0, "NA"))
+isUnknown(x=xFac, unknown=c(0, "NA", NA))
+(xFac &lt;- unknownToNA(x=xFac, unknown="NA"))
+(xFac &lt;- NAToUnknown(x=xFac, unknown="NA"))
+
+xList &lt;- list(xFac=xFac, xInt=xInt)
+isUnknown(xList, unknown=c("NA", 0))
+isUnknown(xList, unknown=list("NA", 0))
+tmp &lt;- c(0, "NA")
+names(tmp) &lt;- c(".default", "xFac")
+isUnknown(xList, unknown=tmp)
+tmp &lt;- list(.default=0, xFac="NA")
+isUnknown(xList, unknown=tmp)
+
+(xList &lt;- unknownToNA(xList, unknown=tmp))
+(xList &lt;- NAToUnknown(xList, unknown=999))
+
+</pre>
+
+
+
+<hr><div align="center">[Package <em>gdata</em> version 2.6.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

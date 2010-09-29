@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Extract Command Line Arguments</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for commandArgs {base}"><tr><td>commandArgs {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Extract Command Line Arguments</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Provides access to a copy of the command line arguments supplied when
+this <font face="Courier New,Courier" color="#666666"><b>R</b></font> session was invoked.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+commandArgs(trailingOnly = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>trailingOnly</code></td>
+<td>
+logical.  Should only arguments after
+<code>--args</code> be returned?</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+These arguments are captured before the standard <font face="Courier New,Courier" color="#666666"><b>R</b></font> command line
+processing takes place.  This means that they are the unmodified
+values.  This is especially useful with the <code>--args</code>
+command-line flag to <font face="Courier New,Courier" color="#666666"><b>R</b></font>, as all of the command line after that flag
+is skipped.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A character vector containing the name of the executable and the
+user-supplied command line arguments.  The first element is the name
+of the executable by which <font face="Courier New,Courier" color="#666666"><b>R</b></font> was invoked.  The exact form of this
+element is platform dependent: it may be the fully qualified name, or
+simply the last component (or basename) of the application, or for an
+embedded <font face="Courier New,Courier" color="#666666"><b>R</b></font> it can be anything the programmer supplied.
+<br>
+If <code>trailingOnly = TRUE</code>, a character vector of those arguments
+(if any) supplied after <code>--args</code>.</p>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="Startup.html">Startup</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+commandArgs()
+## Spawn a copy of this application as it was invoked,
+## subject to shell quoting issues
+## system(paste(commandArgs(), collapse=" "))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Utilities for Building and Checking Add-on Packages</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for PkgUtils {utils}"><tr><td>PkgUtils {utils}</td><td align="right">R Documentation</td></tr></table>
+<h2>Utilities for Building and Checking Add-on Packages</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Utilities for checking whether the sources of an <font face="Courier New,Courier" color="#666666"><b>R</b></font> add-on package
+work correctly, and for building a source or binary package from
+them.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+R CMD build [options] pkgdirs
+R CMD check [options] pkgdirs
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>pkgdirs</code></td>
+<td>
+a list of names of directories with sources of <font face="Courier New,Courier" color="#666666"><b>R</b></font>
+add-on packages.</td></tr>
+<tr valign="top"><td><code>options</code></td>
+<td>
+further options to control the processing, or for
+obtaining information about usage and version of the utility.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>R CMD check</code>
+checks <font face="Courier New,Courier" color="#666666"><b>R</b></font> add-on packages from their sources, performing a wide
+variety of diagnostic checks.
+</p>
+<p>
+<code>R CMD build</code>
+builds <font face="Courier New,Courier" color="#666666"><b>R</b></font> source or binary packages from their sources.  The name(s)
+of the packages are taken from the &lsquo;<span class="file">DESCRIPTION</span>&rsquo; files and not
+from the directory names.
+</p>
+<p>
+Use
+<code>R CMD foo --help</code>
+to obtain usage information on utility <code>foo</code>.
+</p>
+<p>
+Several of the options to <code>build --binary</code> are passed to
+<code><a href="INSTALL.html">INSTALL</a></code> so consult its help for the details.
+</p>
+
+
+<h3>Note</h3>
+
+<p>
+They make use of a temporary directory specified by the environment
+variable <code>TMPDIR</code> and defaulting to <code>c:/TEMP</code>.  Do ensure
+that if set forward slashes are used.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+The sections on &ldquo;Checking and building packages&rdquo; and
+&ldquo;Processing Rd format&rdquo; in &ldquo;Writing <font face="Courier New,Courier" color="#666666"><b>R</b></font> Extensions&rdquo;
+(see the Manuals sub-menu of the Help menu on the console).
+</p>
+<p>
+<code><a href="INSTALL.html">INSTALL</a></code> is called by <code>build --binary</code>.
+</p>
+
+
+
+<hr><div align="center">[Package <em>utils</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

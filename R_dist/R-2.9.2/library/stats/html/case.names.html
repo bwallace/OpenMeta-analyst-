@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Case and Variable Names of Fitted Models</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for case/variable.names {stats}"><tr><td>case/variable.names {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>Case and Variable Names of Fitted Models</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Simple utilities returning (non-missing) case names, and
+(non-eliminated) variable names.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+case.names(object, ...)
+## S3 method for class 'lm':
+case.names(object, full = FALSE, ...)
+
+variable.names(object, ...)
+## S3 method for class 'lm':
+variable.names(object, full = FALSE, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>object</code></td>
+<td>
+an <font face="Courier New,Courier" color="#666666"><b>R</b></font> object, typically a fitted model.</td></tr>
+<tr valign="top"><td><code>full</code></td>
+<td>
+logical; if <code>TRUE</code>, all names (including zero weights,
+...) are returned.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+further arguments passed to or from other methods.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+A character vector.</p>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="lm.html">lm</a></code>; further, <code><a href="../../base/html/allnames.html">all.names</a></code>,
+<code><a href="../../base/html/allnames.html">all.vars</a></code> for functions with a similar name but only slightly
+related purpose.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+x &lt;- 1:20
+y &lt;-  x + (x/4 - 2)^3 + rnorm(20, sd=3)
+names(y) &lt;- paste("O",x,sep=".")
+ww &lt;- rep(1,20); ww[13] &lt;- 0
+summary(lmxy &lt;- lm(y ~ x + I(x^2)+I(x^3) + I((x-10)^2),
+                   weights = ww), cor = TRUE)
+variable.names(lmxy)
+variable.names(lmxy, full= TRUE)# includes the last
+case.names(lmxy)
+case.names(lmxy, full = TRUE)# includes the 0-weight case
+</pre>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Environment Variables</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for EnvVar {base}"><tr><td>EnvVar {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Environment Variables</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Details of some of the environment variables which affect an <font face="Courier New,Courier" color="#666666"><b>R</b></font> session.
+</p>
+
+
+<h3>Details</h3>
+
+<p>
+It is impossible to list all the environment variables which can
+affect an <font face="Courier New,Courier" color="#666666"><b>R</b></font> session: some affect the OS system functions which <font face="Courier New,Courier" color="#666666"><b>R</b></font>
+uses, and others will affect add-on packages.  But here are notes on
+some of the more important ones.  Those that set the defaults for
+options are consulted only at startup (as are some of the others).
+<dl>
+<dt><code>HOME</code>:</dt><dd>The user's &lsquo;home&rsquo; directory.</dd>
+<dt><code>LANGUAGE</code>:</dt><dd>Optional.  The language(s) to be used for
+message translations.  This is consulted when needed.</dd>
+<dt><code>LC_ALL</code>:</dt><dd>(etc) Optional.  Use to set various aspects of
+the locale &ndash; see <code><a href="locales.html">Sys.getlocale</a></code>.  Consulted at startup.</dd>
+<dt><code>R_BATCH</code>:</dt><dd>Optional &ndash; set in a batch session.</dd>
+<dt><code>R_BROWSER</code>:</dt><dd>The path to the default browser.  Used to
+set the default value of <code><a href="options.html">options</a>("browser")</code>.</dd>
+<dt><code>R_COMPLETION</code>:</dt><dd>Optional.  If set to <code>FALSE</code>,
+command-line completion is not used.  (Not used by Mac OS GUI.)</dd>
+<dt><code>R_DEFAULT_PACKAGES</code>:</dt><dd>A comma-separated list of packages
+which are to be loaded in every session.  See <code><a href="options.html">options</a></code>.</dd>
+<dt><code>R_DOC_DIR</code>:</dt><dd>The location of the <font face="Courier New,Courier" color="#666666"><b>R</b></font> &lsquo;<span class="file">doc</span>&rsquo;
+directory.  Set by <font face="Courier New,Courier" color="#666666"><b>R</b></font>.</dd>
+<dt><code>R_DVIPSCMD</code>:</dt><dd>The path to <code>dvips</code>.  Defaults to
+the value of <span class="env">DVIPS</span>, and if that is unset to a value
+determined when <font face="Courier New,Courier" color="#666666"><b>R</b></font> was built.
+Used by <code>R CMD Rd2dvi</code>.
+</dd>
+<dt><code>R_ENVIRON</code>:</dt><dd>Optional.  The path to the site environment
+file: see <a href="Startup.html">Startup</a>.  Consulted at startup.</dd>
+<dt><code>R_GSCMD</code>:</dt><dd>Optional.  The path to GhostScript, used by
+<code><a href="../../grDevices/html/dev2bitmap.html">dev2bitmap</a></code>.</dd>
+<dt><code>R_HISTFILE</code>:</dt><dd>Optional.  The path of the history file:
+see <a href="Startup.html">Startup</a>.  Consulted at startup and when the history is
+saved.</dd>
+<dt><code>R_HISTSIZE</code>:</dt><dd>Optional.  The maximum size of the history
+file, in lines.  Exactly how this is used depends on the
+interface.
+For <code>Rgui</code> it controls the number of lines saved to the
+history file: the size of the history when in use is controlled by
+the console customization: see <code><a href="../../utils/html/Rconsole.html">Rconsole</a></code>.
+</dd>
+<dt><code>R_HOME</code>:</dt><dd>The top-level directory of the <font face="Courier New,Courier" color="#666666"><b>R</b></font>
+installation: see <code><a href="Rhome.html">R.home</a></code>.  Set by <font face="Courier New,Courier" color="#666666"><b>R</b></font>.</dd>
+<dt><code>R_INCLUDE_DIR</code>:</dt><dd>The location of the <font face="Courier New,Courier" color="#666666"><b>R</b></font> &lsquo;<span class="file">include</span>&rsquo;
+directory.  Set by <font face="Courier New,Courier" color="#666666"><b>R</b></font>.</dd>
+<dt><code>R_LATEXCMD</code>:</dt><dd>The path to <code>latex</code>. Defaults to
+the value of <span class="env">LATEX</span>, and if that is unset to a value
+determined when <font face="Courier New,Courier" color="#666666"><b>R</b></font> was built.
+Used by <code>R CMD Rd2dvi</code>.
+</dd>
+<dt><code>R_LIBS</code>:</dt><dd>Optional.  Used for initial setting of
+<code><a href="libPaths.html">.libPaths</a></code>.</dd>
+<dt><code>R_LIBS_SITE</code>:</dt><dd>Optional.  Used for initial setting of
+<code><a href="libPaths.html">.libPaths</a></code>.</dd>
+<dt><code>R_LIBS_USER</code>:</dt><dd>Optional.  Used for initial setting of
+<code><a href="libPaths.html">.libPaths</a></code>.</dd>
+<dt><code>R_MAKEINDEXCMD</code>:</dt><dd>The path to <code>makeindex</code>.  Defaults
+at startup to the value of <span class="env">MAKEINDEX</span>, and if that is unset
+to a value determined when <font face="Courier New,Courier" color="#666666"><b>R</b></font> was built.  Used by <code>R CMD Rd2dvi</code>.</dd>
+<dt><code>R_PAPERSIZE</code>:</dt><dd>Optional.  Use to set the default for
+<code><a href="options.html">options</a>("papersize")</code>, e.g. used by
+<code><a href="../../grDevices/html/pdf.html">pdf</a></code>, <code><a href="../../grDevices/html/postscript.html">postscript</a></code> and
+<code><a href="../../utils/html/help.html">help</a>(offline = TRUE)</code>.</dd>
+<dt><code>R_PDFLATEXCMD</code>:</dt><dd>The path to <code>pdflatex</code>.  Defaults
+at startup to the value of <code>PDFLATEX</code>, and if that is unset
+to a value determined when <font face="Courier New,Courier" color="#666666"><b>R</b></font> was built.  Used by <code>R CMD Rd2dvi</code>.</dd>
+<dt><code>R_PDFVIEWER</code>:</dt><dd>The path to the default PDF viewer.  Used
+by <code>R CMD Rd2dvi</code>.</dd>
+<dt><code>R_PLATFORM</code>:</dt><dd>The platform &ndash; a string of the form
+<code><VAR>cpu</VAR>-<VAR>vendor</VAR>-<VAR>os</VAR></code>, see <code><a href="Version.html">R.Version</a></code>.</dd>
+<dt><code>R_PROFILE</code>:</dt><dd>Optional.  The path to the site profile
+file: see <a href="Startup.html">Startup</a>.  Consulted at startup.</dd>
+<dt><code>R_RD4DVI</code>:</dt><dd>Options for <code>latex</code> processing of
+<code>Rd</code> files.  Used by <code>R CMD Rd2dvi</code> and
+<code><a href="../../utils/html/help.html">help</a>(offline = TRUE)</code>.</dd>
+<dt><code>R_RD4PDF</code>:</dt><dd>Options for <code>pdflatex</code> processing of
+<code>Rd</code> files.  Used by <code>R CMD Rd2dvi</code>.</dd>
+<dt><code>R_SHARE_DIR</code>:</dt><dd>The location of the <font face="Courier New,Courier" color="#666666"><b>R</b></font> &lsquo;<span class="file">share</span>&rsquo;
+directory.  Set by <font face="Courier New,Courier" color="#666666"><b>R</b></font>.</dd> 
+<dt><code>R_TEXI2DVICMD</code>:</dt><dd>The path to <code>texi2dvi</code>. Defaults
+to the value of <span class="env">TEXI2DVI</span>, and if that is unset to a value
+determined when <font face="Courier New,Courier" color="#666666"><b>R</b></font> was built.
+</dd>
+<dt><code>R_UNZIPCMD</code>:</dt><dd>The path to <code>unzip</code>.  Sets the default
+value for <code><a href="options.html">options</a>("unzip")</code>.</dd>
+<dt><code>R_ZIPCMD</code>:</dt><dd>The path to <code>zip</code>.</dd>
+<dt><code>TMPDIR</code>, <code>TMP</code>, <code>TEMP</code>:</dt><dd>Consulted (in that
+order) when setting the temporary directory.  See
+<code><a href="tempfile.html">tempdir</a></code>.</dd>
+<dt><code>TZ</code>:</dt><dd>Optional. The current timezone.  See
+<code><a href="timezones.html">Sys.timezone</a></code> for the system-specific
+formats.  Consulted as needed.</dd>
+<dt><code>no_proxy</code>, <code>http_proxy</code>, <code>ftp_proxy</code>:</dt><dd>(and more).  Optional.  Settings for <code><a href="../../utils/html/download.file.html">download.file</a></code>:
+see its help for further details.</dd>
+</dl>
+
+<h3>Windows-specific</h3>
+
+<p>
+Some Windows-specific variables are
+<dl>
+<dt><code>GSC</code>:</dt><dd>Optional: the path to GhostScript, used if
+<span class="env">R_GSCMD</span> is not set.</dd>
+<dt><code>R_USER</code>:</dt><dd>The user's &lsquo;home&rsquo; directory.  Set by
+<font face="Courier New,Courier" color="#666666"><b>R</b></font>.  (<span class="env">HOME</span> will be set to the same value if not already set.)</dd>
+<dt><code>TZDIR</code>:</dt><dd>Optional. The top-level directory of the
+timezone database.  See <code><a href="timezones.html">Sys.timezone</a></code>.</dd>
+</dl>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="Sys.getenv.html">Sys.getenv</a></code> and <code><a href="Sys.setenv.html">Sys.setenv</a></code> to read and set
+environmental variables in an <font face="Courier New,Courier" color="#666666"><b>R</b></font> session.
+</p>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

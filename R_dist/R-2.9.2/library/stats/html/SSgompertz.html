@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Gompertz Growth Model</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for SSgompertz {stats}"><tr><td>SSgompertz {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>Gompertz Growth Model</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This <code>selfStart</code> model evaluates the Gompertz growth model
+and its gradient.  It has an <code>initial</code> attribute that
+creates initial estimates of the parameters <code>Asym</code>,
+<code>b2</code>, and <code>b3</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+SSgompertz(x, Asym, b2, b3)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+a numeric vector of values at which to evaluate the model.</td></tr>
+<tr valign="top"><td><code>Asym</code></td>
+<td>
+a numeric parameter representing the asymptote.</td></tr>
+<tr valign="top"><td><code>b2</code></td>
+<td>
+a numeric parameter related to the value of the function at
+<code>x = 0</code></td></tr>
+<tr valign="top"><td><code>b3</code></td>
+<td>
+a numeric parameter related to the scale the <code>x</code> axis.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+a numeric vector of the same length as <code>input</code>.  It is the value of
+the expression <code>Asym*exp(-b2*b3^x)</code>.  If all of
+the arguments <code>Asym</code>, <code>b2</code>, and <code>b3</code> are
+names of objects the gradient matrix with respect to these names is attached as
+an attribute named <code>gradient</code>.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Douglas Bates
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="nls.html">nls</a></code>, <code><a href="selfStart.html">selfStart</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+DNase.1 &lt;- subset(DNase, Run == 1)
+SSlogis(log(DNase.1$conc), 4.5, 2.3, 0.7)  # response only
+Asym &lt;- 4.5; b2 &lt;- 2.3; b3 &lt;- 0.7
+SSgompertz(log(DNase.1$conc), Asym, b2, b3 ) # response and gradient
+getInitial(density ~ SSgompertz(log(conc), Asym, b2, b3),
+           data = DNase.1)
+## Initial values are in fact the converged values
+fm1 &lt;- nls(density ~ SSgompertz(log(conc), Asym, b2, b3),
+           data = DNase.1)
+summary(fm1)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

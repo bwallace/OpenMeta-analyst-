@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Community strucure via short random walks</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for walktrap.community {igraph}"><tr><td>walktrap.community {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Community strucure via short random walks</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This function tries to find densely connected subgraphs,
+also called communities in a graph via random walks. The idea is that
+short random walks tend to stay in the same community.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+walktrap.community(graph, weights = E(graph)$weight, steps = 4, merges =
+          TRUE, modularity = FALSE, labels = TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>graph</code></td>
+<td>
+The input graph.</td></tr>
+<tr valign="top"><td><code>weights</code></td>
+<td>
+The edge weights.</td></tr>
+<tr valign="top"><td><code>steps</code></td>
+<td>
+The length of the random walks to perform.</td></tr>
+<tr valign="top"><td><code>merges</code></td>
+<td>
+Logical scalar, whether to include the merge matrix in
+the result.</td></tr>
+<tr valign="top"><td><code>modularity</code></td>
+<td>
+Logical scalar, whether to include the vector of the
+modularity scores in the result.</td></tr>
+<tr valign="top"><td><code>labels</code></td>
+<td>
+Logical scalar, if <code>TRUE</code> and the graph has a
+vertex attribute called <code>name</code> then it will be included in the
+result, in the list member called <code>labels</code>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This function is the implementation of the Walktrap community
+finding algorithm, see Pascal Pons, Matthieu Latapy: Computing
+communities in large networks using random walks, 
+http://arxiv.org/abs/physics/0512106
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A named list with three members:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>merges</code></td>
+<td>
+The merges performed by the
+algorithm will be stored here. Each merge is a
+row in a two-column matrix and contains the ids of the merged
+communities. Communities are numbered from zero and cluster number 
+smaller than the number of nodes in the network belong to the
+individual vertices as singleton communities. In each step a new
+community is created from two other communities and its id will be 
+one larger than the largest community id so far. This means that 
+before the first merge we have <code>n</code> communities (the number of
+vertices in the graph) numbered from zero to <code>n-1</code>. The first
+merge created community <code>n</code>, the second community <code>n+1</code>, etc.
+</td></tr>
+<tr valign="top"><td><code>modularity</code></td>
+<td>
+Numeric vector, the modularity score of the
+current community structure after each merge operation. 
+</td></tr>
+<tr valign="top"><td><code>labels</code></td>
+<td>
+The labels of the vertices in the graph. The
+<code>name</code> vertex attribute will be copied here, if exists.
+</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Pascal Pons <a href="mailto:google@for.it">google@for.it</a> and Gabor Csardi
+<a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a> for the R and igraph interface
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Pascal Pons, Matthieu Latapy: Computing
+communities in large networks using random walks, 
+http://arxiv.org/abs/physics/0512106
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="modularity.html">modularity</a></code> and 
+<code><a href="fastgreedy.community.html">fastgreedy.community</a></code>,
+<code><a href="spinglass.community.html">spinglass.community</a></code>,
+<code><a href="leading.eigenvector.html">leading.eigenvector.community</a></code>,
+<code><a href="community.edge.betweenness.html">edge.betweenness.community</a></code> for other community detection
+methods.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+g &lt;- graph.full(5) %du% graph.full(5) %du% graph.full(5)
+g &lt;- add.edges(g, c(0,5, 0,10, 5, 10))
+walktrap.community(g)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

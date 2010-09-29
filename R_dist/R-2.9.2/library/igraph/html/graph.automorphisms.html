@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Number of automorphisms</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for graph.automorphisms {igraph}"><tr><td>graph.automorphisms {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Number of automorphisms</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Calculate the number of automorphisms of a graph,
+i.e. the number of isomorphisms to itself.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+graph.automorphisms(graph, sh="fm")
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>graph</code></td>
+<td>
+The input graph, it is treated as undirected.</td></tr>
+<tr valign="top"><td><code>sh</code></td>
+<td>
+The splitting heuristics for the BLISS algorithm. Possible
+values are: &lsquo;<code>f</code>&rsquo;: first non-singleton cell,
+&lsquo;<code>fl</code>&rsquo;: first largest non-singleton cell,
+&lsquo;<code>fs</code>&rsquo;: first smallest non-singleton cell,
+&lsquo;<code>fm</code>&rsquo;: first maximally non-trivially connected
+non-singleton cell, &lsquo;<code>flm</code>&rsquo;: first largest maximally
+non-trivially connected non-singleton cell, &lsquo;<code>fsm</code>&rsquo;:
+first smallest maximally non-trivially connected non-singleton
+cell.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+An automorphism of a graph is a permutation of its vertices which
+brings the graph into itself.
+</p>
+<p>
+This function calculates the number of automorphism of a graph using
+the BLISS algorithm. See also the BLISS homepage at 
+<a href="http://www.tcs.hut.fi/Software/bliss/index.html">http://www.tcs.hut.fi/Software/bliss/index.html</a>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A named list with the following members:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>group_size</code></td>
+<td>
+The size of the automorphism group of the
+input graph, as a string. This number is exact if igraph was
+compiled with the GMP library, and approximate otherwise.</td></tr>
+<tr valign="top"><td><code>nof_nodes</code></td>
+<td>
+The number of nodes in the search tree.</td></tr>
+<tr valign="top"><td><code>nof_leaf_nodes</code></td>
+<td>
+The number of leaf nodes in the search
+tree.</td></tr>
+<tr valign="top"><td><code>nof_bad_nodes</code></td>
+<td>
+Number of bad nodes.</td></tr>
+<tr valign="top"><td><code>nof_canupdates</code></td>
+<td>
+Number of canrep updates.</td></tr>
+<tr valign="top"><td><code>max_level</code></td>
+<td>
+Maximum level.</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Tommi Juntilla <a href="mailto:google@for.it">google@for.it</a> for BLISS and Gabor Csardi
+<a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a> for the igraph glue code and this manual
+page.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Tommi Junttila and Petteri Kaski: Engineering an Efficient Canonical
+Labeling Tool for Large and Sparse Graphs, <EM>Proceedings of the
+Ninth Workshop on Algorithm Engineering and Experiments and the
+Fourth Workshop on Analytic Algorithms and Combinatorics.</EM> 2007.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="canonical.permutation.html">canonical.permutation</a></code>, <code><a href="permute.vertices.html">permute.vertices</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## A ring has n*2 automorphisms, you can "turn" it by 0-9 vertices
+## and each of these graphs can be "flipped"
+g &lt;- graph.ring(10)
+graph.automorphisms(g)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

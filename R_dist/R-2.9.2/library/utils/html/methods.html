@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: List Methods for S3 Generic Functions or Classes</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for methods {utils}"><tr><td>methods {utils}</td><td align="right">R Documentation</td></tr></table>
+<h2>List Methods for S3 Generic Functions or Classes</h2>
+
+
+<h3>Description</h3>
+
+<p>
+List all available methods for an S3 generic function, or all
+methods for a class.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+methods(generic.function, class)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>generic.function</code></td>
+<td>
+a generic function, or a character string naming a
+generic function.</td></tr>
+<tr valign="top"><td><code>class</code></td>
+<td>
+a symbol or character string naming a class: only used if
+<code>generic.function</code> is not supplied.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Function <code>methods</code> can be used to find out about the methods for
+a particular generic function or class.  The functions listed are those
+which <EM>are named like methods</EM> and may not actually be methods
+(known exceptions are discarded in the code).  Note that the listed
+methods may not be user-visible objects, but often help will be
+available for them.
+</p>
+<p>
+If <code>class</code> is used, we check that a matching generic can be found
+for each user-visible object named.  If <code>generic.function</code> is
+given, there is a warning if it appears not to be a generic function.
+(The check for being generic used can be fooled.)
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+An object of class <code>"MethodsFunction"</code>, a
+character vector of function names with an <code>"info"</code> attribute.
+There is a <code>print</code> method which marks with an asterisk any
+methods which are not visible: such functions can be examined by
+<code><a href="getS3method.html">getS3method</a></code> or <code><a href="getAnywhere.html">getAnywhere</a></code>.
+<br>
+The <code>"info"</code> attribute is a data frame, currently with a
+logical column, <code>visible</code> and a factor column <code>from</code>
+(indicating where the methods were found).</p>
+
+<h3>Note</h3>
+
+<p>
+This scheme is called <EM>S3</EM> (S version 3).  For new projects,
+it is recommended to use the more flexible and robust <EM>S4</EM> scheme
+provided in the <span class="pkg">methods</span> package.  Functions can have both S3
+and S4 methods, and function <code><a href="../../methods/html/showMethods.html">showMethods</a></code> will
+list the S4 methods (possibly none).
+</p>
+<p>
+The original <code>methods</code> function was written by Martin Maechler.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Chambers, J. M. (1992)
+<EM>Classes and methods: object-oriented programming in S.</EM>
+Appendix A of <EM>Statistical Models in S</EM>
+eds J. M. Chambers and T. J. Hastie, Wadsworth &amp; Brooks/Cole.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../base/html/UseMethod.html">S3Methods</a></code>, <code><a href="../../base/html/class.html">class</a></code>,
+<code><a href="getS3method.html">getS3method</a></code>.
+</p>
+<p>
+For S4, <code><a href="../../methods/html/showMethods.html">showMethods</a></code>, <code><a href="../../methods/html/Methods.html">Methods</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+require(stats)
+
+methods(summary)
+methods(class = "aov")
+methods("[[")    # uses C-internal dispatching
+methods("$")
+methods("$&lt;-")   # replacement function
+methods("+")     # binary operator
+methods("Math")  # group generic
+require(graphics)
+methods("axis")  # looks like it has methods, but not generic
+## Not run: 
+methods(print)   # over 100
+## End(Not run)
+## --&gt; help(showMethods) for related examples
+</pre>
+
+
+
+<hr><div align="center">[Package <em>utils</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

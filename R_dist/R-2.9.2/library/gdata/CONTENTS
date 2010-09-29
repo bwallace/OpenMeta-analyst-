@@ -1,0 +1,209 @@
+Entry: Args
+Aliases: Args
+Keywords: programming utilities documentation
+Description: Formatted Argument List of a Function
+URL: ../../../library/gdata/html/Args.html
+
+Entry: ConvertMedUnits
+Aliases: ConvertMedUnits
+Keywords: manip
+Description: Convert medical measurements between International Standard (SI) and US 'Conventional' Units.
+URL: ../../../library/gdata/html/ConvertMedUnits.html
+
+Entry: MedUnits
+Aliases: MedUnits
+Keywords: datasets
+Description: Table of conversions between Intertional Standard (SI) and US 'Conventional' Units for common medical measurements.
+URL: ../../../library/gdata/html/MedUnits.html
+
+Entry: aggregate.table
+Aliases: aggregate.table
+Keywords: iteration category
+Description: Create 2-Way Table of Summary Statistics
+URL: ../../../library/gdata/html/aggregate.table.html
+
+Entry: bindData
+Aliases: bindData
+Keywords: manip misc
+Description: Bind two data frames into a multivariate data frame
+URL: ../../../library/gdata/html/bindData.html
+
+Entry: cbindX
+Aliases: cbindX
+Keywords: misc
+Description: Column-bind objects with different number of rows
+URL: ../../../library/gdata/html/cbindX.html
+
+Entry: combine
+Aliases: combine
+Keywords: array manip
+Description: Combine R Objects With a Column Labeling the Source
+URL: ../../../library/gdata/html/combine.html
+
+Entry: drop.levels
+Aliases: drop.levels
+Keywords: manip
+Description: Drop unused factor levels
+URL: ../../../library/gdata/html/drop.levels.html
+
+Entry: elem
+Aliases: elem
+Keywords: attribute classes list print utilities
+Description: Display Information about Elements in a Given Object
+URL: ../../../library/gdata/html/elem.html
+
+Entry: env
+Aliases: env
+Keywords: data environment utilities
+Description: Display Information about All Loaded Environments
+URL: ../../../library/gdata/html/env.html
+
+Entry: frameApply
+Aliases: frameApply
+Keywords: manip
+Description: Subset analysis on data frames
+URL: ../../../library/gdata/html/frameApply.html
+
+Entry: gdata-package
+Aliases: gdata-package gdata
+Keywords: package
+Description: Various R programming tools for data manipulation
+URL: ../../../library/gdata/html/gdata-package.html
+
+Entry: getYear
+Aliases: getDateTimeParts getYear getYear.default getYear.Date getYear.POSIXct getYear.POSIXlt getMonth getMonth.default getMonth.Date getMonth.POSIXct getMonth.POSIXlt getDay getDay.default getDay.Date getDay.POSIXct getDay.POSIXlt getHour getHour.default getMin getMin.default getSec getSec.default
+Keywords: manip misc
+Description: Get date/time parts from date and time objects
+URL: ../../../library/gdata/html/getDateTimePart.html
+
+Entry: humanReadable
+Aliases: humanReadable
+Keywords: misc
+Description: Print byte size in human readable format
+URL: ../../../library/gdata/html/humanReadable.html
+
+Entry: interleave
+Aliases: interleave
+Keywords: category array
+Description: Interleave Rows of Data Frames or Matrices
+URL: ../../../library/gdata/html/interleave.html
+
+Entry: is.what
+Aliases: is.what
+Keywords: classes NA programming error utilities
+Description: Run Multiple is.* Tests on a Given Object
+URL: ../../../library/gdata/html/is.what.html
+
+Entry: keep
+Aliases: keep
+Keywords: data environment utilities
+Description: Remove All Objects, Except Those Specified
+URL: ../../../library/gdata/html/keep.html
+
+Entry: ll
+Aliases: ll
+Keywords: data attribute classes list environment print utilities
+Description: Display Information about Objects or Elements
+URL: ../../../library/gdata/html/ll.html
+
+Entry: mapLevels
+Aliases: mapLevels mapLevels.default mapLevels.factor mapLevels.character mapLevels.list mapLevels.data.frame print.levelsMap print.listLevelsMap is.levelsMap is.listLevelsMap as.levelsMap as.listLevelsMap .checkLevelsMap .checkListLevelsMap "[.levelsMap" "[.listLevelsMap" c.levelsMap c.listLevelsMap unique.levelsMap sort.levelsMap mapLevels<- mapLevels<-.default mapLevels<-.factor mapLevels<-.character mapLevels<-.list mapLevels<-.data.frame
+Keywords: misc manip
+Description: Mapping levels
+URL: ../../../library/gdata/html/mapLevels.html
+
+Entry: matchcols
+Aliases: matchcols
+Keywords: manip
+Description: Select columns names matching certain critera
+URL: ../../../library/gdata/html/matchcols.html
+
+Entry: nPairs
+Aliases: nPairs
+Keywords: misc
+Description: Number of variable pairs
+URL: ../../../library/gdata/html/nPairs.html
+
+Entry: nobs
+Aliases: nobs nobs.default nobs.data.frame nobs.lm
+Keywords: attribute
+Description: Compute the Number of Non-missing Observations
+URL: ../../../library/gdata/html/nobs.html
+
+Entry: object.size
+Aliases: object.size print.object_size c.object_size as.object_size is.object_size
+Keywords: utilities
+Description: Report the Space Allocated for an Object
+URL: ../../../library/gdata/html/object.size.html
+
+Entry: read.xls
+Aliases: read.xls xls2csv xls2tab xls2sep
+Keywords: file
+Description: Read Excel files
+URL: ../../../library/gdata/html/read.xls.html
+
+Entry: rename.vars
+Aliases: rename.vars remove.vars
+Keywords: manip
+Description: Remove or rename variables in a dataframe
+URL: ../../../library/gdata/html/rename.vars.html
+
+Entry: reorder.factor
+Aliases: reorder.factor
+Keywords: manip
+Description: Reorder the Levels of a Factor
+URL: ../../../library/gdata/html/reorder.html
+
+Entry: resample
+Aliases: resample
+Keywords: misc
+Description: Consistent Random Samples and Permutations
+URL: ../../../library/gdata/html/resample.html
+
+Entry: .runRUnitTestsGdata
+Aliases: .runRUnitTestsGdata
+Keywords: misc
+Description: Run RUnit tests for the gdata package
+URL: ../../../library/gdata/html/runRUnitTests.html
+
+Entry: trim
+Aliases: trim
+Keywords: manip character
+Description: Remove leading and trailing spaces from character strings
+URL: ../../../library/gdata/html/trim.html
+
+Entry: trimSum
+Aliases: trimSum
+Keywords: manip
+Description: Trim a vector such that the last/first value represents the sum of trimmed values
+URL: ../../../library/gdata/html/trimSum.html
+
+Entry: unknownToNA
+Aliases: isUnknown isUnknown.default isUnknown.POSIXlt isUnknown.list isUnknown.data.frame isUnknown.matrix unknownToNA unknownToNA.default unknownToNA.factor unknownToNA.list unknownToNA.data.frame NAToUnknown NAToUnknown.default NAToUnknown.factor NAToUnknown.list NAToUnknown.data.frame
+Keywords: manip NA
+Description: Change unknown values to NA and vice versa
+URL: ../../../library/gdata/html/unknown.html
+
+Entry: unmatrix
+Aliases: unmatrix
+Keywords: manip
+Description: Convert a matrix into a vector, with appropriate names
+URL: ../../../library/gdata/html/unmatrix.html
+
+Entry: upperTriangle
+Aliases: upperTriangle upperTriangle<- lowerTriangle lowerTriangle<-
+Keywords: array
+Description: Extract or replace the upper/lower triangular portion of a matrix
+URL: ../../../library/gdata/html/upperTriangle.html
+
+Entry: wideByFactor
+Aliases: wideByFactor
+Keywords: manip misc
+Description: Create multivariate data by a given factor
+URL: ../../../library/gdata/html/wideByFactor.html
+
+Entry: write.fwf
+Aliases: write.fwf
+Keywords: print file
+Description: Write object in fixed width format
+URL: ../../../library/gdata/html/write.fwf.html

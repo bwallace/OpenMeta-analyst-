@@ -1,0 +1,104 @@
+\documentclass{report}
+\usepackage{Rnews}
+\begin{document}
+
+\author{by Gregory R. Warnes}
+\title{The gregmisc package: something for everyone}
+\subtitle{}
+
+\maketitle
+
+The gregmisc package is a repository for functions that I find myself
+needing but that don't seem to be available somewhere else.  In
+contrast to many packages, it is not organized thematically, rather
+it contains a hodge-podge of different routines that make my life a
+little easer.
+
+I've taken the time to bundle these functions up as a package for
+three reasons, first to share my efforts with others, second to get
+feedback (particularly bug reports and feature enhancements), and
+third to force myself to properly document and test the code.
+
+The function in the gregmisc library fall into six general areas:
+permutations and combinations, tools for linear models, plots, data
+manipulation, fixed or extended versions of existing functions, and other.
+
+\begin{enumerate}
+
+
+\item{permutation and combinations}
+
+\begin{description}
+\item[combinations]{ Enumerate the combinations of the elements of a vector}
+\item[permutations]{ Enumerate the permutations of the elements of a vector}
+\item[factorial]{ Compute the factorial function}
+\end{description}
+
+\item{tools for linear models}
+
+\begin{description}
+\item[ci]{ Compute confidence intervals}
+\item[contrast.lm]{ Compute (and test) arbitrary single-term     
+        contrasts for regression objects}       
+\item[estimable]{ Compute and test estimable linear functions of
+         the fitted coefficients (including contrasts) of regression objects}
+\item[glh.test]{ Test a general linear hypothesis for regression objects}
+
+\end{description}
+
+\item{plots}
+\begin{description}
+\item[boxplot.n]{Produce a boxplot annotated with the number of observations}
+\item[plotCI]{ Plot error bars}
+\item[plotmeans]{ Plot group means and confidence intervals}
+\item[wapply]{ Compute the value of a function over a local region of
+    an x-y plot}
+\item[space]{ Deterministically space points in an x-y plot so they don't
+ overlap.}
+\item[hist2d]{ Create and Plot a 2-dimensional histogram.}
+\item[bandplot] {Plot x-y points with locally smoothed mean and standard deviation}
+
+\end{description}
+
+\item{data manipulation}
+
+\begin{description}
+\item[combine]{ Combine R objects (such as dataframes) and add an
+    additional column labeling the source}
+\item[rename.vars]{ Rename variables in a dataframe}
+\end{description}
+
+\item{fixed or extended versions of current functions}
+
+\begin{description}
+\item[lowess]{ Extend built-in \verb+lowess+ function to handle model
+    formulae }
+\item[plot.lm]{ Extend the built-in \verb+plot.lm+ function: }
+    \begin{itemize}
+    \item residual plots: add rug, zero line, mean and 1-sigma smooths 
+    \item residual quantile plots: add \verb+qqline+
+    \item add plots of each predictor against the residuals.
+    \end{itemize}
+\end{description}
+
+\item{other}
+
+\begin{description}
+\item[running]{ Apply a function over adjacent subsets of a vector}
+\end{description}
+
+\end{enumerate}
+
+I welcome comments and contributions.  The current package includes
+code by Ben Bolker, Bendix Carstensen, Don MacQueen, and William
+Venables.
+
+
+\address{Gregory R. Warnes \\
+  Random Technologies LLC. \\
+  \emph{greg@random-technologies-llc.com} }  %%!!!%%
+
+
+\end{multicols}  %%!!!%%
+
+\end{document}

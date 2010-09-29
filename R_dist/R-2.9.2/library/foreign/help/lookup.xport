@@ -1,0 +1,43 @@
+lookup.xport             package:foreign             R Documentation
+
+_L_o_o_k_u_p _I_n_f_o_r_m_a_t_i_o_n _o_n _a _S_A_S _X_P_O_R_T _F_o_r_m_a_t _L_i_b_r_a_r_y
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Scans a file as a SAS XPORT format library and returns a list
+     containing information about the SAS library.
+
+_U_s_a_g_e:
+
+     lookup.xport(file)
+
+_A_r_g_u_m_e_n_t_s:
+
+    file: character variable with the name of the file to read.  The
+          file must be in SAS XPORT format.
+
+_V_a_l_u_e:
+
+     A list with one component for each dataset in the XPORT format
+     library.
+
+_A_u_t_h_o_r(_s):
+
+     Saikat DebRoy
+
+_R_e_f_e_r_e_n_c_e_s:
+
+     SAS Technical Support document TS-140: “The Record Layout of a
+     Data Set in SAS Transport (XPORT) Format” available as <URL:
+     http://ftp.sas.com/techsup/download/technote/ts140.html>.
+
+_S_e_e _A_l_s_o:
+
+     'read.xport'
+
+_E_x_a_m_p_l_e_s:
+
+     ## Not run: 
+     lookup.xport("transport")
+     ## End(Not run)
+

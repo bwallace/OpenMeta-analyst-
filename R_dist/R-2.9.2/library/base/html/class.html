@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Object Classes</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for class {base}"><tr><td>class {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Object Classes</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<font face="Courier New,Courier" color="#666666"><b>R</b></font> possesses a simple generic function mechanism which can be used for
+an object-oriented style of programming.  Method dispatch takes place
+based on the class of the first argument to the generic function.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+class(x)
+class(x) &lt;- value
+unclass(x)
+inherits(x, what, which = FALSE)
+
+oldClass(x)
+oldClass(x) &lt;- value
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+a <font face="Courier New,Courier" color="#666666"><b>R</b></font> object</td></tr>
+<tr valign="top"><td><code>what, value</code></td>
+<td>
+a character vector naming classes.  <code>value</code>
+can also be <code>NULL</code>.</td></tr>
+<tr valign="top"><td><code>which</code></td>
+<td>
+logical affecting return value: see &lsquo;Details&rsquo;.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Many <font face="Courier New,Courier" color="#666666"><b>R</b></font> objects have a <code>class</code> attribute, a character vector
+giving the names of the classes from which the object <EM>inherits</EM>.
+If the object does not have a class attribute, it has an implicit
+class, <code>"matrix"</code>, <code>"array"</code> or the result of
+<code><a href="mode.html">mode</a>(x)</code> (except that integer vectors have implicit class
+<code>"integer"</code>).  (Functions <code>oldClass</code> and
+<code>oldClass&lt;-</code> get and set the attribute, which can also be done
+directly.)
+</p>
+<p>
+When a generic function <code>fun</code> is applied to an object with class
+attribute <code>c("first", "second")</code>, the system searches for a
+function called <code>fun.first</code> and, if it finds it, applies it to
+the object.  If no such function is found, a function called
+<code>fun.second</code> is tried.  If no class name produces a suitable
+function, the function <code>fun.default</code> is used (if it exists).  If
+there is no class attribute, the implicit class is tried, then the
+default method.
+</p>
+<p>
+The function <code>class</code> prints the vector of names of classes an
+object inherits from.  Correspondingly, <code>class&lt;-</code> sets the
+classes an object inherits from.  Assigning a zero-length vector or
+<code>NULL</code> removes the class attribute.
+</p>
+<p>
+<code>unclass</code> returns (a copy of) its argument with its class
+attribute removed.  (It is not allowed for objects which cannot be
+copied, namely environments and external pointers.)
+</p>
+<p>
+<code>inherits</code> indicates whether its first argument inherits from any
+of the classes specified in the <code>what</code> argument.  If <code>which</code>
+is <code>TRUE</code> then an integer vector of the same length as
+<code>what</code> is returned. Each element indicates the position in the
+<code>class(x)</code> matched by the element of <code>what</code>; zero indicates
+no match. If <code>which</code> is <code>FALSE</code> then <code>TRUE</code> is 
+returned by <code>inherits</code> if any of the names in <code>what</code> match
+with any <code>class</code>.
+</p>
+<p>
+These functions with the exception of <code>inherits</code> are
+<a href="Primitive.html">primitive</a>, so argument names are ignored.
+</p>
+
+
+<h3>Formal classes</h3>
+
+<p>
+An additional mechanism of <EM>formal</EM> classes is available in
+packages <span class="pkg">methods</span> which is attached by default.  For objects
+which have a formal class, its name is returned by <code>class</code>
+as a character vector of length one.
+</p>
+<p>
+The replacement version of the function sets the class to the value
+provided.  For classes that have a formal definition, directly
+replacing the class this way is strongly deprecated.  The expression
+<code><a href="../../methods/html/as.html">as</a>(object, value)</code> is the way to coerce an object to a
+particular class.
+</p>
+<p>
+The analogue of <code>inherits</code> for formal classes is <code><a href="../../methods/html/is.html">is</a></code>.
+</p>
+
+
+<h3>Note</h3>
+
+<p>
+Functions <code>oldClass</code> and <code>oldClass&lt;-</code> behave in the same way
+as functions of those names in S-PLUS 5/6, <EM>but</EM> in <font face="Courier New,Courier" color="#666666"><b>R</b></font>
+<code><a href="UseMethod.html">UseMethod</a></code> dispatches on the class as returned by
+<code>class</code> (with some interpolated classes: see the link) rather
+than <code>oldClass</code>.  <EM>However</EM>, <a href="groupGeneric.html">group generic</a>s dispatch
+on the <code>oldClass</code> for efficiency, and <a href="zMethods.html">internal generic</a>s
+only dispatch on objects for which <code><a href="is.object.html">is.object</a></code> is true.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="UseMethod.html">UseMethod</a></code>, <code><a href="UseMethod.html">NextMethod</a></code>,
+&lsquo;<a href="groupGeneric.html">group generic</a>&rsquo;, &lsquo;<a href="zMethods.html">internal generic</a>&rsquo;
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+x &lt;- 10
+class(x) # "numeric"
+oldClass(x) # NULL
+inherits(x, "a") #FALSE
+class(x) &lt;- c("a", "b")
+inherits(x,"a") #TRUE
+inherits(x, "a", TRUE) # 1
+inherits(x, c("a", "b", "c"), TRUE) # 1 2 0
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

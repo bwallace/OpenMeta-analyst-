@@ -1,0 +1,219 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Dissimilarity Matrix Calculation</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for daisy {cluster}"><tr><td>daisy {cluster}</td><td align="right">R Documentation</td></tr></table>
+<h2>Dissimilarity Matrix Calculation</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Compute all the pairwise dissimilarities (distances) between observations
+in the data set.  The original variables may be of mixed types.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+daisy(x, metric = c("euclidean", "manhattan", "gower"),
+      stand = FALSE, type = list())
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+numeric matrix or data frame.  Dissimilarities will be computed
+between the rows of <code>x</code>.  Columns of mode <code>numeric</code>
+(i.e. all columns when <code>x</code> is a matrix) will be recognized as
+interval scaled variables, columns of class <code>factor</code> will be
+recognized as nominal variables, and columns of class <code>ordered</code>
+will be recognized as ordinal variables.  Other variable types
+should be specified with the <code>type</code> argument.  Missing values
+(<code><a href="../../base/html/NA.html">NA</a></code>s) are allowed.
+</td></tr>
+<tr valign="top"><td><code>metric</code></td>
+<td>
+character string specifying the metric to be used.
+The currently available options are <code>"euclidean"</code> (the default),
+<code>"manhattan"</code> and <code>"gower"</code>.<br>
+Euclidean distances are root sum-of-squares of differences, and
+manhattan distances are the sum of absolute differences.
+<br>
+&ldquo;Gower's distance&rdquo; is chosen by metric <code>"gower"</code>
+or automatically if some columns of <code>x</code> are not numeric. Also
+known as Gower's coefficient (1971),
+expressed as a dissimilarity, this implies that a particular
+standardisation will be applied to each variable, and the
+&ldquo;distance&rdquo; between two units is the sum of all the
+variable-specific distances, see the details section.
+</td></tr>
+<tr valign="top"><td><code>stand</code></td>
+<td>
+logical flag: if TRUE, then the measurements in <code>x</code>
+are standardized before calculating the
+dissimilarities.  Measurements are standardized for each variable
+(column), by subtracting the variable's mean value and dividing by
+the variable's mean absolute deviation.
+<br>
+If not all columns of <code>x</code> are numeric, <code>stand</code> will
+be ignored and Gower's standardization (based on the
+<code><a href="../../base/html/range.html">range</a></code>) will be applied in any case, see argument
+<code>metric</code>, above, and the details section.
+</td></tr>
+<tr valign="top"><td><code>type</code></td>
+<td>
+list for specifying some (or all) of the types of the
+variables (columns) in <code>x</code>.  The list may contain the following
+components: <code>"ordratio"</code> (ratio scaled variables to be treated as
+ordinal variables), <code>"logratio"</code> (ratio scaled variables that
+must be logarithmically transformed), <code>"asymm"</code> (asymmetric
+binary) and <code>"symm"</code> (symmetric binary variables).  Each
+component's value is a vector, containing the names or the numbers
+of the corresponding columns of <code>x</code>.
+Variables not mentioned in the <code>type</code> list are interpreted as
+usual (see argument <code>x</code>).
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>daisy</code> is fully described in chapter 1 of Kaufman and Rousseeuw (1990).
+Compared to <code><a href="../../stats/html/dist.html">dist</a></code> whose input must be numeric
+variables, the main feature of <code>daisy</code> is its ability to handle
+other variable types as well (e.g. nominal, ordinal, (a)symmetric
+binary) even when different types occur in the same data set.
+</p>
+<p>
+The handling of nominal, ordinal, and (a)symmetric binary data is
+achieved by using the general dissimilarity coefficient of Gower
+(1971).  If <code>x</code> contains any columns of these
+data-types, both arguments <code>metric</code> and <code>stand</code> will be
+ignored and Gower's coefficient will be used as the metric.  This can
+also be activated for purely numeric data by <code>metric = "gower"</code>.
+With that, each variable (column) is first standardized by dividing
+each entry by the range of the corresponding variable.
+</p>
+<p>
+Note that setting the type to <code>symm</code> (symmetric binary) gives the
+same dissimilarities as using <EM>nominal</EM> (which is chosen for
+non-ordered factors) only when no missing values are present, and more
+efficiently.
+</p>
+<p>
+Note that <code>daisy</code> now gives a warning when 2-valued numerical
+variables don't have an explicit <code>type</code> specified, because the
+reference authors recommend to consider using <code>"asymm"</code>.
+</p>
+<p>
+In the <code>daisy</code> algorithm, missing values in a row of x are not
+included in the dissimilarities involving that row.  There are two
+main cases,
+<ol>
+<li>If all variables are interval scaled,
+the metric is "euclidean", and ng is the number of columns in which
+neither row i and j have NAs, then the dissimilarity d(i,j) returned is
+sqrt(ncol(x)/ng) times the Euclidean distance between the two vectors
+of length ng shortened to exclude NAs.  The rule is similar for the
+"manhattan" metric, except that the coefficient is ncol(x)/ng.
+If ng is zero, the dissimilarity is NA.
+<li>When some variables have a type other than interval scaled, the
+dissimilarity between two rows is the weighted sum of the contributions of
+each variable.<br>
+The weight becomes zero when that variable is missing in either or both
+rows, or when the variable is asymmetric binary and both values are
+zero.  In all other situations, the weight of the variable is 1.
+</p>
+<p>
+The contribution of a nominal or binary variable to the total
+dissimilarity is 0 if both values are equal, 1 otherwise.  The
+contribution of other variables is the absolute difference of both
+values, divided by the total range of that variable.  Ordinal
+variables are first converted to ranks.
+</p>
+<p>
+If <code>nok</code> is the number of nonzero weights, the dissimilarity is
+multiplied by the factor <code>1/nok</code> and thus ranges between 0 and 1.
+If <code>nok = 0</code>, the dissimilarity is set to <code><a href="../../base/html/NA.html">NA</a></code>.
+</ol>
+
+<h3>Value</h3>
+
+<p>
+an object of class <code>"dissimilarity"</code> containing the
+dissimilarities among the rows of <code>x</code>.  This is typically the
+input for the functions <code>pam</code>, <code>fanny</code>, <code>agnes</code> or
+<code>diana</code>.  For more details, see <code><a href="dissimilarity.object.html">dissimilarity.object</a></code>.</p>
+
+<h3>Background</h3>
+
+<p>
+Dissimilarities are used as inputs to cluster analysis and
+multidimensional scaling.  The choice of metric may have a
+large impact.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Gower, J. C. (1971)
+A general coefficient of similarity and some of its properties,
+<EM>Biometrics</EM> <B>27</B>, 623&ndash;637.
+</p>
+<p>
+Kaufman, L. and Rousseeuw, P.J. (1990)
+<EM>Finding Groups in Data: An Introduction to Cluster Analysis</EM>.
+Wiley, New York.
+</p>
+<p>
+Struyf, A., Hubert, M. and Rousseeuw, P.J. (1997)
+Integrating Robust Clustering Techniques in S-PLUS,
+<EM>Computational Statistics and Data Analysis</EM> <B>26</B>, 17&ndash;37.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="dissimilarity.object.html">dissimilarity.object</a></code>, <code><a href="../../stats/html/dist.html">dist</a></code>,
+<code><a href="pam.html">pam</a></code>, <code><a href="fanny.html">fanny</a></code>, <code><a href="clara.html">clara</a></code>,
+<code><a href="agnes.html">agnes</a></code>, <code><a href="diana.html">diana</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(agriculture)
+## Example 1 in ref:
+##  Dissimilarities using Euclidean metric and without standardization
+d.agr &lt;- daisy(agriculture, metric = "euclidean", stand = FALSE)
+d.agr
+as.matrix(d.agr)[,"DK"] # via as.matrix.dist(.)
+## compare with
+as.matrix(daisy(agriculture, metric = "gower"))
+
+data(flower)
+## Example 2 in ref
+summary(dfl1 &lt;- daisy(flower, type = list(asymm = 3)))
+summary(dfl2 &lt;- daisy(flower, type = list(asymm = c(1, 3), ordratio = 7)))
+## this failed earlier:
+summary(dfl3 &lt;- daisy(flower,
+        type = list(asymm = c("V1", "V3"), symm= 2,
+                    ordratio= 7, logratio= 8)))
+
+</pre>
+
+
+
+<hr><div align="center">[Package <em>cluster</em> version 1.12.0 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

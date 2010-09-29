@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Select columns names matching certain critera</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for matchcols {gdata}"><tr><td>matchcols {gdata}</td><td align="right">R Documentation</td></tr></table>
+<h2>Select columns names matching certain critera</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This function allows easy selection of the column names of an object
+using a set of inclusion and exclusion critera.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+matchcols(object, with, without, method=c("and","or"), ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>object</code></td>
+<td>
+Matrix or dataframe</td></tr>
+<tr valign="top"><td><code>with, without</code></td>
+<td>
+Vector of regular expression patterns</td></tr>
+<tr valign="top"><td><code>method</code></td>
+<td>
+One of "and" or "or"</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+Optional arguments to <code>grep</code></td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+Vector of column names which match all (<code>method="and"</code>) or any
+(<code>method="or"</code>) of the patterns specified in <code>with</code>, but
+none of the patterns specified in <code>without</code>.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Gregory R. Warnes <a href="mailto:greg@random-technologies-llc.com">greg@random-technologies-llc.com</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../base/html/grep.html">grep</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+
+# create a matrix with a lot of named columns
+x &lt;- matrix( ncol=30, nrow=5 )
+colnames(x) &lt;- c("AffyID","Overall Group Means: Control",
+                     "Overall Group Means: Moderate",
+                     "Overall Group Means: Marked",
+                     "Overall Group Means: Severe",
+                     "Overall Group StdDev: Control",
+                     "Overall Group StdDev: Moderate",
+                     "Overall Group StdDev: Marked",
+                     "Overall Group StdDev: Severe",
+                     "Overall Group CV: Control",
+                     "Overall Group CV: Moderate",
+                     "Overall Group CV: Marked",
+                     "Overall Group CV: Severe",
+                     "Overall Model P-value",
+                     "Overall Model: (Intercept): Estimate",
+                     "Overall Model: Moderate: Estimate",
+                     "Overall Model: Marked: Estimate",
+                     "Overall Model: Severe: Estimate",
+                     "Overall Model: (Intercept): Std. Error",
+                     "Overall Model: Moderate: Std. Error",
+                     "Overall Model: Marked: Std. Error",
+                     "Overall Model: Severe: Std. Error",
+                     "Overall Model: (Intercept): t value",
+                     "Overall Model: Moderate: t value",
+                     "Overall Model: Marked: t value",
+                     "Overall Model: Severe: t value",
+                     "Overall Model: (Intercept): Pr(&gt;|t|)",
+                     "Overall Model: Moderate: Pr(&gt;|t|)",
+                     "Overall Model: Marked: Pr(&gt;|t|)",
+                     "Overall Model: Severe: Pr(&gt;|t|)")
+
+# Get the columns which give estimates or p-values
+# only for marked and severe groups
+matchcols(x, with=c("Pr", "Std. Error"),
+             without=c("Intercept","Moderate"),
+             method="or"
+          )
+
+# Get just the column which give the p-value for the intercept
+matchcols(x, with=c("Intercept", "Pr") )
+                     
+</pre>
+
+
+
+<hr><div align="center">[Package <em>gdata</em> version 2.6.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

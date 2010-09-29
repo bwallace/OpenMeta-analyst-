@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Defunct Functions in the Methods Package</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for methods-defunct {methods}"><tr><td>methods-defunct {methods}</td><td align="right">R Documentation</td></tr></table>
+<h2>Defunct Functions in the Methods Package</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Defunct functions in package <span class="pkg">methods</span>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+getAccess(ClassDef)
+getClassName(ClassDef)
+getClassPackage(ClassDef)
+getExtends(ClassDef)
+getProperties(ClassDef)
+getPrototype(ClassDef)
+getSubclasses(ClassDef)
+getVirtual(ClassDef)
+
+getAllMethods(f, fdef, where)
+mlistMetaName (name, package)
+removeMethodsObject(f, where)
+
+seemsS4Object(object)
+
+allGenerics()
+</pre>
+
+
+<h3>Details</h3>
+
+<p>
+The first block of functions should be replaced by direct access to
+the slots, or by use of higher-level alternatives.
+</p>
+<p>
+The functions and corresponding slots are:
+<table summary="Rd table">
+<tr>
+  <td align="left"><code>getAccess</code> </td>  <td align="left"> <code>"access"</code> </td>
+</tr>
+<tr>
+  <td align="left"> <code>getClassName</code> </td>  <td align="left"> <code>"className"</code> </td>
+</tr>
+<tr>
+  <td align="left"> <code>getClassPackage</code> </td>  <td align="left"> <code>"package"</code> </td>
+</tr>
+<tr>
+  <td align="left"> <code>getExtends</code> </td>  <td align="left"> <code>"contains"</code> </td>
+</tr>
+<tr>
+  <td align="left"> <code>getProperties</code> </td>  <td align="left"> <code>"slots"</code> </td>
+</tr>
+<tr>
+  <td align="left"> <code>getPrototype</code> </td>  <td align="left"> <code>"prototype"</code> </td>
+</tr>
+<tr>
+  <td align="left"> <code>getSubclasses</code> </td>  <td align="left"> <code>"subclasses"</code> </td>
+</tr>
+<tr>
+  <td align="left"> <code>getVirtual</code> </td>  <td align="left"> <code>"virtual"</code> </td>
+</tr>
+</table>
+
+<p>
+<code>getAllMethods</code> replicated the behavior of
+<code><a href="findMethods.html">getMethods</a></code>, which should be called instead to obtain
+approximately the old behavior of <code>getAllMethods</code>.  However, a
+better substitution is to use <code><a href="findMethods.html">findMethods</a></code>, which
+returns a simpler structure.
+</p>
+<p>
+<code>mlistMetaName</code> was a utility to  return the mangled
+name for the object that stored the <code>MethodsList</code>
+representation of the methods for a particular generic function,
+typically in the environment of a package.  These objects are no
+longer used.
+</p>
+<p>
+<code>removeMethodsObject</code> removed the metadata object containing
+methods for <code>f</code>.
+</p>
+<p>
+<code>seemsS4Object</code> was similar to <code><a href="../../base/html/isS4.html">isS4</a></code> and superseded
+by the introduction of the S4 bit in <font face="Courier New,Courier" color="#666666"><b>R</b></font> 2.4.0.
+</p>
+<p>
+<code>allGenerics</code> is superseded by <code><a href="GenericFunctions.html">getGenerics</a></code>.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../base/html/Defunct.html">Defunct</a></code>
+</p>
+
+
+
+<hr><div align="center">[Package <em>methods</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

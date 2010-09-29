@@ -1,0 +1,193 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Finding communities in graphs based on statistical meachanics</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for spinglass.community {igraph}"><tr><td>spinglass.community {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Finding communities in graphs based on statistical meachanics</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This function tries to find communities in graphs via
+a spin-glass model and simulated annealing.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+spinglass.community(graph, weights=NULL, spins=25, parupdate=FALSE,
+                    start.temp=1, stop.temp=0.1, cool.fact=0.99,
+                    update.rule=c("config", "random", "simple"), gamma=1)
+spinglass.community(graph, weights=NULL, vertex, spins=25,
+                    update.rule=c("config", "random", "simple"), gamma=1)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>graph</code></td>
+<td>
+The input graph, can be directed but the direction of the
+edges is neglected.</td></tr>
+<tr valign="top"><td><code>weights</code></td>
+<td>
+The weights of the edges. Either a numeric vector or
+<code>NULL</code>. If it is null and the input graph has a &lsquo;weight&rsquo;
+edge attribute then that will be used. If <code>NULL</code> and no such
+attribute is present then the edges will have equal weights.</td></tr>
+<tr valign="top"><td><code>spins</code></td>
+<td>
+Integer constant, the number of spins to use. This is the
+upper limit for the number of communities. It is not a problem to
+supply a (reasonably) big number here, in which case some
+spin states will be unpopulated. </td></tr>
+<tr valign="top"><td><code>parupdate</code></td>
+<td>
+Logical constant, whether to update the spins of the
+vertices in parallel (synchronously) or not. This argument is
+ignored if the second form of the function is used (ie. the
+&lsquo;<code>vertex</code>&rsquo; argument is present). </td></tr>
+<tr valign="top"><td><code>start.temp</code></td>
+<td>
+Real constant, the start temperature.
+This argument is ignored if the second form of the
+function is used (ie. the &lsquo;<code>vertex</code>&rsquo; argument is
+present). </td></tr>
+<tr valign="top"><td><code>stop.temp</code></td>
+<td>
+Real constant, the stop temperature. The simulation
+terminates if the temperature lowers below this level.
+This argument is ignored if the second form of the
+function is used (ie. the &lsquo;<code>vertex</code>&rsquo; argument is
+present). </td></tr>
+<tr valign="top"><td><code>cool.fact</code></td>
+<td>
+Cooling factor for the simulated annealing.
+This argument is ignored if the second form of the
+function is used (ie. the &lsquo;<code>vertex</code>&rsquo; argument is
+present). </td></tr>
+<tr valign="top"><td><code>update.rule</code></td>
+<td>
+Character constant giving the &lsquo;null-model&rsquo;
+of the simulation. Possible values: &ldquo;simple&rdquo; and
+&ldquo;config&rdquo;. &ldquo;simple&rdquo; uses a random graph with the same
+number of edges as the baseline probability and &ldquo;config&rdquo; uses
+a random graph with the same vertex degrees as the input graph.</td></tr>
+<tr valign="top"><td><code>gamma</code></td>
+<td>
+Real constant, the gamma argument of the algorithm. This
+specifies the balance between the importance of present and
+non-present edges in a community. Roughly, a comunity is a set of
+vertices having many edges inside the community and few edges
+outside the community. The default 1.0 value makes existing and
+non-existing links equally important. Smaller values make the
+existing links, greater values the missing links more important.</td></tr>
+<tr valign="top"><td><code>vertex</code></td>
+<td>
+This parameter can be used to calculate the community of
+a given vertex without calculating all communities. Note that if
+this argument is present then some other arguments are ignored.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This function tries to find communities in a graph. A community is a
+set of nodes with many edges inside the community and  few edges
+between outside it (ie. between the community itself and the rest of
+the graph.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+If the <code>vertex</code> argument is not given, ie. the first form is used
+then a named list is returned with the following slots:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>membership</code></td>
+<td>
+Integer vector giving the communities found. The
+communities have ids starting from zero and for each graph vertex
+ids community id is given in this vector.</td></tr>
+<tr valign="top"><td><code>csize</code></td>
+<td>
+The sizes of the communities in the order of their ids.</td></tr>
+<tr valign="top"><td><code>modularity</code></td>
+<td>
+The modularity score of the result, as defined by
+Newman and Girvan, see references.</td></tr>
+<tr valign="top"><td><code>temperature</code></td>
+<td>
+The temperature of the system when the algorithm
+terminated.</td></tr>
+<tr valign="top"><td><code>community</code></td>
+<td>
+Numeric vector giving the ids of the vertices in
+the same community as <code>vertex</code>.</td></tr>
+<tr valign="top"><td><code>cohesion</code></td>
+<td>
+The cohesion score of the result, see references.</td></tr>
+<tr valign="top"><td><code>adhesion</code></td>
+<td>
+The adhesion score of the result, see references.</td></tr>
+<tr valign="top"><td><code>inner.links</code></td>
+<td>
+The number of edges within the community of
+<code>vertex</code>.</td></tr>
+<tr valign="top"><td><code>outer.links</code></td>
+<td>
+The number of edges between the community of
+<code>vertex</code> and the rest of the graph. </td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Jorg Reichardt <a href="mailto:lastname@physik.uni-wuerzburg.de">lastname@physik.uni-wuerzburg.de</a> for the
+original code and Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a> for the
+igraph glue code
+</p>
+
+
+<h3>References</h3>
+
+<p>
+J. Reichardt and S. Bornholdt: Statistical Mechanics of Community
+Detection, <EM>Phys. Rev. E</EM>, 74, 016110 (2006),
+<a href="http://arxiv.org/abs/cond-mat/0603718">http://arxiv.org/abs/cond-mat/0603718</a>
+</p>
+<p>
+M. E. J. Newman and M. Girvan: Finding and evaluating community
+structure in networks, <EM>Phys. Rev. E</EM> 69, 026113 (2004)
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="clusters.html">clusters</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+  g &lt;- erdos.renyi.game(10, 5/10) %du% erdos.renyi.game(9, 5/9)
+  g &lt;- add.edges(g, c(0, 11))
+  g &lt;- subgraph(g, subcomponent(g, 0))
+  spinglass.community(g, spins=2)
+  spinglass.community(g, vertex=0)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

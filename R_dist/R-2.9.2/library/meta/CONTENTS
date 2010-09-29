@@ -1,0 +1,143 @@
+Entry: Fleiss93
+Aliases: Fleiss93
+Keywords: datasets
+Description: Aspirin after Myocardial Infarction
+URL: ../../../library/meta/html/Fleiss93.html
+
+Entry: Fleiss93cont
+Aliases: Fleiss93cont
+Keywords: datasets
+Description: Mental Health Treatment
+URL: ../../../library/meta/html/Fleiss93cont.html
+
+Entry: Olkin95
+Aliases: Olkin95
+Keywords: datasets
+Description: Thrombolytic Therapy after Acute Myocardial Infarction
+URL: ../../../library/meta/html/Olkin95.html
+
+Entry: addvar
+Aliases: addvar as.data.frame.meta
+Keywords: print
+Description: Additional functions for objects of class meta
+URL: ../../../library/meta/html/addvar.html
+
+Entry: ci
+Aliases: ci
+Keywords: htest
+Description: Calculation of confidence intervals (normal approximation)
+URL: ../../../library/meta/html/ci.html
+
+Entry: forest
+Aliases: forest
+Keywords: hplot
+Description: Forest plot (new plot function for objects of class meta)
+URL: ../../../library/meta/html/forest.html
+
+Entry: funnel
+Aliases: funnel
+Keywords: hplot
+Description: Generic function to produce a funnel plot.
+URL: ../../../library/meta/html/funnel.html
+
+Entry: funnel.meta
+Aliases: funnel.meta funnel.default radial
+Keywords: hplot
+Description: Plot to assess funnel plot asymmetry
+URL: ../../../library/meta/html/funnel.meta.html
+
+Entry: labbe
+Aliases: labbe
+Keywords: hplot
+Description: L\'Abbe plot
+URL: ../../../library/meta/html/labbe.html
+
+Entry: labbe.metabin
+Aliases: labbe.metabin labbe.default
+Keywords: hplot
+Description: L\'Abbe plot
+URL: ../../../library/meta/html/labbe.metabin.html
+
+Entry: metabias
+Aliases: metabias
+Keywords: htest
+Description: Test for funnel plot asymmetry
+URL: ../../../library/meta/html/metabias.html
+
+Entry: metabin
+Aliases: metabin
+Keywords: htest
+Description: Meta-analysis of binary outcome data
+URL: ../../../library/meta/html/metabin.html
+
+Entry: metacont
+Aliases: metacont
+Keywords: htest
+Description: Meta-analysis of continuous outcome data
+URL: ../../../library/meta/html/metacont.html
+
+Entry: metacr
+Aliases: metacr
+Keywords: htest
+Description: Meta-analysis of outcome data from Cochrane review
+URL: ../../../library/meta/html/metacr.html
+
+Entry: metacum
+Aliases: metacum
+Keywords: htest
+Description: Cumulative meta-analysis
+URL: ../../../library/meta/html/metacum.html
+
+Entry: metagen
+Aliases: metagen
+Keywords: htest
+Description: Generic inverse variance meta-analysis
+URL: ../../../library/meta/html/metagen.html
+
+Entry: metainf
+Aliases: metainf
+Keywords: htest
+Description: Influence analysis in meta-analysis
+URL: ../../../library/meta/html/metainf.html
+
+Entry: metaprop
+Aliases: metaprop
+Keywords: htest
+Description: Meta-analysis of single proportions
+URL: ../../../library/meta/html/metaprop.html
+
+Entry: plot.meta
+Aliases: plot.meta
+Keywords: hplot
+Description: Plot function for objects of class meta
+URL: ../../../library/meta/html/plot.meta.html
+
+Entry: print.meta
+Aliases: print.meta print.metabias summary.meta print.summary.meta
+Keywords: print
+Description: Print and summary method for objects of class meta
+URL: ../../../library/meta/html/print.meta.html
+
+Entry: read.mtv
+Aliases: read.mtv
+Keywords: datagen
+Description: Import RevMan 4 data files (.mtv)
+URL: ../../../library/meta/html/read.mtv.html
+
+Entry: read.rm5
+Aliases: read.rm5 Fleiss93_CR Fleiss93_CR_Windows
+Keywords: datagen
+Description: Import RevMan 5 data files (.csv)
+URL: ../../../library/meta/html/read.rm5.html
+
+Entry: trimfill
+Aliases: trimfill
+Keywords: htest
+Description: Generic function for trim-and-fill method
+URL: ../../../library/meta/html/trimfill.html
+
+Entry: trimfill.meta
+Aliases: trimfill.meta trimfill.default
+Keywords: htest
+Description: Trim and fill method for meta-analysis
+URL: ../../../library/meta/html/trimfill.meta.html

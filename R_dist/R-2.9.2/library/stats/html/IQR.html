@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: The Interquartile Range</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for IQR {stats}"><tr><td>IQR {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>The Interquartile Range</h2>
+
+
+<h3>Description</h3>
+
+<p>
+computes interquartile range of the <code>x</code> values.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+IQR(x, na.rm = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+a numeric vector.</td></tr>
+<tr valign="top"><td><code>na.rm</code></td>
+<td>
+logical. Should missing values be removed?</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Note that this function computes the quartiles using the
+<code><a href="quantile.html">quantile</a></code> function rather than following
+Tukey's recommendations,
+i.e., <code>IQR(x) = quantile(x,3/4) - quantile(x,1/4)</code>.
+</p>
+<p>
+For normally <i>N(m,1)</i> distributed <i>X</i>, the expected value of
+<code>IQR(X)</code> is <code>2*qnorm(3/4) = 1.3490</code>, i.e., for a normal-consistent
+estimate of the standard deviation, use <code>IQR(x) / 1.349</code>.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Tukey, J. W. (1977).
+<EM>Exploratory Data Analysis.</EM>
+Reading: Addison-Wesley.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="fivenum.html">fivenum</a></code>, <code><a href="mad.html">mad</a></code> which is more robust,
+<code><a href="../../base/html/range.html">range</a></code>, <code><a href="quantile.html">quantile</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+IQR(rivers)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

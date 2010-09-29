@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Return the R Home Directory</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for Rhome {base}"><tr><td>Rhome {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Return the R Home Directory</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Return the <font face="Courier New,Courier" color="#666666"><b>R</b></font> home directory.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+R.home(component="home")
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>component</code></td>
+<td>
+As well as <code>"home"</code> which gives the <font face="Courier New,Courier" color="#666666"><b>R</b></font> home
+directory, other known values are <code>"bin"</code>, <code>"doc"</code>,
+<code>"etc"</code> and <code>"share"</code> giving the paths to the
+corresponding parts of an <font face="Courier New,Courier" color="#666666"><b>R</b></font> installation.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The <font face="Courier New,Courier" color="#666666"><b>R</b></font> home directory is the top-level directory of the <font face="Courier New,Courier" color="#666666"><b>R</b></font>
+installation being run.
+</p>
+<p>
+The <font face="Courier New,Courier" color="#666666"><b>R</b></font> home directory is often referred to as <VAR>R_HOME</VAR>,
+and is the value of an environment variable of that name in an <font face="Courier New,Courier" color="#666666"><b>R</b></font>
+session.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A character string giving the <font face="Courier New,Courier" color="#666666"><b>R</b></font> home directory or path to a
+particular component.  Normally the components are all subdirectories
+of the <font face="Courier New,Courier" color="#666666"><b>R</b></font> home directory, but this may not be the case in a Unix-like
+installation.</p>
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

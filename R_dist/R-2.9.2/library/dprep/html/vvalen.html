@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: The Van Valen test for equal covariance matrices</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for vvalen {dprep}"><tr><td>vvalen {dprep}</td><td align="right">R Documentation</td></tr></table>
+<h2>The Van Valen test for equal covariance matrices</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The Van Valen nonparametric test for homocedasticity (equal covariance matrices).
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+vvalen(data)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>data</code></td>
+<td>
+The name of the dataset to be tested </td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+Gives the p-value for a Kruskal Wallis test. A  p-value near to zero
+indicates homocedasticity.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Edgar Acuna
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Van Valen, L. (1962). A study of fluctuating asymmetry. Evolution Vol. 16, pp. 125142.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="mardia.html">mardia</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+#---------Testing homocedasticity-----
+data(colon)
+vvalen(colon)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>dprep</em> version 2.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

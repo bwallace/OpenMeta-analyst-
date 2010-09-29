@@ -1,0 +1,143 @@
+Entry: Rigaweb
+Aliases: Rigaweb
+Keywords: datasets
+Description: Gulf of Riga autumn planktonic food web
+URL: ../../../library/diagram/html/Rigaweb.html
+
+Entry: Takapotoweb
+Aliases: Takapotoweb
+Keywords: datasets
+Description: Takapoto atoll planktonic food web
+URL: ../../../library/diagram/html/Takapotoweb.html
+
+Entry: Teasel
+Aliases: Teasel
+Keywords: datasets
+Description: Population dynamics model transition matrix of teasel
+URL: ../../../library/diagram/html/Teasel.html
+
+Entry: bentarrow
+Aliases: bentarrow
+Keywords: aplot
+Description: adds 2-segmented arrow between two points
+URL: ../../../library/diagram/html/bentarrow.html
+
+Entry: coordinates
+Aliases: coordinates
+Keywords: manip
+Description: coordinates of elements on a plot
+URL: ../../../library/diagram/html/coordinates.html
+
+Entry: curvedarrow
+Aliases: curvedarrow
+Keywords: aplot
+Description: adds curved arrow between two points
+URL: ../../../library/diagram/html/curvedarrow.html
+
+Entry: diagram-package
+Aliases: diagram-package diagram
+Keywords: package
+Description: Functions for visualising simple graphs (networks), plotting flow diagrams
+URL: ../../../library/diagram/html/diagram.html
+
+Entry: openplotmat
+Aliases: openplotmat
+Keywords: hplot
+Description: Creates an empty plot used for diagram plotting.
+URL: ../../../library/diagram/html/openplotmat.html
+
+Entry: plotmat
+Aliases: plotmat
+Keywords: aplot
+Description: plots a graph (network), based on a transition matrix
+URL: ../../../library/diagram/html/plotmat.html
+
+Entry: plotweb
+Aliases: plotweb
+Keywords: aplot
+Description: plots a web
+URL: ../../../library/diagram/html/plotweb.html
+
+Entry: segmentarrow
+Aliases: segmentarrow
+Keywords: aplot
+Description: adds 3-segmented arrow between two points.
+URL: ../../../library/diagram/html/segmentarrow.html
+
+Entry: selfarrow
+Aliases: selfarrow
+Keywords: aplot
+Description: adds a circular, self-pointing arrow to a plot
+URL: ../../../library/diagram/html/selfarrow.html
+
+Entry: shadowbox
+Aliases: shadowbox
+Keywords: aplot
+Description: adds a box with a shadow to a plot
+URL: ../../../library/diagram/html/shadowbox.html
+
+Entry: splitarrow
+Aliases: splitarrow
+Keywords: aplot
+Description: adds a branched arrow between several points
+URL: ../../../library/diagram/html/splitarrow.html
+
+Entry: straightarrow
+Aliases: straightarrow
+Keywords: aplot
+Description: adds straight arrow between two points
+URL: ../../../library/diagram/html/straightarrow.html
+
+Entry: textdiamond
+Aliases: textdiamond
+Keywords: aplot
+Description: adds lines of text in a diamand-shaped box to a plot
+URL: ../../../library/diagram/html/textdiamond.html
+
+Entry: textellipse
+Aliases: textellipse
+Keywords: aplot
+Description: adds lines of text in an ellipsoid box to a plot
+URL: ../../../library/diagram/html/textellipse.html
+
+Entry: textempty
+Aliases: textempty
+Keywords: aplot
+Description: adds lines of text, on a colored background to a plot
+URL: ../../../library/diagram/html/textempty.html
+
+Entry: texthexa
+Aliases: texthexa
+Keywords: aplot
+Description: adds lines of text in an hexagonal box to a plot
+URL: ../../../library/diagram/html/texthexa.html
+
+Entry: textmulti
+Aliases: textmulti
+Keywords: aplot
+Description: adds lines of text in an multigonal box to a plot
+URL: ../../../library/diagram/html/textmulti.html
+
+Entry: textplain
+Aliases: textplain
+Keywords: aplot
+Description: adds lines of text to a plot
+URL: ../../../library/diagram/html/textplain.html
+
+Entry: textrect
+Aliases: textrect
+Keywords: aplot
+Description: adds lines of text in a rectangular-shaped box to a plot
+URL: ../../../library/diagram/html/textrect.html
+
+Entry: textround
+Aliases: textround
+Keywords: aplot
+Description: adds lines of text in an rounded box to a plot
+URL: ../../../library/diagram/html/textround.html
+
+Entry: treearrow
+Aliases: treearrow
+Keywords: aplot
+Description: adds a dendrogram-like branched arrow between several points
+URL: ../../../library/diagram/html/treearrow.html

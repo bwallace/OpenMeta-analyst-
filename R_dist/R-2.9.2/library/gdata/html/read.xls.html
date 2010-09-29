@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Read Excel files</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for read.xls {gdata}"><tr><td>read.xls {gdata}</td><td align="right">R Documentation</td></tr></table>
+<h2>Read Excel files</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Reads a Microsoft Excel file into a data frame
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+read.xls(xls, sheet=1, verbose=FALSE, pattern, ...,
+         method=c("csv","tab"), perl="perl")
+
+xls2csv(xls, sheet=1, verbose=FALSE, ..., perl="perl")
+xls2tab(xls, sheet=1, verbose=FALSE, ..., perl="perl")
+xls2sep(xls, sheet=1, verbose=FALSE, ..., method=c("csv","tab"),
+        perl="perl")
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>xls</code></td>
+<td>
+path to the Microsoft Excel file.  To access a file on the
+internet, start the path with "http://".</td></tr>
+<tr valign="top"><td><code>sheet</code></td>
+<td>
+number of the sheet within the Excel file from which data
+are to be read</td></tr>
+<tr valign="top"><td><code>verbose</code></td>
+<td>
+logical flag indicating whether details should be
+printed as the file is processed.</td></tr>
+<tr valign="top"><td><code>pattern</code></td>
+<td>
+if specified, them skip all lines before the first 
+containing this string</td></tr>
+<tr valign="top"><td><code>perl</code></td>
+<td>
+name of the perl executable to be called.</td></tr>
+<tr valign="top"><td><code>method</code></td>
+<td>
+intermediate file format, "csv" for comma-separated and
+"tab" for tab-separated</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+additional arguments to read.table. The defaults of
+read.csv are used.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This function works translating the named Microsoft Excel file into a
+temporary .csv or .tab file, using the xls2csv or xls2tab
+Perl script installed as part of this (gdata) package.
+</p>
+<p>
+Caution: In the conversion to csv, strings will be quoted. This can be
+problem if you are trying to use the <code>comment.char</code> option of
+<code>read.table</code> since the first character of all lines (including
+comment lines) will be """ after conversion.
+</p>
+<p>
+Caution: If you call <code>"xls2csv"</code> directly, is your responsibility 
+to close and delete the file after using it.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>"read.xls"</code> returns a data frame.
+<br>
+<code>"xls2sep"</code> returns a temporary file in the specified format.  
+<code>"xls2csv"</code> and <code>"xls2tab"</code> are simply wrappers for
+<code>"xls2sep"</code> specifying method as "csv" or "tab", respectively.</p>
+
+<h3>Note</h3>
+
+<p>
+Either a working version of Perl must be present in the executable
+search path, or the exact path of the perl executable must be provided
+via the <code>perl</code> argument.  See the examples below for an illustration.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Jim Rogers <a href="mailto:james.a.rogers@pfizer.com">james.a.rogers@pfizer.com</a>, modified
+and extended by Gregory R. Warnes <a href="mailto:greg@random-technologies-llc.com">greg@random-technologies-llc.com</a> 
+Gabor Grothendiek <a href="mailto:ggrothendieck@gmail.com">ggrothendieck@gmail.com</a>.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+http://www.analytics.washington.edu/statcomp/downloads/xls2csv
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../base/html/read.csv.html">read.csv</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+
+   # iris.xls is included in the gregmisc package for use as an example
+   xlsfile &lt;- file.path(.path.package('gdata'),'xls','iris.xls')
+   xlsfile
+
+   iris &lt;- read.xls(xlsfile) # defaults to csv format
+   iris &lt;- read.xls(xlsfile,method="csv") # specify csv format
+   iris &lt;- read.xls(xlsfile,method="tab") # specify tab format
+
+   head(iris)  # look at the top few rows
+
+   
+
+  ## Not run: 
+   # Example specifying exact Perl path for default MS-Windows install of
+   # ActiveState perl
+   iris &lt;- read.xls(xlsfile, perl="C:/perl/bin/perl.exe")
+
+   # Example specifying exact Perl path for Unix systems
+   iris &lt;- read.xls(xlsfile, perl="/usr/bin/perl")
+
+   # read xls file from net
+   nba.url &lt;- "http://lcb1.uoregon.edu/sergiok/DSC330HSP04/week5/NBA.xls"
+   nba &lt;- read.xls(nba.url)
+
+   # read xls file ignoring all lines prior to first containing State
+   crime.url &lt;- "http://www.jrsainfo.org/jabg/state_data2/Tribal_Data00.xls"
+   crime &lt;- read.xls(crime.url, pattern = "State")
+
+   # use of xls2csv - open con, print two lines, close con
+   con &lt;- xls2csv(nba.url)
+   print(readLines(con, 2)) 
+   file.remove(summary(con)$description)
+   
+   ## End(Not run)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>gdata</em> version 2.6.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

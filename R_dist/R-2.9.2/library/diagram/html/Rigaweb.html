@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Gulf of Riga autumn planktonic food web</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for Rigaweb {diagram}"><tr><td>Rigaweb {diagram}</td><td align="right">R Documentation</td></tr></table>
+<h2>Gulf of Riga autumn planktonic food web</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Carbon flux matrix of the Gulf of Riga planktonic food web in autumn
+as reconstructed by inverse modelling by Donali et al. (1999).
+</p>
+<p>
+The Gulf of Riga is a highly eutrophic system in the Baltic Sea.
+</p>
+<p>
+The foodweb comprises 7 functional compartments: 
+<ul>
+<li>picoautotrophs (P1)
+<li>non-picoautotrophs (P2)
+<li>bacteria (B)
+<li>heterotrophic nanoflagellates (N)
+<li>zooplankton (Z)
+<li>detritus, including virus (D)
+<li>dissolved organic carbon (DOC)
+</ul>
+<p>
+and two external compartments:
+<ul>
+<li>CO2
+<li>Sedimentation
+</ul>
+<p>
+These compartments are connected with 26 flows.
+</p>
+<p>
+Units of the flows are mg C/m3/day.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>Rigaweb</pre>
+
+
+<h3>Format</h3>
+
+<p>
+matrix with flow values, where element ij denotes flow from compartment i to j
+</p>
+<p>
+rownames and columnames are the components.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Karline Soetaert &lt;k.soetaert@nioo.knaw.nl&gt;.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Donali, E., Olli, K., Heiskanen, A.S., Andersen, T., 1999. Carbon flow
+patterns in the planktonic food web of the Gulf of Riga, the Baltic Sea: 
+a reconstruction by the inverse method.
+Journal of Marine Systems 23, pp. 251 268.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="Takapotoweb.html">Takapotoweb</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+  plotweb(Rigaweb,main="Gulf of Riga planktonic food web",
+                    sub="mgC/m3/day")
+</pre>
+
+
+
+<hr><div align="center">[Package <em>diagram</em> version 1.5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

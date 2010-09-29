@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Set or disable the use of Internet Explorer for Internet access.</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for setInternet2 {utils}"><tr><td>setInternet2 {utils}</td><td align="right">R Documentation</td></tr></table>
+<h2>Set or disable the use of Internet Explorer for Internet access.</h2>
+
+
+<h3>Description</h3>
+
+<p>
+With the <code>--internet2</code> startup option, or by calling this function, R
+will make use of the &lsquo;<span class="file">internet2.dll</span>&rsquo; library for Internet 
+access, which makes use of Internet Explorer functions.  This allows specification
+of proxies, etc., in the &ldquo;Internet Options&rdquo; applet in &ldquo;Control Panel&rdquo;.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+setInternet2(use = TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>use</code></td>
+<td>
+Whether to use &lsquo;<span class="file">internet2.dll</span>&rsquo;.  If <code>NA</code>, just
+return the current setting.
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+R does not load either &lsquo;<span class="file">internet.dll</span>&rsquo; or &lsquo;<span class="file">internet2.dll</span>&rsquo; until needed,
+so it is certainly safe to call this function before making any calls that access
+the Internet (e.g. <code><a href="download.file.html">download.file</a></code>).  If one of the DLLs has already
+been loaded, this function will switch to the other one without unloading the first
+one, so there is a potential resource leak.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+The previous setting is returned, invisibly if <code>use</code> is not <code>NA</code>.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Duncan Murdoch
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="download.file.html">download.file</a></code>, <code><a href="../../base/html/connections.html">url</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+setInternet2(NA)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>utils</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

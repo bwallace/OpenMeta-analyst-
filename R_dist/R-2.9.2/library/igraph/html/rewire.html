@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Graph rewiring</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for rewire {igraph}"><tr><td>rewire {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Graph rewiring</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Randomly rewires a graph while preserving the degree
+distribution.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+rewire(graph, mode = "simple", niter = 100) 
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>graph</code></td>
+<td>
+The graph to be rewired.</td></tr>
+<tr valign="top"><td><code>mode</code></td>
+<td>
+The rewiring algorithm to be used. It can be one of the
+following: <code>simple</code>: simple rewiring algorithm which
+chooses two arbitrary edges in each step (namely (a,b) and (c,d))
+and substitutes them with (a,d) and (c,b) if they don't yet exist.</td></tr>
+<tr valign="top"><td><code>niter</code></td>
+<td>
+Number of rewiring trials to perform.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This function generates a new graph based on the original one by
+randomly rewiring edges while preserving the original graph's degree
+distribution.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A new graph object.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Tamas Nepusz <a href="mailto:ntamas@rmki.kfki.hu">ntamas@rmki.kfki.hu</a> and
+Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="degree.sequence.game.html">degree.sequence.game</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+g &lt;- graph.ring(20)
+g2 &lt;- rewire(g, niter=3)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

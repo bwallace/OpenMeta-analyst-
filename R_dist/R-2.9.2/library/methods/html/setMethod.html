@@ -1,0 +1,276 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Create and Save a Method</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for setMethod {methods}"><tr><td>setMethod {methods}</td><td align="right">R Documentation</td></tr></table>
+<h2>Create and Save a Method</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Create and save a formal method for a given function and list of classes.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+setMethod(f, signature=character(), definition,
+          where = topenv(parent.frame()),
+          valueClass = NULL, sealed = FALSE)
+
+removeMethod(f, signature, where)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>f</code></td>
+<td>
+A generic function or the character-string name of the function. </td></tr>
+<tr valign="top"><td><code>signature</code></td>
+<td>
+A match of formal argument names for <code>f</code> with
+the character-string names of corresponding classes.  See the
+details below; however, if the signature is not trivial, you should use <code><a href="method.skeleton.html">method.skeleton</a></code> to generate a valid call to <code>setMethod</code>.</td></tr>
+<tr valign="top"><td><code>definition</code></td>
+<td>
+A function definition, which will become the method
+called when the arguments in a call to <code>f</code> match the
+classes in <code>signature</code>, directly or through inheritance. </td></tr>
+<tr valign="top"><td><code>where</code></td>
+<td>
+the environment in which to store the definition of the
+method.
+For <code>setMethod</code>, it is recommended to omit this argument and to include the call in source code that is evaluated at the top level; that is, either in an R session by something equivalent to a call to <code><a href="../../base/html/source.html">source</a></code>, or as part of the R source code for a package.
+<br>
+For <code>removeMethod</code>, the default is the location of the (first)
+instance of the method for this signature.</td></tr>
+<tr valign="top"><td><code>valueClass</code></td>
+<td>
+Obsolete and unused, but see the same argument for <code><a href="setGeneric.html">setGeneric</a></code>. </td></tr>
+<tr valign="top"><td><code>sealed</code></td>
+<td>
+If <code>TRUE</code>, the method so defined cannot be
+redefined by another call to <code>setMethod</code> (although it can
+be removed and then re-assigned).</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The call to <code>setMethod</code> stores the supplied method definition  in
+the metadata table for this generic function in the environment,
+typically the global environment or the name space of a package.
+In the case of a package, the table object becomes part of the name space or environment of the
+package.
+When the package is loaded into a later session, the
+methods will be merged into the table of methods in the corresponding
+generic function object.
+</p>
+<p>
+Generic functions are referenced by the combination of the function name and
+the package name;
+for example, the function <code>"show"</code> from the package
+<code>"methods"</code>.
+Metadata for methods is identified by the two strings; in particular, the
+generic function object itself has slots containing its name and its
+package name.
+The package name of a generic is set according to the package
+from which it originally comes; in particular, and frequently, the
+package where a non-generic version of the function originated.
+For example, generic functions for all the functions in package <code>base</code> will
+have <code>"base"</code> as the package name, although none of them is an
+S4 generic on that package.
+These include most of the base functions that are primitives, rather than
+true functions; see the section on primitive functions in the
+documentation for <code><a href="setGeneric.html">setGeneric</a></code> for details.
+</p>
+<p>
+Multiple packages can have methods for the same generic function; that
+is, for the same combination of generic function name and package
+name.
+Even though the methods are stored in separate tables in separate
+environments, loading the corresponding packages adds the methods to
+the table in the generic function itself, for the duration of the session.
+</p>
+<p>
+The class
+names in the signature can be any formal class, including basic
+classes such as <code>"numeric"</code>, <code>"character"</code>, and
+<code>"matrix"</code>.  Two additional special class names can appear:
+<code>"ANY"</code>, meaning that this argument can have any class at all;
+and <code>"missing"</code>, meaning that this argument <EM>must not</EM>
+appear in the call in order to match this signature.  Don't confuse
+these two:  if an argument isn't mentioned in a signature, it
+corresponds implicitly to class <code>"ANY"</code>, not to
+<code>"missing"</code>.  See the example below.  Old-style (&lsquo;S3&rsquo;)
+classes can also be used, if you need compatibility with these, but
+you should definitely declare these classes by calling
+<code><a href="setOldClass.html">setOldClass</a></code> if you want S3-style inheritance to work.
+</p>
+<p>
+Method definitions can
+have default expressions for arguments, but a current limitation is
+that the generic function must have <EM>some</EM> default expression for the
+same argument in order for the method's defaults to be used.
+If so, and if the corresponding argument is
+missing in the call to the generic function, the default expression
+in the method is used.  If the method definition has no default for
+the argument, then the expression supplied in the definition of the
+generic function itself is used, but note that this expression will
+be evaluated using the enclosing environment of the method, not of
+the generic function.
+Note also that specifying class <code>"missing"</code> in the signature
+does not require any default expressions, and method selection does
+not evaluate default expressions.
+All actual (non-missing) arguments in the signature of the
+generic function will be evaluated when a method is selected&mdash;when
+the call to <code>standardGeneric(f)</code> occurs.
+</p>
+<p>
+It is possible to have some differences between the
+formal arguments to a method supplied to <code>setMethod</code> and those
+of the generic. Roughly, if the generic has ... as one of its
+arguments, then the method may have extra formal arguments, which
+will be matched from the arguments matching ... in the call to
+<code>f</code>.  (What actually happens is that a local function is
+created inside the method, with the modified formal arguments, and the method
+is re-defined to call that local function.)
+</p>
+<p>
+Method dispatch tries to match the class of the actual arguments in a
+call to the available methods collected for <code>f</code>.  If there is a
+method defined for the exact same classes as in this call, that
+method is used.  Otherwise, all possible signatures are considered
+corresponding to the actual classes or to superclasses of the actual
+classes (including <code>"ANY"</code>).
+The method having the least distance from the actual classes is
+chosen; if more than one method has minimal distance, one is chosen
+(the lexicographically first in terms of superclasses) but a warning
+is issued.
+All inherited methods chosen are stored in another table, so that
+the inheritance calculations only need to be done once per session
+per sequence of actual classes.
+See
+<a href="Methods.html">Methods</a> for more details.
+</p>
+<p>
+The function <code>removeMethod</code> removes the specified method from the
+metadata table in the corresponding environment.
+It's not a function that is used much, since one normally wants to
+redefine a method rather than leave no definition.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+These functions exist for their side-effect, in setting or removing a
+method in the object defining methods for the specified generic.
+<br>
+The value returned by <code>removeMethod</code> is <code>TRUE</code> if a method
+was found to be removed.</p>
+
+<h3>References</h3>
+
+<p>
+Chambers, John M. (2008)
+<EM>Software for Data Analysis: Programming with R</EM>
+Springer.  (For the R version.)
+</p>
+<p>
+Chambers, John M. (1998)
+<EM>Programming with Data</EM>
+Springer (For the original S4 version.)
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="method.skeleton.html">method.skeleton</a></code>, which is the recommended way to generate a skeleton of the call to <code>setMethod</code>, with the correct formal arguments and other details.
+</p>
+<p>
+<a href="Methods.html">Methods</a> and the links there for a general discussion, <code><a href="dotsMethods.html">dotsMethods</a></code> for methods that dispatch on
+&ldquo;...&rdquo;, and <code><a href="setGeneric.html">setGeneric</a></code> for generic functions.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+
+
+require(graphics)
+## methods for plotting track objects (see the example for <a href="setClass.html">setClass</a>)
+##
+## First, with only one object as argument:
+setMethod("plot", signature(x="track", y="missing"),
+  function(x,  y, ...) plot(slot(x, "x"), slot(x, "y"), ...)
+)
+## Second, plot the data from the track on the y-axis against anything
+## as the x data.
+setMethod("plot", signature(y = "track"),
+ function(x, y, ...) plot(x, slot(y, "y"), ...)
+)
+## and similarly with the track on the x-axis (using the short form of
+## specification for signatures)
+setMethod("plot", "track",
+ function(x, y, ...) plot(slot(x, "y"), y,  ...)
+)
+t1 &lt;- new("track", x=1:20, y=(1:20)^2)
+tc1 &lt;- new("trackCurve", t1)
+slot(tc1, "smooth") &lt;- smooth.spline(slot(tc1, "x"), slot(tc1, "y"))$y #$
+plot(t1)
+plot(qnorm(ppoints(20)), t1)
+## An example of inherited methods, and of conforming method arguments
+## (note the dotCurve argument in the method, which will be pulled out
+## of ... in the generic.
+setMethod("plot", c("trackCurve", "missing"),
+function(x, y, dotCurve = FALSE, ...) {
+  plot(as(x, "track"))
+  if(length(slot(x, "smooth") &gt; 0))
+    lines(slot(x, "x"), slot(x, "smooth"),
+         lty = if(dotCurve) 2 else 1)
+  }
+)
+## the plot of tc1 alone has an added curve; other uses of tc1
+## are treated as if it were a "track" object.
+plot(tc1, dotCurve = TRUE)
+plot(qnorm(ppoints(20)), tc1)
+
+## defining methods for a special function.
+## Although "[" and "length" are not ordinary functions
+## methods can be defined for them.
+setMethod("[", "track",
+  function(x, i, j, ..., drop) {
+    x@x &lt;- x@x[i]; x@y &lt;- x@y[i]
+    x
+  })
+plot(t1[1:15])
+
+setMethod("length", "track", function(x)length(x@y))
+length(t1)
+
+## methods can be defined for missing arguments as well
+setGeneric("summary") ## make the function into a generic
+
+## A method for summary()
+## The method definition can include the arguments, but
+## if they're omitted, class "missing" is assumed.
+
+setMethod("summary", "missing", function() "&lt;No Object&gt;")
+
+
+</pre>
+
+
+
+<hr><div align="center">[Package <em>methods</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

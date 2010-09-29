@@ -1,0 +1,82 @@
+read.ssd               package:foreign               R Documentation
+
+_O_b_t_a_i_n _a _D_a_t_a _F_r_a_m_e _f_r_o_m _a _S_A_S _P_e_r_m_a_n_e_n_t _D_a_t_a_s_e_t, _v_i_a _r_e_a_d._x_p_o_r_t
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Generates a SAS program to convert the ssd contents to SAS
+     transport format and then uses 'read.xport' to obtain a data
+     frame.
+
+_U_s_a_g_e:
+
+     read.ssd(libname, sectionnames, 
+        tmpXport=tempfile(), tmpProgLoc=tempfile(), sascmd="sas")
+
+_A_r_g_u_m_e_n_t_s:
+
+ libname: character string defining the SAS library (usually a
+          directory reference)
+
+sectionnames: character vector giving member names. These are files in
+          the 'libname' directory. They will usually have a '.ssd0x' or
+          '.sas7bdat' extension, which should be omitted.
+
+tmpXport: character  string: location where temporary xport format
+          archive should reside - defaults to a randomly named file in
+          the session temporary directory, which will be removed.
+
+tmpProgLoc: character  string: location where temporary conversion SAS
+          program should reside - defaults to a randomly named file in
+          session temporary directory, which will be removed on
+          successful operation.
+
+  sascmd: character string giving full path to SAS executable.
+
+_D_e_t_a_i_l_s:
+
+     Creates a SAS program and runs it.
+
+     Error handling is primitive.
+
+_V_a_l_u_e:
+
+     A data frame if all goes well, or 'NULL' with warnings and some
+     enduring side effects (log file for auditing)
+
+_N_o_t_e:
+
+     *This requires SAS to be available.*  If you have a SAS dataset
+     without access to SAS you will need another product to convert it
+     to a  format such as '.csv', for example ‘Stat/Transfer’ or 
+     ‘DBMS/Copy’ or the ‘SAS System Viewer’ (Windows only).
+
+_A_u_t_h_o_r(_s):
+
+     For Unix: VJ Carey stvjc@channing.harvard.edu
+
+_S_e_e _A_l_s_o:
+
+     'read.xport'
+
+_E_x_a_m_p_l_e_s:
+
+     ## if there were some files on the web we could get a real
+     ## runnable example
+     ## Not run: 
+     R> list.files("trialdata")
+      [1] "baseline.sas7bdat" "form11.sas7bdat"   "form12.sas7bdat"  
+      [4] "form13.sas7bdat"   "form22.sas7bdat"   "form23.sas7bdat"  
+      [7] "form3.sas7bdat"    "form4.sas7bdat"    "form48.sas7bdat"  
+     [10] "form50.sas7bdat"   "form51.sas7bdat"   "form71.sas7bdat"  
+     [13] "form72.sas7bdat"   "form8.sas7bdat"    "form9.sas7bdat"   
+     [16] "form90.sas7bdat"   "form91.sas7bdat"  
+     R> baseline <- read.ssd("trialdata","baseline")
+     R> form90 <- read.ssd("trialdata","form90")
+
+     ## Or for a Windows example
+     sashome <- "/Program Files/SAS/SAS 9.1"
+     read.ssd(file.path(sashome, "core", "sashelp"), "retail",
+              sascmd = file.path(sashome, "sas.exe"))
+     ## End(Not run)
+

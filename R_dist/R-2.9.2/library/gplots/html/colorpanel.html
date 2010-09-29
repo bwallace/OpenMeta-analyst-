@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Generate a smoothly varying set of colors</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for colorpanel {gplots}"><tr><td>colorpanel {gplots}</td><td align="right">R Documentation</td></tr></table>
+<h2>Generate a smoothly varying set of colors</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>colorpanel</code> generate a set of colors that varies
+smoothly. <code>redgreen</code>, <code>greenred</code>, <code>bluered</code>, and 
+<code>redblue</code> generate red-black-green, green-black-red,
+red-white-blue, and blue-white-red colorbars, respectively.
+colors
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+colorpanel(n, low, mid, high)
+redgreen(n)
+greenred(n)
+bluered(n)
+redblue(n)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>n</code></td>
+<td>
+Desired number of color elements in the panel.</td></tr>
+<tr valign="top"><td><code>low, mid, high</code></td>
+<td>
+Colors to use for the Lowest, middle,
+and highest values. <code>mid</code> may be ommited.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The values for <code>low, mid, high</code> can be given as
+color names ('red'), plot color index (2=red), and HTML-style RGB,
+("#FF0000"=red). 
+</p>
+<p>
+If <code>mid</code> is supplied, then the returned color panel will consist
+of <code>n - floor(n/2)</code> HTML-style RGB elements which vary smoothly
+between <code>low</code> and <code>mid</code>, then between <code>mid</code> and
+<code>high</code>. Note that if <code>n</code> is even, the color <code>mid</code> will
+occur twice at the center of the sequence.
+</p>
+<p>
+If <code>mid</code> is omitted, the color panel will vary
+smoothly beween <code>low</code> and <code>high</code>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+Vector of HTML-style RGB colors.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Gregory R. Warnes <a href="mailto:greg@random-technologies-llc.com">greg@random-technologies-llc.com</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../base/html/colors.html">colors</a> </code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+
+showpanel &lt;- function(col)
+{
+  image(z=matrix(1:100, ncol=1), col=col, xaxt="n", yaxt="n" )
+}
+
+par(mfrow=c(3,3))
+
+# two colors only:
+showpanel(colorpanel(8,low="red",high="green"))
+
+# three colors
+showpanel(colorpanel(8,"red","black","green"))
+# note the duplicatation of black at the center, using an odd
+# number of elements resolves this:
+showpanel(colorpanel(9,"red","black","green"))
+
+showpanel(greenred(64))
+showpanel(redgreen(64))
+showpanel(bluered(64))
+showpanel(redblue(64))
+
+</pre>
+
+
+
+<hr><div align="center">[Package <em>gplots</em> version 2.7.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

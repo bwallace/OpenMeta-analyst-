@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: De Bruijn graphs.</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for graph.de.bruijn {igraph}"><tr><td>graph.de.bruijn {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>De Bruijn graphs.</h2>
+
+
+<h3>Description</h3>
+
+<p>
+De Bruijn graphs are labeled graphs representing the
+overlap of strings.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+graph.de.bruijn(m,n)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>m</code></td>
+<td>
+Integer scalar, the size of the alphabet. See details below.</td></tr>
+<tr valign="top"><td><code>n</code></td>
+<td>
+Integer scalar, the length of the labels. See details below.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+A de Bruijn graph represents relationships between strings. An alphabet
+of <code>m</code> letters are used and strings of length <code>n</code> are considered. 
+A vertex corresponds to every possible string and there is a directed edge
+from vertex <code>v</code> to vertex <code>w</code> if the string of <code>v</code> can
+be transformed into the string of <code>w</code> by removing its first letter
+and appending a letter to it.
+</p>
+<p>
+Please note that the graph will have <code>m</code> to the power <code>n</code>
+vertices and even more edges, so probably you don't want to supply too
+big numbers for <code>m</code> and <code>n</code>.
+</p>
+<p>
+De Bruijn graphs have some interesting properties, please see another source,
+eg. Wikipedia for details.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A graph object.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Gabor Csardi &lt;csardi@rmki.kfki.hu&gt;
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="graph.kautz.html">graph.kautz</a></code>, <code><a href="line.graph.html">line.graph</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+# de Bruijn graphs can be created recursively by line graphs as well 
+g &lt;- graph.de.bruijn(2,1)
+graph.de.bruijn(2,2)
+line.graph(g)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

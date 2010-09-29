@@ -1,0 +1,713 @@
+Entry: INSTALL
+Aliases: INSTALL
+Keywords: utilities
+Description: Install Add-on Packages
+URL: ../../../library/utils/html/INSTALL.html
+
+Entry: PkgUtils
+Aliases: build check
+Keywords: utilities
+Description: Utilities for Building and Checking Add-on Packages
+URL: ../../../library/utils/html/PkgUtils.html
+
+Entry: REMOVE
+Aliases: REMOVE
+Keywords: utilities
+Description: Remove Add-on Packages
+URL: ../../../library/utils/html/REMOVE.html
+
+Entry: RShowDoc
+Aliases: RShowDoc
+Keywords: documentation
+Description: Show R Manuals and Other Documentation
+URL: ../../../library/utils/html/RShowDoc.html
+
+Entry: RSiteSearch
+Aliases: RSiteSearch
+Keywords: utilities documentation
+Description: Search for Key Words or Phrases in the R-help Mailing List Archives or Documentation
+URL: ../../../library/utils/html/RSiteSearch.html
+
+Entry: Rprof
+Aliases: Rprof
+Keywords: utilities
+Description: Enable Profiling of R's Execution
+URL: ../../../library/utils/html/Rprof.html
+
+Entry: Rprofmem
+Aliases: Rprofmem
+Keywords: utilities
+Description: Enable Profiling of R's Memory Use
+URL: ../../../library/utils/html/Rprofmem.html
+
+Entry: Rscript
+Aliases: Rscript
+Keywords: utilities
+Description: Scripting Front-End for R
+URL: ../../../library/utils/html/Rscript.html
+
+Entry: Rtangle
+Aliases: Rtangle RtangleSetup
+Keywords: utilities
+Description: R Driver for Stangle
+URL: ../../../library/utils/html/Rtangle.html
+
+Entry: RweaveLatex
+Aliases: RweaveLatex RweaveLatexSetup
+Keywords: utilities
+Description: R/LaTeX Driver for Sweave
+URL: ../../../library/utils/html/RweaveLatex.html
+
+Entry: SHLIB
+Aliases: SHLIB
+Keywords: utilities
+Description: Build Shared Object/DLL for Dynamic Loading
+URL: ../../../library/utils/html/SHLIB.html
+
+Entry: Sweave
+Aliases: Sweave Stangle SweaveSyntaxLatex SweaveSyntaxNoweb
+Keywords: utilities
+Description: Automatic Generation of Reports
+URL: ../../../library/utils/html/Sweave.html
+
+Entry: SweaveSyntConv
+Aliases: SweaveSyntConv
+Keywords: utilities
+Description: Convert Sweave Syntax
+URL: ../../../library/utils/html/SweaveSyntConv.html
+
+Entry: SweaveUtils
+Aliases: RtangleWritedoc RweaveChunkPrefix RweaveEvalWithOpt RweaveLatexFinish RweaveLatexOptions RweaveLatexWritedoc RweaveTryStop SweaveHooks SweaveUtils makeRweaveLatexCodeRunner
+Keywords: utilities internal
+Description: Sweave Driver Utilities
+URL: ../../../library/utils/html/SweaveUtils.html
+
+Entry: URLencode
+Aliases: URLencode URLdecode
+Keywords: utilities
+Description: Encode or Decode a (partial) URL
+URL: ../../../library/utils/html/URLencode.html
+
+Entry: View
+Aliases: View
+Keywords: utilities
+Description: Invoke a Data Viewer
+URL: ../../../library/utils/html/View.html
+
+Entry: alarm
+Aliases: alarm
+Keywords: utilities
+Description: Alert the user
+URL: ../../../library/utils/html/alarm.html
+
+Entry: apropos
+Aliases: apropos find
+Keywords: data documentation environment
+Description: Find Objects by (Partial) Name
+URL: ../../../library/utils/html/apropos.html
+
+Entry: browseEnv
+Aliases: browseEnv wsbrowser
+Keywords: interface
+Description: Browse Objects in Environment
+URL: ../../../library/utils/html/browseEnv.html
+
+Entry: browseURL
+Aliases: browseURL
+Keywords: file
+Description: Load URL into a WWW Browser
+URL: ../../../library/utils/html/browseURL.html
+
+Entry: browseVignettes
+Aliases: browseVignettes print.browseVignettes
+Keywords: documentation
+Description: List Vignettes in an HTML Browser
+URL: ../../../library/utils/html/browseVignettes.html
+
+Entry: bug.report
+Aliases: bug.report
+Keywords: utilities error
+Description: Send a Bug Report
+URL: ../../../library/utils/html/bug.report.html
+
+Entry: capture.output
+Aliases: capture.output
+Keywords: utilities
+Description: Send output to a character string or file
+URL: ../../../library/utils/html/capture.output.html
+
+Entry: chooseCRANmirror
+Aliases: chooseCRANmirror getCRANmirrors
+Keywords: utilities
+Description: Select a CRAN Mirror
+URL: ../../../library/utils/html/chooseCRANmirror.html
+
+Entry: citEntry
+Aliases: citEntry CITATION citHeader citFooter readCitationFile
+Keywords: misc
+Description: Writing Package CITATION Files
+URL: ../../../library/utils/html/citEntry.html
+
+Entry: citation
+Aliases: citation toBibtex.citation toBibtex.citationList
+Keywords: misc
+Description: Citing R and R Packages in Publications
+URL: ../../../library/utils/html/citation.html
+
+Entry: close.socket
+Aliases: close.socket
+Keywords: misc
+Description: Close a Socket
+URL: ../../../library/utils/html/close.socket.html
+
+Entry: combn
+Aliases: combn
+Keywords: utilities iteration
+Description: Generate All Combinations of n Elements, Taken m at a Time
+URL: ../../../library/utils/html/combn.html
+
+Entry: compareVersion
+Aliases: compareVersion
+Keywords: utilities
+Description: Compare Two Package Version Numbers
+URL: ../../../library/utils/html/compareVersion.html
+
+Entry: count.fields
+Aliases: count.fields
+Keywords: file
+Description: Count the Number of Fields per Line
+URL: ../../../library/utils/html/count.fields.html
+
+Entry: data
+Aliases: data print.packageIQR
+Keywords: documentation datasets
+Description: Data Sets
+URL: ../../../library/utils/html/data.html
+
+Entry: dataentry
+Aliases: data.entry dataentry de de.ncols de.restore de.setup
+Keywords: utilities file
+Description: Spreadsheet Interface for Entering Data
+URL: ../../../library/utils/html/dataentry.html
+
+Entry: debugger
+Aliases: debugger dump.frames
+Keywords: utilities error
+Description: Post-Mortem Debugging
+URL: ../../../library/utils/html/debugger.html
+
+Entry: demo
+Aliases: demo
+Keywords: documentation utilities
+Description: Demonstrations of R Functionality
+URL: ../../../library/utils/html/demo.html
+
+Entry: download.file
+Aliases: download.file
+Keywords: utilities
+Description: Download File from the Internet
+URL: ../../../library/utils/html/download.file.html
+
+Entry: edit
+Aliases: edit edit.default vi emacs pico xemacs xedit
+Keywords: utilities
+Description: Invoke a Text Editor
+URL: ../../../library/utils/html/edit.html
+
+Entry: edit.data.frame
+Aliases: edit.data.frame edit.matrix
+Keywords: utilities
+Description: Edit Data Frames and Matrices
+URL: ../../../library/utils/html/edit.data.frame.html
+
+Entry: example
+Aliases: example
+Keywords: documentation utilities
+Description: Run an Examples Section from the Online Help
+URL: ../../../library/utils/html/example.html
+
+Entry: file.edit
+Aliases: file.edit
+Keywords: utilities
+Description: Edit One or More Files
+URL: ../../../library/utils/html/file.edit.html
+
+Entry: file_test
+Aliases: file_test
+Keywords: file
+Description: Shell-style Tests on Files
+URL: ../../../library/utils/html/filetest.html
+
+Entry: fix
+Aliases: fix
+Keywords: utilities
+Description: Fix an Object
+URL: ../../../library/utils/html/fix.html
+
+Entry: flush.console
+Aliases: flush.console
+Keywords: utilities
+Description: Flush Output to A Console
+URL: ../../../library/utils/html/flush.console.html
+
+Entry: format
+Aliases: formatUL formatOL
+Keywords: print
+Description: Format Unordered and Ordered Lists
+URL: ../../../library/utils/html/format.html
+
+Entry: getAnywhere
+Aliases: getAnywhere argsAnywhere [.getAnywhere print.getAnywhere
+Keywords: data
+Description: Retrieve an R Object, Including from a Name Space
+URL: ../../../library/utils/html/getAnywhere.html
+
+Entry: getFromNamespace
+Aliases: assignInNamespace getFromNamespace fixInNamespace
+Keywords: data
+Description: Utility functions for Developing Namespaces
+URL: ../../../library/utils/html/getFromNamespace.html
+
+Entry: getS3method
+Aliases: getS3method
+Keywords: data
+Description: Get An S3 Method
+URL: ../../../library/utils/html/getS3method.html
+
+Entry: glob2rx
+Aliases: glob2rx
+Keywords: file character utilities
+Description: Change Wildcard or Globbing Pattern into Regular Expression
+URL: ../../../library/utils/html/glob2rx.html
+
+Entry: head
+Aliases: head head.default head.data.frame head.function head.ftable head.table head.matrix tail tail.default tail.data.frame tail.function tail.ftable tail.table tail.matrix
+Keywords: manip
+Description: Return the First or Last Part of an Object
+URL: ../../../library/utils/html/head.html
+
+Entry: help
+Aliases: help ?
+Keywords: documentation
+Description: Documentation
+URL: ../../../library/utils/html/help.html
+
+Entry: help.request
+Aliases: help.request
+Keywords: utilities error
+Description: Send a Post to R-help
+URL: ../../../library/utils/html/help.request.html
+
+Entry: help.search
+Aliases: help.search ?? print.hsearch
+Keywords: documentation
+Description: Search the Help System
+URL: ../../../library/utils/html/help.search.html
+
+Entry: help.start
+Aliases: help.start
+Keywords: documentation
+Description: Hypertext Documentation
+URL: ../../../library/utils/html/help.start.html
+
+Entry: index.search
+Aliases: index.search
+Keywords: utilities
+Description: Search Indices for Help Files
+URL: ../../../library/utils/html/index.search.html
+
+Entry: installed.packages
+Aliases: installed.packages
+Keywords: utilities
+Description: Find Installed Packages
+URL: ../../../library/utils/html/installed.packages.html
+
+Entry: localeToCharset
+Aliases: localeToCharset
+Keywords: utilities
+Description: Select a Suitable Encoding Name from a Locale Name
+URL: ../../../library/utils/html/localeToCharset.html
+
+Entry: ls.str
+Aliases: ls.str lsf.str print.ls_str
+Keywords: print utilities
+Description: List Objects and their Structure
+URL: ../../../library/utils/html/ls_str.html
+
+Entry: make.socket
+Aliases: make.socket print.socket
+Keywords: misc
+Description: Create a Socket Connection
+URL: ../../../library/utils/html/make.socket.html
+
+Entry: menu
+Aliases: menu
+Keywords: utilities programming
+Description: Menu Interaction Function
+URL: ../../../library/utils/html/menu.html
+
+Entry: methods
+Aliases: methods print.MethodsFunction
+Keywords: methods
+Description: List Methods for S3 Generic Functions or Classes
+URL: ../../../library/utils/html/methods.html
+
+Entry: mirrorAdmin
+Aliases: mirrorAdmin mirror2html checkCRAN
+Keywords: misc
+Description: Managing Repository Mirrors
+URL: ../../../library/utils/html/mirrorAdmin.html
+
+Entry: modifyList
+Aliases: modifyList
+Keywords: utilities
+Description: Recursively Modify Elements of a List
+URL: ../../../library/utils/html/modifyList.html
+
+Entry: normalizePath
+Aliases: normalizePath
+Keywords: utilities
+Description: Express File Paths in Canonical Form
+URL: ../../../library/utils/html/normalizePath.html
+
+Entry: object.size
+Aliases: object.size print.object_size
+Keywords: utilities
+Description: Report the Space Allocated for an Object
+URL: ../../../library/utils/html/object.size.html
+
+Entry: package.skeleton
+Aliases: package.skeleton
+Keywords: file utilities
+Description: Create a Skeleton for a New Source Package
+URL: ../../../library/utils/html/package.skeleton.html
+
+Entry: packageDescription
+Aliases: packageDescription print.packageDescription
+Keywords: utilities
+Description: Package Description
+URL: ../../../library/utils/html/packageDescription.html
+
+Entry: packageStatus
+Aliases: packageStatus print.packageStatus summary.packageStatus update.packageStatus upgrade.packageStatus upgrade
+Keywords: utilities
+Description: Package Management Tools
+URL: ../../../library/utils/html/packageStatus.html
+
+Entry: page
+Aliases: page
+Keywords: utilities
+Description: Invoke a Pager on an R Object
+URL: ../../../library/utils/html/page.html
+
+Entry: person
+Aliases: person as.person as.person.default personList as.personList as.personList.person as.personList.default as.character.person as.character.personList toBibtex.person toBibtex.personList
+Keywords: misc
+Description: Person Names and Contact Information
+URL: ../../../library/utils/html/person.html
+
+Entry: prompt
+Aliases: prompt prompt.default prompt.data.frame
+Keywords: documentation
+Description: Produce Prototype of an R Documentation File
+URL: ../../../library/utils/html/prompt.html
+
+Entry: promptData
+Aliases: promptData
+Keywords: documentation
+Description: Generate a Shell for Documentation of Data Sets
+URL: ../../../library/utils/html/promptData.html
+
+Entry: promptPackage
+Aliases: promptPackage
+Keywords: documentation
+Description: Generate a Shell for Documentation of a Package
+URL: ../../../library/utils/html/promptPackage.html
+
+Entry: rcompgen
+Aliases: rcompgen rc.settings rc.status rc.getOption rc.options
+Keywords: IO utilities
+Description: A Completion Generator for R
+URL: ../../../library/utils/html/rcompgen.html
+
+Entry: read.DIF
+Aliases: read.DIF
+Keywords: file connection
+Description: Data Input from Spreadsheet
+URL: ../../../library/utils/html/read.DIF.html
+
+Entry: read.fortran
+Aliases: read.fortran
+Keywords: file connection
+Description: Read fixed-format data
+URL: ../../../library/utils/html/read.fortran.html
+
+Entry: read.fwf
+Aliases: read.fwf
+Keywords: file connection
+Description: Read Fixed Width Format Files
+URL: ../../../library/utils/html/read.fwf.html
+
+Entry: read.socket
+Aliases: read.socket write.socket
+Keywords: misc
+Description: Read from or Write to a Socket
+URL: ../../../library/utils/html/read.socket.html
+
+Entry: read.table
+Aliases: read.table read.csv read.csv2 read.delim read.delim2
+Keywords: file connection
+Description: Data Input
+URL: ../../../library/utils/html/read.table.html
+
+Entry: recover
+Aliases: recover limitedLabels
+Keywords: programming debugging
+Description: Browsing after an Error
+URL: ../../../library/utils/html/recover.html
+
+Entry: relist
+Aliases: relist relist.default relist.list relist.factor relist.matrix as.relistable is.relistable unlist.relistable
+Keywords: list manip
+Description: Allow Re-Listing an unlist()ed Object
+URL: ../../../library/utils/html/relist.html
+
+Entry: remove.packages
+Aliases: remove.packages
+Keywords: utilities
+Description: Remove Installed Packages
+URL: ../../../library/utils/html/remove.packages.html
+
+Entry: roman
+Aliases: as.roman
+Keywords: arith
+Description: Roman Numerals
+URL: ../../../library/utils/html/roman.html
+
+Entry: rtags
+Aliases: rtags
+Keywords: programming utilities
+Description: An etags-like a tagging utility for R
+URL: ../../../library/utils/html/rtags.html
+
+Entry: savehistory
+Aliases: loadhistory savehistory history timestamp
+Keywords: utilities
+Description: Load or Save or Display the Commands History
+URL: ../../../library/utils/html/savehistory.html
+
+Entry: select.list
+Aliases: select.list
+Keywords: utilities
+Description: Select Items from a List
+URL: ../../../library/utils/html/select.list.html
+
+Entry: sessionInfo
+Aliases: sessionInfo toLatex.sessionInfo print.sessionInfo
+Keywords: misc
+Description: Collect Information About the Current R Session
+URL: ../../../library/utils/html/sessionInfo.html
+
+Entry: setRepositories
+Aliases: setRepositories
+Keywords: utilities
+Description: Select Package Repositories
+URL: ../../../library/utils/html/setRepositories.html
+
+Entry: stack
+Aliases: stack stack.default stack.data.frame unstack unstack.default unstack.data.frame
+Keywords: manip
+Description: Stack or Unstack Vectors from a Data Frame or List
+URL: ../../../library/utils/html/stack.html
+
+Entry: str
+Aliases: str str.default str.data.frame strOptions
+Keywords: print documentation utilities
+Description: Compactly Display the Structure of an Arbitrary R Object
+URL: ../../../library/utils/html/str.html
+
+Entry: summaryRprof
+Aliases: summaryRprof
+Keywords: utilities
+Description: Summarise Output of R Sampling Profiler
+URL: ../../../library/utils/html/summaryRprof.html
+
+Entry: toLatex
+Aliases: toLatex print.Latex toBibtex print.Bibtex
+Keywords: misc
+Description: Converting R Objects to BibTeX or LaTeX
+URL: ../../../library/utils/html/toLatex.html
+
+Entry: txtProgressBar
+Aliases: txtProgressBar getTxtProgressBar setTxtProgressBar close.txtProgressBar
+Keywords: utilities
+Description: Text Progress Bar
+URL: ../../../library/utils/html/txtProgressBar.html
+
+Entry: type.convert
+Aliases: type.convert
+Keywords: manip
+Description: Type Conversion on Character Variables
+URL: ../../../library/utils/html/type.convert.html
+
+Entry: unzip
+Aliases: unzip
+Keywords: file utilities
+Description: Extract or List Zip archives
+URL: ../../../library/utils/html/unzip.html
+
+Entry: update.packages
+Aliases: update.packages available.packages old.packages new.packages download.packages install.packages contrib.url
+Keywords: utilities
+Description: Download Packages from CRAN-like repositories
+URL: ../../../library/utils/html/update.packages.html
+
+Entry: url.show
+Aliases: url.show
+Keywords: file misc
+Description: Display a text URL
+URL: ../../../library/utils/html/url.show.html
+
+Entry: utils-defunct
+Aliases: utils-defunct package.contents
+Keywords: internal
+Description: Defunct Functions in Package utils
+URL: ../../../library/utils/html/utils-defunct.html
+
+Entry: utils-deprecated
+Aliases: utils-deprecated CRAN.packages
+Keywords: misc
+Description: Deprecated Functions in Package utils
+URL: ../../../library/utils/html/utils-deprecated.html
+
+Entry: utils-package
+Aliases: utils-package utils
+Keywords: package programming
+Description: The R Utils Package
+URL: ../../../library/utils/html/utils-package.html
+
+Entry: vignette
+Aliases: vignette edit.vignette print.vignette vignettes
+Keywords: documentation
+Description: View or List Vignettes
+URL: ../../../library/utils/html/vignette.html
+
+Entry: write.table
+Aliases: write.table write.csv write.csv2
+Keywords: print file
+Description: Data Output
+URL: ../../../library/utils/html/write.table.html
+
+Entry: zip.file.extract
+Aliases: zip.file.extract
+Keywords: file
+Description: Extract File from a Zip Archive
+URL: ../../../library/utils/html/zip.file.extract.html
+
+Entry: BATCH
+Aliases: BATCH
+Keywords: utilities
+Description: Batch Execution of R
+URL: ../../../library/utils/html/BATCH.html
+
+Entry: DLL.version
+Aliases: DLL.version
+Keywords: utilities
+Description: DLL Version Information
+URL: ../../../library/utils/html/DLL.version.html
+
+Entry: Rwin configuration
+Aliases: Rconsole Rdevga loadRconsole
+Keywords: utilities
+Description: R for Windows Configuration
+URL: ../../../library/utils/html/Rconsole.html
+
+Entry: SHLIB
+Aliases: SHLIB
+Keywords: utilities
+Description: Build a DLL for Dynamic Loading
+URL: ../../../library/utils/html/SHLIB.html
+
+Entry: choose.dir
+Aliases: choose.dir
+Keywords: file
+Description: Choose a Folder Interactively
+URL: ../../../library/utils/html/choose.dir.html
+
+Entry: choose.files
+Aliases: choose.files Filters
+Keywords: file
+Description: Choose a List of Files Interactively
+URL: ../../../library/utils/html/choose.files.html
+
+Entry: clipboard
+Aliases: getClipboardFormats readClipboard writeClipboard clipboard
+Keywords: utilities
+Description: Read/Write to/from the Windows Clipboard
+URL: ../../../library/utils/html/clipboard.html
+
+Entry: getWindowsHandle
+Aliases: getWindowsHandle
+Keywords: utilities
+Description: Get a Windows Handle
+URL: ../../../library/utils/html/getWindowsHandle.html
+
+Entry: link.html.help
+Aliases: link.html.help make.packages.html make.search.html fixup.package.URLs fixup.libraries.URLs
+Keywords: utilities
+Description: Update HTML documentation files
+URL: ../../../library/utils/html/linkhtml.html
+
+Entry: memory.size
+Aliases: memory.size memory.limit
+Keywords: utilities
+Description: Report on Memory Allocation
+URL: ../../../library/utils/html/memory.size.html
+
+Entry: readRegistry
+Aliases: readRegistry
+Keywords: utilities
+Description: Read a Windows Registy Hive
+URL: ../../../library/utils/html/readRegistry.html
+
+Entry: setInternet2
+Aliases: setInternet2
+Keywords: utilities
+Description: Set or disable the use of Internet Explorer for Internet access.
+URL: ../../../library/utils/html/setInternet2.html
+
+Entry: setWindowTitle
+Aliases: setWindowTitle getWindowTitle getIdentification setStatusBar
+Keywords: utilities
+Description: Set or get the Window Title, or Set the Statusbar
+URL: ../../../library/utils/html/setWindowTitle.html
+
+Entry: shortPathName
+Aliases: shortPathName
+Keywords: utilities
+Description: Express File Paths in Short Form
+URL: ../../../library/utils/html/shortPathName.html
+
+Entry: winDialog
+Aliases: winDialog winDialogString
+Keywords: utilities
+Description: Dialog Boxes under Windows
+URL: ../../../library/utils/html/winDialog.html
+
+Entry: winMenus
+Aliases: winMenuAdd winMenuAddItem winMenuDel winMenuDelItem winMenuNames winMenuItems
+Keywords: utilities
+Description: User Menus under Windows
+URL: ../../../library/utils/html/winMenus.html
+
+Entry: winProgressBar
+Aliases: winProgressBar getWinProgressBar setWinProgressBar close.winProgressBar
+Keywords: utilities
+Description: Progress Bars under Windows
+URL: ../../../library/utils/html/winProgressBar.html
+
+Entry: winextras
+Aliases: win.version zip.unpack
+Keywords: utilities
+Description: Auxiliary Functions for the Windows Port
+URL: ../../../library/utils/html/winextras.html

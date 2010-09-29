@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Takapoto atoll planktonic food web</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for Takapotoweb {diagram}"><tr><td>Takapotoweb {diagram}</td><td align="right">R Documentation</td></tr></table>
+<h2>Takapoto atoll planktonic food web</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Carbon flux matrix of the Takapoto atoll planktonic food web
+</p>
+<p>
+as reconstructed by inverse modelling by Niquil et al. (1998).
+</p>
+<p>
+The Takapoto Atoll lagoon is located in the French Polynesia of the
+South Pacific
+</p>
+<p>
+The food web comprises 7 functional compartments:
+<ul>
+<li>Phytoplankton
+<li>Bacteria
+<li>Protozoa
+<li>Microzooplankton
+<li>Mesozooplankton
+<li>Detritus
+<li>Dissolved organic carbon (DOC)
+</ul>
+<p>
+and three external compartments/sinks:
+<ul>
+<li>CO2
+<li>Sedimentation
+<li>Grazing
+</ul>
+<p>
+These compartments are connected with 32 flows.
+Units of the flows are mg C/m2/day
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>Takapotoweb</pre>
+
+
+<h3>Format</h3>
+
+<p>
+matrix with flow values, where element ij denotes flow from compartment
+i to j
+</p>
+<p>
+rownames and columnames are the components.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Karline Soetaert &lt;k.soetaert@nioo.knaw.nl&gt;
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Niquil, N., Jackson, G.A., Legendre, L., Delesalle, B., 1998. Inverse
+model analysis of the planktonic food web of Takapoto Atoll
+(French Polynesia). Marine Ecology Progress Series 165, pp. 17 29.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="Rigaweb.html">Rigaweb</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>plotweb(Takapotoweb,main="Takapoto atoll planktonic food web",
+                    sub="mgC/m2/day",lab.size=1)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>diagram</em> version 1.5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

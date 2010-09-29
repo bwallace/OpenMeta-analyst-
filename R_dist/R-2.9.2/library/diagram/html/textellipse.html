@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: adds lines of text in an ellipsoid box to a plot</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for textellipse {diagram}"><tr><td>textellipse {diagram}</td><td align="right">R Documentation</td></tr></table>
+<h2>adds lines of text in an ellipsoid box to a plot</h2>
+
+
+<h3>Description</h3>
+
+<p>
+adds one or more lines of text, centered around "mid"
+in an ellipsoid box
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+textellipse(mid, radx, rady=radx*length(lab), lwd=1,  
+  shadow.size=0.01, adj=c(0.5,0.5),lab="", box.col="white", 
+  lcol="black", shadow.col="grey", angle=0, dr=0.01, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>mid </code></td>
+<td>
+midpoint (x,y) of the box.
+</td></tr>
+<tr valign="top"><td><code>radx </code></td>
+<td>
+horizontal radius of the box.
+</td></tr>
+<tr valign="top"><td><code>rady </code></td>
+<td>
+vertical radius of the box.
+</td></tr>
+<tr valign="top"><td><code>lwd </code></td>
+<td>
+line width of line surrounding the box.
+</td></tr>
+<tr valign="top"><td><code>shadow.size </code></td>
+<td>
+relative size of shadow.
+</td></tr>
+<tr valign="top"><td><code>adj </code></td>
+<td>
+text adjustment.
+</td></tr>
+<tr valign="top"><td><code>lab </code></td>
+<td>
+one label or a vector string of labels to be added in box.
+</td></tr>
+<tr valign="top"><td><code>box.col </code></td>
+<td>
+fill color of the box.
+</td></tr>
+<tr valign="top"><td><code>lcol </code></td>
+<td>
+line color surrounding box.
+</td></tr>
+<tr valign="top"><td><code>shadow.col </code></td>
+<td>
+color of shadow.
+</td></tr>
+<tr valign="top"><td><code>angle </code></td>
+<td>
+rotation angle, degrees.
+</td></tr>
+<tr valign="top"><td><code>dr </code></td>
+<td>
+size of segments, in radians, to draw ellipse (decrease for
+smoother).
+</td></tr>
+<tr valign="top"><td><code>... </code></td>
+<td>
+other arguments passed to function <a href="textplain.html">textplain</a>.
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+see <code><a href="shadowbox.html">shadowbox</a></code> for specifications of the ellipsoid-shaped box
+and its shadow
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Karline Soetaert &lt;k.soetaert@nioo.knaw.nl&gt;
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="textdiamond.html">textdiamond</a></code>, <code><a href="textempty.html">textempty</a></code>, <code><a href="texthexa.html">texthexa</a></code>,
+<code><a href="textmulti.html">textmulti</a></code>, <code><a href="textplain.html">textplain</a></code>, <code><a href="textrect.html">textrect</a></code>,
+<code><a href="textround.html">textround</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+  openplotmat(xlim=c(-0.1,1.1),main="textellipse")
+  for (i in 1:10) textellipse(mid=runif(2),col=i,box.col=grey(0.95),radx=0.1,
+                          rady=0.05,lab=LETTERS[i],cex=2,angle=runif(1)*360)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>diagram</em> version 1.5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

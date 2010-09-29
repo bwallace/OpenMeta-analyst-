@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Default Panel Function for histogram</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for panel.histogram {lattice}"><tr><td>panel.histogram {lattice}</td><td align="right">R Documentation</td></tr></table>
+<h2>Default Panel Function for histogram</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This is the default panel function for <code>histogram</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+panel.histogram(x,
+                breaks,
+                equal.widths = TRUE,
+                type = "density",
+                nint = round(log2(length(x)) + 1), 
+                alpha, col, border, lty, lwd,
+                ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+The data points for which the histogram is to be drawn</td></tr>
+<tr valign="top"><td><code>breaks</code></td>
+<td>
+The breakpoints for the histogram</td></tr>
+<tr valign="top"><td><code>equal.widths</code></td>
+<td>
+logical used when <code>breaks==NULL</code> </td></tr>
+<tr valign="top"><td><code>type</code></td>
+<td>
+Type of histogram, possible values being <code>"percent"</code>,
+<code>"density"</code> and <code>"count"</code></td></tr>
+<tr valign="top"><td><code>nint</code></td>
+<td>
+Number of bins for the histogram </td></tr>
+<tr valign="top"><td><code>alpha, col, border, lty, lwd</code></td>
+<td>
+graphical parameters for bars; defaults are obtained from the
+<code>plot.polygon</code> settings.
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+other arguments, passed to <code><a href="../../graphics/html/hist.html">hist</a></code> when
+deemed appropriate </td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Deepayan Sarkar <a href="mailto:Deepayan.Sarkar@R-project.org">Deepayan.Sarkar@R-project.org</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="histogram.html">histogram</a></code>
+</p>
+
+
+
+<hr><div align="center">[Package <em>lattice</em> version 0.17-25 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

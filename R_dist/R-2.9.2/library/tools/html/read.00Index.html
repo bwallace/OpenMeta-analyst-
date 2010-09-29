@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Read 00Index-style Files</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for read.00Index {tools}"><tr><td>read.00Index {tools}</td><td align="right">R Documentation</td></tr></table>
+<h2>Read 00Index-style Files</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Read item/description information from 00Index-style files.  Such
+files are description lists rendered in tabular form, and currently
+used for the &lsquo;<span class="file">INDEX</span>&rsquo; and &lsquo;<span class="file">demo/00Index</span>&rsquo; files of add-on
+packages.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+read.00Index(file)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>file</code></td>
+<td>
+the name of a file to read data values from.  If the
+specified file is <code>""</code>, then input is taken from the keyboard
+(in this case input can be terminated by a blank line).
+Alternatively, <code>file</code> can be a <code><a href="../../base/html/connections.html">connection</a></code>, which
+will be opened if necessary, and if so closed at the end of the
+function call.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+A character matrix with 2 columns named <code>"Item"</code> and
+<code>"Description"</code> which hold the items and descriptions.</p>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../base/html/formatDL.html">formatDL</a></code> for the inverse operation of creating a
+00Index-style file from items and their descriptions.
+</p>
+
+
+
+<hr><div align="center">[Package <em>tools</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

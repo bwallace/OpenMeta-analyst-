@@ -1,0 +1,35 @@
+useDynLib(gtools)
+
+export(
+       addLast,
+       ask,
+       assert,
+       binsearch,
+       capture,
+       checkRVersion,
+       combinations,
+       ddirichlet,
+       defmacro,
+       even,
+       foldchange,
+       foldchange2logratio,
+       inv.logit,
+       invalid,
+       keywords,
+       logit,
+       logratio2foldchange,
+       mixedorder,
+       mixedsort,
+       odd,
+       permutations,
+       permute,
+       quantcut,
+       rdirichlet,
+       running,
+       scat,
+       setTCPNoDelay,
+       smartbind,
+       sprint,
+       strmacro
+       )
+

@@ -1,0 +1,323 @@
+Entry: agnes
+Aliases: agnes
+Keywords: cluster
+Description: Agglomerative Nesting (Hierarchical Clustering)
+URL: ../../../library/cluster/html/agnes.html
+
+Entry: agnes.object
+Aliases: agnes.object
+Keywords: cluster
+Description: Agglomerative Nesting (AGNES) Object
+URL: ../../../library/cluster/html/agnes.object.html
+
+Entry: agriculture
+Aliases: agriculture
+Keywords: datasets
+Description: European Union Agricultural Workforces
+URL: ../../../library/cluster/html/agriculture.html
+
+Entry: animals
+Aliases: animals
+Keywords: datasets
+Description: Attributes of Animals
+URL: ../../../library/cluster/html/animals.html
+
+Entry: bannerplot
+Aliases: bannerplot
+Keywords: hplot cluster utilities
+Description: Plot Banner (of Hierarchical Clustering)
+URL: ../../../library/cluster/html/bannerplot.html
+
+Entry: chorSub
+Aliases: chorSub
+Keywords: datasets
+Description: Subset of C-horizon of Kola Data
+URL: ../../../library/cluster/html/chorSub.html
+
+Entry: clara
+Aliases: clara
+Keywords: cluster
+Description: Clustering Large Applications
+URL: ../../../library/cluster/html/clara.html
+
+Entry: clara.object
+Aliases: clara.object
+Keywords: cluster
+Description: Clustering Large Applications (CLARA) Object
+URL: ../../../library/cluster/html/clara.object.html
+
+Entry: clusplot
+Aliases: clusplot
+Keywords: cluster hplot
+Description: Cluster Plot - Generic Function
+URL: ../../../library/cluster/html/clusplot.html
+
+Entry: clusplot.default
+Aliases: clusplot.default
+Keywords: cluster hplot
+Description: Bivariate Cluster Plot (clusplot) Default Method
+URL: ../../../library/cluster/html/clusplot.default.html
+
+Entry: clusplot.partition
+Aliases: clusplot.partition
+Keywords: cluster hplot
+Description: Bivariate Clusplot of a Partitioning Object
+URL: ../../../library/cluster/html/clusplot.partition.html
+
+Entry: cluster-internal
+Aliases: meanabsdev
+Keywords: internal
+Description: Internal cluster functions
+URL: ../../../library/cluster/html/cluster-internal.html
+
+Entry: coef.hclust
+Aliases: coef.hclust coef.twins
+Keywords: cluster
+Description: Agglomerative Coefficient for 'hclust' Objects
+URL: ../../../library/cluster/html/coef.hclust.html
+
+Entry: daisy
+Aliases: daisy
+Keywords: cluster
+Description: Dissimilarity Matrix Calculation
+URL: ../../../library/cluster/html/daisy.html
+
+Entry: diana
+Aliases: diana diana.object
+Keywords: cluster
+Description: DIvisive ANAlysis Clustering
+URL: ../../../library/cluster/html/diana.html
+
+Entry: dissimilarity.object
+Aliases: dissimilarity.object
+Keywords: cluster
+Description: Dissimilarity Matrix Object
+URL: ../../../library/cluster/html/dissimilarity.object.html
+
+Entry: ellipsoidhull
+Aliases: ellipsoidhull print.ellipsoid
+Keywords: dplot hplot
+Description: Compute the Ellipsoid Hull or Spanning Ellipsoid of a Point Set
+URL: ../../../library/cluster/html/ellipsoidhull.html
+
+Entry: fanny
+Aliases: fanny
+Keywords: cluster
+Description: Fuzzy Analysis Clustering
+URL: ../../../library/cluster/html/fanny.html
+
+Entry: fanny.object
+Aliases: fanny.object
+Keywords: cluster
+Description: Fuzzy Analysis (FANNY) Object
+URL: ../../../library/cluster/html/fanny.object.html
+
+Entry: flower
+Aliases: flower
+Keywords: datasets
+Description: Flower Characteristics
+URL: ../../../library/cluster/html/flower.html
+
+Entry: lower.to.upper.tri.inds
+Aliases: lower.to.upper.tri.inds upper.to.lower.tri.inds
+Keywords: array utilities
+Description: Permute Indices for Triangular Matrices
+URL: ../../../library/cluster/html/lower.to.upper.tri.inds.html
+
+Entry: mona
+Aliases: mona
+Keywords: cluster
+Description: MONothetic Analysis Clustering of Binary Variables
+URL: ../../../library/cluster/html/mona.html
+
+Entry: mona.object
+Aliases: mona.object
+Keywords: cluster
+Description: Monothetic Analysis (MONA) Object
+URL: ../../../library/cluster/html/mona.object.html
+
+Entry: pam
+Aliases: pam
+Keywords: cluster
+Description: Partitioning Around Medoids
+URL: ../../../library/cluster/html/pam.html
+
+Entry: pam.object
+Aliases: pam.object
+Keywords: cluster
+Description: Partitioning Around Medoids (PAM) Object
+URL: ../../../library/cluster/html/pam.object.html
+
+Entry: partition.object
+Aliases: partition partition.object
+Keywords: cluster
+Description: Partitioning Object
+URL: ../../../library/cluster/html/partition.object.html
+
+Entry: plantTraits
+Aliases: plantTraits
+Keywords: datasets
+Description: Plant Species Traits Data
+URL: ../../../library/cluster/html/plantTraits.html
+
+Entry: plot.agnes
+Aliases: plot.agnes
+Keywords: cluster hplot
+Description: Plots of an Agglomerative Hierarchical Clustering
+URL: ../../../library/cluster/html/plot.agnes.html
+
+Entry: plot.diana
+Aliases: plot.diana
+Keywords: cluster hplot
+Description: Plots of a Divisive Hierarchical Clustering
+URL: ../../../library/cluster/html/plot.diana.html
+
+Entry: plot.mona
+Aliases: plot.mona
+Keywords: cluster hplot
+Description: Banner of Monothetic Divisive Hierarchical Clusterings
+URL: ../../../library/cluster/html/plot.mona.html
+
+Entry: plot.partition
+Aliases: plot.partition
+Keywords: cluster hplot
+Description: Plot of a Partition of the Data Set
+URL: ../../../library/cluster/html/plot.partition.html
+
+Entry: pltree
+Aliases: pltree
+Keywords: cluster hplot
+Description: Clustering Trees - Generic Function
+URL: ../../../library/cluster/html/pltree.html
+
+Entry: pltree.twins
+Aliases: pltree.twins
+Keywords: cluster hplot
+Description: Clustering Tree of a Hierarchical Clustering
+URL: ../../../library/cluster/html/pltree.twins.html
+
+Entry: pluton
+Aliases: pluton
+Keywords: datasets
+Description: Isotopic Composition Plutonium Batches
+URL: ../../../library/cluster/html/pluton.html
+
+Entry: predict.ellipsoid
+Aliases: predict.ellipsoid ellipsoidPoints
+Keywords: dplot utilities
+Description: Predict Method for Ellipsoid Objects
+URL: ../../../library/cluster/html/predict.ellipsoid.html
+
+Entry: print.agnes
+Aliases: print.agnes
+Keywords: cluster print
+Description: Print Method for AGNES Objects
+URL: ../../../library/cluster/html/print.agnes.html
+
+Entry: print.clara
+Aliases: print.clara
+Keywords: cluster print
+Description: Print Method for CLARA Objects
+URL: ../../../library/cluster/html/print.clara.html
+
+Entry: print.diana
+Aliases: print.diana
+Keywords: cluster print
+Description: Print Method for DIANA Objects
+URL: ../../../library/cluster/html/print.diana.html
+
+Entry: print.dissimilarity
+Aliases: print.dissimilarity summary.dissimilarity print.summary.dissimilarity
+Keywords: cluster print
+Description: Print and Summary Methods for Dissimilarity Objects
+URL: ../../../library/cluster/html/print.dissimilarity.html
+
+Entry: print.fanny
+Aliases: print.fanny summary.fanny print.summary.fanny
+Keywords: cluster print
+Description: Print and Summary Methods for FANNY Objects
+URL: ../../../library/cluster/html/print.fanny.html
+
+Entry: print.mona
+Aliases: print.mona
+Keywords: cluster print
+Description: Print Method for MONA Objects
+URL: ../../../library/cluster/html/print.mona.html
+
+Entry: print.pam
+Aliases: print.pam
+Keywords: cluster print
+Description: Print Method for PAM Objects
+URL: ../../../library/cluster/html/print.pam.html
+
+Entry: ruspini
+Aliases: ruspini
+Keywords: datasets
+Description: Ruspini Data
+URL: ../../../library/cluster/html/ruspini.html
+
+Entry: silhouette
+Aliases: silhouette silhouette.clara silhouette.default silhouette.partition sortSilhouette summary.silhouette print.summary.silhouette plot.silhouette
+Keywords: cluster
+Description: Compute or Extract Silhouette Information from Clustering
+URL: ../../../library/cluster/html/silhouette.html
+
+Entry: sizeDiss
+Aliases: sizeDiss
+Keywords: utilities arith
+Description: Sample Size of Dissimilarity Like Object
+URL: ../../../library/cluster/html/sizeDiss.html
+
+Entry: summary.agnes
+Aliases: summary.agnes print.summary.agnes
+Keywords: cluster print
+Description: Summary Method for 'agnes' Objects
+URL: ../../../library/cluster/html/summary.agnes.html
+
+Entry: summary.clara
+Aliases: summary.clara print.summary.clara
+Keywords: cluster print
+Description: Summary Method for 'clara' Objects
+URL: ../../../library/cluster/html/summary.clara.html
+
+Entry: summary.diana
+Aliases: summary.diana print.summary.diana
+Keywords: cluster print
+Description: Summary Method for 'diana' Objects
+URL: ../../../library/cluster/html/summary.diana.html
+
+Entry: summary.mona
+Aliases: summary.mona print.summary.mona
+Keywords: cluster print
+Description: Summary Method for 'mona' Objects
+URL: ../../../library/cluster/html/summary.mona.html
+
+Entry: summary.pam
+Aliases: summary.pam print.summary.pam
+Keywords: cluster
+Description: Summary Method for PAM Objects
+URL: ../../../library/cluster/html/summary.pam.html
+
+Entry: twins.object
+Aliases: twins.object twins
+Keywords: cluster
+Description: Hierarchical Clustering Object
+URL: ../../../library/cluster/html/twins.object.html
+
+Entry: volume.ellipsoid
+Aliases: volume volume.ellipsoid
+Keywords: utilities
+Description: Compute the Volume of Planar Object
+URL: ../../../library/cluster/html/volume.ellipsoid.html
+
+Entry: votes.repub
+Aliases: votes.repub
+Keywords: datasets
+Description: Votes for Republican Candidate in Presidential Elections
+URL: ../../../library/cluster/html/votes.repub.html
+
+Entry: xclara
+Aliases: xclara
+Keywords: datasets
+Description: Bivariate Data Set with 3 Clusters
+URL: ../../../library/cluster/html/xclara.html

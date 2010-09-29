@@ -1,0 +1,2381 @@
+Entry: Arithmetic
+Aliases: + - * ** / ^ %% %/% Arithmetic
+Keywords: arith
+Description: Arithmetic Operators
+URL: ../../../library/base/html/Arithmetic.html
+
+Entry: AsIs
+Aliases: I AsIs print.AsIs [.AsIs
+Keywords: models
+Description: Inhibit Interpretation/Conversion of Objects
+URL: ../../../library/base/html/AsIs.html
+
+Entry: Bessel
+Aliases: bessel Bessel besselI besselJ besselK besselY
+Keywords: math
+Description: Bessel Functions
+URL: ../../../library/base/html/Bessel.html
+
+Entry: Colon
+Aliases: : colon
+Keywords: manip
+Description: Colon Operator
+URL: ../../../library/base/html/Colon.html
+
+Entry: Comparison
+Aliases: < <= == != >= > Comparison
+Keywords: logic
+Description: Relational Operators
+URL: ../../../library/base/html/Comparison.html
+
+Entry: Constants
+Aliases: LETTERS letters month.abb month.name pi
+Keywords: sysdata
+Description: Built-in Constants
+URL: ../../../library/base/html/Constants.html
+
+Entry: Control
+Aliases: Control if else for in while repeat break next
+Keywords: programming iteration logic
+Description: Control Flow
+URL: ../../../library/base/html/Control.html
+
+Entry: Cstack_info
+Aliases: Cstack_info
+Keywords: utilities
+Description: Report Information on C Stack Size and Usage
+URL: ../../../library/base/html/Cstack_info.html
+
+Entry: DateTimeClasses
+Aliases: DateTimeClasses POSIXct POSIXlt POSIXt print.POSIXct print.POSIXlt summary.POSIXct summary.POSIXlt +.POSIXt -.POSIXt Ops.POSIXt Math.POSIXt Summary.POSIXct Math.POSIXlt Summary.POSIXlt [.POSIXct [<-.POSIXct [[.POSIXct [.POSIXlt [<-.POSIXlt as.data.frame.POSIXct as.data.frame.POSIXlt .leap.seconds is.na.POSIXlt all.equal.POSIXct c.POSIXct c.POSIXlt as.matrix.POSIXlt mean.POSIXct mean.POSIXlt str.POSIXt check_tzones duplicated.POSIXlt unique.POSIXlt split.POSIXct date-time
+Keywords: utilities chron
+Description: Date-Time Classes
+URL: ../../../library/base/html/DateTimeClasses.html
+
+Entry: Dates
+Aliases: Date Dates print.Date summary.Date Math.Date Summary.Date [.Date [<-.Date [[.Date as.data.frame.Date c.Date mean.Date split.Date
+Keywords: utilities chron
+Description: Date Class
+URL: ../../../library/base/html/Dates.html
+
+Entry: Defunct
+Aliases: Defunct .Defunct
+Keywords: documentation utilities
+Description: Marking Objects as Defunct
+URL: ../../../library/base/html/Defunct.html
+
+Entry: Deprecated
+Aliases: Deprecated .Deprecated
+Keywords: documentation utilities
+Description: Marking Objects as Deprecated
+URL: ../../../library/base/html/Deprecated.html
+
+Entry: Encoding
+Aliases: Encoding Encoding<-
+Keywords: utilities character
+Description: Read or Set the Declared Encodings for a Character Vector
+URL: ../../../library/base/html/Encoding.html
+
+Entry: EnvVar
+Aliases: environment variables HOME LANGUAGE R_BATCH R_BROWSER R_COMPLETION R_DOC_DIR R_DVIPSCMD R_GSCMD R_HISTFILE R_HISTSIZE R_INCLUDE_DIR R_LATEXCMD R_MAKEINDEXCMD R_PAPERSIZE R_PDFLATEXCMD R_PDFVIEWER R_PLATFORM R_RD4DVI R_RD4PDF R_SHARE_DIR R_TEXI2DVICMD R_UNZIPCMD R_ZIPCMD GSC R_USER
+Keywords: utilities
+Description: Environment Variables
+URL: ../../../library/base/html/EnvVar.html
+
+Entry: Extract
+Aliases: Extract Subscript [ [.listof [.simple.list [[ $ [<- [[<- $<-
+Keywords: array list
+Description: Extract or Replace Parts of an Object
+URL: ../../../library/base/html/Extract.html
+
+Entry: Extract.data.frame
+Aliases: [.data.frame [[.data.frame [<-.data.frame [[<-.data.frame $<-.data.frame
+Keywords: array
+Description: Extract or Replace Parts of a Data Frame
+URL: ../../../library/base/html/Extract.data.frame.html
+
+Entry: Extract.factor
+Aliases: [.factor [<-.factor [[.factor
+Keywords: category
+Description: Extract or Replace Parts of a Factor
+URL: ../../../library/base/html/Extract.factor.html
+
+Entry: Extremes
+Aliases: max min pmax pmin pmax.int pmin.int
+Keywords: univar arith
+Description: Maxima and Minima
+URL: ../../../library/base/html/Extremes.html
+
+Entry: Foreign
+Aliases: Foreign .C .Fortran .External .Call .External.graphics .Call.graphics
+Keywords: programming
+Description: Foreign Function Interface
+URL: ../../../library/base/html/Foreign.html
+
+Entry: Hyperbolic
+Aliases: cosh sinh tanh acosh asinh atanh
+Keywords: math
+Description: Hyperbolic Functions
+URL: ../../../library/base/html/Hyperbolic.html
+
+Entry: Internal
+Aliases: .Internal
+Keywords: interface
+Description: Call an Internal Function
+URL: ../../../library/base/html/Internal.html
+
+Entry: Last.value
+Aliases: .Last.value
+Keywords: programming
+Description: Value of Last Evaluated Expression
+URL: ../../../library/base/html/Last.value.html
+
+Entry: log
+Aliases: log logb log10 log2 log1p exp expm1
+Keywords: math
+Description: Logarithms and Exponentials
+URL: ../../../library/base/html/Log.html
+
+Entry: Logic
+Aliases: ! & && | || xor Logic isTRUE
+Keywords: logic
+Description: Logical Operators
+URL: ../../../library/base/html/Logic.html
+
+Entry: MathFun
+Aliases: abs sqrt
+Keywords: math
+Description: Miscellaneous Mathematical Functions
+URL: ../../../library/base/html/MathFun.html
+
+Entry: Memory-limits
+Aliases: Memory-limits
+Keywords: environment
+Description: Memory Limits in R
+URL: ../../../library/base/html/Memory-limits.html
+
+Entry: Memory
+Aliases: Memory mem.limits
+Keywords: environment
+Description: Memory Available for Data Storage
+URL: ../../../library/base/html/Memory.html
+
+Entry: NA
+Aliases: NA NA_integer_ NA_real_ NA_complex_ NA_character_ is.na is.na.data.frame is.na<- is.na<-.default
+Keywords: NA logic manip
+Description: Not Available / "Missing" Values
+URL: ../../../library/base/html/NA.html
+
+Entry: NULL
+Aliases: NULL as.null as.null.default is.null
+Keywords: attribute manip list sysdata
+Description: The Null Object
+URL: ../../../library/base/html/NULL.html
+
+Entry: NumericConstants
+Aliases: NumericConstants
+Keywords: documentation
+Description: Numeric Constants
+URL: ../../../library/base/html/NumericConstants.html
+
+Entry: Ops.Date
+Aliases: +.Date -.Date Ops.Date
+Keywords: utilities chron
+Description: Operators on the Date Class
+URL: ../../../library/base/html/Ops.Date.html
+
+Entry: Paren
+Aliases: Paren ( {
+Keywords: programming
+Description: Parentheses and Braces
+URL: ../../../library/base/html/Paren.html
+
+Entry: .Platform
+Aliases: .Platform
+Keywords: file utilities
+Description: Platform Specific Variables
+URL: ../../../library/base/html/Platform.html
+
+Entry: Primitive
+Aliases: .Primitive primitive
+Keywords: interface
+Description: Call a "Primitive" Internal Function
+URL: ../../../library/base/html/Primitive.html
+
+Entry: Quotes
+Aliases: Quotes backtick backquote ' " `
+Keywords: documentation
+Description: Quotes
+URL: ../../../library/base/html/Quotes.html
+
+Entry: Random.user
+Aliases: Random.user
+Keywords: distribution sysdata
+Description: User-supplied Random Number Generation
+URL: ../../../library/base/html/Random-user.html
+
+Entry: Random
+Aliases: RNG RNGkind RNGversion set.seed .Random.seed
+Keywords: distribution sysdata
+Description: Random Number Generation
+URL: ../../../library/base/html/Random.html
+
+Entry: RdUtils
+Aliases: Rdconv Rd2txt Rd2dvi Sd2Rd
+Keywords: utilities
+Description: Utilities for Processing Rd Files
+URL: ../../../library/base/html/RdUtils.html
+
+Entry: Recall
+Aliases: Recall
+Keywords: programming
+Description: Recursive Calling
+URL: ../../../library/base/html/Recall.html
+
+Entry: Reserved
+Aliases: Reserved reserved
+Keywords: programming documentation
+Description: Reserved Words in R
+URL: ../../../library/base/html/Reserved.html
+
+Entry: Rhome
+Aliases: R.home R_HOME
+Keywords: utilities
+Description: Return the R Home Directory
+URL: ../../../library/base/html/Rhome.html
+
+Entry: Round
+Aliases: ceiling floor round signif trunc zapsmall
+Keywords: arith
+Description: Rounding of Numbers
+URL: ../../../library/base/html/Round.html
+
+Entry: Special
+Aliases: Special beta lbeta gamma lgamma psigamma digamma trigamma choose lchoose factorial lfactorial
+Keywords: math
+Description: Special Functions of Mathematics
+URL: ../../../library/base/html/Special.html
+
+Entry: Startup
+Aliases: Startup Rprofile .Rprofile Rprofile.site Renviron Renviron.site .Renviron .First .First.sys .OptRequireMethods R_DEFAULT_PACKAGES R_ENVIRON R_ENVIRON_USER R_PROFILE R_PROFILE_USER
+Keywords: environment
+Description: Initialization at Start of an R Session
+URL: ../../../library/base/html/Startup.html
+
+Entry: Syntax
+Aliases: Syntax
+Keywords: documentation programming
+Description: Operator Syntax and Precedence
+URL: ../../../library/base/html/Syntax.html
+
+Entry: Sys.getenv
+Aliases: Sys.getenv
+Keywords: environment utilities
+Description: Get Environment Variables
+URL: ../../../library/base/html/Sys.getenv.html
+
+Entry: getpid
+Aliases: Sys.getpid
+Keywords: utilities
+Description: Get the Process ID of the R Session
+URL: ../../../library/base/html/Sys.getpid.html
+
+Entry: Sys.glob
+Aliases: Sys.glob
+Keywords: utilities file
+Description: Wildcard Expansion on File Paths
+URL: ../../../library/base/html/Sys.glob.html
+
+Entry: Sys.info
+Aliases: Sys.info
+Keywords: utilities
+Description: Extract System and User Information
+URL: ../../../library/base/html/Sys.info.html
+
+Entry: localeconv
+Aliases: localeconv Sys.localeconv
+Keywords: utilities
+Description: Find Details of the Numerical and Monetary Representations in the Current Locale
+URL: ../../../library/base/html/Sys.localeconv.html
+
+Entry: Sys.setenv
+Aliases: Sys.setenv Sys.unsetenv
+Keywords: environment utilities
+Description: Set or Unset Environment Variables
+URL: ../../../library/base/html/Sys.setenv.html
+
+Entry: Sys.sleep
+Aliases: Sys.sleep
+Keywords: utilities
+Description: Suspend Execution for a Time Interval
+URL: ../../../library/base/html/Sys.sleep.html
+
+Entry: Sys.time
+Aliases: Sys.time Sys.Date
+Keywords: utilities chron
+Description: Get Current Date and Time
+URL: ../../../library/base/html/Sys.time.html
+
+Entry: Sys.which
+Aliases: Sys.which
+Keywords: utilities
+Description: Find Full Paths of Executables
+URL: ../../../library/base/html/Sys.which.html
+
+Entry: Trig
+Aliases: Trig cos sin tan acos asin atan atan2
+Keywords: math
+Description: Trigonometric Functions
+URL: ../../../library/base/html/Trig.html
+
+Entry: UseMethod
+Aliases: UseMethod NextMethod S3Methods .Method .Generic .Class
+Keywords: methods
+Description: Class Methods
+URL: ../../../library/base/html/UseMethod.html
+
+Entry: R.Version
+Aliases: R.Version R.version version R.version.string
+Keywords: environment sysdata programming
+Description: Version Information
+URL: ../../../library/base/html/Version.html
+
+Entry: abbreviate
+Aliases: abbreviate
+Keywords: character
+Description: Abbreviate Strings
+URL: ../../../library/base/html/abbreviate.html
+
+Entry: agrep
+Aliases: agrep fuzzy matching
+Keywords: character
+Description: Approximate String Matching (Fuzzy Matching)
+URL: ../../../library/base/html/agrep.html
+
+Entry: all
+Aliases: all
+Keywords: logic
+Description: Are All Values True?
+URL: ../../../library/base/html/all.html
+
+Entry: all.equal
+Aliases: all.equal all.equal.default all.equal.numeric all.equal.character all.equal.factor all.equal.formula all.equal.list all.equal.language all.equal.raw attr.all.equal
+Keywords: programming utilities logic arith
+Description: Test if Two Objects are (Nearly) Equal
+URL: ../../../library/base/html/all.equal.html
+
+Entry: all.names
+Aliases: all.names all.vars
+Keywords: programming
+Description: Find All Names in an Expression
+URL: ../../../library/base/html/allnames.html
+
+Entry: any
+Aliases: any
+Keywords: logic
+Description: Are Some Values True?
+URL: ../../../library/base/html/any.html
+
+Entry: aperm
+Aliases: aperm
+Keywords: array
+Description: Array Transposition
+URL: ../../../library/base/html/aperm.html
+
+Entry: append
+Aliases: append
+Keywords: manip
+Description: Vector Merging
+URL: ../../../library/base/html/append.html
+
+Entry: apply
+Aliases: apply
+Keywords: iteration array
+Description: Apply Functions Over Array Margins
+URL: ../../../library/base/html/apply.html
+
+Entry: args
+Aliases: args
+Keywords: documentation
+Description: Argument List of a Function
+URL: ../../../library/base/html/args.html
+
+Entry: array
+Aliases: array as.array as.array.default is.array
+Keywords: array
+Description: Multi-way Arrays
+URL: ../../../library/base/html/array.html
+
+Entry: as.POSIX*
+Aliases: as.POSIXct as.POSIXct.default as.POSIXct.POSIXlt as.POSIXct.date as.POSIXct.dates as.POSIXct.Date as.POSIXct.numeric as.POSIXlt as.POSIXlt.Date as.POSIXlt.date as.POSIXlt.dates as.POSIXlt.POSIXct as.POSIXlt.factor as.POSIXlt.character as.POSIXlt.default as.POSIXlt.numeric as.double.POSIXlt
+Keywords: utilities chron
+Description: Date-time Conversion Functions
+URL: ../../../library/base/html/as.POSIXlt.html
+
+Entry: as.data.frame
+Aliases: as.data.frame is.data.frame as.data.frame.AsIs as.data.frame.character as.data.frame.complex as.data.frame.data.frame as.data.frame.default as.data.frame.factor as.data.frame.integer as.data.frame.list as.data.frame.logical as.data.frame.raw as.data.frame.matrix as.data.frame.model.matrix as.data.frame.numeric as.data.frame.ordered as.data.frame.ts as.data.frame.vector as.data.frame.array as.data.frame.difftime
+Keywords: classes methods
+Description: Coerce to a Data Frame
+URL: ../../../library/base/html/as.data.frame.html
+
+Entry: as.environment
+Aliases: as.environment
+Keywords: data environment
+Description: Coerce to an Environment Object
+URL: ../../../library/base/html/as.environment.html
+
+Entry: as.function
+Aliases: as.function as.function.default
+Keywords: programming
+Description: Convert Object to Function
+URL: ../../../library/base/html/as.function.html
+
+Entry: assign
+Aliases: assign
+Keywords: data
+Description: Assign a Value to a Name
+URL: ../../../library/base/html/assign.html
+
+Entry: assignOps
+Aliases: <- = <<- -> ->> assignOps
+Keywords: data
+Description: Assignment Operators
+URL: ../../../library/base/html/assignOps.html
+
+Entry: attach
+Aliases: attach
+Keywords: data
+Description: Attach Set of R Objects to Search Path
+URL: ../../../library/base/html/attach.html
+
+Entry: attr
+Aliases: attr attr<-
+Keywords: attribute
+Description: Object Attributes
+URL: ../../../library/base/html/attr.html
+
+Entry: attributes
+Aliases: attributes attributes<- mostattributes<-
+Keywords: attribute
+Description: Object Attribute Lists
+URL: ../../../library/base/html/attributes.html
+
+Entry: autoload
+Aliases: autoload autoloader .AutoloadEnv .Autoloaded Autoloads
+Keywords: data programming
+Description: On-demand Loading of Packages
+URL: ../../../library/base/html/autoload.html
+
+Entry: backsolve
+Aliases: backsolve forwardsolve
+Keywords: algebra array
+Description: Solve an Upper or Lower Triangular System
+URL: ../../../library/base/html/backsolve.html
+
+Entry: base-defunct
+Aliases: base-defunct Version provide .Provided category print.anova.glm print.anova.lm print.tabular print.plot save.plot system.test getenv read.table.url scan.url source.url httpclient parse.dcf .Alias print.ordered .Dyn.libs .lib.loc machine Platform Machine restart printNoClass codes codes.factor codes.ordered codes<- print.atomic La.eigen tetragamma pentagamma package.description loadURL delay write.table0 format.char La.chol La.chol2inv symbol.C symbol.For unix gammaCody manglePackageName
+Keywords: internal
+Description: Defunct Functions in Base Package
+URL: ../../../library/base/html/base-defunct.html
+
+Entry: base-deprecated
+Aliases: base-deprecated Sys.putenv
+Keywords: misc
+Description: Deprecated Functions in Base package
+URL: ../../../library/base/html/base-deprecated.html
+
+Entry: base-internal
+Aliases: .subset .subset2 .find.package .path.package .getRequiredPackages .getRequiredPackages2 testPlatformEquivalence .isMethodsDispatchOn sys.save.image sys.load.image .row_names_info .set_row_names .ArgsEnv .GenericArgsEnv findPackageEnv lazyLoadDBfetch .TAOCP1997init .gt .gtn
+Keywords: internal
+Description: Internal Functions in the Base Package
+URL: ../../../library/base/html/base-internal.html
+
+Entry: base-package
+Aliases: base-package base
+Keywords: package
+Description: The R Base Package
+URL: ../../../library/base/html/base-package.html
+
+Entry: basename
+Aliases: basename dirname
+Keywords: file
+Description: Manipulate File Paths
+URL: ../../../library/base/html/basename.html
+
+Entry: bindenv
+Aliases: bindenv lockEnvironment environmentIsLocked lockBinding unlockBinding makeActiveBinding bindingIsLocked bindingIsActive
+Keywords: utilities
+Description: Binding and Environment Adjustments
+URL: ../../../library/base/html/bindenv.html
+
+Entry: body
+Aliases: body body<-
+Keywords: programming
+Description: Access to and Manipulation of the Body of a Function
+URL: ../../../library/base/html/body.html
+
+Entry: bquote
+Aliases: bquote
+Keywords: programming data
+Description: Partial substitution in expressions
+URL: ../../../library/base/html/bquote.html
+
+Entry: browser
+Aliases: browser
+Keywords: programming environment
+Description: Environment Browser
+URL: ../../../library/base/html/browser.html
+
+Entry: builtins
+Aliases: builtins
+Keywords: utilities
+Description: Returns the Names of All Built-in Objects
+URL: ../../../library/base/html/builtins.html
+
+Entry: by
+Aliases: by by.default by.data.frame print.by
+Keywords: iteration category
+Description: Apply a Function to a Data Frame split by Factors
+URL: ../../../library/base/html/by.html
+
+Entry: c
+Aliases: c
+Keywords: manip
+Description: Combine Values into a Vector or List
+URL: ../../../library/base/html/c.html
+
+Entry: call
+Aliases: call is.call as.call
+Keywords: programming attribute
+Description: Function Calls
+URL: ../../../library/base/html/call.html
+
+Entry: callCC
+Aliases: callCC
+Keywords: programming
+Description: Call With Current Continuation
+URL: ../../../library/base/html/callCC.html
+
+Entry: capabilities
+Aliases: capabilities
+Keywords: utilities
+Description: Report Capabilities of this Build of R
+URL: ../../../library/base/html/capabilities.html
+
+Entry: cat
+Aliases: cat
+Keywords: print file connection
+Description: Concatenate and Print
+URL: ../../../library/base/html/cat.html
+
+Entry: cbind
+Aliases: cbind rbind cbind.data.frame rbind.data.frame .__H__.cbind .__H__.rbind
+Keywords: array manip
+Description: Combine R Objects by Rows or Columns
+URL: ../../../library/base/html/cbind.html
+
+Entry: char.expand
+Aliases: char.expand
+Keywords: character
+Description: Expand a String with Respect to a Target Table
+URL: ../../../library/base/html/char.expand.html
+
+Entry: character
+Aliases: character as.character as.character.default as.character.factor is.character
+Keywords: character classes
+Description: Character Vectors
+URL: ../../../library/base/html/character.html
+
+Entry: charmatch
+Aliases: charmatch
+Keywords: character
+Description: Partial String Matching
+URL: ../../../library/base/html/charmatch.html
+
+Entry: chartr
+Aliases: chartr tolower toupper casefold
+Keywords: character
+Description: Character Translation and Casefolding
+URL: ../../../library/base/html/chartr.html
+
+Entry: chol
+Aliases: chol chol.default
+Keywords: algebra array
+Description: The Choleski Decomposition
+URL: ../../../library/base/html/chol.html
+
+Entry: chol2inv
+Aliases: chol2inv
+Keywords: algebra array
+Description: Inverse from Choleski (or QR) Decomposition
+URL: ../../../library/base/html/chol2inv.html
+
+Entry: class
+Aliases: class class<- oldClass oldClass<- unclass inherits
+Keywords: methods classes
+Description: Object Classes
+URL: ../../../library/base/html/class.html
+
+Entry: col
+Aliases: col
+Keywords: array
+Description: Column Indexes
+URL: ../../../library/base/html/col.html
+
+Entry: colSums
+Aliases: colSums rowSums colMeans rowMeans
+Keywords: array algebra arith
+Description: Form Row and Column Sums and Means
+URL: ../../../library/base/html/colSums.html
+
+Entry: row/colnames
+Aliases: rownames rownames<- colnames colnames<-
+Keywords: array manip
+Description: Row and Column Names
+URL: ../../../library/base/html/colnames.html
+
+Entry: commandArgs
+Aliases: commandArgs
+Keywords: environment sysdata programming
+Description: Extract Command Line Arguments
+URL: ../../../library/base/html/commandArgs.html
+
+Entry: comment
+Aliases: comment comment<-
+Keywords: attribute
+Description: Query or Set a 'Comment' Attribute
+URL: ../../../library/base/html/comment.html
+
+Entry: complex
+Aliases: complex as.complex is.complex Re Im Mod Arg Conj
+Keywords: complex
+Description: Complex Vectors
+URL: ../../../library/base/html/complex.html
+
+Entry: conditions
+Aliases: conditions condition computeRestarts conditionCall conditionMessage findRestart invokeRestart invokeRestartInteractively isRestart restartDescription restartFormals signalCondition simpleCondition simpleError simpleWarning simpleMessage tryCatch withCallingHandlers withRestarts .signalSimpleWarning .handleSimpleError as.character.condition as.character.error conditionCall.condition conditionMessage.condition print.condition print.restart
+Keywords: programming error
+Description: Condition Handling and Recovery
+URL: ../../../library/base/html/conditions.html
+
+Entry: conflicts
+Aliases: conflicts
+Keywords: utilities
+Description: Search for Masked Objects on the Search Path
+URL: ../../../library/base/html/conflicts.html
+
+Entry: connections
+Aliases: connections connection file clipboard pipe fifo gzfile unz bzfile url socketConnection open open.connection isOpen isIncomplete close close.connection flush flush.connection print.connection summary.connection
+Keywords: file connection
+Description: Functions to Manipulate Connections
+URL: ../../../library/base/html/connections.html
+
+Entry: contributors
+Aliases: contributors
+Keywords: misc
+Description: R Project Contributors
+URL: ../../../library/base/html/contributors.html
+
+Entry: getNumCConverters
+Aliases: getNumCConverters getCConverterDescriptions getCConverterStatus setCConverterStatus removeCConverter
+Keywords: interface programming
+Description: Management of .C argument conversion list
+URL: ../../../library/base/html/converters.html
+
+Entry: copyright
+Aliases: copyright copyrights
+Keywords: misc
+Description: Copyrights of Files Used to Build R
+URL: ../../../library/base/html/copyright.html
+
+Entry: crossprod
+Aliases: crossprod tcrossprod
+Keywords: algebra array
+Description: Matrix Crossproduct
+URL: ../../../library/base/html/crossprod.html
+
+Entry: cumsum
+Aliases: cumsum cumprod cummin cummax
+Keywords: arith
+Description: Cumulative Sums, Products, and Extremes
+URL: ../../../library/base/html/cumsum.html
+
+Entry: cut.POSIXt
+Aliases: cut.POSIXt cut.Date
+Keywords: manip chron
+Description: Convert a Date or Date-Time Object to a Factor
+URL: ../../../library/base/html/cut.POSIXt.html
+
+Entry: cut
+Aliases: cut cut.default
+Keywords: category
+Description: Convert Numeric to Factor
+URL: ../../../library/base/html/cut.html
+
+Entry: data.class
+Aliases: data.class
+Keywords: classes methods
+Description: Object Classes
+URL: ../../../library/base/html/data.class.html
+
+Entry: data.frame
+Aliases: data.frame default.stringsAsFactors
+Keywords: classes methods
+Description: Data Frames
+URL: ../../../library/base/html/data.frame.html
+
+Entry: data.matrix
+Aliases: data.matrix
+Keywords: array
+Description: Convert a Data Frame to a Numeric Matrix
+URL: ../../../library/base/html/data.matrix.html
+
+Entry: dataframeHelpers
+Aliases: xpdrows.data.frame
+Keywords: internal
+Description: Data Frame Auxiliary Functions
+URL: ../../../library/base/html/dataframeHelpers.html
+
+Entry: date
+Aliases: date
+Keywords: utilities
+Description: System Date and Time
+URL: ../../../library/base/html/date.html
+
+Entry: dcf
+Aliases: read.dcf write.dcf
+Keywords: print file
+Description: Read and Write Data in DCF Format
+URL: ../../../library/base/html/dcf.html
+
+Entry: debug
+Aliases: debug undebug isdebugged
+Keywords: programming environment
+Description: Debug a Function
+URL: ../../../library/base/html/debug.html
+
+Entry: delayedAssign
+Aliases: delayedAssign promise promises
+Keywords: programming data
+Description: Delay Evaluation
+URL: ../../../library/base/html/delayedAssign.html
+
+Entry: deparse
+Aliases: deparse
+Keywords: programming manip data
+Description: Expression Deparsing
+URL: ../../../library/base/html/deparse.html
+
+Entry: deparseOpts
+Aliases: .deparseOpts
+Keywords: programming
+Description: Options for Expression Deparsing
+URL: ../../../library/base/html/deparseOpts.html
+
+Entry: det
+Aliases: det determinant determinant.matrix
+Keywords: array
+Description: Calculate the Determinant of a Matrix
+URL: ../../../library/base/html/det.html
+
+Entry: detach
+Aliases: detach
+Keywords: data
+Description: Detach Objects from the Search Path
+URL: ../../../library/base/html/detach.html
+
+Entry: .Device
+Aliases: .Device .Devices
+Keywords: device
+Description: Lists of Open/Active Graphics Devices
+URL: ../../../library/base/html/dev.html
+
+Entry: diag
+Aliases: diag diag<-
+Keywords: array
+Description: Matrix Diagonals
+URL: ../../../library/base/html/diag.html
+
+Entry: diff
+Aliases: diff diff.default diff.POSIXt diff.Date
+Keywords: arith
+Description: Lagged Differences
+URL: ../../../library/base/html/diff.html
+
+Entry: difftime
+Aliases: difftime as.difftime as.double.difftime print.difftime round.difftime format.difftime units.difftime units<-.difftime Ops.difftime *.difftime /.difftime Math.difftime Summary.difftime [.difftime mean.difftime units units<- time interval
+Keywords: utilities chron
+Description: Time Intervals
+URL: ../../../library/base/html/difftime.html
+
+Entry: dim
+Aliases: dim dim.data.frame dim<-
+Keywords: array
+Description: Dimensions of an Object
+URL: ../../../library/base/html/dim.html
+
+Entry: dimnames
+Aliases: dimnames dimnames<- dimnames.data.frame dimnames<-.data.frame
+Keywords: array manip
+Description: Dimnames of an Object
+URL: ../../../library/base/html/dimnames.html
+
+Entry: do.call
+Aliases: do.call
+Keywords: programming
+Description: Execute a Function Call
+URL: ../../../library/base/html/do.call.html
+
+Entry: double
+Aliases: double as.double is.double single as.single as.single.default
+Keywords: classes
+Description: Double-Precision Vectors
+URL: ../../../library/base/html/double.html
+
+Entry: dput
+Aliases: dput dget
+Keywords: file programming connection
+Description: Write an Object to a File or Recreate it
+URL: ../../../library/base/html/dput.html
+
+Entry: drop
+Aliases: drop
+Keywords: array
+Description: Drop Redundant Extent Information
+URL: ../../../library/base/html/drop.html
+
+Entry: dump
+Aliases: dump
+Keywords: file connection
+Description: Text Representations of R Objects
+URL: ../../../library/base/html/dump.html
+
+Entry: duplicated
+Aliases: duplicated duplicated.default duplicated.data.frame duplicated.matrix duplicated.array anyDuplicated anyDuplicated.default anyDuplicated.array anyDuplicated.matrix anyDuplicated.data.frame
+Keywords: logic manip
+Description: Determine Duplicate Elements
+URL: ../../../library/base/html/duplicated.html
+
+Entry: dyn.load
+Aliases: dyn.load dyn.unload is.loaded DLLpath
+Keywords: interface
+Description: Foreign Function Interface
+URL: ../../../library/base/html/dynload.html
+
+Entry: eapply
+Aliases: eapply
+Keywords: iteration environment list
+Description: Apply a Function over values in an environment
+URL: ../../../library/base/html/eapply.html
+
+Entry: eigen
+Aliases: eigen
+Keywords: algebra array
+Description: Spectral Decomposition of a Matrix
+URL: ../../../library/base/html/eigen.html
+
+Entry: encodeString
+Aliases: encodeString
+Keywords: utilities
+Description: Encode Character Vector as for Printing
+URL: ../../../library/base/html/encodeString.html
+
+Entry: environment
+Aliases: environment environment<- .GlobalEnv globalenv emptyenv baseenv is.environment new.env parent.env parent.env<- .BaseNamespaceEnv environmentName env.profile
+Keywords: data programming
+Description: Environment Access
+URL: ../../../library/base/html/environment.html
+
+Entry: eval
+Aliases: eval evalq eval.parent local
+Keywords: data programming
+Description: Evaluate an (Unevaluated) Expression
+URL: ../../../library/base/html/eval.html
+
+Entry: exists
+Aliases: exists
+Keywords: data
+Description: Is an Object Defined?
+URL: ../../../library/base/html/exists.html
+
+Entry: expand.grid
+Aliases: expand.grid
+Keywords: models array
+Description: Create a Data Frame from All Combinations of Factors
+URL: ../../../library/base/html/expand.grid.html
+
+Entry: expression
+Aliases: expression is.expression as.expression as.expression.default
+Keywords: programming dplot
+Description: Unevaluated Expressions
+URL: ../../../library/base/html/expression.html
+
+Entry: factor
+Aliases: factor ordered is.factor is.ordered as.factor as.ordered is.na<-.factor Math.factor Ops.factor Summary.factor Ops.ordered addNA
+Keywords: category NA
+Description: Factors
+URL: ../../../library/base/html/factor.html
+
+Entry: file.access
+Aliases: file.access
+Keywords: file
+Description: Ascertain File Accessibility
+URL: ../../../library/base/html/file.access.html
+
+Entry: file.choose
+Aliases: file.choose
+Keywords: file
+Description: Choose a File Interactively
+URL: ../../../library/base/html/file.choose.html
+
+Entry: file.info
+Aliases: file.info
+Keywords: file
+Description: Extract File Information
+URL: ../../../library/base/html/file.info.html
+
+Entry: file.path
+Aliases: file.path
+Keywords: file
+Description: Construct Path to File
+URL: ../../../library/base/html/file.path.html
+
+Entry: file.show
+Aliases: file.show
+Keywords: file
+Description: Display One or More Files
+URL: ../../../library/base/html/file.show.html
+
+Entry: files
+Aliases: files file.append file.copy file.create file.exists file.rcopy file.remove file.rename file.symlink
+Keywords: file
+Description: File Manipulation
+URL: ../../../library/base/html/files.html
+
+Entry: files2
+Aliases: dir.create Sys.chmod Sys.umask
+Keywords: file
+Description: Manipulaton of Directories and file Permissions
+URL: ../../../library/base/html/files2.html
+
+Entry: findInterval
+Aliases: findInterval
+Keywords: arith utilities
+Description: Find Interval Numbers or Indices
+URL: ../../../library/base/html/findInt.html
+
+Entry: force
+Aliases: force
+Keywords: data programming
+Description: Force Evaluation of an Argument
+URL: ../../../library/base/html/force.html
+
+Entry: formals
+Aliases: formals formals<-
+Keywords: programming
+Description: Access to and Manipulation of the Formal Arguments
+URL: ../../../library/base/html/formals.html
+
+Entry: format.Date
+Aliases: format.Date as.character.Date as.Date as.Date.character as.Date.default as.Date.factor as.Date.POSIXct as.Date.POSIXlt as.Date.date as.Date.dates as.Date.numeric
+Keywords: utilities chron
+Description: Date Conversion Functions to and from Character
+URL: ../../../library/base/html/format.Date.html
+
+Entry: format
+Aliases: format format.AsIs format.data.frame format.default format.factor
+Keywords: character print
+Description: Encode in a Common Format
+URL: ../../../library/base/html/format.html
+
+Entry: format.info
+Aliases: format.info
+Keywords: character print programming
+Description: format(.) Information
+URL: ../../../library/base/html/format.info.html
+
+Entry: format.pval
+Aliases: format.pval
+Keywords: print
+Description: Format P Values
+URL: ../../../library/base/html/format.pval.html
+
+Entry: formatDL
+Aliases: formatDL
+Keywords: print
+Description: Format Description Lists
+URL: ../../../library/base/html/formatDL.html
+
+Entry: formatC
+Aliases: formatC prettyNum
+Keywords: character print
+Description: Formatting Using C-style Formats
+URL: ../../../library/base/html/formatc.html
+
+Entry: function
+Aliases: function return
+Keywords: programming
+Description: Function Definition
+URL: ../../../library/base/html/function.html
+
+Entry: funprog
+Aliases: Filter Find Map Negate Reduce Position
+Keywords: programming
+Description: Common Higher-Order Functions in Functional Programming Languages
+URL: ../../../library/base/html/funprog.html
+
+Entry: gc
+Aliases: gc gcinfo
+Keywords: environment
+Description: Garbage Collection
+URL: ../../../library/base/html/gc.html
+
+Entry: gc.time
+Aliases: gc.time
+Keywords: utilities
+Description: Report Time Spent in Garbage Collection
+URL: ../../../library/base/html/gc.time.html
+
+Entry: gctorture
+Aliases: gctorture
+Keywords: environment
+Description: Torture Garbage Collector
+URL: ../../../library/base/html/gctorture.html
+
+Entry: get
+Aliases: get mget
+Keywords: data
+Description: Return the Value of a Named Object
+URL: ../../../library/base/html/get.html
+
+Entry: getCallingDLL
+Aliases: getCallingDLL getCallingDLLe
+Keywords: internal
+Description: Compute DLL for Native Interface Call
+URL: ../../../library/base/html/getCallingDLL.html
+
+Entry: getDLLRegisteredRoutines
+Aliases: getDLLRegisteredRoutines getDLLRegisteredRoutines.character getDLLRegisteredRoutines.DLLInfo print.NativeRoutineList print.DLLRegisteredRoutines
+Keywords: interface
+Description: Reflectance Information for C/Fortran routines in a DLL
+URL: ../../../library/base/html/getDLLRegisteredRoutines.html
+
+Entry: getLoadedDLLs
+Aliases: getLoadedDLLs print.DLLInfo print.DLLInfoList $.DLLInfo
+Keywords: interface
+Description: Get DLLs Loaded in Current Session
+URL: ../../../library/base/html/getLoadedDLLs.html
+
+Entry: getNativeSymbolInfo
+Aliases: getNativeSymbolInfo NativeSymbolInfo NativeSymbol RegisteredNativeSymbol
+Keywords: interface
+Description: Obtain a Description of one or more Native (C/Fortran) Symbols
+URL: ../../../library/base/html/getNativeSymbolInfo.html
+
+Entry: gettext
+Aliases: gettext ngettext bindtextdomain
+Keywords: utilities character
+Description: Translate Text Messages
+URL: ../../../library/base/html/gettext.html
+
+Entry: getwd
+Aliases: getwd setwd
+Keywords: utilities
+Description: Get or Set Working Directory
+URL: ../../../library/base/html/getwd.html
+
+Entry: gl
+Aliases: gl
+Keywords: category arith
+Description: Generate Factor Levels
+URL: ../../../library/base/html/gl.html
+
+Entry: grep
+Aliases: grep grepl sub gsub regexpr gregexpr
+Keywords: character utilities
+Description: Pattern Matching and Replacement
+URL: ../../../library/base/html/grep.html
+
+Entry: groupGeneric
+Aliases: S3groupGeneric .Group Math Math.data.frame Ops Ops.data.frame Summary Summary.data.frame Complex group generic
+Keywords: methods
+Description: S3 Group Generic Functions
+URL: ../../../library/base/html/groupGeneric.html
+
+Entry: gzcon
+Aliases: gzcon
+Keywords: file connection
+Description: (De)compress I/O Through Connections
+URL: ../../../library/base/html/gzcon.html
+
+Entry: hexmode
+Aliases: as.hexmode format.hexmode print.hexmode as.character.hexmode [.hexmode hexmode
+Keywords: print
+Description: Display Numbers in Hexadecimal
+URL: ../../../library/base/html/hexmode.html
+
+Entry: iconv
+Aliases: iconv iconvlist
+Keywords: character utilities
+Description: Convert Character Vector between Encodings
+URL: ../../../library/base/html/iconv.html
+
+Entry: icuSetCollate
+Aliases: icuSetCollate
+Keywords: utilities
+Description: Setup Collation by ICU
+URL: ../../../library/base/html/icuSetCollate.html
+
+Entry: identical
+Aliases: identical
+Keywords: programming logic iteration
+Description: Test Objects for Exact Equality
+URL: ../../../library/base/html/identical.html
+
+Entry: identity
+Aliases: identity
+Keywords: programming
+Description: Identity function
+URL: ../../../library/base/html/identity.html
+
+Entry: ifelse
+Aliases: ifelse
+Keywords: logic programming
+Description: Conditional Element Selection
+URL: ../../../library/base/html/ifelse.html
+
+Entry: integer
+Aliases: integer as.integer is.integer
+Keywords: classes
+Description: Integer Vectors
+URL: ../../../library/base/html/integer.html
+
+Entry: interaction
+Aliases: interaction
+Keywords: category
+Description: Compute Factor Interactions
+URL: ../../../library/base/html/interaction.html
+
+Entry: interactive
+Aliases: interactive
+Keywords: environment programming
+Description: Is R Running Interactively?
+URL: ../../../library/base/html/interactive.html
+
+Entry: invisible
+Aliases: invisible
+Keywords: programming
+Description: Change the Print Mode to Invisible
+URL: ../../../library/base/html/invisible.html
+
+Entry: is.finite
+Aliases: is.finite is.infinite Inf NaN is.nan finite
+Keywords: programming math
+Description: Finite, Infinite and NaN Numbers
+URL: ../../../library/base/html/is.finite.html
+
+Entry: is.function
+Aliases: is.function is.primitive
+Keywords: programming
+Description: Is an Object of Type (Primitive) Function?
+URL: ../../../library/base/html/is.function.html
+
+Entry: is.language
+Aliases: is.language
+Keywords: programming
+Description: Is an Object a Language Object?
+URL: ../../../library/base/html/is.language.html
+
+Entry: is.object
+Aliases: is.object
+Keywords: methods classes
+Description: Is an Object "internally classed"?
+URL: ../../../library/base/html/is.object.html
+
+Entry: is.recursive
+Aliases: is.atomic is.recursive
+Keywords: programming classes
+Description: Is an Object Atomic or Recursive?
+URL: ../../../library/base/html/is.recursive.html
+
+Entry: is.single
+Aliases: is.single
+Keywords: classes
+Description: Is an Object of Single Precision Type?
+URL: ../../../library/base/html/is.single.html
+
+Entry: is.unsorted
+Aliases: is.unsorted
+Keywords: univar
+Description: Test if an Object is Not Sorted
+URL: ../../../library/base/html/is.unsorted.html
+
+Entry: is.R
+Aliases: is.R
+Keywords: environment utilities
+Description: Are we using R, rather than S?
+URL: ../../../library/base/html/isR.html
+
+Entry: isS4
+Aliases: isS4 asS4 S4
+Keywords: programming
+Description: Test for an S4 object
+URL: ../../../library/base/html/isS4.html
+
+Entry: isSymmetric
+Aliases: isSymmetric isSymmetric.matrix
+Keywords: array utilities
+Description: Test if a Matrix or other Object is Symmetric
+URL: ../../../library/base/html/isSymmetric.html
+
+Entry: jitter
+Aliases: jitter
+Keywords: dplot utilities
+Description: Add 'Jitter' (Noise) to Numbers
+URL: ../../../library/base/html/jitter.html
+
+Entry: kappa
+Aliases: rcond kappa kappa.default kappa.lm kappa.qr kappa.tri
+Keywords: math
+Description: Compute or Estimate the Condition Number of a Matrix
+URL: ../../../library/base/html/kappa.html
+
+Entry: kronecker
+Aliases: kronecker %x%
+Keywords: array
+Description: Kronecker products on arrays
+URL: ../../../library/base/html/kronecker.html
+
+Entry: l10n_info
+Aliases: l10n_info
+Keywords: utilities
+Description: Localization Information
+URL: ../../../library/base/html/l10n_info.html
+
+Entry: labels
+Aliases: labels labels.default
+Keywords: print models
+Description: Find Labels from Object
+URL: ../../../library/base/html/labels.html
+
+Entry: lapply
+Aliases: lapply sapply replicate
+Keywords: iteration list
+Description: Apply a Function over a List or Vector
+URL: ../../../library/base/html/lapply.html
+
+Entry: lazyLoad
+Aliases: lazyLoad
+Keywords: internal
+Description: Lazy Load a Database of R Objects
+URL: ../../../library/base/html/lazyload.html
+
+Entry: length
+Aliases: length length<- length<-.factor
+Keywords: attribute
+Description: Length of an Object
+URL: ../../../library/base/html/length.html
+
+Entry: levels
+Aliases: levels levels.default levels<- levels<-.factor
+Keywords: category
+Description: Levels Attributes
+URL: ../../../library/base/html/levels.html
+
+Entry: libPaths
+Aliases: .Library .Library.site .libPaths R_LIBS R_LIBS_SITE R_LIBS_USER .expand_R_libs_env_var
+Keywords: data
+Description: Search Paths for Packages
+URL: ../../../library/base/html/libPaths.html
+
+Entry: library
+Aliases: library require .First.lib .Last.lib .noGenerics print.libraryIQR print.packageInfo
+Keywords: data
+Description: Loading and Listing of Packages
+URL: ../../../library/base/html/library.html
+
+Entry: library.dynam
+Aliases: library.dynam library.dynam.unload .dynLibs
+Keywords: data
+Description: Loading DLLs from Packages
+URL: ../../../library/base/html/library.dynam.html
+
+Entry: license
+Aliases: license licence
+Keywords: misc
+Description: The R License Terms
+URL: ../../../library/base/html/license.html
+
+Entry: list
+Aliases: list pairlist alist as.list as.list.default as.list.data.frame as.list.environment as.list.factor as.list.function as.pairlist is.list is.pairlist
+Keywords: list manip
+Description: Lists -- Generic and Dotted Pairs
+URL: ../../../library/base/html/list.html
+
+Entry: list.files
+Aliases: list.files dir
+Keywords: file
+Description: List the Files in a Directory/Folder
+URL: ../../../library/base/html/list.files.html
+
+Entry: load
+Aliases: load
+Keywords: file
+Description: Reload Saved Datasets
+URL: ../../../library/base/html/load.html
+
+Entry: locales
+Aliases: locales Sys.getlocale Sys.setlocale LC_ALL LC_COLLATE LC_CTYPE LC_MONETARY LC_NUMERIC LC_TIME
+Keywords: utilities
+Description: Query or Set Aspects of the Locale
+URL: ../../../library/base/html/locales.html
+
+Entry: logical
+Aliases: logical as.logical is.logical TRUE FALSE T F
+Keywords: classes logic
+Description: Logical Vectors
+URL: ../../../library/base/html/logical.html
+
+Entry: lower.tri
+Aliases: lower.tri upper.tri
+Keywords: array
+Description: Lower and Upper Triangular Part of a Matrix
+URL: ../../../library/base/html/lower.tri.html
+
+Entry: ls
+Aliases: ls objects
+Keywords: environment
+Description: List Objects
+URL: ../../../library/base/html/ls.html
+
+Entry: make.names
+Aliases: make.names
+Keywords: character
+Description: Make Syntactically Valid Names
+URL: ../../../library/base/html/make.names.html
+
+Entry: make.unique
+Aliases: make.unique
+Keywords: character
+Description: Make Character Strings Unique
+URL: ../../../library/base/html/make.unique.html
+
+Entry: mapply
+Aliases: mapply Vectorize
+Keywords: manip utilities
+Description: Apply a function to multiple list or vector arguments
+URL: ../../../library/base/html/mapply.html
+
+Entry: margin.table
+Aliases: margin.table
+Keywords: array
+Description: Compute table margin
+URL: ../../../library/base/html/margin.table.html
+
+Entry: mat.or.vec
+Aliases: mat.or.vec
+Keywords: array
+Description: Create a Matrix or a Vector
+URL: ../../../library/base/html/mat.or.vec.html
+
+Entry: match
+Aliases: match %in%
+Keywords: manip logic
+Description: Value Matching
+URL: ../../../library/base/html/match.html
+
+Entry: match.arg
+Aliases: match.arg
+Keywords: programming
+Description: Argument Verification Using Partial Matching
+URL: ../../../library/base/html/match.arg.html
+
+Entry: match.call
+Aliases: match.call
+Keywords: programming
+Description: Argument Matching
+URL: ../../../library/base/html/match.call.html
+
+Entry: match.fun
+Aliases: match.fun
+Keywords: programming
+Description: Function Verification for "Function Variables"
+URL: ../../../library/base/html/match.fun.html
+
+Entry: matmult
+Aliases: %*% matmult
+Keywords: array arith
+Description: Matrix Multiplication
+URL: ../../../library/base/html/matmult.html
+
+Entry: matrix
+Aliases: matrix as.matrix as.matrix.default as.matrix.data.frame is.matrix
+Keywords: array algebra
+Description: Matrices
+URL: ../../../library/base/html/matrix.html
+
+Entry: maxCol
+Aliases: max.col
+Keywords: utilities array
+Description: Find Maximum Position in Matrix
+URL: ../../../library/base/html/maxCol.html
+
+Entry: mean
+Aliases: mean mean.default mean.data.frame
+Keywords: univar
+Description: Arithmetic Mean
+URL: ../../../library/base/html/mean.html
+
+Entry: memory.profile
+Aliases: memory.profile
+Keywords: utilities
+Description: Profile the Usage of Cons Cells
+URL: ../../../library/base/html/memory.profile.html
+
+Entry: merge
+Aliases: merge merge.default merge.data.frame
+Keywords: array manip
+Description: Merge Two Data Frames
+URL: ../../../library/base/html/merge.html
+
+Entry: message
+Aliases: message suppressMessages packageStartupMessage .packageStartupMessage suppressPackageStartupMessages .makeMessage
+Keywords: programming
+Description: Diagnostic Messages
+URL: ../../../library/base/html/message.html
+
+Entry: missing
+Aliases: missing
+Keywords: programming
+Description: Does a Formal Argument have a Value?
+URL: ../../../library/base/html/missing.html
+
+Entry: mode
+Aliases: mode mode<- storage.mode storage.mode<-
+Keywords: attribute
+Description: The (Storage) Mode of an Object
+URL: ../../../library/base/html/mode.html
+
+Entry: name
+Aliases: name is.symbol as.symbol as.name is.name
+Keywords: programming attribute
+Description: Names and Symbols
+URL: ../../../library/base/html/name.html
+
+Entry: names
+Aliases: names names.default names<- names<-.default
+Keywords: attribute
+Description: The Names of an Object
+URL: ../../../library/base/html/names.html
+
+Entry: nargs
+Aliases: nargs
+Keywords: programming
+Description: The Number of Arguments to a Function
+URL: ../../../library/base/html/nargs.html
+
+Entry: nchar
+Aliases: nchar nzchar
+Keywords: character
+Description: Count the Number of Characters (or Bytes or Width)
+URL: ../../../library/base/html/nchar.html
+
+Entry: nlevels
+Aliases: nlevels
+Keywords: category
+Description: The Number of Levels of a Factor
+URL: ../../../library/base/html/nlevels.html
+
+Entry: noquote
+Aliases: noquote print.noquote as.matrix.noquote c.noquote [.noquote
+Keywords: print methods utilities
+Description: Class for "no quote" Printing of Character Strings
+URL: ../../../library/base/html/noquote.html
+
+Entry: NotYet
+Aliases: NotYetImplemented .NotYetImplemented NotYetUsed .NotYetUsed
+Keywords: documentation utilities
+Description: Not Yet Implemented Functions and Unused Arguments
+URL: ../../../library/base/html/notyet.html
+
+Entry: nrow
+Aliases: nrow NROW ncol NCOL
+Keywords: array
+Description: The Number of Rows/Columns of an Array
+URL: ../../../library/base/html/nrow.html
+
+Entry: ns-alt
+Aliases: .Export .Import .ImportFrom .S3method
+Keywords: internal
+Description: Experimental Alternative Name Specification Support
+URL: ../../../library/base/html/ns-alt.html
+
+Entry: ns-dblcolon
+Aliases: :: :::
+Keywords: programming
+Description: Double Colon and Triple Colon Operators
+URL: ../../../library/base/html/ns-dblcolon.html
+
+Entry: ns-hooks
+Aliases: .onLoad .onUnload .onAttach
+Keywords: utilities
+Description: Hooks for Name Space events
+URL: ../../../library/base/html/ns-hooks.html
+
+Entry: ns-internals
+Aliases: asNamespace getNamespaceInfo importIntoEnv isBaseNamespace isNamespace namespaceExport namespaceImport namespaceImportClasses namespaceImportFrom namespaceImportMethods packageHasNamespace parseNamespaceFile registerS3method registerS3methods setNamespaceInfo .__S3MethodsTable__. .mergeExportMethods .mergeImportMethods .knownS3Generics
+Keywords: internal
+Description: Name Space Internals
+URL: ../../../library/base/html/ns-internal.html
+
+Entry: ns-load
+Aliases: attachNamespace loadNamespace loadedNamespaces unloadNamespace
+Keywords: data utilities
+Description: Loading and Unloading Name Spaces
+URL: ../../../library/base/html/ns-load.html
+
+Entry: ns-lowlev
+Aliases: loadingNamespaceInfo saveNamespaceImage
+Keywords: internal
+Description: Low Level Name Space Support Functions
+URL: ../../../library/base/html/ns-lowlev.html
+
+Entry: ns-reflect.Rd
+Aliases: getExportedValue getNamespace getNamespaceExports getNamespaceImports getNamespaceName getNamespaceUsers getNamespaceVersion
+Keywords: internal
+Description: Name Space Reflection Support
+URL: ../../../library/base/html/ns-reflect.html
+
+Entry: ns-topenv
+Aliases: topenv
+Keywords: programming
+Description: Top Level Environment
+URL: ../../../library/base/html/ns-topenv.html
+
+Entry: numeric
+Aliases: numeric as.numeric is.numeric is.numeric.Date is.numeric.POSIXt
+Keywords: classes attribute
+Description: Numeric Vectors
+URL: ../../../library/base/html/numeric.html
+
+Entry: numeric_version
+Aliases: numeric_version as.numeric_version is.numeric_version package_version is.package_version as.package_version R_system_version getRversion [.numeric_version [[.numeric_version [[<-.numeric_version Ops.numeric_version Summary.numeric_version as.character.numeric_version as.data.frame.numeric_version as.list.numeric_version c.numeric_version duplicated.numeric_version print.numeric_version rep.numeric_version unique.numeric_version xtfrm.numeric_version $.package_version .encode_numeric_version .decode_numeric_version .make_numeric_version
+Keywords: utilities
+Description: Numeric Versions
+URL: ../../../library/base/html/numeric_version.html
+
+Entry: octmode
+Aliases: as.octmode format.octmode print.octmode as.character.octmode [.octmode octmode
+Keywords: print
+Description: Display Numbers in Octal
+URL: ../../../library/base/html/octmode.html
+
+Entry: on.exit
+Aliases: on.exit
+Keywords: programming
+Description: Function Exit Code
+URL: ../../../library/base/html/on.exit.html
+
+Entry: options
+Aliases: options .Options getOption
+Keywords: environment error print
+Description: Options Settings
+URL: ../../../library/base/html/options.html
+
+Entry: order
+Aliases: order sort.list
+Keywords: univar manip
+Description: Ordering Permutation
+URL: ../../../library/base/html/order.html
+
+Entry: outer
+Aliases: outer %o%
+Keywords: array
+Description: Outer Product of Arrays
+URL: ../../../library/base/html/outer.html
+
+Entry: parse
+Aliases: parse
+Keywords: file programming connection
+Description: Parse Expressions
+URL: ../../../library/base/html/parse.html
+
+Entry: paste
+Aliases: paste
+Keywords: character
+Description: Concatenate Strings
+URL: ../../../library/base/html/paste.html
+
+Entry: path.expand
+Aliases: path.expand
+Keywords: file
+Description: Expand File Paths
+URL: ../../../library/base/html/path.expand.html
+
+Entry: pmatch
+Aliases: pmatch
+Keywords: character
+Description: Partial String Matching
+URL: ../../../library/base/html/pmatch.html
+
+Entry: polyroot
+Aliases: polyroot
+Keywords: math
+Description: Find Zeros of a Real or Complex Polynomial
+URL: ../../../library/base/html/polyroot.html
+
+Entry: pos.to.env
+Aliases: pos.to.env
+Keywords: utilities
+Description: Convert Positions in the Search Path to Environments
+URL: ../../../library/base/html/pos.to.env.html
+
+Entry: pretty
+Aliases: pretty
+Keywords: dplot
+Description: Pretty Breakpoints
+URL: ../../../library/base/html/pretty.html
+
+Entry: print
+Aliases: print print.factor print.htest print.listof print.simple.list print.table
+Keywords: print
+Description: Print Values
+URL: ../../../library/base/html/print.html
+
+Entry: print.data.frame
+Aliases: print.data.frame
+Keywords: print
+Description: Printing Data Frames
+URL: ../../../library/base/html/print.dataframe.html
+
+Entry: print.default
+Aliases: print.default
+Keywords: print
+Description: Default Printing
+URL: ../../../library/base/html/print.default.html
+
+Entry: prmatrix
+Aliases: prmatrix
+Keywords: print
+Description: Print Matrices, Old-style
+URL: ../../../library/base/html/prmatrix.html
+
+Entry: proc.time
+Aliases: proc.time print.proc_time
+Keywords: utilities
+Description: Running Time of R
+URL: ../../../library/base/html/proc.time.html
+
+Entry: prod
+Aliases: prod
+Keywords: arith
+Description: Product of Vector Elements
+URL: ../../../library/base/html/prod.html
+
+Entry: prop.table
+Aliases: prop.table
+Keywords: array
+Description: Express Table Entries as Fraction of Marginal Table
+URL: ../../../library/base/html/prop.table.html
+
+Entry: pushBack
+Aliases: pushBack pushBackLength
+Keywords: connection
+Description: Push Text Back on to a Connection
+URL: ../../../library/base/html/pushBack.html
+
+Entry: qr
+Aliases: qr qr.default qr.coef qr.qy qr.qty qr.resid qr.fitted qr.solve is.qr as.qr solve.qr
+Keywords: algebra array
+Description: The QR Decomposition of a Matrix
+URL: ../../../library/base/html/qr.html
+
+Entry: QR.Auxiliaries
+Aliases: qr.X qr.Q qr.R
+Keywords: algebra array
+Description: Reconstruct the Q, R, or X Matrices from a QR Object
+URL: ../../../library/base/html/qraux.html
+
+Entry: quit
+Aliases: quit q .Last .Last.sys
+Keywords: environment
+Description: Terminate an R Session
+URL: ../../../library/base/html/quit.html
+
+Entry: range
+Aliases: range range.default
+Keywords: univar arith
+Description: Range of Values
+URL: ../../../library/base/html/range.html
+
+Entry: rank
+Aliases: rank
+Keywords: univar
+Description: Sample Ranks
+URL: ../../../library/base/html/rank.html
+
+Entry: rapply
+Aliases: rapply
+Keywords: iteration list
+Description: Recursively Apply a Function to a List
+URL: ../../../library/base/html/rapply.html
+
+Entry: raw
+Aliases: raw as.raw is.raw
+Keywords: classes
+Description: Raw Vectors
+URL: ../../../library/base/html/raw.html
+
+Entry: rawConnection
+Aliases: rawConnection rawConnectionValue
+Keywords: file connection
+Description: Raw Connections
+URL: ../../../library/base/html/rawConnection.html
+
+Entry: rawConversion
+Aliases: charToRaw rawToChar rawShift rawToBits intToBits packBits
+Keywords: classes
+Description: Convert to or from Raw Vectors
+URL: ../../../library/base/html/rawConversion.html
+
+Entry: readBin
+Aliases: readBin writeBin
+Keywords: file connection
+Description: Transfer Binary Data To and From Connections
+URL: ../../../library/base/html/readBin.html
+
+Entry: readChar
+Aliases: readChar writeChar
+Keywords: file connection
+Description: Transfer Character Strings To and From Connections
+URL: ../../../library/base/html/readChar.html
+
+Entry: readLines
+Aliases: readLines
+Keywords: file connection
+Description: Read Text Lines from a Connection
+URL: ../../../library/base/html/readLines.html
+
+Entry: readRDS
+Aliases: .readRDS .saveRDS
+Keywords: internal
+Description: Internal Serialization Interface
+URL: ../../../library/base/html/readRDS.html
+
+Entry: readline
+Aliases: readline
+Keywords: utilities
+Description: Read a Line from the Terminal
+URL: ../../../library/base/html/readline.html
+
+Entry: real
+Aliases: real as.real is.real
+Keywords: classes
+Description: Real Vectors
+URL: ../../../library/base/html/real.html
+
+Entry: reg.finalizer
+Aliases: reg.finalizer
+Keywords: programming environment
+Description: Finalization of Objects
+URL: ../../../library/base/html/reg.finalizer.html
+
+Entry: regex
+Aliases: regex regexp regular expression
+Keywords: character
+Description: Regular Expressions as used in R
+URL: ../../../library/base/html/regex.html
+
+Entry: rep
+Aliases: rep rep.factor rep.int rep.POSIXct rep.POSIXlt rep.Date
+Keywords: manip chron
+Description: Replicate Elements of Vectors and Lists
+URL: ../../../library/base/html/rep.html
+
+Entry: replace
+Aliases: replace
+Keywords: manip
+Description: Replace Values in a Vector
+URL: ../../../library/base/html/replace.html
+
+Entry: rev
+Aliases: rev rev.default
+Keywords: manip
+Description: Reverse Elements
+URL: ../../../library/base/html/rev.html
+
+Entry: rle
+Aliases: rle inverse.rle print.rle
+Keywords: manip
+Description: Run Length Encoding
+URL: ../../../library/base/html/rle.html
+
+Entry: remove
+Aliases: rm remove
+Keywords: environment
+Description: Remove Objects from a Specified Environment
+URL: ../../../library/base/html/rm.html
+
+Entry: round.POSIXt
+Aliases: round.POSIXt trunc.POSIXt round.Date trunc.Date
+Keywords: chron
+Description: Round / Truncate Data-Time Objects
+URL: ../../../library/base/html/round.POSIXt.html
+
+Entry: row
+Aliases: row
+Keywords: array
+Description: Row Indexes
+URL: ../../../library/base/html/row.html
+
+Entry: row.names
+Aliases: row.names row.names.data.frame row.names.default row.names<- row.names<-.data.frame row.names<-.default
+Keywords: classes methods
+Description: Get and Set Row Names for Data Frames
+URL: ../../../library/base/html/row.names.html
+
+Entry: rowsum
+Aliases: rowsum rowsum.default rowsum.data.frame
+Keywords: manip
+Description: Give column sums of a matrix or data frame, based on a grouping variable
+URL: ../../../library/base/html/rowsum.html
+
+Entry: sQuote
+Aliases: sQuote dQuote
+Keywords: character
+Description: Quote Text
+URL: ../../../library/base/html/sQuote.html
+
+Entry: sample
+Aliases: sample sample.int
+Keywords: distribution
+Description: Random Samples and Permutations
+URL: ../../../library/base/html/sample.html
+
+Entry: save
+Aliases: save save.image
+Keywords: file
+Description: Save R Objects
+URL: ../../../library/base/html/save.html
+
+Entry: scale
+Aliases: scale scale.default
+Keywords: array
+Description: Scaling and Centering of Matrix-like Objects
+URL: ../../../library/base/html/scale.html
+
+Entry: scan
+Aliases: scan
+Keywords: file connection
+Description: Read Data Values
+URL: ../../../library/base/html/scan.html
+
+Entry: search
+Aliases: search searchpaths
+Keywords: data
+Description: Give Search Path for R Objects
+URL: ../../../library/base/html/search.html
+
+Entry: seek
+Aliases: seek seek.connection truncate truncate.connection isSeekable
+Keywords: file connection
+Description: Functions to Reposition Connections
+URL: ../../../library/base/html/seek.html
+
+Entry: seq.Date
+Aliases: seq.Date
+Keywords: manip chron
+Description: Generate Regular Sequences of Dates
+URL: ../../../library/base/html/seq.Date.html
+
+Entry: seq.POSIXt
+Aliases: seq.POSIXt
+Keywords: manip chron
+Description: Generate Regular Sequences of Dates
+URL: ../../../library/base/html/seq.POSIXt.html
+
+Entry: seq
+Aliases: seq seq.default seq.int seq_along seq_len
+Keywords: manip
+Description: Sequence Generation
+URL: ../../../library/base/html/seq.html
+
+Entry: sequence
+Aliases: sequence
+Keywords: manip
+Description: Create A Vector of Sequences
+URL: ../../../library/base/html/sequence.html
+
+Entry: serialize
+Aliases: serialize unserialize
+Keywords: file connection
+Description: Simple Serialization Interface
+URL: ../../../library/base/html/serialize.html
+
+Entry: setTimeLimit
+Aliases: setTimeLimit setSessionTimeLimit
+Keywords: utilities
+Description: Set CPU and/or Elapsed Time Limits
+URL: ../../../library/base/html/setTimeLimit.html
+
+Entry: sets
+Aliases: union intersect setdiff is.element setequal
+Keywords: misc
+Description: Set Operations
+URL: ../../../library/base/html/sets.html
+
+Entry: shQuote
+Aliases: shQuote
+Keywords: utilities
+Description: Quote Strings for Use in OS Shells
+URL: ../../../library/base/html/shQuote.html
+
+Entry: showConnections
+Aliases: showConnections getConnection getAllConnections closeAllConnections stdin stdout stderr
+Keywords: connection
+Description: Display Connections
+URL: ../../../library/base/html/showConnections.html
+
+Entry: sign
+Aliases: sign
+Keywords: arith
+Description: Sign Function
+URL: ../../../library/base/html/sign.html
+
+Entry: sink
+Aliases: sink sink.number
+Keywords: file connection
+Description: Send R Output to a File
+URL: ../../../library/base/html/sink.html
+
+Entry: slice.index
+Aliases: slice.index
+Keywords: array
+Description: Slice Indexes in an Array
+URL: ../../../library/base/html/slice.index.html
+
+Entry: slotOp
+Aliases: @
+Keywords: manip
+Description: Extract Slots
+URL: ../../../library/base/html/slotOp.html
+
+Entry: socketSelect
+Aliases: socketSelect
+Keywords: connection
+Description: Wait on Socket Connections
+URL: ../../../library/base/html/socketSelect.html
+
+Entry: solve
+Aliases: solve solve.default
+Keywords: algebra
+Description: Solve a System of Equations
+URL: ../../../library/base/html/solve.html
+
+Entry: sort
+Aliases: sort sort.default sort.POSIXlt sort.int
+Keywords: univar manip arith
+Description: Sorting or Ordering Vectors
+URL: ../../../library/base/html/sort.html
+
+Entry: source
+Aliases: source
+Keywords: file programming connection
+Description: Read R Code from a File or a Connection
+URL: ../../../library/base/html/source.html
+
+Entry: split
+Aliases: split split.default split.data.frame split<- split<-.default split<-.data.frame unsplit
+Keywords: category
+Description: Divide into Groups and Reassemble
+URL: ../../../library/base/html/split.html
+
+Entry: sprintf
+Aliases: sprintf gettextf
+Keywords: print character
+Description: Use C-style String Formatting Commands
+URL: ../../../library/base/html/sprintf.html
+
+Entry: srcfile
+Aliases: srcfile srcfilecopy getSrcLines srcref srcfile-class srcfilecopy-class srcref-class print.srcfile open.srcfile open.srcfilecopy close.srcfile print.srcref as.character.srcref .isOpen
+Keywords: debugging utilities
+Description: References to source files
+URL: ../../../library/base/html/srcfile.html
+
+Entry: standardGeneric
+Aliases: standardGeneric
+Keywords: programming internal
+Description: Formal Method System -- Creating Generic Functions
+URL: ../../../library/base/html/standardGeneric.html
+
+Entry: stop
+Aliases: stop geterrmessage
+Keywords: environment programming error
+Description: Stop Function Execution
+URL: ../../../library/base/html/stop.html
+
+Entry: stopifnot
+Aliases: stopifnot
+Keywords: environment programming error
+Description: Ensure the 'Truth' of R Expressions
+URL: ../../../library/base/html/stopifnot.html
+
+Entry: strptime
+Aliases: format.POSIXct format.POSIXlt strftime strptime as.character.POSIXt ISOdatetime ISOdate
+Keywords: utilities chron
+Description: Date-time Conversion Functions to and from Character
+URL: ../../../library/base/html/strptime.html
+
+Entry: strsplit
+Aliases: strsplit
+Keywords: character
+Description: Split the Elements of a Character Vector
+URL: ../../../library/base/html/strsplit.html
+
+Entry: strtrim
+Aliases: strtrim
+Keywords: character utilities
+Description: Trim Character Strings to Specified Widths
+URL: ../../../library/base/html/strtrim.html
+
+Entry: structure
+Aliases: structure
+Keywords: attribute manip
+Description: Attribute Specification
+URL: ../../../library/base/html/structure.html
+
+Entry: strwrap
+Aliases: strwrap
+Keywords: character
+Description: Wrap Character Strings to Format Paragraphs
+URL: ../../../library/base/html/strwrap.html
+
+Entry: subset
+Aliases: subset subset.default subset.matrix subset.data.frame
+Keywords: manip
+Description: Subsetting Vectors, Matrices and Data Frames
+URL: ../../../library/base/html/subset.html
+
+Entry: substitute
+Aliases: substitute quote
+Keywords: programming data
+Description: Substituting and Quoting Expressions
+URL: ../../../library/base/html/substitute.html
+
+Entry: substr
+Aliases: substr substring substr<- substring<-
+Keywords: character
+Description: Substrings of a Character Vector
+URL: ../../../library/base/html/substr.html
+
+Entry: sum
+Aliases: sum
+Keywords: arith
+Description: Sum of Vector Elements
+URL: ../../../library/base/html/sum.html
+
+Entry: summary
+Aliases: summary summary.default summary.data.frame summary.factor summary.matrix
+Keywords: methods
+Description: Object Summaries
+URL: ../../../library/base/html/summary.html
+
+Entry: svd
+Aliases: svd La.svd
+Keywords: algebra array
+Description: Singular Value Decomposition of a Matrix
+URL: ../../../library/base/html/svd.html
+
+Entry: sweep
+Aliases: sweep
+Keywords: array iteration
+Description: Sweep out Array Summaries
+URL: ../../../library/base/html/sweep.html
+
+Entry: switch
+Aliases: switch
+Keywords: programming
+Description: Select One of a List of Alternatives
+URL: ../../../library/base/html/switch.html
+
+Entry: sys.parent
+Aliases: sys.parent sys.call sys.calls sys.frame sys.frames sys.nframe sys.function sys.parents sys.on.exit sys.status parent.frame
+Keywords: programming data
+Description: Functions to Access the Function Call Stack
+URL: ../../../library/base/html/sys.parent.html
+
+Entry: sys.source
+Aliases: sys.source
+Keywords: file utilities
+Description: Parse and Evaluate Expressions from a File
+URL: ../../../library/base/html/sys.source.html
+
+Entry: system
+Aliases: system
+Keywords: interface file utilities
+Description: Invoke a System Command
+URL: ../../../library/base/html/system.html
+
+Entry: system.file
+Aliases: system.file
+Keywords: file utilities
+Description: Find Names of R System Files
+URL: ../../../library/base/html/system.file.html
+
+Entry: system.time
+Aliases: system.time unix.time
+Keywords: utilities
+Description: CPU Time Used
+URL: ../../../library/base/html/system.time.html
+
+Entry: t
+Aliases: t t.default t.data.frame
+Keywords: array
+Description: Matrix Transpose
+URL: ../../../library/base/html/t.html
+
+Entry: table
+Aliases: table summary.table print.summary.table as.data.frame.table as.table as.table.default is.table
+Keywords: category
+Description: Cross Tabulation and Table Creation
+URL: ../../../library/base/html/table.html
+
+Entry: tabulate
+Aliases: tabulate
+Keywords: arith
+Description: Tabulation for Vectors
+URL: ../../../library/base/html/tabulate.html
+
+Entry: tapply
+Aliases: tapply
+Keywords: iteration category
+Description: Apply a Function Over a "Ragged" Array
+URL: ../../../library/base/html/tapply.html
+
+Entry: taskCallback
+Aliases: addTaskCallback removeTaskCallback
+Keywords: environment
+Description: Add or remove a top-level task callback
+URL: ../../../library/base/html/taskCallback.html
+
+Entry: taskCallbackManager
+Aliases: taskCallbackManager
+Keywords: environment
+Description: Create an R-level task callback manager
+URL: ../../../library/base/html/taskCallbackManager.html
+
+Entry: taskCallbackNames
+Aliases: getTaskCallbackNames
+Keywords: environment
+Description: Query the names of the current internal top-level task callbacks
+URL: ../../../library/base/html/taskCallbackNames.html
+
+Entry: tempfile
+Aliases: tempfile tempdir
+Keywords: file
+Description: Create Names for Temporary Files
+URL: ../../../library/base/html/tempfile.html
+
+Entry: textConnection
+Aliases: textConnection textConnectionValue
+Keywords: file connection
+Description: Text Connections
+URL: ../../../library/base/html/textconnections.html
+
+Entry: tilde
+Aliases: ~ tilde
+Keywords: models
+Description: Tilde Operator
+URL: ../../../library/base/html/tilde.html
+
+Entry: timezones
+Aliases: Sys.timezone timezone time zone time zones TZ TZDIR
+Keywords: utilities chron
+Description: Time Zones
+URL: ../../../library/base/html/timezones.html
+
+Entry: toString
+Aliases: toString toString.default
+Keywords: utilities
+Description: Convert an R Object to a Character String
+URL: ../../../library/base/html/toString.html
+
+Entry: trace
+Aliases: trace untrace tracingState .doTrace .primTrace .primUntrace
+Keywords: programming debugging
+Description: Interactive Tracing and Debugging of Calls to a Function or Method
+URL: ../../../library/base/html/trace.html
+
+Entry: traceback
+Aliases: traceback .Traceback
+Keywords: programming
+Description: Print Call Stacks
+URL: ../../../library/base/html/traceback.html
+
+Entry: tracemem
+Aliases: tracemem untracemem retracemem
+Keywords: utilities
+Description: Trace Copying of Objects
+URL: ../../../library/base/html/tracemem.html
+
+Entry: transform
+Aliases: transform transform.default transform.data.frame
+Keywords: manip
+Description: Transform an Object, for Example a Data Frame
+URL: ../../../library/base/html/transform.html
+
+Entry: try
+Aliases: try
+Keywords: programming
+Description: Try an Expression Allowing Error Recovery
+URL: ../../../library/base/html/try.html
+
+Entry: typeof
+Aliases: typeof type
+Keywords: attribute
+Description: The Type of an Object
+URL: ../../../library/base/html/typeof.html
+
+Entry: unique
+Aliases: unique unique.default unique.data.frame unique.matrix unique.array
+Keywords: manip logic
+Description: Extract Unique Elements
+URL: ../../../library/base/html/unique.html
+
+Entry: unlink
+Aliases: unlink
+Keywords: file
+Description: Delete Files and Directories
+URL: ../../../library/base/html/unlink.html
+
+Entry: unlist
+Aliases: unlist
+Keywords: list manip
+Description: Flatten Lists
+URL: ../../../library/base/html/unlist.html
+
+Entry: unname
+Aliases: unname
+Keywords: utilities
+Description: Remove 'names' or 'dimnames'
+URL: ../../../library/base/html/unname.html
+
+Entry: UserHooks
+Aliases: getHook setHook packageEvent .userHooksEnv
+Keywords: utilities
+Description: Functions to Get and Set Hooks for Load, Attach, Detach and Unload
+URL: ../../../library/base/html/userhooks.html
+
+Entry: utf8Conversion
+Aliases: utf8ToInt intToUtf8
+Keywords: character utilities
+Description: Convert to or from UTF-8-encoded Character Vectors
+URL: ../../../library/base/html/utf8Conversion.html
+
+Entry: vector
+Aliases: vector as.vector as.vector.factor is.vector atomic
+Keywords: classes
+Description: Vectors
+URL: ../../../library/base/html/vector.html
+
+Entry: warning
+Aliases: warning suppressWarnings
+Keywords: programming error
+Description: Warning Messages
+URL: ../../../library/base/html/warning.html
+
+Entry: warnings
+Aliases: warnings last.warning print.warnings
+Keywords: programming error
+Description: Print Warning Messages
+URL: ../../../library/base/html/warnings.html
+
+Entry: weekdays
+Aliases: weekdays weekdays.POSIXt weekdays.Date months months.POSIXt months.Date quarters quarters.POSIXt quarters.Date julian julian.POSIXt julian.Date
+Keywords: chron
+Description: Extract Parts of a POSIXt or Date Object
+URL: ../../../library/base/html/weekday.POSIXt.html
+
+Entry: which
+Aliases: which
+Keywords: logic attribute
+Description: Which indices are TRUE?
+URL: ../../../library/base/html/which.html
+
+Entry: which.min
+Aliases: which.min which.max
+Keywords: utilities
+Description: Where is the Min() or Max() ?
+URL: ../../../library/base/html/which.min.html
+
+Entry: with
+Aliases: with with.default within within.list within.data.frame
+Keywords: data programming
+Description: Evaluate an Expression in a Data Environment
+URL: ../../../library/base/html/with.html
+
+Entry: withVisible
+Aliases: withVisible
+Keywords: programming
+Description: Return both a value and its visibility
+URL: ../../../library/base/html/withVisible.html
+
+Entry: write
+Aliases: write
+Keywords: file connection
+Description: Write Data to a File
+URL: ../../../library/base/html/write.html
+
+Entry: writeLines
+Aliases: writeLines
+Keywords: file connection
+Description: Write Lines to a Connection
+URL: ../../../library/base/html/writeLines.html
+
+Entry: xtfrm
+Aliases: xtfrm xtfrm.default xtfrm.factor xtfrm.Surv xtfrm.Date xtfrm.POSIXct xtfrm.POSIXlt
+Keywords: univar manip
+Description: Auxiliary Function for Sorting and Ranking
+URL: ../../../library/base/html/xtfrm.html
+
+Entry: .Machine
+Aliases: .Machine
+Keywords: sysdata programming math
+Description: Numerical Characteristics of the Machine
+URL: ../../../library/base/html/zMachine.html
+
+Entry: InternalMethods
+Aliases: InternalMethods InternalGenerics internal generic .S3PrimitiveGenerics
+Keywords: methods
+Description: Internal Generic Functions
+URL: ../../../library/base/html/zMethods.html
+
+Entry: .Script
+Aliases: .Script
+Keywords: interface internal
+Description: Scripting Language Interface
+URL: ../../../library/base/html/zScript.html
+
+Entry: zpackages
+Aliases: .packages
+Keywords: data
+Description: Listing of Packages
+URL: ../../../library/base/html/zpackages.html
+
+Entry: zutils
+Aliases: .standard_regexps
+Keywords: utilities
+Description: Miscellaneous Internal/Programming Utilities
+URL: ../../../library/base/html/zutils.html
+
+Entry: shell
+Aliases: shell
+Keywords: utilities
+Description: Invoke a System Command, using a Shell
+URL: ../../../library/base/html/shell.html
+
+Entry: shell.exec
+Aliases: shell.exec
+Keywords: utilities
+Description: Open a File or URL using Windows File Associations
+URL: ../../../library/base/html/shell.exec.html

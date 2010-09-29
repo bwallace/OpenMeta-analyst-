@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Khan et al.'s small round blood cells dataset</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for srbct {dprep}"><tr><td>srbct {dprep}</td><td align="right">R Documentation</td></tr></table>
+<h2>Khan et al.'s small round blood cells dataset</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The sbrct dataset which contains information on 63 samples and 2308 genes. The samples
+are distributed in four classes as follows: 8 Burkitt Lymphoma (BL), 23 Ewing Sarcoma
+(EWS), 12 neuroblastoma (NB), and 20 rhabdomyosarcoma (RMS). 
+The last column contains the class labels.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>data(srbct)</pre>
+
+
+<h3>Format</h3>
+
+<p>
+A data frame containing 63 observations with 2308 attributes each. The last column of 
+the dat frame contains the class labels for each observation.
+</p>
+
+
+<h3>Source</h3>
+
+<p>
+The data set was  obtained, as binary R file from Marcel Dettling's web site:
+<ul>
+<li><a href="http://stat.ethz.ch/~dettling/bagboost.html">http://stat.ethz.ch/~dettling/bagboost.html</a>
+</ul>
+
+<h3>References</h3>
+
+<p>
+Javed Khan, Jun S. Wei, Markus Ringner, Lao H. Saal, Marc Ladanyi, Frank Westermann,
+Frank Berthold, Manfred Schwab, Cristina R. Antonescu, Carsten Peterson, and 
+Paul S. Meltzer (2001). Classification and diagnostic prediction of cancers using gene
+expression profiling and artificial neural networks. Nature Medicine, Volume 7, Number 6, June
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+#---z-score Normalization
+data(srbct)
+srbct.rnorm=rangenorm(srbct,"znorm")
+#---feature selection using the RELIEF feature selection algorithm-----
+#relief(srbct,63,0.12)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>dprep</em> version 2.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

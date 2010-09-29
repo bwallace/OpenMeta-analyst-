@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Find the multiple or loop edges in a graph</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for is.multiple {igraph}"><tr><td>is.multiple {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Find the multiple or loop edges in a graph</h2>
+
+
+<h3>Description</h3>
+
+<p>
+A loop edge is an edge from a vertex to itself. An edge is
+a multiple edge if it has exactly the same head and tail vertices as
+another edge. A graph without multiple and loop edges is called a
+simple graph.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+is.loop(graph, eids=E(graph))
+is.multiple(graph, eids=E(graph))
+count.multiple(graph, eids=E(graph))
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>graph</code></td>
+<td>
+The input graph.</td></tr>
+<tr valign="top"><td><code>eids</code></td>
+<td>
+The edges to which the query is restricted. By default
+this is all edges in the graph.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Note that the semantics for <code>is.multiple</code> and
+<code>count.multiple</code> is different. <code>is.multiple</code> gives <code>TRUE</code>
+for all occurences of a multiple edge except for one. Ie. if there are
+three <code>i-j</code> edges in the graph then <code>is.multiple</code> returns
+<code>TRUE</code> for only two of them while <code>count.multiple</code> returns
+&lsquo;3&rsquo; for all three.
+</p>
+<p>
+See the examples for getting rid of multiple edges while keeping their
+original multiplicity as an edge attribute.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>is.loop</code> and <code>is.multiple</code> return a logical
+vector. <code>count.multiple</code> returns a numeric vector.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="simplify.html">simplify</a></code> to eliminate loop and multiple edges.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+# Loops
+g &lt;- graph( c(0,0,1,1,2,2,3,4) )
+is.loop(g)
+
+# Multiple edges
+g &lt;- barabasi.game(10, m=3)
+is.multiple(g)
+count.multiple(g)
+is.multiple(simplify(g))
+all(count.multiple(simplify(g)) == 1)
+
+# Direction of the edge is important
+is.multiple(graph( c(0,1, 1,0) ))
+is.multiple(graph( c(0,1, 1,0), dir=FALSE ))
+
+# Remove multiple edges but keep multiplicity
+g &lt;- barabasi.game(10, m=3)
+E(g)$weight &lt;- count.multiple(g)
+g &lt;- simplify(g)
+any(is.multiple(g))
+E(g)$weight
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

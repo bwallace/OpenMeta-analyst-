@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Generate random graphs according to the Erdos-Renyi model</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for erdos.renyi.game {igraph}"><tr><td>erdos.renyi.game {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Generate random graphs according to the Erdos-Renyi model</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This model is very simple, every possible edge is created
+with the same constant probability.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+erdos.renyi.game(n, p.or.m, type=c("gnp", "gnm"),
+                 directed = FALSE, loops = FALSE, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>n</code></td>
+<td>
+The number of vertices in the graph.</td></tr>
+<tr valign="top"><td><code>p.or.m</code></td>
+<td>
+Either the probability for drawing an edge between two
+arbitrary vertices (G(n,p) graph), or the number of edges in the
+graph (for G(n,m) graphs).</td></tr>
+<tr valign="top"><td><code>type</code></td>
+<td>
+The type of the random graph to create, either <code>gnp</code>
+(G(n,p) graph) or <code>gnm</code> (G(n,m) graph).</td></tr>
+<tr valign="top"><td><code>directed</code></td>
+<td>
+Logical, whether the graph will be directed, defaults
+to FALSE.</td></tr>
+<tr valign="top"><td><code>loops</code></td>
+<td>
+Logical, whether to add loop edges, defaults to FALSE.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+Additional arguments, ignored.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+In G(n,p) graphs, the graph has &lsquo;n&rsquo; vertices and for each edge
+the probability that it is present in the graph is &lsquo;p&rsquo;.
+</p>
+<p>
+In G(n,m) graphs, the graph has &lsquo;n&rsquo; vertices and &lsquo;m&rsquo;
+edges, and the &lsquo;m&rsquo; edges are chosen uniformly randomly from the
+set of all possible edges. This set includes loop edges as well if the
+<code>loops</code> parameter is TRUE.
+</p>
+<p>
+<code>random.graph.game</code> is an alias to this function.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A graph object.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Erdos, P. and Renyi, A., On random graphs, <EM>Publicationes
+Mathematicae</EM> 6, 290&ndash;297 (1959).
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="ba.game.html">barabasi.game</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+g &lt;- erdos.renyi.game(1000, 1/1000)
+degree.distribution(g)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,431 @@
+Entry: Predict.matrix
+Aliases: Predict.matrix Predict.matrix2
+Keywords: models
+Description: Prediction methods for smooth terms in a GAM
+URL: ../../../library/mgcv/html/Predict.matrix.html
+
+Entry: Predict.matrix.cr.smooth
+Aliases: Predict.matrix.cr.smooth Predict.matrix.cs.smooth Predict.matrix.cyclic.smooth Predict.matrix.pspline.smooth Predict.matrix.tensor.smooth Predict.matrix.tprs.smooth Predict.matrix.ts.smooth
+Keywords: models
+Description: Predict matrix method functions
+URL: ../../../library/mgcv/html/Predict.matrix.cr.smooth.html
+
+Entry: Tweedie
+Aliases: Tweedie
+Keywords: models
+Description: GAM Tweedie family
+URL: ../../../library/mgcv/html/Tweedie.html
+
+Entry: anova.gam
+Aliases: anova.gam print.anova.gam
+Keywords: models
+Description: Hypothesis tests related to GAM fits
+URL: ../../../library/mgcv/html/anova.gam.html
+
+Entry: cSplineDes
+Aliases: cSplineDes
+Keywords: models
+Description: Evaluate cyclic B spline basis
+URL: ../../../library/mgcv/html/cSplineDes.html
+
+Entry: choose.k
+Aliases: choose.k
+Keywords: models
+Description: Basis dimension choice for smooths
+URL: ../../../library/mgcv/html/choose.k.html
+
+Entry: exclude.too.far
+Aliases: exclude.too.far
+Keywords: hplot
+Description: Exclude prediction grid points too far from data
+URL: ../../../library/mgcv/html/exclude.too.far.html
+
+Entry: extract.lme.cov
+Aliases: extract.lme.cov extract.lme.cov2
+Keywords: models
+Description: Extract the data covariance matrix from an lme object
+URL: ../../../library/mgcv/html/extract.lme.cov.html
+
+Entry: fix.family.link
+Aliases: fix.family.link fix.family.var fix.family.ls
+Keywords: models
+Description: Modify families for use in GAM fitting
+URL: ../../../library/mgcv/html/fix.family.link.html
+
+Entry: fixDependence
+Aliases: fixDependence
+Keywords: models
+Description: Detect linear dependencies of one matrix on another
+URL: ../../../library/mgcv/html/fixDependence.html
+
+Entry: formXtViX
+Aliases: formXtViX
+Keywords: models
+Description: Form component of GAMM covariance matrix
+URL: ../../../library/mgcv/html/formXtViX.html
+
+Entry: formula.gam
+Aliases: formula.gam
+Keywords: models
+Description: GAM formula
+URL: ../../../library/mgcv/html/formula.gam.html
+
+Entry: full.score
+Aliases: full.score
+Keywords: models
+Description: GCV/UBRE score for use within nlm
+URL: ../../../library/mgcv/html/full.score.html
+
+Entry: gam
+Aliases: gam
+Keywords: models
+Description: Generalized additive models with integrated smoothness estimation
+URL: ../../../library/mgcv/html/gam.html
+
+Entry: gam.check
+Aliases: gam.check
+Keywords: models
+Description: Some diagnostics for a fitted gam model
+URL: ../../../library/mgcv/html/gam.check.html
+
+Entry: gam.control
+Aliases: gam.control
+Keywords: models
+Description: Setting GAM fitting defaults
+URL: ../../../library/mgcv/html/gam.control.html
+
+Entry: gam.convergence
+Aliases: gam.convergence gam.performance
+Keywords: models
+Description: GAM convergence and performance issues
+URL: ../../../library/mgcv/html/gam.convergence.html
+
+Entry: gam.fit
+Aliases: gam.fit
+Keywords: models
+Description: GAM P-IRLS estimation with GCV/UBRE smoothness estimation
+URL: ../../../library/mgcv/html/gam.fit.html
+
+Entry: gam.fit3
+Aliases: gam.fit3
+Keywords: models
+Description: P-IRLS GAM estimation with GCV & UBRE/AIC or RE/ML derivative calculation
+URL: ../../../library/mgcv/html/gam.fit3.html
+
+Entry: gam.models
+Aliases: gam.models
+Keywords: models
+Description: Specifying generalized additive models
+URL: ../../../library/mgcv/html/gam.models.html
+
+Entry: gam.outer
+Aliases: gam.outer
+Keywords: models
+Description: Minimize GCV or UBRE score of a GAM using 'outer' iteration
+URL: ../../../library/mgcv/html/gam.outer.html
+
+Entry: gam.selection
+Aliases: gam.selection
+Keywords: models
+Description: Generalized Additive Model Selection
+URL: ../../../library/mgcv/html/gam.selection.html
+
+Entry: gam.side
+Aliases: gam.side
+Keywords: models
+Description: Identifiability side conditions for a GAM
+URL: ../../../library/mgcv/html/gam.side.html
+
+Entry: gam2objective
+Aliases: gam2objective gam2derivative
+Keywords: models
+Description: Objective functions for GAM smoothing parameter estimation
+URL: ../../../library/mgcv/html/gam2objective.html
+
+Entry: gamObject
+Aliases: gamObject
+Keywords: models
+Description: Fitted gam object
+URL: ../../../library/mgcv/html/gamObject.html
+
+Entry: gamSim
+Aliases: gamSim
+Keywords: models
+Description: Simulate example data for GAMs
+URL: ../../../library/mgcv/html/gamSim.html
+
+Entry: gamm
+Aliases: gamm
+Keywords: models
+Description: Generalized Additive Mixed Models
+URL: ../../../library/mgcv/html/gamm.html
+
+Entry: get.var
+Aliases: get.var
+Keywords: models
+Description: Get named variable or evaluate expression from list or data.frame
+URL: ../../../library/mgcv/html/get.var.html
+
+Entry: influence.gam
+Aliases: influence.gam
+Keywords: models
+Description: Extract the diagonal of the influence/hat matrix for a GAM
+URL: ../../../library/mgcv/html/influence.gam.html
+
+Entry: initial.sp
+Aliases: initial.sp
+Keywords: models
+Description: Starting values for multiple smoothing parameter estimation
+URL: ../../../library/mgcv/html/initial.sp.html
+
+Entry: interpret.gam
+Aliases: interpret.gam
+Keywords: models
+Description: Interpret a GAM formula
+URL: ../../../library/mgcv/html/interpret.gam.html
+
+Entry: ldTweedie
+Aliases: ldTweedie
+Keywords: models
+Description: Log Tweedie density evaluation
+URL: ../../../library/mgcv/html/ldTweedie.html
+
+Entry: linear.functional.terms
+Aliases: linear.functional.terms function.predictors signal.regression
+Keywords: models
+Description: Linear functionals of a smooth in GAMs
+URL: ../../../library/mgcv/html/linear.functional.terms.html
+
+Entry: logLik.gam
+Aliases: logLik.gam
+Keywords: models
+Description: Extract the log likelihood for a fitted GAM
+URL: ../../../library/mgcv/html/logLik.gam.html
+
+Entry: magic
+Aliases: magic
+Keywords: models
+Description: Stable Multiple Smoothing Parameter Estimation by GCV or UBRE, with optional fixed penalty
+URL: ../../../library/mgcv/html/magic.html
+
+Entry: magic.post.proc
+Aliases: magic.post.proc
+Keywords: models
+Description: Auxilliary information from magic fit
+URL: ../../../library/mgcv/html/magic.post.proc.html
+
+Entry: mgcv-package
+Aliases: mgcv-package
+Keywords: package models smooth regression
+Description: GAMs with GCV/AIC/REML smoothness estimation and GAMMs by REML/PQL
+URL: ../../../library/mgcv/html/mgcv-package.html
+
+Entry: mgcv
+Aliases: mgcv
+Keywords: models
+Description: Multiple Smoothing Parameter Estimation by GCV or UBRE
+URL: ../../../library/mgcv/html/mgcv.html
+
+Entry: mgcv.control
+Aliases: mgcv.control
+Keywords: models
+Description: Setting mgcv defaults
+URL: ../../../library/mgcv/html/mgcv.control.html
+
+Entry: model.matrix.gam
+Aliases: model.matrix.gam
+Keywords: models
+Description: Extract model matrix from GAM fit
+URL: ../../../library/mgcv/html/model.matrix.gam.html
+
+Entry: mono.con
+Aliases: mono.con
+Keywords: models
+Description: Monotonicity constraints for a cubic regression spline
+URL: ../../../library/mgcv/html/mono.con.html
+
+Entry: mroot
+Aliases: mroot
+Keywords: models
+Description: Smallest square root of matrix
+URL: ../../../library/mgcv/html/mroot.html
+
+Entry: negbin
+Aliases: negbin
+Keywords: models
+Description: GAM negative binomial family
+URL: ../../../library/mgcv/html/negbin.html
+
+Entry: new.name
+Aliases: new.name
+Keywords: models
+Description: Obtain a name for a new variable that is not already in use
+URL: ../../../library/mgcv/html/new.name.html
+
+Entry: notExp
+Aliases: notExp notLog
+Keywords: models
+Description: Functions for better-than-log positive parameterization
+URL: ../../../library/mgcv/html/notExp.html
+
+Entry: notExp2
+Aliases: notExp2 notLog2
+Keywords: models
+Description: Alternative to log parameterization for variance components
+URL: ../../../library/mgcv/html/notExp2.html
+
+Entry: null.space.dimension
+Aliases: null.space.dimension
+Keywords: models
+Description: The basis of the space of un-penalized functions for a TPRS
+URL: ../../../library/mgcv/html/null.space.dimension.html
+
+Entry: pcls
+Aliases: pcls
+Keywords: models
+Description: Penalized Constrained Least Squares Fitting
+URL: ../../../library/mgcv/html/pcls.html
+
+Entry: pdIdnot
+Aliases: pdIdnot pdConstruct.pdIdnot pdFactor.pdIdnot pdMatrix.pdIdnot coef.pdIdnot corMatrix.pdIdnot Dim.pdIdnot logDet.pdIdnot solve.pdIdnot summary.pdIdnot
+Keywords: models
+Description: Overflow proof pdMat class for multiples of the identity matrix
+URL: ../../../library/mgcv/html/pdIdnot.html
+
+Entry: pdTens
+Aliases: pdTens pdConstruct.pdTens pdFactor.pdTens pdMatrix.pdTens coef.pdTens summary.pdTens
+Keywords: models
+Description: Functions implementing a pdMat class for tensor product smooths
+URL: ../../../library/mgcv/html/pdTens.html
+
+Entry: place.knots
+Aliases: place.knots
+Keywords: models
+Description: Automatically place a set of knots evenly through covariate values
+URL: ../../../library/mgcv/html/place.knots.html
+
+Entry: plot.gam
+Aliases: plot.gam
+Keywords: models
+Description: Default GAM plotting
+URL: ../../../library/mgcv/html/plot.gam.html
+
+Entry: predict.gam
+Aliases: predict.gam
+Keywords: models
+Description: Prediction from fitted GAM model
+URL: ../../../library/mgcv/html/predict.gam.html
+
+Entry: print.gam
+Aliases: print.gam
+Keywords: models
+Description: Print a Generalized Additive Model object.
+URL: ../../../library/mgcv/html/print.gam.html
+
+Entry: residuals.gam
+Aliases: residuals.gam
+Keywords: models
+Description: Generalized Additive Model residuals
+URL: ../../../library/mgcv/html/residuals.gam.html
+
+Entry: s
+Aliases: s
+Keywords: models
+Description: Defining smooths in GAM formulae
+URL: ../../../library/mgcv/html/s.html
+
+Entry: smooth.construct
+Aliases: smooth.construct smooth.construct2 user.defined.smooth
+Keywords: models
+Description: Constructor functions for smooth terms in a GAM
+URL: ../../../library/mgcv/html/smooth.construct.html
+
+Entry: smooth.construct.ad.smooth.spec
+Aliases: smooth.construct.ad.smooth.spec adaptive.smooth
+Keywords: models
+Description: Adaptive smooths in GAMs
+URL: ../../../library/mgcv/html/smooth.construct.ad.smooth.spec.html
+
+Entry: smooth.construct.cr.smooth.spec
+Aliases: smooth.construct.cr.smooth.spec smooth.construct.cs.smooth.spec smooth.construct.cc.smooth.spec cubic.regression.spline cyclic.cubic.spline
+Keywords: models
+Description: Penalized Cubic regression splines in GAMs
+URL: ../../../library/mgcv/html/smooth.construct.cr.smooth.spec.html
+
+Entry: smooth.construct.ps.smooth.spec
+Aliases: smooth.construct.ps.smooth.spec smooth.construct.cp.smooth.spec p.spline cyclic.p.spline
+Keywords: models
+Description: P-splines in GAMs
+URL: ../../../library/mgcv/html/smooth.construct.ps.smooth.spec.html
+
+Entry: smooth.construct.tensor.smooth.spec
+Aliases: smooth.construct.tensor.smooth.spec
+Keywords: models
+Description: Tensor product smoothing constructor
+URL: ../../../library/mgcv/html/smooth.construct.tensor.smooth.spec.html
+
+Entry: smooth.construct.tp.smooth.spec
+Aliases: smooth.construct.tp.smooth.spec smooth.construct.ts.smooth.spec tprs
+Keywords: models
+Description: Penalized thin plate regression splines in GAMs
+URL: ../../../library/mgcv/html/smooth.construct.tp.smooth.spec.html
+
+Entry: smooth.terms
+Aliases: smooth.terms
+Keywords: regression
+Description: Smooth terms in GAM
+URL: ../../../library/mgcv/html/smooth.terms.html
+
+Entry: smoothCon
+Aliases: smoothCon PredictMat
+Keywords: models
+Description: Prediction/Construction wrapper functions for GAM smooth terms
+URL: ../../../library/mgcv/html/smoothCon.html
+
+Entry: sp.vcov
+Aliases: sp.vcov
+Keywords: models
+Description: Extract smoothing parameter estimator covariance matrix from (RE)ML GAM fit
+URL: ../../../library/mgcv/html/sp.vcov.html
+
+Entry: step.gam
+Aliases: step.gam
+Keywords: models
+Description: Alternatives to step.gam
+URL: ../../../library/mgcv/html/step.gam.html
+
+Entry: summary.gam
+Aliases: summary.gam print.summary.gam
+Keywords: models
+Description: Summary for a GAM fit
+URL: ../../../library/mgcv/html/summary.gam.html
+
+Entry: te
+Aliases: te
+Keywords: models
+Description: Define tensor product smooths in GAM formulae
+URL: ../../../library/mgcv/html/te.html
+
+Entry: tensor.prod.model.matrix
+Aliases: tensor.prod.model.matrix tensor.prod.penalties
+Keywords: models
+Description: Utility functions for constructing tensor product smooths
+URL: ../../../library/mgcv/html/tensor.prod.model.matrix.html
+
+Entry: uniquecombs
+Aliases: uniquecombs
+Keywords: models
+Description: find the unique rows in a matrix
+URL: ../../../library/mgcv/html/uniquecombs.html
+
+Entry: vcov.gam
+Aliases: vcov.gam
+Keywords: models
+Description: Extract parameter (estimator) covariance matrix from GAM fit
+URL: ../../../library/mgcv/html/vcov.gam.html
+
+Entry: vis.gam
+Aliases: vis.gam persp.gam
+Keywords: hplot
+Description: Visualization of GAM objects
+URL: ../../../library/mgcv/html/vis.gam.html

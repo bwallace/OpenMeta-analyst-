@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Not Available / &ldquo;Missing&rdquo; Values</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for NA {base}"><tr><td>NA {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Not Available / &ldquo;Missing&rdquo; Values</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>NA</code> is a logical constant of length 1 which contains a missing
+value indicator.  <code>NA</code> can be freely coerced to any other vector
+type except raw.  There are also constants <code>NA_integer_</code>,
+<code>NA_real_</code>, <code>NA_complex_</code> and <code>NA_character_</code> of the
+other atomic vector types which support missing values: all of these
+are <a href="Reserved.html">reserved</a> words in the <font face="Courier New,Courier" color="#666666"><b>R</b></font> language.
+</p>
+<p>
+The generic function <code>is.na</code> indicates which elements are missing.
+</p>
+<p>
+The generic function <code>is.na&lt;-</code> sets elements to <code>NA</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+NA
+is.na(x)
+## S3 method for class 'data.frame':
+is.na(x)
+
+is.na(x) &lt;- value
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+an <font face="Courier New,Courier" color="#666666"><b>R</b></font> object to be tested.</td></tr>
+<tr valign="top"><td><code>value</code></td>
+<td>
+a suitable index vector for use with <code>x</code>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The <code>NA</code> of character type is distinct from the
+string <code>"NA"</code>.  Programmers who need to specify an explicit
+string <code>NA</code> should use <code>NA_character_</code> rather than
+<code>"NA"</code>, or set elements to <code>NA</code> using <code>is.na&lt;-</code>.
+</p>
+<p>
+<code>is.na(x)</code> works elementwise when <code>x</code> is a
+<code><a href="list.html">list</a></code>.  It is generic: you can write methods to handle
+specific classes of objects, see <a href="zMethods.html">InternalMethods</a>.  A complex
+value is regarded as <code>NA</code> if either its real or imaginary part is
+<code>NA</code> or <code>NaN</code>.
+</p>
+<p>
+Function <code>is.na&lt;-</code> may provide a safer way to set missingness.
+It behaves differently for factors, for example.
+</p>
+<p>
+<code>is.na</code> (but not the replacement function nor the
+<code>data.frame</code> method) is a <a href="Primitive.html">primitive</a> function so any
+argument name is ignored.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+The default method for <code>is.na</code> returns a logical vector of the same
+length as its argument <code>x</code>, containing <code>TRUE</code> for those
+elements marked <code>NA</code> or <code><a href="is.finite.html">NaN</a></code> (!) and <code>FALSE</code>
+otherwise.  <code>dim</code>, <code>dimnames</code> and <code>names</code> attributes
+are preserved.
+<br>
+The method <code>is.na.data.frame</code> returns a logical matrix with the
+same dimensions as the data frame, and with dimnames taken from the
+row and column names of the data frame.</p>
+
+<h3>References</h3>
+
+<p>
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+<EM>The New S Language</EM>.
+Wadsworth &amp; Brooks/Cole.
+</p>
+<p>
+Chambers, J. M. (1998)
+<EM>Programming with Data. A Guide to the S Language</EM>.
+Springer.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="is.finite.html">NaN</a></code>, <code><a href="is.finite.html">is.nan</a></code>, etc.,
+and the utility function <code><a href="../../stats/html/complete.cases.html">complete.cases</a></code>.
+</p>
+<p>
+<code><a href="../../stats/html/na.action.html">na.action</a></code>, <code><a href="../../stats/html/na.fail.html">na.omit</a></code>, <code><a href="../../stats/html/na.fail.html">na.fail</a></code>
+on how methods can be tuned to deal with missing values.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+is.na(c(1, NA))        #&gt; FALSE  TRUE
+is.na(paste(c(1, NA))) #&gt; FALSE FALSE
+
+(xx &lt;- c(0:4))
+is.na(xx) &lt;- c(2, 4)
+xx                     #&gt; 0 NA  2 NA  4
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

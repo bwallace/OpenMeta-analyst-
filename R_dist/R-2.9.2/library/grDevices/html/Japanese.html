@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Japanese characters in R</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for Japanese {grDevices}"><tr><td>Japanese {grDevices}</td><td align="right">R Documentation</td></tr></table>
+<h2>Japanese characters in R</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The implementation of Hershey vector fonts provides a large number of
+Japanese characters (Hiragana, Katakana, and Kanji).
+</p>
+
+
+<h3>Details</h3>
+
+<p>
+Without keyboard support for typing Japanese characters, the only way
+to produce these characters is to use special escape sequences: see
+<code><a href="Hershey.html">Hershey</a></code>.
+</p>
+<p>
+For example, the Hiragana character for the sound "ka" is produced
+by <code>\\#J242b</code> and the Katakana character for this sound is
+produced by <code>\\#J252b</code>.  The Kanji ideograph for "one" is
+produced by <code>\\#J306c</code> or <code>\\#N0001</code>.
+</p>
+<p>
+The output from <code><a href="../../utils/html/demo.html">demo</a>(Japanese)</code> shows tables of the escape
+sequences for the available Japanese characters.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+<a href="http://www.gnu.org/software/plotutils/plotutils.html">http://www.gnu.org/software/plotutils/plotutils.html</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../utils/html/demo.html">demo</a>(Japanese)</code>, <code><a href="Hershey.html">Hershey</a></code>, <code><a href="../../graphics/html/text.html">text</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+require(graphics)
+
+plot(1:9, type="n", axes=FALSE, frame=TRUE, ylab="",
+     main= "example(Japanese)", xlab= "using Hershey fonts")
+par(cex=3)
+Vf &lt;- c("serif", "plain")
+text(4, 2, "\\#J2438\\#J2421\\#J2451\\#J2473", vfont = Vf)
+text(4, 4, "\\#J2538\\#J2521\\#J2551\\#J2573", vfont = Vf)
+text(4, 6, "\\#J467c\\#J4b5c", vfont = Vf)
+text(4, 8, "Japan", vfont = Vf)
+par(cex=1)
+text(8, 2, "Hiragana")
+text(8, 4, "Katakana")
+text(8, 6, "Kanji")
+text(8, 8, "English")
+</pre>
+
+
+
+<hr><div align="center">[Package <em>grDevices</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

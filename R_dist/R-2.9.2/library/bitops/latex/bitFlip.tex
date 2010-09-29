@@ -1,0 +1,33 @@
+\HeaderA{bitFlip}{Binary Flip (Not) Operator}{bitFlip}
+\keyword{arith}{bitFlip}
+\keyword{utilities}{bitFlip}
+\begin{Description}\relax
+Binary flop (not) operator.
+\end{Description}
+\begin{Usage}
+\begin{verbatim}
+bitFlip(a, bitWidth=32)
+\end{verbatim}
+\end{Usage}
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{a}] numeric vector.
+\item[\code{bitWidth}] scalar integer between 0 and 32.
+\end{ldescription}
+\end{Arguments}
+\begin{Value}
+binary numeric vector of the same length as \code{a} masked with
+(2**\code{bitWidth})-1. NA is returned for any value of \code{a} that
+is not finite or whose magnitude is greater or equal to 2**32.
+\end{Value}
+\begin{Author}\relax
+Steve Dutky \textless{}sdutky@terpalum.umd.edu\textgreater{}
+\end{Author}
+\begin{Examples}
+\begin{ExampleCode}
+  bitFlip(-1) == 0
+  bitFlip(0) == 4294967295
+  bitFlip(0,bitWidth=8) == 255
+\end{ExampleCode}
+\end{Examples}
+

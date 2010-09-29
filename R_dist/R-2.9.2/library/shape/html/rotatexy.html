@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: rotates 2-column matrix around a midpoint</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for rotatexy {shape}"><tr><td>rotatexy {shape}</td><td align="right">R Documentation</td></tr></table>
+<h2>rotates 2-column matrix around a midpoint</h2>
+
+
+<h3>Description</h3>
+
+<p>
+rotates xy values around a midpoint;
+xy is either a 2-columned matrix or a 2-valued vector
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+rotatexy(xy, angle, mid=colMeans(xy), asp=FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>xy </code></td>
+<td>
+matrix with 2 columns, or a 2-valued vector to be rotated.
+</td></tr>
+<tr valign="top"><td><code>angle </code></td>
+<td>
+angle of rotation, in degrees.
+</td></tr>
+<tr valign="top"><td><code>mid </code></td>
+<td>
+rotation point, default=centroid.
+</td></tr>
+<tr valign="top"><td><code>asp </code></td>
+<td>
+if true: aspect ratio is kept.
+</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+a 2-column matrix with rotated values</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Karline Soetaert &lt;k.soetaert@nioo.knaw.nl&gt;
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>x &lt;- seq(0,2*pi,pi/100)
+  y &lt;- sin(x)
+  cols &lt;- intpalette(c("blue","green","yellow","red"),n=500)
+  cols &lt;- c(cols,rev(cols))
+  plot(x,y,type="l",ylim=c(-3,3),main="rotatexy",col=cols[1],
+       lwd=2)
+  for (i in 2:1000) lines(rotatexy(cbind(x,y),angle=0.18*i),
+                          col=cols[i],lwd=2)
+  
+  cols &lt;- femmecol(1000)
+  plot(x,y,xlim=c(-1,1),ylim=c(-1,1),main="rotatexy",
+       col=cols[1],type="n")
+  for (i in 2:1000) {xy&lt;-rotatexy(c(0,1),angle=0.36*i, mid=c(0,0));
+                    points(xy[1],xy[2],col=cols[i],pch=".",cex=2)}
+</pre>
+
+
+
+<hr><div align="center">[Package <em>shape</em> version 1.2.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

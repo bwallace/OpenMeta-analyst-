@@ -1,0 +1,70 @@
+trapz                package:caTools                R Documentation
+
+_T_r_a_p_e_z_o_i_d _R_u_l_e _N_u_m_e_r_i_c_a_l _I_n_t_e_g_r_a_t_i_o_n
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Computes the integral of Y with respect to X using trapezoid rule 
+     integration.
+
+_U_s_a_g_e:
+
+     trapz(x, y)
+
+_A_r_g_u_m_e_n_t_s:
+
+       x: Sorted vector of x-axis values. 
+
+       y: Vector of y-axis values. 
+
+_D_e_t_a_i_l_s:
+
+     The function has only two lines:
+
+
+         idx = 2:length(x)
+         return (as.double( (x[idx] - x[idx-1]) %*% (y[idx] +
+     y[idx-1])) / 2)
+
+
+_V_a_l_u_e:
+
+     Integral of Y with respect to X or area under the Y curve.
+
+_N_o_t_e:
+
+     Trapezoid rule is not the most accurate way of calculating
+     integrals (it is  exact for linear functions), for example
+     Simpson's rule (exact for linear and  quadratic functions) is more
+     accurate.
+
+_A_u_t_h_o_r(_s):
+
+     Jarek Tuszynski (SAIC) jaroslaw.w.tuszynski@saic.com
+
+_R_e_f_e_r_e_n_c_e_s:
+
+     D. Kincaid & W. Chaney (1991), _Numerical Analysis_, p.445
+
+_S_e_e _A_l_s_o:
+
+
+        *  'intg' from 'PROcess' package
+
+        *  'trapezint' from 'ROC' package
+
+        *  'integrate'
+
+        *  Matlab's 'trapz' function (<URL: 
+           http://www.mathworks.com/access/helpdesk/help/techdoc/ref/trapz.html>) 
+
+_E_x_a_m_p_l_e_s:
+
+       # integral of sine function in [0, pi] range suppose to be exactly 2.
+       # lets calculate it using 10 samples:
+       x = (1:10)*pi/10
+       trapz(x, sin(x))
+       # now lets calculate it using 1000 samples:
+       x = (1:1000)*pi/1000
+       trapz(x, sin(x))
+

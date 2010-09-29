@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Trapezoid Rule Numerical Integration</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for trapz {caTools}"><tr><td>trapz {caTools}</td><td align="right">R Documentation</td></tr></table>
+<h2>Trapezoid Rule Numerical Integration</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Computes the integral of Y with respect to X using trapezoid rule 
+integration.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>trapz(x, y)</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+Sorted vector of x-axis values. </td></tr>
+<tr valign="top"><td><code>y</code></td>
+<td>
+Vector of y-axis values. </td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The function has only two lines:
+<pre>
+    idx = 2:length(x)
+    return (as.double( (x[idx] - x[idx-1]) %*% (y[idx] + y[idx-1])) / 2)
+</pre>
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+Integral of Y with respect to X or area under the Y curve.</p>
+
+<h3>Note</h3>
+
+<p>
+Trapezoid rule is not the most accurate way of calculating integrals (it is 
+exact for linear functions), for example Simpson's rule (exact for linear and 
+quadratic functions) is more accurate.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Jarek Tuszynski (SAIC) <a href="mailto:jaroslaw.w.tuszynski@saic.com">jaroslaw.w.tuszynski@saic.com</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+D. Kincaid &amp; W. Chaney (1991), <EM>Numerical Analysis</EM>, p.445
+</p>
+
+
+<h3>See Also</h3>
+
+<ul>
+<li><code><a href="../../PROcess/html/intg.html">intg</a></code> from <span class="pkg">PROcess</span> package
+<li><code><a href="../../ROC/html/trapezint.html">trapezint</a></code> from <span class="pkg">ROC</span> package
+<li><code><a href="../../stats/html/integrate.html">integrate</a></code>
+<li>Matlab's <code>trapz</code> function (<a href="
+http://www.mathworks.com/access/helpdesk/help/techdoc/ref/trapz.html">
+http://www.mathworks.com/access/helpdesk/help/techdoc/ref/trapz.html</a>) 
+</ul>
+
+<h3>Examples</h3>
+
+<pre>
+  # integral of sine function in [0, pi] range suppose to be exactly 2.
+  # lets calculate it using 10 samples:
+  x = (1:10)*pi/10
+  trapz(x, sin(x))
+  # now lets calculate it using 1000 samples:
+  x = (1:1000)*pi/1000
+  trapz(x, sin(x))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>caTools</em> version 1.9 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

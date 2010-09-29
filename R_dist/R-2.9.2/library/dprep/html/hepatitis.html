@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: The hepatitis dataset</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for hepatitis {dprep}"><tr><td>hepatitis {dprep}</td><td align="right">R Documentation</td></tr></table>
+<h2>The hepatitis dataset</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This is the hepatitis dataset from the UCI. The data was donated by Gail Gong.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>data(hepatitis)</pre>
+
+
+<h3>Format</h3>
+
+<p>
+A data frame with 155 observations on the following 20 variables.
+This dataset contains a large number of missing values.
+<dl>
+<dt>V1</dt><dd>Histology:no,yes</dd>
+<dt>V2</dt><dd>age</dd>
+<dt>V3</dt><dd>sex: male,female</dd>
+<dt>V4</dt><dd>steroid:no,yes</dd>
+<dt>V5</dt><dd>antivirals:no,yes</dd>
+<dt>V6</dt><dd>fatigue:no, yes</dd>
+<dt>V7</dt><dd>malaise:no, yes</dd>
+<dt>V8</dt><dd>anorexia:no, yes</dd>
+<dt>V9</dt><dd>liver big:no,yes</dd>
+<dt>V10</dt><dd>liver firm:no,yes</dd>
+<dt>V11</dt><dd>spleen palpable: no, yes</dd>
+<dt>V12</dt><dd>spiders:no,yes</dd>
+<dt>V13</dt><dd>ascites:no,yes</dd>
+<dt>V14</dt><dd>Varices:no,yes</dd>
+<dt>V15</dt><dd>Bilirubin</dd>
+<dt>V16</dt><dd>alk phosphate</dd>
+<dt>V17</dt><dd>sgot</dd>
+<dt>V18</dt><dd>Albumin</dd>
+<dt>V19</dt><dd>Protime</dd>
+<dt>V20</dt><dd>Class:Die, Live</dd>
+</dl>
+
+<h3>Details</h3>
+
+<p>
+The original dataset has the class labels in the first column.
+</p>
+
+
+<h3>Source</h3>
+
+<p>
+The UCI Machine Learning Database Repository at:
+<ul>
+<li><a href="ftp://ftp.ics.uci.edu/pub/machine-learning-databases">ftp://ftp.ics.uci.edu/pub/machine-learning-databases</a>
+<li><a href="http://www.ics.uci.edu/~mlearn/MLRepository.html">http://www.ics.uci.edu/~mlearn/MLRepository.html</a>
+</ul>
+
+<h3>References</h3>
+
+<p>
+Diaconis,P. &amp; Efron,B. (1983). Computer-Intensive Methods in Statistics. 
+Scientific American, Volume 248.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+#------Report and plot of missing values ------
+data(hepatitis)
+imagmiss(hepatitis,"Hepatitis")
+</pre>
+
+
+
+<hr><div align="center">[Package <em>dprep</em> version 2.1 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

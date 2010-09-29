@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Text Representations of R Objects</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for dump {base}"><tr><td>dump {base}</td><td align="right">R Documentation</td></tr></table>
+<h2>Text Representations of R Objects</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This function takes a vector of names of <font face="Courier New,Courier" color="#666666"><b>R</b></font> objects and produces
+text representations of the objects on a file or connection.
+A <code>dump</code> file can usually be <code><a href="source.html">source</a></code>d into another
+<font face="Courier New,Courier" color="#666666"><b>R</b></font> (or S) session.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+dump(list, file = "dumpdata.R", append = FALSE, 
+     control = "all", envir = parent.frame(), evaluate = TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>list</code></td>
+<td>
+character. The names of one or more <font face="Courier New,Courier" color="#666666"><b>R</b></font> objects to be dumped.</td></tr>
+<tr valign="top"><td><code>file</code></td>
+<td>
+either a character string naming a file or a
+connection.  <code>""</code> indicates output to the console.</td></tr>
+<tr valign="top"><td><code>append</code></td>
+<td>
+if <code>TRUE</code> and <code>file</code> is a character string,
+output will be appended to <code>file</code>; otherwise, it will overwrite
+the contents of <code>file</code>.</td></tr>
+<tr valign="top"><td><code>control</code></td>
+<td>
+character vector indicating deparsing options.
+See <code><a href="deparseOpts.html">.deparseOpts</a></code> for their description.</td></tr>
+<tr valign="top"><td><code>envir</code></td>
+<td>
+the environment to search for objects.</td></tr>
+<tr valign="top"><td><code>evaluate</code></td>
+<td>
+logical.  Should promises be evaluated?</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+If some of the objects named do not exist (in scope), they are
+omitted, with a warning.  If <code>file</code> is a file and no objects
+exist then no file is created.
+</p>
+<p>
+<code>source</code>ing may not produce an identical copy of
+<code>dump</code>ed objects.  A warning is issued if it is likely that
+problems will arise, for example when dumping exotic or complex
+objects (see the Note).
+</p>
+<p>
+<code>dump</code> will also warn if fewer characters were written to a file
+than expected, which may indicate a full or corrupt file system.
+</p>
+<p>
+A <code>dump</code> file can be <code><a href="source.html">source</a></code>d into another <font face="Courier New,Courier" color="#666666"><b>R</b></font> (or
+perhaps S) session, but the function <code><a href="save.html">save</a></code> is designed to
+be used for transporting <font face="Courier New,Courier" color="#666666"><b>R</b></font> data, and will work with <font face="Courier New,Courier" color="#666666"><b>R</b></font> objects that
+<code>dump</code> does not handle.
+</p>
+<p>
+To produce a more readable representation of an object, use
+<code>control = NULL</code>.  This will skip attributes, and will make other
+simplifications that make <code>source</code> less likely to produce an
+identical copy.  See <code><a href="deparse.html">deparse</a></code> for details.
+</p>
+<p>
+To deparse the internal representation of a function rather than
+displaying the saved source, use <code>control = c("keepInteger",
+    "warnIncomplete", "keepNA")</code>.  This will lose all formatting and
+comments, but may be useful in those cases where the saved source is
+no longer correct.
+</p>
+<p>
+Promises will normally only be encountered by users as a result of
+lazy-loading (when the default <code>evaluate = TRUE</code> is essential)
+and after the use of <code><a href="delayedAssign.html">delayedAssign</a></code>,
+when <code>evaluate = FALSE</code> might be intended.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+An invisible character vector containing the names of the objects
+which were dumped.</p>
+
+<h3>Note</h3>
+
+<p>
+As <code>dump</code> is defined in the base name space, the <span class="pkg">base</span>
+package will be searched <EM>before</EM> the global environment unless
+<code>dump</code> is called from the top level prompt or the <code>envir</code>
+argument is given explicitly.
+</p>
+<p>
+To avoid the risk of a source attribute becoming out of sync with the
+actual function definition, the source attribute of a function will
+never be dumped as an attribute.
+</p>
+<p>
+Currently environments, external pointers, weak references and objects
+of type <code>S4</code> are not deparsed in a way that can be
+<code>source</code>d.  In addition, language objects are deparsed in a
+simple way whatever the value of <code>control</code>, and this includes not
+dumping their attributes (which will result in a warning).
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+<EM>The New S Language</EM>.
+Wadsworth &amp; Brooks/Cole.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="dput.html">dput</a></code>, <code><a href="dput.html">dget</a></code>, <code><a href="write.html">write</a></code>.<br>
+<code><a href="save.html">save</a></code> for a more reliable way to save <font face="Courier New,Courier" color="#666666"><b>R</b></font> objects.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+x &lt;- 1; y &lt;- 1:10
+dump(ls(pattern = '^[xyz]'), "xyz.Rdmped")
+print(.Last.value)
+unlink("xyz.Rdmped")
+</pre>
+
+
+
+<hr><div align="center">[Package <em>base</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

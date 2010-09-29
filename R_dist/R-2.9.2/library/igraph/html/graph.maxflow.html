@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Maximum flow in a network</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for graph.maxflow {igraph}"><tr><td>graph.maxflow {igraph}</td><td align="right">R Documentation</td></tr></table>
+<h2>Maximum flow in a network</h2>
+
+
+<h3>Description</h3>
+
+<p>
+In a graph where each edge has a given flow capacity the
+maximal flow between two vertices is calculated.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+graph.maxflow(graph, source, target, capacity=NULL)
+graph.mincut(graph, source=NULL, target=NULL, capacity=NULL,
+       value.only = TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>graph</code></td>
+<td>
+The input graph.</td></tr>
+<tr valign="top"><td><code>source</code></td>
+<td>
+The id of the source vertex.</td></tr>
+<tr valign="top"><td><code>target</code></td>
+<td>
+The id of the target vertex (sometimes also called sink).</td></tr>
+<tr valign="top"><td><code>capacity</code></td>
+<td>
+Vector giving the capacity of the edges. If this is
+<code>NULL</code> (the default) then the <code>capacity</code> edge attribute is
+used.</td></tr>
+<tr valign="top"><td><code>value.only</code></td>
+<td>
+Logical scalar, if <code>TRUE</code> only the minumum cut
+value is returned, if <code>FALSE</code> the edges in the cut and a the
+two (or more) partitions are also returned. This currently only
+works for undirected graphs.
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>graph.maxflow</code> calculates the maximum flow between two vertices
+in a weighted (ie. valued) graph. A flow from <code>source</code> to
+<code>target</code> is an assignment of non-negative real numbers to the
+edges of the graph, satisfying two properties: (1) for each edge the
+flow (ie. the assigned number) is not more than the capacity of the
+edge (the <code>capacity</code> parameter or edge attribute), (2) for every
+vertex, except the source and the target the incoming flow is the same
+as the outgoing flow. The value of the flow is the incoming flow of
+the <code>target</code> vertex. The maximum flow is the flow of maximum
+value.
+</p>
+<p>
+<code>graph.mincut</code> calculates the minimum st-cut between two vertices
+in a graph (if the <code>source</code> and <code>target</code> arguments are
+given) or the minimum cut of the graph (if both <code>source</code> and
+<code>target</code> are <code>NULL</code>).
+</p>
+<p>
+The minimum st-cut between <code>source</code> and <code>target</code> is the
+minimum total weight of edges needed to remove to eliminate all paths from
+<code>source</code> to <code>target</code>.
+</p>
+<p>
+The minimum cut of a graph is the minimum total weight of the edges
+needed to remove to separate the graph into (at least) two
+components. (Which is to make the graph <EM>not</EM> strongly connected
+in the directed case.)
+</p>
+<p>
+The maximum flow between two vertices in a graph is the same as the minimum
+st-cut, so <code>graph.maxflow</code> and <code>graph.mincut</code> essentially
+calculate the same quantity, the only difference is that
+<code>graph.mincut</code> can be invoked without giving the <code>source</code>
+and <code>target</code> arguments and then minimum of all possible minimum
+cuts is calculated.
+</p>
+<p>
+Starting from version 0.5 igraph can return the edges in the minimum
+cut for undirected graphs.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A numeric constant, the maximum flow, or the minimum cut, except if
+<code>value.only=FALSE</code> for <code>graph.mincut</code>. In this case a named
+list with components:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>value</code></td>
+<td>
+Numeric scalar, the cut value.</td></tr>
+<tr valign="top"><td><code>cut</code></td>
+<td>
+Numeric vector, the edges in the cut.</td></tr>
+<tr valign="top"><td><code>partition1</code></td>
+<td>
+The vertices in the first partition after the cut
+edges are removed. Note that these vertices might be actually in
+different components (after the cut edges are removed), as the
+graph may fall apart into more than two components.</td></tr>
+<tr valign="top"><td><code>partition2</code></td>
+<td>
+The vertices in the second partition after the cut
+edges are removed. Note that these vertices might be actually in
+different components (after the cut edges are removed), as the
+graph may fall apart into more than two components.</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Gabor Csardi <a href="mailto:csardi@rmki.kfki.hu">csardi@rmki.kfki.hu</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+A. V. Goldberg and R. E. Tarjan: ``A New Approach to the Maximum Flow
+Problem'' Journal of the ACM 35:921-940, 1988.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="shortest.paths.html">shortest.paths</a></code>, <code><a href="edge.connectivity.html">edge.connectivity</a></code>,
+<code><a href="vertex.connectivity.html">vertex.connectivity</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+g &lt;- graph.ring(100)
+graph.mincut(g, capacity=rep(1,vcount(g)))
+graph.mincut(g, value.only=FALSE, capacity=rep(1,vcount(g)))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>igraph</em> version 0.5.2-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>
