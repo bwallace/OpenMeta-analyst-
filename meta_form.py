@@ -491,7 +491,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                             outcome_name, self.model.get_current_follow_up_name(), group) for group in cur_groups]):
                 self.model.set_current_groups(self.model.next_groups())
             
-        #self.model.set_current_time_point(0)
         self.cur_outcome_lbl.setText(u"<font color='Blue'>%s</font>" % outcome_name)
         self.cur_time_lbl.setText(u"<font color='Blue'>%s</font>" % self.model.get_current_follow_up_name())
         self.model.reset()

@@ -213,6 +213,11 @@ class DatasetModel(QAbstractTableModel):
         elif role == Qt.BackgroundColorRole:
             if column in self.OUTCOMES:
                 return QVariant(QColor(Qt.yellow))
+            elif column in self.RAW_DATA[len(self.RAW_DATA)/2:] and \
+                        self.current_effect in ONE_ARM_METRICS:
+                #pyqtRemoveInputHook()
+                #pdb.set_trace()
+                return QVariant(QColor(Qt.gray))
             else:
                 return QVariant(QColor(Qt.white))
         return QVariant()

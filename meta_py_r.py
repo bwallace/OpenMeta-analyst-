@@ -511,8 +511,6 @@ def effect_for_study(e1, n1, e2=None, n2=None, two_arm=True,
     else:
         r_str = "escalc(measure='%s', xi=c(%s), ni=c(%s))" % (metric, e1, n1)        
                     
-    pyqtRemoveInputHook()
-    pdb.set_trace()
     effect = ro.r(r_str)
     lg_point_est = effect[0][0]
     sd = math.sqrt(effect[1][0])
