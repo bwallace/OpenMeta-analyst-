@@ -60,6 +60,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.model = DatasetModel(dataset=data_model)
             self.display_outcome("death")
             self.model.set_current_time_point(0)
+            self.model.current_effect = "OR"
             self.model.try_to_update_outcomes()
             self.model.reset()
             self.tableView.resizeColumnsToContents()
@@ -220,17 +221,35 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         return metric_action
     
     
-    def metric_selected(self, metric_name, menu):
-        # de-select previously active metric --
+    def deselect_all_metrics(self):
+        # de-selects all metrics
         # it doesn't appear that there is a more
         # straight forward way of doing this, 
         # unfortunately.
-        #
+        data_type = self.tableView.model().get_current_outcome_type(get_str=False)
+        if data_type in (BINARY, CONTINUOUS):
+            # then there are sub-menus (one-group, two-group)
+            for sub_menu in self.menuMetric.actions():
+                sub_menu = sub_menu.menu()
+                for action in sub_menu.actions():
+                    action.blockSignals(True)
+                    action.setChecked(False)
+                    action.blockSignals(False)
+        ##
+        # @TODO -- diagnostic data.
+        
+    def metric_selected(self, metric_name, menu):
+        # first deselect the previous metric
+        self.deselect_all_metrics()
+        
+        # now select the newly chosen one.
         prev_metric_name = self.tableView.model().current_effect
         for action in menu.actions():
             action_text = action.text()
-            if prev_metric_name != metric_name and action_text == prev_metric_name:
-                action.setChecked(False)
+            if action_text == metric_name:
+                action.blockSignals(True)
+                action.setChecked(True)
+                action.blockSignals(False)
         
         self.tableView.model().set_current_metric(metric_name)
         self.model.try_to_update_outcomes()    

@@ -22,28 +22,13 @@ import copy
 
 import two_way_dict
 import meta_globals
+from meta_globals import *
 
 #####
 # Let's define some module level constants.
 #####
 
-# enumeration of data types and dictionaries mapping both ways
-BINARY, CONTINUOUS, DIAGNOSTIC, OTHER = range(4)
 
-# we need two types for covariates; factor and continuous. we'll use the 
-# above definition (enumerated as part of a general data type) for continuous
-# and just define factor here.
-FACTOR = 4
-
-STR_TO_TYPE_DICT = {u"binary":BINARY, u"continuous":CONTINUOUS, 
-                                    u"diagnostic":DIAGNOSTIC, u"OTHER":OTHER}
-TYPE_TO_STR_DICT = {BINARY:u"binary", CONTINUOUS:u"continuous", 
-                                    DIAGNOSTIC:u"diagnostic", OTHER:u"OTHER"}
-                                    
-# enumeration of meta-analytic types
-VANILLA, NETWORK = range(2)
-
-EMPTY_VALS = ("", None) # these indicate an empty row/cell 
 
 class Dataset:
     def __len__(self):

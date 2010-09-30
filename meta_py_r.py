@@ -484,7 +484,8 @@ def continuous_effect_for_study(n1, m1, sd1, n2, m2, sd2, metric="MD", conf_leve
     lower, upper = (point_est-mult*sd, point_est+mult*sd)
     return (point_est, lower, upper)
     
-def effect_for_study(e1, n1, e2, n2, metric="OR", conf_level=.975):
+def effect_for_study(e1, n1, e2=None, n2=None, two_arm=True, 
+                metric="OR", conf_level=.975):
     '''
     Computes a point estimate, lower & upper bound for
     the parametric 2x2 *binary* table data.
@@ -497,12 +498,21 @@ def effect_for_study(e1, n1, e2, n2, metric="OR", conf_level=.975):
     n1 -- size of group 1
     e2 -- events in group 2
     n2 -- size of group 2
+    --
+    
+    
     '''
     print metric
-    # notice that we're using WV's escalc routine here
-    r_str = "escalc(measure='%s', ai=c(%s), n1i=c(%s), ci=c(%s), n2i=c(%s))" %\
-                    (metric, e1, n1, e2, n2)
-
+    r_str = None
+    if two_arm:
+        # notice that we're using WV's escalc routine here
+        r_str = "escalc(measure='%s', ai=c(%s), n1i=c(%s), ci=c(%s), n2i=c(%s))" %\
+                        (metric, e1, n1, e2, n2)
+    else:
+        r_str = "escalc(measure='%s', xi=c(%s), ni=c(%s))" % (metric, e1, n1)        
+                    
+    pyqtRemoveInputHook()
+    pdb.set_trace()
     effect = ro.r(r_str)
     lg_point_est = effect[0][0]
     sd = math.sqrt(effect[1][0])

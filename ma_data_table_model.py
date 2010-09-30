@@ -22,6 +22,8 @@ import pdb
 import ma_dataset
 from ma_dataset import *
 import meta_py_r
+import meta_globals 
+from meta_globals import *
 
 class DatasetModel(QAbstractTableModel):
     '''
@@ -690,7 +692,13 @@ class DatasetModel(QAbstractTableModel):
         if self.raw_data_is_complete_for_study(study_index):
             if data_type == BINARY:
                 e1, n1, e2, n2 = self.get_cur_raw_data_for_study(study_index)
-                est, lower, upper = meta_py_r.effect_for_study(e1, n1, e2, n2, metric=self.current_effect)
+                print self.current_effect
+                if self.current_effect in BINARY_TWO_ARM_METRICS:
+                    est, lower, upper = meta_py_r.effect_for_study(e1, n1, e2, n2, metric=self.current_effect)
+                else:
+                    # binary, one-arm
+                    est, lower, upper = meta_py_r.effect_for_study(e1, n1, \
+                                                    two_arm=False, metric=self.current_effect)
             elif data_type == CONTINUOUS:
                 n1, m1, se1, n2, m2, se2 = self.get_cur_raw_data_for_study(study_index)
                 est, lower, upper = meta_py_r.continuous_effect_for_study(n1, m1, se1, n2, m2, se2)
@@ -789,8 +797,6 @@ class DatasetModel(QAbstractTableModel):
         # we must also make sure the time point exists. note that we use the *name* rather than the 
         # index of the current time/follow up
         if not self.get_current_follow_up_name() in self.dataset.studies[study_index].outcomes_to_follow_ups[self.current_outcome]:
-            pyqtRemoveInputHook()
-            pdb.set_trace()
             self.dataset.studies[study_index].add_outcome_at_follow_up(
                                 self.dataset.get_outcome_obj(self.current_outcome), self.get_current_follow_up_name())
         
