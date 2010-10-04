@@ -4,7 +4,7 @@
 
 ########################## example data ###############################
 
-setwd("C:/Documents and Settings/idahabreh/Desktop/graph")
+#setwd("C:/Documents and Settings/idahabreh/Desktop/graph")
 
 library("grid")
 
@@ -291,12 +291,13 @@ effectsize.column()
 plot.options(boxSca=0.8)
                 
 #close any devices that may be open
-dev.off()
+graphics.off()
 # here i need input on the computer it is running on 
 # if pc or mac need to call other device
 # here i work as if on pc
-windows()
-
+#windows()
+pdf(file="test1.pdf", width =25  , height = 15)  
+png(file="test1.pdf", width =25  , height = 15) 
 
 # these are calls to plotting functions
 
@@ -326,5 +327,46 @@ drawDataCol(col3, 2*length(additionalColumns)+3,  colorOveral = "lightblue",
                       summaryLinePat = "dashed",
                       metric = "Effect size",
                       diamSize = 1.2)   
-                      
+
+
+                 
 popViewport()
+graphics.off()
+
+###png
+
+
+# TODO need to do something about the scaling.
+png(file="test3.png", width =25  , height = 15, units = "in", res = 144)
+
+# these are calls to plotting functions
+
+ExtraSpace <- sum(data$types != 0) 
+Height <- length(data$types)+ ExtraSpace
+data.width <- unit.c( max(unit(rep(1, length(data$label)), "grobwidth", col1$content)),    colgap   )
+ 
+pushViewport(viewport(layout=grid.layout( Height ,2*length(additionalColumns)+3,
+                        widths=
+                        unit.c(max(unit(rep(1, length(data$label)), "grobwidth", col1$content)),
+                               colgap,  rep(data.width, length(additionalColumns))  , col3width  ),
+                        heights=unit(rep(1, Height)  , "lines"))))
+
+ #### consider including these as they have no options and i want them to 
+
+number.cols <- 2 + length(additional.columns)
+
+drawLabelCol(col1, 1)
+
+for (i in 1:length(additionalColumns)) {
+drawLabelCol(additionalColumns[[i]], 1+2*i)
+}
+
+drawDataCol(col3, 2*length(additionalColumns)+3,  colorOveral = "lightblue",
+                      colorSubgroup = "yellow",
+                      summaryLineCol= "red",
+                      summaryLinePat = "dashed",
+                      metric = "Effect size",
+                      diamSize = 1.2)   
+
+popViewport()
+graphics.off()
