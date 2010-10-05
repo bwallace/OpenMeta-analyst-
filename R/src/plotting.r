@@ -56,7 +56,7 @@ study.column <- function(data, title.font="bold") {
 additional.columns <- function(data, font = "bold") {
     #  first get the number of columns
     additional.data <- length(data$additional.col.data)
-    
+  
     additionalColumns <- vector("list", length(data$additional.col.data))
     
     for (j in 1:length(data$additional.col.data)){
@@ -254,10 +254,10 @@ forest.plot <- function(data, outpath){
     data.width <- unit.c(max(unit(rep(1, length(data$label)), "grobwidth", study.col$content)), 
                              forest.plot.params$col.gap)
      
-    pushViewport(viewport(layout=grid.layout(Height ,2*length(additional.cols)+3,
+    pushViewport(viewport(layout=grid.layout(height ,2*length(additional.cols)+3,
                             widths=
                                unit.c(max(unit(rep(1, length(data$label)), "grobwidth", study.col$content)),
-                                      forest.plot.params$col.gap,  rep(data.width, length(add.columns)), forest.plot.params$effect.col.width),
+                                      forest.plot.params$col.gap,  rep(data.width, length(additional.cols)), forest.plot.params$effect.col.width),
                                       heights=unit(rep(1, height)  , "lines"))))
     
                                       
@@ -302,14 +302,14 @@ forest.plot <- function(data, outpath){
     pushViewport(viewport(layout=grid.layout(height ,2*length(additional.cols)+3,
                             widths=
                             unit.c(max(unit(rep(1, length(data$label)), "grobwidth", study.col$content)),
-                                   colgap,  rep(data.width, length(additional.cols)), forest.plot.params$effect.col.width),
+                                   forest.plot.params$col.gap,  rep(data.width, length(additional.cols)), forest.plot.params$effect.col.width),
                             heights=unit(rep(1, height)  , "lines"))))
     
      #### consider including these as they have no options and i want them to 
     
     number.cols <- 2 + length(additional.columns)
     
-    draw.label.col(col1, 1)
+    draw.label.col(study.col, 1)
     
     for (i in 1:length(additional.cols)) {
         draw.label.col(additional.cols[[i]], 1+2*i)
