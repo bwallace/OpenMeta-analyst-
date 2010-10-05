@@ -20,13 +20,13 @@ library("grid")
 
 # get data for the study column
 
-study.column <- function(data, TitleFont="bold") {
+study.column <- function(data, title.font="bold") {
 
     content<-rep(NA, length(data$label))
     
     for (i in 1:length(data$label)){
       if (data$types[i] !=  0)
-        content[i] <- list(textGrob(data$label[i], x=0, just = "left", gp = gpar(fontface = TitleFont)))
+        content[i] <- list(textGrob(data$label[i], x=0, just = "left", gp = gpar(fontface = title.font)))
       else
         content[i] <- list(textGrob(data$label[i], x=0, just = "left", gp = gpar(fontface = "plain")))
     }
@@ -48,16 +48,11 @@ study.column <- function(data, TitleFont="bold") {
        rows[i+1] <- rows[i] + 1
     }
     
-    ###
-    # this is the problem. issa was setting the content in additional.cols here, i.e.:
-    #   > col1 <<-list(content = content, rows = rows)
-    # 
     study.column.list <- list(content = content, rows = rows)
     study.column.list
 }
 
 # additional columns
-
 additional.columns <- function(data, font = "bold") {
     #  first get the number of columns
     additional.data <- length(data$additional.col.data)
@@ -119,7 +114,7 @@ effectsize.column <- function(data) {
 }
 
 
-plot.options <- function(data, boxSca = 1) {
+plot.options <- function(data, box.sca = 1) {
     # weights for the boxes
     ## TODO parameterize 1.96
     precision <- NULL
@@ -135,7 +130,7 @@ plot.options <- function(data, boxSca = 1) {
           precision <- sqrt(1 / ((effect.col$UL - effect.col$LL)/(2*1.96)))
           effect.col.range <- c(max(-3 , min(effect.col$LL)), min(3 , max(effect.col$UL)))
     }   
-    effect.col.sizes <- boxSca * precision/max(precision)
+    effect.col.sizes <- box.sca * precision/max(precision)
     effect.col.width <- unit(3, "inches")
     
     forest.params = list(
@@ -174,16 +169,14 @@ draw.normal.CI <- function(LL, ES, UL, size) {
   # Draw arrow if exceed col range
   # convertX() used to convert between coordinate systems
   
-  if (convertX(unit(UL, "native"), "npc", valueOnly=TRUE) > 1  &&  convertX(unit(LL, "native"), "npc", valueOnly=TRUE) > 0)
-     
+  if (convertX(unit(UL, "native"), "npc", valueOnly=TRUE) > 1  &&  convertX(unit(LL, "native"), "npc", valueOnly=TRUE) > 0){
     grid.arrows(x=unit(c(LL, 1), c("native", "npc")),
-                length=unit(0.05, "inches")) 
-                       
-  else if (convertX(unit(UL, "native"), "npc", valueOnly=TRUE) < 1  &&  convertX(unit(LL, "native"), "npc", valueOnly=TRUE) < 0)
-    
+                length=unit(0.05, "inches"))                 
+  }
+  else if (convertX(unit(UL, "native"), "npc", valueOnly=TRUE) < 1  &&  convertX(unit(LL, "native"), "npc", valueOnly=TRUE) < 0){
     grid.arrows(x=unit(c(UL, 0), c("native", "npc")),
                length=unit(0.05, "inches"))
-               
+  }
   else if (convertX(unit(UL, "native"), "npc", valueOnly=TRUE) > 1   &&  convertX(unit(LL, "native"), "npc", valueOnly=TRUE) < 0 ){
     grid.arrows(x=unit(c(ES, 0), c("native", "npc")),
                length=unit(0.05, "inches")) 
@@ -192,7 +185,7 @@ draw.normal.CI <- function(LL, ES, UL, size) {
   }
   else {
     # Draw line white if totally inside rect
-    lineCol <- if ((convertX(unit(ES, "native") + unit(0.5*size, "lines"),
+    line.col <- if ((convertX(unit(ES, "native") + unit(0.5*size, "lines"),
                              "native", valueOnly=TRUE) > UL) &&
                    (convertX(unit(ES, "native") - unit(0.5*size, "lines"),
                              "native", valueOnly=TRUE) < LL))
@@ -200,33 +193,34 @@ draw.normal.CI <- function(LL, ES, UL, size) {
     else
       "black"
     grid.lines(x=unit(c(LL, UL), "native"), y=0.5,
-               gp=gpar(col=lineCol))
+               gp=gpar(col=line.col))
   }
 }
 
 # Function to draw a summary "diamond"
-draw.summary.CI <- function(LL, ES, UL, size, color, diamHeight) {
+draw.summary.CI <- function(LL, ES, UL, size, color, diam.height) {
   # for diamonds: using half the height of the equivalent rect
   grid.polygon(x=unit(c(LL, ES, UL, ES), "native"),
-               y=unit(0.5 + c(0, 0.25*diamHeight*size, 0, -0.25*diamHeight*size), "npc"), gp=gpar(fill=color))
+               y=unit(0.5 + c(0, 0.25*diam.height*size, 0, -0.25*diam.height*size), "npc"), gp=gpar(fill=color))
 }
 
 # Function to draw a "forest" column
-draw.data.col <- function(col, j, colorOverall = "black",
-                                colorSubgroup = "black",
-                                summaryLineCol = "darkred",
-                                summaryLinePat = "dashed",
+draw.data.col <- function(col, j, color.overall = "black",
+                                color.subgroup = "black",
+                                summary.line.col = "darkred",
+                                summary.line.pat = "dashed",
                                 metric = "Effect size",
-                                diamSize=1) {
+                                diam.size=1) {
   pushViewport(viewport(layout.pos.col=j, xscale=col$range))
   
   if (data$scale == "log") 
       grid.lines(x=unit(1, "native"), y=0:1)
-  if (data$scale == "cont") 
+  else if (data$scale == "cont") 
       grid.lines(x=unit(0, "native"), y=0:1)
+      
   # Assume that last value in col is "All" 
   grid.lines(x=unit(col$ES[length(col$ES)], "native"),
-             y=0:1, gp=gpar(lty = summaryLinePat, col= summaryLineCol ))
+             y=0:1, gp=gpar(lty = summary.line.pat, col= summary.line.col))
   grid.xaxis(gp=gpar(cex=0.6))
   grid.text(metric, y=unit(-2, "lines"))
   popViewport()
@@ -235,10 +229,10 @@ draw.data.col <- function(col, j, colorOverall = "black",
                           xscale=col$range))
     if (col$types[i] == 0)
        draw.normal.CI(col$LL[i], col$ES[i], col$UL[i], col$sizes[i])
-    if (col$types[i] == 1)
-       draw.summary.CI(col$LL[i], col$ES[i], col$UL[i], col$sizes[i], colorSubgroup, diamSize )
-    if (col$types[i] == 2)
-       draw.summary.CI(col$LL[i], col$ES[i], col$UL[i], col$sizes[i], colorOverall, diamSize )
+    else if (col$types[i] == 1)
+       draw.summary.CI(col$LL[i], col$ES[i], col$UL[i], col$sizes[i], color.subgroup, diam.size )
+    else if (col$types[i] == 2)
+       draw.summary.CI(col$LL[i], col$ES[i], col$UL[i], col$sizes[i], color.overall, diam.size )
     popViewport()
   }
 }
@@ -249,7 +243,7 @@ forest.plot <- function(data, outpath){
     study.col<- study.column(data, "bold")
     additional.cols <- additional.columns(data, "bold")
     effects.col <- effectsize.column(data)
-    forest.plot.params <- plot.options(data, boxSca=0.8)
+    forest.plot.params <- plot.options(data, box.sca=0.8)
                 
     # these are calls to plotting functions
     extra.space <- sum(data$types != 0) 
@@ -282,12 +276,12 @@ forest.plot <- function(data, outpath){
     effects.col$sizes <- forest.plot.params$effect.col.sizes
     effects.col$width <- forest.plot.params$effect.col.width
     draw.data.col(effects.col, 2*length(additional.cols)+3,  
-                             colorOverall = "lightblue",
-                             colorSubgroup = "yellow",
-                             summaryLineCol= "red",
-                             summaryLinePat = "dashed",
+                             color.overall = "lightblue",
+                             color.subgroup = "yellow",
+                             summary.line.col= "red",
+                             summary.line.pat = "dashed",
                              metric = "Effect size",
-                             diamSize = 1.2)   
+                             diam.size = 1.2)   
     
     
                      
@@ -318,12 +312,12 @@ forest.plot <- function(data, outpath){
         draw.label.col(additional.cols[[i]], 1+2*i)
     }
     
-    draw.data.col(effects.col, 2*length(additional.cols)+3,  colorOverall = "lightblue",
-                          colorSubgroup = "yellow",
-                          summaryLineCol= "red",
-                          summaryLinePat = "dashed",
+    draw.data.col(effects.col, 2*length(additional.cols)+3,  color.overall = "lightblue",
+                          color.subgroup = "yellow",
+                          summary.line.col= "red",
+                          summary.line.pat = "dashed",
                           metric = "Effect size",
-                          diamSize = 1.2)   
+                          diam.size = 1.2)   
     
     popViewport()
     graphics.off()
