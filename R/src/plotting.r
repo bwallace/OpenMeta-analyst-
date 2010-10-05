@@ -227,12 +227,15 @@ draw.data.col <- function(col, j, color.overall = "black",
   for (i in 1:length(col$rows)) {
     pushViewport(viewport(layout.pos.row=col$rows[i], layout.pos.col=j,
                           xscale=col$range))
-    if (col$types[i] == 0)
+    if (col$types[i] == 0){
        draw.normal.CI(col$LL[i], col$ES[i], col$UL[i], col$sizes[i])
-    else if (col$types[i] == 1)
+    }
+    else if (col$types[i] == 1){
        draw.summary.CI(col$LL[i], col$ES[i], col$UL[i], col$sizes[i], color.subgroup, diam.size )
-    else if (col$types[i] == 2)
+    }
+    else if (col$types[i] == 2){
        draw.summary.CI(col$LL[i], col$ES[i], col$UL[i], col$sizes[i], color.overall, diam.size )
+    }
     popViewport()
   }
 }
@@ -240,7 +243,7 @@ draw.data.col <- function(col, j, color.overall = "black",
 
 forest.plot <- function(data, outpath){
     # these are calls to data functions
-    study.col<- study.column(data, "bold")
+    study.col <- study.column(data, "bold")
     additional.cols <- additional.columns(data, "bold")
     effects.col <- effectsize.column(data)
     forest.plot.params <- plot.options(data, box.sca=0.8)
@@ -257,8 +260,8 @@ forest.plot <- function(data, outpath){
                                       forest.plot.params$col.gap,  rep(data.width, length(add.columns)), forest.plot.params$effect.col.width),
                                       heights=unit(rep(1, height)  , "lines"))))
     
-     #### consider including these as they have no options and i want them to 
-    
+                                      
+    ## consider including these as they have no options and i want them to 
     number.cols <- 2 + length(additional.columns)
     
     draw.label.col(study.col, 1)
@@ -323,8 +326,8 @@ forest.plot <- function(data, outpath){
     graphics.off()
 }
 
-### testing
 
+### sample usage.
 # these are the main data (study names and subgroups)
 data <- list( label = c("Studies", "study1" , "study2", "study3" , "subgroup1" , "study3" , "study4" , "subgroup2" , 
                "study1" , "study2", "study3" , "subgroup1" , "study3" , "study4" , "subgroup2" , "study1" , "study2", 
@@ -385,5 +388,4 @@ effects <- list(ES=c(-1, 1.27, 1.17, 1.17, 2.97, 1.86, 1.05,
                                
                                
 data$effects <- effects
-
 forest.plot(data, "test.png")
