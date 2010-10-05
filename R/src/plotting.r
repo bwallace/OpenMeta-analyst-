@@ -149,7 +149,7 @@ plot.options <- function(data, boxSca = 1) {
 }
 
 # Function to draw a cell in a text column
-drawLabelCol <- function(col, j) {
+draw.label.col <- function(col, j) {
   for (i in 1:length(col$rows)) {
     pushViewport(viewport(layout.pos.row=col$rows[i], layout.pos.col=j))
     # Labels are grobs containing their location so just
@@ -160,7 +160,7 @@ drawLabelCol <- function(col, j) {
 }
 
 # Function to draw a non-summary rect-plus-CI
-drawNormalCI <- function(LL, ES, UL, size) {
+draw.normal.CI <- function(LL, ES, UL, size) {
   # "native" units to position relative to
   # the x-axis scale, and "snpc" units to size relative to
   # the height of the row
@@ -189,7 +189,7 @@ drawNormalCI <- function(LL, ES, UL, size) {
                length=unit(0.05, "inches")) 
     grid.arrows(x=unit(c(ES, 1), c("native", "npc")),
                length=unit(0.05, "inches"))              
-}
+  }
   else {
     # Draw line white if totally inside rect
     lineCol <- if ((convertX(unit(ES, "native") + unit(0.5*size, "lines"),
@@ -205,14 +205,14 @@ drawNormalCI <- function(LL, ES, UL, size) {
 }
 
 # Function to draw a summary "diamond"
-drawSummaryCI <- function(LL, ES, UL, size, color, diamHeight) {
+draw.summary.CI <- function(LL, ES, UL, size, color, diamHeight) {
   # for diamonds: using half the height of the equivalent rect
   grid.polygon(x=unit(c(LL, ES, UL, ES), "native"),
                y=unit(0.5 + c(0, 0.25*diamHeight*size, 0, -0.25*diamHeight*size), "npc"), gp=gpar(fill=color))
 }
 
 # Function to draw a "forest" column
-drawDataCol <- function(col, j, colorOverall = "black",
+draw.data.col <- function(col, j, colorOverall = "black",
                                 colorSubgroup = "black",
                                 summaryLineCol = "darkred",
                                 summaryLinePat = "dashed",
@@ -234,11 +234,11 @@ drawDataCol <- function(col, j, colorOverall = "black",
     pushViewport(viewport(layout.pos.row=col$rows[i], layout.pos.col=j,
                           xscale=col$range))
     if (col$types[i] == 0)
-      drawNormalCI(col$LL[i], col$ES[i], col$UL[i], col$sizes[i])
+       draw.normal.CI(col$LL[i], col$ES[i], col$UL[i], col$sizes[i])
     if (col$types[i] == 1)
-       drawSummaryCI(col$LL[i], col$ES[i], col$UL[i], col$sizes[i], colorSubgroup, diamSize )
+       draw.summary.CI(col$LL[i], col$ES[i], col$UL[i], col$sizes[i], colorSubgroup, diamSize )
     if (col$types[i] == 2)
-       drawSummaryCI(col$LL[i], col$ES[i], col$UL[i], col$sizes[i], colorOverall, diamSize )
+       draw.summary.CI(col$LL[i], col$ES[i], col$UL[i], col$sizes[i], colorOverall, diamSize )
     popViewport()
   }
 }
@@ -257,11 +257,6 @@ forest.plot <- function(data, outpath){
     data.width <- unit.c(max(unit(rep(1, length(data$label)), "grobwidth", study.col$content)), 
                              forest.plot.params$col.gap)
      
-        #col.gap = unit(3, "mm"),
-        #precision = precision,    
-        #effect.col.range = effect.col.range,
-        #effect.col.sizes = effect.col.sizes,
-        #effect.col.width = effect.col.width
     pushViewport(viewport(layout=grid.layout(Height ,2*length(additional.cols)+3,
                             widths=
                                unit.c(max(unit(rep(1, length(data$label)), "grobwidth", study.col$content)),
@@ -272,10 +267,10 @@ forest.plot <- function(data, outpath){
     
     number.cols <- 2 + length(additional.columns)
     
-    drawLabelCol(study.col, 1)
+    draw.label.col(study.col, 1)
     
     for (i in 1:length(additional.cols)){
-        drawLabelCol(additional.cols[[i]], 1+2*i)
+        draw.label.col(additional.cols[[i]], 1+2*i)
     }
     
     ### this could (ahem, should) be better refactored
@@ -286,8 +281,8 @@ forest.plot <- function(data, outpath){
     effects.col$range <- forest.plot.params$effect.col.range
     effects.col$sizes <- forest.plot.params$effect.col.sizes
     effects.col$width <- forest.plot.params$effect.col.width
-    drawDataCol(effects.col, 2*length(additional.cols)+3,  
-                             colorOveral = "lightblue",
+    draw.data.col(effects.col, 2*length(additional.cols)+3,  
+                             colorOverall = "lightblue",
                              colorSubgroup = "yellow",
                              summaryLineCol= "red",
                              summaryLinePat = "dashed",
@@ -317,13 +312,13 @@ forest.plot <- function(data, outpath){
     
     number.cols <- 2 + length(additional.columns)
     
-    drawLabelCol(col1, 1)
+    draw.label.col(col1, 1)
     
     for (i in 1:length(additional.cols)) {
-        drawLabelCol(additional.cols[[i]], 1+2*i)
+        draw.label.col(additional.cols[[i]], 1+2*i)
     }
     
-    drawDataCol(effects.col, 2*length(additional.cols)+3,  colorOveral = "lightblue",
+    draw.data.col(effects.col, 2*length(additional.cols)+3,  colorOverall = "lightblue",
                           colorSubgroup = "yellow",
                           summaryLineCol= "red",
                           summaryLinePat = "dashed",

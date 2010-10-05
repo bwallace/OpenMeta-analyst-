@@ -128,7 +128,7 @@ binary.fixed.mh <- function(binaryData, params){
         results <- list("summary"=res)
     }
     else{
-        res<<-rma.mh(ai=binaryData@g1O1, bi=binaryData@g1O2, 
+        res<-rma.mh(ai=binaryData@g1O1, bi=binaryData@g1O2, 
                                 ci=binaryData@g2O1, di=binaryData@g2O2, slab=binaryData@studyNames,
                                 level=params$conf.level, digits=params$digits)              
                                                   
@@ -200,7 +200,7 @@ binary.fixed.peto <- function(binaryData, params){
         results <- list("summary"=res)
     }
     else{  
-        res<<-rma.peto(ai=binaryData@g1O1, bi=binaryData@g1O2, 
+        res <- rma.peto(ai=binaryData@g1O1, bi=binaryData@g1O2, 
                                 ci=binaryData@g2O1, di=binaryData@g2O2, slab=binaryData@studyNames,
                                 level=params$conf.level, digits=params$digits)              
                                                   
