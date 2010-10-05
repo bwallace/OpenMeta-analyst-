@@ -24,16 +24,16 @@ study.column <- function(data, TitleFont="bold") {
 
     content<-rep(NA, length(data$label))
     
-    for (i in 1:length(data$label))  {
+    for (i in 1:length(data$label)){
       if (data$types[i] !=  0)
-        content[i] <- list( textGrob(data$label[i], x=0, just = "left", gp = gpar(fontface = TitleFont))  )
+        content[i] <- list(textGrob(data$label[i], x=0, just = "left", gp = gpar(fontface = TitleFont)))
       else
-        content[i] <- list( textGrob(data$label[i], x=0, just = "left", gp = gpar(fontface = "plain"))  )
+        content[i] <- list(textGrob(data$label[i], x=0, just = "left", gp = gpar(fontface = "plain")))
     }
 
     rows<-c(1, rep(NA, (length(data$label)-1) ) )
 
-    for (i in 1:(length(data$label) -1 ))  {
+    for (i in 1:(length(data$label) -1)){
       if (data$types[i] == 3  &&  data$types[i+1] == 0 )
         rows[i+1] <- rows[i] + 2
       else if (data$types[i] == 0  &&  data$types[i+1] == 2 )
@@ -47,48 +47,52 @@ study.column <- function(data, TitleFont="bold") {
       else
        rows[i+1] <- rows[i] + 1
     }
-
-    col1 <<-list(content = content, rows = rows)
+    
+    ###
+    # this is the problem. issa was setting the content in additional.cols here, i.e.:
+    #   > col1 <<-list(content = content, rows = rows)
+    # 
+    study.column.list <- list(content = content, rows = rows)
+    study.column.list
 }
 
 # additional columns
 
 additional.columns <- function(data, font = "bold") {
     #  first get the number of columns
-    additional.data <- length(data$additional.columns)
+    additional.data <- length(data$additional.col.data)
     
-    additionalColumns <<- vector("list", length(data2))
+    additionalColumns <- vector("list", length(data$additional.col.data))
     
-    for (j in 1:length(data2) ) {
-    
-    content<-rep(NA, length(data2$cases))
-    
-    for (i in 1:length(data2$cases)){
-      if (data$types[i] != 0 )
-        content[i] <- list( textGrob(data2[[j]][[i]], x=1, just = "right", gp = gpar(fontface = font))  )
-      else
-        content[i] <- list(  textGrob(data2[[j]][[i]], x=1, just = "right", gp = gpar(fontface = "plain"))  )
+    for (j in 1:length(data$additional.col.data)){
+        content<-rep(NA, length(data$additional.col.data$cases))
+        
+        for (i in 1:length(data$additional.col.data$cases)){
+          if (data$types[i] != 0)
+            content[i] <- list(textGrob(data$additional.col.data[[j]][[i]], x=1, just = "right", gp = gpar(fontface = font)))
+          else
+            content[i] <- list(textGrob(data$additional.col.data[[j]][[i]], x=1, just = "right", gp = gpar(fontface = "plain")))
+        }
+        
+        rows<-c(1, rep(NA, (length(data$label)-1)))
+        
+        for (i in 1:(length(data$label)-1)){
+          if (data$types[i] == 3  &&  data$types[i+1] == 0 )
+            rows[i+1] <- rows[i] + 2
+          else if (data$types[i] == 0  &&  data$types[i+1] == 2 )
+            rows[i+1] <- rows[i] + 1
+          else if (data$types[i] == 0  &&  data$types[i+1] == 1 )
+            rows[i+1] <- rows[i] + 1
+          else if (data$types[i] == 1  &&  data$types[i+1] == 0 )
+            rows[i+1] <- rows[i] + 2
+          else if (data$types[i] == 1  &&  data$types[i+1] == 2 )
+            rows[i+1] <- rows[i] + 2
+          else
+            rows[i+1] <- rows[i] + 1
+        }
+        additionalColumns[[j]] <-list(content = content, rows = rows)
     }
-    
-    rows<-c(1, rep(NA, (length(data$label)-1) ) )
-    
-    for (i in 1:(length(data$label) -1 ))  {
-      if (data$types[i] == 3  &&  data$types[i+1] == 0 )
-        rows[i+1] <- rows[i] + 2
-      else if (data$types[i] == 0  &&  data$types[i+1] == 2 )
-        rows[i+1] <- rows[i] + 1
-      else if (data$types[i] == 0  &&  data$types[i+1] == 1 )
-        rows[i+1] <- rows[i] + 1
-      else if (data$types[i] == 1  &&  data$types[i+1] == 0 )
-        rows[i+1] <- rows[i] + 2
-      else if (data$types[i] == 1  &&  data$types[i+1] == 2 )
-        rows[i+1] <- rows[i] + 2
-      else
-       rows[i+1] <- rows[i] + 1
-    }
-    
-    additionalColumns[[j]] <<-list(content = content, rows = rows)
-    }
+    additionalColumns
 }
 
 
@@ -110,26 +114,38 @@ effectsize.column <- function(data) {
         rows[i+1] <- rows[i] + 1
     }
     
-    col3 <<- list(ES = data3$ES, LL = data3$LL, UL = data3$UL, rows = rows[-1]  ,types = data$types[-1])
+    list(ES = data$effects$ES, LL = data$effects$LL, 
+                  UL = data$effects$UL, rows = rows[-1], types = data$types[-1])
 }
 
 
 plot.options <- function(data, boxSca = 1) {
-    # between collumns gap
-    colgap <<- unit(3, "mm")
     # weights for the boxes
+    ## TODO parameterize 1.96
+    precision <- NULL
+    effect.col.range <- NULL
+    effect.col<-data$effects
     if (data$scale == "log") 
-          precision<<- sqrt(1 / ((log(col3$UL) - log(col3$LL))/(2*1.96)))
-    if (data$scale == "cont") 
-          precision<<- sqrt(1 / ((col3$UL - col3$LL)/(2*1.96)))
-    col3$sizes <<- boxSca * precision/max(precision)
-    # Width of column 3
-    col3width <<- unit(3, "inches")
-    # Range on the x-axis for column 3
-    if (data$scale == "cont") 
-        col3$range <<- c(max(-3 , min(col3$LL)) ,  min(3 , max(col3$UL)))
-    if (data$scale == "log") 
-        col3$range <<- c(min(0.5 , min(col3$LL)) ,  min(4 , max(col3$UL)))
+    {
+          precision <- sqrt(1 / ((log(effect.col$UL) - log(effect.col$LL))/(2*1.96)))
+          effect.col.range <- c(min(0.5 , min(effect.col$LL)), min(4 , max(effect.col$UL)))
+    }
+    else if (data$scale == "cont") 
+    {
+          precision <- sqrt(1 / ((effect.col$UL - effect.col$LL)/(2*1.96)))
+          effect.col.range <- c(max(-3 , min(effect.col$LL)), min(3 , max(effect.col$UL)))
+    }   
+    effect.col.sizes <- boxSca * precision/max(precision)
+    effect.col.width <- unit(3, "inches")
+    
+    forest.params = list(
+        col.gap = unit(3, "mm"),
+        precision = precision,    
+        effect.col.range = effect.col.range,
+        effect.col.sizes = effect.col.sizes,
+        effect.col.width = effect.col.width
+    )
+    forest.params
 }
 
 # Function to draw a cell in a text column
@@ -196,7 +212,7 @@ drawSummaryCI <- function(LL, ES, UL, size, color, diamHeight) {
 }
 
 # Function to draw a "forest" column
-drawDataCol <- function(col, j, colorOveral = "black",
+drawDataCol <- function(col, j, colorOverall = "black",
                                 colorSubgroup = "black",
                                 summaryLineCol = "darkred",
                                 summaryLinePat = "dashed",
@@ -222,7 +238,7 @@ drawDataCol <- function(col, j, colorOveral = "black",
     if (col$types[i] == 1)
        drawSummaryCI(col$LL[i], col$ES[i], col$UL[i], col$sizes[i], colorSubgroup, diamSize )
     if (col$types[i] == 2)
-      drawSummaryCI(col$LL[i], col$ES[i], col$UL[i], col$sizes[i], colorOveral, diamSize )
+       drawSummaryCI(col$LL[i], col$ES[i], col$UL[i], col$sizes[i], colorOverall, diamSize )
     popViewport()
   }
 }
@@ -230,38 +246,53 @@ drawDataCol <- function(col, j, colorOveral = "black",
 
 forest.plot <- function(data, outpath){
     # these are calls to data functions
-    study.column(data, "bold")
-    additional.columns(data, "bold")
-    effectsize.column(data)
-    plot.options(data, boxSca=0.8)
+    study.col<- study.column(data, "bold")
+    additional.cols <- additional.columns(data, "bold")
+    effects.col <- effectsize.column(data)
+    forest.plot.params <- plot.options(data, boxSca=0.8)
                 
     # these are calls to plotting functions
-    ExtraSpace <- sum(data$types != 0) 
-    Height <- length(data$types)+ ExtraSpace
-    data.width <- unit.c( max(unit(rep(1, length(data$label)), "grobwidth", col1$content)),    colgap   )
+    extra.space <- sum(data$types != 0) 
+    height <- length(data$types)+ extra.space
+    data.width <- unit.c(max(unit(rep(1, length(data$label)), "grobwidth", study.col$content)), 
+                             forest.plot.params$col.gap)
      
-    pushViewport(viewport(layout=grid.layout( Height ,2*length(additionalColumns)+3,
+        #col.gap = unit(3, "mm"),
+        #precision = precision,    
+        #effect.col.range = effect.col.range,
+        #effect.col.sizes = effect.col.sizes,
+        #effect.col.width = effect.col.width
+    pushViewport(viewport(layout=grid.layout(Height ,2*length(additional.cols)+3,
                             widths=
-                            unit.c(max(unit(rep(1, length(data$label)), "grobwidth", col1$content)),
-                                   colgap,  rep(data.width, length(additionalColumns))  , col3width  ),
-                            heights=unit(rep(1, Height)  , "lines"))))
+                               unit.c(max(unit(rep(1, length(data$label)), "grobwidth", study.col$content)),
+                                      forest.plot.params$col.gap,  rep(data.width, length(add.columns)), forest.plot.params$effect.col.width),
+                                      heights=unit(rep(1, height)  , "lines"))))
     
      #### consider including these as they have no options and i want them to 
     
     number.cols <- 2 + length(additional.columns)
     
-    drawLabelCol(col1, 1)
+    drawLabelCol(study.col, 1)
     
-    for (i in 1:length(additionalColumns)) {
-    drawLabelCol(additionalColumns[[i]], 1+2*i)
+    for (i in 1:length(additional.cols)){
+        drawLabelCol(additional.cols[[i]], 1+2*i)
     }
     
-    drawDataCol(col3, 2*length(additionalColumns)+3,  colorOveral = "lightblue",
-                          colorSubgroup = "yellow",
-                          summaryLineCol= "red",
-                          summaryLinePat = "dashed",
-                          metric = "Effect size",
-                          diamSize = 1.2)   
+    ### this could (ahem, should) be better refactored
+    # we pull out some values for the effects column that
+    # are computed in the plot.params method -- but they're
+    # not really 'plot parameters'. they should be computed
+    # elsewhere.
+    effects.col$range <- forest.plot.params$effect.col.range
+    effects.col$sizes <- forest.plot.params$effect.col.sizes
+    effects.col$width <- forest.plot.params$effect.col.width
+    drawDataCol(effects.col, 2*length(additional.cols)+3,  
+                             colorOveral = "lightblue",
+                             colorSubgroup = "yellow",
+                             summaryLineCol= "red",
+                             summaryLinePat = "dashed",
+                             metric = "Effect size",
+                             diamSize = 1.2)   
     
     
                      
@@ -273,15 +304,14 @@ forest.plot <- function(data, outpath){
     png(file=outpath, width =25  , height = 15, units = "in", res = 144)
     
     # these are calls to plotting functions
-    ExtraSpace <- sum(data$types != 0) 
-    Height <- length(data$types)+ ExtraSpace
-    data.width <- unit.c( max(unit(rep(1, length(data$label)), "grobwidth", col1$content)),    colgap   )
-     
-    pushViewport(viewport(layout=grid.layout( Height ,2*length(additionalColumns)+3,
+    #extraSpace <- sum(data$types != 0) 
+    #height <- length(data$types)+ extra.space
+    #data.width <- unit.c( max(unit(rep(1, length(data$label)), "grobwidth", col1$content)), forest.plot.params$effect.col.width)
+    pushViewport(viewport(layout=grid.layout(height ,2*length(additional.cols)+3,
                             widths=
-                            unit.c(max(unit(rep(1, length(data$label)), "grobwidth", col1$content)),
-                                   colgap,  rep(data.width, length(additionalColumns))  , col3width  ),
-                            heights=unit(rep(1, Height)  , "lines"))))
+                            unit.c(max(unit(rep(1, length(data$label)), "grobwidth", study.col$content)),
+                                   colgap,  rep(data.width, length(additional.cols)), forest.plot.params$effect.col.width),
+                            heights=unit(rep(1, height)  , "lines"))))
     
      #### consider including these as they have no options and i want them to 
     
@@ -289,11 +319,11 @@ forest.plot <- function(data, outpath){
     
     drawLabelCol(col1, 1)
     
-    for (i in 1:length(additionalColumns)) {
-        drawLabelCol(additionalColumns[[i]], 1+2*i)
+    for (i in 1:length(additional.cols)) {
+        drawLabelCol(additional.cols[[i]], 1+2*i)
     }
     
-    drawDataCol(col3, 2*length(additionalColumns)+3,  colorOveral = "lightblue",
+    drawDataCol(effects.col, 2*length(additional.cols)+3,  colorOveral = "lightblue",
                           colorSubgroup = "yellow",
                           summaryLineCol= "red",
                           summaryLinePat = "dashed",
@@ -348,10 +378,10 @@ additional.cols <- list(  cases = c("cases", "123456" , "110" , "28", "238" , "1
                             "100" , "3" , "4" ,  "123" , "150", "155", "6" , 
                             "100" , "123" , "24" ,  "4" , "5", "7", "123" , "6334537"))
 
-data$additional.cols <- additional.cols
+data$additional.col.data <- additional.cols
 
 # these are the effect sizes
-effects <- list(  ES=c(-1, 1.27, 1.17, 1.17, 2.97, 1.86, 1.05,
+effects <- list(ES=c(-1, 1.27, 1.17, 1.17, 2.97, 1.86, 1.05,
                       1.27, 1.17, 1.17, 2.97, 1.86, 2.01, 1.20,
                       1.27, 1.17, 1.17, 2.97, 1.86, 2.01,
                       1.27, 1.17, 1.17, 2.97, 1.86, 2.01, 1.20, 1.4, 1.5),
