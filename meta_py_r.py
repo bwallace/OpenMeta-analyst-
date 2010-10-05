@@ -520,8 +520,9 @@ def effect_for_study(e1, n1, e2=None, n2=None, two_arm=True,
     mult = ro.r(r_str)[0]
 
     # note that we're currently returning point estimate on the raw scale 
-    lower, upper = (math.exp(lg_point_est-mult*sd), math.exp(lg_point_est+mult*sd))
-    point_est, lower, upper = [math.exp(lg_point_est), lower, upper]
+    point_est = math.exp(lg_point_est)
+    lower, upper = (point_est-mult*sd, point_est+mult*sd)
+    
     print "%s, %s, %s" % (lower, point_est, upper)
 
     return (point_est, lower, upper)
