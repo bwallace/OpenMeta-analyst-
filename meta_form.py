@@ -281,10 +281,11 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     def _add_new_covariate(self, cov_name, cov_type):
         self.model.add_covariate(cov_name, cov_type)
         print "new covariate name: %s with type %s" % (cov_name, cov_type)
-        
+        self.tableView.resizeColumnsToContents()
         
     def _undo_add_new_covariate(self, cov_name):
         self.model.remove_covariate(cov_name)
+        self.tableView.resizeColumnsToContents()
         
     def add_new(self):
         redo_f, undo_f = None, None

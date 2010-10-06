@@ -24,11 +24,6 @@ import two_way_dict
 import meta_globals
 from meta_globals import *
 
-#####
-# Let's define some module level constants.
-#####
-
-
 
 class Dataset:
     def __len__(self):
@@ -211,7 +206,7 @@ class Dataset:
    
     def add_group(self, group_name, outcome_name, follow_up_name=None):
         ####
-        # A note on adding new groups: per consultation with sir
+        # A note on adding new groups: per consultation with the wise sir
         # Thomas Trikalinos, a decision has been made that when a 
         # group is added to an outcome, it is added by default to all
         # the follow ups belonging to said outcome. It is not, however

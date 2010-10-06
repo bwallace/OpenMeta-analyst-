@@ -16,6 +16,7 @@ import pdb
 from pdb import set_trace
 from PyQt4.QtCore import pyqtRemoveInputHook
 
+from meta_globals import *
 
 try:
     import rpy2
@@ -269,14 +270,17 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
     
     # grab the study names. note: the list is pulled out in reverse order from the 
     # model, so we, er, reverse it.
-    studies = table_model.get_studies()
+    studies = table_model.get_studies(only_if_included=True)
     studies.reverse()
     study_names = ", ".join(["'" + study.name + "'" for study in studies])
         
     ests, SEs = table_model.get_cur_ests_and_SEs()
     ests_str = ", ".join(_to_strs(ests))
     SEs_str = ", ".join(_to_strs(SEs))
-        
+                
+    # generate the covariate string
+    cov_str = gen_cov_str(table_model.dataset, studies)
+    
     # first try and construct an object with raw data
     if table_model.included_studies_have_raw_data():
         print "ok; raw data has been entered for all included studies"
@@ -306,19 +310,23 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
         g2O2 = [(total_i-event_i) for total_i, event_i in zip(g2_totals, g2_events)]
         g2O2_str = ", ".join(_to_strs(g2O2))
     
+        pyqtRemoveInputHook()
+        pdb.set_trace()
+                
         # actually creating a new object on the R side seems the path of least resistance here.
         # the alternative would be to try and create a representation of the R object on the 
         # python side, but this would require more work and I'm not sure what the benefits
         # would be
-        r_str = "%s <- new('BinaryData', g1O1=c(%s), g1O2=c(%s), g2O1=c(%s), g2O2=c(%s), y=c(%s), SE=c(%s), studyNames=c(%s))" \
-                        % (var_name, g1O1_str, g1O2_str, g2O1_str, g2O2_str, ests_str, SEs_str, study_names)
-    
+        r_str = "%s <- new('BinaryData', g1O1=c(%s), g1O2=c(%s), g2O1=c(%s), g2O2=c(%s), \
+                            y=c(%s), SE=c(%s), studyNames=c(%s), covariates=%s)" % \
+                            (var_name, g1O1_str, g1O2_str, g2O1_str, g2O2_str, \
+                             ests_str, SEs_str, study_names, cov_str)
         
     elif table_model.included_studies_have_point_estimates():
         print "not sufficient raw data, but studies have point estimates..."
 
-        r_str = "%s <- new('BinaryData', y=c(%s), SE=c(%s), studyNames=c(%s))" \
-                            % (var_name, ests_str, SEs_str, study_names)
+        r_str = "%s <- new('BinaryData', y=c(%s), SE=c(%s), studyNames=c(%s),  covariates=%s)" \
+                            % (var_name, ests_str, SEs_str, study_names, cov_str)
                             
     else:
         print "there is neither sufficient raw data nor entered effects/CIs. I cannot run an analysis."
@@ -327,6 +335,40 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
     ro.r(r_str)
     print "ok."
     return r_str
+
+
+def gen_cov_str(dataset, studies):
+    # add covariates, if any
+    cov_str = "list("
+    if len(dataset.covariates) > 0:
+        study_order = [study.name for study in studies]
+        cov_strs = []
+        for cov in dataset.covariates:
+            cov_strs.append(cov_to_str(cov, study_order, dataset))
+        cov_str += ", ".join(cov_strs)
+    cov_str += ")"
+    return cov_str
+
+
+def cov_to_str(cov, study_names, dataset):
+    '''
+    The string is constructured so that the covariate
+    values are in the same order as the 'study_names'
+    list.
+    '''
+    cov_str = "%s=c(" % cov.name
+    cov_value_d = dataset.get_values_for_cov(cov.name)
+    cov_values = []
+    for study in study_names:
+        if cov.data_type == CONTINUOUS:
+            cov_values.append("%s" % cov_value_d[study])
+        else:
+            # factor; note the string.
+            cov_values.append("'%s'" % cov_value_d[study])
+    cov_str += ",".join(cov_values) + ")"
+    return cov_str
+        
+    
 
 def run_continuous_ma(function_name, params, res_name = "result", cont_data_name = "tmp_obj"):
     params_df = ro.r['data.frame'](**params)

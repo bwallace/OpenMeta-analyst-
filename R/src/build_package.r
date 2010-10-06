@@ -23,6 +23,6 @@ setwd("OpenMeta/R/src/")
 
 # update if more files/modules are added
 flist <- c("classes.r", "binary_methods.r", "continuous_methods.r", 
-            "data_transform.r", "meta_methods.r") 
+            "data_transform.r", "meta_methods.r", "plotting.r") 
 package.skeleton(name="openmetar", path="../", code_files=flist)
 
