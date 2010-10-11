@@ -20,29 +20,29 @@ library("grid")
 
 # get data for the study column
 
-study.column <- function(data, title.font="bold") {
+study.column <- function(forest.data, title.font="bold") {
 
-    content<-rep(NA, length(data$label))
+    content<-rep(NA, length(forest.data$label))
     
-    for (i in 1:length(data$label)){
-      if (data$types[i] !=  0)
-        content[i] <- list(textGrob(data$label[i], x=0, just = "left", gp = gpar(fontface = title.font)))
+    for (i in 1:length(forest.data$label)){
+      if (forest.data$types[i] !=  0)
+        content[i] <- list(textGrob(forest.data$label[i], x=0, just = "left", gp = gpar(fontface = title.font)))
       else
-        content[i] <- list(textGrob(data$label[i], x=0, just = "left", gp = gpar(fontface = "plain")))
+        content[i] <- list(textGrob(forest.data$label[i], x=0, just = "left", gp = gpar(fontface = "plain")))
     }
 
-    rows<-c(1, rep(NA, (length(data$label)-1) ) )
+    rows<-c(1, rep(NA, (length(forest.data$label)-1) ) )
 
-    for (i in 1:(length(data$label) -1)){
-      if (data$types[i] == 3  &&  data$types[i+1] == 0 )
+    for (i in 1:(length(forest.data$label) -1)){
+      if (forest.data$types[i] == 3  &&  forest.data$types[i+1] == 0 )
         rows[i+1] <- rows[i] + 2
-      else if (data$types[i] == 0  &&  data$types[i+1] == 2 )
+      else if (forest.data$types[i] == 0  &&  forest.data$types[i+1] == 2 )
         rows[i+1] <- rows[i]  + 1
-      else if (data$types[i] == 0  &&  data$types[i+1] == 1 )
+      else if (forest.data$types[i] == 0  &&  forest.data$types[i+1] == 1 )
         rows[i+1] <- rows[i] + 1
-      else if (data$types[i] == 1  &&  data$types[i+1] == 0 )
+      else if (forest.data$types[i] == 1  &&  forest.data$types[i+1] == 0 )
         rows[i+1] <- rows[i] + 2
-      else if (data$types[i] == 1  &&  data$types[i+1] == 2 )
+      else if (forest.data$types[i] == 1  &&  forest.data$types[i+1] == 2 )
         rows[i+1] <- rows[i] + 2
       else
        rows[i+1] <- rows[i] + 1
@@ -53,34 +53,34 @@ study.column <- function(data, title.font="bold") {
 }
 
 # additional columns
-additional.columns <- function(data, font = "bold") {
+additional.columns <- function(forest.data, font = "bold") {
     #  first get the number of columns
-    additional.data <- length(data$additional.col.data)
+    additional.data <- length(forest.data$additional.col.data)
   
-    additionalColumns <- vector("list", length(data$additional.col.data))
+    additionalColumns <- vector("list", length(forest.data$additional.col.data))
     
-    for (j in 1:length(data$additional.col.data)){
-        content<-rep(NA, length(data$additional.col.data$cases))
+    for (j in 1:length(forest.data$additional.col.data)){
+        content<-rep(NA, length(forest.data$additional.col.data$cases))
         
-        for (i in 1:length(data$additional.col.data$cases)){
-          if (data$types[i] != 0)
-            content[i] <- list(textGrob(data$additional.col.data[[j]][[i]], x=1, just = "right", gp = gpar(fontface = font)))
+        for (i in 1:length(forest.data$additional.col.data$cases)){
+          if (forest.data$types[i] != 0)
+            content[i] <- list(textGrob(forest.data$additional.col.data[[j]][[i]], x=1, just = "right", gp = gpar(fontface = font)))
           else
-            content[i] <- list(textGrob(data$additional.col.data[[j]][[i]], x=1, just = "right", gp = gpar(fontface = "plain")))
+            content[i] <- list(textGrob(forest.data$additional.col.data[[j]][[i]], x=1, just = "right", gp = gpar(fontface = "plain")))
         }
         
-        rows<-c(1, rep(NA, (length(data$label)-1)))
+        rows<-c(1, rep(NA, (length(forest.data$label)-1)))
         
-        for (i in 1:(length(data$label)-1)){
-          if (data$types[i] == 3  &&  data$types[i+1] == 0 )
+        for (i in 1:(length(forest.data$label)-1)){
+          if (forest.data$types[i] == 3  &&  forest.data$types[i+1] == 0 )
             rows[i+1] <- rows[i] + 2
-          else if (data$types[i] == 0  &&  data$types[i+1] == 2 )
+          else if (forest.data$types[i] == 0  &&  forest.data$types[i+1] == 2 )
             rows[i+1] <- rows[i] + 1
-          else if (data$types[i] == 0  &&  data$types[i+1] == 1 )
+          else if (forest.data$types[i] == 0  &&  forest.data$types[i+1] == 1 )
             rows[i+1] <- rows[i] + 1
-          else if (data$types[i] == 1  &&  data$types[i+1] == 0 )
+          else if (forest.data$types[i] == 1  &&  forest.data$types[i+1] == 0 )
             rows[i+1] <- rows[i] + 2
-          else if (data$types[i] == 1  &&  data$types[i+1] == 2 )
+          else if (forest.data$types[i] == 1  &&  forest.data$types[i+1] == 2 )
             rows[i+1] <- rows[i] + 2
           else
             rows[i+1] <- rows[i] + 1
@@ -91,41 +91,41 @@ additional.columns <- function(data, font = "bold") {
 }
 
 
-effectsize.column <- function(data) {
-    rows<-c(1, rep(NA, (length(data$label)-1) ) )
+effectsize.column <- function(forest.data) {
+    rows<-c(1, rep(NA, (length(forest.data$label)-1) ) )
     
-    for (i in 1:(length(data$label) -1)){
-      if (data$types[i] == 3  &&  data$types[i+1] == 0)
+    for (i in 1:(length(forest.data$label) -1)){
+      if (forest.data$types[i] == 3  &&  forest.data$types[i+1] == 0)
         rows[i+1] <- rows[i] + 2
-      else if (data$types[i] == 0  &&  data$types[i+1] == 2)
+      else if (forest.data$types[i] == 0  &&  forest.data$types[i+1] == 2)
         rows[i+1] <- rows[i]  + 1
-      else if (data$types[i] == 0  &&  data$types[i+1] == 1)
+      else if (forest.data$types[i] == 0  &&  forest.data$types[i+1] == 1)
         rows[i+1] <- rows[i] + 1
-      else if (data$types[i] == 1  &&  data$types[i+1] == 0)
+      else if (forest.data$types[i] == 1  &&  forest.data$types[i+1] == 0)
         rows[i+1] <- rows[i] + 2
-      else if (data$types[i] == 1  &&  data$types[i+1] == 2)
+      else if (forest.data$types[i] == 1  &&  forest.data$types[i+1] == 2)
         rows[i+1] <- rows[i] + 2
       else
         rows[i+1] <- rows[i] + 1
     }
     
-    list(ES = data$effects$ES, LL = data$effects$LL, 
-                  UL = data$effects$UL, rows = rows[-1], types = data$types[-1])
+    list(ES = forest.data$effects$ES, LL = forest.data$effects$LL, 
+                  UL = forest.data$effects$UL, rows = rows[-1], types = forest.data$types[-1])
 }
 
 
-plot.options <- function(data, box.sca = 1) {
+plot.options <- function(forest.data, box.sca = 1) {
     # weights for the boxes
     ## TODO parameterize 1.96
     precision <- NULL
     effect.col.range <- NULL
-    effect.col<-data$effects
-    if (data$scale == "log") 
+    effect.col<-forest.data$effects
+    if (forest.data$scale == "log") 
     {
           precision <- sqrt(1 / ((log(effect.col$UL) - log(effect.col$LL))/(2*1.96)))
           effect.col.range <- c(min(0.5 , min(effect.col$LL)), min(4 , max(effect.col$UL)))
     }
-    else if (data$scale == "cont") 
+    else if (forest.data$scale == "cont") 
     {
           precision <- sqrt(1 / ((effect.col$UL - effect.col$LL)/(2*1.96)))
           effect.col.range <- c(max(-3 , min(effect.col$LL)), min(3 , max(effect.col$UL)))
@@ -213,9 +213,9 @@ draw.data.col <- function(col, j, color.overall = "black",
                                 diam.size=1) {
   pushViewport(viewport(layout.pos.col=j, xscale=col$range))
   
-  if (data$scale == "log") 
+  if (forest.data$scale == "log") 
       grid.lines(x=unit(1, "native"), y=0:1)
-  else if (data$scale == "cont") 
+  else if (forest.data$scale == "cont") 
       grid.lines(x=unit(0, "native"), y=0:1)
       
   # Assume that last value in col is "All" 
@@ -241,22 +241,22 @@ draw.data.col <- function(col, j, color.overall = "black",
 }
                             
 
-forest.plot <- function(data, outpath){
+forest.plot <- function(forest.data, outpath){
     # these are calls to data functions
-    study.col <- study.column(data, "bold")
-    additional.cols <- additional.columns(data, "bold")
-    effects.col <- effectsize.column(data)
-    forest.plot.params <- plot.options(data, box.sca=0.8)
+    study.col <- study.column(forest.data, "bold")
+    additional.cols <- additional.columns(forest.data, "bold")
+    effects.col <- effectsize.column(forest.data)
+    forest.plot.params <- plot.options(forest.data, box.sca=0.8)
                 
     # these are calls to plotting functions
-    extra.space <- sum(data$types != 0) 
-    height <- length(data$types)+ extra.space
-    data.width <- unit.c(max(unit(rep(1, length(data$label)), "grobwidth", study.col$content)), 
+    extra.space <- sum(forest.data$types != 0) 
+    height <- length(forest.data$types)+ extra.space
+    data.width <- unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)), 
                              forest.plot.params$col.gap)
      
     pushViewport(viewport(layout=grid.layout(height ,2*length(additional.cols)+3,
                             widths=
-                               unit.c(max(unit(rep(1, length(data$label)), "grobwidth", study.col$content)),
+                               unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
                                       forest.plot.params$col.gap,  rep(data.width, length(additional.cols)), forest.plot.params$effect.col.width),
                                       heights=unit(rep(1, height)  , "lines"))))
     
@@ -293,15 +293,10 @@ forest.plot <- function(data, outpath){
     
     
     # TODO need to do something about the scaling.
-    png(file=outpath, width =25  , height = 15, units = "in", res = 144)
-    
-    # these are calls to plotting functions
-    #extraSpace <- sum(data$types != 0) 
-    #height <- length(data$types)+ extra.space
-    #data.width <- unit.c( max(unit(rep(1, length(data$label)), "grobwidth", col1$content)), forest.plot.params$effect.col.width)
+    png(file=outpath, width =25, height = 15, units = "in", res = 144)
     pushViewport(viewport(layout=grid.layout(height ,2*length(additional.cols)+3,
                             widths=
-                            unit.c(max(unit(rep(1, length(data$label)), "grobwidth", study.col$content)),
+                            unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
                                    forest.plot.params$col.gap,  rep(data.width, length(additional.cols)), forest.plot.params$effect.col.width),
                             heights=unit(rep(1, height)  , "lines"))))
     
@@ -329,7 +324,7 @@ forest.plot <- function(data, outpath){
 
 ### sample usage.
 # these are the main data (study names and subgroups)
-data <- list( label = c("Studies", "study1" , "study2", "study3" , "subgroup1" , "study3" , "study4" , "subgroup2" , 
+forest.data <- list( label = c("Studies", "study1" , "study2", "study3" , "subgroup1" , "study3" , "study4" , "subgroup2" , 
                "study1" , "study2", "study3" , "subgroup1" , "study3" , "study4" , "subgroup2" , "study1" , "study2", 
                "study3" , "subgroup1" , "study3" , "study4" , "subgroup2" , 
                "study1" , "study2", "study3" , "subgroup1" , "study3" , "study4" , "subgroup2" , "Overall"),
@@ -370,7 +365,7 @@ additional.cols <- list(  cases = c("cases", "123456" , "110" , "28", "238" , "1
                             "100" , "3" , "4" ,  "123" , "150", "155", "6" , 
                             "100" , "123" , "24" ,  "4" , "5", "7", "123" , "6334537"))
 
-data$additional.col.data <- additional.cols
+forest.data$additional.col.data <- additional.cols
 
 # these are the effect sizes
 effects <- list(ES=c(-1, 1.27, 1.17, 1.17, 2.97, 1.86, 1.05,
@@ -387,5 +382,5 @@ effects <- list(ES=c(-1, 1.27, 1.17, 1.17, 2.97, 1.86, 1.05,
                        1.85, 1.32, 1.32, 6.21, 7.51, 3.71, 1.35, 2.2, 1.7))
                                
                                
-data$effects <- effects
-forest.plot(data, "test.png")
+forest.data$effects <- effects
+forest.plot(forest.data, "test.png")
