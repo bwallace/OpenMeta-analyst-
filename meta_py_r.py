@@ -391,7 +391,7 @@ def run_continuous_ma(function_name, params, res_name = "result", cont_data_name
     return {"images":_rls_to_pyd(result[0]), "image_var_names":image_var_name_d,
                                               "texts":text_d}    
     
-def run_binary_ma(function_name, params, res_name = "result", bin_data_name="tmp_obj"):
+def run_binary_ma(function_name, params, res_name="result", bin_data_name="tmp_obj"):
     params_df = ro.r['data.frame'](**params)
     r_str = "%s<-%s(%s, %s)" % (res_name, function_name, bin_data_name, params_df.r_repr())
     print "\n\n(run_binary_ma): executing:\n %s\n" % r_str
@@ -411,6 +411,9 @@ def run_binary_ma(function_name, params, res_name = "result", bin_data_name="tmp
 
     return {"images":_rls_to_pyd(result[0]), "image_var_names":image_var_name_d,
                                               "texts":text_d}
+                                              
+def run_meta_regression(bin_data_name="tmp_obj", res_name="result"):
+    pass
                                 
 def run_meta_method(meta_function_name, function_name, params, \
                         res_name = "result", data_name="tmp_obj"):

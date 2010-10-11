@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'meta.ui'
 #
-# Created: Fri Sep 24 16:51:05 2010
+# Created: Mon Oct 11 15:30:30 2010
 #      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -197,6 +197,14 @@ class Ui_MainWindow(object):
         self.actionTX_Mean_one_arm.setObjectName("actionTX_Mean_one_arm")
         self.actionYo = QtGui.QAction(MainWindow)
         self.actionYo.setObjectName("actionYo")
+        self.actionNew_dataset = QtGui.QAction(MainWindow)
+        self.actionNew_dataset.setObjectName("actionNew_dataset")
+        self.actionNew_dataset_2 = QtGui.QAction(MainWindow)
+        self.actionNew_dataset_2.setObjectName("actionNew_dataset_2")
+        self.action_meta_regression = QtGui.QAction(MainWindow)
+        self.action_meta_regression.setObjectName("action_meta_regression")
+        self.menu_file.addAction(self.actionNew_dataset)
+        self.menu_file.addSeparator()
         self.menu_file.addAction(self.action_save)
         self.menu_file.addAction(self.action_open)
         self.menu_file.addAction(self.action_quit)
@@ -206,6 +214,10 @@ class Ui_MainWindow(object):
         self.menuAnalysis.addSeparator()
         self.menuAnalysis.addAction(self.action_cum_ma)
         self.menuAnalysis.addAction(self.action_loo_ma)
+        self.menuAnalysis.addSeparator()
+        self.menuAnalysis.addAction(self.action_meta_regression)
+        self.menuDataset.addAction(self.actionNew_dataset_2)
+        self.menuDataset.addSeparator()
         self.menuDataset.addAction(self.action_edit)
         self.menuDataset.addAction(self.action_view_network)
         self.menuDataset.addAction(self.action_add_covariate)
@@ -237,5 +249,8 @@ class Ui_MainWindow(object):
         self.actionRR.setText(QtGui.QApplication.translate("MainWindow", "RR", None, QtGui.QApplication.UnicodeUTF8))
         self.actionTX_Mean_one_arm.setText(QtGui.QApplication.translate("MainWindow", "TX Mean (one-arm)", None, QtGui.QApplication.UnicodeUTF8))
         self.actionYo.setText(QtGui.QApplication.translate("MainWindow", "yo", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionNew_dataset.setText(QtGui.QApplication.translate("MainWindow", "new dataset...", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionNew_dataset_2.setText(QtGui.QApplication.translate("MainWindow", "new dataset...", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_meta_regression.setText(QtGui.QApplication.translate("MainWindow", "meta-regression", None, QtGui.QApplication.UnicodeUTF8))
 
 import icons_rc
