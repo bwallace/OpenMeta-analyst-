@@ -365,6 +365,8 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionNew_dataset"/>
+    <addaction name="separator"/>
     <addaction name="action_save"/>
     <addaction name="action_open"/>
     <addaction name="action_quit"/>
@@ -384,11 +386,15 @@
     <addaction name="separator"/>
     <addaction name="action_cum_ma"/>
     <addaction name="action_loo_ma"/>
+    <addaction name="separator"/>
+    <addaction name="action_meta_regression"/>
    </widget>
    <widget class="QMenu" name="menuDataset">
     <property name="title">
      <string>Dataset</string>
     </property>
+    <addaction name="actionNew_dataset_2"/>
+    <addaction name="separator"/>
     <addaction name="action_edit"/>
     <addaction name="action_view_network"/>
     <addaction name="action_add_covariate"/>
@@ -461,6 +467,21 @@
   <action name="actionYo">
    <property name="text">
     <string>yo</string>
+   </property>
+  </action>
+  <action name="actionNew_dataset">
+   <property name="text">
+    <string>new dataset...</string>
+   </property>
+  </action>
+  <action name="actionNew_dataset_2">
+   <property name="text">
+    <string>new dataset...</string>
+   </property>
+  </action>
+  <action name="action_meta_regression">
+   <property name="text">
+    <string>meta-regression</string>
    </property>
   </action>
  </widget>
