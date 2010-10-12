@@ -13,6 +13,11 @@ class MetaRegForm(QDialog, ui_meta_reg.Ui_cov_reg_dialog):
         
         
     def _populate_combo_box(self):
-        pyqtRemoveInputHook()
-        pdb.set_trace()
-        pass
+        studies = self.model.get_studies(only_if_included=True)
+        
+        for cov in self.model.dataset.covariates:
+            cov_vals = [study.covariate_dict[cov.name] for study in studies]
+            if not None in cov_vals:
+                self.cov_cbo_box.addItem(cov.name)
+
+        

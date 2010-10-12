@@ -274,7 +274,7 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
     studies.reverse()
     study_names = ", ".join(["'" + study.name + "'" for study in studies])
         
-    ests, SEs = table_model.get_cur_ests_and_SEs()
+    ests, SEs = table_model.get_cur_ests_and_SEs(only_if_included=True)
     ests_str = ", ".join(_to_strs(ests))
     SEs_str = ", ".join(_to_strs(SEs))
                 
@@ -286,7 +286,7 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
         print "ok; raw data has been entered for all included studies"
         
         # get the point estimates
-        ests, SEs = table_model.get_cur_ests_and_SEs()
+        ests, SEs = table_model.get_cur_ests_and_SEs(only_if_included=True)
         ests_str = ", ".join(_to_strs(ests))
         SEs_str = ", ".join(_to_strs(SEs))
         
@@ -309,9 +309,6 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
         g2_totals.reverse()
         g2O2 = [(total_i-event_i) for total_i, event_i in zip(g2_totals, g2_events)]
         g2O2_str = ", ".join(_to_strs(g2O2))
-    
-        pyqtRemoveInputHook()
-        pdb.set_trace()
                 
         # actually creating a new object on the R side seems the path of least resistance here.
         # the alternative would be to try and create a representation of the R object on the 
