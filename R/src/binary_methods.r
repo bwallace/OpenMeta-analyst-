@@ -8,7 +8,7 @@
 ####################################
 
 
-#bd <- new('BinaryData', g1O1=c(30, 20, 10), g1O2=c(270, 180, 90), g2O1=c(35, 25, 15), g2O2=c(265, 175, 85), y=c(0.62962962963, 0.777777777778, 0.84126984127), SE=c(0.432831413165, 0.343592092809, 0.290047070662), studyNames=c('lau', 'wallace', 'trik'))
+#bd <- new('BinaryData', g1O1=c(30, 20, 10), g1O2=c(270, 180, 90), g2O1=c(35, 25, 15), g2O2=c(265, 175, 85), y=c(0.62962962963, 0.777777777778, 0.84126984127), SE=c(0.432831413165, 0.343592092809, 0.290047070662), studyNames=c('lau', 'wallace', 'trik'), covariates=list(hi=c(1,2,3)))
 
 
 # bd <- new("BinaryData", g1O1=c(10, 20, 30), g1O2=c(90, 180, 270), g2O1=c(15, 25, 35), g2O2=c(85, 175, 265),                       studyNames=c("1", "2", "3")
@@ -46,12 +46,12 @@ get.res.for.one.binary.study <- function(binaryData, params){
     res
 }
 
-create.plot.data <- function(binaryData, params, res){
-	# Creates a data structure that can be passed to forest.plot
-  # res is the output of a call to the Metafor function rma
+create.plot.data <- function(binaryData, params, res, selectedCov = NULL){
+    # Creates a data structure that can be passed to forest.plot
+    # res is the output of a call to the Metafor function rma
     plotData <- list( label = c("Studies", binaryData@studyNames, "Overall"),
-				types = c(3, rep(0, length(binaryData@studyNames)), 2),
-				scale = "log" )
+                types = c(3, rep(0, length(binaryData@studyNames)), 2),
+                scale = "log" )
 
     alpha <- 1.0-(params$conf.level/100.0)
     mult <- abs(qnorm(alpha/2.0))
@@ -80,16 +80,19 @@ create.plot.data <- function(binaryData, params, res){
                                 " / ", sum(binaryData@g1O1 + binaryData@g1O2), sep = "")),
                             controls = c("Ev/Ctrl", paste(binaryData@g1O1, " / ", binaryData@g1O1 + binaryData@g1O2, sep = ""),
                                 paste(sum(binaryData@g1O1), " / ", sum(binaryData@g1O1 + binaryData@g1O2), sep = "")),
-							              es = c("ES (LL, UL)", paste(yRounded, " (", lbRounded, " , ", ubRounded, ")", sep = ""),
+                                          es = c("ES (LL, UL)", paste(yRounded, " (", lbRounded, " , ", ubRounded, ")", sep = ""),
                                 paste(yOverallRounded, " (", lbOverallRounded, " , ", ubOverallRounded, ")", sep = "")))
 
-	plotData$additional.col.data <- additional.cols
-
-	effects <- list( ES = c(y, yOverall),
-					LL = c(lb, lbOverall),
-					UL = c(ub, ubOverall))
-	plotData$effects <- effects
-	plotData
+    plotData$additional.col.data <- additional.cols
+    if (!is.null(selectedCov)){
+        plotData$covariate <- binaryData@covariates[selectedCov]
+    }
+    
+    effects <- list( ES = c(y, yOverall),
+                    LL = c(lb, lbOverall),
+                    UL = c(ub, ubOverall))
+    plotData$effects <- effects
+    plotData
 }
 
 ###################################################

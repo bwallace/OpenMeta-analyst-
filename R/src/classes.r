@@ -13,7 +13,6 @@
 #
 # This is the super (parent) class. All Open Meta data objects should inherit from this
 # type.
-#
 setClass("OMData", representation(studyNames="character", notes="character", 
          years="integer", covariates="list"))
 

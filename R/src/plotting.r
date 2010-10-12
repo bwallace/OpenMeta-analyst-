@@ -421,13 +421,17 @@ meta.regression.plot <- function(plot.data, outpath,
     radii <-  precision/sum(precision)
     # TODO need to do something about the scaling.
     png(file=outpath, width=5 , height=5, units="in", res=144)
+    # TODO there *has* to be a better way to do this...
+    cov.name <- names(plot.data$covariate)[1]
+    cov.val.str <- paste("plot.data$covariate$", cov.name, sep="")
+    cov.values <- eval(parse(text=cov.val.str))
     #depends on whether these are natural or log
     if (plot.data$scale == "cont"){
-        symbols(y = data.reg$ES, x = plot.data$covariate$values, circles = symSize*radii , inches=FALSE,
+        symbols(y = data.reg$ES, x = cov.values, circles = symSize*radii , inches=FALSE,
               xlab = xlabel, ylab = metric, bty = plotregion, fg = mcolor)
     }
     else{ 
-        symbols(y = log(data.reg$ES), x = plot.data$covariate$values, circles = symSize*radii , inches = FALSE,
+        symbols(y = log(data.reg$ES), x = cov.values, circles = symSize*radii , inches = FALSE,
               xlab = xlabel, ylab = metric, bty = plotregion, fg = mcolor)
     }
     #certainly there is a better way  ?
@@ -435,10 +439,10 @@ meta.regression.plot <- function(plot.data, outpath,
     #the untransformed coefficient from the meta-reg
     # so i am doing no transformation
     if (regline == TRUE)  {
-       x<-c(min(plot.data$covariate$values), max(plot.data$covariate$values))
-       y<-c (fitted.line$intercept + 
-                min(plot.data$covariate$values)*fitted.line$slope, fitted.line$intercept + 
-                max(plot.data$covariate$values)*fitted.line$slope)
+       x<-c(min(cov.values), max(cov.values))
+       y<-c (plot.data$fitted.line$intercept + 
+                min(cov.values)*plot.data$fitted.line$slope, plot.data$fitted.line$intercept + 
+                max(cov.values)*plot.data$fitted.line$slope)
        lines(x, y, col = lcol, lwd = lweight, lty = lpatern)
     }
     graphics.off()

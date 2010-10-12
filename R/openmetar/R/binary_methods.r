@@ -46,6 +46,52 @@ get.res.for.one.binary.study <- function(binaryData, params){
     res
 }
 
+create.plot.data <- function(binaryData, params, res){
+    # Creates a data structure that can be passed to forest.plot
+    # res is the output of a call to the Metafor function rma
+    plotData <- list( label = c("Studies", binaryData@studyNames, "Overall"),
+                types = c(3, rep(0, length(binaryData@studyNames)), 2),
+                scale = "log" )
+
+    alpha <- 1.0-(params$conf.level/100.0)
+    mult <- abs(qnorm(alpha/2.0))
+    lb <- binaryData@y - mult*binaryData@SE
+    ub <- binaryData@y + mult*binaryData@SE
+
+    # exponentiate effect sizes and bounds.
+    y <- exp(binaryData@y)
+    lb <- exp(lb)
+    ub <- exp(ub)
+
+    yOverall <- exp(res$b[1])
+    lbOverall <- exp(res$ci.lb)
+    ubOverall <- exp(res$ci.ub)
+
+    # round results for display.
+    yRounded <- round(y, digits = params$digits)
+    lbRounded <- round(lb, digits = params$digits)
+    ubRounded <- round(ub, digits = params$digits)
+    yOverallRounded <- round(yOverall, digits = params$digits)
+    lbOverallRounded <- round(lbOverall, digits = params$digits)
+    ubOverallRounded <- round(ubOverall, digits = params$digits)
+
+    additional.cols <- list( cases = c("Ev/Trt", paste(binaryData@g1O1, " / ",
+                            binaryData@g1O1 + binaryData@g1O2, sep = ""), paste(sum(binaryData@g1O1),
+                                " / ", sum(binaryData@g1O1 + binaryData@g1O2), sep = "")),
+                            controls = c("Ev/Ctrl", paste(binaryData@g1O1, " / ", binaryData@g1O1 + binaryData@g1O2, sep = ""),
+                                paste(sum(binaryData@g1O1), " / ", sum(binaryData@g1O1 + binaryData@g1O2), sep = "")),
+                                          es = c("ES (LL, UL)", paste(yRounded, " (", lbRounded, " , ", ubRounded, ")", sep = ""),
+                                paste(yOverallRounded, " (", lbOverallRounded, " , ", ubOverallRounded, ")", sep = "")))
+
+    plotData$additional.col.data <- additional.cols
+
+    effects <- list( ES = c(y, yOverall),
+                    LL = c(lb, lbOverall),
+                    UL = c(ub, ubOverall))
+    plotData$effects <- effects
+    plotData
+}
+
 ###################################################
 # binary fixed effects -- inverse variance        #
 ###################################################
@@ -68,7 +114,9 @@ binary.fixed.inv.var <- function(binaryData, params){
         # generate the forest plot 
         forest_path <- "./r_tmp/forest.png"
         png(forest_path)
-        forest_plot<-forest.rma(res, digits=params$digits)
+        # forest_plot<-forest.rma(res, digits=params$digits)
+        plotData <- create.plot.data(binaryData, params, res)
+        forest.plot(plotData, outpath=forest_path)
         dev.off()
     
         #
