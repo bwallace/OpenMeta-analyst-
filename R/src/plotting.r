@@ -298,7 +298,7 @@ forest.plot <- function(forest.data, outpath){
                             unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
                                    forest.plot.params$col.gap,  
                                    rep(data.width, length(additional.cols)), forest.plot.params$effect.col.width),
-                            	   heights=unit(rep(1, height)  , "lines"))))
+                                   heights=unit(rep(1, height)  , "lines"))))
     
      #### consider including these as they have no options and i want them to 
     
@@ -402,46 +402,46 @@ meta.regression.plot <- function(plot.data, outpath,
                                   regline = TRUE) {
 
 
-	# make the data data.frame and exclude the first element of 
-	# types (it's just a clumn heading)
-	data.reg <- data.frame(plot.data$effects, types = plot.data$types[-1])
-	# data for plot (only keep the studies - not the summaries)
-	data.reg <- subset(data.reg, types==0)
-	
-	# area of circles
+    # make the data data.frame and exclude the first element of 
+    # types (it's just a clumn heading)
+    data.reg <- data.frame(plot.data$effects, types = plot.data$types[-1])
+    # data for plot (only keep the studies - not the summaries)
+    data.reg <- subset(data.reg, types==0)
+    
+    # area of circles
     precision = NULL
     mult = 1.96 # TODO parameterize
-	if (plot.data$scale == "log"){
-	    precision <- 1 / ((log(data.reg$UL) - log(data.reg$LL))/(2*mult))
+    if (plot.data$scale == "log"){
+        precision <- 1 / ((log(data.reg$UL) - log(data.reg$LL))/(2*mult))
     }
-	else if (plot.data$scale == "cont"){
-	    precision <- 1 / ((data.reg$UL - data.reg$LL)/(2*mult))
+    else if (plot.data$scale == "cont"){
+        precision <- 1 / ((data.reg$UL - data.reg$LL)/(2*mult))
     }
-	
-	radii <-  precision/sum(precision)
-	# TODO need to do something about the scaling.
-	png(file=outpath, width=5 , height=5, units="in", res=144)
-	#depends on whether these are natural or log
-	if (plot.data$scale == "cont"){
-	    symbols(y = data.reg$ES, x = plot.data$covariate$values, circles = symSize*radii , inches=FALSE,
-	          xlab = xlabel, ylab = metric, bty = plotregion, fg = mcolor)
+    
+    radii <-  precision/sum(precision)
+    # TODO need to do something about the scaling.
+    png(file=outpath, width=5 , height=5, units="in", res=144)
+    #depends on whether these are natural or log
+    if (plot.data$scale == "cont"){
+        symbols(y = data.reg$ES, x = plot.data$covariate$values, circles = symSize*radii , inches=FALSE,
+              xlab = xlabel, ylab = metric, bty = plotregion, fg = mcolor)
     }
-	else{ 
-	    symbols(y = log(data.reg$ES), x = plot.data$covariate$values, circles = symSize*radii , inches = FALSE,
-	          xlab = xlabel, ylab = metric, bty = plotregion, fg = mcolor)
+    else{ 
+        symbols(y = log(data.reg$ES), x = plot.data$covariate$values, circles = symSize*radii , inches = FALSE,
+              xlab = xlabel, ylab = metric, bty = plotregion, fg = mcolor)
     }
-	#certainly there is a better way  ?
-	# note that i am assuming you have
-	#the untransformed coefficient from the meta-reg
-	# so i am doing no transformation
-	if (regline == TRUE)  {
-	   x<-c(min(plot.data$covariate$values), max(plot.data$covariate$values))
-	   y<-c (fitted.line$intercept + 
-	   			min(plot.data$covariate$values)*fitted.line$slope, fitted.line$intercept + 
-	   			max(plot.data$covariate$values)*fitted.line$slope)
-	   lines(x, y, col = lcol, lwd = lweight, lty = lpatern)
-	}
-	graphics.off()
+    #certainly there is a better way  ?
+    # note that i am assuming you have
+    #the untransformed coefficient from the meta-reg
+    # so i am doing no transformation
+    if (regline == TRUE)  {
+       x<-c(min(plot.data$covariate$values), max(plot.data$covariate$values))
+       y<-c (fitted.line$intercept + 
+                min(plot.data$covariate$values)*fitted.line$slope, fitted.line$intercept + 
+                max(plot.data$covariate$values)*fitted.line$slope)
+       lines(x, y, col = lcol, lwd = lweight, lty = lpatern)
+    }
+    graphics.off()
 }
 
 #####################################
