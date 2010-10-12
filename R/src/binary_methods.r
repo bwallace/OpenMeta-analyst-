@@ -46,7 +46,7 @@ get.res.for.one.binary.study <- function(binaryData, params){
     res
 }
 
-create.plot.data <- function(binaryData, params, res, selectedCov = NULL){
+create.plot.data <- function(binaryData, params, res, selected.cov = NULL, include.overall=TRUE){
     # Creates a data structure that can be passed to forest.plot
     # res is the output of a call to the Metafor function rma
     plotData <- list( label = c("Studies", binaryData@studyNames, "Overall"),
@@ -64,8 +64,8 @@ create.plot.data <- function(binaryData, params, res, selectedCov = NULL){
     ub <- exp(ub)
 
     yOverall <- exp(res$b[1])
-    lbOverall <- exp(res$ci.lb)
-    ubOverall <- exp(res$ci.ub)
+    lbOverall <- exp(res$ci.lb[1])
+    ubOverall <- exp(res$ci.ub[1])
 
     # round results for display.
     yRounded <- round(y, digits = params$digits)
@@ -84,11 +84,14 @@ create.plot.data <- function(binaryData, params, res, selectedCov = NULL){
                                 paste(yOverallRounded, " (", lbOverallRounded, " , ", ubOverallRounded, ")", sep = "")))
 
     plotData$additional.col.data <- additional.cols
-    if (!is.null(selectedCov)){
-        plotData$covariate <- binaryData@covariates[selectedCov]
+    if (!is.null(selected.cov)){
+        cov.val.str <- paste("binaryData@covariates$", selected.cov, sep="")
+        cov.values <- eval(parse(text=cov.val.str))
+        plotData$covariate <- list(varname = selected.cov,
+                                   values = cov.values)
     }
     
-    effects <- list( ES = c(y, yOverall),
+    effects <- list(ES = c(y, yOverall),
                     LL = c(lb, lbOverall),
                     UL = c(ub, ubOverall))
     plotData$effects <- effects

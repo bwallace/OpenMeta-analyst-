@@ -394,7 +394,7 @@ meta.regression.plot <- function(plot.data, outpath,
                                   symSize=1,
                                   lcol = "darkred",
                                   metric = "Effect size",
-                                  xlabel= covariate$varname,
+                                  xlabel= plot.data$covariate$varname,
                                   lweight = 3,
                                   lpatern = "dotted",
                                   plotregion = "n",
@@ -422,9 +422,8 @@ meta.regression.plot <- function(plot.data, outpath,
     # TODO need to do something about the scaling.
     png(file=outpath, width=5 , height=5, units="in", res=144)
     # TODO there *has* to be a better way to do this...
-    cov.name <- names(plot.data$covariate)[1]
-    cov.val.str <- paste("plot.data$covariate$", cov.name, sep="")
-    cov.values <- eval(parse(text=cov.val.str))
+    cov.name <- plot.data$covariate$varname
+    cov.values <- plot.data$covariate$values
     #depends on whether these are natural or log
     if (plot.data$scale == "cont"){
         symbols(y = data.reg$ES, x = cov.values, circles = symSize*radii , inches=FALSE,
@@ -451,7 +450,7 @@ meta.regression.plot <- function(plot.data, outpath,
 #####################################
 #   meta-regression usage example   #
 #####################################
-reg.data <- list( label = c("Studies", "study1" , "study2", "study3" , "subgroup1" , "study3" , "study4" , "subgroup2" ,
+reg.data <- list(label = c("Studies", "study1" , "study2", "study3" , "subgroup1" , "study3" , "study4" , "subgroup2" ,
                "study1" , "study2", "study3" , "subgroup1" , "study3" , "study4" , "subgroup2" , "study1" , "study2",
                "study3" , "subgroup1" , "study3" , "study4" , "subgroup2" ,
                "study1" , "study2", "study3" , "subgroup1" , "study3" , "study4" , "subgroup2" , "Overall"),
