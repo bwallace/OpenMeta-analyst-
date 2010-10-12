@@ -34,6 +34,7 @@ import meta_py_r
 import add_new_dialogs
 import results_window
 import ma_specs
+import meta_reg_form
 import edit_dialog
 import network_view
 import meta_globals 
@@ -129,6 +130,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         QObject.connect(self.action_edit, SIGNAL("triggered()"), self.edit_dataset)
         QObject.connect(self.action_view_network, SIGNAL("triggered()"), self.view_network)
         QObject.connect(self.action_add_covariate, SIGNAL("triggered()"), self.add_covariate)
+        
+        QObject.connect(self.action_meta_regression, SIGNAL("triggered()"), self.meta_reg)
 
     def go(self):
         # the spec form gets *this* form as a parameter.
@@ -137,6 +140,11 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         form =  ma_specs.MA_Specs(self.model, parent=self)
         form.show()
     
+    def meta_reg(self):
+        form = meta_reg_form.MetaRegForm(self.model, parent=self)
+        form.show()
+        
+        
     # Here are the calls to ma_specs with so-called `meta-methods`
     # which operate over the output of meta-analytic methods. Note
     # that we don't care what sort of data we're operating over here;

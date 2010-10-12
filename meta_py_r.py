@@ -376,20 +376,7 @@ def run_continuous_ma(function_name, params, res_name = "result", cont_data_name
     print "\n\n(run_continuous_ma): executing:\n %s\n" % r_str
     ro.r(r_str)
     result = ro.r("%s" % res_name)
-
-    # parse out text field(s). note that "plot names" is 'reserved', i.e., it's
-    # a special field which is assumed to contain the plot variable names
-    # in R (for graphics manipulation).
-    text_d = {}
-    image_var_name_d = None
-    for text_n, text in zip(list(result.getnames())[1:], list(result)[1:]):
-        if not text_n == "plot_names":
-           text_d[text_n]=text
-        else:
-           image_var_name_d = _rls_to_pyd(text)
-
-    return {"images":_rls_to_pyd(result[0]), "image_var_names":image_var_name_d,
-                                              "texts":text_d}    
+    return parse_out_results(result)
     
 def run_binary_ma(function_name, params, res_name="result", bin_data_name="tmp_obj"):
     params_df = ro.r['data.frame'](**params)
@@ -397,7 +384,9 @@ def run_binary_ma(function_name, params, res_name="result", bin_data_name="tmp_o
     print "\n\n(run_binary_ma): executing:\n %s\n" % r_str
     ro.r(r_str)
     result = ro.r("%s" % res_name)
-
+    return parse_out_results(result)
+           
+def parse_out_results(result):
     # parse out text field(s). note that "plot names" is 'reserved', i.e., it's
     # a special field which is assumed to contain the plot variable names
     # in R (for graphics manipulation).
@@ -412,9 +401,18 @@ def run_binary_ma(function_name, params, res_name="result", bin_data_name="tmp_o
     return {"images":_rls_to_pyd(result[0]), "image_var_names":image_var_name_d,
                                               "texts":text_d}
                                               
-def run_meta_regression(bin_data_name="tmp_obj", res_name="result"):
-    pass
-                                
+                                       
+def run_binary_meta_regression(selected_cov, bin_data_name="tmp_obj", res_name="result"):
+    #params <- list(conf.level=95, digits=3)
+    params = {"conf.level":95, "digits":3}
+    params_df = ro.r['data.frame'](**params)
+    r_str = "%s<-binary.meta.regression(%s, %s, %s)" % (res_name, bin_data_name, params_df.r_repr(), selected_cov)
+    print "\n\n(run_binary_ma): executing:\n %s\n" % r_str
+    ro.r(r_str)
+    result = ro.r("%s" % res_name)
+    return parse_out_results(result)
+            
+    
 def run_meta_method(meta_function_name, function_name, params, \
                         res_name = "result", data_name="tmp_obj"):
     '''
