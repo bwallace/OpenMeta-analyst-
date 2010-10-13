@@ -123,7 +123,7 @@ binary.fixed.inv.var <- function(binaryData, params){
         # forest_plot<-forest.rma(res, digits=params$digits)
         plotData <- create.plot.data(binaryData, params, res)
         forest.plot(plotData, outpath=forest_path)
-        dev.off()
+        # dev.off()
     
         #
         # Now we package the results in a dictionary (technically, a named 

@@ -36,6 +36,7 @@ except:
 
 try:
     ro.r("library(igraph)")
+    ro.r("library(grid)")
 except:
     raise Exception, "igraph library not available!"
 
