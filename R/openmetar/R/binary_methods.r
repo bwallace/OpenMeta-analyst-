@@ -46,6 +46,7 @@ get.res.for.one.binary.study <- function(binaryData, params){
     res
 }
 
+# TODO this should be moved to plotting.r
 create.plot.data <- function(binaryData, params, res, selected.cov = NULL, include.overall=TRUE){
     # Creates a data structure that can be passed to forest.plot
     # res is the output of a call to the Metafor function rma
@@ -58,6 +59,9 @@ create.plot.data <- function(binaryData, params, res, selected.cov = NULL, inclu
     lb <- binaryData@y - mult*binaryData@SE
     ub <- binaryData@y + mult*binaryData@SE
 
+
+    ### TODO only do this for appropriate metrics
+    # i.e., ratios, which will be on the log-scale
     # exponentiate effect sizes and bounds.
     y <- exp(binaryData@y)
     lb <- exp(lb)
@@ -75,13 +79,18 @@ create.plot.data <- function(binaryData, params, res, selected.cov = NULL, inclu
     lbOverallRounded <- round(lbOverall, digits = params$digits)
     ubOverallRounded <- round(ubOverall, digits = params$digits)
 
-    additional.cols <- list( cases = c("Ev/Trt", paste(binaryData@g1O1, " / ",
-                            binaryData@g1O1 + binaryData@g1O2, sep = ""), paste(sum(binaryData@g1O1),
-                                " / ", sum(binaryData@g1O1 + binaryData@g1O2), sep = "")),
-                            controls = c("Ev/Ctrl", paste(binaryData@g1O1, " / ", binaryData@g1O1 + binaryData@g1O2, sep = ""),
-                                paste(sum(binaryData@g1O1), " / ", sum(binaryData@g1O1 + binaryData@g1O2), sep = "")),
-                                          es = c("ES (LL, UL)", paste(yRounded, " (", lbRounded, " , ", ubRounded, ")", sep = ""),
-                                paste(yOverallRounded, " (", lbOverallRounded, " , ", ubOverallRounded, ")", sep = "")))
+    additional.cols <- list(es = c("ES (LL, UL)", paste(yRounded, " (", lbRounded, " , ", ubRounded, ")", sep = ""),
+                                 paste(yOverallRounded, " (", lbOverallRounded, " , ", ubOverallRounded, ")", sep = "")))
+        
+    # if we have raw data, add it to the additional columns
+    if (length(binaryData@g1O1) > 0) {
+        additional.cols$cases = c("Ev/Trt", 
+                                    paste(binaryData@g1O1, " / ", binaryData@g1O1 + binaryData@g1O2, sep = ""), 
+                                    paste(sum(binaryData@g1O1), " / ", sum(binaryData@g1O1 + binaryData@g1O2), sep = ""))
+        additional.cols$controls = c("Ev/Ctrl", 
+                                        paste(binaryData@g1O1, " / ", binaryData@g1O1 + binaryData@g1O2, sep = ""),
+                                        paste(sum(binaryData@g1O1), " / ", sum(binaryData@g1O1 + binaryData@g1O2), sep = ""))
+    }
 
     plotData$additional.col.data <- additional.cols
     if (!is.null(selected.cov)){

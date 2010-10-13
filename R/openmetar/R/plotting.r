@@ -14,12 +14,82 @@
 library("grid")
 
       
-#################################################
-#functions for data manipulation and forest plot#
-#################################################
+#####################################################
+#   functions for data manipulation and forest plot #
+#####################################################
+
+###
+# TODO 10/13/10
+#   1) Move create.plot.data from binary_methods to this module
+#   2) Implement create.plot.data.continuous -- refactor out
+#        common code to create.plot.data.generic
+create.plot.data.generic <- function(om.data, params){
+        
+}
+
+
+create.plot.data.continuous <- function(cont.data, params, res, selected.cov = NULL, include.overall=TRUE){
+    # Creates a data structure that can be passed to forest.plot
+    # res is the output of a call to the Metafor function rma
+    plot.data <- list(label = c("Studies", cont.data@studyNames, "Overall"),
+                     types = c(3, rep(0, length(binaryData@studyNames)), 2),
+                     scale = "log" )
+
+    alpha <- 1.0-(params$conf.level/100.0)
+    mult <- abs(qnorm(alpha/2.0))
+    lb <- binaryData@y - mult*binaryData@SE
+    ub <- binaryData@y + mult*binaryData@SE
+
+
+    ### TODO only do this for appropriate metrics
+    # i.e., ratios, which will be on the log-scale
+    # exponentiate effect sizes and bounds.
+    y <- exp(binaryData@y)
+    lb <- exp(lb)
+    ub <- exp(ub)
+
+    yOverall <- exp(res$b[1])
+    lbOverall <- exp(res$ci.lb[1])
+    ubOverall <- exp(res$ci.ub[1])
+
+    # round results for display.
+    yRounded <- round(y, digits = params$digits)
+    lbRounded <- round(lb, digits = params$digits)
+    ubRounded <- round(ub, digits = params$digits)
+    yOverallRounded <- round(yOverall, digits = params$digits)
+    lbOverallRounded <- round(lbOverall, digits = params$digits)
+    ubOverallRounded <- round(ubOverall, digits = params$digits)
+
+    additional.cols <- list(es = c("ES (LL, UL)", paste(yRounded, " (", lbRounded, " , ", ubRounded, ")", sep = ""),
+                                 paste(yOverallRounded, " (", lbOverallRounded, " , ", ubOverallRounded, ")", sep = "")))
+        
+    # if we have raw data, add it to the additional columns
+    if (length(binaryData@g1O1) > 0) {
+        additional.cols$cases = c("Ev/Trt", 
+                                    paste(binaryData@g1O1, " / ", binaryData@g1O1 + binaryData@g1O2, sep = ""), 
+                                    paste(sum(binaryData@g1O1), " / ", sum(binaryData@g1O1 + binaryData@g1O2), sep = ""))
+        additional.cols$controls = c("Ev/Ctrl", 
+                                        paste(binaryData@g1O1, " / ", binaryData@g1O1 + binaryData@g1O2, sep = ""),
+                                        paste(sum(binaryData@g1O1), " / ", sum(binaryData@g1O1 + binaryData@g1O2), sep = ""))
+    }
+
+    plotData$additional.col.data <- additional.cols
+    if (!is.null(selected.cov)){
+        cov.val.str <- paste("binaryData@covariates$", selected.cov, sep="")
+        cov.values <- eval(parse(text=cov.val.str))
+        plotData$covariate <- list(varname = selected.cov,
+                                   values = cov.values)
+    }
+    
+    effects <- list(ES = c(y, yOverall),
+                    LL = c(lb, lbOverall),
+                    UL = c(ub, ubOverall))
+    plotData$effects <- effects
+    plotData
+}
+
 
 # get data for the study column
-
 study.column <- function(forest.data, title.font="bold") {
 
     content<-rep(NA, length(forest.data$label))
