@@ -421,7 +421,6 @@ meta.regression.plot <- function(plot.data, outpath,
     radii <-  precision/sum(precision)
     # TODO need to do something about the scaling.
     png(file=outpath, width=5 , height=5, units="in", res=144)
-    # TODO there *has* to be a better way to do this...
     cov.name <- plot.data$covariate$varname
     cov.values <- plot.data$covariate$values
     #depends on whether these are natural or log

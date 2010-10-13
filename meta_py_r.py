@@ -403,8 +403,11 @@ def run_binary_meta_regression(selected_cov, bin_data_name="tmp_obj", res_name="
     #params <- list(conf.level=95, digits=3)
     params = {"conf.level":95, "digits":3}
     params_df = ro.r['data.frame'](**params)
-    r_str = "%s<-binary.meta.regression(%s, %s, %s)" % (res_name, bin_data_name, params_df.r_repr(), selected_cov)
+    r_str = "%s<-binary.meta.regression(%s, %s, %s)" % \
+            (res_name, bin_data_name, params_df.r_repr(), "'"+ selected_cov + "'")
     print "\n\n(run_binary_ma): executing:\n %s\n" % r_str
+    pyqtRemoveInputHook()
+    pdb.set_trace()
     ro.r(r_str)
     result = ro.r("%s" % res_name)
     return parse_out_results(result)

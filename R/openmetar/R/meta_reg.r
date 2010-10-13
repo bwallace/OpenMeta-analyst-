@@ -4,7 +4,7 @@
 #  Tufts Medical Center                                          #
 #  OpenMeta[analyst]                                             #
 #  ---                                                           #
-#  meta-reg.r                                                    #
+#  meta_reg.r                                                    #
 ##################################################################
 
 library(metafor)
@@ -24,7 +24,7 @@ binary.meta.regression <- function(binary.data, params, cov.name){
     plot.path <- "./r_tmp/reg_plot.png"
     meta.regression.plot(plot.data, plot.path)   
     images <- c("regression plot"=plot.path)
-    plot_names <- c("forest plot"="reg.plot")
+    plot.names <- c("forest plot"="reg.plot")
     
     results <- list("images"=images, "coefficients"=betas, "plot_names"=plot.names)
     results
