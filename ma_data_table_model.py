@@ -145,7 +145,7 @@ class DatasetModel(QAbstractTableModel):
             self.OUTCOMES = [7, 8, 9]
         elif current_data_type == "continuous":
             self.RAW_DATA = [col+offset for col in range(6)]
-            self.OUTCOMES = [9, 10, 11, 12] 
+            self.OUTCOMES = [9, 10, 11] 
         else:
             # diagnostic
             # @TODO what to do about 'other'?
@@ -196,7 +196,8 @@ class DatasetModel(QAbstractTableModel):
                 # here the column is to the right of the outcomes (and not the 0th, or
                 # 'include study' column, and thus must corrrespond to a covariate.
                 cov_name = self.get_cov(column).name
-                cov_value = study.covariate_dict[cov_name]
+                cov_value = study.covariate_dict[cov_name] if \
+                    study.covariate_dict.has_key(cov_name) else None
                 if cov_value is None:
                     cov_value = ""
                 return QVariant(cov_value)
@@ -215,8 +216,6 @@ class DatasetModel(QAbstractTableModel):
                 return QVariant(QColor(Qt.yellow))
             elif column in self.RAW_DATA[len(self.RAW_DATA)/2:] and \
                         self.current_effect in ONE_ARM_METRICS:
-                #pyqtRemoveInputHook()
-                #pdb.set_trace()
                 return QVariant(QColor(Qt.gray))
             else:
                 return QVariant(QColor(Qt.white))

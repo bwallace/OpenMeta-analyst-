@@ -106,7 +106,21 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             elif event.key() == QtCore.Qt.Key_A:
                 self.analysis()
 
-    def _setup_connections(self):
+
+    def _disconnections(self):
+        ''' 
+        disconnects model-related signs/slots. this should be called prior to swapping
+        in a new model, e.g., when a dataset is loaded, to tear down the relevant connections. 
+        _setup_connections (with menu_actiosn set to False) should subsequently be invoked. 
+        '''
+        QObject.disconnect(self.tableView.model(), SIGNAL("cellContentChanged(QModelIndex, QVariant, QVariant)"),
+                                                                self.tableView.cell_content_changed)
+        QObject.disconnect(self.tableView.model(), SIGNAL("outcomeChanged()"),
+                                                                self.tableView.displayed_ma_changed)
+        QObject.disconnect(self.tableView.model(), SIGNAL("followUpChanged()"),
+                                                                self.tableView.displayed_ma_changed) 
+        
+    def _setup_connections(self, menu_actions=True):
         ''' Signals & slots '''
         QObject.connect(self.tableView.model(), SIGNAL("cellContentChanged(QModelIndex, QVariant, QVariant)"),
                                                                 self.tableView.cell_content_changed)
@@ -114,24 +128,26 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                                                                 self.tableView.displayed_ma_changed)
         QObject.connect(self.tableView.model(), SIGNAL("followUpChanged()"),
                                                                 self.tableView.displayed_ma_changed)
-        QObject.connect(self.nav_add_btn, SIGNAL("pressed()"), self.add_new)
-        QObject.connect(self.nav_right_btn, SIGNAL("pressed()"), self.next)
-        QObject.connect(self.nav_left_btn, SIGNAL("pressed()"), self.previous)
-        QObject.connect(self.nav_up_btn, SIGNAL("pressed()"), self.next_dimension)
-        QObject.connect(self.nav_down_btn, SIGNAL("pressed()"), self.previous_dimension)
-
-        QObject.connect(self.action_save, SIGNAL("triggered()"), self.save)
-        QObject.connect(self.action_open, SIGNAL("triggered()"), self.open)
-        QObject.connect(self.action_quit, SIGNAL("triggered()"), self.quit)
-        QObject.connect(self.action_go, SIGNAL("triggered()"), self.go)
-        QObject.connect(self.action_cum_ma, SIGNAL("triggered()"), self.cum_ma)
-        QObject.connect(self.action_loo_ma, SIGNAL("triggered()"), self.loo_ma)
-        
-        QObject.connect(self.action_edit, SIGNAL("triggered()"), self.edit_dataset)
-        QObject.connect(self.action_view_network, SIGNAL("triggered()"), self.view_network)
-        QObject.connect(self.action_add_covariate, SIGNAL("triggered()"), self.add_covariate)
-        
-        QObject.connect(self.action_meta_regression, SIGNAL("triggered()"), self.meta_reg)
+                                                                
+        if menu_actions:                
+            QObject.connect(self.nav_add_btn, SIGNAL("pressed()"), self.add_new)
+            QObject.connect(self.nav_right_btn, SIGNAL("pressed()"), self.next)
+            QObject.connect(self.nav_left_btn, SIGNAL("pressed()"), self.previous)
+            QObject.connect(self.nav_up_btn, SIGNAL("pressed()"), self.next_dimension)
+            QObject.connect(self.nav_down_btn, SIGNAL("pressed()"), self.previous_dimension)
+    
+            QObject.connect(self.action_save, SIGNAL("triggered()"), self.save)
+            QObject.connect(self.action_open, SIGNAL("triggered()"), self.open)
+            QObject.connect(self.action_quit, SIGNAL("triggered()"), self.quit)
+            QObject.connect(self.action_go, SIGNAL("triggered()"), self.go)
+            QObject.connect(self.action_cum_ma, SIGNAL("triggered()"), self.cum_ma)
+            QObject.connect(self.action_loo_ma, SIGNAL("triggered()"), self.loo_ma)
+            
+            QObject.connect(self.action_edit, SIGNAL("triggered()"), self.edit_dataset)
+            QObject.connect(self.action_view_network, SIGNAL("triggered()"), self.view_network)
+            QObject.connect(self.action_add_covariate, SIGNAL("triggered()"), self.add_covariate)
+            
+            QObject.connect(self.action_meta_regression, SIGNAL("triggered()"), self.meta_reg)
 
     def go(self):
         # the spec form gets *this* form as a parameter.
@@ -153,6 +169,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     # implementation.
     ### TODO pull out meta methods auto-magically via introspection.
     def cum_ma(self):
+        pyqtRemoveInputHook()
+        pdb.set_trace()
         print "gettin' meta -- cumulative meta-analysis"
         form =  ma_specs.MA_Specs(self.model, meta_f_str="cum.ma", parent=self)
         form.show()
@@ -563,6 +581,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.model = DatasetModel(dataset=data_model)
         if state_dict is not None:
             self.model.set_state(state_dict)
+        self._disconnections()
         self.tableView.setModel(self.model)
         self.model_updated()
         print "ok -- model set."
@@ -578,8 +597,11 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # our signals and slots when the underlying model 
         # changes, because otherwise the antiquated/replaced
         # model (which was connected to the slots of interest)
-        # remains, which is useless.
-        self._setup_connections()
+        # remains, which is useless. However, we do not
+        # reconnect the menu_action options; this will cause those
+        # methods to be called x times! (x being the number of times
+        # _setup_connections is invoked)
+        self._setup_connections(menu_actions=False)
         self.tableView.resizeColumnsToContents()
         self.update_outcome_lbl()
         self.update_follow_up_label()
@@ -591,6 +613,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.model = DatasetModel(dataset)
         self.model.set_state(state_dict)
         self.out_path = out_path
+        self._disconnections()
         self.tableView.setModel(self.model)
         self.model_updated()
         
