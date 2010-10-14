@@ -55,6 +55,9 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         
         # this is just for debugging purposes; if a
         # switch is passed in, display fake/toy data
+        #
+        # TODO should also allow a (path to a) dataset
+        # to be given on the console.
         if len(sys.argv)>1 and sys.argv[-1]=="--toy-data":
             # toy data for now
             data_model = _gen_some_data()
@@ -68,6 +71,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         else:
             data_model = Dataset()
             self.model = DatasetModel(dataset=data_model)
+            # no dataset; disable saving, editing, etc.
+            self.disable_menu_options_that_require_dataset
 
         self.tableView.setModel(self.model)
         # attach a delegate for editing
@@ -92,7 +97,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.tableView.main_gui = self
         self.tableView.resizeColumnsToContents()
         self.out_path = None
-
+        
+    
+    def disable_menu_options_that_require_dataset(self):
+        pass
 
     def keyPressEvent(self, event):
         if (event.modifiers() & QtCore.Qt.ControlModifier):

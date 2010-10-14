@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'meta.ui'
 #
-# Created: Mon Oct 11 15:30:30 2010
+# Created: Thu Oct 14 09:48:27 2010
 #      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -203,8 +203,6 @@ class Ui_MainWindow(object):
         self.actionNew_dataset_2.setObjectName("actionNew_dataset_2")
         self.action_meta_regression = QtGui.QAction(MainWindow)
         self.action_meta_regression.setObjectName("action_meta_regression")
-        self.menu_file.addAction(self.actionNew_dataset)
-        self.menu_file.addSeparator()
         self.menu_file.addAction(self.action_save)
         self.menu_file.addAction(self.action_open)
         self.menu_file.addAction(self.action_quit)

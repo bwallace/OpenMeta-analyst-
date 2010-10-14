@@ -171,7 +171,7 @@ class DatasetModel(QAbstractTableModel):
                     return QVariant("")
                 else:
                     return QVariant(study.year)
-            elif column in self.RAW_DATA:
+            elif self.current_outcome is not None and column in self.RAW_DATA:
                 adjusted_index = column - 3
                 if self.current_outcome in study.outcomes_to_follow_ups:
                     cur_raw_data = self.get_current_ma_unit_for_study(index.row()).\
@@ -250,7 +250,7 @@ class DatasetModel(QAbstractTableModel):
                         self.reset()
                 else:
                     study.year = value.toInt()[0]
-            elif column in self.RAW_DATA:
+            elif self.current_outcome is not None and column in self.RAW_DATA:
                 # @TODO make module-level constant?
                 adjust_by = 3 # include study, study name, year columns
                 ma_unit = self.get_current_ma_unit_for_study(index.row())
@@ -315,15 +315,16 @@ class DatasetModel(QAbstractTableModel):
             new_val = self.data(index)
             self.emit(SIGNAL("cellContentChanged(QModelIndex, QVariant, QVariant)"), index, old_val, new_val)
          
-            effect_d = self.get_current_ma_unit_for_study(index.row()).effects_dict[self.current_effect]
-            # if any of the effect values are empty, we cannot include this study in the analysis, so it
-            # is automatically excluded.
-            if any([val is None for val in [effect_d[effect_key] for effect_key in ("upper", "lower", "est")]]):
-                study.include = False
-            # if the study has not been explicitly excluded by the user, then we automatically
-            # include it once it has sufficient data.
-            elif not study.manually_excluded:
-                study.include = True
+            if self.current_outcome is not None:
+                effect_d = self.get_current_ma_unit_for_study(index.row()).effects_dict[self.current_effect]
+                # if any of the effect values are empty, we cannot include this study in the analysis, so it
+                # is automatically excluded.
+                if any([val is None for val in [effect_d[effect_key] for effect_key in ("upper", "lower", "est")]]):
+                    study.include = False
+                # if the study has not been explicitly excluded by the user, then we automatically
+                # include it once it has sufficient data.
+                elif not study.manually_excluded:
+                    study.include = True
                 
             return True
         return False
@@ -349,7 +350,7 @@ class DatasetModel(QAbstractTableModel):
                 return QVariant(self.headers[self.YEAR])
             # note that we're assuming here that raw data
             # always shows only two tx groups at once.
-            elif section in self.RAW_DATA:
+            elif self.current_outcome is not None and section in self.RAW_DATA:
                 # switch on the outcome type 
                 current_tx = self.current_txs[0] # i.e., the first group
                 if outcome_type== BINARY:
@@ -389,8 +390,7 @@ class DatasetModel(QAbstractTableModel):
             else:
                 # then the column is to the right of the outcomes, and must
                 # be a covariate.
-                cov_index = section - (self.OUTCOMES[-1]+1)
-                cov_name = self.dataset.covariates[cov_index].name
+                cov_name = self.get_cov(section).name
                 return QVariant(cov_name)
         
         # this is the vertical -- non-table header -- case.
@@ -414,7 +414,12 @@ class DatasetModel(QAbstractTableModel):
         return self._get_col_count()
 
     def get_cov(self, table_col_index):
-        cov_index = table_col_index - (self.OUTCOMES[-1]+1)
+        # we map (ie, adjust) the table column index to the covariate
+        # index. if there is currently an outcome, this means we are
+        # subtract off the indices up to the last outcomes column; otherwise
+        # we just subtract the include, study name and year columns (giving 3)
+        cov_index = table_col_index - (self.OUTCOMES[-1]+1) if \
+                        self.current_outcome is not None else table_col_index - 3
         return self.dataset.covariates[cov_index]
         
     def _get_col_count(self):

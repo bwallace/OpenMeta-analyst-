@@ -36,21 +36,29 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         ### outcomes
         self.outcomes_model = edit_list_models.OutcomesModel(dataset = dataset)
         self.outcome_list.setModel(self.outcomes_model)
-        index_of_outcome_to_select = self.outcomes_model.outcome_list.index(parent.model.current_outcome)
-        outcome_index = self.outcomes_model.createIndex(index_of_outcome_to_select, 0)
-        self.outcome_list.setCurrentIndex(outcome_index)
-        self.selected_outcome = parent.model.current_outcome
-        self.remove_outcome_btn.setEnabled(True)
+        try:
+            index_of_outcome_to_select = self.outcomes_model.outcome_list.index(parent.model.current_outcome)
+            outcome_index = self.outcomes_model.createIndex(index_of_outcome_to_select, 0)
+            self.outcome_list.setCurrentIndex(outcome_index)
+            self.selected_outcome = parent.model.current_outcome
+            self.remove_outcome_btn.setEnabled(True)
+        except:
+            # no outcomes.
+            self.selected_outcome = None
             
         ### follow-ups
         # notice that we pass the follow ups model the current outcome, because it will display only
         # those follow-ups included for this outcome
         self.follow_ups_model = edit_list_models.FollowUpsModel(dataset = dataset, outcome = self.selected_outcome)
         self.follow_up_list.setModel(self.follow_ups_model)
-        self.selected_follow_up = parent.model.get_current_follow_up_name()
-        index_of_follow_up_to_select = self.follow_ups_model.follow_up_list.index(self.selected_follow_up)
-        follow_up_index = self.follow_ups_model.createIndex(index_of_follow_up_to_select, 0)
-        self.follow_up_list.setCurrentIndex(follow_up_index)
+        if self.selected_outcome is not None:
+            self.selected_follow_up = parent.model.get_current_follow_up_name()
+            index_of_follow_up_to_select = self.follow_ups_model.follow_up_list.index(self.selected_follow_up)
+            follow_up_index = self.follow_ups_model.createIndex(index_of_follow_up_to_select, 0)
+            self.follow_up_list.setCurrentIndex(follow_up_index)
+        else:
+            self.selected_follow_up = None
+            
         
         ### groups
         self.groups_model = edit_list_models.TXGroupsModel(dataset = dataset,\
