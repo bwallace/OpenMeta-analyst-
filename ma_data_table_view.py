@@ -317,7 +317,10 @@ class CommandCellEdit(QUndoCommand):
         if self.first_call:
             self.first_call = False
             self.added_study = self.ma_data_table_view.model().study_auto_added
-            self.ma_data_table_view.model().study_auto_added = None
+            # note: previously (10/14/10) there was a call here to set the
+            # model's study_auto_added field to None. I don't know why it was
+            # here, and removed it.  
+            #     > self.ma_data_table_view.model().study_auto_added = None
         else:
             model = self.ma_data_table_view.model()
             # here we block signals from the model. this is

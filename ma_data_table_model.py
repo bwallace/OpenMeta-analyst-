@@ -246,7 +246,7 @@ class DatasetModel(QAbstractTableModel):
                         # for this at runtime as we do with follow-up and outcome
                         new_study = Study(self.max_study_id()+1)
                         self.dataset.add_study(new_study)
-                        self.study_auto_added = new_study.id
+                        self.study_auto_added = int(new_study.id)
                         self.reset()
                 else:
                     study.year = value.toInt()[0]
@@ -650,9 +650,6 @@ class DatasetModel(QAbstractTableModel):
         '''
         This captures the state of the model view; things like the current outcome
         and column indices that are on the QT side of the data table model.
-
-        @TODO we're going to need to handle covariates (and possibly other information) 
-        here eventually
         '''
         d = {}
 
@@ -668,8 +665,8 @@ class DatasetModel(QAbstractTableModel):
         d["current_time_point"] = self.current_time_point
         d["current_txs"] = self.current_txs
         d["current_effect"] = self.current_effect
-
         d["study_auto_added"] = self.study_auto_added
+        
         return d
 
     def set_state(self, state_dict):

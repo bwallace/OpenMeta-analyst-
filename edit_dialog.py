@@ -131,6 +131,8 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
             data_type = STR_TO_TYPE_DICT[data_type.lower()]
             self.outcome_list.model().dataset.add_outcome(Outcome(new_outcome_name, data_type))
             self.outcome_list.model().refresh_outcome_list()
+            self.outcome_list.model().current_outcome = new_outcome_name
+            
             
     def get_selected_outcome(self):
         index = self.outcome_list.currentIndex()
