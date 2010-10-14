@@ -365,8 +365,6 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionNew_dataset"/>
-    <addaction name="separator"/>
     <addaction name="action_save"/>
     <addaction name="action_open"/>
     <addaction name="action_quit"/>
