@@ -20,6 +20,8 @@ _S_l_o_t_s:
 
      '_y_e_a_r_s': Object of class '"integer"' ~~ 
 
+     '_c_o_v_a_r_i_a_t_e_s': Object of class '"list"' ~~ 
+
 _M_e_t_h_o_d_s:
 
      No methods defined with class "OMData" in the signature.

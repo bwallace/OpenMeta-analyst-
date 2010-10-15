@@ -22,6 +22,10 @@ _S_l_o_t_s:
 
      '_g_2_O_2': Object of class '"numeric"' ~~ 
 
+     '_y': Object of class '"numeric"' ~~ 
+
+     '_S_E': Object of class '"numeric"' ~~ 
+
      '_g_1_N_a_m_e': Object of class '"character"' ~~ 
 
      '_g_2_N_a_m_e': Object of class '"character"' ~~ 
@@ -31,6 +35,8 @@ _S_l_o_t_s:
      '_n_o_t_e_s': Object of class '"character"' ~~ 
 
      '_y_e_a_r_s': Object of class '"integer"' ~~ 
+
+     '_c_o_v_a_r_i_a_t_e_s': Object of class '"list"' ~~ 
 
 _E_x_t_e_n_d_s:
 

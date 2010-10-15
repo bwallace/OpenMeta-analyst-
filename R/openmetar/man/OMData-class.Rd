@@ -14,6 +14,7 @@ Objects can be created by calls of the form \code{new("OMData", ...)}.
     \item{\code{studyNames}:}{Object of class \code{"character"} ~~ }
     \item{\code{notes}:}{Object of class \code{"character"} ~~ }
     \item{\code{years}:}{Object of class \code{"integer"} ~~ }
+    \item{\code{covariates}:}{Object of class \code{"list"} ~~ }
   }
 }
 \section{Methods}{

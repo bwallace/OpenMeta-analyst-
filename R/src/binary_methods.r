@@ -46,6 +46,28 @@ get.res.for.one.binary.study <- function(binaryData, params){
     res
 }
 
+create.table <- function(binaryData, params){
+    # Creates a table to display the raw data in binaryData
+    
+    # Compute bounds on confidence intervals.
+    alpha <- 1.0-(params$conf.level/100.0)
+    mult <- abs(qnorm(alpha/2.0))
+    LL <- exp(binaryData@y - mult*binaryData@SE)
+    UL <- exp(binaryData@y + mult*binaryData@SE)
+   
+    rawData<-c("Study", "", binaryData@studyNames, 
+              "Events (T)", "", round(binaryData@g1O1, digits = params$digits), 
+              "Subjects (T)", "", round(binaryData@g1O1 + binaryData@g1O2, digits = params$digits),
+              "Events (C)", "", round(binaryData@g2O1, digits = params$digits), 
+              "Subjects (T)", "", round(binaryData@g2O1 + binaryData@g2O2, digits = params$digits),
+              "Effect size", "", round(exp(binaryData@y), digits = params$digits),  
+              "Lower bound", "", round(LL, digits = params$digits), 
+              "Upper bound", "", round(UL, digits = params$digits))
+    a <- array(rawData, dim = c(length(binaryData@studyNames) + 2, 8))
+    dt <- format(data.frame(a), justify = "centre")
+    dt                            
+}
+
 create.plot.data <- function(binaryData, params, res, selected.cov = NULL, include.overall=TRUE){
     # Creates a data structure that can be passed to forest.plot
     # res is the output of a call to the Metafor function rma
@@ -140,7 +162,8 @@ binary.fixed.inv.var <- function(binaryData, params){
         # should we return the name of the result object & the name of the
         # plotting function as well here? perhaps only for the forest plot? 
         # this would allow interactive plot refinement via the console...
-        results <- list("images"=images, "summary"=res, "plot_names"=plot_names)
+        dt <- create.table(binaryData, params)
+        results <- list("images"=images, "summary"=dt, "plot_names"=plot_names)
     }
     results
 }

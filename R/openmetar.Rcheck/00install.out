@@ -4,8 +4,52 @@
 * Installing *source* package 'openmetar' ...
 ** R
 ** preparing package for lazy loading
-Loading 'metafor' package. Type: help(metafor)
-for an overview and introduction to the package.
+Loading 'metafor' package (version 0.5-7). For an overview 
+and introduction to the package please type: help(metafor).
+Warning in arrowsGrob(x = x, y = y, default.units = default.units, grob = grob,  :
+  grid.arrows() has been deprecated;  use 'arrow' arguments to line drawing functions.
+Warning in arrowsGrob(x = x, y = y, default.units = default.units, grob = grob,  :
+  grid.arrows() has been deprecated;  use 'arrow' arguments to line drawing functions.
+Warning in arrowsGrob(x = x, y = y, default.units = default.units, grob = grob,  :
+  grid.arrows() has been deprecated;  use 'arrow' arguments to line drawing functions.
+Warning in arrowsGrob(x = x, y = y, default.units = default.units, grob = grob,  :
+  grid.arrows() has been deprecated;  use 'arrow' arguments to line drawing functions.
+Warning in arrowsGrob(x = x, y = y, default.units = default.units, grob = grob,  :
+  grid.arrows() has been deprecated;  use 'arrow' arguments to line drawing functions.
+Warning in arrowsGrob(x = x, y = y, default.units = default.units, grob = grob,  :
+  grid.arrows() has been deprecated;  use 'arrow' arguments to line drawing functions.
+Warning in arrowsGrob(x = x, y = y, default.units = default.units, grob = grob,  :
+  grid.arrows() has been deprecated;  use 'arrow' arguments to line drawing functions.
+Warning in arrowsGrob(x = x, y = y, default.units = default.units, grob = grob,  :
+  grid.arrows() has been deprecated;  use 'arrow' arguments to line drawing functions.
+Warning in arrowsGrob(x = x, y = y, default.units = default.units, grob = grob,  :
+  grid.arrows() has been deprecated;  use 'arrow' arguments to line drawing functions.
+Warning in arrowsGrob(x = x, y = y, default.units = default.units, grob = grob,  :
+  grid.arrows() has been deprecated;  use 'arrow' arguments to line drawing functions.
+Warning in arrowsGrob(x = x, y = y, default.units = default.units, grob = grob,  :
+  grid.arrows() has been deprecated;  use 'arrow' arguments to line drawing functions.
+Warning in arrowsGrob(x = x, y = y, default.units = default.units, grob = grob,  :
+  grid.arrows() has been deprecated;  use 'arrow' arguments to line drawing functions.
+Warning in arrowsGrob(x = x, y = y, default.units = default.units, grob = grob,  :
+  grid.arrows() has been deprecated;  use 'arrow' arguments to line drawing functions.
+Warning in arrowsGrob(x = x, y = y, default.units = default.units, grob = grob,  :
+  grid.arrows() has been deprecated;  use 'arrow' arguments to line drawing functions.
+Warning in arrowsGrob(x = x, y = y, default.units = default.units, grob = grob,  :
+  grid.arrows() has been deprecated;  use 'arrow' arguments to line drawing functions.
+Warning in arrowsGrob(x = x, y = y, default.units = default.units, grob = grob,  :
+  grid.arrows() has been deprecated;  use 'arrow' arguments to line drawing functions.
+Warning in arrowsGrob(x = x, y = y, default.units = default.units, grob = grob,  :
+  grid.arrows() has been deprecated;  use 'arrow' arguments to line drawing functions.
+Warning in arrowsGrob(x = x, y = y, default.units = default.units, grob = grob,  :
+  grid.arrows() has been deprecated;  use 'arrow' arguments to line drawing functions.
+Warning in arrowsGrob(x = x, y = y, default.units = default.units, grob = grob,  :
+  grid.arrows() has been deprecated;  use 'arrow' arguments to line drawing functions.
+Warning in arrowsGrob(x = x, y = y, default.units = default.units, grob = grob,  :
+  grid.arrows() has been deprecated;  use 'arrow' arguments to line drawing functions.
+Warning in arrowsGrob(x = x, y = y, default.units = default.units, grob = grob,  :
+  grid.arrows() has been deprecated;  use 'arrow' arguments to line drawing functions.
+Warning in arrowsGrob(x = x, y = y, default.units = default.units, grob = grob,  :
+  grid.arrows() has been deprecated;  use 'arrow' arguments to line drawing functions.
 ** help
 *** installing help indices
  >>> Building/Updating help pages for package 'openmetar'
@@ -14,18 +58,413 @@ for an overview and introduction to the package.
      missing link(s):  ~~fun~~ CLASSNAME-class
   BinaryData-class                  text    html    latex   example
      missing link(s):  ~~fun~~ CLASSNAME-class
+  ContinuousData-class              text    html    latex   example
+     missing link(s):  ~~fun~~ CLASSNAME-class
   OMData-class                      text    html    latex   example
      missing link(s):  ~~fun~~ CLASSNAME-class
-Note: removing empty section \value in file 'binaryrmh.Rd'
-Note: removing empty section \author in file 'binaryrmh.Rd'
-Note: removing empty section \details in file 'binaryrmh.Rd'
-Note: removing empty section \description in file 'binaryrmh.Rd'
-Note: removing empty section \note in file 'binaryrmh.Rd'
-Note: removing empty section \references in file 'binaryrmh.Rd'
-Note: removing empty section \title in file 'binaryrmh.Rd'
-Note: removing empty section \seealso in file 'binaryrmh.Rd'
-  binaryrmh                         text    html    latex   example
+Note: removing empty section \source in file 'additional.cols.Rd'
+Note: removing empty section \details in file 'additional.cols.Rd'
+Note: removing empty section \description in file 'additional.cols.Rd'
+Note: removing empty section \references in file 'additional.cols.Rd'
+Note: removing empty section \title in file 'additional.cols.Rd'
+  additional.cols                   text    html    latex   example
+Note: removing empty section \value in file 'additional.columns.Rd'
+Note: removing empty section \author in file 'additional.columns.Rd'
+Note: removing empty section \details in file 'additional.columns.Rd'
+Note: removing empty section \description in file 'additional.columns.Rd'
+Note: removing empty section \note in file 'additional.columns.Rd'
+Note: removing empty section \references in file 'additional.columns.Rd'
+Note: removing empty section \title in file 'additional.columns.Rd'
+Note: removing empty section \seealso in file 'additional.columns.Rd'
+  additional.columns                text    html    latex   example
+Note: removing empty section \value in file 'binary.fixed.inv.var.Rd'
+Note: removing empty section \author in file 'binary.fixed.inv.var.Rd'
+Note: removing empty section \details in file 'binary.fixed.inv.var.Rd'
+Note: removing empty section \description in file 'binary.fixed.inv.var.Rd'
+Note: removing empty section \note in file 'binary.fixed.inv.var.Rd'
+Note: removing empty section \references in file 'binary.fixed.inv.var.Rd'
+Note: removing empty section \title in file 'binary.fixed.inv.var.Rd'
+Note: removing empty section \seealso in file 'binary.fixed.inv.var.Rd'
+  binary.fixed.inv.var              text    html    latex   example
+Note: removing empty section \value in file 'binary.fixed.inv.var.overall.Rd'
+Note: removing empty section \author in file 'binary.fixed.inv.var.overall.Rd'
+Note: removing empty section \details in file 'binary.fixed.inv.var.overall.Rd'
+Note: removing empty section \description in file 'binary.fixed.inv.var.overall.Rd'
+Note: removing empty section \note in file 'binary.fixed.inv.var.overall.Rd'
+Note: removing empty section \references in file 'binary.fixed.inv.var.overall.Rd'
+Note: removing empty section \title in file 'binary.fixed.inv.var.overall.Rd'
+Note: removing empty section \seealso in file 'binary.fixed.inv.var.overall.Rd'
+  binary.fixed.inv.var.overall      text    html    latex   example
+Note: removing empty section \value in file 'binary.fixed.inv.var.parameters.Rd'
+Note: removing empty section \author in file 'binary.fixed.inv.var.parameters.Rd'
+Note: removing empty section \details in file 'binary.fixed.inv.var.parameters.Rd'
+Note: removing empty section \description in file 'binary.fixed.inv.var.parameters.Rd'
+Note: removing empty section \note in file 'binary.fixed.inv.var.parameters.Rd'
+Note: removing empty section \references in file 'binary.fixed.inv.var.parameters.Rd'
+Note: removing empty section \title in file 'binary.fixed.inv.var.parameters.Rd'
+Note: removing empty section \seealso in file 'binary.fixed.inv.var.parameters.Rd'
+  binary.fixed.inv.var.parameters   text    html    latex   example
+Note: removing empty section \value in file 'binary.fixed.mh.Rd'
+Note: removing empty section \author in file 'binary.fixed.mh.Rd'
+Note: removing empty section \details in file 'binary.fixed.mh.Rd'
+Note: removing empty section \description in file 'binary.fixed.mh.Rd'
+Note: removing empty section \note in file 'binary.fixed.mh.Rd'
+Note: removing empty section \references in file 'binary.fixed.mh.Rd'
+Note: removing empty section \title in file 'binary.fixed.mh.Rd'
+Note: removing empty section \seealso in file 'binary.fixed.mh.Rd'
+  binary.fixed.mh                   text    html    latex   example
+Note: removing empty section \value in file 'binary.fixed.mh.is.feasible.Rd'
+Note: removing empty section \author in file 'binary.fixed.mh.is.feasible.Rd'
+Note: removing empty section \details in file 'binary.fixed.mh.is.feasible.Rd'
+Note: removing empty section \description in file 'binary.fixed.mh.is.feasible.Rd'
+Note: removing empty section \note in file 'binary.fixed.mh.is.feasible.Rd'
+Note: removing empty section \references in file 'binary.fixed.mh.is.feasible.Rd'
+Note: removing empty section \title in file 'binary.fixed.mh.is.feasible.Rd'
+Note: removing empty section \seealso in file 'binary.fixed.mh.is.feasible.Rd'
+  binary.fixed.mh.is.feasible       text    html    latex   example
+Note: removing empty section \value in file 'binary.fixed.mh.overall.Rd'
+Note: removing empty section \author in file 'binary.fixed.mh.overall.Rd'
+Note: removing empty section \details in file 'binary.fixed.mh.overall.Rd'
+Note: removing empty section \description in file 'binary.fixed.mh.overall.Rd'
+Note: removing empty section \note in file 'binary.fixed.mh.overall.Rd'
+Note: removing empty section \references in file 'binary.fixed.mh.overall.Rd'
+Note: removing empty section \title in file 'binary.fixed.mh.overall.Rd'
+Note: removing empty section \seealso in file 'binary.fixed.mh.overall.Rd'
+  binary.fixed.mh.overall           text    html    latex   example
+Note: removing empty section \value in file 'binary.fixed.mh.parameters.Rd'
+Note: removing empty section \author in file 'binary.fixed.mh.parameters.Rd'
+Note: removing empty section \details in file 'binary.fixed.mh.parameters.Rd'
+Note: removing empty section \description in file 'binary.fixed.mh.parameters.Rd'
+Note: removing empty section \note in file 'binary.fixed.mh.parameters.Rd'
+Note: removing empty section \references in file 'binary.fixed.mh.parameters.Rd'
+Note: removing empty section \title in file 'binary.fixed.mh.parameters.Rd'
+Note: removing empty section \seealso in file 'binary.fixed.mh.parameters.Rd'
+  binary.fixed.mh.parameters        text    html    latex   example
+Note: removing empty section \value in file 'binary.fixed.peto.Rd'
+Note: removing empty section \author in file 'binary.fixed.peto.Rd'
+Note: removing empty section \details in file 'binary.fixed.peto.Rd'
+Note: removing empty section \description in file 'binary.fixed.peto.Rd'
+Note: removing empty section \note in file 'binary.fixed.peto.Rd'
+Note: removing empty section \references in file 'binary.fixed.peto.Rd'
+Note: removing empty section \title in file 'binary.fixed.peto.Rd'
+Note: removing empty section \seealso in file 'binary.fixed.peto.Rd'
+  binary.fixed.peto                 text    html    latex   example
+Note: removing empty section \value in file 'binary.fixed.peto.is.feasible.Rd'
+Note: removing empty section \author in file 'binary.fixed.peto.is.feasible.Rd'
+Note: removing empty section \details in file 'binary.fixed.peto.is.feasible.Rd'
+Note: removing empty section \description in file 'binary.fixed.peto.is.feasible.Rd'
+Note: removing empty section \note in file 'binary.fixed.peto.is.feasible.Rd'
+Note: removing empty section \references in file 'binary.fixed.peto.is.feasible.Rd'
+Note: removing empty section \title in file 'binary.fixed.peto.is.feasible.Rd'
+Note: removing empty section \seealso in file 'binary.fixed.peto.is.feasible.Rd'
+  binary.fixed.peto.is.feasible     text    html    latex   example
+Note: removing empty section \value in file 'binary.fixed.peto.overall.Rd'
+Note: removing empty section \author in file 'binary.fixed.peto.overall.Rd'
+Note: removing empty section \details in file 'binary.fixed.peto.overall.Rd'
+Note: removing empty section \description in file 'binary.fixed.peto.overall.Rd'
+Note: removing empty section \note in file 'binary.fixed.peto.overall.Rd'
+Note: removing empty section \references in file 'binary.fixed.peto.overall.Rd'
+Note: removing empty section \title in file 'binary.fixed.peto.overall.Rd'
+Note: removing empty section \seealso in file 'binary.fixed.peto.overall.Rd'
+  binary.fixed.peto.overall         text    html    latex   example
+Note: removing empty section \value in file 'binary.fixed.peto.parameters.Rd'
+Note: removing empty section \author in file 'binary.fixed.peto.parameters.Rd'
+Note: removing empty section \details in file 'binary.fixed.peto.parameters.Rd'
+Note: removing empty section \description in file 'binary.fixed.peto.parameters.Rd'
+Note: removing empty section \note in file 'binary.fixed.peto.parameters.Rd'
+Note: removing empty section \references in file 'binary.fixed.peto.parameters.Rd'
+Note: removing empty section \title in file 'binary.fixed.peto.parameters.Rd'
+Note: removing empty section \seealso in file 'binary.fixed.peto.parameters.Rd'
+  binary.fixed.peto.parameters      text    html    latex   example
+Note: removing empty section \value in file 'binary.meta.regression.Rd'
+Note: removing empty section \author in file 'binary.meta.regression.Rd'
+Note: removing empty section \details in file 'binary.meta.regression.Rd'
+Note: removing empty section \description in file 'binary.meta.regression.Rd'
+Note: removing empty section \note in file 'binary.meta.regression.Rd'
+Note: removing empty section \references in file 'binary.meta.regression.Rd'
+Note: removing empty section \title in file 'binary.meta.regression.Rd'
+Note: removing empty section \seealso in file 'binary.meta.regression.Rd'
+  binary.meta.regression            text    html    latex   example
+Note: removing empty section \value in file 'binary.random.Rd'
+Note: removing empty section \author in file 'binary.random.Rd'
+Note: removing empty section \details in file 'binary.random.Rd'
+Note: removing empty section \description in file 'binary.random.Rd'
+Note: removing empty section \note in file 'binary.random.Rd'
+Note: removing empty section \references in file 'binary.random.Rd'
+Note: removing empty section \title in file 'binary.random.Rd'
+Note: removing empty section \seealso in file 'binary.random.Rd'
+  binary.random                     text    html    latex   example
+Note: removing empty section \value in file 'binary.random.overall.Rd'
+Note: removing empty section \author in file 'binary.random.overall.Rd'
+Note: removing empty section \details in file 'binary.random.overall.Rd'
+Note: removing empty section \description in file 'binary.random.overall.Rd'
+Note: removing empty section \note in file 'binary.random.overall.Rd'
+Note: removing empty section \references in file 'binary.random.overall.Rd'
+Note: removing empty section \title in file 'binary.random.overall.Rd'
+Note: removing empty section \seealso in file 'binary.random.overall.Rd'
+  binary.random.overall             text    html    latex   example
+Note: removing empty section \value in file 'binary.random.parameters.Rd'
+Note: removing empty section \author in file 'binary.random.parameters.Rd'
+Note: removing empty section \details in file 'binary.random.parameters.Rd'
+Note: removing empty section \description in file 'binary.random.parameters.Rd'
+Note: removing empty section \note in file 'binary.random.parameters.Rd'
+Note: removing empty section \references in file 'binary.random.parameters.Rd'
+Note: removing empty section \title in file 'binary.random.parameters.Rd'
+Note: removing empty section \seealso in file 'binary.random.parameters.Rd'
+  binary.random.parameters          text    html    latex   example
+Note: removing empty section \value in file 'check.1spell.res.Rd'
+Note: removing empty section \author in file 'check.1spell.res.Rd'
+Note: removing empty section \details in file 'check.1spell.res.Rd'
+Note: removing empty section \description in file 'check.1spell.res.Rd'
+Note: removing empty section \note in file 'check.1spell.res.Rd'
+Note: removing empty section \references in file 'check.1spell.res.Rd'
+Note: removing empty section \title in file 'check.1spell.res.Rd'
+Note: removing empty section \seealso in file 'check.1spell.res.Rd'
+  check.1spell.res                  text    html    latex   example
+Note: removing empty section \value in file 'compute.for.one.bin.study.Rd'
+Note: removing empty section \author in file 'compute.for.one.bin.study.Rd'
+Note: removing empty section \details in file 'compute.for.one.bin.study.Rd'
+Note: removing empty section \description in file 'compute.for.one.bin.study.Rd'
+Note: removing empty section \note in file 'compute.for.one.bin.study.Rd'
+Note: removing empty section \references in file 'compute.for.one.bin.study.Rd'
+Note: removing empty section \title in file 'compute.for.one.bin.study.Rd'
+Note: removing empty section \seealso in file 'compute.for.one.bin.study.Rd'
+  compute.for.one.bin.study         text    html    latex   example
+Note: removing empty section \value in file 'compute.for.one.cont.study.Rd'
+Note: removing empty section \author in file 'compute.for.one.cont.study.Rd'
+Note: removing empty section \details in file 'compute.for.one.cont.study.Rd'
+Note: removing empty section \description in file 'compute.for.one.cont.study.Rd'
+Note: removing empty section \note in file 'compute.for.one.cont.study.Rd'
+Note: removing empty section \references in file 'compute.for.one.cont.study.Rd'
+Note: removing empty section \title in file 'compute.for.one.cont.study.Rd'
+Note: removing empty section \seealso in file 'compute.for.one.cont.study.Rd'
+  compute.for.one.cont.study        text    html    latex   example
+Note: removing empty section \value in file 'continuous.random.Rd'
+Note: removing empty section \author in file 'continuous.random.Rd'
+Note: removing empty section \details in file 'continuous.random.Rd'
+Note: removing empty section \description in file 'continuous.random.Rd'
+Note: removing empty section \note in file 'continuous.random.Rd'
+Note: removing empty section \references in file 'continuous.random.Rd'
+Note: removing empty section \title in file 'continuous.random.Rd'
+Note: removing empty section \seealso in file 'continuous.random.Rd'
+  continuous.random                 text    html    latex   example
+Note: removing empty section \value in file 'continuous.random.overall.Rd'
+Note: removing empty section \author in file 'continuous.random.overall.Rd'
+Note: removing empty section \details in file 'continuous.random.overall.Rd'
+Note: removing empty section \description in file 'continuous.random.overall.Rd'
+Note: removing empty section \note in file 'continuous.random.overall.Rd'
+Note: removing empty section \references in file 'continuous.random.overall.Rd'
+Note: removing empty section \title in file 'continuous.random.overall.Rd'
+Note: removing empty section \seealso in file 'continuous.random.overall.Rd'
+  continuous.random.overall         text    html    latex   example
+Note: removing empty section \value in file 'continuous.random.parameters.Rd'
+Note: removing empty section \author in file 'continuous.random.parameters.Rd'
+Note: removing empty section \details in file 'continuous.random.parameters.Rd'
+Note: removing empty section \description in file 'continuous.random.parameters.Rd'
+Note: removing empty section \note in file 'continuous.random.parameters.Rd'
+Note: removing empty section \references in file 'continuous.random.parameters.Rd'
+Note: removing empty section \title in file 'continuous.random.parameters.Rd'
+Note: removing empty section \seealso in file 'continuous.random.parameters.Rd'
+  continuous.random.parameters      text    html    latex   example
+Note: removing empty section \value in file 'create.plot.data.Rd'
+Note: removing empty section \author in file 'create.plot.data.Rd'
+Note: removing empty section \details in file 'create.plot.data.Rd'
+Note: removing empty section \description in file 'create.plot.data.Rd'
+Note: removing empty section \note in file 'create.plot.data.Rd'
+Note: removing empty section \references in file 'create.plot.data.Rd'
+Note: removing empty section \title in file 'create.plot.data.Rd'
+Note: removing empty section \seealso in file 'create.plot.data.Rd'
+  create.plot.data                  text    html    latex   example
+Note: removing empty section \value in file 'cum.ma.binary.Rd'
+Note: removing empty section \author in file 'cum.ma.binary.Rd'
+Note: removing empty section \details in file 'cum.ma.binary.Rd'
+Note: removing empty section \description in file 'cum.ma.binary.Rd'
+Note: removing empty section \note in file 'cum.ma.binary.Rd'
+Note: removing empty section \references in file 'cum.ma.binary.Rd'
+Note: removing empty section \title in file 'cum.ma.binary.Rd'
+Note: removing empty section \seealso in file 'cum.ma.binary.Rd'
+  cum.ma.binary                     text    html    latex   example
+Note: removing empty section \value in file 'cum.ma.continuous.Rd'
+Note: removing empty section \author in file 'cum.ma.continuous.Rd'
+Note: removing empty section \details in file 'cum.ma.continuous.Rd'
+Note: removing empty section \description in file 'cum.ma.continuous.Rd'
+Note: removing empty section \note in file 'cum.ma.continuous.Rd'
+Note: removing empty section \references in file 'cum.ma.continuous.Rd'
+Note: removing empty section \title in file 'cum.ma.continuous.Rd'
+Note: removing empty section \seealso in file 'cum.ma.continuous.Rd'
+  cum.ma.continuous                 text    html    latex   example
+Note: removing empty section \value in file 'draw.data.col.Rd'
+Note: removing empty section \author in file 'draw.data.col.Rd'
+Note: removing empty section \details in file 'draw.data.col.Rd'
+Note: removing empty section \description in file 'draw.data.col.Rd'
+Note: removing empty section \note in file 'draw.data.col.Rd'
+Note: removing empty section \references in file 'draw.data.col.Rd'
+Note: removing empty section \title in file 'draw.data.col.Rd'
+Note: removing empty section \seealso in file 'draw.data.col.Rd'
+  draw.data.col                     text    html    latex   example
+Note: removing empty section \value in file 'draw.label.col.Rd'
+Note: removing empty section \author in file 'draw.label.col.Rd'
+Note: removing empty section \details in file 'draw.label.col.Rd'
+Note: removing empty section \description in file 'draw.label.col.Rd'
+Note: removing empty section \note in file 'draw.label.col.Rd'
+Note: removing empty section \references in file 'draw.label.col.Rd'
+Note: removing empty section \title in file 'draw.label.col.Rd'
+Note: removing empty section \seealso in file 'draw.label.col.Rd'
+  draw.label.col                    text    html    latex   example
+Note: removing empty section \value in file 'draw.normal.CI.Rd'
+Note: removing empty section \author in file 'draw.normal.CI.Rd'
+Note: removing empty section \details in file 'draw.normal.CI.Rd'
+Note: removing empty section \description in file 'draw.normal.CI.Rd'
+Note: removing empty section \note in file 'draw.normal.CI.Rd'
+Note: removing empty section \references in file 'draw.normal.CI.Rd'
+Note: removing empty section \title in file 'draw.normal.CI.Rd'
+Note: removing empty section \seealso in file 'draw.normal.CI.Rd'
+  draw.normal.CI                    text    html    latex   example
+Note: removing empty section \value in file 'draw.summary.CI.Rd'
+Note: removing empty section \author in file 'draw.summary.CI.Rd'
+Note: removing empty section \details in file 'draw.summary.CI.Rd'
+Note: removing empty section \description in file 'draw.summary.CI.Rd'
+Note: removing empty section \note in file 'draw.summary.CI.Rd'
+Note: removing empty section \references in file 'draw.summary.CI.Rd'
+Note: removing empty section \title in file 'draw.summary.CI.Rd'
+Note: removing empty section \seealso in file 'draw.summary.CI.Rd'
+  draw.summary.CI                   text    html    latex   example
+Note: removing empty section \source in file 'effects.Rd'
+Note: removing empty section \details in file 'effects.Rd'
+Note: removing empty section \description in file 'effects.Rd'
+Note: removing empty section \references in file 'effects.Rd'
+Note: removing empty section \title in file 'effects.Rd'
+  effects                           text    html    latex   example
+Note: removing empty section \value in file 'effectsize.column.Rd'
+Note: removing empty section \author in file 'effectsize.column.Rd'
+Note: removing empty section \details in file 'effectsize.column.Rd'
+Note: removing empty section \description in file 'effectsize.column.Rd'
+Note: removing empty section \note in file 'effectsize.column.Rd'
+Note: removing empty section \references in file 'effectsize.column.Rd'
+Note: removing empty section \title in file 'effectsize.column.Rd'
+Note: removing empty section \seealso in file 'effectsize.column.Rd'
+  effectsize.column                 text    html    latex   example
+Note: removing empty section \value in file 'fillin.2x2.simple.Rd'
+Note: removing empty section \author in file 'fillin.2x2.simple.Rd'
+Note: removing empty section \details in file 'fillin.2x2.simple.Rd'
+Note: removing empty section \description in file 'fillin.2x2.simple.Rd'
+Note: removing empty section \note in file 'fillin.2x2.simple.Rd'
+Note: removing empty section \references in file 'fillin.2x2.simple.Rd'
+Note: removing empty section \title in file 'fillin.2x2.simple.Rd'
+Note: removing empty section \seealso in file 'fillin.2x2.simple.Rd'
+  fillin.2x2.simple                 text    html    latex   example
+Note: removing empty section \value in file 'fillin.cont.1spell.Rd'
+Note: removing empty section \author in file 'fillin.cont.1spell.Rd'
+Note: removing empty section \details in file 'fillin.cont.1spell.Rd'
+Note: removing empty section \description in file 'fillin.cont.1spell.Rd'
+Note: removing empty section \note in file 'fillin.cont.1spell.Rd'
+Note: removing empty section \references in file 'fillin.cont.1spell.Rd'
+Note: removing empty section \title in file 'fillin.cont.1spell.Rd'
+Note: removing empty section \seealso in file 'fillin.cont.1spell.Rd'
+  fillin.cont.1spell                text    html    latex   example
+Note: removing empty section \value in file 'fillin.cont.AminusB.Rd'
+Note: removing empty section \author in file 'fillin.cont.AminusB.Rd'
+Note: removing empty section \details in file 'fillin.cont.AminusB.Rd'
+Note: removing empty section \description in file 'fillin.cont.AminusB.Rd'
+Note: removing empty section \note in file 'fillin.cont.AminusB.Rd'
+Note: removing empty section \references in file 'fillin.cont.AminusB.Rd'
+Note: removing empty section \title in file 'fillin.cont.AminusB.Rd'
+Note: removing empty section \seealso in file 'fillin.cont.AminusB.Rd'
+  fillin.cont.AminusB               text    html    latex   example
+Note: removing empty section \source in file 'forest.data.Rd'
+Note: removing empty section \details in file 'forest.data.Rd'
+Note: removing empty section \description in file 'forest.data.Rd'
+Note: removing empty section \references in file 'forest.data.Rd'
+Note: removing empty section \title in file 'forest.data.Rd'
+  forest.data                       text    html    latex   example
+Note: removing empty section \value in file 'forest.plot.Rd'
+Note: removing empty section \author in file 'forest.plot.Rd'
+Note: removing empty section \details in file 'forest.plot.Rd'
+Note: removing empty section \description in file 'forest.plot.Rd'
+Note: removing empty section \note in file 'forest.plot.Rd'
+Note: removing empty section \references in file 'forest.plot.Rd'
+Note: removing empty section \title in file 'forest.plot.Rd'
+Note: removing empty section \seealso in file 'forest.plot.Rd'
+  forest.plot                       text    html    latex   example
+Note: removing empty section \value in file 'get.res.for.one.binary.study.Rd'
+Note: removing empty section \author in file 'get.res.for.one.binary.study.Rd'
+Note: removing empty section \details in file 'get.res.for.one.binary.study.Rd'
+Note: removing empty section \description in file 'get.res.for.one.binary.study.Rd'
+Note: removing empty section \note in file 'get.res.for.one.binary.study.Rd'
+Note: removing empty section \references in file 'get.res.for.one.binary.study.Rd'
+Note: removing empty section \title in file 'get.res.for.one.binary.study.Rd'
+Note: removing empty section \seealso in file 'get.res.for.one.binary.study.Rd'
+  get.res.for.one.binary.study      text    html    latex   example
+Note: removing empty section \value in file 'get.res.for.one.cont.study.Rd'
+Note: removing empty section \author in file 'get.res.for.one.cont.study.Rd'
+Note: removing empty section \details in file 'get.res.for.one.cont.study.Rd'
+Note: removing empty section \description in file 'get.res.for.one.cont.study.Rd'
+Note: removing empty section \note in file 'get.res.for.one.cont.study.Rd'
+Note: removing empty section \references in file 'get.res.for.one.cont.study.Rd'
+Note: removing empty section \title in file 'get.res.for.one.cont.study.Rd'
+Note: removing empty section \seealso in file 'get.res.for.one.cont.study.Rd'
+  get.res.for.one.cont.study        text    html    latex   example
+Note: removing empty section \value in file 'impute.bin.data.Rd'
+Note: removing empty section \author in file 'impute.bin.data.Rd'
+Note: removing empty section \details in file 'impute.bin.data.Rd'
+Note: removing empty section \description in file 'impute.bin.data.Rd'
+Note: removing empty section \note in file 'impute.bin.data.Rd'
+Note: removing empty section \references in file 'impute.bin.data.Rd'
+Note: removing empty section \title in file 'impute.bin.data.Rd'
+Note: removing empty section \seealso in file 'impute.bin.data.Rd'
+  impute.bin.data                   text    html    latex   example
+Note: removing empty section \value in file 'isnt.null.Rd'
+Note: removing empty section \author in file 'isnt.null.Rd'
+Note: removing empty section \details in file 'isnt.null.Rd'
+Note: removing empty section \description in file 'isnt.null.Rd'
+Note: removing empty section \note in file 'isnt.null.Rd'
+Note: removing empty section \references in file 'isnt.null.Rd'
+Note: removing empty section \title in file 'isnt.null.Rd'
+Note: removing empty section \seealso in file 'isnt.null.Rd'
+  isnt.null                         text    html    latex   example
+Note: removing empty section \value in file 'loo.ma.binary.Rd'
+Note: removing empty section \author in file 'loo.ma.binary.Rd'
+Note: removing empty section \details in file 'loo.ma.binary.Rd'
+Note: removing empty section \description in file 'loo.ma.binary.Rd'
+Note: removing empty section \note in file 'loo.ma.binary.Rd'
+Note: removing empty section \references in file 'loo.ma.binary.Rd'
+Note: removing empty section \title in file 'loo.ma.binary.Rd'
+Note: removing empty section \seealso in file 'loo.ma.binary.Rd'
+  loo.ma.binary                     text    html    latex   example
+Note: removing empty section \value in file 'meta.regression.plot.Rd'
+Note: removing empty section \author in file 'meta.regression.plot.Rd'
+Note: removing empty section \details in file 'meta.regression.plot.Rd'
+Note: removing empty section \description in file 'meta.regression.plot.Rd'
+Note: removing empty section \note in file 'meta.regression.plot.Rd'
+Note: removing empty section \references in file 'meta.regression.plot.Rd'
+Note: removing empty section \title in file 'meta.regression.plot.Rd'
+Note: removing empty section \seealso in file 'meta.regression.plot.Rd'
+  meta.regression.plot              text    html    latex   example
   openmetar-package                 text    html    latex   example
+Note: removing empty section \value in file 'plot.options.Rd'
+Note: removing empty section \author in file 'plot.options.Rd'
+Note: removing empty section \details in file 'plot.options.Rd'
+Note: removing empty section \description in file 'plot.options.Rd'
+Note: removing empty section \note in file 'plot.options.Rd'
+Note: removing empty section \references in file 'plot.options.Rd'
+Note: removing empty section \title in file 'plot.options.Rd'
+Note: removing empty section \seealso in file 'plot.options.Rd'
+  plot.options                      text    html    latex   example
+Note: removing empty section \source in file 'reg.data.Rd'
+Note: removing empty section \details in file 'reg.data.Rd'
+Note: removing empty section \description in file 'reg.data.Rd'
+Note: removing empty section \references in file 'reg.data.Rd'
+Note: removing empty section \title in file 'reg.data.Rd'
+  reg.data                          text    html    latex   example
+Note: removing empty section \value in file 'study.column.Rd'
+Note: removing empty section \author in file 'study.column.Rd'
+Note: removing empty section \details in file 'study.column.Rd'
+Note: removing empty section \description in file 'study.column.Rd'
+Note: removing empty section \note in file 'study.column.Rd'
+Note: removing empty section \references in file 'study.column.Rd'
+Note: removing empty section \title in file 'study.column.Rd'
+Note: removing empty section \seealso in file 'study.column.Rd'
+  study.column                      text    html    latex   example
 ** building package indices ...
 ** MD5 sums
 * DONE (openmetar)

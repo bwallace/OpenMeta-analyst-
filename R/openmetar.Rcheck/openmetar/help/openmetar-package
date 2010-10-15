@@ -14,13 +14,13 @@ _D_e_t_a_i_l_s:
        Package:   openmetar
        Type:      Package
        Version:   1.0
-       Date:      2009-12-02
+       Date:      2010-10-14
        License:   What license is it under?
        LazyLoad:  yes
        Depends:   methods
 
      ~~ An overview of how to use the package, including the most
-     important functions ~~
+     important ~~ ~~ functions ~~
 
 _A_u_t_h_o_r(_s):
 

@@ -15,11 +15,14 @@ Objects can be created by calls of the form \code{new("BinaryData", ...)}.
     \item{\code{g1O2}:}{Object of class \code{"numeric"} ~~ }
     \item{\code{g2O1}:}{Object of class \code{"numeric"} ~~ }
     \item{\code{g2O2}:}{Object of class \code{"numeric"} ~~ }
+    \item{\code{y}:}{Object of class \code{"numeric"} ~~ }
+    \item{\code{SE}:}{Object of class \code{"numeric"} ~~ }
     \item{\code{g1Name}:}{Object of class \code{"character"} ~~ }
     \item{\code{g2Name}:}{Object of class \code{"character"} ~~ }
     \item{\code{studyNames}:}{Object of class \code{"character"} ~~ }
     \item{\code{notes}:}{Object of class \code{"character"} ~~ }
     \item{\code{years}:}{Object of class \code{"integer"} ~~ }
+    \item{\code{covariates}:}{Object of class \code{"list"} ~~ }
   }
 }
 \section{Extends}{

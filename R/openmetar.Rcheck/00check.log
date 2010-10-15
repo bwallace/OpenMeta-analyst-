@@ -1,4 +1,4 @@
-* using log directory 'C:/dev/OpenMeta/R/openmetar.Rcheck'
+* using log directory 'H:/OpenMeta-analyst-/R/openmetar.Rcheck'
 * using R version 2.9.2 (2009-08-24)
 * using session charset: ISO8859-1
 * checking for file 'openmetar/DESCRIPTION' ... OK
@@ -12,7 +12,8 @@ Found the following significant warnings:
        missing link(s):  ~~fun~~ CLASSNAME-class
        missing link(s):  ~~fun~~ CLASSNAME-class
        missing link(s):  ~~fun~~ CLASSNAME-class
-See 'C:/dev/OpenMeta/R/openmetar.Rcheck/00install.out' for details.
+       missing link(s):  ~~fun~~ CLASSNAME-class
+See 'H:/OpenMeta-analyst-/R/openmetar.Rcheck/00install.out' for details.
 * checking package directory ... OK
 * checking for portable file names ... OK
 * checking DESCRIPTION meta-information ... OK
@@ -24,12 +25,72 @@ See 'C:/dev/OpenMeta/R/openmetar.Rcheck/00install.out' for details.
 * checking whether the package can be loaded ... OK
 * checking whether the package can be loaded with stated dependencies ... OK
 * checking for unstated dependencies in R code ... OK
-* checking S3 generic/method consistency ... OK
+* checking S3 generic/method consistency ... WARNING
+plot:
+  function(x, ...)
+plot.options:
+  function(forest.data, box.sca)
+
+See section 'Generic functions and methods' of the 'Writing R Extensions'
+manual.
 * checking replacement functions ... OK
 * checking foreign function calls ... OK
 * checking R code for possible problems ... NOTE
-binaryrmh: no visible global function definition for 'rma.mh'
-binaryrmh: no visible global function definition for 'forest.rma'
+additional.columns: no visible global function definition for
+  'textGrob'
+additional.columns: no visible global function definition for 'gpar'
+binary.fixed.inv.var: no visible global function definition for
+  'rma.uni'
+binary.fixed.mh: no visible global function definition for 'rma.mh'
+binary.fixed.mh: no visible global function definition for 'forest.rma'
+binary.fixed.peto: no visible global function definition for 'rma.peto'
+binary.fixed.peto: no visible global function definition for
+  'forest.rma'
+binary.meta.regression: no visible global function definition for
+  'rma.uni'
+binary.random: no visible global function definition for 'rma.uni'
+binary.random: no visible global function definition for 'forest.rma'
+compute.for.one.bin.study: no visible global function definition for
+  'escalc'
+compute.for.one.cont.study: no visible global function definition for
+  'escalc'
+continuous.random: no visible global function definition for 'rma.uni'
+continuous.random: no visible global function definition for
+  'forest.rma'
+draw.data.col: no visible global function definition for 'pushViewport'
+draw.data.col: no visible global function definition for 'viewport'
+draw.data.col: no visible global function definition for 'grid.lines'
+draw.data.col: no visible global function definition for 'unit'
+draw.data.col: no visible global function definition for 'gpar'
+draw.data.col: no visible global function definition for 'grid.xaxis'
+draw.data.col: no visible global function definition for 'grid.text'
+draw.data.col: no visible global function definition for 'popViewport'
+draw.label.col: no visible global function definition for
+  'pushViewport'
+draw.label.col: no visible global function definition for 'viewport'
+draw.label.col: no visible global function definition for 'grid.draw'
+draw.label.col: no visible global function definition for 'popViewport'
+draw.normal.CI: no visible global function definition for 'grid.rect'
+draw.normal.CI: no visible global function definition for 'unit'
+draw.normal.CI: no visible global function definition for 'gpar'
+draw.normal.CI: no visible global function definition for 'convertX'
+draw.normal.CI: no visible global function definition for 'grid.arrows'
+draw.normal.CI: no visible global function definition for 'grid.lines'
+draw.summary.CI: no visible global function definition for
+  'grid.polygon'
+draw.summary.CI: no visible global function definition for 'unit'
+draw.summary.CI: no visible global function definition for 'gpar'
+forest.plot: no visible global function definition for 'unit.c'
+forest.plot: no visible global function definition for 'unit'
+forest.plot: no visible global function definition for 'pushViewport'
+forest.plot: no visible global function definition for 'viewport'
+forest.plot: no visible global function definition for 'grid.layout'
+forest.plot: no visible global function definition for 'popViewport'
+impute.bin.data: no visible global function definition for 'ln'
+meta.regression.plot: no visible binding for global variable 'types'
+plot.options: no visible global function definition for 'unit'
+study.column: no visible global function definition for 'textGrob'
+study.column: no visible global function definition for 'gpar'
 * checking Rd files ... ERROR
 Rd files with likely Rd problems:
 Unaccounted top-level text in file 'AnalysisSpecification-class.Rd':
@@ -40,25 +101,205 @@ Unaccounted top-level text in file 'BinaryData-class.Rd':
 Following section 'note':
 "\n\n ~Make other sections like Warning with \\section{Warning }{....} ~\n\n"
 
+Unaccounted top-level text in file 'ContinuousData-class.Rd':
+Following section 'note':
+"\n\n ~Make other sections like Warning with \\section{Warning }{....} ~\n\n"
+
 Unaccounted top-level text in file 'OMData-class.Rd':
 Following section 'note':
 "\n\n ~Make other sections like Warning with \\section{Warning }{....} ~\n\n"
 
 Unaccounted top-level text in file 'openmetar-package.Rd':
 Following section 'references':
-"\n~~ Optionally other standard keywords, one per line, from file KEYWORDS in the R documentation directory ~~\n"
+"\n~~ Optionally other standard keywords, one per line, from file KEYWORDS in ~~\n~~ the R documentation directory ~~\n"
 
 Rd files with missing or empty '\title':
-  binaryrmh.Rd
+  additional.cols.Rd
+  additional.columns.Rd
+  binary.fixed.inv.var.overall.Rd
+  binary.fixed.inv.var.parameters.Rd
+  binary.fixed.inv.var.Rd
+  binary.fixed.mh.is.feasible.Rd
+  binary.fixed.mh.overall.Rd
+  binary.fixed.mh.parameters.Rd
+  binary.fixed.mh.Rd
+  binary.fixed.peto.is.feasible.Rd
+  binary.fixed.peto.overall.Rd
+  binary.fixed.peto.parameters.Rd
+  binary.fixed.peto.Rd
+  binary.meta.regression.Rd
+  binary.random.overall.Rd
+  binary.random.parameters.Rd
+  binary.random.Rd
+  check.1spell.res.Rd
+  compute.for.one.bin.study.Rd
+  compute.for.one.cont.study.Rd
+  continuous.random.overall.Rd
+  continuous.random.parameters.Rd
+  continuous.random.Rd
+  create.plot.data.Rd
+  cum.ma.binary.Rd
+  cum.ma.continuous.Rd
+  draw.data.col.Rd
+  draw.label.col.Rd
+  draw.normal.CI.Rd
+  draw.summary.CI.Rd
+  effects.Rd
+  effectsize.column.Rd
+  fillin.2x2.simple.Rd
+  fillin.cont.1spell.Rd
+  fillin.cont.AminusB.Rd
+  forest.data.Rd
+  forest.plot.Rd
+  get.res.for.one.binary.study.Rd
+  get.res.for.one.cont.study.Rd
+  impute.bin.data.Rd
+  isnt.null.Rd
+  loo.ma.binary.Rd
+  meta.regression.plot.Rd
+  plot.options.Rd
+  reg.data.Rd
+  study.column.Rd
 
 Rd files without 'description':
-  binaryrmh.Rd
+  additional.cols.Rd
+  additional.columns.Rd
+  binary.fixed.inv.var.overall.Rd
+  binary.fixed.inv.var.parameters.Rd
+  binary.fixed.inv.var.Rd
+  binary.fixed.mh.is.feasible.Rd
+  binary.fixed.mh.overall.Rd
+  binary.fixed.mh.parameters.Rd
+  binary.fixed.mh.Rd
+  binary.fixed.peto.is.feasible.Rd
+  binary.fixed.peto.overall.Rd
+  binary.fixed.peto.parameters.Rd
+  binary.fixed.peto.Rd
+  binary.meta.regression.Rd
+  binary.random.overall.Rd
+  binary.random.parameters.Rd
+  binary.random.Rd
+  check.1spell.res.Rd
+  compute.for.one.bin.study.Rd
+  compute.for.one.cont.study.Rd
+  continuous.random.overall.Rd
+  continuous.random.parameters.Rd
+  continuous.random.Rd
+  create.plot.data.Rd
+  cum.ma.binary.Rd
+  cum.ma.continuous.Rd
+  draw.data.col.Rd
+  draw.label.col.Rd
+  draw.normal.CI.Rd
+  draw.summary.CI.Rd
+  effects.Rd
+  effectsize.column.Rd
+  fillin.2x2.simple.Rd
+  fillin.cont.1spell.Rd
+  fillin.cont.AminusB.Rd
+  forest.data.Rd
+  forest.plot.Rd
+  get.res.for.one.binary.study.Rd
+  get.res.for.one.cont.study.Rd
+  impute.bin.data.Rd
+  isnt.null.Rd
+  loo.ma.binary.Rd
+  meta.regression.plot.Rd
+  plot.options.Rd
+  reg.data.Rd
+  study.column.Rd
 Rd files without 'title':
-  binaryrmh.Rd
+  additional.cols.Rd
+  additional.columns.Rd
+  binary.fixed.inv.var.overall.Rd
+  binary.fixed.inv.var.parameters.Rd
+  binary.fixed.inv.var.Rd
+  binary.fixed.mh.is.feasible.Rd
+  binary.fixed.mh.overall.Rd
+  binary.fixed.mh.parameters.Rd
+  binary.fixed.mh.Rd
+  binary.fixed.peto.is.feasible.Rd
+  binary.fixed.peto.overall.Rd
+  binary.fixed.peto.parameters.Rd
+  binary.fixed.peto.Rd
+  binary.meta.regression.Rd
+  binary.random.overall.Rd
+  binary.random.parameters.Rd
+  binary.random.Rd
+  check.1spell.res.Rd
+  compute.for.one.bin.study.Rd
+  compute.for.one.cont.study.Rd
+  continuous.random.overall.Rd
+  continuous.random.parameters.Rd
+  continuous.random.Rd
+  create.plot.data.Rd
+  cum.ma.binary.Rd
+  cum.ma.continuous.Rd
+  draw.data.col.Rd
+  draw.label.col.Rd
+  draw.normal.CI.Rd
+  draw.summary.CI.Rd
+  effects.Rd
+  effectsize.column.Rd
+  fillin.2x2.simple.Rd
+  fillin.cont.1spell.Rd
+  fillin.cont.AminusB.Rd
+  forest.data.Rd
+  forest.plot.Rd
+  get.res.for.one.binary.study.Rd
+  get.res.for.one.cont.study.Rd
+  impute.bin.data.Rd
+  isnt.null.Rd
+  loo.ma.binary.Rd
+  meta.regression.plot.Rd
+  plot.options.Rd
+  reg.data.Rd
+  study.column.Rd
 These entries are required in an Rd file.
 
 Rd files with non-standard keywords:
-  binaryrmh.Rd: ~kwd1 ~kwd2
+  additional.columns.Rd: ~kwd1 ~kwd2
+  binary.fixed.inv.var.overall.Rd: ~kwd1 ~kwd2
+  binary.fixed.inv.var.parameters.Rd: ~kwd1 ~kwd2
+  binary.fixed.inv.var.Rd: ~kwd1 ~kwd2
+  binary.fixed.mh.is.feasible.Rd: ~kwd1 ~kwd2
+  binary.fixed.mh.overall.Rd: ~kwd1 ~kwd2
+  binary.fixed.mh.parameters.Rd: ~kwd1 ~kwd2
+  binary.fixed.mh.Rd: ~kwd1 ~kwd2
+  binary.fixed.peto.is.feasible.Rd: ~kwd1 ~kwd2
+  binary.fixed.peto.overall.Rd: ~kwd1 ~kwd2
+  binary.fixed.peto.parameters.Rd: ~kwd1 ~kwd2
+  binary.fixed.peto.Rd: ~kwd1 ~kwd2
+  binary.meta.regression.Rd: ~kwd1 ~kwd2
+  binary.random.overall.Rd: ~kwd1 ~kwd2
+  binary.random.parameters.Rd: ~kwd1 ~kwd2
+  binary.random.Rd: ~kwd1 ~kwd2
+  check.1spell.res.Rd: ~kwd1 ~kwd2
+  compute.for.one.bin.study.Rd: ~kwd1 ~kwd2
+  compute.for.one.cont.study.Rd: ~kwd1 ~kwd2
+  continuous.random.overall.Rd: ~kwd1 ~kwd2
+  continuous.random.parameters.Rd: ~kwd1 ~kwd2
+  continuous.random.Rd: ~kwd1 ~kwd2
+  create.plot.data.Rd: ~kwd1 ~kwd2
+  cum.ma.binary.Rd: ~kwd1 ~kwd2
+  cum.ma.continuous.Rd: ~kwd1 ~kwd2
+  draw.data.col.Rd: ~kwd1 ~kwd2
+  draw.label.col.Rd: ~kwd1 ~kwd2
+  draw.normal.CI.Rd: ~kwd1 ~kwd2
+  draw.summary.CI.Rd: ~kwd1 ~kwd2
+  effectsize.column.Rd: ~kwd1 ~kwd2
+  fillin.2x2.simple.Rd: ~kwd1 ~kwd2
+  fillin.cont.1spell.Rd: ~kwd1 ~kwd2
+  fillin.cont.AminusB.Rd: ~kwd1 ~kwd2
+  forest.plot.Rd: ~kwd1 ~kwd2
+  get.res.for.one.binary.study.Rd: ~kwd1 ~kwd2
+  get.res.for.one.cont.study.Rd: ~kwd1 ~kwd2
+  impute.bin.data.Rd: ~kwd1 ~kwd2
+  isnt.null.Rd: ~kwd1 ~kwd2
+  loo.ma.binary.Rd: ~kwd1 ~kwd2
+  meta.regression.plot.Rd: ~kwd1 ~kwd2
+  plot.options.Rd: ~kwd1 ~kwd2
+  study.column.Rd: ~kwd1 ~kwd2
 Each '\keyword' entry should specify one of the standard keywords (as
 listed in file 'KEYWORDS' in the R documentation directory).
 

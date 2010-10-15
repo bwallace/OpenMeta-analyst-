@@ -38,16 +38,22 @@ function (binaryData, params)
 {
     if (!("BinaryData" %in% class(binaryData))) 
         stop("Binary data expected.")
-    res &lt;&lt;- rma.peto(ai = binaryData@g1O1, bi = binaryData@g1O2, 
-        ci = binaryData@g2O1, di = binaryData@g2O2, slab = binaryData@studyNames, 
-        level = params$conf.level, digits = params$digits)
-    forest_path &lt;- "./r_tmp/forest.png"
-    png(forest_path)
-    forest_plot &lt;- forest.rma(res, digits = params$digits)
-    dev.off()
-    images &lt;- c(`forest plot` = forest_path)
-    plot_names &lt;- c(`forest plot` = "forest_plot")
-    results &lt;- list(images = images, summary = res, plot_names = plot_names)
+    if (length(binaryData@g1O1) == 1) {
+        res &lt;- get.res.for.one.binary.study(binaryData, params)
+        results &lt;- list(summary = res)
+    }
+    else {
+        res &lt;- rma.peto(ai = binaryData@g1O1, bi = binaryData@g1O2, 
+            ci = binaryData@g2O1, di = binaryData@g2O2, slab = binaryData@studyNames, 
+            level = params$conf.level, digits = params$digits)
+        forest_path &lt;- "./r_tmp/forest.png"
+        png(forest_path)
+        forest_plot &lt;- forest.rma(res, digits = params$digits)
+        dev.off()
+        images &lt;- c(`forest plot` = forest_path)
+        plot_names &lt;- c(`forest plot` = "forest_plot")
+        results &lt;- list(images = images, summary = res, plot_names = plot_names)
+    }
     results
   }
 </pre>

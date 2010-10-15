@@ -22,11 +22,29 @@ Keywords: classes
 Description: Class "OMData" ~~~
 URL: ../../../library/openmetar/html/OMData-class.html
 
+Entry: additional.cols
+Aliases: additional.cols
+Keywords: datasets
+Description: 
+URL: ../../../library/openmetar/html/additional.cols.html
+
+Entry: additional.columns
+Aliases: additional.columns
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/additional.columns.html
+
 Entry: binary.fixed.inv.var
 Aliases: binary.fixed.inv.var
 Keywords: ~kwd1 ~kwd2
 Description: 
 URL: ../../../library/openmetar/html/binary.fixed.inv.var.html
+
+Entry: binary.fixed.inv.var.overall
+Aliases: binary.fixed.inv.var.overall
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/binary.fixed.inv.var.overall.html
 
 Entry: binary.fixed.inv.var.parameters
 Aliases: binary.fixed.inv.var.parameters
@@ -46,6 +64,12 @@ Keywords: ~kwd1 ~kwd2
 Description: 
 URL: ../../../library/openmetar/html/binary.fixed.mh.is.feasible.html
 
+Entry: binary.fixed.mh.overall
+Aliases: binary.fixed.mh.overall
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/binary.fixed.mh.overall.html
+
 Entry: binary.fixed.mh.parameters
 Aliases: binary.fixed.mh.parameters
 Keywords: ~kwd1 ~kwd2
@@ -64,17 +88,35 @@ Keywords: ~kwd1 ~kwd2
 Description: 
 URL: ../../../library/openmetar/html/binary.fixed.peto.is.feasible.html
 
+Entry: binary.fixed.peto.overall
+Aliases: binary.fixed.peto.overall
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/binary.fixed.peto.overall.html
+
 Entry: binary.fixed.peto.parameters
 Aliases: binary.fixed.peto.parameters
 Keywords: ~kwd1 ~kwd2
 Description: 
 URL: ../../../library/openmetar/html/binary.fixed.peto.parameters.html
 
+Entry: binary.meta.regression
+Aliases: binary.meta.regression
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/binary.meta.regression.html
+
 Entry: binary.random
 Aliases: binary.random
 Keywords: ~kwd1 ~kwd2
 Description: 
 URL: ../../../library/openmetar/html/binary.random.html
+
+Entry: binary.random.overall
+Aliases: binary.random.overall
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/binary.random.overall.html
 
 Entry: binary.random.parameters
 Aliases: binary.random.parameters
@@ -88,17 +130,89 @@ Keywords: ~kwd1 ~kwd2
 Description: 
 URL: ../../../library/openmetar/html/check.1spell.res.html
 
+Entry: compute.for.one.bin.study
+Aliases: compute.for.one.bin.study
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/compute.for.one.bin.study.html
+
+Entry: compute.for.one.cont.study
+Aliases: compute.for.one.cont.study
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/compute.for.one.cont.study.html
+
 Entry: continuous.random
 Aliases: continuous.random
 Keywords: ~kwd1 ~kwd2
 Description: 
 URL: ../../../library/openmetar/html/continuous.random.html
 
+Entry: continuous.random.overall
+Aliases: continuous.random.overall
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/continuous.random.overall.html
+
 Entry: continuous.random.parameters
 Aliases: continuous.random.parameters
 Keywords: ~kwd1 ~kwd2
 Description: 
 URL: ../../../library/openmetar/html/continuous.random.parameters.html
+
+Entry: create.plot.data
+Aliases: create.plot.data
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/create.plot.data.html
+
+Entry: cum.ma.binary
+Aliases: cum.ma.binary
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/cum.ma.binary.html
+
+Entry: cum.ma.continuous
+Aliases: cum.ma.continuous
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/cum.ma.continuous.html
+
+Entry: draw.data.col
+Aliases: draw.data.col
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/draw.data.col.html
+
+Entry: draw.label.col
+Aliases: draw.label.col
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/draw.label.col.html
+
+Entry: draw.normal.CI
+Aliases: draw.normal.CI
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/draw.normal.CI.html
+
+Entry: draw.summary.CI
+Aliases: draw.summary.CI
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/draw.summary.CI.html
+
+Entry: effects
+Aliases: effects
+Keywords: datasets
+Description: 
+URL: ../../../library/openmetar/html/effects.html
+
+Entry: effectsize.column
+Aliases: effectsize.column
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/effectsize.column.html
 
 Entry: fillin.2x2.simple
 Aliases: fillin.2x2.simple
@@ -118,6 +232,30 @@ Keywords: ~kwd1 ~kwd2
 Description: 
 URL: ../../../library/openmetar/html/fillin.cont.AminusB.html
 
+Entry: forest.data
+Aliases: forest.data
+Keywords: datasets
+Description: 
+URL: ../../../library/openmetar/html/forest.data.html
+
+Entry: forest.plot
+Aliases: forest.plot
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/forest.plot.html
+
+Entry: get.res.for.one.binary.study
+Aliases: get.res.for.one.binary.study
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/get.res.for.one.binary.study.html
+
+Entry: get.res.for.one.cont.study
+Aliases: get.res.for.one.cont.study
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/get.res.for.one.cont.study.html
+
 Entry: impute.bin.data
 Aliases: impute.bin.data
 Keywords: ~kwd1 ~kwd2
@@ -130,8 +268,38 @@ Keywords: ~kwd1 ~kwd2
 Description: 
 URL: ../../../library/openmetar/html/isnt.null.html
 
+Entry: loo.ma.binary
+Aliases: loo.ma.binary
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/loo.ma.binary.html
+
+Entry: meta.regression.plot
+Aliases: meta.regression.plot
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/meta.regression.plot.html
+
 Entry: openmetar-package
 Aliases: openmetar-package openmetar
 Keywords: package
 Description: What the package does (short line) ~~ package title ~~
 URL: ../../../library/openmetar/html/openmetar-package.html
+
+Entry: plot.options
+Aliases: plot.options
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/plot.options.html
+
+Entry: reg.data
+Aliases: reg.data
+Keywords: datasets
+Description: 
+URL: ../../../library/openmetar/html/reg.data.html
+
+Entry: study.column
+Aliases: study.column
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/study.column.html

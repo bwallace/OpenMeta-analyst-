@@ -135,7 +135,7 @@ binary.fixed.inv.var <- function(binaryData, params){
         images <- c("forest plot"=forest_path)
         plot_names <- c("forest plot"="forest_plot")
         
-        
+        #res<- "<HTML><BODY><H1>Fixed-Effects Model</H1></BODY></HTML>"
         ###
         # should we return the name of the result object & the name of the
         # plotting function as well here? perhaps only for the forest plot? 

@@ -1,7 +1,69 @@
 AnalysisSpecification-class
                         Class "AnalysisSpecification" ~~~
 BinaryData-class        Class "BinaryData" ~~~
+ContinuousData-class    Class "ContinuousData" ~~~
 OMData-class            Class "OMData" ~~~
-binaryrmh               
+additional.cols         
+additional.columns      
+binary.fixed.inv.var    
+binary.fixed.inv.var.overall
+                        
+binary.fixed.inv.var.parameters
+                        
+binary.fixed.mh         
+binary.fixed.mh.is.feasible
+                        
+binary.fixed.mh.overall
+                        
+binary.fixed.mh.parameters
+                        
+binary.fixed.peto       
+binary.fixed.peto.is.feasible
+                        
+binary.fixed.peto.overall
+                        
+binary.fixed.peto.parameters
+                        
+binary.meta.regression
+                        
+binary.random           
+binary.random.overall   
+binary.random.parameters
+                        
+check.1spell.res        
+compute.for.one.bin.study
+                        
+compute.for.one.cont.study
+                        
+continuous.random       
+continuous.random.overall
+                        
+continuous.random.parameters
+                        
+create.plot.data        
+cum.ma.binary           
+cum.ma.continuous       
+draw.data.col           
+draw.label.col          
+draw.normal.CI          
+draw.summary.CI         
+effects                 
+effectsize.column       
+fillin.2x2.simple       
+fillin.cont.1spell      
+fillin.cont.AminusB     
+forest.data             
+forest.plot             
+get.res.for.one.binary.study
+                        
+get.res.for.one.cont.study
+                        
+impute.bin.data         
+isnt.null               
+loo.ma.binary           
+meta.regression.plot    
 openmetar-package       What the package does (short line) ~~ package
                         title ~~
+plot.options            
+reg.data                
+study.column            
