@@ -55,6 +55,9 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         
         # this is just for debugging purposes; if a
         # switch is passed in, display fake/toy data
+        #
+        # TODO should also allow a (path to a) dataset
+        # to be given on the console.
         if len(sys.argv)>1 and sys.argv[-1]=="--toy-data":
             # toy data for now
             data_model = _gen_some_data()
@@ -68,6 +71,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         else:
             data_model = Dataset()
             self.model = DatasetModel(dataset=data_model)
+            # no dataset; disable saving, editing, etc.
+            self.disable_menu_options_that_require_dataset
 
         self.tableView.setModel(self.model)
         # attach a delegate for editing
@@ -92,7 +97,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.tableView.main_gui = self
         self.tableView.resizeColumnsToContents()
         self.out_path = None
-
+        
+    
+    def disable_menu_options_that_require_dataset(self):
+        pass
 
     def keyPressEvent(self, event):
         if (event.modifiers() & QtCore.Qt.ControlModifier):
@@ -169,8 +177,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     # implementation.
     ### TODO pull out meta methods auto-magically via introspection.
     def cum_ma(self):
-        pyqtRemoveInputHook()
-        pdb.set_trace()
         print "gettin' meta -- cumulative meta-analysis"
         form =  ma_specs.MA_Specs(self.model, meta_f_str="cum.ma", parent=self)
         form.show()
@@ -185,16 +191,35 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         edit_window =  edit_dialog.EditDialog(cur_dataset, parent=self)
     
         if edit_window.exec_():
-            self.display_outcome(self.model.current_outcome)
-            print "current outcome is %s" % self.model.current_outcome
-            print edit_window.dataset.studies[0].outcomes_to_follow_ups
+            # if we edited the current dataset when there was no
+            # outcome yet, then we want to default to an outcome
+            # that was added.
+            #if self.model.current_outcome is None:
+            #    self.model.current_outcome = edit_window.outcome_list.model().current_outcome
+            ### get stateful dictionary here, update, pass to 
+            pyqtRemoveInputHook()
+            pdb.set_trace()
+            old_state_dict = self.tableView.model().get_stateful_dict()
+            new_state_dict = copy.deepcopy(old_state_dict)
+            
+            # update the new state dict to reflect the currently selected
+            # outcomes, etc.
+            new_state_dict["current_outcome"] = edit_window.outcome_list.model().current_outcome
+            new_state_dict["current_time_point"] =  max(edit_window.follow_up_list.currentIndex(), 0)
+            grp_list = edit_window.group_list.model().group_list
+            if len(grp_list) >= 2:
+                new_state_dict["current_txs"] = grp_list[:2]
+            else:
+                new_state_dict["current_txs"] = ["tx A", "tx B"]
             modified_dataset = edit_window.dataset
-            redo_f = lambda : self.set_model(modified_dataset)
+            
+            redo_f = lambda : self.set_model(modified_dataset, new_state_dict)
             original_dataset = copy.deepcopy(self.model.dataset)
-            undo_f = lambda : self.set_model(original_dataset) 
-            print original_dataset.outcome_names_to_follow_ups
+            undo_f = lambda : self.set_model(original_dataset, old_state_dict) 
             edit_command = CommandGenericDo(redo_f, undo_f)
             self.tableView.undoStack.push(edit_command)
+            
+            #self.display_outcome(self.model.current_outcome)
             
     
     def populate_metrics_menu(self):
@@ -577,7 +602,12 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # thus when the dataset was dumped (via pickle) it included this study,
         # but the model will append *another* blank study to the dataset
         # when it is opened. this was the easiest way to resolve this issue.
-        data_model.studies = data_model.studies[:-1]
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
+        
+        if state_dict is not None and state_dict["study_auto_added"] is not None:
+            data_model.studies = data_model.studies[:-1]
+            
         self.model = DatasetModel(dataset=data_model)
         if state_dict is not None:
             self.model.set_state(state_dict)

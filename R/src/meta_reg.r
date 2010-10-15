@@ -29,3 +29,18 @@ binary.meta.regression <- function(binary.data, params, cov.name){
     results <- list("images"=images, "coefficients"=betas, "plot_names"=plot.names)
     results
 }
+
+
+## TODO there's a lot of redundancy between this method
+# and the above (binary.meta.regression) function --
+# should probably refactor
+cont.meta.regression <- function(cont.data, params, cov.name){
+    res<-rma.uni(yi=contData@y, sei=contData@SE, 
+                                        slab=contData@studyNames,
+                                        method=params$rm.method, level=params$conf.level,
+                                        digits=params$digits)
+    
+    betas <- res$b
+    fitted.line <- list(intercept=betas[1], slope=betas[2])
+                                        
+}
