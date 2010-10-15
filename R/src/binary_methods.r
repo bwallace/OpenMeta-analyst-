@@ -46,7 +46,6 @@ get.res.for.one.binary.study <- function(binaryData, params){
     res
 }
 
-<<<<<<< HEAD
 create.table <- function(binaryData, params){
     # Creates a table to display the raw data in binaryData
     
@@ -69,9 +68,8 @@ create.table <- function(binaryData, params){
     dt                            
 }
 
-=======
 # TODO this should be moved to plotting.r
->>>>>>> 690a19f42977b3ca2d1ee2a740eedc9af80fa96a
+
 create.plot.data <- function(binaryData, params, res, selected.cov = NULL, include.overall=TRUE){
     # Creates a data structure that can be passed to forest.plot
     # res is the output of a call to the Metafor function rma
