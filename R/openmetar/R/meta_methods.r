@@ -157,7 +157,7 @@ loo.ma.binary <- function(fname, binary.data, params){
     images <- c("loo forest plot"=forest_path)
     plot.names <- c("loo forest plot"="loo_forest_plot")
     
-    results <- list("images"=images, "cum_results"=loo.results, "cum_labels"=loo.labels, "plot_names"=plot.names)
+    results <- list("images"=images, "loo_results"=loo.results, "loo_labels"=loo.labels, "plot_names"=plot.names)
     results
 }
 
@@ -315,6 +315,6 @@ loo.ma.continuous <- function(fname, cont.data, params){
     images <- c("loo forest plot"=forest.path)
     plot.names <- c("loo forest plot"="loo_forest_plot")
     
-    results <- list("images"=images, "cum_results"=loo.results, "cum_labels"=loo.labels, "plot_names"=plot.names)
+    results <- list("images"=images, "loo_results"=loo.results, "loo_labels"=loo.labels, "plot_names"=plot.names)
     results
 }
