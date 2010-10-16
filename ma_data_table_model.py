@@ -719,6 +719,9 @@ class DatasetModel(QAbstractTableModel):
             if not only_if_included or self.dataset.studies[study_index].include:
                 raw_data.append(self.get_cur_raw_data_for_study(study_index))
         # we lop off the last entry because it is always a blank line/study
+        ## TODO we should really just check the .include field on the study, as
+        # above here. at current, new studies (i.e., auto-added) have their 'include'
+        # field set to true for some reason
         return raw_data[:-1]
                 
     def included_studies_have_raw_data(self):
