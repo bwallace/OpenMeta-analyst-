@@ -31,8 +31,8 @@ function (binaryData, params)
         forest.plot(plotData, outpath = forest_path)
         images <- c(`forest plot` = forest_path)
         plot_names <- c(`forest plot` = "forest_plot")
-        res <- "<HTML><BODY><H1>Fixed-Effects Model</H1></BODY></HTML>"
-        results <- list(images = images, summary = res, plot_names = plot_names)
+        dt <- create.table(binaryData, params)
+        results <- list(images = images, summary = dt, plot_names = plot_names)
     }
     results
   }

@@ -35,12 +35,18 @@ compute.for.one.bin.study
                         
 compute.for.one.cont.study
                         
+cont.meta.regression    
 continuous.random       
 continuous.random.overall
                         
 continuous.random.parameters
                         
 create.plot.data        
+create.plot.data.continuous
+                        
+create.plot.data.generic
+                        
+create.table            
 cum.ma.binary           
 cum.ma.continuous       
 draw.data.col           
@@ -61,6 +67,7 @@ get.res.for.one.cont.study
 impute.bin.data         
 isnt.null               
 loo.ma.binary           
+loo.ma.continuous       
 meta.regression.plot    
 openmetar-package       What the package does (short line) ~~ package
                         title ~~

@@ -142,6 +142,12 @@ Keywords: ~kwd1 ~kwd2
 Description: 
 URL: ../../../library/openmetar/html/compute.for.one.cont.study.html
 
+Entry: cont.meta.regression
+Aliases: cont.meta.regression
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/cont.meta.regression.html
+
 Entry: continuous.random
 Aliases: continuous.random
 Keywords: ~kwd1 ~kwd2
@@ -165,6 +171,24 @@ Aliases: create.plot.data
 Keywords: ~kwd1 ~kwd2
 Description: 
 URL: ../../../library/openmetar/html/create.plot.data.html
+
+Entry: create.plot.data.continuous
+Aliases: create.plot.data.continuous
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/create.plot.data.continuous.html
+
+Entry: create.plot.data.generic
+Aliases: create.plot.data.generic
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/create.plot.data.generic.html
+
+Entry: create.table
+Aliases: create.table
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/create.table.html
 
 Entry: cum.ma.binary
 Aliases: cum.ma.binary
@@ -273,6 +297,12 @@ Aliases: loo.ma.binary
 Keywords: ~kwd1 ~kwd2
 Description: 
 URL: ../../../library/openmetar/html/loo.ma.binary.html
+
+Entry: loo.ma.continuous
+Aliases: loo.ma.continuous
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/loo.ma.continuous.html
 
 Entry: meta.regression.plot
 Aliases: meta.regression.plot

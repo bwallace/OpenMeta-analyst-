@@ -21,11 +21,15 @@ BinaryData-class	BinaryData-class
 check.1spell.res	check.1spell.res
 compute.for.one.bin.study	compute.for.one.bin.study
 compute.for.one.cont.study	compute.for.one.cont.study
+cont.meta.regression	cont.meta.regression
 continuous.random	continuous.random
 continuous.random.overall	continuous.random.overall
 continuous.random.parameters	continuous.random.parameters
 ContinuousData-class	ContinuousData-class
 create.plot.data	create.plot.data
+create.plot.data.continuous	create.plot.data.continuous
+create.plot.data.generic	create.plot.data.generic
+create.table	create.table
 cum.ma.binary	cum.ma.binary
 cum.ma.continuous	cum.ma.continuous
 draw.data.col	draw.data.col
@@ -44,6 +48,7 @@ get.res.for.one.cont.study	get.res.for.one.cont.study
 impute.bin.data	impute.bin.data
 isnt.null	isnt.null
 loo.ma.binary	loo.ma.binary
+loo.ma.continuous	loo.ma.continuous
 meta.regression.plot	meta.regression.plot
 OMData-class	OMData-class
 openmetar	openmetar-package

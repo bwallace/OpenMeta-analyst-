@@ -46,7 +46,7 @@ get.res.for.one.binary.study <- function(binaryData, params){
     res
 }
 
-create.table <- function(binaryData, params){
+results.table <- function(binaryData, params){
     # Creates a table to display the raw data in binaryData
     
     # Compute bounds on confidence intervals.
@@ -64,8 +64,206 @@ create.table <- function(binaryData, params){
               "Lower bound", "", round(LL, digits = params$digits), 
               "Upper bound", "", round(UL, digits = params$digits))
     a <- array(rawData, dim = c(length(binaryData@studyNames) + 2, 8))
-    dt <- format(data.frame(a), justify = "centre")
-    dt                            
+    df <- data.frame(a)
+    dt <- format(df, justify = "centre", width = 12)
+    print(dt, row.names = FALSE)
+}
+
+print.rma.uni <-
+function (x, digits = x$digits, showfit = FALSE, signif.legend = FALSE, 
+    ...) 
+{
+    if (!is.element("rma.uni", class(x))) 
+        stop("Argument 'x' must be an object of class \"rma.uni\".")
+    cutoff <- paste(c(".", rep(0, digits - 1), 1), collapse = "")
+    ncutoff <- as.numeric(cutoff)
+    cat("\n")
+    if (x$method == "FE") {
+        if (x$int.only) {
+            cat("Fixed-Effects Model (k = ", x$k, ")", sep = "")
+        }
+        else {
+            cat("Fixed-Effects with Moderators Model (k = ", 
+                x$k, ")", sep = "")
+        }
+    }
+    else {
+        if (x$int.only) {
+            cat("Random-Effects Model (k = ", x$k, "; ", sep = "")
+        }
+        else {
+            cat("Mixed-Effects Model (k = ", x$k, "; ", sep = "")
+        }
+        cat("tau^2 estimator: ", x$method, ")", sep = "")
+    }
+    if (showfit) {
+        cat("\n")
+        if (x$method == "REML") {
+            fs <- c(formatC(x$fit.stats$REML, digits = digits, 
+                format = "f"))
+            names(fs) <- c("logLik", "Deviance", "AIC", "BIC")
+        }
+        else {
+            fs <- c(formatC(x$fit.stats$ML, digits = digits, 
+                format = "f"))
+            names(fs) <- c("logLik", "Deviance", "AIC", "BIC")
+        }
+        cat("\n")
+        print(fs, quote = FALSE, print.gap = 2)
+        cat("\n")
+    }
+    else {
+        cat("\n\n")
+    }
+    if (x$method != "FE") {
+        if (x$int.only) {
+            if (x$method == "ML" || x$method == "REML") {
+                cat("tau^2 (estimate of total amount of heterogeneity): ", 
+                  formatC(x$tau2, digits = ifelse(x$tau2 <= .Machine$double.eps * 
+                    10, 0, digits), format = "f"), " (SE = ", 
+                  ifelse(is.na(x$se.tau2), NA, formatC(x$se.tau2, 
+                    digits = digits, format = "f")), ")", "\n", 
+                  sep = "")
+            }
+            else {
+                cat("tau^2 (estimate of total amount of heterogeneity): ", 
+                  formatC(x$tau2, digits = ifelse(x$tau2 <= .Machine$double.eps * 
+                    10, 0, digits), format = "f"), "\n", sep = "")
+            }
+            cat("tau (sqrt of the estimate of total heterogeneity): ", 
+                ifelse(x$tau2 >= 0, formatC(sqrt(x$tau2), digits = ifelse(x$tau2 <= 
+                  .Machine$double.eps * 10, 0, digits), format = "f"), 
+                  NA), "\n", sep = "")
+            cat("I^2 (% of total variability due to heterogeneity): ", 
+                ifelse(is.na(x$I2), NA, formatC(x$I2, digits = 2, 
+                  format = "f")), "%", "\n", sep = "")
+            cat("H^2 (total variability / within-study variance):   ", 
+                ifelse(is.na(x$H2), NA, formatC(x$H2, digits = 2, 
+                  format = "f")), sep = "")
+        }
+        else {
+            if (x$method == "ML" || x$method == "REML") {
+                cat("tau^2 (estimate of residual amount of heterogeneity): ", 
+                  formatC(x$tau2, digits = ifelse(x$tau2 <= .Machine$double.eps * 
+                    10, 0, digits), format = "f"), " (SE = ", 
+                  ifelse(is.na(x$se.tau2), NA, formatC(x$se.tau2, 
+                    digits = digits, format = "f")), ")", "\n", 
+                  sep = "")
+            }
+            else {
+                cat("tau^2 (estimate of residual amount of heterogeneity): ", 
+                  formatC(x$tau2, digits = ifelse(x$tau2 <= .Machine$double.eps * 
+                    10, 0, digits), format = "f"), "\n", sep = "")
+            }
+            cat("tau (sqrt of the estimate of residual heterogeneity): ", 
+                ifelse(x$tau2 >= 0, formatC(sqrt(x$tau2), digits = ifelse(x$tau2 <= 
+                  .Machine$double.eps * 10, 0, digits), format = "f"), 
+                  NA), sep = "")
+        }
+        cat("\n\n")
+    }
+    if (!is.na(x$QE)) {
+        QEp <- x$QEp
+        if (QEp > ncutoff) {
+            QEp <- paste("=", formatC(QEp, digits = digits, format = "f"))
+        }
+        else {
+            QEp <- paste("< ", cutoff, sep = "", collapse = "")
+        }
+        if (x$int.only) {
+            cat("Test for Heterogeneity:")
+            cat("\n")
+            hframe <- data.frame(" " = paste("Q(df = ", x$k - x$p, ") = ", 
+                                        formatC(x$QE, digits = digits, format = "f"), sep = ""),
+                                " " = paste("p-Value ", QEp, sep = ""), check.names = FALSE)
+            hDisplay <- format(hframe, justify = "centre", width = 20)
+            print(hDisplay, row.names = FALSE)
+            cat("\n \n")                    
+            #cat("Q(df = ", x$k - x$p, ") = ", formatC(x$QE, digits = digits, 
+             #   format = "f"), ", p-val ", QEp, "\n\n", sep = "")
+        }
+        else {
+            cat("Test for Residual Heterogeneity: \n")
+            cat("QE(df = ", x$k - x$p, ") = ", formatC(x$QE, 
+                digits = digits, format = "f"), ", p-val ", QEp, 
+                "\n\n", sep = "")
+        }
+    }
+    QMp <- x$QMp
+    if (QMp > ncutoff) {
+        QMp <- paste("=", formatC(QMp, digits = digits, format = "f"))
+    }
+    else {
+        QMp <- paste("< ", cutoff, sep = "", collapse = "")
+    }
+    if (x$p > 1) {
+        cat("Test of Moderators (coefficient(s) ", paste(x$btt, 
+            collapse = ","), "): \n", sep = "")
+        if (!x$knha) {
+            cat("QM(df = ", x$m, ") = ", formatC(x$QM, digits = digits, 
+                format = "f"), ", p-val ", QMp, "\n\n", sep = "")
+        }
+        else {
+            cat("F(df1 = ", x$m, ", df2 = ", x$k - x$p, ") = ", 
+                formatC(x$QM, digits = digits, format = "f"), 
+                ", p-val ", QMp, "\n\n", sep = "")
+        }
+    }
+    # metafor doc says: int.only - logical that indicates whether the model only includes an intercept. For MetaAnalyst, will this
+    # always be true?
+    if (x$int.only) {  
+        dframe <- data.frame(" " = c("Estimate", "", round(exp(x$b), digits=digits)), " " = c("SE", "", round(x$se, digits=digits)), 
+                            " " = c("z-Value", "", round(x$zval, digits=digits)), " " = c("p-Value", "", round(x$pval, digits=digits)), 
+                            " " = c("Lower bound", " ", round(exp(x$ci.lb), digits=digits)), 
+                            " " = c("Upper bound", " ", round(exp(x$ci.ub), digits=digits)), check.names = FALSE)
+        if (x$knha) {
+            dframe[3] <- c("t Value", "", round(x$zval, digits=digits))
+        }
+        displayResults <- format(dframe, justify = "centre", width = 10)
+        #res.table <- formatC(res.table, digits = digits, format = "f")
+        #signif <- symnum(x$pval, corr = FALSE, na = FALSE, cutpoints = c(0, 
+        #    0.001, 0.01, 0.05, 0.1, 1), symbols = c("***", "**", 
+        #    "*", ".", " "))
+        #res.table <- c(formatC(res.table, digits = digits, format = "f"), 
+        #    signif)
+        #names(res.table)[7] <- ""
+        #res.table[4][x$pval > ncutoff] <- formatC(x$pval[x$pval > 
+        #    ncutoff], digits = digits, format = "f")
+        #res.table[4][x$pval < ncutoff] <- paste("<", cutoff, 
+         #   sep = "", collapse = "")
+    }
+    else {
+        res.table <- cbind(x$b, x$se, x$zval, x$pval, x$ci.lb, 
+            x$ci.ub)
+        dimnames(res.table)[[2]] <- c("estimate", "se", "zval", 
+            "pval", "ci.lb", "ci.ub")
+        if (x$knha) {
+            dimnames(res.table)[[2]][3] <- c("tval")
+        }
+        signif <- symnum(x$pval, corr = FALSE, na = FALSE, cutpoints = c(0, 
+            0.001, 0.01, 0.05, 0.1, 1), symbols = c("***", "**", 
+            "*", ".", " "))
+        res.table <- cbind(formatC(res.table, digits = digits, 
+            format = "f"), signif)
+        dimnames(res.table)[[2]][7] <- ""
+        res.table[x$pval > ncutoff, 4] <- formatC(x$pval[x$pval > 
+            ncutoff], digits = digits, format = "f")
+        res.table[x$pval < ncutoff, 4] <- paste("<", cutoff, 
+            sep = "", collapse = "")
+    }
+    cat("Model Results:")
+    cat("\n")
+    if (x$int.only) {
+        print(displayResults, row.names = FALSE)
+    }
+    else {
+        print(res.table, quote = FALSE, justify = "centre", print.gap = 2)
+    }
+    cat("\n")
+    if (signif.legend == TRUE) {
+        cat("---\nSignif. codes: ", attr(signif, "legend"), "\n\n")
+    }
+    invisible()
 }
 
 # TODO this should be moved to plotting.r
@@ -147,7 +345,7 @@ binary.fixed.inv.var <- function(binaryData, params){
         res<-rma.uni(yi=binaryData@y, sei=binaryData@SE, slab=binaryData@studyNames,
                                 level=params$conf.level, digits=params$digits, method="FE", add=params$adjust,
                                 to=params$to)
-         
+        class(res) = c("print.results") 
                                                   
         # generate the forest plot 
         forest_path <- "./r_tmp/forest.png"
@@ -172,8 +370,8 @@ binary.fixed.inv.var <- function(binaryData, params){
         # should we return the name of the result object & the name of the
         # plotting function as well here? perhaps only for the forest plot? 
         # this would allow interactive plot refinement via the console...
-        dt <- create.table(binaryData, params)
-        results <- list("images"=images, "summary"=dt, "plot_names"=plot_names)
+        class(res) <- c("print.rma.uni", "rma.uni")
+        results <- list("images"=images, "summary"=res, "plot_names"=plot_names)
     }
     results
 }
