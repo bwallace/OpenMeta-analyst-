@@ -1,14 +1,14 @@
-####################################################
-#
-#  Byron C. Wallace
-#  Tufts Medical Center
-#  OpenMeta[analyst]
-#
-#  This is a proxy module that is responsible for communicating with R.
-#   **All calls to R (equivalently, all references to the rpy2 library)
-#   are to be made via this module **
-#
-####################################################
+#############################################################################
+#                                                                           #
+#  Byron C. Wallace                                                         #
+#  Tufts Medical Center                                                     #
+#  OpenMeta[analyst]                                                        #
+#                                                                           #
+#  This is a proxy module that is responsible for communicating with R.     #
+#   **All calls to R (equivalently, all references to the rpy2 library)     #
+#   are to be made via this module **                                       #
+#                                                                           #
+#############################################################################
 
 import math
 import os

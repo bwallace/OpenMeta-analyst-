@@ -602,9 +602,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # thus when the dataset was dumped (via pickle) it included this study,
         # but the model will append *another* blank study to the dataset
         # when it is opened. this was the easiest way to resolve this issue.
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
-        
+
         if state_dict is not None and state_dict["study_auto_added"] is not None:
             data_model.studies = data_model.studies[:-1]
             

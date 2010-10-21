@@ -181,8 +181,10 @@ class Dataset:
         if isinstance(covariate, Covariate):
             cov_name = covariate.name
         cov_d = {}
-        for study in self.studies:
-            cov_d[study.name] = study.covariate_dict[cov_name]
+        for study in self.studies:  
+            if study.covariate_dict.has_key(cov_name) and \
+                    study.covariate_dict[cov_name] is not None:
+                cov_d[study.name] = study.covariate_dict[cov_name]
         return cov_d
         
     def get_cov_names(self):
@@ -390,6 +392,9 @@ class Study:
     be performed, and some meta-data (e.g., study name)
     '''
     def __init__(self, id, name="", year=None, include=True):
+        # TODO should fiddle with the include field here. 
+        # when a study is auto-added, it should be excluded
+        # until there is sufficient data
         self.id = id
         self.year = year
         self.name = name

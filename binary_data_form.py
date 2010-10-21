@@ -39,11 +39,15 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             raw_data = self.ma_unit.get_raw_data_for_group(group)
             self.raw_data_d[group]  = raw_data
         
+        pyqtRemoveInputHook()
+        pdb.set_trace()
         self.cur_groups = cur_txs
         self.cur_effect = cur_effect
         self._update_raw_data()
         self._update_data_table()
         self._populate_effect_data()
+        
+
     
     def _setup_signals_and_slots(self):
         QObject.connect(self.raw_data_table, SIGNAL("cellChanged (int, int)"), 
@@ -97,9 +101,11 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         # tries to make sense of user input before passing
         # on to the R routine
         self._fillin_basics(row, col) 
+
         params = self._get_vals()
         computed = meta_py_r.fillin_2x2(params)
         print computed
+        
         if computed is not None:
             if max(computed['residuals'].values()) > THRESHOLD:
                 print"Problem computing 2x2 table."
@@ -107,16 +113,19 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                 print "Table computed!"
                 self._set_vals(computed["coefficients"])
         self._update_ma_unit()
-            #pyqtRemoveInputHook()
-            #pdb.set_trace()
+
         
     def _get_vals(self):
         vals_d = {}
         vals_d["c11"] = self._get_int(0, 0)
         vals_d["c12"] = self._get_int(0, 1)
-        vals_d["c21"] = self._get_int(1, 0)
         
+        pyqtRemoveInputHook()
+        pdb.set_trace()
+        
+        vals_d["c21"] = self._get_int(1, 0)
         vals_d["c22"] = self._get_int(1, 1)
+
         vals_d["r1sum"] = self._get_int(0, 2)
         vals_d["r2sum"] = self._get_int(1, 2)
         vals_d["c1sum"] = self._get_int(2, 0)
@@ -269,5 +278,6 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         
     def _get_int(self, i, j):
         if not self._is_empty(i,j):
-            return int(float(self.raw_data_table.item(i, j).text()))
+            int_val = int(float(self.raw_data_table.item(i, j).text()))
+            return int_val
             

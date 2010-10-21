@@ -349,9 +349,9 @@ binary.fixed.inv.var <- function(binaryData, params){
                                                   
         # generate the forest plot 
         forest_path <- "./r_tmp/forest.png"
-        png(forest_path)
+        #png(forest_path)
         # forest_plot<-forest.rma(res, digits=params$digits)
-        plotData <- create.plot.data(binaryData, params, res)
+        plotData <- create.plot.data.binary(binaryData, params, res)
         forest.plot(plotData, outpath=forest_path)
         # dev.off()
     

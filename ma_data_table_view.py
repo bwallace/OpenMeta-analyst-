@@ -334,6 +334,7 @@ class CommandCellEdit(QUndoCommand):
             model.blockSignals(False)
             # make the view reflect the update
             self.ma_data_table_view.model().reset()
+        self.ma_data_table_view.resizeColumnsToContents()
 
     def undo(self):
         index = self._get_index()
@@ -346,7 +347,8 @@ class CommandCellEdit(QUndoCommand):
         self.ma_data_table_view.model().reset()
         if self.added_study is not None:
             self.ma_data_table_view.model().remove_study(self.added_study)
-
+        self.ma_data_table_view.resizeColumnsToContents()
+        
     def _get_index(self):
         return self.ma_data_table_view.model().createIndex(self.row, self.col)
 
