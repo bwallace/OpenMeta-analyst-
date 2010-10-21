@@ -23,10 +23,98 @@ library("grid")
 #   1) Move create.plot.data from binary_methods to this module
 #   2) Implement create.plot.data.continuous -- refactor out
 #        common code to create.plot.data.generic
-create.plot.data.generic <- function(om.data, params){
+create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
+    scale.str <- "cont"
+    ## TODO not all binary metrics are logged, obviously..
+    if ("BinaryData" %in% class(om.data)){
+        scale.str <- "log"
+    }
+    
+    # Creates a data structure that can be passed to forest.plot
+    # res is the output of a call to the Metafor function rma
+    plot.data <- list( label = c("Studies", om.data@studyNames, "Overall"),
+                types = c(3, rep(0, length(om.data@studyNames)), 2),
+                scale = scale.str )
+
+    alpha <- 1.0-(params$conf.level/100.0)
+    mult <- abs(qnorm(alpha/2.0))
+    
+    ###
+    # TODO we're making tacit assumptions here
+    # about the subclass of OmData; namely
+    # that it includes a y and SE field.
+    lb <- om.data@y - mult*om.data@SE
+    ub <- om.data@y + mult*om.data@SE
+    y <- om.data@y
+
+    y.overall <- res$b[1]
+    lb.overall <- res$ci.lb[1]
+    ub.overall <- res$ci.ub[1]
         
+    ### TODO only do this for appropriate metrics
+    # i.e., ratios, which will be on the log-scale
+    # exponentiate effect sizes and bounds.
+    if (scale.str == "log"){
+        y <- exp(om.data@y)
+        lb <- exp(lb)
+        ub <- exp(ub)
+    
+        y.overall <- exp(y.overall)
+        lb.overall <- exp(lb.overall)
+        ub.overall <- exp(ub.overall)
+    }
+
+    # round results for display.
+    y.rounded <- round(y, digits = params$digits)
+    lb.rounded <- round(lb, digits = params$digits)
+    ub.rounded <- round(ub, digits = params$digits)
+    y.overall.rounded <- round(y.overall, digits = params$digits)
+    lb.overall.rounded <- round(lb.overall, digits = params$digits)
+    ub.overall.rounded <- round(ub.overall, digits = params$digits)
+    
+    additional.cols <- list(es = c("ES (LL, UL)", paste(y.rounded, " (", lb.rounded, " , ", ub.rounded, ")", sep = ""),
+                                 paste(y.overall.rounded, " (", lb.overall.rounded, " , ", ub.overall.rounded, ")", sep = "")))
+    plot.data$additional.col.data <- additional.cols               
+    effects <- list(ES = c(y, y.overall),
+                    LL = c(lb, lb.overall),
+                    UL = c(ub, ub.overall))
+    plot.data$effects <- effects
+    
+    # covariates
+    if (!is.null(selected.cov)){
+        cov.val.str <- paste("om.data@covariates$", selected.cov, sep="")
+        cov.values <- eval(parse(text=cov.val.str))
+        plot.data$covariate <- list(varname = selected.cov,
+                                   values = cov.values)
+    }
+
+    plot.data
 }
 
+metric.is.log.scale <- function(metric){
+    metric %in% c("RR", "OR", "PETO")    
+}
+
+create.plot.data.binary <- function(binary.data, params, res, selected.cov = NULL, include.overall=TRUE){
+
+    plot.data <- create.plot.data.generic  (binary.data, params, res, selected.cov=selected.cov)
+        
+    # if we have raw data, add it to the additional columns
+    if (length(binary.data@g1O1) > 0) {
+        # TODO these strings ('ev/trt') shouldn't be hard-coded.
+        plot.data$additional.col.data$cases = c("Ev/Trt", 
+                                    paste(binary.data@g1O1, " / ", binary.data@g1O1 + binary.data@g1O2, sep = ""), 
+                                    paste(sum(binary.data@g1O1), " / ", sum(binary.data@g1O1 + binary.data@g1O2), sep = ""))
+    }
+    
+    if (length(binary.data@g2O1) > 0){
+        plot.data$additional.col.data$controls = c("Ev/Ctrl", 
+                                        paste(binary.data@g2O1, " / ", binary.data@g1O1 + binary.data@g2O2, sep = ""),
+                                        paste(sum(binary.data@g2O1), " / ", sum(binary.data@g1O1 + binary.data@g2O2), sep = ""))
+    }
+    
+    plot.data
+}
 
 create.plot.data.continuous <- function(cont.data, params, res, selected.cov = NULL, include.overall=TRUE){
     # Creates a data structure that can be passed to forest.plot
@@ -73,19 +161,19 @@ create.plot.data.continuous <- function(cont.data, params, res, selected.cov = N
                                         paste(sum(binaryData@g1O1), " / ", sum(binaryData@g1O1 + binaryData@g1O2), sep = ""))
     }
 
-    plotData$additional.col.data <- additional.cols
+    plot.data$additional.col.data <- additional.cols
     if (!is.null(selected.cov)){
         cov.val.str <- paste("binaryData@covariates$", selected.cov, sep="")
         cov.values <- eval(parse(text=cov.val.str))
-        plotData$covariate <- list(varname = selected.cov,
+        plot.data$covariate <- list(varname = selected.cov,
                                    values = cov.values)
     }
     
     effects <- list(ES = c(y, yOverall),
                     LL = c(lb, lbOverall),
                     UL = c(ub, ubOverall))
-    plotData$effects <- effects
-    plotData
+    plot.data$effects <- effects
+    plot.data
 }
 
 
@@ -127,12 +215,12 @@ additional.columns <- function(forest.data, font = "bold") {
     #  first get the number of columns
     additional.data <- length(forest.data$additional.col.data)
   
-    additionalColumns <- vector("list", length(forest.data$additional.col.data))
+    additional.columns <- vector("list", length(forest.data$additional.col.data))
     
     for (j in 1:length(forest.data$additional.col.data)){
-        content<-rep(NA, length(forest.data$additional.col.data$cases))
-        
-        for (i in 1:length(forest.data$additional.col.data$cases)){
+        content<-rep(NA, length(forest.data$label))
+
+        for (i in 1:length(forest.data$label)){
           if (forest.data$types[i] != 0)
             content[i] <- list(textGrob(forest.data$additional.col.data[[j]][[i]], x=1, just = "right", gp = gpar(fontface = font)))
           else
@@ -155,9 +243,9 @@ additional.columns <- function(forest.data, font = "bold") {
           else
             rows[i+1] <- rows[i] + 1
         }
-        additionalColumns[[j]] <-list(content = content, rows = rows)
+        additional.columns[[j]] <-list(content = content, rows = rows)
     }
-    additionalColumns
+    additional.columns
 }
 
 
@@ -184,28 +272,28 @@ effectsize.column <- function(forest.data) {
 }
 
 
-plot.options <- function(forest.data, box.sca = 1) {
+plot.options <- function(forest.data, box.sca = 1, gapSize=3, plotWidth = 4) {
     # weights for the boxes
     ## TODO parameterize 1.96
     precision <- NULL
     effect.col.range <- NULL
     effect.col<-forest.data$effects
-    if (forest.data$scale == "log") 
+    if (forest.data$scale == "log")
     {
           precision <- sqrt(1 / ((log(effect.col$UL) - log(effect.col$LL))/(2*1.96)))
           effect.col.range <- c(min(0.5 , min(effect.col$LL)), min(4 , max(effect.col$UL)))
     }
-    else if (forest.data$scale == "cont") 
+    else if (forest.data$scale == "cont")
     {
           precision <- sqrt(1 / ((effect.col$UL - effect.col$LL)/(2*1.96)))
           effect.col.range <- c(max(-3 , min(effect.col$LL)), min(3 , max(effect.col$UL)))
     }   
     effect.col.sizes <- box.sca * precision/max(precision)
-    effect.col.width <- unit(3, "inches")
-    
+    effect.col.width <- unit(plotWidth, "inches")
+
     forest.params = list(
-        col.gap = unit(3, "mm"),
-        precision = precision,    
+        col.gap = unit(gapSize, "mm"),
+        precision = precision,
         effect.col.range = effect.col.range,
         effect.col.sizes = effect.col.sizes,
         effect.col.width = effect.col.width
@@ -275,7 +363,7 @@ draw.summary.CI <- function(LL, ES, UL, size, color, diam.height) {
 }
 
 # Function to draw a "forest" column
-draw.data.col <- function(col, j, color.overall = "black",
+draw.data.col <- function(forest.data, col, j, color.overall = "black",
                                 color.subgroup = "black",
                                 summary.line.col = "darkred",
                                 summary.line.pat = "dashed",
@@ -314,32 +402,46 @@ draw.data.col <- function(col, j, color.overall = "black",
 forest.plot <- function(forest.data, outpath){
     # these are calls to data functions
     study.col <- study.column(forest.data, "bold")
-    additional.cols <- additional.columns(forest.data, "bold")
+    additional.cols <- NULL
+    if (length(forest.data$additional.col.data)>0 ){
+        additional.cols <- additional.columns(forest.data, "bold")    
+    } 
+    
     effects.col <- effectsize.column(forest.data)
-    forest.plot.params <- plot.options(forest.data, box.sca=0.8)
-                
+    forest.plot.params <- plot.options(forest.data, box.sca=0.8, gapSize = 2.5, plotWidth=5)
+
     # these are calls to plotting functions
     extra.space <- sum(forest.data$types != 0) 
     height <- length(forest.data$types)+ extra.space
-    data.width <- unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)), 
-                             forest.plot.params$col.gap)
-     
-    pushViewport(viewport(layout=grid.layout(height ,2*length(additional.cols)+3,
-                            widths=
+  
+ # data.width<-c(rep(NA, length(additional.cols) ))
+     if (length(forest.data$additional.col.data)>0 )      {
+                  width.list <-vector("list")
+                 width.list[[1]] <- unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", additional.cols[[1]]$content)), forest.plot.params$col.gap)
+                      for (i in 2:length(additional.cols))  {
+                       width.list[[i]] <- unit.c(width.list[[i-1]], max(unit(rep(1, length(forest.data$label)), "grobwidth", additional.cols[[i]]$content)), forest.plot.params$col.gap) 
+                                               }
+                        pushViewport(viewport(layout=grid.layout(height ,2*length(additional.cols)+3,
+                            width=
                                unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
-                                      forest.plot.params$col.gap,  rep(data.width, length(additional.cols)), forest.plot.params$effect.col.width),
-                                      heights=unit(rep(1, height)  , "lines"))))
-    
-                                      
-    ## consider including these as they have no options and i want them to 
-    number.cols <- 2 + length(additional.columns)
+                                      forest.plot.params$col.gap,  width.list[[length(additional.cols)]]  ,  forest.plot.params$effect.col.width),
+                                      height=unit(rep(1, height)  , "lines"))))
+                                             }  else {         
+                   pushViewport(viewport(layout=grid.layout(height ,2*length(additional.cols)+3,
+                                          width=
+                                             unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
+                                                    forest.plot.params$col.gap,   forest.plot.params$effect.col.width),
+                                                    height=unit(rep(1, height)  , "lines"))))
+                     }
+    ## consider including these as they have no options and i want them to
+    number.cols <- 2 + length(additional.cols)
     
     draw.label.col(study.col, 1)
-    
-    for (i in 1:length(additional.cols)){
-        draw.label.col(additional.cols[[i]], 1+2*i)
-    }
-    
+    if (length(forest.data$additional.col.data)>0 )  {
+           for (i in 1:length(additional.cols)){
+                    draw.label.col(additional.cols[[i]], 1+2*i)
+                }
+    }  
     ### this could (ahem, should) be better refactored
     # we pull out some values for the effects column that
     # are computed in the plot.params method -- but they're
@@ -348,7 +450,7 @@ forest.plot <- function(forest.data, outpath){
     effects.col$range <- forest.plot.params$effect.col.range
     effects.col$sizes <- forest.plot.params$effect.col.sizes
     effects.col$width <- forest.plot.params$effect.col.width
-    draw.data.col(effects.col, 2*length(additional.cols)+3,  
+    draw.data.col(forest.data, effects.col, 2*length(additional.cols)+3,  
                              color.overall = "lightblue",
                              color.subgroup = "yellow",
                              summary.line.col= "red",
@@ -360,33 +462,63 @@ forest.plot <- function(forest.data, outpath){
     popViewport()
     graphics.off()
     
-    
-    # TODO need to do something about the scaling.
-    png(file=outpath, width =25, height = 15, units = "in", res = 144)
-    pushViewport(viewport(layout=grid.layout(height ,2*length(additional.cols)+3,
-                            widths=
-                            unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
-                                   forest.plot.params$col.gap,  
-                                   rep(data.width, length(additional.cols)), forest.plot.params$effect.col.width),
-                                   heights=unit(rep(1, height)  , "lines"))))
-    
-     #### consider including these as they have no options and i want them to 
-    
-    number.cols <- 2 + length(additional.columns)
+   if (length(forest.data$additional.col.data)>0 )      {         # first if additional colums are present
+      
+          width.list <-vector("list")
+          width.list[[1]] <- unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", additional.cols[[1]]$content)), forest.plot.params$col.gap)
+                      for (i in 2:length(additional.cols))  {
+                       width.list[[i]] <- unit.c(width.list[[i-1]], max(unit(rep(1, length(forest.data$label)), "grobwidth", additional.cols[[i]]$content)), forest.plot.params$col.gap) 
+                                               }
+          how.wide <- convertX(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)), "inches" , valueOnly=TRUE  ) +
+                              convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )  +
+                               sum( convertX(   unit.c(width.list[[length(additional.cols)]]) , "inches" , valueOnly=TRUE ) )  + 
+                                length(additional.cols)*   convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )   + 
+                                convertX(forest.plot.params$effect.col.width, "inches" , valueOnly=TRUE ) 
+          how.tall <- convertY(unit(rep(1, height)  , "lines")        , "inches" , valueOnly=TRUE )
+          png(file=outpath, width = how.wide + 1, height = height*how.tall+2 , units = "in", res = 72)
+          
+             pushViewport(viewport(layout=grid.layout(height ,2*length(additional.cols)+3,
+                            width=
+                               unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
+                                      forest.plot.params$col.gap,  width.list[[length(additional.cols)]]  ,  forest.plot.params$effect.col.width),
+                                      height=unit(rep(1, height)  , "lines"))))
+                                             }   else  { # if no additional colums thins are simple
+                           how.wide <- convertX(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)), "inches" , valueOnly=TRUE  ) +
+                              convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )  +
+                              convertX(forest.plot.params$effect.col.width, "inches" , valueOnly=TRUE ) 
+                            how.tall <- convertY(unit(rep(1, height)  , "lines")        , "inches" , valueOnly=TRUE ) 
+                                           
+                          png(file=outpath, width = how.wide + 1, height = height*how.tall+2 , units = "in", res = 72)                      
+                          pushViewport(viewport(layout=grid.layout(height ,2*length(additional.cols)+3,
+                                          width=
+                                             unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
+                                                    forest.plot.params$col.gap,   forest.plot.params$effect.col.width),
+                                                    height=unit(rep(1, height)  , "lines"))))
+                     }
+    #### consider including these as they have no options and i want them to
+    number.cols <- 2 + length(additional.cols)
     
     draw.label.col(study.col, 1)
-    
-    for (i in 1:length(additional.cols)) {
-        draw.label.col(additional.cols[[i]], 1+2*i)
-    }
-    
-    draw.data.col(effects.col, 2*length(additional.cols)+3,  color.overall = "lightblue",
-                          color.subgroup = "yellow",
-                          summary.line.col= "red",
-                          summary.line.pat = "dashed",
-                          metric = "Effect size",
-                          diam.size = 1.2)   
-    
+    if (length(forest.data$additional.col.data)>0 )  {
+           for (i in 1:length(additional.cols)){
+             draw.label.col(additional.cols[[i]], 1+2*i)
+                }
+    }  
+    ### this could (ahem, should) be better refactored
+    # we pull out some values for the effects column that
+    # are computed in the plot.params method -- but they're
+    # not really 'plot parameters'. they should be computed
+    # elsewhere.
+    effects.col$range <- forest.plot.params$effect.col.range
+    effects.col$sizes <- forest.plot.params$effect.col.sizes
+    effects.col$width <- forest.plot.params$effect.col.width
+    draw.data.col(forest.data, effects.col, 2*length(additional.cols)+3,
+                             color.overall = "lightblue",
+                             color.subgroup = "yellow",
+                             summary.line.col= "red",
+                             summary.line.pat = "dashed",
+                             metric = "Effect size",
+                             diam.size = 1.2)
     popViewport()
     graphics.off()
 }
@@ -394,66 +526,7 @@ forest.plot <- function(forest.data, outpath){
 
 ### sample usage.
 # these are the main data (study names and subgroups)
-forest.data <- list( label = c("Studies", "study1" , "study2", "study3" , "subgroup1" , "study3" , "study4" , "subgroup2" , 
-               "study1" , "study2", "study3" , "subgroup1" , "study3" , "study4" , "subgroup2" , "study1" , "study2", 
-               "study3" , "subgroup1" , "study3" , "study4" , "subgroup2" , 
-               "study1" , "study2", "study3" , "subgroup1" , "study3" , "study4" , "subgroup2" , "Overall"),
-            types = c(3,0,0,0,1,0,0,1,0,0,0,1,0,0,1,0,0,0,1,0,0,1,0,0,0,1,0,0,1,2),
-            scale = "cont" )
-                    
-# these are the rest of the data (optional info that we want to appear in tabular format)
-additional.cols <- list(  cases = c("cases", "123456" , "110" , "28", "238" , "150", "155", "305" ,
-                            "100" , "110" , "28", "238" , "150", "155", "305" , 
-                             "100" , "110" , "28", "238" , "150", "155", "305" ,
-                            "100" , "110" , "28", "238" , "150", "155", "305" , "634") ,
-              controls =  c("controls", "231" , "123" , "123" ,  "13" , "150", "155", "305" , 
-                            "100" , "110" , "24" ,  "210" , "150", "155", "305" , 
-                            "100" , "110" , "24" ,  "123" , "150", "155", "305" , 
-                            "100" , "123" , "24" ,  "123" , "123", "123", "123" , "6334537") ,
-                rejected1 =  c("rejected1", "99" , "123" , "99" ,  "99" , "150", "155", "305" , 
-                            "100" , "110" , "24" ,  "99" , "150", "155", "305" , 
-                            "100" , "110" , "24" ,  "123" , "150", "155", "305" , 
-                            "100" , "123" , "24" ,  "123" , "123", "123", "123" , "6334537"),
-                rejected2 =  c("rejected2", "99" , "123" , "99" ,  "99" , "150", "155", "305" , 
-                            "100" , "110" , "24" ,  "99" , "150", "155", "305" , 
-                            "100" , "110" , "24" ,  "123" , "150", "155", "305" , 
-                            "100" , "123" , "24" ,  "123" , "123", "123", "123" , "6334537"),
-                rejected3 =  c("rejected3", "1" , "123" , "99" ,  "99" , "150", "155", "305" , 
-                            "100" , "110" , "24" ,  "1" , "2", "3", "305" , 
-                            "100" , "3" , "4" ,  "123" , "150", "155", "6" , 
-                            "100" , "123" , "24" ,  "4" , "5", "7", "123" , "6334537"),
-                rejected4 =  c("rejected4", "1" , "123" , "99" ,  "99" , "150", "155", "305" , 
-                            "100" , "110" , "24" ,  "1" , "2", "3", "305" , 
-                            "100" , "3" , "4" ,  "123" , "150", "155", "6" , 
-                            "100" , "123" , "24" ,  "4" , "5", "7", "123" , "6334537"),
-                rejected5 =  c("rejected5", "1" , "123" , "99" ,  "99" , "150", "155", "305" , 
-                            "100" , "110" , "24" ,  "1" , "2", "3", "305" , 
-                            "100" , "3" , "4" ,  "123" , "150", "155", "6" , 
-                            "100" , "123" , "24" ,  "4" , "5", "7", "123" , "6334537"),
-                rejected6 =  c("rejected6", "1" , "123" , "99" ,  "99" , "150", "155", "305" , 
-                            "100" , "110" , "24" ,  "1" , "2", "3", "305" , 
-                            "100" , "3" , "4" ,  "123" , "150", "155", "6" , 
-                            "100" , "123" , "24" ,  "4" , "5", "7", "123" , "6334537"))
 
-forest.data$additional.col.data <- additional.cols
-
-# these are the effect sizes
-effects <- list(ES=c(-1, 1.27, 1.17, 1.17, 2.97, 1.86, 1.05,
-                      1.27, 1.17, 1.17, 2.97, 1.86, 2.01, 1.20,
-                      1.27, 1.17, 1.17, 2.97, 1.86, 2.01,
-                      1.27, 1.17, 1.17, 2.97, 1.86, 2.01, 1.20, 1.4, 1.5),
-              LL=c(-4, -6.0, 1.03, 1.03, 1.42, 0.46, 0.85,
-                       0.87, 1.03, 1.03, 1.42, 0.46, 1.09, 1.07,
-                       0.87, 1.03, 1.03, 1.42, 0.46, 1.09,
-                       0.87, 1.03, 1.03, 1.42, 0.46, 1.09, 1.07, 0.8, 1.2),
-              UL=c(3.28, 1.85, 1.32, 1.32, 6.21, 7.51, 2,
-                       1.85, 1.32, 1.32, 6.21, 7.51, 3.71, 1.35,
-                       1.85, 1.32, 1.32, 6.21, 7.51, 3.71,
-                       1.85, 1.32, 1.32, 6.21, 7.51, 3.71, 1.35, 2.2, 1.7))
-                               
-                               
-forest.data$effects <- effects
-forest.plot(forest.data, "test.png")
 
 
 

@@ -46,7 +46,7 @@ get.res.for.one.binary.study <- function(binaryData, params){
     res
 }
 
-results.table <- function(binaryData, params){
+raw.table <- function(binaryData, params){
     # Creates a table to display the raw data in binaryData
     
     # Compute bounds on confidence intervals.
@@ -55,16 +55,14 @@ results.table <- function(binaryData, params){
     LL <- exp(binaryData@y - mult*binaryData@SE)
     UL <- exp(binaryData@y + mult*binaryData@SE)
    
-    rawData<-c("Study", "", binaryData@studyNames, 
-              "Events (T)", "", round(binaryData@g1O1, digits = params$digits), 
-              "Subjects (T)", "", round(binaryData@g1O1 + binaryData@g1O2, digits = params$digits),
-              "Events (C)", "", round(binaryData@g2O1, digits = params$digits), 
-              "Subjects (T)", "", round(binaryData@g2O1 + binaryData@g2O2, digits = params$digits),
-              "Effect size", "", round(exp(binaryData@y), digits = params$digits),  
-              "Lower bound", "", round(LL, digits = params$digits), 
-              "Upper bound", "", round(UL, digits = params$digits))
-    a <- array(rawData, dim = c(length(binaryData@studyNames) + 2, 8))
-    df <- data.frame(a)
+    df <- data.frame(" " = c("Study", "", binaryData@studyNames), 
+                    " " = c("Events (T)", "", round(binaryData@g1O1, digits = params$digits)), 
+                    " " = c("Subjects (T)", "", round(binaryData@g1O1 + binaryData@g1O2, digits = params$digits)),
+                    " " = c("Events (C)", "", round(binaryData@g2O1, digits = params$digits)), 
+                    " " = c("Subjects (T)", "", round(binaryData@g2O1 + binaryData@g2O2, digits = params$digits)),
+                    " " = c("Effect size", "", round(exp(binaryData@y), digits = params$digits)),  
+                    " " = c("Lower bound", "", round(LL, digits = params$digits)), 
+                    " " = c("Upper bound", "", round(UL, digits = params$digits)), check.names = FALSE)
     dt <- format(df, justify = "centre", width = 12)
     print(dt, row.names = FALSE)
 }
@@ -170,6 +168,8 @@ function (x, digits = x$digits, showfit = FALSE, signif.legend = FALSE,
         else {
             QEp <- paste("< ", cutoff, sep = "", collapse = "")
         }
+        # metafor doc: int.only - logical that indicates whether the model only includes an intercept. For MetaAnalyst, will this
+        # always be true?
         if (x$int.only) {
             cat("Test for Heterogeneity:")
             cat("\n")
@@ -178,7 +178,7 @@ function (x, digits = x$digits, showfit = FALSE, signif.legend = FALSE,
                                 " " = paste("p-Value ", QEp, sep = ""), check.names = FALSE)
             hDisplay <- format(hframe, justify = "centre", width = 20)
             print(hDisplay, row.names = FALSE)
-            cat("\n \n")                    
+            cat("\n")                    
             #cat("Q(df = ", x$k - x$p, ") = ", formatC(x$QE, digits = digits, 
              #   format = "f"), ", p-val ", QEp, "\n\n", sep = "")
         }
@@ -209,7 +209,7 @@ function (x, digits = x$digits, showfit = FALSE, signif.legend = FALSE,
                 ", p-val ", QMp, "\n\n", sep = "")
         }
     }
-    # metafor doc says: int.only - logical that indicates whether the model only includes an intercept. For MetaAnalyst, will this
+    # metafor doc: int.only - logical that indicates whether the model only includes an intercept. For MetaAnalyst, will this
     # always be true?
     if (x$int.only) {  
         dframe <- data.frame(" " = c("Estimate", "", round(exp(x$b), digits=digits)), " " = c("SE", "", round(x$se, digits=digits)), 
@@ -345,8 +345,8 @@ binary.fixed.inv.var <- function(binaryData, params){
         res<-rma.uni(yi=binaryData@y, sei=binaryData@SE, slab=binaryData@studyNames,
                                 level=params$conf.level, digits=params$digits, method="FE", add=params$adjust,
                                 to=params$to)
-        class(res) = c("print.results") 
-                                                  
+        # Set the class of res to use print.rma.uni above.
+        class(res) <- c("print.rma.uni", "rma.uni")                                          
         # generate the forest plot 
         forest_path <- "./r_tmp/forest.png"
         #png(forest_path)
@@ -370,7 +370,7 @@ binary.fixed.inv.var <- function(binaryData, params){
         # should we return the name of the result object & the name of the
         # plotting function as well here? perhaps only for the forest plot? 
         # this would allow interactive plot refinement via the console...
-        class(res) <- c("print.rma.uni", "rma.uni")
+        
         results <- list("images"=images, "summary"=res, "plot_names"=plot_names)
     }
     results
@@ -415,8 +415,7 @@ binary.fixed.mh <- function(binaryData, params){
     else{
         res<-rma.mh(ai=binaryData@g1O1, bi=binaryData@g1O2, 
                                 ci=binaryData@g2O1, di=binaryData@g2O2, slab=binaryData@studyNames,
-                                level=params$conf.level, digits=params$digits)              
-                                                  
+                                level=params$conf.level, digits=params$digits)                                                        
         #
         # generate forest plot 
         #

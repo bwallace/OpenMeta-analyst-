@@ -50,13 +50,13 @@ function (binaryData, params)
             digits = params$digits, method = "FE", add = params$adjust, 
             to = params$to)
         forest_path &lt;- "./r_tmp/forest.png"
-        png(forest_path)
-        plotData &lt;- create.plot.data(binaryData, params, res)
+        plotData &lt;- create.plot.data.binary(binaryData, params, 
+            res)
         forest.plot(plotData, outpath = forest_path)
         images &lt;- c(`forest plot` = forest_path)
         plot_names &lt;- c(`forest plot` = "forest_plot")
-        dt &lt;- create.table(binaryData, params)
-        results &lt;- list(images = images, summary = dt, plot_names = plot_names)
+        class(res) &lt;- c("print.rma.uni", "rma.uni")
+        results &lt;- list(images = images, summary = res, plot_names = plot_names)
     }
     results
   }

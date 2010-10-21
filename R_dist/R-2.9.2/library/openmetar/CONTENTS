@@ -22,12 +22,6 @@ Keywords: classes
 Description: Class "OMData" ~~~
 URL: ../../../library/openmetar/html/OMData-class.html
 
-Entry: additional.cols
-Aliases: additional.cols
-Keywords: datasets
-Description: 
-URL: ../../../library/openmetar/html/additional.cols.html
-
 Entry: additional.columns
 Aliases: additional.columns
 Keywords: ~kwd1 ~kwd2
@@ -172,6 +166,12 @@ Keywords: ~kwd1 ~kwd2
 Description: 
 URL: ../../../library/openmetar/html/create.plot.data.html
 
+Entry: create.plot.data.binary
+Aliases: create.plot.data.binary
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/create.plot.data.binary.html
+
 Entry: create.plot.data.continuous
 Aliases: create.plot.data.continuous
 Keywords: ~kwd1 ~kwd2
@@ -183,12 +183,6 @@ Aliases: create.plot.data.generic
 Keywords: ~kwd1 ~kwd2
 Description: 
 URL: ../../../library/openmetar/html/create.plot.data.generic.html
-
-Entry: create.table
-Aliases: create.table
-Keywords: ~kwd1 ~kwd2
-Description: 
-URL: ../../../library/openmetar/html/create.table.html
 
 Entry: cum.ma.binary
 Aliases: cum.ma.binary
@@ -226,12 +220,6 @@ Keywords: ~kwd1 ~kwd2
 Description: 
 URL: ../../../library/openmetar/html/draw.summary.CI.html
 
-Entry: effects
-Aliases: effects
-Keywords: datasets
-Description: 
-URL: ../../../library/openmetar/html/effects.html
-
 Entry: effectsize.column
 Aliases: effectsize.column
 Keywords: ~kwd1 ~kwd2
@@ -255,12 +243,6 @@ Aliases: fillin.cont.AminusB
 Keywords: ~kwd1 ~kwd2
 Description: 
 URL: ../../../library/openmetar/html/fillin.cont.AminusB.html
-
-Entry: forest.data
-Aliases: forest.data
-Keywords: datasets
-Description: 
-URL: ../../../library/openmetar/html/forest.data.html
 
 Entry: forest.plot
 Aliases: forest.plot
@@ -310,6 +292,12 @@ Keywords: ~kwd1 ~kwd2
 Description: 
 URL: ../../../library/openmetar/html/meta.regression.plot.html
 
+Entry: metric.is.log.scale
+Aliases: metric.is.log.scale
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/metric.is.log.scale.html
+
 Entry: openmetar-package
 Aliases: openmetar-package openmetar
 Keywords: package
@@ -322,11 +310,23 @@ Keywords: ~kwd1 ~kwd2
 Description: 
 URL: ../../../library/openmetar/html/plot.options.html
 
+Entry: print.rma.uni
+Aliases: print.rma.uni
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/print.rma.uni.html
+
 Entry: reg.data
 Aliases: reg.data
 Keywords: datasets
 Description: 
 URL: ../../../library/openmetar/html/reg.data.html
+
+Entry: results.table
+Aliases: results.table
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/results.table.html
 
 Entry: study.column
 Aliases: study.column

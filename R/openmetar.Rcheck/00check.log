@@ -29,7 +29,7 @@ See 'H:/OpenMeta-analyst-/R/openmetar.Rcheck/00install.out' for details.
 plot:
   function(x, ...)
 plot.options:
-  function(forest.data, box.sca)
+  function(forest.data, box.sca, gapSize, plotWidth)
 
 See section 'Generic functions and methods' of the 'Writing R Extensions'
 manual.
@@ -91,6 +91,8 @@ forest.plot: no visible global function definition for 'pushViewport'
 forest.plot: no visible global function definition for 'viewport'
 forest.plot: no visible global function definition for 'grid.layout'
 forest.plot: no visible global function definition for 'popViewport'
+forest.plot: no visible global function definition for 'convertX'
+forest.plot: no visible global function definition for 'convertY'
 impute.bin.data: no visible global function definition for 'ln'
 loo.ma.binary: no visible binding for global variable 'forest_path'
 meta.regression.plot: no visible binding for global variable 'types'
@@ -120,7 +122,6 @@ Following section 'references':
 "\n~~ Optionally other standard keywords, one per line, from file KEYWORDS in ~~\n~~ the R documentation directory ~~\n"
 
 Rd files with missing or empty '\title':
-  additional.cols.Rd
   additional.columns.Rd
   binary.fixed.inv.var.overall.Rd
   binary.fixed.inv.var.parameters.Rd
@@ -144,22 +145,20 @@ Rd files with missing or empty '\title':
   continuous.random.overall.Rd
   continuous.random.parameters.Rd
   continuous.random.Rd
+  create.plot.data.binary.Rd
   create.plot.data.continuous.Rd
   create.plot.data.generic.Rd
   create.plot.data.Rd
-  create.table.Rd
   cum.ma.binary.Rd
   cum.ma.continuous.Rd
   draw.data.col.Rd
   draw.label.col.Rd
   draw.normal.CI.Rd
   draw.summary.CI.Rd
-  effects.Rd
   effectsize.column.Rd
   fillin.2x2.simple.Rd
   fillin.cont.1spell.Rd
   fillin.cont.AminusB.Rd
-  forest.data.Rd
   forest.plot.Rd
   get.res.for.one.binary.study.Rd
   get.res.for.one.cont.study.Rd
@@ -168,12 +167,14 @@ Rd files with missing or empty '\title':
   loo.ma.binary.Rd
   loo.ma.continuous.Rd
   meta.regression.plot.Rd
+  metric.is.log.scale.Rd
   plot.options.Rd
+  print.rma.uni.Rd
   reg.data.Rd
+  results.table.Rd
   study.column.Rd
 
 Rd files without 'description':
-  additional.cols.Rd
   additional.columns.Rd
   binary.fixed.inv.var.overall.Rd
   binary.fixed.inv.var.parameters.Rd
@@ -197,22 +198,20 @@ Rd files without 'description':
   continuous.random.overall.Rd
   continuous.random.parameters.Rd
   continuous.random.Rd
+  create.plot.data.binary.Rd
   create.plot.data.continuous.Rd
   create.plot.data.generic.Rd
   create.plot.data.Rd
-  create.table.Rd
   cum.ma.binary.Rd
   cum.ma.continuous.Rd
   draw.data.col.Rd
   draw.label.col.Rd
   draw.normal.CI.Rd
   draw.summary.CI.Rd
-  effects.Rd
   effectsize.column.Rd
   fillin.2x2.simple.Rd
   fillin.cont.1spell.Rd
   fillin.cont.AminusB.Rd
-  forest.data.Rd
   forest.plot.Rd
   get.res.for.one.binary.study.Rd
   get.res.for.one.cont.study.Rd
@@ -221,11 +220,13 @@ Rd files without 'description':
   loo.ma.binary.Rd
   loo.ma.continuous.Rd
   meta.regression.plot.Rd
+  metric.is.log.scale.Rd
   plot.options.Rd
+  print.rma.uni.Rd
   reg.data.Rd
+  results.table.Rd
   study.column.Rd
 Rd files without 'title':
-  additional.cols.Rd
   additional.columns.Rd
   binary.fixed.inv.var.overall.Rd
   binary.fixed.inv.var.parameters.Rd
@@ -249,22 +250,20 @@ Rd files without 'title':
   continuous.random.overall.Rd
   continuous.random.parameters.Rd
   continuous.random.Rd
+  create.plot.data.binary.Rd
   create.plot.data.continuous.Rd
   create.plot.data.generic.Rd
   create.plot.data.Rd
-  create.table.Rd
   cum.ma.binary.Rd
   cum.ma.continuous.Rd
   draw.data.col.Rd
   draw.label.col.Rd
   draw.normal.CI.Rd
   draw.summary.CI.Rd
-  effects.Rd
   effectsize.column.Rd
   fillin.2x2.simple.Rd
   fillin.cont.1spell.Rd
   fillin.cont.AminusB.Rd
-  forest.data.Rd
   forest.plot.Rd
   get.res.for.one.binary.study.Rd
   get.res.for.one.cont.study.Rd
@@ -273,8 +272,11 @@ Rd files without 'title':
   loo.ma.binary.Rd
   loo.ma.continuous.Rd
   meta.regression.plot.Rd
+  metric.is.log.scale.Rd
   plot.options.Rd
+  print.rma.uni.Rd
   reg.data.Rd
+  results.table.Rd
   study.column.Rd
 These entries are required in an Rd file.
 
@@ -302,10 +304,10 @@ Rd files with non-standard keywords:
   continuous.random.overall.Rd: ~kwd1 ~kwd2
   continuous.random.parameters.Rd: ~kwd1 ~kwd2
   continuous.random.Rd: ~kwd1 ~kwd2
+  create.plot.data.binary.Rd: ~kwd1 ~kwd2
   create.plot.data.continuous.Rd: ~kwd1 ~kwd2
   create.plot.data.generic.Rd: ~kwd1 ~kwd2
   create.plot.data.Rd: ~kwd1 ~kwd2
-  create.table.Rd: ~kwd1 ~kwd2
   cum.ma.binary.Rd: ~kwd1 ~kwd2
   cum.ma.continuous.Rd: ~kwd1 ~kwd2
   draw.data.col.Rd: ~kwd1 ~kwd2
@@ -324,7 +326,10 @@ Rd files with non-standard keywords:
   loo.ma.binary.Rd: ~kwd1 ~kwd2
   loo.ma.continuous.Rd: ~kwd1 ~kwd2
   meta.regression.plot.Rd: ~kwd1 ~kwd2
+  metric.is.log.scale.Rd: ~kwd1 ~kwd2
   plot.options.Rd: ~kwd1 ~kwd2
+  print.rma.uni.Rd: ~kwd1 ~kwd2
+  results.table.Rd: ~kwd1 ~kwd2
   study.column.Rd: ~kwd1 ~kwd2
 Each '\keyword' entry should specify one of the standard keywords (as
 listed in file 'KEYWORDS' in the R documentation directory).

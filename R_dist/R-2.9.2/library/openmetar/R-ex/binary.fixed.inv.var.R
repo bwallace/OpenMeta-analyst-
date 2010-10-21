@@ -26,13 +26,13 @@ function (binaryData, params)
             digits = params$digits, method = "FE", add = params$adjust, 
             to = params$to)
         forest_path <- "./r_tmp/forest.png"
-        png(forest_path)
-        plotData <- create.plot.data(binaryData, params, res)
+        plotData <- create.plot.data.binary(binaryData, params, 
+            res)
         forest.plot(plotData, outpath = forest_path)
         images <- c(`forest plot` = forest_path)
         plot_names <- c(`forest plot` = "forest_plot")
-        dt <- create.table(binaryData, params)
-        results <- list(images = images, summary = dt, plot_names = plot_names)
+        class(res) <- c("print.rma.uni", "rma.uni")
+        results <- list(images = images, summary = res, plot_names = plot_names)
     }
     results
   }
