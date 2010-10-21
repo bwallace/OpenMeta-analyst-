@@ -54,6 +54,7 @@ draw.label.col
 draw.normal.CI          
 draw.summary.CI         
 effectsize.column       
+extractData             
 fillin.2x2.simple       
 fillin.cont.1spell      
 fillin.cont.AminusB     
@@ -71,7 +72,7 @@ metric.is.log.scale
 openmetar-package       What the package does (short line) ~~ package
                         title ~~
 plot.options            
+print.extractData       
 print.rma.uni           
 reg.data                
-results.table           
 study.column            

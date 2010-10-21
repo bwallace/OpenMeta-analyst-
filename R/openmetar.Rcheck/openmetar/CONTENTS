@@ -226,6 +226,12 @@ Keywords: ~kwd1 ~kwd2
 Description: 
 URL: ../../../library/openmetar/html/effectsize.column.html
 
+Entry: extractData
+Aliases: extractData
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/extractData.html
+
 Entry: fillin.2x2.simple
 Aliases: fillin.2x2.simple
 Keywords: ~kwd1 ~kwd2
@@ -310,6 +316,12 @@ Keywords: ~kwd1 ~kwd2
 Description: 
 URL: ../../../library/openmetar/html/plot.options.html
 
+Entry: print.extractData
+Aliases: print.extractData
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/print.extractData.html
+
 Entry: print.rma.uni
 Aliases: print.rma.uni
 Keywords: ~kwd1 ~kwd2
@@ -321,12 +333,6 @@ Aliases: reg.data
 Keywords: datasets
 Description: 
 URL: ../../../library/openmetar/html/reg.data.html
-
-Entry: results.table
-Aliases: results.table
-Keywords: ~kwd1 ~kwd2
-Description: 
-URL: ../../../library/openmetar/html/results.table.html
 
 Entry: study.column
 Aliases: study.column

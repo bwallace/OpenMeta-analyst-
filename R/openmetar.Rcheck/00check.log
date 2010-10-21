@@ -26,6 +26,11 @@ See 'H:/OpenMeta-analyst-/R/openmetar.Rcheck/00install.out' for details.
 * checking whether the package can be loaded with stated dependencies ... OK
 * checking for unstated dependencies in R code ... OK
 * checking S3 generic/method consistency ... WARNING
+print:
+  function(x, ...)
+print.extractData:
+  function(rawData, ...)
+
 plot:
   function(x, ...)
 plot.options:
@@ -156,6 +161,7 @@ Rd files with missing or empty '\title':
   draw.normal.CI.Rd
   draw.summary.CI.Rd
   effectsize.column.Rd
+  extractData.Rd
   fillin.2x2.simple.Rd
   fillin.cont.1spell.Rd
   fillin.cont.AminusB.Rd
@@ -169,9 +175,9 @@ Rd files with missing or empty '\title':
   meta.regression.plot.Rd
   metric.is.log.scale.Rd
   plot.options.Rd
+  print.extractData.Rd
   print.rma.uni.Rd
   reg.data.Rd
-  results.table.Rd
   study.column.Rd
 
 Rd files without 'description':
@@ -209,6 +215,7 @@ Rd files without 'description':
   draw.normal.CI.Rd
   draw.summary.CI.Rd
   effectsize.column.Rd
+  extractData.Rd
   fillin.2x2.simple.Rd
   fillin.cont.1spell.Rd
   fillin.cont.AminusB.Rd
@@ -222,9 +229,9 @@ Rd files without 'description':
   meta.regression.plot.Rd
   metric.is.log.scale.Rd
   plot.options.Rd
+  print.extractData.Rd
   print.rma.uni.Rd
   reg.data.Rd
-  results.table.Rd
   study.column.Rd
 Rd files without 'title':
   additional.columns.Rd
@@ -261,6 +268,7 @@ Rd files without 'title':
   draw.normal.CI.Rd
   draw.summary.CI.Rd
   effectsize.column.Rd
+  extractData.Rd
   fillin.2x2.simple.Rd
   fillin.cont.1spell.Rd
   fillin.cont.AminusB.Rd
@@ -274,9 +282,9 @@ Rd files without 'title':
   meta.regression.plot.Rd
   metric.is.log.scale.Rd
   plot.options.Rd
+  print.extractData.Rd
   print.rma.uni.Rd
   reg.data.Rd
-  results.table.Rd
   study.column.Rd
 These entries are required in an Rd file.
 
@@ -315,6 +323,7 @@ Rd files with non-standard keywords:
   draw.normal.CI.Rd: ~kwd1 ~kwd2
   draw.summary.CI.Rd: ~kwd1 ~kwd2
   effectsize.column.Rd: ~kwd1 ~kwd2
+  extractData.Rd: ~kwd1 ~kwd2
   fillin.2x2.simple.Rd: ~kwd1 ~kwd2
   fillin.cont.1spell.Rd: ~kwd1 ~kwd2
   fillin.cont.AminusB.Rd: ~kwd1 ~kwd2
@@ -328,8 +337,8 @@ Rd files with non-standard keywords:
   meta.regression.plot.Rd: ~kwd1 ~kwd2
   metric.is.log.scale.Rd: ~kwd1 ~kwd2
   plot.options.Rd: ~kwd1 ~kwd2
+  print.extractData.Rd: ~kwd1 ~kwd2
   print.rma.uni.Rd: ~kwd1 ~kwd2
-  results.table.Rd: ~kwd1 ~kwd2
   study.column.Rd: ~kwd1 ~kwd2
 Each '\keyword' entry should specify one of the standard keywords (as
 listed in file 'KEYWORDS' in the R documentation directory).

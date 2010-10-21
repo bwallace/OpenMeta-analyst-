@@ -36,6 +36,7 @@ draw.label.col	draw.label.col
 draw.normal.CI	draw.normal.CI
 draw.summary.CI	draw.summary.CI
 effectsize.column	effectsize.column
+extractData	extractData
 fillin.2x2.simple	fillin.2x2.simple
 fillin.cont.1spell	fillin.cont.1spell
 fillin.cont.AminusB	fillin.cont.AminusB
@@ -51,7 +52,7 @@ metric.is.log.scale	metric.is.log.scale
 OMData-class	OMData-class
 openmetar	openmetar-package
 plot.options	plot.options
+print.extractData	print.extractData
 print.rma.uni	print.rma.uni
 reg.data	reg.data
-results.table	results.table
 study.column	study.column

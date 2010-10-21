@@ -46,25 +46,39 @@ get.res.for.one.binary.study <- function(binaryData, params){
     res
 }
 
-raw.table <- function(binaryData, params){
-    # Creates a table to display the raw data in binaryData
+extractData <- function(binaryData, params){
+    # Extracts data from binaryData into an array and computes bounds on confidence intervals.
     
     # Compute bounds on confidence intervals.
     alpha <- 1.0-(params$conf.level/100.0)
     mult <- abs(qnorm(alpha/2.0))
-    LL <- exp(binaryData@y - mult*binaryData@SE)
-    UL <- exp(binaryData@y + mult*binaryData@SE)
-   
-    df <- data.frame(" " = c("Study", "", binaryData@studyNames), 
-                    " " = c("Events (T)", "", round(binaryData@g1O1, digits = params$digits)), 
-                    " " = c("Subjects (T)", "", round(binaryData@g1O1 + binaryData@g1O2, digits = params$digits)),
-                    " " = c("Events (C)", "", round(binaryData@g2O1, digits = params$digits)), 
-                    " " = c("Subjects (T)", "", round(binaryData@g2O1 + binaryData@g2O2, digits = params$digits)),
-                    " " = c("Effect size", "", round(exp(binaryData@y), digits = params$digits)),  
-                    " " = c("Lower bound", "", round(LL, digits = params$digits)), 
-                    " " = c("Upper bound", "", round(UL, digits = params$digits)), check.names = FALSE)
-    dt <- format(df, justify = "centre", width = 12)
-    print(dt, row.names = FALSE)
+    LL <- round(exp(binaryData@y - mult*binaryData@SE), digits = params$digits)
+    UL <- round(exp(binaryData@y + mult*binaryData@SE), digits = params$digits)
+    # Extract the data from binaryData and round
+    eventT <- round(binaryData@g1O1, digits = params$digits)
+    subjectT <- round(binaryData@g1O1 + binaryData@g1O2, digits = params$digits)
+    eventC <- round(binaryData@g2O1, digits = params$digits)
+    subjectC <- round(binaryData@g2O1 + binaryData@g2O2, digits = params$digits)
+    y <- round(binaryData@y, digits = params$digits) 
+    rawData <- array(c(binaryData@studyNames, eventT, subjectT, eventC, subjectC, y, LL, UL), 
+                  dim = c(length(binaryData@studyNames), 8))  
+    class(rawData) <- c("extractData")
+    return(rawData)
+}
+
+print.extractData <- function(rawData, ...){
+        
+    # Create data frame to display the data
+    dframe <- data.frame(" " = c("Study", "", rawData[,1]), 
+                    " " = c("Events (T)", "", rawData[,2]), 
+                    " " = c("Subjects (T)", "", rawData[,3]),
+                    " " = c("Events (C)", "", rawData[,4]), 
+                    " " = c("Subjects (T)", "", rawData[,5]),
+                    " " = c("Effect size", "", rawData[,6]),  
+                    " " = c("Lower bound", "", rawData[,7]), 
+                    " " = c("Upper bound", "", rawData[,8]), check.names = FALSE)
+    displayResults <- format(dframe, justify = "centre", quote = FALSE, width = 12)
+    print(displayResults, row.names=FALSE)
 }
 
 print.rma.uni <-
@@ -173,6 +187,7 @@ function (x, digits = x$digits, showfit = FALSE, signif.legend = FALSE,
         if (x$int.only) {
             cat("Test for Heterogeneity:")
             cat("\n")
+            # Create data frame to display results.
             hframe <- data.frame(" " = paste("Q(df = ", x$k - x$p, ") = ", 
                                         formatC(x$QE, digits = digits, format = "f"), sep = ""),
                                 " " = paste("p-Value ", QEp, sep = ""), check.names = FALSE)
@@ -209,15 +224,15 @@ function (x, digits = x$digits, showfit = FALSE, signif.legend = FALSE,
                 ", p-val ", QMp, "\n\n", sep = "")
         }
     }
-    # metafor doc: int.only - logical that indicates whether the model only includes an intercept. For MetaAnalyst, will this
-    # always be true?
-    if (x$int.only) {  
+    if (x$int.only) { 
+        # Create data frame to display results. 
         dframe <- data.frame(" " = c("Estimate", "", round(exp(x$b), digits=digits)), " " = c("SE", "", round(x$se, digits=digits)), 
                             " " = c("z-Value", "", round(x$zval, digits=digits)), " " = c("p-Value", "", round(x$pval, digits=digits)), 
                             " " = c("Lower bound", " ", round(exp(x$ci.lb), digits=digits)), 
                             " " = c("Upper bound", " ", round(exp(x$ci.ub), digits=digits)), check.names = FALSE)
         if (x$knha) {
-            dframe[3] <- c("t Value", "", round(x$zval, digits=digits))
+            # Display "t-Value" instead of "p-Value in col. 4.
+            dframe[3] <- c("t-Value", "", round(x$zval, digits=digits))
         }
         displayResults <- format(dframe, justify = "centre", width = 10)
         #res.table <- formatC(res.table, digits = digits, format = "f")
@@ -345,12 +360,8 @@ binary.fixed.inv.var <- function(binaryData, params){
         res<-rma.uni(yi=binaryData@y, sei=binaryData@SE, slab=binaryData@studyNames,
                                 level=params$conf.level, digits=params$digits, method="FE", add=params$adjust,
                                 to=params$to)
-        # Set the class of res to use print.rma.uni above.
-        class(res) <- c("print.rma.uni", "rma.uni")                                          
-        # generate the forest plot 
+       
         forest_path <- "./r_tmp/forest.png"
-        #png(forest_path)
-        # forest_plot<-forest.rma(res, digits=params$digits)
         plotData <- create.plot.data.binary(binaryData, params, res)
         forest.plot(plotData, outpath=forest_path)
         # dev.off()

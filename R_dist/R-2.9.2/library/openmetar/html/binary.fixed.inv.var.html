@@ -55,7 +55,6 @@ function (binaryData, params)
         forest.plot(plotData, outpath = forest_path)
         images &lt;- c(`forest plot` = forest_path)
         plot_names &lt;- c(`forest plot` = "forest_plot")
-        class(res) &lt;- c("print.rma.uni", "rma.uni")
         results &lt;- list(images = images, summary = res, plot_names = plot_names)
     }
     results

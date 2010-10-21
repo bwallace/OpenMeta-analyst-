@@ -4548,7 +4548,7 @@ function (ai, bi, ci, di, n1i, n2i, data = NULL, slab = NULL,
         "ni.f", "ids", "not.na", "not.na.yivi", "slab", "slab.null", 
         "measure", "method", "weighted", "knha", "digits", "level", 
         "add", "to", "fit.stats")
-    class(res) <- c("rma.mh", "rma")
+    #class(res) <- c("rma.mh", "rma")
     return(res)
 }
 rma.peto <-
