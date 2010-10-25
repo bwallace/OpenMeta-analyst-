@@ -18,14 +18,10 @@ library("grid")
 #   functions for data manipulation and forest plot #
 #####################################################
 
-###
-# TODO 10/13/10
-#   1) Move create.plot.data from binary_methods to this module
-#   2) Implement create.plot.data.continuous -- refactor out
-#        common code to create.plot.data.generic
+
 create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     scale.str <- "log"
-    ## TODO not all binary metrics are logged, obviously..
+    ## TODO resolve scaling
     
     # Creates a data structure that can be passed to forest.plot
     # res is the output of a call to the Metafor function rma
@@ -50,22 +46,6 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     y.overall <- res$b[1]
     lb.overall <- res$ci.lb[1]
     ub.overall <- res$ci.ub[1]
-        
-    ### TODO only do this for appropriate metrics
-    # i.e., ratios, which will be on the log-scale
-    # exponentiate effect sizes and bounds.
-    #
-    # for now we are assuming that we want to exponentiate
-    # the overall estimate/bounds for binary outcomes
-    if ("BinaryData" %in% class(om.data)){
-    #    y <- exp(om.data@y)
-    #    lb <- exp(lb)
-    #    ub <- exp(ub)
-    
-        y.overall <- exp(y.overall)
-        lb.overall <- exp(lb.overall)
-        ub.overall <- exp(ub.overall)
-    }
 
     # round results for display.
     y.rounded <- round(y, digits = params$digits)

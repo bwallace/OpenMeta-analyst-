@@ -558,16 +558,17 @@ def effect_for_study(e1, n1, e2=None, n2=None, two_arm=True,
         r_str = "escalc(measure='%s', xi=c(%s), ni=c(%s))" % (metric, e1, n1)        
                     
     effect = ro.r(r_str)
-    lg_point_est = effect[0][0]
-    sd = math.sqrt(effect[1][0])
+    point_est = effect[0][0]
+    se = math.sqrt(effect[1][0])
 
     # scalar for computing confidence interval
     r_str = "qnorm(%s)" % conf_level
     mult = ro.r(r_str)[0]
 
-    # note that we're currently returning point estimate on the raw scale 
-    point_est = math.exp(lg_point_est)
-    lower, upper = (point_est-mult*sd, point_est+mult*sd)
+    # note that the point estimate, lower & upper are all computed
+    # and returned on the calculation scale (e.g., log in the case of
+    # ratios)
+    lower, upper = (point_est-mult*se, point_est+mult*se)
     
     print "%s, %s, %s" % (lower, point_est, upper)
 

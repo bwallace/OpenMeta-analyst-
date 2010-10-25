@@ -19,7 +19,7 @@
 
 # set working directory; may change depending on your OS/settings
 setwd("../../../dev")
-setwd("OpenMeta/R/src/")
+setwd("OpenMeta-analyst-/R/src/")
 
 # update if more files/modules are added
 flist <- c("classes.r", "binary_methods.r", "continuous_methods.r", 
