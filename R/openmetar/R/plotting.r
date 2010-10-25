@@ -8,7 +8,9 @@
 #  (And more?)                     #
 #                                  #
 # This code due mostly to Issa     #
-#   Dahabreh                       #    
+#   Dahabreh -- except for things  #
+#   that are broken, those are     #
+#   due to Byron Wallace.          #    
 ####################################
 
 library("grid")
@@ -82,7 +84,7 @@ create.plot.data.binary <- function(binary.data, params, res, selected.cov = NUL
 
     plot.data <- create.plot.data.generic  (binary.data, params, res, selected.cov=selected.cov)
         
-    # if we have raw data, add it to the additional columns
+    # if we have raw data, add it to the additional columns field
     if (length(binary.data@g1O1) > 0) {
         # TODO these strings ('ev/trt') shouldn't be hard-coded.
         plot.data$additional.col.data$cases = c("Ev/Trt", 
@@ -333,7 +335,7 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
 forest.plot <- function(forest.data, outpath){
     # these are calls to data functions
     study.col <- study.column(forest.data, "bold")
-    additional.cols <- NULL
+    additional.cols <- c()
     if (length(forest.data$additional.col.data)>0 ){
         additional.cols <- additional.columns(forest.data, "bold")    
     } 
@@ -345,14 +347,15 @@ forest.plot <- function(forest.data, outpath){
     extra.space <- sum(forest.data$types != 0) 
     height <- length(forest.data$types)+ extra.space
   
- # data.width<-c(rep(NA, length(additional.cols) ))
-    
-   if (length(forest.data$additional.col.data)>0 )      {         # first if additional colums are present
+	if (length(forest.data$additional.col.data)>0 )      {         # first if additional colums are present
       
           width.list <-vector("list")
           width.list[[1]] <- unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", additional.cols[[1]]$content)), forest.plot.params$col.gap)
+                     
+              if  (length(forest.data$additional.col.data)>1 )  {   
                       for (i in 2:length(additional.cols))  {
                        width.list[[i]] <- unit.c(width.list[[i-1]], max(unit(rep(1, length(forest.data$label)), "grobwidth", additional.cols[[i]]$content)), forest.plot.params$col.gap) 
+                                               }
                                                }
           how.wide <- convertX(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)), "inches" , valueOnly=TRUE  ) +
                               convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )  +
@@ -367,6 +370,7 @@ forest.plot <- function(forest.data, outpath){
                                unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
                                       forest.plot.params$col.gap,  width.list[[length(additional.cols)]]  ,  forest.plot.params$effect.col.width),
                                       height=unit(rep(1, height)  , "lines"))))
+                                             
                                              }   else  { # if no additional colums thins are simple
                            how.wide <- convertX(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)), "inches" , valueOnly=TRUE  ) +
                               convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )  +
@@ -384,10 +388,10 @@ forest.plot <- function(forest.data, outpath){
     number.cols <- 2 + length(additional.cols)
     
     draw.label.col(study.col, 1)
-    if (length(forest.data$additional.col.data)>0 )  {
+    if (length(additional.cols)>0 )  {
            for (i in 1:length(additional.cols)){
              draw.label.col(additional.cols[[i]], 1+2*i)
-                }
+        }
     }  
     ### this could (ahem, should) be better refactored
     # we pull out some values for the effects column that
@@ -483,6 +487,11 @@ reg.data <- list(label = c("Studies", "study1" , "study2", "study3" , "subgroup1
                "study1" , "study2", "study3" , "subgroup1" , "study3" , "study4" , "subgroup2" , "Overall"),
             types = c(3,0,0,0,1,0,0,1,0,0,0,1,0,0,1,0,0,0,1,0,0,1,0,0,0,1,0,0,1,2),
             scale = "cont" )
+
+reg.data$additional.col.data <- list( col1= c("xxxxx", "study1" , "study2", "study3" , "subgroup1" , "study3" , "study4" , "subgroup2" ,
+               "study1" , "study2", "study3" , "subgroup1" , "study3" , "study4" , "subgroup2" , "study1" , "study2",
+               "study3" , "subgroup1" , "study3" , "study4" , "subgroup2" ,
+               "study1" , "study2", "study3" , "subgroup1" , "study3" , "study4" , "subgroup2", "all results")     )
 
 # these are the effect size, again, identical
 reg.data$effects <- list(ES=c(-1, 1.27, 1.17, 1.17, 2.97, 1.86, 1.05,

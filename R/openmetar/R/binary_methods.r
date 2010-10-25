@@ -303,7 +303,6 @@ binary.fixed.inv.var <- function(binaryData, params){
         forest_path <- "./r_tmp/forest.png"
         plotData <- create.plot.data.binary(binaryData, params, res)
         forest.plot(plotData, outpath=forest_path)
-        # dev.off()
     
         #
         # Now we package the results in a dictionary (technically, a named 
