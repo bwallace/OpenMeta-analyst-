@@ -68,8 +68,9 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
     def set_psuedo_console_text(self):
         text = ["\t\tOpenMeta(analyst)",
                "This is a pipe to the R console. The image names are as follows:"]
-        for image_var_name in self.image_var_names.values():
-            text.append(image_var_name)
+        if self.image_var_names is not None:
+            for image_var_name in self.image_var_names.values():
+                text.append(image_var_name)
         self.psuedo_console.setPlainText(QString("\n".join(text)))
         self.psuedo_console.append(">> ")
 
