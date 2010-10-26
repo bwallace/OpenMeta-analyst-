@@ -187,10 +187,11 @@ class DatasetModel(QAbstractTableModel):
                 # confidence interval
                 outcome_index = column - self.OUTCOMES[0]
                 est_and_ci = self.get_current_ma_unit_for_study(index.row()).\
-                                                get_effect_and_ci(self.current_effect)
+                                                get_display_effect_and_ci(self.current_effect)
                 outcome_val = est_and_ci[outcome_index]
                 if outcome_val is None:
                     return QVariant("")
+                outcome_val = est_and_ci[outcome_index]
                 return QVariant(round(outcome_val, self.NUM_DIGITS))
             elif column != self.INCLUDE_STUDY:
                 # here the column is to the right of the outcomes (and not the 0th, or
@@ -231,6 +232,7 @@ class DatasetModel(QAbstractTableModel):
         For more, see: http://doc.trolltech.com/4.5/qabstracttablemodel.html
         '''
         if index.isValid() and 0 <= index.row() < len(self.dataset):
+            current_data_type = self.dataset.get_outcome_type(self.current_outcome)
             column = index.column()
             old_val = self.data(index)
             study = self.dataset.studies[index.row()]
@@ -255,7 +257,6 @@ class DatasetModel(QAbstractTableModel):
                 adjust_by = 3 # include study, study name, year columns
                 ma_unit = self.get_current_ma_unit_for_study(index.row())
                 group_name = self.current_txs[0]
-                current_data_type = self.dataset.get_outcome_type(self.current_outcome)
                 if current_data_type == BINARY:
                     if column in self.RAW_DATA[2:]:
                         adjust_by += 2 
@@ -274,17 +275,32 @@ class DatasetModel(QAbstractTableModel):
             elif column in self.OUTCOMES:
                 # the user can also explicitly set the effect size / CIs
                 # @TODO what to do if the entered estimate contradicts the raw data?
-                double_val, converted_ok = value.toDouble()
+                display_scale_val, converted_ok = value.toDouble()
                 if converted_ok:
+                    # note that we convert from the display/continuous
+                    # scale on which the metric is assumed to have been
+                    # entered into the 'calculation' scale (e.g., log)
+                    calc_scale_val = None
+                    if current_data_type == BINARY:
+                        calc_scale_val = meta_py_r.binary_convert_scale(display_scale_val, \
+                                                    self.current_effect, convert_to="calc.scale")
+                    else:
+                        ## assuming continuous here
+                        calc_scale_val = meta_py_r.continuous_convert_scale(display_scale_val, \
+                                                    self.current_effect, convert_to="calc.scale")
+                                                    
                     ma_unit = self.get_current_ma_unit_for_study(index.row())
                     if column == self.OUTCOMES[0]:
-                        ma_unit.set_effect(self.current_effect, double_val)
+                        ma_unit.set_effect(self.current_effect, calc_scale_val)
+                        ma_unit.set_display_effect(self.current_effect, display_scale_val)
                     elif column == self.OUTCOMES[1]:
                         # lower
-                        ma_unit.set_lower(self.current_effect, double_val)
+                        ma_unit.set_lower(self.current_effect, calc_scale_val)
+                        ma_unit.set_display_lower(self.current_effect, display_scale_val)
                     else:
                         # upper
-                        ma_unit.set_upper(self.current_effect, double_val)
+                        ma_unit.set_upper(self.current_effect, calc_scale_val)
+                        ma_unit.set_display_upper(self.current_effect, display_scale_val)
             elif column == self.INCLUDE_STUDY:
                 study.include = value.toBool()
                 # we keep note if a study was manually 
@@ -692,7 +708,7 @@ class DatasetModel(QAbstractTableModel):
         entered to compute the outcome. If so, the outcome is computed and
         displayed.
         '''
-        est, lower, upper = None, None, None
+        est_and_ci_d = None
         
         data_type = self.get_current_outcome_type(get_str=False)  
         if self.raw_data_is_complete_for_study(study_index):
@@ -700,18 +716,27 @@ class DatasetModel(QAbstractTableModel):
                 e1, n1, e2, n2 = self.get_cur_raw_data_for_study(study_index)
                 print self.current_effect
                 if self.current_effect in BINARY_TWO_ARM_METRICS:
-                    est, lower, upper = meta_py_r.effect_for_study(e1, n1, e2, n2, metric=self.current_effect)
+                    est_and_ci_d = meta_py_r.effect_for_study(e1, n1, e2, n2, metric=self.current_effect)
                 else:
                     # binary, one-arm
-                    est, lower, upper = meta_py_r.effect_for_study(e1, n1, \
-                                                    two_arm=False, metric=self.current_effect)
+                    est_and_ci_d = meta_py_r.effect_for_study(e1, n1, \
+                                        two_arm=False, metric=self.current_effect)
             elif data_type == CONTINUOUS:
                 n1, m1, se1, n2, m2, se2 = self.get_cur_raw_data_for_study(study_index)
-                est, lower, upper = meta_py_r.continuous_effect_for_study(n1, m1, se1, n2, m2, se2)
+                est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, se1, n2, m2, se2)
+                #est, lower, upper = meta_py_r.continuous_effect_for_study(n1, m1, se1, n2, m2, se2)
 
-        ma_unit = self.get_current_ma_unit_for_study(study_index)
-        # now set the effect size & CIs
-        ma_unit.set_effect_and_ci(self.current_effect, est, lower, upper)
+            est, lower, upper = None, None, None
+            if est_and_ci_d is not None:
+                est, lower, upper = est_and_ci_d["calc_scale"] # calculation scale
+                disp_est, disp_lower, disp_upper = est_and_ci_d["display_scale"] # transformed/dispaly scale
+            ma_unit = self.get_current_ma_unit_for_study(study_index)
+            # now set the effect size & CIs
+            # note that we keep two versions around; a version on the 'calculation' scale
+            # (e.g., log) and a version on the continuous/display scale to present to the
+            # user via the UI.
+            ma_unit.set_effect_and_ci(self.current_effect, est, lower, upper)
+            ma_unit.set_display_effect_and_ci(self.current_effect, disp_est, disp_lower, disp_upper)
         
     def get_cur_raw_data(self, only_if_included=True):
         raw_data = []

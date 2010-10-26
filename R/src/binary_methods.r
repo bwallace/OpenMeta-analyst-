@@ -16,10 +16,35 @@
 
 library(metafor)
 
-compute.for.one.bin.study <- function(binaryData, params){
-    res <- escalc(params$metric, ai=binaryData@g1O1, bi=binaryData@g1O2, 
-                                    ci=binaryData@g2O1, di=binaryData@g2O2)
+binary.log.metrics <- c("OR", "RR", "PETO")
+
+compute.for.one.bin.study <- function(binary.data, params){
+    res <- escalc(params$metric, ai=binary.data@g1O1, bi=binary.data@g1O2, 
+                                    ci=binary.data@g2O1, di=binary.data@g2O2)
     res                             
+}
+
+binary.transform.f <- function(metric.str){
+    display.scale <- function(x){
+        if (metric.str %in% binary.log.metrics){
+            exp(x)
+        }
+        else {
+        	# identity function
+            x
+        }
+    }
+    
+    calc.scale <- function(x){
+        if (metric.str %in% binary.log.metrics){
+            log(x)
+        }
+        else {
+        	# identity function
+            x
+        }    
+    }
+    list(display.scale = display.scale, calc.scale = calc.scale)
 }
 
 get.res.for.one.binary.study <- function(binaryData, params){

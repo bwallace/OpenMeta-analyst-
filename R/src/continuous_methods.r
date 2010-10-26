@@ -21,6 +21,18 @@ compute.for.one.cont.study <- function(contData, params){
     res      
 }
 
+continuous.transform.f <- function(metric.str){
+    display.scale <- function(x){
+        x
+    }
+    
+    calc.scale <- function(x){
+        x
+    }
+    
+    list(display.scale = display.scale, calc.scale = calc.scale)
+}
+
 get.res.for.one.cont.study <- function(contData, params){
     # this method can be called when there is only one study to 
     # get the point estimate and lower/upper bounds.

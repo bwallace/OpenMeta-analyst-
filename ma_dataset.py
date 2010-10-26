@@ -504,37 +504,56 @@ class MetaAnalyticUnit:
         # Also -- where do one-arm metrics live?
         if self.outcome.data_type == BINARY:
             for effect in meta_globals.BINARY_TWO_ARM_METRICS + meta_globals.BINARY_ONE_ARM_METRICS:
-                self.effects_dict[effect] = {"est":None, "lower":None,
-                                                         "upper":None, "variance":None}
+                self.effects_dict[effect] = {"est":None, "lower":None, "upper":None, "variance":None,
+                                             "display_est":None, "display_lower":None, "display_upper":None}
         elif self.outcome.data_type == CONTINUOUS:
             # right now we only have mean difference and standardized mean difference
             # @TODO hedge's G, cohen's D, glass delta; WV doesn't
             # implement these
             for effect in meta_globals.CONTINUOUS_TWO_ARM_METRICS + meta_globals.CONTINUOUS_ONE_ARM_METRICS:
-                self.effects_dict[effect] = {"est":None, "lower":None,
-                                                         "upper":None, "SE":None}
+                self.effects_dict[effect] = {"est":None, "lower":None, "upper":None, "SE":None,
+                                             "display_est":None, "display_lower":None, "display_upper":None}
                 
     def set_effect(self, effect, value):
         self.effects_dict[effect]["est"] = value
-        
+       
+    def set_display_effect(self, effect, value):
+        self.effects_dict[effect]["display_est"] = value
+         
     def set_effect_and_ci(self, effect, est, lower, upper):
         self.set_effect(effect, est)
         self.effects_dict[effect]["lower"] = lower
         self.effects_dict[effect]["upper"] = upper
+       
+    def set_display_effect_and_ci(self, effect, est, lower, upper):
+        self.effects_dict[effect]["display_est"] = est
+        self.effects_dict[effect]["display_lower"] = lower
+        self.effects_dict[effect]["display_upper"] = upper
         
-    def set_lower(self, effect, lower):
-        self.effects_dict[effect]["lower"] = lower
-        
-    def set_upper(self, effect, upper):
-        self.effects_dict[effect]["upper"] = upper
-        
-    def get_effect(self, effect):
-        return self.effects_dict[effect]["est"]
-    
     def get_effect_and_ci(self, effect):
         return (self.effects_dict[effect]["est"], self.effects_dict[effect]["lower"], \
                     self.effects_dict[effect]["upper"])
                 
+    def get_display_effect_and_ci(self, effect):
+        return (self.effects_dict[effect]["display_est"], self.effects_dict[effect]["display_lower"], \
+                    self.effects_dict[effect]["display_upper"])
+        
+    def set_lower(self, effect, lower):
+        self.effects_dict[effect]["lower"] = lower
+        
+    def set_display_lower(self, effect, lower):
+        self.effects_dict[effect]["display_lower"] = lower
+        
+    def set_upper(self, effect, upper):
+        self.effects_dict[effect]["upper"] = upper
+       
+    def set_display_upper(self, effect, upper):
+        self.effects_dict[effect]["display_upper"] = upper
+         
+    def get_effect(self, effect):
+        return self.effects_dict[effect]["est"]
+    
+
     def type(self):
         return self.outcome.data_type
         
