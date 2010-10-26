@@ -147,11 +147,11 @@ create.plot.data <- function(binaryData, params, res, selected.cov = NULL, inclu
 
 print.summaryDisplay <- function(x,...) {
     # Round stats
-    QEDisp <- roundedNumDisplay(round(x$QE, x$digits), x$digits)
-    QEpDisp <- roundedNumDisplay(round(x$QEp, x$digits), x$digits)
-    pDisp <- roundedNumDisplay(round(x$PVal, x$digits), x$digits)
+    QEDisp <- roundedQEDisplay(round(x$QE, x$digits), x$digits)
+    QEpDisp <- roundedQEDisplay(round(x$QEp, x$digits), x$digits)
+    pDisp <- roundedPDisplay(round(x$PVal, x$digits), x$digits)
     hTest <- data.frame(" " = c("|"),
-                        " " = paste("Q(df = ", x$df, ") = ", 
+                        " " = paste("Q(df = ", x$df, ") ", 
                                         QEDisp, sep = ""),
                         " " = c("|"),
                         " " = paste("p-Value ", QEpDisp, sep = ""), 
@@ -172,11 +172,7 @@ print.summaryDisplay <- function(x,...) {
     cat("\n\n")
     hLine2 <- " +----------------------------------------------------------------------------------+"
     hLine2middle <- " |----------------------------------------------------------------------------------|"
-    if (!is.na(x$modelLogLabel)) {
-        cat(x$modelLogLabel)
-        cat("\n")
-        
-        modelLogLabels <- data.frame(" " = c("|"),
+    modelLabels <- data.frame(" " = c("|"),
                             " " = c("Estimate"), 
                             " " = c("|"),
                             " " = c("SE"),
@@ -189,29 +185,36 @@ print.summaryDisplay <- function(x,...) {
                             " " = c("|"),
                             " " = c("Upper bound"), 
                             " " = c("|"), check.names = FALSE) 
+    modelLabels[c(2,6,8)] <- format(modelLabels[c(2,6,8)], justify = "centre", width = 10)
+    modelLabels[4] <- format(modelLabels[4], justify = "centre", width = 5)
+    modelLabels[c(10,12)] <- format(modelLabels[c(10,12)], justify = "centre", width = 12)
+    modelLabels[c(1,3,5,7,9,11,13)] <- format(modelLabels[c(1,3,5,7,9,11,13)], justify="centre", width=2)    
+                       
+    if (!is.na(x$modelLogLabel)) {
+        cat(x$modelLogLabel)
+        cat("\n")
+        
+        
         modelLogRes <- data.frame(" " = c("|"),
-                            " " = c(as.character(round(exp(x$estimate), digits=x$digits))), 
+                            " " = c(as.character(round(x$estimate, digits=x$digits))), 
                             " " = c("|"),
-                            " " = c(as.character(round(x$SE, digits=digits))),
+                            " " = c(as.character(round(x$SE, digits=x$digits))),
                             " " = c("|"), 
-                            " " = c(as.character(round(x$ZVal, digits=digits))),
+                            " " = c(as.character(round(x$ZVal, digits=x$digits))),
                             " " = c("|"), 
                             " " = c(as.character(pDisp)), 
                             " " = c("|"),
-                            " " = c(as.character(round(exp(x$LowerBound), digits=digits))), 
+                            " " = c(as.character(round(x$LowerBound, digits=x$digits))), 
                             " " = c("|"),
-                            " " = c(as.character(round(exp(x$UpperBound), digits=digits))), 
+                            " " = c(as.character(round(x$UpperBound, digits=x$digits))), 
                             " " = c("|"), check.names = FALSE) 
-        modelLogLabels[c(2,6,8)] <- format(modelLogLabels[c(2,6,8)], justify = "centre", width = 10)
-        modelLogLabels[4] <- format(modelLogLabels[4], justify = "centre", width = 5)
-        modelLogLabels[c(10,12)] <- format(modelLogLabels[c(10,12)], justify = "centre", width = 12)
+        
         modelLogRes[c(2,6,8)] <- format(modelLogRes[c(2,6,8)], justify = "centre", width = 10)
         modelLogRes[4] <- format(modelLogRes[4], justify = "centre", width = 5)
         modelLogRes[c(10,12)] <- format(modelLogRes[c(10,12)], justify = "centre", width = 12)
-        modelLogLabels[c(1,3,5,7,9,11,13)] <- format(modelLogLabels[c(1,3,5,7,9,11,13)], justify="centre", width=2)
         modelLogRes[c(1,3,5,7,9,11,13)] <- format(modelLogRes[c(1,3,5,7,9,11,13)], justify="centre", width=2)
         cat(hLine2)
-        print(modelLogLabels, row.names=FALSE)
+        print(modelLabels, row.names=FALSE)
         cat(hLine2middle)
         print(modelLogRes, row.names=FALSE)
         cat(hLine2)
@@ -221,43 +224,25 @@ print.summaryDisplay <- function(x,...) {
     if (!is.na(x$modelStdLabel)) {
         cat(x$modelStdLabel)
         cat("\n")
-        
-        modelStdLabels <- data.frame(" " = c("|"),
-                            " " = c("Estimate"), 
-                            " " = c("|"),
-                            " " = c("SE"),
-                            " " = c("|"), 
-                            " " = c("z-Value"),
-                            " " = c("|"), 
-                            " " = c("p-Value"), 
-                            " " = c("|"),
-                            " " = c("Lower bound"), 
-                            " " = c("|"),
-                            " " = c("Upper bound"), 
-                            " " = c("|"), check.names = FALSE) 
         modelStdRes <- data.frame(" " = c("|"),
                             " " = c(as.character(round(exp(x$estimate), digits=x$digits))), 
                             " " = c("|"),
-                            " " = c(as.character(round(x$SE, digits=digits))),
+                            " " = c(as.character(round(x$SE, digits=x$digits))),
                             " " = c("|"), 
-                            " " = c(as.character(round(x$ZVal, digits=digits))),
+                            " " = c(as.character(round(x$ZVal, digits=x$digits))),
                             " " = c("|"), 
                             " " = c(as.character(pDisp)), 
                             " " = c("|"),
-                            " " = c(as.character(round(exp(x$LowerBound), digits=digits))), 
+                            " " = c(as.character(round(exp(x$LowerBound), digits=x$digits))), 
                             " " = c("|"),
-                            " " = c(as.character(round(exp(x$UpperBound), digits=digits))), 
+                            " " = c(as.character(round(exp(x$UpperBound), digits=x$digits))), 
                             " " = c("|"), check.names = FALSE) 
-        modelStdLabels[c(2,6,8)] <- format(modelStdLabels[c(2,6,8)], justify = "centre", width = 10)
-        modelStdLabels[4] <- format(modelStdLabels[4], justify = "centre", width = 5)
-        modelStdLabels[c(10,12)] <- format(modelStdLabels[c(10,12)], justify = "centre", width = 12)
         modelStdRes[c(2,6,8)] <- format(modelStdRes[c(2,6,8)], justify = "centre", width = 10)
         modelStdRes[4] <- format(modelStdRes[4], justify = "centre", width = 5)
         modelStdRes[c(10,12)] <- format(modelStdRes[c(10,12)], justify = "centre", width = 12)
-        modelStdLabels[c(1,3,5,7,9,11,13)] <- format(modelStdLabels[c(1,3,5,7,9,11,13)], justify="centre", width=2)
         modelStdRes[c(1,3,5,7,9,11,13)] <- format(modelStdRes[c(1,3,5,7,9,11,13)], justify="centre", width=2)
         cat(hLine2)
-        print(modelStdLabels, row.names=FALSE)
+        print(modelLabels, row.names=FALSE)
         cat(hLine2middle)
         print(modelStdRes, row.names=FALSE)
         cat(hLine2)
@@ -265,14 +250,23 @@ print.summaryDisplay <- function(x,...) {
     }
 }
 
-roundedNumDisplay <- function(x, digits) {
-    # Prints "< 10^(-digits)" if x is < 10^(-digits)
-    xDisp<-x
+roundedQEDisplay <- function(x, digits) {
+    # Prints "< 10^(-digits)" if x is < 10^(-digits) or "= x" otherwise
+    xDisp <- paste("= ", x, sep = "", collapse = "")
     if (x < 10^(-digits)) {
         xDisp <- paste("< ", 10^(-digits), sep = "", collapse = "")
     }
     return(xDisp)
 }
+
+roundedPDisplay <- function(x, digits) {
+    # Prints "< 10^(-digits)" if x is < 10^(-digits) or "= x" otherwise
+    xDisp <- x
+    if (x < 10^(-digits)) {
+        xDisp <- paste("< ", 10^(-digits), sep = "", collapse = "")
+    }
+    return(xDisp)
+} 
 
 ###################################################
 # binary fixed effects -- inverse variance        #
@@ -459,11 +453,11 @@ binary.fixed.peto <- function(binaryData, params){
         images <- c("forest plot"=forest_path)
         plot_names <- c("forest plot"="forest_plot")
         modelDesc <- paste("Fixed-Effects Model - Peto (k = ", res$k, ")", sep="")
-        hetTest <- "Test for Heterogeneity:"       
-        modelStdLabel <- "Model Results (standard scale):"
-        modelLogLabel <- "Model Results (log scale):"
+        hetTest <- "  Test for Heterogeneity:"       
+        modelStdLabel <- "  Model Results (standard scale):"
+        modelLogLabel <- "  Model Results (log scale):"
         summaryDisp <- list("digits"=params$digits, "modelDesc"=modelDesc, "hetTest"=hetTest, "modelStdLabel"=modelStdLabel, 
-                            "modelLogLabel"=modelLogLabel, "df"=res$k - res$p, "QE"=res$QE, "QEp"=res$QEp, "estimate"=res$b, 
+                            "modelLogLabel"=modelLogLabel, "df"=res$k.yi - 1, "QE"=res$QE, "QEp"=res$QEp, "estimate"=res$b, 
                             "SE"=res$se, "ZVal"=res$zval, "PVal"=res$pval, "LowerBound"=res$ci.lb, "UpperBound"=res$ci.ub)
         class(summaryDisp) <- "summaryDisplay"                        
         results <- list("images"=images, "summary"=summary, "plot_names"=plot_names)
