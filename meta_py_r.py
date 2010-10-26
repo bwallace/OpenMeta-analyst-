@@ -368,7 +368,6 @@ def cov_to_str(cov, study_names, dataset):
     cov_str += ",".join(cov_values) + ")"
     return cov_str
         
-    
 
 def run_continuous_ma(function_name, params, res_name = "result", cont_data_name = "tmp_obj"):
     params_df = ro.r['data.frame'](**params)
@@ -519,16 +518,14 @@ def continuous_effect_for_study(n1, m1, sd1, n2, m2, sd2, metric="MD", conf_leve
     # the first 0 indexes into the study; the second, into the point estimate
     # (the escalc method is general and thus expects an array of studies)
     point_est = effect[0][0]
-    sd = math.sqrt(effect[1][0])
+    se = math.sqrt(effect[1][0])
     
-    ####
-    # @TODO the following ought to be refactored, as it's repeated
-    # (albeit on a different scale) below
-    #
     r_str =  "qnorm(%s)" % conf_level
     mult = ro.r(r_str)[0]
-    lower, upper = (point_est-mult*sd, point_est+mult*sd)
-    return (point_est, lower, upper)
+    lower, upper = (point_est-mult*se, point_est+mult*se)
+    est_and_ci = (point_est, lower, upper)
+    transformed_est_and_ci = continuous_convert_scale(est_and_ci, metric)
+    return {"calc_scale":est_and_ci, "display_scale":transformed_est_and_ci}
     
 def effect_for_study(e1, n1, e2=None, n2=None, two_arm=True, 
                 metric="OR", conf_level=.975):
@@ -545,8 +542,6 @@ def effect_for_study(e1, n1, e2=None, n2=None, two_arm=True,
     e2 -- events in group 2
     n2 -- size of group 2
     --
-    
-    
     '''
     print metric
     r_str = None
@@ -572,8 +567,30 @@ def effect_for_study(e1, n1, e2=None, n2=None, two_arm=True,
     
     print "%s, %s, %s" % (lower, point_est, upper)
 
-    return (point_est, lower, upper)
+    # we return both the transformed and untransformed scales here
+    est_and_ci = (point_est, lower, upper)
+    transformed_est_and_ci = binary_convert_scale(est_and_ci, metric)
+    return {"calc_scale":est_and_ci, "display_scale":transformed_est_and_ci}
 
 
+def binary_convert_scale(x, metric_name, convert_to="display.scale"):
+    # convert_to is either 'display.scale' or 'calc.scale'
+    return generic_convert_scale(x, metric_name, "binary", convert_to)
     
+def continuous_convert_scale(x, metric_name, convert_to="display.scale"):
+    return generic_convert_scale(x, metric_name, "continuous", convert_to)
+    
+def generic_convert_scale(x, metric_name, data_type, convert_to="display.scale"):
+    ro.r("trans.f <- %s.transform.f('%s')" % (data_type, metric_name))
+    islist = isinstance(x, list) or isinstance(x, tuple) # being loose with what qualifies as a 'list' here.
+    if islist:
+        ro.r("x <- c%s" % str(x))
+    else:
+        ro.r("x <- %s" % str(x))
+    transformed = ro.r("trans.f$%s(x)" % convert_to)
+    transformed_ls = [x_i for x_i in transformed]
+    if not islist:
+        # scalar
+        return transformed_ls[0]
+    return transformed_ls
     
