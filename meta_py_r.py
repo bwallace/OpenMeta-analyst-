@@ -152,7 +152,7 @@ def get_available_methods(for_data_type=None, data_obj_name=None):
     # start with the name of the data type. furthermore, the parameters
     # for those methods are returned by a method with a name
     # ending in ".parameters"
-    special_endings = [".parameters", ".is.feasible", ".overall"]
+    special_endings = [".parameters", ".is.feasible", ".overall", ".regression"]
     is_special = lambda f: any([f.endswith(ending) for ending in special_endings])
     all_methods = [method for method in method_list if not is_special(method)]
     if for_data_type is not None:
@@ -208,12 +208,14 @@ def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj"):
     # grab the study names. note: the list is pulled out in reverse order from the 
     # model, so we, er, reverse it.
     studies = table_model.get_studies()
-    studies.reverse()
     study_names = ", ".join(["'" + study.name + "'" for study in studies])
-        
+    studies.reverse()
+    
     ests, SEs = table_model.get_cur_ests_and_SEs()
     ests_str = ", ".join(_to_strs(ests))
     SEs_str = ", ".join(_to_strs(SEs))
+    
+    cov_str = gen_cov_str(table_model.dataset, studies)
     
     # first try and construct an object with raw data
     if table_model.included_studies_have_raw_data():
@@ -230,10 +232,10 @@ def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj"):
         r_str = "%s <- new('ContinuousData', \
                                      N1=c(%s), mean1=c(%s), sd1=c(%s), \
                                      N2=c(%s), mean2=c(%s), sd2=c(%s), \
-                                     y=c(%s), SE=c(%s), studyNames=c(%s))" \
+                                     y=c(%s), SE=c(%s), studyNames=c(%s), covariates=%s)" \
                         % (var_name, Ns1_str, means1_str, SDs1_str, \
                             Ns2_str, means2_str, SDs2_str, \
-                            ests_str, SEs_str, study_names)
+                            ests_str, SEs_str, study_names, cov_str)
         
     else:
         print "no raw data... using effects"
@@ -272,9 +274,9 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
     # grab the study names. note: the list is pulled out in reverse order from the 
     # model, so we, er, reverse it.
     studies = table_model.get_studies(only_if_included=True)
-    studies.reverse()
     study_names = ", ".join(["'" + study.name + "'" for study in studies])
-        
+    studies.reverse()
+    
     ests, SEs = table_model.get_cur_ests_and_SEs(only_if_included=True)
     ests_str = ", ".join(_to_strs(ests))
     SEs_str = ", ".join(_to_strs(SEs))
@@ -556,16 +558,17 @@ def effect_for_study(e1, n1, e2=None, n2=None, two_arm=True,
         r_str = "escalc(measure='%s', xi=c(%s), ni=c(%s))" % (metric, e1, n1)        
                     
     effect = ro.r(r_str)
-    lg_point_est = effect[0][0]
-    sd = math.sqrt(effect[1][0])
+    point_est = effect[0][0]
+    se = math.sqrt(effect[1][0])
 
     # scalar for computing confidence interval
     r_str = "qnorm(%s)" % conf_level
     mult = ro.r(r_str)[0]
 
-    # note that we're currently returning point estimate on the raw scale 
-    point_est = math.exp(lg_point_est)
-    lower, upper = (point_est-mult*sd, point_est+mult*sd)
+    # note that the point estimate, lower & upper are all computed
+    # and returned on the calculation scale (e.g., log in the case of
+    # ratios)
+    lower, upper = (point_est-mult*se, point_est+mult*se)
     
     print "%s, %s, %s" % (lower, point_est, upper)
 
