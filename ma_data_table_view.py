@@ -73,7 +73,9 @@ class MADataTable(QtGui.QTableView):
     def row_header_clicked(self, row):
         # dispatch on the data type
         form = None
-        ma_unit = self.model().get_current_ma_unit_for_study(row)
+        study_index = row
+        ma_unit = self.model().get_current_ma_unit_for_study(study_index)
+        old_ma_unit = copy.deepcopy(ma_unit)
         cur_txs = self.model().current_txs
         cur_effect = self.model().current_effect
         data_type = self.model().get_current_outcome_type()
@@ -91,8 +93,11 @@ class MADataTable(QtGui.QTableView):
             form =  binary_data_form.BinaryDataForm2(ma_unit, cur_txs, cur_effect, parent=self)
             if form.exec_():
                 # push the edit event
-                raw_data_edit = CommandEditRawData(ma_unit, self.model(), copy.deepcopy(cur_raw_data_dict), form.raw_data_d)
-                self.undoStack.push(raw_data_edit)
+                #pyqtRemoveInputHook()
+                #pdb.set_trace()
+                #raw_data_edit = CommandEditRawData(ma_unit, self.model(), copy.deepcopy(cur_raw_data_dict), form.raw_data_d)
+                ma_edit = CommandEditMAUnit(self, study_index, ma_unit, old_ma_unit)
+                self.undoStack.push(ma_edit)
         elif data_type == "continuous":
             cur_raw_data_dict = {}
             for group_name in cur_txs:
@@ -381,6 +386,25 @@ class CommandPaste(QUndoCommand):
         self.ma_data_table_view.model().reset()
 
 
+class CommandEditMAUnit(QUndoCommand):
+    def __init__(self, table_view, study_index, new_ma_unit, old_ma_unit, description="MA unit edit"):
+        super(CommandEditMAUnit, self).__init__(description)
+        self.model = table_view.model()
+        self.old_ma_unit = old_ma_unit
+        self.new_ma_unit = new_ma_unit
+        self.table_view = table_view
+        self.study_index = study_index
+        
+    def undo(self):
+        self.model.set_current_ma_unit_for_study(self.study_index, self.old_ma_unit)
+        self.model.reset()
+        self.table_view.resizeColumnsToContents()
+        
+    def redo(self):
+        self.model.set_current_ma_unit_for_study(self.study_index, self.new_ma_unit)
+        self.model.reset()    
+        self.table_view.resizeColumnsToContents()
+    
 class CommandEditRawData(QUndoCommand):
     def __init__(self, ma_unit, model, old_raw_data_dict, new_raw_data_dict, description="Raw data edit"):
         super(CommandEditRawData, self).__init__(description)

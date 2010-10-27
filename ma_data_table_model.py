@@ -812,6 +812,10 @@ class DatasetModel(QAbstractTableModel):
     def get_cur_raw_data_for_study(self, study_index):
         return self.get_current_ma_unit_for_study(study_index).get_raw_data_for_groups(self.current_txs)
 
+    def set_current_ma_unit_for_study(self, study_index, new_ma_unit):
+        # note that we just assume this exists.
+        self.dataset.studies[study_index].outcomes_to_follow_ups[self.current_outcome][self.get_current_follow_up_name()]=new_ma_unit
+        
     def get_current_ma_unit_for_study(self, study_index):
         '''
         Returns the MetaAnalytic unit for the study @ study_index. If no such Unit exists,
