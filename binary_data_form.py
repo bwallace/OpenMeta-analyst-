@@ -39,8 +39,6 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             raw_data = self.ma_unit.get_raw_data_for_group(group)
             self.raw_data_d[group]  = raw_data
         
-        pyqtRemoveInputHook()
-        pdb.set_trace()
         self.cur_groups = cur_txs
         self.cur_effect = cur_effect
         self._update_raw_data()
@@ -48,23 +46,30 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self._populate_effect_data()
         
 
-    
     def _setup_signals_and_slots(self):
         QObject.connect(self.raw_data_table, SIGNAL("cellChanged (int, int)"), 
                                                                                 self._cell_changed)
         QObject.connect(self.effect_cbo_box, SIGNAL("currentIndexChanged(QString)"),
-                                                                                self.effect_changed)                                                            
-                                                                                 
+                                                                                self.effect_changed) 
+                                                                                
+        QObject.connect(self.effect_txt_box, SIGNAL("textChanged(QString)"), lambda new_text : self.val_edit("est", new_text))
+        QObject.connect(self.low_txt_box, SIGNAL("textChanged(QString)"), lambda new_text : self.val_edit("lower", new_text))
+        QObject.connect(self.high_txt_box, SIGNAL("textChanged(QString)"), lambda new_text : self.val_edit("upper", new_text))                                                                                            
+
+                                                                             
     def _populate_effect_data(self):
         q_effects = sorted([QString(effect_str) for effect_str in self.ma_unit.effects_dict.keys()])
+        self.effect_cbo_box.blockSignals(True)
         self.effect_cbo_box.addItems(q_effects)
+        self.effect_cbo_box.blockSignals(False)
         self.effect_cbo_box.setCurrentIndex(q_effects.index(QString(self.cur_effect)))
         # populate fields with current effect data
         self.set_current_effect()
 
     def set_current_effect(self):
         effect_dict = self.ma_unit.effects_dict[self.cur_effect]
-        for s, txt_box in zip(['est', 'lower', 'upper'], [self.effect_txt_box, self.low_txt_box, self.high_txt_box]):
+        for s, txt_box in zip(['display_est', 'display_lower', 'display_upper'], \
+                              [self.effect_txt_box, self.low_txt_box, self.high_txt_box]):
             if effect_dict[s] is not None:
                 txt_box.setText(QString("%s" % round(effect_dict[s], NUM_DIGITS)))
             else:
@@ -74,14 +79,44 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.cur_effect = unicode(self.effect_cbo_box.currentText().toUtf8(), "utf-8")
         self.set_current_effect()
         
+    def val_edit(self, val_str, display_scale_val):
+        ''' val_str is one of `est`, `lower`, `upper` '''
+        
+        try:
+            display_scale_val = float(display_scale_val)
+        except:
+            # a number wasn't entered; ignore
+            # should probably clear out the box here, too.
+            print "fail."
+            return None
+            
+        calc_scale_val = meta_py_r.binary_convert_scale(display_scale_val, \
+                                        self.cur_effect, convert_to="calc.scale")
+                      
+        if val_str == "est":
+            self.ma_unit.set_effect(self.cur_effect, calc_scale_val)
+            self.ma_unit.set_display_effect(self.cur_effect, display_scale_val)
+        elif val_str == "lower":
+            self.ma_unit.set_lower(self.cur_effect, calc_scale_val)
+            self.ma_unit.set_display_lower(self.cur_effect, display_scale_val)
+        else:
+            self.ma_unit.set_upper(self.cur_effect, calc_scale_val)
+            self.ma_unit.set_display_upper(self.cur_effect, display_scale_val)
+        
     def _update_raw_data(self):
         ''' Generates the 2x2 table with whatever parametric data was provided '''
         self.raw_data_table.blockSignals(True)
         for row, group in enumerate(self.cur_groups):
             for col in (0,2):
                 adjusted_index = 0 if col==0 else 1
-                item = QTableWidgetItem(str(self.raw_data_d[group][adjusted_index]))
-                self.raw_data_table.setItem(row, col, item)
+                val = self.raw_data_d[group][adjusted_index]
+                if val is not None:
+                    try:
+                        val = str(int(val))
+                    except:
+                        val = str(val)
+                    item = QTableWidgetItem(val)
+                    self.raw_data_table.setItem(row, col, item)
         self.raw_data_table.blockSignals(False)
       
     def _update_ma_unit(self):
@@ -101,11 +136,10 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         # tries to make sense of user input before passing
         # on to the R routine
         self._fillin_basics(row, col) 
-
         params = self._get_vals()
         computed = meta_py_r.fillin_2x2(params)
         print computed
-        
+
         if computed is not None:
             if max(computed['residuals'].values()) > THRESHOLD:
                 print"Problem computing 2x2 table."
@@ -119,9 +153,6 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         vals_d = {}
         vals_d["c11"] = self._get_int(0, 0)
         vals_d["c12"] = self._get_int(0, 1)
-        
-        pyqtRemoveInputHook()
-        pdb.set_trace()
         
         vals_d["c21"] = self._get_int(1, 0)
         vals_d["c22"] = self._get_int(1, 1)
@@ -158,30 +189,8 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                  QTableWidgetItem(str(val)))
         
     def _fillin_basics(self, row, col):
-        '''
-        if row < 2:
-            cur_group = self.cur_groups[row]
-            if col in (0,2):
-                # then raw data was changed.
-                adjusted_col = 1 if col==2 else 0
-               
-                self.raw_data[cur_group][adjusted_col] = self._get_int(row, col)
-                self.raw_data_d[cur_group][offset+adjusted_col] = self._get_int(row, col)
-                if col == 0 and not self._is_empty(row, 1):
-                    print "ne: %s, N: %s" % (self._get_int(row, 0), self._get_int(row, 1))
-                    print self._get_int(row, 0) + self._get_int(row, 1)
-                    # if the event count has been changed, and the number of
-                    # no events has been given, we need to update the total
-                    self.raw_data[offset+1] = self._get_int(row, 0) + self._get_int(row, 1)
-            else:
-                ### not sure that we want to do anything in this case
-                # then column 1, i.e., "no event" has been edited. 
-                no_events = self._get_int(row, col)
-                index = offset+1
-                print "setting %s to %s" % (index, self.raw_data[offset] + no_events)
-                self.raw_data[index] = self.raw_data[offset] + no_events
-        '''
         self._update_ma_unit()
+        # _update_raw_data results in the 1,0 being "None"
         self._update_raw_data()
         self._update_data_table()
         self.check_for_consistencies()
@@ -278,6 +287,10 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         
     def _get_int(self, i, j):
         if not self._is_empty(i,j):
-            int_val = int(float(self.raw_data_table.item(i, j).text()))
+            try:
+                int_val = int(float(self.raw_data_table.item(i, j).text()))
+            except:
+                pyqtRemoveInputHook()
+                pdb.set_trace()
             return int_val
-            
+        
