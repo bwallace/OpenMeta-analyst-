@@ -197,8 +197,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             #if self.model.current_outcome is None:
             #    self.model.current_outcome = edit_window.outcome_list.model().current_outcome
             ### get stateful dictionary here, update, pass to 
-            pyqtRemoveInputHook()
-            pdb.set_trace()
             old_state_dict = self.tableView.model().get_stateful_dict()
             new_state_dict = copy.deepcopy(old_state_dict)
             
@@ -218,8 +216,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             undo_f = lambda : self.set_model(original_dataset, old_state_dict) 
             edit_command = CommandGenericDo(redo_f, undo_f)
             self.tableView.undoStack.push(edit_command)
-            
-            #self.display_outcome(self.model.current_outcome)
             
     
     def populate_metrics_menu(self):

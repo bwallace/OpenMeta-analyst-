@@ -724,8 +724,7 @@ class DatasetModel(QAbstractTableModel):
             elif data_type == CONTINUOUS:
                 n1, m1, se1, n2, m2, se2 = self.get_cur_raw_data_for_study(study_index)
                 est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, se1, n2, m2, se2)
-                #est, lower, upper = meta_py_r.continuous_effect_for_study(n1, m1, se1, n2, m2, se2)
-
+   
             est, lower, upper = None, None, None
             if est_and_ci_d is not None:
                 est, lower, upper = est_and_ci_d["calc_scale"] # calculation scale

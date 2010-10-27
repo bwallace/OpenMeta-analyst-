@@ -12,6 +12,7 @@ import pdb
 from PyQt4.Qt import *
 from PyQt4 import QtGui
 import meta_py_r
+from meta_globals import *
 
 import ui_binary_data_form
 from ui_binary_data_form import Ui_BinaryDataForm
@@ -139,15 +140,16 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         params = self._get_vals()
         computed = meta_py_r.fillin_2x2(params)
         print computed
-
         if computed is not None:
             if max(computed['residuals'].values()) > THRESHOLD:
-                print"Problem computing 2x2 table."
+                print "problem computing 2x2 table."
             else:
-                print "Table computed!"
+                print "table computed!"
                 self._set_vals(computed["coefficients"])
+                # need to try and update metric here
+                
         self._update_ma_unit()
-
+        self.try_to_update_cur_outcome()
         
     def _get_vals(self):
         vals_d = {}
@@ -285,12 +287,32 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         val = self.raw_data_table.item(i,j)
         return val is None or val.text() == ""
         
+        
     def _get_int(self, i, j):
         if not self._is_empty(i,j):
-            try:
-                int_val = int(float(self.raw_data_table.item(i, j).text()))
-            except:
-                pyqtRemoveInputHook()
-                pdb.set_trace()
+            int_val = int(float(self.raw_data_table.item(i, j).text()))
             return int_val
+        
+            
+    def try_to_update_cur_outcome(self):
+        e1, n1, e2, n2 = self.ma_unit.get_raw_data_for_groups(self.cur_groups)
+        # if None is in the raw data, should we clear out current outcome?
+        if not any([x is None for x in [e1, n1, e2, n2]]):
+            if self.cur_effect in BINARY_TWO_ARM_METRICS:
+                est_and_ci_d = meta_py_r.effect_for_study(e1, n1, e2, n2, metric=self.cur_effect)
+            else:
+                # binary, one-arm
+                est_and_ci_d = meta_py_r.effect_for_study(e1, n1, \
+                                            two_arm=False, metric=self.cur_effect)
+        
+            display_est, display_low, display_high = est_and_ci_d["display_scale"]
+            self.ma_unit.set_display_effect_and_ci(self.cur_effect, display_est, display_low, display_high)                            
+            est, low, high = est_and_ci_d["calc_scale"] # calculation (e.g., log) scale
+            self.ma_unit.set_effect_and_ci(self.cur_effect, est, low, high)
+            
+            self.set_current_effect()
+           
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
+        #est_and_ci_d['display_scale']
         
