@@ -724,8 +724,7 @@ class DatasetModel(QAbstractTableModel):
             elif data_type == CONTINUOUS:
                 n1, m1, se1, n2, m2, se2 = self.get_cur_raw_data_for_study(study_index)
                 est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, se1, n2, m2, se2)
-                #est, lower, upper = meta_py_r.continuous_effect_for_study(n1, m1, se1, n2, m2, se2)
-
+   
             est, lower, upper = None, None, None
             if est_and_ci_d is not None:
                 est, lower, upper = est_and_ci_d["calc_scale"] # calculation scale
@@ -813,6 +812,10 @@ class DatasetModel(QAbstractTableModel):
     def get_cur_raw_data_for_study(self, study_index):
         return self.get_current_ma_unit_for_study(study_index).get_raw_data_for_groups(self.current_txs)
 
+    def set_current_ma_unit_for_study(self, study_index, new_ma_unit):
+        # note that we just assume this exists.
+        self.dataset.studies[study_index].outcomes_to_follow_ups[self.current_outcome][self.get_current_follow_up_name()]=new_ma_unit
+        
     def get_current_ma_unit_for_study(self, study_index):
         '''
         Returns the MetaAnalytic unit for the study @ study_index. If no such Unit exists,

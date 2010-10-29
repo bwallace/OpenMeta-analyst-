@@ -62,15 +62,15 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
 
     def setup_signals_and_slots(self):
         QObject.connect(self.simple_table, SIGNAL("cellChanged (int, int)"), 
-                                                                                self.impute_data)
+                                            self.impute_data)
         QObject.connect(self.alpha_edit, SIGNAL("textChanged (QString)"), 
-                                                                                self.update_alpha)                    
+                                            self.update_alpha)                    
         QObject.connect(self.correlation_edit, SIGNAL("textChanged (QString)"), 
-                                                                                self.update_correlation)          
+                                            self.update_correlation)          
         QObject.connect(self.g1_pre_post_table, SIGNAL("cellChanged (int, int)"),
-                                                                                lambda: self.impute_pre_post_data(self.g1_pre_post_table, 0))
+                                            lambda: self.impute_pre_post_data(self.g1_pre_post_table, 0))
         QObject.connect(self.g2_pre_post_table, SIGNAL("cellChanged (int, int)"),
-                                                                                lambda: self.impute_pre_post_data(self.g2_pre_post_table, 1))
+                                            lambda: self.impute_pre_post_data(self.g2_pre_post_table, 1))
                                                                                 
     def _set_col_widths(self, table):
         for column in range(table.columnCount()):
