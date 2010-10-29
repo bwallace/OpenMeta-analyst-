@@ -70,7 +70,7 @@ def fillin_2x2(table_data_dict):
             r_str.append("%s=%s," % (param, val))
         
     # drop the last comma, close the function call
-    r_str = "".join(r_str)[:-1]
+    r_str = "".join(r_str)[:-1] if r_str[-1].endswith(",") else "".join(r_str)
     r_str += ")"
     res = ro.r(r_str)
     if "NA" in str(res).split(" "):

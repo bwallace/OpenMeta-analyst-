@@ -33,16 +33,15 @@ NUM_DIGITS = 4
 default_col_width = 65
 
 class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm):
-    #def __init__(self, ma_unit, cur_txs, cur_effect, parent=None):
-    def __init__(self, raw_data_dict, cur_txs, cur_effect, parent=None):
+    def __init__(self, ma_unit, cur_txs, cur_effect, parent=None):
         super(ContinuousDataForm, self).__init__(parent)
         self.setupUi(self)
         self.setup_signals_and_slots()
-
-        self.raw_data_dict = raw_data_dict
-        self.raw_data = []
+        self.ma_unit = ma_unit
+        self.raw_data_dict = {}
         for group in cur_txs:
-            self.raw_data.extend(self.raw_data_dict[group])
+            raw_data = self.ma_unit.get_raw_data_for_group(group)
+            self.raw_data_dict[group]  = raw_data
         self.cur_groups = cur_txs
         self.cur_effect = cur_effect
         self.alpha = .05
@@ -63,6 +62,8 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
     def setup_signals_and_slots(self):
         QObject.connect(self.simple_table, SIGNAL("cellChanged (int, int)"), 
                                             self.impute_data)
+        QObject.connect(self.simple_table, SIGNAL("cellChanged (int, int)"), 
+                                            self._cell_changed)
         QObject.connect(self.alpha_edit, SIGNAL("textChanged (QString)"), 
                                             self.update_alpha)                    
         QObject.connect(self.correlation_edit, SIGNAL("textChanged (QString)"), 
@@ -113,7 +114,17 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         
         self.impute_data()
         self.simple_table.blockSignals(False)
-            
+          
+    def _cell_changed(self, row, col):
+        self._update_ma_unit()
+    
+    def _update_ma_unit(self):
+        for row_index, group_name in enumerate(self.cur_groups):
+            grp_raw_data = self.raw_data_dict[group_name]
+            for col_index in range(len(grp_raw_data)):
+                cur_val = self._get_float(row_index, col_index)
+                self.raw_data_dict[group_name][col_index] = cur_val
+               
     def impute_data(self):
         ''' compute what we can for each study from what has been given '''
         # note that we rely on the variable names corresponding to what
@@ -145,6 +156,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                     if var_index < 3:
                         #self.ma_unit.tx_groups[group_name].raw_data[var_index] = computed_vals[var_name]
                         self.raw_data_dict[group_name][var_index] = computed_vals[var_name]
+                self._update_ma_unit()
                 self.simple_table.blockSignals(False)
 
     def impute_pre_post_data(self, table, group_index):

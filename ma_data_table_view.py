@@ -92,6 +92,7 @@ class MADataTable(QtGui.QTableView):
                 
             form =  binary_data_form.BinaryDataForm2(ma_unit, cur_txs, cur_effect, parent=self)
             if form.exec_():
+                ### TODO do the same for continuous data!
                 # push the edit event
                 #pyqtRemoveInputHook()
                 #pdb.set_trace()
@@ -104,11 +105,17 @@ class MADataTable(QtGui.QTableView):
                 cur_raw_data_dict[group_name] = list(ma_unit.tx_groups[group_name].raw_data)
                 
             old_raw_data_dict = copy.deepcopy(cur_raw_data_dict)
-            form = continuous_data_form.ContinuousDataForm(copy.deepcopy(cur_raw_data_dict), cur_txs, cur_effect, parent=self)
+            #form = continuous_data_form.ContinuousDataForm(copy.deepcopy(cur_raw_data_dict), cur_txs, cur_effect, parent=self)
+            form = continuous_data_form.ContinuousDataForm(ma_unit, cur_txs, cur_effect, parent=self)
             if form.exec_():
                 # update the model; push this event onto the stack
-                raw_data_edit = CommandEditRawData(ma_unit, self.model(), old_raw_data_dict, form.raw_data_dict)
-                self.undoStack.push(raw_data_edit)
+                ### TODO need to update to using CommandEditMAUnit!
+                pyqtRemoveInputHook()
+                pdb.set_trace()
+                ma_edit = CommandEditMAUnit(self, study_index, ma_unit, old_ma_unit)
+                self.undoStack.push(ma_edit)
+                #raw_data_edit = CommandEditRawData(ma_unit, self.model(), old_raw_data_dict, form.raw_data_dict)
+                #self.undoStack.push(raw_data_edit)
 
     def rowMoved(self, row, oldIndex, newIndex):
         pass
