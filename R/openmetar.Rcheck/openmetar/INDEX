@@ -23,12 +23,14 @@ binary.fixed.peto.overall
                         
 binary.fixed.peto.parameters
                         
+binary.log.metrics      
 binary.meta.regression
                         
 binary.random           
 binary.random.overall   
 binary.random.parameters
                         
+binary.transform.f      
 check.1spell.res        
 compute.for.one.bin.study
                         
@@ -40,6 +42,8 @@ continuous.random.overall
                         
 continuous.random.parameters
                         
+continuous.transform.f
+                        
 create.plot.data        
 create.plot.data.binary
                         
@@ -47,6 +51,7 @@ create.plot.data.continuous
                         
 create.plot.data.generic
                         
+createSummaryDisp       
 cum.ma.binary           
 cum.ma.continuous       
 draw.data.col           
@@ -65,14 +70,18 @@ get.res.for.one.cont.study
                         
 impute.bin.data         
 isnt.null               
+list2Array              
 loo.ma.binary           
 loo.ma.continuous       
 meta.regression.plot    
 metric.is.log.scale     
 openmetar-package       What the package does (short line) ~~ package
                         title ~~
+padEntry                
 plot.options            
-print.extractData       
-print.rma.uni           
+print.Table             
+print.summaryDisplay    
 reg.data                
+roundedDisplay          
+roundedQEDisplay        
 study.column            

@@ -28,8 +28,13 @@ See 'H:/OpenMeta-analyst-/R/openmetar.Rcheck/00install.out' for details.
 * checking S3 generic/method consistency ... WARNING
 print:
   function(x, ...)
-print.extractData:
-  function(rawData, ...)
+print.summaryDisplay:
+  function(results, ...)
+
+print:
+  function(x, ...)
+print.Table:
+  function(tableData)
 
 plot:
   function(x, ...)
@@ -47,7 +52,6 @@ additional.columns: no visible global function definition for 'gpar'
 binary.fixed.inv.var: no visible global function definition for
   'rma.uni'
 binary.fixed.mh: no visible global function definition for 'rma.mh'
-binary.fixed.mh: no visible global function definition for 'forest.rma'
 binary.fixed.peto: no visible global function definition for 'rma.peto'
 binary.fixed.peto: no visible global function definition for
   'forest.rma'
@@ -63,10 +67,6 @@ cont.meta.regression: no visible global function definition for
   'rma.uni'
 cont.meta.regression: no visible binding for global variable 'contData'
 continuous.random: no visible global function definition for 'rma.uni'
-continuous.random: no visible global function definition for
-  'forest.rma'
-create.plot.data.continuous: no visible binding for global variable
-  'binaryData'
 draw.data.col: no visible global function definition for 'pushViewport'
 draw.data.col: no visible global function definition for 'viewport'
 draw.data.col: no visible global function definition for 'grid.lines'
@@ -92,12 +92,11 @@ draw.summary.CI: no visible global function definition for 'unit'
 draw.summary.CI: no visible global function definition for 'gpar'
 forest.plot: no visible global function definition for 'unit.c'
 forest.plot: no visible global function definition for 'unit'
+forest.plot: no visible global function definition for 'convertX'
+forest.plot: no visible global function definition for 'convertY'
 forest.plot: no visible global function definition for 'pushViewport'
 forest.plot: no visible global function definition for 'viewport'
 forest.plot: no visible global function definition for 'grid.layout'
-forest.plot: no visible global function definition for 'popViewport'
-forest.plot: no visible global function definition for 'convertX'
-forest.plot: no visible global function definition for 'convertY'
 impute.bin.data: no visible global function definition for 'ln'
 loo.ma.binary: no visible binding for global variable 'forest_path'
 meta.regression.plot: no visible binding for global variable 'types'
@@ -139,10 +138,12 @@ Rd files with missing or empty '\title':
   binary.fixed.peto.overall.Rd
   binary.fixed.peto.parameters.Rd
   binary.fixed.peto.Rd
+  binary.log.metrics.Rd
   binary.meta.regression.Rd
   binary.random.overall.Rd
   binary.random.parameters.Rd
   binary.random.Rd
+  binary.transform.f.Rd
   check.1spell.res.Rd
   compute.for.one.bin.study.Rd
   compute.for.one.cont.study.Rd
@@ -150,10 +151,12 @@ Rd files with missing or empty '\title':
   continuous.random.overall.Rd
   continuous.random.parameters.Rd
   continuous.random.Rd
+  continuous.transform.f.Rd
   create.plot.data.binary.Rd
   create.plot.data.continuous.Rd
   create.plot.data.generic.Rd
   create.plot.data.Rd
+  createSummaryDisp.Rd
   cum.ma.binary.Rd
   cum.ma.continuous.Rd
   draw.data.col.Rd
@@ -170,14 +173,18 @@ Rd files with missing or empty '\title':
   get.res.for.one.cont.study.Rd
   impute.bin.data.Rd
   isnt.null.Rd
+  list2Array.Rd
   loo.ma.binary.Rd
   loo.ma.continuous.Rd
   meta.regression.plot.Rd
   metric.is.log.scale.Rd
+  padEntry.Rd
   plot.options.Rd
-  print.extractData.Rd
-  print.rma.uni.Rd
+  print.summaryDisplay.Rd
+  print.Table.Rd
   reg.data.Rd
+  roundedDisplay.Rd
+  roundedQEDisplay.Rd
   study.column.Rd
 
 Rd files without 'description':
@@ -193,10 +200,12 @@ Rd files without 'description':
   binary.fixed.peto.overall.Rd
   binary.fixed.peto.parameters.Rd
   binary.fixed.peto.Rd
+  binary.log.metrics.Rd
   binary.meta.regression.Rd
   binary.random.overall.Rd
   binary.random.parameters.Rd
   binary.random.Rd
+  binary.transform.f.Rd
   check.1spell.res.Rd
   compute.for.one.bin.study.Rd
   compute.for.one.cont.study.Rd
@@ -204,10 +213,12 @@ Rd files without 'description':
   continuous.random.overall.Rd
   continuous.random.parameters.Rd
   continuous.random.Rd
+  continuous.transform.f.Rd
   create.plot.data.binary.Rd
   create.plot.data.continuous.Rd
   create.plot.data.generic.Rd
   create.plot.data.Rd
+  createSummaryDisp.Rd
   cum.ma.binary.Rd
   cum.ma.continuous.Rd
   draw.data.col.Rd
@@ -224,14 +235,18 @@ Rd files without 'description':
   get.res.for.one.cont.study.Rd
   impute.bin.data.Rd
   isnt.null.Rd
+  list2Array.Rd
   loo.ma.binary.Rd
   loo.ma.continuous.Rd
   meta.regression.plot.Rd
   metric.is.log.scale.Rd
+  padEntry.Rd
   plot.options.Rd
-  print.extractData.Rd
-  print.rma.uni.Rd
+  print.summaryDisplay.Rd
+  print.Table.Rd
   reg.data.Rd
+  roundedDisplay.Rd
+  roundedQEDisplay.Rd
   study.column.Rd
 Rd files without 'title':
   additional.columns.Rd
@@ -246,10 +261,12 @@ Rd files without 'title':
   binary.fixed.peto.overall.Rd
   binary.fixed.peto.parameters.Rd
   binary.fixed.peto.Rd
+  binary.log.metrics.Rd
   binary.meta.regression.Rd
   binary.random.overall.Rd
   binary.random.parameters.Rd
   binary.random.Rd
+  binary.transform.f.Rd
   check.1spell.res.Rd
   compute.for.one.bin.study.Rd
   compute.for.one.cont.study.Rd
@@ -257,10 +274,12 @@ Rd files without 'title':
   continuous.random.overall.Rd
   continuous.random.parameters.Rd
   continuous.random.Rd
+  continuous.transform.f.Rd
   create.plot.data.binary.Rd
   create.plot.data.continuous.Rd
   create.plot.data.generic.Rd
   create.plot.data.Rd
+  createSummaryDisp.Rd
   cum.ma.binary.Rd
   cum.ma.continuous.Rd
   draw.data.col.Rd
@@ -277,14 +296,18 @@ Rd files without 'title':
   get.res.for.one.cont.study.Rd
   impute.bin.data.Rd
   isnt.null.Rd
+  list2Array.Rd
   loo.ma.binary.Rd
   loo.ma.continuous.Rd
   meta.regression.plot.Rd
   metric.is.log.scale.Rd
+  padEntry.Rd
   plot.options.Rd
-  print.extractData.Rd
-  print.rma.uni.Rd
+  print.summaryDisplay.Rd
+  print.Table.Rd
   reg.data.Rd
+  roundedDisplay.Rd
+  roundedQEDisplay.Rd
   study.column.Rd
 These entries are required in an Rd file.
 
@@ -305,6 +328,7 @@ Rd files with non-standard keywords:
   binary.random.overall.Rd: ~kwd1 ~kwd2
   binary.random.parameters.Rd: ~kwd1 ~kwd2
   binary.random.Rd: ~kwd1 ~kwd2
+  binary.transform.f.Rd: ~kwd1 ~kwd2
   check.1spell.res.Rd: ~kwd1 ~kwd2
   compute.for.one.bin.study.Rd: ~kwd1 ~kwd2
   compute.for.one.cont.study.Rd: ~kwd1 ~kwd2
@@ -312,10 +336,12 @@ Rd files with non-standard keywords:
   continuous.random.overall.Rd: ~kwd1 ~kwd2
   continuous.random.parameters.Rd: ~kwd1 ~kwd2
   continuous.random.Rd: ~kwd1 ~kwd2
+  continuous.transform.f.Rd: ~kwd1 ~kwd2
   create.plot.data.binary.Rd: ~kwd1 ~kwd2
   create.plot.data.continuous.Rd: ~kwd1 ~kwd2
   create.plot.data.generic.Rd: ~kwd1 ~kwd2
   create.plot.data.Rd: ~kwd1 ~kwd2
+  createSummaryDisp.Rd: ~kwd1 ~kwd2
   cum.ma.binary.Rd: ~kwd1 ~kwd2
   cum.ma.continuous.Rd: ~kwd1 ~kwd2
   draw.data.col.Rd: ~kwd1 ~kwd2
@@ -332,13 +358,17 @@ Rd files with non-standard keywords:
   get.res.for.one.cont.study.Rd: ~kwd1 ~kwd2
   impute.bin.data.Rd: ~kwd1 ~kwd2
   isnt.null.Rd: ~kwd1 ~kwd2
+  list2Array.Rd: ~kwd1 ~kwd2
   loo.ma.binary.Rd: ~kwd1 ~kwd2
   loo.ma.continuous.Rd: ~kwd1 ~kwd2
   meta.regression.plot.Rd: ~kwd1 ~kwd2
   metric.is.log.scale.Rd: ~kwd1 ~kwd2
+  padEntry.Rd: ~kwd1 ~kwd2
   plot.options.Rd: ~kwd1 ~kwd2
-  print.extractData.Rd: ~kwd1 ~kwd2
-  print.rma.uni.Rd: ~kwd1 ~kwd2
+  print.summaryDisplay.Rd: ~kwd1 ~kwd2
+  print.Table.Rd: ~kwd1 ~kwd2
+  roundedDisplay.Rd: ~kwd1 ~kwd2
+  roundedQEDisplay.Rd: ~kwd1 ~kwd2
   study.column.Rd: ~kwd1 ~kwd2
 Each '\keyword' entry should specify one of the standard keywords (as
 listed in file 'KEYWORDS' in the R documentation directory).

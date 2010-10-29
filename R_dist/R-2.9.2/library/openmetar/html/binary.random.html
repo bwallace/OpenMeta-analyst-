@@ -56,6 +56,11 @@ function (binaryData, params)
                 slab = binaryData@studyNames, method = params$rm.method, 
                 level = params$conf.level, digits = params$digits)
         }
+        degf &lt;- res$k.yi - 1
+        summaryDisp &lt;- createSummaryDisp(res, params, degf)
+        summaryDisp$modelTitle &lt;- paste("Random-Effects Model (k = ", 
+            res$k, ")", sep = "")
+        summaryDisp
         getwd()
         forest_path &lt;- "./r_tmp/forest.png"
         png(forest_path)

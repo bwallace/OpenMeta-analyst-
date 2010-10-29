@@ -25,13 +25,19 @@ function (binaryData, params)
             slab = binaryData@studyNames, level = params$conf.level, 
             digits = params$digits, method = "FE", add = params$adjust, 
             to = params$to)
+        degf <- res$k - res$p
+        summaryDisp <- createSummaryDisp(res, params, degf)
+        summaryDisp$modelTitle <- paste("Fixed-Effects Model - Inverse Variance (k = ", 
+            res$k, ")", sep = "")
+        summaryDisp
         forest_path <- "./r_tmp/forest.png"
         plotData <- create.plot.data.binary(binaryData, params, 
             res)
         forest.plot(plotData, outpath = forest_path)
         images <- c(`forest plot` = forest_path)
         plot_names <- c(`forest plot` = "forest_plot")
-        results <- list(images = images, summary = res, plot_names = plot_names)
+        results <- list(images = images, summary = summaryDisp, 
+            plot_names = plot_names)
     }
     results
   }

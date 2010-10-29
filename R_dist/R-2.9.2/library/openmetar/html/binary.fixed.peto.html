@@ -46,13 +46,18 @@ function (binaryData, params)
         res &lt;- rma.peto(ai = binaryData@g1O1, bi = binaryData@g1O2, 
             ci = binaryData@g2O1, di = binaryData@g2O2, slab = binaryData@studyNames, 
             level = params$conf.level, digits = params$digits)
+        degf &lt;- res$k.yi - 1
+        summaryDisp &lt;- createSummaryDisp(res, params, degf)
+        summaryDisp$modelTitle &lt;- paste("Fixed-Effects Model - Peto (k = ", 
+            res$k, ")", sep = "")
+        summaryDisp
         forest_path &lt;- "./r_tmp/forest.png"
         png(forest_path)
         forest_plot &lt;- forest.rma(res, digits = params$digits)
         dev.off()
         images &lt;- c(`forest plot` = forest_path)
         plot_names &lt;- c(`forest plot` = "forest_plot")
-        results &lt;- list(images = images, summary = res, plot_names = plot_names)
+        results &lt;- list(images = images, summary = summary, plot_names = plot_names)
     }
     results
   }

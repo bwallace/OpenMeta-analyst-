@@ -73,7 +73,6 @@ get.res.for.one.binary.study <- function(binaryData, params){
 
 extractData <- function(binaryData, params){
     # Extracts data from binaryData into an array and computes bounds on confidence intervals.
-    
     # Compute bounds on confidence intervals.
     alpha <- 1.0-(params$conf.level/100.0)
     mult <- abs(qnorm(alpha/2.0))
@@ -85,27 +84,11 @@ extractData <- function(binaryData, params){
     eventC <- round(binaryData@g2O1, digits = params$digits)
     subjectC <- round(binaryData@g2O1 + binaryData@g2O2, digits = params$digits)
     y <- round(binaryData@y, digits = params$digits) 
-    rawData <- array(c(binaryData@studyNames, eventT, subjectT, eventC, subjectC, y, LL, UL), 
-                  dim = c(length(binaryData@studyNames), 8))  
-    class(rawData) <- c("extractData")
+    rawData <- array(c("Study", binaryData@studyNames, "Events (T)", eventT, "Subjects (T)", subjectT, "Events (C)", eventC, 
+                    "Subjects (C)", subjectC, "Effect size", y, "Lower bound", LL, "Upper bound", UL), 
+                    dim=c(length(binaryData@studyNames) + 1, 8))
+    class(rawData) <- "Table" 
     return(rawData)
-}
-
-print.extractData <- function(rawData, ...){
-        
-    # Create data frame to display the data
-    dframe <- data.frame(" " = c("Study", "", rawData[,1]), 
-                    " " = c("Events (T)", "", rawData[,2]), 
-                    " " = c("Subjects (T)", "", rawData[,3]),
-                    " " = c("Events (C)", "", rawData[,4]), 
-                    " " = c("Subjects (T)", "", rawData[,5]),
-                    " " = c("Effect size", "", rawData[,6]),  
-                    " " = c("Lower bound", "", rawData[,7]), 
-                    " " = c("Upper bound", "", rawData[,8]), check.names = FALSE)
-    displayResults <- format(dframe, justify = "centre", quote = FALSE, width = 12)
-    displayResults[1] <- format(dframe[1], justify = "left", quote = False, width = 12)
-    displayResults
-    print(displayResults, row.names=FALSE)
 }
 
 # TODO this should be moved to plotting.r
@@ -170,109 +153,101 @@ create.plot.data <- function(binaryData, params, res, selected.cov = NULL, inclu
     plotData
 }
 
-print.summaryDisplay <- function(x,...) {
-    # Round stats
-    QEDisp <- roundedQEDisplay(round(x$QE, x$digits), x$digits)
-    QEpDisp <- roundedQEDisplay(round(x$QEp, x$digits), x$digits)
-    pDisp <- roundedPDisplay(round(x$PVal, x$digits), x$digits)
-    hTest <- data.frame(" " = c("|"),
-                        " " = paste("Q(df = ", x$df, ") ", 
-                                        QEDisp, sep = ""),
-                        " " = c("|"),
-                        " " = paste("p-Value ", QEpDisp, sep = ""), 
-                        " " = c("|"), check.names = FALSE)
-    hTestDisp<-format(hTest, justify = "centre", width=15)
-    hTestDisp[1]<-format(hTest[1], justify="left", width = 2)
-    hTestDisp[3]<-format(hTest[3], justify="centre", width = 2)
-    hTestDisp[5]<-format(hTest[5], justify="right", width = 2) 
-    hLine1 <- " +----------------------------------------+"
-    
-    cat(x$modelDesc)
+print.summaryDisplay <- function(results,...) {
+    # Prints results summary
+    cat(results$modelTitle)
     cat("\n\n")
-    cat(x$hetTest)
+    if (!is.na(results$hetTestData$Title)) {
+        cat(results$hetTestData$Title)
+        cat("\n")
+        hetTable <- list2Array(results$hetTestData, digits=results$digits)
+        print(hetTable)
+        cat("\n")
+    }                   
+    if (!is.na(results$resultData$Title)) {
+        cat(results$resultData$Title)
+        cat("\n")
+        resultsTable <- list2Array(results$resultData, digits=results$digits)
+        print(resultsTable)
+        cat("\n")
+    }
+    if (!is.na(results$altData$Title)) {
+        cat(results$altData$Title)
+        cat("\n")
+        altTable <- list2Array(results$altData, digits=results$digits)
+        print(altTable)
+    }
+}
+
+list2Array <- function(dataList, digits) {
+    # Accepts a named list dataList and converts it to an array in which 
+    # first row is the names and second row is the rounded values.
+    # dataList$Labels and dataList$Labels must have the same length. 
+    if (length(dataList$Labels) == length(dataList$Values)) {
+      listVals <- dataList$Values
+      listVals <- roundedDisplay(listVals, digits)
+      arr <- array(dim=c(2,length(listVals)))
+      arr[1,] <- dataList$Labels
+      arr[2,] <- listVals
+      class(arr) <- "resultsTable"
+    }
+    else {
+        arr = "Labels list and values list have different lengths."
+    }
+    return(arr)
+}
+
+print.Table <- function(tableData) {
+    # Prints an array tableData with lines separating rows and columns.
+    tableRow <- "|"
+    #rowLength <- 1
+    numRows <- length(tableData[,1])
+    numCols <- length(tableData[1,])
+    # Compute column widths
+    colWidths <- NULL
+    for (colIndex in 1:numCols) {
+      colWidths <- c(colWidths, max(nchar(tableData[,colIndex])) + 4)
+    }
+    tableWidth <- sum(colWidths) + numCols + 1 
+    # Create line of dashes of length tableWidth - 2
+    dashLine <- NULL
+    for (count in 1:(tableWidth - 2)) {
+        dashLine <- paste(dashLine, "-", sep="")
+    }
+    topLine <- paste("+", dashLine, "+", sep="")
+    middleLine <- paste("|", dashLine, "|", sep="")
+      
+    # Build table
+    cat(topLine)
     cat("\n")
-    cat(hLine1)
-    print(hTestDisp, row.names=FALSE)
-    cat(hLine1)
-    cat("\n\n")
-    hLine2 <- " +----------------------------------------------------------------------------------+"
-    hLine2middle <- " |----------------------------------------------------------------------------------|"
-    modelLabels <- data.frame(" " = c("|"),
-                            " " = c("Estimate"), 
-                            " " = c("|"),
-                            " " = c("SE"),
-                            " " = c("|"), 
-                            " " = c("z-Value"),
-                            " " = c("|"), 
-                            " " = c("p-Value"), 
-                            " " = c("|"),
-                            " " = c("Lower bound"), 
-                            " " = c("|"),
-                            " " = c("Upper bound"), 
-                            " " = c("|"), check.names = FALSE) 
-    modelLabels[c(2,6,8)] <- format(modelLabels[c(2,6,8)], justify = "centre", width = 10)
-    modelLabels[4] <- format(modelLabels[4], justify = "centre", width = 5)
-    modelLabels[c(10,12)] <- format(modelLabels[c(10,12)], justify = "centre", width = 12)
-    modelLabels[c(1,3,5,7,9,11,13)] <- format(modelLabels[c(1,3,5,7,9,11,13)], justify="centre", width=2)    
-                       
-    if (!is.na(x$modelLogLabel)) {
-        cat(x$modelLogLabel)
+    for (rowIndex in 1:numRows) {
+        tableRow <- "|"
+        for (colIndex in 1:numCols) {
+            colWidth <- colWidths[colIndex]
+            entry <- padEntry(tableData[rowIndex,colIndex], colWidth)
+            tableRow <- paste(tableRow, entry, "|", sep="")
+        }
+        cat(tableRow)
         cat("\n")
-        
-        
-        modelLogRes <- data.frame(" " = c("|"),
-                            " " = c(as.character(round(x$estimate, digits=x$digits))), 
-                            " " = c("|"),
-                            " " = c(as.character(round(x$SE, digits=x$digits))),
-                            " " = c("|"), 
-                            " " = c(as.character(round(x$ZVal, digits=x$digits))),
-                            " " = c("|"), 
-                            " " = c(as.character(pDisp)), 
-                            " " = c("|"),
-                            " " = c(as.character(round(x$LowerBound, digits=x$digits))), 
-                            " " = c("|"),
-                            " " = c(as.character(round(x$UpperBound, digits=x$digits))), 
-                            " " = c("|"), check.names = FALSE) 
-        
-        modelLogRes[c(2,6,8)] <- format(modelLogRes[c(2,6,8)], justify = "centre", width = 10)
-        modelLogRes[4] <- format(modelLogRes[4], justify = "centre", width = 5)
-        modelLogRes[c(10,12)] <- format(modelLogRes[c(10,12)], justify = "centre", width = 12)
-        modelLogRes[c(1,3,5,7,9,11,13)] <- format(modelLogRes[c(1,3,5,7,9,11,13)], justify="centre", width=2)
-        cat(hLine2)
-        print(modelLabels, row.names=FALSE)
-        cat(hLine2middle)
-        print(modelLogRes, row.names=FALSE)
-        cat(hLine2)
-        cat("\n\n")
+        if (rowIndex < numRows) {
+            cat(middleLine) 
+            cat("\n")
+        } 
+    } 
+    cat(topLine)
+    cat("\n")
+}    
+
+padEntry <- function(entry, colWidth) {
+    # Adds spaces to entry so that it will be centered in a column of width colWidth.
+    # Pad a table entry with zeros
+    for (i in 1:floor((colWidth - nchar(entry))/2)) {
+        entry <- paste(" ", entry, sep="")
     }
-    
-    if (!is.na(x$modelStdLabel)) {
-        cat(x$modelStdLabel)
-        cat("\n")
-        modelStdRes <- data.frame(" " = c("|"),
-                            " " = c(as.character(round(exp(x$estimate), digits=x$digits))), 
-                            " " = c("|"),
-                            " " = c(as.character(round(x$SE, digits=x$digits))),
-                            " " = c("|"), 
-                            " " = c(as.character(round(x$ZVal, digits=x$digits))),
-                            " " = c("|"), 
-                            " " = c(as.character(pDisp)), 
-                            " " = c("|"),
-                            " " = c(as.character(round(exp(x$LowerBound), digits=x$digits))), 
-                            " " = c("|"),
-                            " " = c(as.character(round(exp(x$UpperBound), digits=x$digits))), 
-                            " " = c("|"), check.names = FALSE) 
-        modelStdRes[c(2,6,8)] <- format(modelStdRes[c(2,6,8)], justify = "centre", width = 10)
-        modelStdRes[4] <- format(modelStdRes[4], justify = "centre", width = 5)
-        modelStdRes[c(10,12)] <- format(modelStdRes[c(10,12)], justify = "centre", width = 12)
-        modelStdRes[c(1,3,5,7,9,11,13)] <- format(modelStdRes[c(1,3,5,7,9,11,13)], justify="centre", width=2)
-        cat(hLine2)
-        print(modelLabels, row.names=FALSE)
-        cat(hLine2middle)
-        print(modelStdRes, row.names=FALSE)
-        cat(hLine2)
-        cat("\n")
+    for (i in 1:ceiling(colWidth - nchar(entry))/2) {
+        entry <- paste(entry, " ", sep="")
     }
+    return(entry)
 }
 
 roundedQEDisplay <- function(x, digits) {
@@ -284,14 +259,42 @@ roundedQEDisplay <- function(x, digits) {
     return(xDisp)
 }
 
-roundedPDisplay <- function(x, digits) {
-    # Prints "< 10^(-digits)" if x is < 10^(-digits) or "= x" otherwise
-    xDisp <- x
-    if (x < 10^(-digits)) {
-        xDisp <- paste("< ", 10^(-digits), sep = "", collapse = "")
+roundedDisplay <- function(x, digits) {
+    # Prints "< 10^(-digits)" if x is < 10^(-digits) or "x" otherwise
+    xDisp <- round(x, digits)
+    for (count in 1:length(x)) {
+        if (abs(xDisp[count]) < 10^(-digits)) {
+          xDisp[count] <- paste("< ", 10^(-digits), sep = "", collapse = "")
+        }
     }
     return(xDisp)
 } 
+
+createSummaryDisp <- function(res, params, degf) {
+    QLabel =  paste("Q(df = ", degf, ")", sep="")
+    hetTestData <- list("Title" = "  Test for Heterogeneity", "Labels" = c(QLabel, "p-Value"),
+                        "Values" = c(res$QE, res$QEp))
+    estDisp <- binary.transform.f(params$metric)$display.scale(res$b)
+    lbDisp <- binary.transform.f(params$metric)$display.scale(res$ci.lb)
+    ubDisp <- binary.transform.f(params$metric)$display.scale(res$ci.ub) 
+    estCalc <- binary.transform.f(params$metric)$calc.scale(exp(res$b))
+    lbCalc <- binary.transform.f(params$metric)$calc.scale(exp(res$ci.lb))
+    ubCalc <- binary.transform.f(params$metric)$calc.scale(exp(res$ci.ub))              
+    resultData <- list("Title" = "  Model Results (log scale):",
+                        "Labels" = c("Estimate", "SE", "p-Value", "Z-Value", "Lower bound", "Upper bound"),
+                        "Values" = c(estDisp, res$se, res$pval, res$zval, lbDisp, ubDisp))
+    altData <- list("Title" = "Model Results (standard scale):",
+                    "Labels" = c("Estimate", "Lower bound", "Upper bound"),
+                    "Values" = c(estCalc, lbCalc, ubCalc))                    
+    if (params$metric %in% binary.log.metrics) { 
+        resultData$Title <- "  Model Results (standard scale)"
+        altData$Title <- "  Model Results (log scale)"
+    }
+    summaryDisp <- list("digits" = params$digits, "hetTestData" = hetTestData, "resultData" = resultData,
+                        "altData" = altData)
+    class(summaryDisp) <- "summaryDisplay"                     
+    return(summaryDisp)
+}
 
 ###################################################
 # binary fixed effects -- inverse variance        #
@@ -310,6 +313,11 @@ binary.fixed.inv.var <- function(binaryData, params){
         res<-rma.uni(yi=binaryData@y, sei=binaryData@SE, slab=binaryData@studyNames,
                                 level=params$conf.level, digits=params$digits, method="FE", add=params$adjust,
                                 to=params$to)
+        # Create list to display summary of results
+        degf <- res$k - res$p
+        summaryDisp <- createSummaryDisp(res, params, degf)
+        summaryDisp$modelTitle <- paste("Fixed-Effects Model - Inverse Variance (k = ", res$k, ")", sep="")
+        summaryDisp
         
         forest_path <- "./r_tmp/forest.png"
         plotData <- create.plot.data.binary(binaryData, params, res)
@@ -325,24 +333,14 @@ binary.fixed.inv.var <- function(binaryData, params){
         images <- c("forest plot"=forest_path)
         plot_names <- c("forest plot"="forest_plot")
         
-        
         ###
         # should we return the name of the result object & the name of the
         # plotting function as well here? perhaps only for the forest plot? 
         # this would allow interactive plot refinement via the console...
-        modelDesc <- paste("Fixed-Effects Model - Inverse Variance (k = ", res$k, ")", sep="")
-        hetTest <- "  Test for Heterogeneity:"       
-        modelStdLabel <- "  Model Results (standard scale):"
-        modelLogLabel <- "  Model Results (log scale):"
-        summaryDisp <- list("digits"=params$digits, "modelDesc"=modelDesc, "hetTest"=hetTest, "modelStdLabel"=modelStdLabel, 
-                            "modelLogLabel"=NA, "df"=res$k - res$p, "QE"=res$QE, "QEp"=res$QEp, "estimate"=res$b, 
-                            "SE"=res$se, "ZVal"=res$zval, "PVal"=res$pval, "LowerBound"=res$ci.lb, "UpperBound"=res$ci.ub) 
-        class(summaryDisp) <- "summaryDisplay"                    
         results <- list("images"=images, "summary"=summaryDisp, "plot_names"=plot_names)
     }
     results
 }
-
                                 
 binary.fixed.inv.var.parameters <- function(){
     # parameters
@@ -382,7 +380,14 @@ binary.fixed.mh <- function(binaryData, params){
     else{
         res<-rma.mh(ai=binaryData@g1O1, bi=binaryData@g1O2, 
                                 ci=binaryData@g2O1, di=binaryData@g2O2, slab=binaryData@studyNames,
-                                level=params$conf.level, digits=params$digits)                                                        
+                                level=params$conf.level, digits=params$digits) 
+        #                        
+        # Create list to display summary of results
+        #
+        degf <- res$k.yi - 1
+        summaryDisp <- createSummaryDisp(res, params, degf)
+        summaryDisp$modelTitle <- paste("Fixed-Effects Model - Mantel Haenszel (k = ", res$k, ")", sep="")
+        summaryDisp                                                                               
         #
         # generate forest plot 
         #
@@ -399,14 +404,6 @@ binary.fixed.mh <- function(binaryData, params){
         #     
         images <- c("forest plot"=forest_path)
         plot_names <- c("forest plot"="forest_plot")
-        modelDesc <- paste("Fixed-Effects Model - Mantel Haenszel(k = ", res$k, ")", sep="")
-        hetTest <- "  Test for Heterogeneity:"       
-        modelStdLabel <- "  Model Results (standard scale):"
-        modelLogLabel <- "  Model Results (log scale):"
-        summaryDisp <- list("digits"=params$digits, "modelDesc"=modelDesc, "hetTest"=hetTest, "modelStdLabel"=modelStdLabel, 
-                            "modelLogLabel"=modelLogLabel, "df"=res$k.yi - 1, "QE"=res$QE, "QEp"=res$QEp, "estimate"=res$b, 
-                            "SE"=res$se, "ZVal"=res$zval, "PVal"=res$pval, "LowerBound"=res$ci.lb, "UpperBound"=res$ci.ub)
-        class(summaryDisp) <- "summaryDisplay"                        
         results <- list("images"=images, "summary"=summary, "plot_names"=plot_names)
     }
     results
@@ -459,7 +456,13 @@ binary.fixed.peto <- function(binaryData, params){
         res <- rma.peto(ai=binaryData@g1O1, bi=binaryData@g1O2, 
                                 ci=binaryData@g2O1, di=binaryData@g2O2, slab=binaryData@studyNames,
                                 level=params$conf.level, digits=params$digits)              
-                                                  
+        #                        
+        # Create list to display summary of results
+        #
+        degf <- res$k.yi - 1
+        summaryDisp <- createSummaryDisp(res, params, degf)
+        summaryDisp$modelTitle <- paste("Fixed-Effects Model - Peto (k = ", res$k, ")", sep="")
+        summaryDisp                                                 
         #
         # generate forest plot 
         #
@@ -477,14 +480,7 @@ binary.fixed.peto <- function(binaryData, params){
         #     
         images <- c("forest plot"=forest_path)
         plot_names <- c("forest plot"="forest_plot")
-        modelDesc <- paste("Fixed-Effects Model - Peto (k = ", res$k, ")", sep="")
-        hetTest <- "  Test for Heterogeneity:"       
-        modelStdLabel <- "  Model Results (standard scale):"
-        modelLogLabel <- "  Model Results (log scale):"
-        summaryDisp <- list("digits"=params$digits, "modelDesc"=modelDesc, "hetTest"=hetTest, "modelStdLabel"=modelStdLabel, 
-                            "modelLogLabel"=modelLogLabel, "df"=res$k.yi - 1, "QE"=res$QE, "QEp"=res$QEp, "estimate"=res$b, 
-                            "SE"=res$se, "ZVal"=res$zval, "PVal"=res$pval, "LowerBound"=res$ci.lb, "UpperBound"=res$ci.ub)
-        class(summaryDisp) <- "summaryDisplay"                        
+        
         results <- list("images"=images, "summary"=summary, "plot_names"=plot_names)
     }
     results
@@ -548,7 +544,13 @@ binary.random <- function(binaryData, params){
                                         method=params$rm.method, level=params$conf.level,
                                         digits=params$digits)
         }
-        
+        #                        
+        # Create list to display summary of results
+        #
+        degf <- res$k.yi - 1
+        summaryDisp <- createSummaryDisp(res, params, degf)
+        summaryDisp$modelTitle <- paste("Random-Effects Model (k = ", res$k, ")", sep="")
+        summaryDisp       
         #
         # generate forest plot 
         #
