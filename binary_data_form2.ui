@@ -16,7 +16,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Binary Data</string>
   </property>
   <widget class="QWidget" name="layoutWidget_5">
    <property name="geometry">

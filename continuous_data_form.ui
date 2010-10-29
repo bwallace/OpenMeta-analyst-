@@ -31,7 +31,7 @@
    <string>Continuous Data</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="images/icons.qrc">
+   <iconset resource="../OpenMeta/images/icons.qrc">
     <normaloff>:/images/meta.png</normaloff>:/images/meta.png</iconset>
   </property>
   <widget class="QDialogButtonBox" name="buttonBox">
@@ -116,19 +116,19 @@ p, li { white-space: pre-wrap; }
      <rect>
       <x>70</x>
       <y>31</y>
-      <width>550</width>
+      <width>490</width>
       <height>81</height>
      </rect>
     </property>
     <property name="minimumSize">
      <size>
-      <width>550</width>
+      <width>490</width>
       <height>0</height>
      </size>
     </property>
     <property name="maximumSize">
      <size>
-      <width>550</width>
+      <width>490</width>
       <height>16777215</height>
      </size>
     </property>
@@ -162,7 +162,7 @@ p, li { white-space: pre-wrap; }
      <number>2</number>
     </property>
     <property name="columnCount">
-     <number>8</number>
+     <number>7</number>
     </property>
     <row>
      <property name="text">
@@ -201,11 +201,6 @@ p, li { white-space: pre-wrap; }
     </column>
     <column>
      <property name="text">
-      <string>pval</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
       <string>low</string>
      </property>
     </column>
@@ -220,19 +215,19 @@ p, li { white-space: pre-wrap; }
      <rect>
       <x>70</x>
       <y>130</y>
-      <width>550</width>
+      <width>490</width>
       <height>81</height>
      </rect>
     </property>
     <property name="minimumSize">
      <size>
-      <width>550</width>
+      <width>490</width>
       <height>0</height>
      </size>
     </property>
     <property name="maximumSize">
      <size>
-      <width>550</width>
+      <width>490</width>
       <height>16777215</height>
      </size>
     </property>
@@ -258,7 +253,7 @@ p, li { white-space: pre-wrap; }
      <number>2</number>
     </property>
     <property name="columnCount">
-     <number>8</number>
+     <number>7</number>
     </property>
     <row>
      <property name="text">
@@ -297,11 +292,6 @@ p, li { white-space: pre-wrap; }
     </column>
     <column>
      <property name="text">
-      <string>pval</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
       <string>low</string>
      </property>
     </column>
@@ -314,7 +304,7 @@ p, li { white-space: pre-wrap; }
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>510</x>
+      <x>450</x>
       <y>220</y>
       <width>71</width>
       <height>16</height>
@@ -327,7 +317,7 @@ p, li { white-space: pre-wrap; }
    <widget class="QLineEdit" name="correlation_pre_post">
     <property name="geometry">
      <rect>
-      <x>580</x>
+      <x>530</x>
       <y>220</y>
       <width>41</width>
       <height>16</height>
@@ -521,7 +511,7 @@ p, li { white-space: pre-wrap; }
   </widget>
  </widget>
  <resources>
-  <include location="images/icons.qrc"/>
+  <include location="../OpenMeta/images/icons.qrc"/>
  </resources>
  <connections>
   <connection>

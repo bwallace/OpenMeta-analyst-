@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'binary_data_form2.ui'
 #
-# Created: Wed Oct 27 13:43:26 2010
+# Created: Fri Oct 29 16:11:57 2010
 #      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -248,7 +248,7 @@ class Ui_BinaryDataForm(object):
         QtCore.QMetaObject.connectSlotsByName(BinaryDataForm)
 
     def retranslateUi(self, BinaryDataForm):
-        BinaryDataForm.setWindowTitle(QtGui.QApplication.translate("BinaryDataForm", "Dialog", None, QtGui.QApplication.UnicodeUTF8))
+        BinaryDataForm.setWindowTitle(QtGui.QApplication.translate("BinaryDataForm", "Binary Data", None, QtGui.QApplication.UnicodeUTF8))
         self.label_5.setText(QtGui.QApplication.translate("BinaryDataForm", "event", None, QtGui.QApplication.UnicodeUTF8))
         self.label_6.setText(QtGui.QApplication.translate("BinaryDataForm", "no event", None, QtGui.QApplication.UnicodeUTF8))
         self.label_10.setText(QtGui.QApplication.translate("BinaryDataForm", "total", None, QtGui.QApplication.UnicodeUTF8))
