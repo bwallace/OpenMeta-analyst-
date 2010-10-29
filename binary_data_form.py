@@ -71,16 +71,17 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         effect_dict = self.ma_unit.effects_dict[self.cur_effect]
         for s, txt_box in zip(['display_est', 'display_lower', 'display_upper'], \
                               [self.effect_txt_box, self.low_txt_box, self.high_txt_box]):
-            txt_box.blockSignals(True)
             if effect_dict[s] is not None:
                 txt_box.setText(QString("%s" % round(effect_dict[s], NUM_DIGITS)))
             else:
                 txt_box.setText(QString(""))
-            txt_box.blockSignals(False)
+            
             
     def effect_changed(self):
         self.cur_effect = unicode(self.effect_cbo_box.currentText().toUtf8(), "utf-8")
+        self.try_to_update_cur_outcome()
         self.set_current_effect()
+        
         
     def val_edit(self, val_str, display_scale_val):
         ''' val_str is one of `est`, `lower`, `upper` '''
@@ -297,8 +298,6 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                                             QTableWidgetItem(str(no_events2)))
             elif not self._is_empty(1, 1):
                 # we have number no-events, too
-                pyqtRemoveInputHook()
-                pdb.set_trace()
                 n2 = self._get_int(1, 1) + e2
                 self.raw_data_table.setItem(1, 2, \
                                             QTableWidgetItem(str(n2)))
