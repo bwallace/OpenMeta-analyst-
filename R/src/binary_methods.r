@@ -189,7 +189,7 @@ list2Array <- function(dataList, digits) {
       arr <- array(dim=c(2,length(listVals)))
       arr[1,] <- dataList$Labels
       arr[2,] <- listVals
-      class(arr) <- "resultsTable"
+      class(arr) <- "Table"
     }
     else {
         arr = "Labels list and values list have different lengths."
@@ -274,24 +274,34 @@ createSummaryDisp <- function(res, params, degf) {
     QLabel =  paste("Q(df = ", degf, ")", sep="")
     hetTestData <- list("Title" = "  Test for Heterogeneity", "Labels" = c(QLabel, "p-Value"),
                         "Values" = c(res$QE, res$QEp))
-    estDisp <- binary.transform.f(params$metric)$display.scale(res$b)
-    lbDisp <- binary.transform.f(params$metric)$display.scale(res$ci.lb)
-    ubDisp <- binary.transform.f(params$metric)$display.scale(res$ci.ub)
+    #estDisp <- binary.transform.f(params$metric)$display.scale(res$b)
+    #lbDisp <- binary.transform.f(params$metric)$display.scale(res$ci.lb)
+    #ubDisp <- binary.transform.f(params$metric)$display.scale(res$ci.ub)
+    
     resultData <- list("Title" = "  Model Results (log scale):",
                         "Labels" = c("Estimate", "SE", "p-Value", "Z-Value", "Lower bound", "Upper bound"),
-                        "Values" = c(estDisp, res$se, res$pval, res$zval, lbDisp, ubDisp))
-    if (binary.transform.f(params$metric)$display.scale(1)!= binary.transform.f(params$metric)$calc.scale(1)) { 
-        resultData$Title <- "  Model Results (standard scale)"
-        estCalc <- binary.transform.f(params$metric)$calc.scale(estDisp)
-        lbCalc <- binary.transform.f(params$metric)$calc.scale(lbDisp)
-        ubCalc <- binary.transform.f(params$metric)$calc.scale(ubDisp) 
+                        "Values" = NULL)
+    #if ((params$metric == "OR") || (params$metric == "RR")) {                    
+        resultData$Title = "  Model Results (standard scale):"
+        resultData$Values = c(exp(res$b), res$se, res$pval, res$zval, exp(res$ci.lb), exp(res$ci.ub))
         altData <- list("Title" = "  Model Results (log scale):",
                       "Labels" = c("Estimate", "Lower bound", "Upper bound"),
-                      "Values" = c(estCalc, lbCalc, ubCalc))                    
-    }
-    else {
-        altData <- list("Title"=NA)
-    }    
+                      "Values" = c(res$b, res$ci.lb, res$ci.ub))        
+    #}    
+    #if (binary.transform.f(params$metric)$display.scale(1)!= binary.transform.f(params$metric)$calc.scale(1)) { 
+    #else {
+    #    resultData$Title <- "  Model Results (standard scale)"
+    #    altData <- list("Title" = NA)
+        #estCalc <- binary.transform.f(params$metric)$calc.scale(estDisp)
+        #lbCalc <- binary.transform.f(params$metric)$calc.scale(lbDisp)
+        #ubCalc <- binary.transform.f(params$metric)$calc.scale(ubDisp) 
+        #altData <- list("Title" = "  Model Results (log scale):",
+        #              "Labels" = c("Estimate", "Lower bound", "Upper bound"),
+        #              "Values" = c(estCalc, lbCalc, ubCalc))                    
+    #}
+    #else {
+    #    altData <- list("Title"=NA)
+    #}    
     summaryDisp <- list("digits" = params$digits, "hetTestData" = hetTestData, "resultData" = resultData,
                         "altData" = altData)
     class(summaryDisp) <- "summaryDisplay"                     
