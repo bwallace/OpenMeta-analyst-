@@ -66,7 +66,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                                             self._cell_changed)
         QObject.connect(self.alpha_edit, SIGNAL("textChanged (QString)"), 
                                             self.update_alpha)                    
-        QObject.connect(self.correlation_edit, SIGNAL("textChanged (QString)"), 
+        QObject.connect(self.correlation_simple, SIGNAL("textChanged (QString)"), 
                                             self.update_correlation)          
         QObject.connect(self.g1_pre_post_table, SIGNAL("cellChanged (int, int)"),
                                             lambda: self.impute_pre_post_data(self.g1_pre_post_table, 0))
@@ -80,7 +80,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
     def update_correlation(self):
         success = False
         try:
-            val = float(self.correlation_edit.text())
+            val = float(self.correlation_simple.text())
             if val > 0.0 and val < 1.0:
                 self.correlation = val
                 success = True
