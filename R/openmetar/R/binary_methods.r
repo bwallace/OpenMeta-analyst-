@@ -276,20 +276,22 @@ createSummaryDisp <- function(res, params, degf) {
                         "Values" = c(res$QE, res$QEp))
     estDisp <- binary.transform.f(params$metric)$display.scale(res$b)
     lbDisp <- binary.transform.f(params$metric)$display.scale(res$ci.lb)
-    ubDisp <- binary.transform.f(params$metric)$display.scale(res$ci.ub) 
-    estCalc <- binary.transform.f(params$metric)$calc.scale(exp(res$b))
-    lbCalc <- binary.transform.f(params$metric)$calc.scale(exp(res$ci.lb))
-    ubCalc <- binary.transform.f(params$metric)$calc.scale(exp(res$ci.ub))              
+    ubDisp <- binary.transform.f(params$metric)$display.scale(res$ci.ub)
     resultData <- list("Title" = "  Model Results (log scale):",
                         "Labels" = c("Estimate", "SE", "p-Value", "Z-Value", "Lower bound", "Upper bound"),
                         "Values" = c(estDisp, res$se, res$pval, res$zval, lbDisp, ubDisp))
-    altData <- list("Title" = "Model Results (standard scale):",
-                    "Labels" = c("Estimate", "Lower bound", "Upper bound"),
-                    "Values" = c(estCalc, lbCalc, ubCalc))                    
-    if (params$metric %in% binary.log.metrics) { 
+    if (binary.transform.f(params$metric)$display.scale(1)!= binary.transform.f(params$metric)$calc.scale(1)) { 
         resultData$Title <- "  Model Results (standard scale)"
-        altData$Title <- "  Model Results (log scale)"
+        estCalc <- binary.transform.f(params$metric)$calc.scale(estDisp)
+        lbCalc <- binary.transform.f(params$metric)$calc.scale(lbDisp)
+        ubCalc <- binary.transform.f(params$metric)$calc.scale(ubDisp) 
+        altData <- list("Title" = "  Model Results (log scale):",
+                      "Labels" = c("Estimate", "Lower bound", "Upper bound"),
+                      "Values" = c(estCalc, lbCalc, ubCalc))                    
     }
+    else {
+        altData <- list("Title"=NA)
+    }    
     summaryDisp <- list("digits" = params$digits, "hetTestData" = hetTestData, "resultData" = resultData,
                         "altData" = altData)
     class(summaryDisp) <- "summaryDisplay"                     

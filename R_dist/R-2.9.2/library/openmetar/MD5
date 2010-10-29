@@ -1,9 +1,9 @@
 d85a7d8d1c5f158b85dc5d63f8f12318 *CONTENTS
-3fe8ccb053e61ad5ed662c5f2f1fd8ff *DESCRIPTION
+6b865ceb972007d6a0e48da0a01dfc10 *DESCRIPTION
 5454b3d66528138e2caea653460f9390 *INDEX
 4336d4e5baef0c8c719cc35672d51296 *Meta/Rd.rds
 70ad0d8012d529777a410895e9d6203b *Meta/hsearch.rds
-290da92366ce1ad3f85b8f5b6980f378 *Meta/package.rds
+38088cc5ff1dd8053b8cd1433fa0b197 *Meta/package.rds
 a86e9e41cbc70ad6683599012aa5d4c3 *R-ex/AnalysisSpecification-class.R
 0ce7f1374e3a5bddeacee6e7c1b3c105 *R-ex/BinaryData-class.R
 95c6810db7db4d406f438bced0a3a25c *R-ex/ContinuousData-class.R
@@ -38,7 +38,7 @@ f2f05d78f31d325be6d9dfb835abe963 *R-ex/create.plot.data.R
 9df112073380ae71880c861d81879b82 *R-ex/create.plot.data.binary.R
 98f5fc7ea3a68ed8ff1c84821c4d3651 *R-ex/create.plot.data.continuous.R
 e9446d22896a61aa8e133ee5a0c42853 *R-ex/create.plot.data.generic.R
-0b640df69480c7b9c77c432379d1e677 *R-ex/createSummaryDisp.R
+32fd9b6f78fd60053297043f346eb627 *R-ex/createSummaryDisp.R
 e562f84aa1985379d61cdd8deb1f02f5 *R-ex/cum.ma.binary.R
 b9ba55725e249d736005bc8b477ab724 *R-ex/cum.ma.continuous.R
 fafc4159a80e5c8a3f2af4c673e66440 *R-ex/draw.data.col.R
@@ -70,8 +70,8 @@ d990ca147dc2d93bc2ffbb942c810213 *R-ex/print.Table.R
 136880a02a52fe3f276d0c3cce693791 *R-ex/roundedQEDisplay.R
 61a98276a698ab1b9ef781afeb3a40c0 *R-ex/study.column.R
 eca183792ddaccc39b9d7d91c1531356 *R/openmetar
-b4c03349e82b68012c90fef0fe1683bc *R/openmetar.rdb
-a8241faa1485b34fec6971ebec8e3af0 *R/openmetar.rdx
+9b2eda083b22fd99cb9cba229bb7f2fa *R/openmetar.rdb
+c26a161729663d0746759373df716db1 *R/openmetar.rdx
 decb130b24f9f5e59cebbded1f25403c *help/AnIndex
 347376c7c813f9c6d7c9ce316f754126 *help/AnalysisSpecification-class
 91f4c0c298588e53245f0729e4a7cbe2 *help/BinaryData-class
@@ -107,7 +107,7 @@ b7030089e86d14190757f8bef9302338 *help/continuous.random.parameters
 836e2237ac3b05d849b72f07ef3e0a71 *help/create.plot.data.binary
 ec6c933376b436ae8343d6b1643db50d *help/create.plot.data.continuous
 9fa5ac0da565900d8dc62f86991722ed *help/create.plot.data.generic
-aab33eed2c72dd6ef2a4d1e3a325f7d1 *help/createSummaryDisp
+c40859098d0fe41bd06a48955d78efe6 *help/createSummaryDisp
 37e70bd825989acd426608eb3fcd8ddc *help/cum.ma.binary
 eb302c9f3a080b722d686645a3aaebfb *help/cum.ma.continuous
 75aac6cead5d47124a62178309b80aaf *help/draw.data.col
@@ -129,7 +129,7 @@ e52c09020c293cf25d576428aa8ac072 *help/loo.ma.binary
 950dfc6a4aad5be9227b6a956466ad6a *help/loo.ma.continuous
 e73d6a075b0b6387b20a78a250fa8648 *help/meta.regression.plot
 f2c7234dab024567d1ad36afe4896fad *help/metric.is.log.scale
-442f0f453c94ce9707149712b2ce9547 *help/openmetar-package
+7fd676580243a768eb980160209920a9 *help/openmetar-package
 866e7550f90153d564e9a4c45ebada38 *help/padEntry
 1c734f2fce16c59c18a19f7485a56730 *help/plot.options
 0379d2f47970aea54e0b88fb74396709 *help/print.Table
@@ -173,7 +173,7 @@ a39ff5a1082a599dd0bedc8b40fcab2c *html/continuous.transform.f.html
 37feaf0f1df6f7322f95d189fbbff59c *html/create.plot.data.continuous.html
 955abc5b256e1431c9adad79e0d66fd6 *html/create.plot.data.generic.html
 5749d90146af60a25d40bece73b3b1b0 *html/create.plot.data.html
-db703022ee8ab21ef1705becdfce9fdc *html/createSummaryDisp.html
+3895c80303882666729eabed17371613 *html/createSummaryDisp.html
 4f20cd324a06cd4835080f83467faa08 *html/cum.ma.binary.html
 e86419bb545caf1c6a80ebfb8bbfe5fb *html/cum.ma.continuous.html
 43d7a41bd758caa024f32888e472780c *html/draw.data.col.html
@@ -195,7 +195,7 @@ b6d532dd8199a1a51afcb00d4ffbb746 *html/isnt.null.html
 76657d3a9b0e36072f729845c493cb86 *html/loo.ma.continuous.html
 4bbae749f2ca0b70c694e1fb1ca8c62e *html/meta.regression.plot.html
 9ba1f3a27ad4a8b508a7cc6707f0856e *html/metric.is.log.scale.html
-b39d149254bb85b753028d56ee2b900d *html/openmetar-package.html
+f4467589341bc59cd453cc40faac4097 *html/openmetar-package.html
 7e947231de503b446f751278a5ace75b *html/padEntry.html
 5e7cc664257a88d4684c7696bfc8dc36 *html/plot.options.html
 d8f132bf021fbe9b996744de4083ea29 *html/print.Table.html
@@ -238,7 +238,7 @@ b686143830e36f645d6bbc1ffa7a47c3 *latex/continuous.random.tex
 12a5890c748fd4fcccb34588ab3703a4 *latex/create.plot.data.continuous.tex
 15d8e97d17ac6a72bf195ee4ed24cc35 *latex/create.plot.data.generic.tex
 a5119f4f1ec6d45446337fceffd54aee *latex/create.plot.data.tex
-13df43c63e1f2fe779148e69ab669764 *latex/createSummaryDisp.tex
+77f5ad9da9860d83368339ec1494dcff *latex/createSummaryDisp.tex
 0ef59dd977bfa1a6c33f748607361b02 *latex/cum.ma.binary.tex
 96ee924773d2bbd33dc8ff18fb95eb76 *latex/cum.ma.continuous.tex
 3e2b76940da792f899a573348da349a0 *latex/draw.data.col.tex
@@ -260,7 +260,7 @@ e95e6ffca64f8faea7ecbb4a05afe26d *latex/list2Array.tex
 361a1c4127f7ba4542b141bab6255487 *latex/loo.ma.continuous.tex
 27206a7cda870beabf9f7096d2f0421d *latex/meta.regression.plot.tex
 fb3a4f4f467f7e3f91f52c081e2f4625 *latex/metric.is.log.scale.tex
-20aa65c9171bfdde1a569f6dc016add1 *latex/openmetar-package.tex
+b0b5da2c4d160ecf5ba2bb27d7359dc0 *latex/openmetar-package.tex
 1fc0a76212bb645f1fb5d02b5b8af461 *latex/padEntry.tex
 b9182935d9d4cfc4bc55d552df6ab9c2 *latex/plot.options.tex
 736a8e7b9314dfe061f55a5c8d61771d *latex/print.Table.tex
@@ -269,4 +269,4 @@ b4765b605580c63a1506a8dd6b33ef48 *latex/print.summaryDisplay.tex
 1d182f6172790ecea9634e86b3b9aaf3 *latex/roundedDisplay.tex
 6c0c732973f1da79afb47630babd7571 *latex/roundedQEDisplay.tex
 f99725c300b70f5f0d32ea30a83ba6c7 *latex/study.column.tex
-d998186c8f31589221fa3776c5b750cd *man/openmetar.Rd.gz
+c315051cbf00568a6c7fe0b62999c378 *man/openmetar.Rd.gz
