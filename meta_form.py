@@ -618,9 +618,9 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.model.set_state(state_dict)
         self._disconnections()
         if len(data_model) >= 2:
-            self.enable_menu_options_that_require_dataset(True)
+            self.enable_menu_options_that_require_dataset()
         else:
-            self.enable_menu_options_that_require_dataset(False)
+            self.disable_menu_options_that_require_dataset()
         self.tableView.setModel(self.model)
         self.model_updated()
         print "ok -- model set."
