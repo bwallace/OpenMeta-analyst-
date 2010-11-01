@@ -28,10 +28,6 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
                                        self.item_clicked)
                          
         self.psuedo_console.blockSignals(False)              
-        #QObject.connect(self.psuedo_console, SIGNAL("returnPressed(void)"),
-        #                               self.process_console_input)
-        #QObject.connect(self.psuedo_console, SIGNAL("textChanged()"),
-         #                              self.process_console_input)
         QObject.connect(self.psuedo_console, SIGNAL("returnPressed()"),
                                        self.process_console_input)
         QObject.connect(self.psuedo_console, SIGNAL("upArrowPressed()"),
@@ -124,6 +120,7 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
     def create_text_item(self, text, position):
         txt_item = QGraphicsTextItem(QString(text))
+        txt_item.setFont(QFont("courier", 8))
         txt_item.setTextInteractionFlags(Qt.TextEditable)
         self.scene.addItem(txt_item)
         self.y_coord +=txt_item.boundingRect().size().height()
