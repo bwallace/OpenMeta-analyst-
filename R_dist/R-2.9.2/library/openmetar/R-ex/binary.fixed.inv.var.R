@@ -26,9 +26,9 @@ function (binaryData, params)
             digits = params$digits, method = "FE", add = params$adjust, 
             to = params$to)
         degf <- res$k - res$p
-        summaryDisp <- createSummaryDisp(res, params, degf)
-        summaryDisp$modelTitle <- paste("Fixed-Effects Model - Inverse Variance (k = ", 
+        modelTitle <- paste("Fixed-Effects Model - Inverse Variance (k = ", 
             res$k, ")", sep = "")
+        summaryDisp <- createSummaryDisp(res, params, degf, modelTitle)
         summaryDisp
         forest_path <- "./r_tmp/forest.png"
         plotData <- create.plot.data.binary(binaryData, params, 

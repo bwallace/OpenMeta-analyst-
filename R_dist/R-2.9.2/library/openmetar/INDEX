@@ -83,5 +83,4 @@ print.Table
 print.summaryDisplay    
 reg.data                
 roundedDisplay          
-roundedQEDisplay        
 study.column            

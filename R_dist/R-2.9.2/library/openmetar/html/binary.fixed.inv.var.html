@@ -50,9 +50,9 @@ function (binaryData, params)
             digits = params$digits, method = "FE", add = params$adjust, 
             to = params$to)
         degf &lt;- res$k - res$p
-        summaryDisp &lt;- createSummaryDisp(res, params, degf)
-        summaryDisp$modelTitle &lt;- paste("Fixed-Effects Model - Inverse Variance (k = ", 
+        modelTitle &lt;- paste("Fixed-Effects Model - Inverse Variance (k = ", 
             res$k, ")", sep = "")
+        summaryDisp &lt;- createSummaryDisp(res, params, degf, modelTitle)
         summaryDisp
         forest_path &lt;- "./r_tmp/forest.png"
         plotData &lt;- create.plot.data.binary(binaryData, params, 

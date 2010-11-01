@@ -56,6 +56,11 @@ function (contData, params)
                 slab = contData@studyNames, method = params$rm.method, 
                 level = params$conf.level, digits = params$digits)
         }
+        degf &lt;- res$k - res$p
+        modelTitle &lt;- paste("Continuous Random-Effects Model (k = ", 
+            res$k, ")", sep = "")
+        summaryDisp &lt;- createSummaryDisp(res, params, degf, modelTitle)
+        summaryDisp
         getwd()
         forest.path &lt;- "./r_tmp/forest.png"
         plotData &lt;- create.plot.data.continuous(contData, params, 
@@ -63,7 +68,8 @@ function (contData, params)
         forest.plot(plotData, outpath = forest.path)
         images &lt;- c(`forest plot` = forest.path)
         plot_names &lt;- c(`forest plot` = "forest_plot")
-        results &lt;- list(images = images, summary = res, plot_names = plot_names)
+        results &lt;- list(images = images, summary = summaryDisp, 
+            plot_names = plot_names)
     }
     results
   }

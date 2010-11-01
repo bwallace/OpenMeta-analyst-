@@ -32,6 +32,11 @@ function (contData, params)
                 slab = contData@studyNames, method = params$rm.method, 
                 level = params$conf.level, digits = params$digits)
         }
+        degf <- res$k - res$p
+        modelTitle <- paste("Continuous Random-Effects Model (k = ", 
+            res$k, ")", sep = "")
+        summaryDisp <- createSummaryDisp(res, params, degf, modelTitle)
+        summaryDisp
         getwd()
         forest.path <- "./r_tmp/forest.png"
         plotData <- create.plot.data.continuous(contData, params, 
@@ -39,7 +44,8 @@ function (contData, params)
         forest.plot(plotData, outpath = forest.path)
         images <- c(`forest plot` = forest.path)
         plot_names <- c(`forest plot` = "forest_plot")
-        results <- list(images = images, summary = res, plot_names = plot_names)
+        results <- list(images = images, summary = summaryDisp, 
+            plot_names = plot_names)
     }
     results
   }

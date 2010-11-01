@@ -62,5 +62,4 @@ print.summaryDisplay	print.summaryDisplay
 print.Table	print.Table
 reg.data	reg.data
 roundedDisplay	roundedDisplay
-roundedQEDisplay	roundedQEDisplay
 study.column	study.column

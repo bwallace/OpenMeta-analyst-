@@ -376,12 +376,6 @@ Keywords: ~kwd1 ~kwd2
 Description: 
 URL: ../../../library/openmetar/html/roundedDisplay.html
 
-Entry: roundedQEDisplay
-Aliases: roundedQEDisplay
-Keywords: ~kwd1 ~kwd2
-Description: 
-URL: ../../../library/openmetar/html/roundedQEDisplay.html
-
 Entry: study.column
 Aliases: study.column
 Keywords: ~kwd1 ~kwd2

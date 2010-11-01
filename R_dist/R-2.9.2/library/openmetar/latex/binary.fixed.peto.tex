@@ -32,9 +32,9 @@ function (binaryData, params)
             ci = binaryData@g2O1, di = binaryData@g2O2, slab = binaryData@studyNames, 
             level = params$conf.level, digits = params$digits)
         degf <- res$k.yi - 1
-        summaryDisp <- createSummaryDisp(res, params, degf)
-        summaryDisp$modelTitle <- paste("Fixed-Effects Model - Peto (k = ", 
+        modelTitle <- paste("Fixed-Effects Model - Peto (k = ", 
             res$k, ")", sep = "")
+        summaryDisp <- createSummaryDisp(res, params, degf, modelTitle)
         summaryDisp
         forest_path <- "./r_tmp/forest.png"
         png(forest_path)
@@ -42,7 +42,8 @@ function (binaryData, params)
         dev.off()
         images <- c(`forest plot` = forest_path)
         plot_names <- c(`forest plot` = "forest_plot")
-        results <- list(images = images, summary = summary, plot_names = plot_names)
+        results <- list(images = images, summary = summaryDisp, 
+            plot_names = plot_names)
     }
     results
   }

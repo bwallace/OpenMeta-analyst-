@@ -11,7 +11,7 @@
 library(metafor)
 
 # cd <- new('ContinuousData', N1=c(20, 90), mean1=c(1.2, .9), sd1=c(.2, .2), N2=c(30, 50), mean2=c(2, 2), sd2=c(.1, .1), studyNames=c("1", "2"))
-# params <- list(metric="MD", conf.level=95, digits=3)
+# params <- list(measure="MD", conf.level=95, digits=3)
 
 compute.for.one.cont.study <- function(contData, params){
     res <- escalc(params$metric, 
@@ -86,7 +86,11 @@ continuous.random <- function(contData, params){
                                         method=params$rm.method, level=params$conf.level,
                                         digits=params$digits)
         }
-        
+        degf <- res$k - res$p
+        modelTitle <- paste("Continuous Random-Effects Model (k = ", res$k, ")", sep="")
+        summaryDisp <- createSummaryDisp(res, params, degf, modelTitle)
+        #summaryDisp$modelTitle <- paste("Random-Effects Model - Inverse Variance (k = ", res$k, ")", sep="")
+        summaryDisp
         #
         # generate forest plot 
         #
@@ -108,7 +112,7 @@ continuous.random <- function(contData, params){
         images <- c("forest plot"=forest.path)
         plot_names <- c("forest plot"="forest_plot")
         
-        results <- list("images"=images, "summary"=res, "plot_names"=plot_names)
+        results <- list("images"=images, "summary"=summaryDisp, "plot_names"=plot_names)
     }
     results
 }

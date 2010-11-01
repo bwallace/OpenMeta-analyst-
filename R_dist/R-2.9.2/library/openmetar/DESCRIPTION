@@ -2,11 +2,11 @@ Package: openmetar
 Type: Package
 Title: What the package does (short line)
 Version: 1.0
-Date: 2010-10-29
+Date: 2010-11-01
 Author: Who wrote it
 Maintainer: Who to complain to <yourfault@somewhere.net>
 Description: More about what it does (maybe more than one line)
 License: What license is it under?
 LazyLoad: yes
 Depends: methods
-Built: R 2.9.2; ; 2010-10-29 21:24:06 UTC; windows
+Built: R 2.9.2; ; 2010-11-01 20:08:14 UTC; windows

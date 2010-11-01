@@ -12,14 +12,14 @@
 
 
 # bd <- new("BinaryData", g1O1=c(10, 20, 30), g1O2=c(90, 180, 270), g2O1=c(15, 25, 35), g2O2=c(85, 175, 265),                       studyNames=c("1", "2", "3")
-# params <- list(metric="OR", conf.level=95, digits=3)
+# params <- list(measure="OR", conf.level=95, digits=3)
 
 library(metafor)
 
 binary.log.metrics <- c("OR", "RR", "PETO")
 
 compute.for.one.bin.study <- function(binary.data, params){
-    res <- escalc(params$metric, ai=binary.data@g1O1, bi=binary.data@g1O2, 
+    res <- escalc(params$measure, ai=binary.data@g1O1, bi=binary.data@g1O2, 
                                     ci=binary.data@g2O1, di=binary.data@g2O2)
     res                             
 }
@@ -160,32 +160,36 @@ print.summaryDisplay <- function(results,...) {
     if (!is.na(results$hetTestData$Title)) {
         cat(results$hetTestData$Title)
         cat("\n")
-        hetTable <- list2Array(results$hetTestData, digits=results$digits)
+        hetTable <- list2Array(results$hetTestData)
         print(hetTable)
         cat("\n")
     }                   
     if (!is.na(results$resultData$Title)) {
         cat(results$resultData$Title)
         cat("\n")
-        resultsTable <- list2Array(results$resultData, digits=results$digits)
+        resultsTable <- list2Array(results$resultData)
         print(resultsTable)
         cat("\n")
     }
     if (!is.na(results$altData$Title)) {
         cat(results$altData$Title)
         cat("\n")
-        altTable <- list2Array(results$altData, digits=results$digits)
+        altTable <- list2Array(results$altData)
         print(altTable)
     }
+    #if (length(binaryData@g1O1) > 0) {
+    #    rawData<-extractData(binaryData, params)
+    #    cat("  Data\n")
+    #    print(rawData)
+    #}
 }
 
-list2Array <- function(dataList, digits) {
+list2Array <- function(dataList) {
     # Accepts a named list dataList and converts it to an array in which 
-    # first row is the names and second row is the rounded values.
+    # first row is the names and second row is the values.
     # dataList$Labels and dataList$Labels must have the same length. 
     if (length(dataList$Labels) == length(dataList$Values)) {
       listVals <- dataList$Values
-      listVals <- roundedDisplay(listVals, digits)
       arr <- array(dim=c(2,length(listVals)))
       arr[1,] <- dataList$Labels
       arr[2,] <- listVals
@@ -250,14 +254,14 @@ padEntry <- function(entry, colWidth) {
     return(entry)
 }
 
-roundedQEDisplay <- function(x, digits) {
+#roundedQEDisplay <- function(x, digits) {
     # Prints "< 10^(-digits)" if x is < 10^(-digits) or "= x" otherwise
-    xDisp <- paste("= ", x, sep = "", collapse = "")
-    if (x < 10^(-digits)) {
-        xDisp <- paste("< ", 10^(-digits), sep = "", collapse = "")
-    }
-    return(xDisp)
-}
+    #xDisp <- paste("= ", x, sep = "", collapse = "")
+    #if (x < 10^(-digits)) {
+    #    xDisp <- paste("< ", 10^(-digits), sep = "", collapse = "")
+    #}
+    #return(xDisp)
+#}
 
 roundedDisplay <- function(x, digits) {
     # Prints "< 10^(-digits)" if x is < 10^(-digits) or "x" otherwise
@@ -270,39 +274,40 @@ roundedDisplay <- function(x, digits) {
     return(xDisp)
 } 
 
-createSummaryDisp <- function(res, params, degf) {
+createSummaryDisp <- function(res, params, degf, modelTitle) {
     QLabel =  paste("Q(df = ", degf, ")", sep="")
-    hetTestData <- list("Title" = "  Test for Heterogeneity", "Labels" = c(QLabel, "p-Value"),
-                        "Values" = c(res$QE, res$QEp))
-    #estDisp <- binary.transform.f(params$metric)$display.scale(res$b)
-    #lbDisp <- binary.transform.f(params$metric)$display.scale(res$ci.lb)
-    #ubDisp <- binary.transform.f(params$metric)$display.scale(res$ci.ub)
+    I2 <- max(0, (res$QE - degf)/res$QE)
+    I2 <- paste(100 * round(I2, digits = 2), "%")
+    QE <- round(res$QE, digits=params$digits)
+    QEp <- roundedDisplay(res$QEp, digits=params$digits)
+    hetTestData <- list("Title" = "  Test for Heterogeneity", "Labels" = c(QLabel, "p-Value", "I^2"),
+                        "Values" = c(QE, QEp, I2))
+    estDisp <- round(binary.transform.f(params$measure)$display.scale(res$b), digits=params$digits) 
+    lbDisp <- round(binary.transform.f(params$measure)$display.scale(res$ci.lb), digits=params$digits)
+    ubDisp <- round(binary.transform.f(params$measure)$display.scale(res$ci.ub), digits=params$digits)
     
-    resultData <- list("Title" = "  Model Results (log scale):",
+    pVal <- roundedDisplay(res$pval, digits=params$digits)
+    zVal <- round(res$zval, digits=params$digits)
+    se <- round(res$se, digits=params$digits)
+    if (binary.transform.f(params$measure)$display.scale(1)!= binary.transform.f(params$measure)$calc.scale(1)) { 
+         resultData <- list("Title" = "  Model Results (reporting scale)",
+                        "Labels" = c("Estimate", "p-Value", "Z-Value", "Lower bound", "Upper bound"),
+                        "Values" = c(estDisp, pVal, zVal, lbDisp, ubDisp))
+         estCalc <- round(res$b, digits=params$digits) 
+         lbCalc <- round(res$ci.lb, digits=params$digits)
+         ubCalc <- round(res$ci.ub, digits=params$digits)
+         altData <- list("Title" = "  Model Results (calculation scale)",
+                      "Labels" = c("Estimate", "SE", "Lower bound", "Upper bound"),
+                      "Values" = c(estCalc, se, lbCalc, ubCalc))        
+    }    
+     
+    else {
+        resultData <- list("Title" = "  Model Results (reporting scale)",
                         "Labels" = c("Estimate", "SE", "p-Value", "Z-Value", "Lower bound", "Upper bound"),
-                        "Values" = NULL)
-    #if ((params$metric == "OR") || (params$metric == "RR")) {                    
-        resultData$Title = "  Model Results (standard scale):"
-        resultData$Values = c(exp(res$b), res$se, res$pval, res$zval, exp(res$ci.lb), exp(res$ci.ub))
-        altData <- list("Title" = "  Model Results (log scale):",
-                      "Labels" = c("Estimate", "Lower bound", "Upper bound"),
-                      "Values" = c(res$b, res$ci.lb, res$ci.ub))        
-    #}    
-    #if (binary.transform.f(params$metric)$display.scale(1)!= binary.transform.f(params$metric)$calc.scale(1)) { 
-    #else {
-    #    resultData$Title <- "  Model Results (standard scale)"
-    #    altData <- list("Title" = NA)
-        #estCalc <- binary.transform.f(params$metric)$calc.scale(estDisp)
-        #lbCalc <- binary.transform.f(params$metric)$calc.scale(lbDisp)
-        #ubCalc <- binary.transform.f(params$metric)$calc.scale(ubDisp) 
-        #altData <- list("Title" = "  Model Results (log scale):",
-        #              "Labels" = c("Estimate", "Lower bound", "Upper bound"),
-        #              "Values" = c(estCalc, lbCalc, ubCalc))                    
-    #}
-    #else {
-    #    altData <- list("Title"=NA)
-    #}    
-    summaryDisp <- list("digits" = params$digits, "hetTestData" = hetTestData, "resultData" = resultData,
+                        "Values" = c(estDisp, se, pVal, zVal, lbDisp, ubDisp))
+        altData <- list("Title" = NA)
+    }
+    summaryDisp <- list("digits" = params$digits, "modelTitle" = modelTitle, "hetTestData" = hetTestData, "resultData" = resultData,
                         "altData" = altData)
     class(summaryDisp) <- "summaryDisplay"                     
     return(summaryDisp)
@@ -327,8 +332,8 @@ binary.fixed.inv.var <- function(binaryData, params){
                                 to=params$to)
         # Create list to display summary of results
         degf <- res$k - res$p
-        summaryDisp <- createSummaryDisp(res, params, degf)
-        summaryDisp$modelTitle <- paste("Fixed-Effects Model - Inverse Variance (k = ", res$k, ")", sep="")
+        modelTitle <- paste("Fixed-Effects Model - Inverse Variance (k = ", res$k, ")", sep="")
+        summaryDisp <- createSummaryDisp(res, params, degf, modelTitle)
         summaryDisp
         
         forest_path <- "./r_tmp/forest.png"
@@ -392,13 +397,13 @@ binary.fixed.mh <- function(binaryData, params){
     else{
         res<-rma.mh(ai=binaryData@g1O1, bi=binaryData@g1O2, 
                                 ci=binaryData@g2O1, di=binaryData@g2O2, slab=binaryData@studyNames,
-                                level=params$conf.level, digits=params$digits) 
+                                level=params$conf.level, digits=params$digits, measure=params$measure) 
         #                        
         # Create list to display summary of results
         #
         degf <- res$k.yi - 1
-        summaryDisp <- createSummaryDisp(res, params, degf)
-        summaryDisp$modelTitle <- paste("Fixed-Effects Model - Mantel Haenszel (k = ", res$k, ")", sep="")
+        modelTitle <- paste("Fixed-Effects Model - Mantel Haenszel (k = ", res$k, ")", sep="")
+        summaryDisp <- createSummaryDisp(res, params, degf, modelTitle)
         summaryDisp                                                                               
         #
         # generate forest plot 
@@ -416,7 +421,7 @@ binary.fixed.mh <- function(binaryData, params){
         #     
         images <- c("forest plot"=forest_path)
         plot_names <- c("forest plot"="forest_plot")
-        results <- list("images"=images, "summary"=summary, "plot_names"=plot_names)
+        results <- list("images"=images, "summary"=summaryDisp, "plot_names"=plot_names)
     }
     results
 }
@@ -472,8 +477,8 @@ binary.fixed.peto <- function(binaryData, params){
         # Create list to display summary of results
         #
         degf <- res$k.yi - 1
-        summaryDisp <- createSummaryDisp(res, params, degf)
-        summaryDisp$modelTitle <- paste("Fixed-Effects Model - Peto (k = ", res$k, ")", sep="")
+        modelTitle <- paste("Fixed-Effects Model - Peto (k = ", res$k, ")", sep="")
+        summaryDisp <- createSummaryDisp(res, params, degf, modelTitle)
         summaryDisp                                                 
         #
         # generate forest plot 
@@ -493,7 +498,7 @@ binary.fixed.peto <- function(binaryData, params){
         images <- c("forest plot"=forest_path)
         plot_names <- c("forest plot"="forest_plot")
         
-        results <- list("images"=images, "summary"=summary, "plot_names"=plot_names)
+        results <- list("images"=images, "summary"=summaryDisp, "plot_names"=plot_names)
     }
     results
 }
@@ -560,8 +565,8 @@ binary.random <- function(binaryData, params){
         # Create list to display summary of results
         #
         degf <- res$k.yi - 1
-        summaryDisp <- createSummaryDisp(res, params, degf)
-        summaryDisp$modelTitle <- paste("Random-Effects Model (k = ", res$k, ")", sep="")
+        modelTitle <- paste("Binary Random-Effects Model (k = ", res$k, ")", sep="")
+        summaryDisp <- createSummaryDisp(res, params, degf, modelTitle)
         summaryDisp       
         #
         # generate forest plot 
@@ -582,7 +587,7 @@ binary.random <- function(binaryData, params){
         images <- c("forest plot"=forest_path)
         plot_names <- c("forest plot"="forest_plot")
         
-        results <- list("images"=images, "summary"=res, "plot_names"=plot_names)
+        results <- list("images"=images, "summary"=summaryDisp, "plot_names"=plot_names)
     }
     results
 }
@@ -607,8 +612,3 @@ binary.random.overall <- function(results) {
     overall <- list(c("estimate"=res$b[1], "lower"=res$ci.lb, "upper"=res$ci.ub))
     overall
 }
-
-
-
-
-
