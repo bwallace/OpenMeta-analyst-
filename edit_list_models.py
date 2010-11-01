@@ -86,6 +86,7 @@ class OutcomesModel(QAbstractTableModel):
     def __init__(self, filename=QString(), dataset=None):
         super(OutcomesModel, self).__init__()
         self.dataset = dataset
+        self.current_outcome = None
         self.outcome_list = self.dataset.get_outcome_names()
         
     def refresh_outcome_list(self):
@@ -176,6 +177,54 @@ class FollowUpsModel(QAbstractTableModel):
         return True
         
         
+    def flags(self, index):
+        if not index.isValid():
+            return Qt.ItemIsEnabled
+        return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
+                            Qt.ItemIsEditable)
+                            
+class StudiesModel(QAbstractTableModel):
+    '''
+    Table model implementation for studies list.
+    '''
+    def __init__(self, filename=QString(), dataset=None, outcome=None, follow_up=None):
+        super(StudiesModel, self).__init__()
+        self.dataset = dataset
+        self.update_study_list()
+        
+    def update_study_list(self):
+        self.studies_list = self.dataset.studies
+        
+    def data(self, index, role=Qt.DisplayRole):
+        if not index.isValid() or not (0 <= index.row() < len(self.studies_list)):
+            return QVariant()
+        study_name = self.studies_list[index.row()].name
+        if role == Qt.DisplayRole:
+            return QVariant(study_name)
+        elif role == Qt.TextAlignmentRole:
+            return QVariant(int(Qt.AlignLeft|Qt.AlignVCenter))
+        return QVariant()
+    
+    def rowCount(self, index=QModelIndex()):
+        return len(self.studies_list)
+        
+    def columnCount(self, index=QModelIndex()):
+        return 1
+        
+    def setData(self, index, value, role=Qt.EditRole):
+        study_object = self.studies_list[index.row()]
+        new_name = unicode(value.toString().toUtf8(), "utf-8")
+
+        ###
+        # we don't allow empty strings for group names; just pass
+        # if this happens (typically this will be an accident on the user's part)
+        if new_name == "":
+            return False
+        
+        
+        study_object.name = new_name
+        self.refresh_group_list(self.current_outcome, self.current_follow_up)
+        return True
         
     def flags(self, index):
         if not index.isValid():

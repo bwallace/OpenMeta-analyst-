@@ -22,6 +22,8 @@ from ui_binary_data_form import Ui_BinaryDataForm
 # here we show four digits; there it is 3. We want different
 # levels of granularity).
 NUM_DIGITS = 4 
+ERROR_COLOR = QColor("red")
+OK_COLOR = QColor("black")
 
 # this is the maximum size of a residual that we're willing to accept
 # when computing 2x2 data
@@ -36,6 +38,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self._setup_signals_and_slots()
         self.ma_unit = ma_unit
         self.raw_data_d = {}
+        self.inconsistent = False
         for group in cur_txs:
             raw_data = self.ma_unit.get_raw_data_for_group(group)
             self.raw_data_d[group]  = raw_data
@@ -219,7 +222,8 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         
     def check_for_consistencies(self):
         self.check_that_rows_sum()
-    
+        self.check_that_cols_sum()
+        
     def check_that_rows_sum(self):
         for row in range(3):
             if self._row_is_populated(row):
@@ -230,8 +234,23 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                     self._color_row(row)
                     
     def check_that_cols_sum(self):
-        # @TODO
+        #for col in range93):
+        #    col_sum = 0
+        #    for row in range(2):
+        #        col_sum += self._get_int(row, col)
         pass
+        
+    def _color_all(self, color=ERROR_COLOR):
+        self.raw_data_table.blockSignals(True)
+        for row in range(3):
+            for col in range(3):
+                print "setting row: %s, col: %s" % (row, col)
+                item = self.raw_data_table.item(row, col)
+                if item is not None:
+                    item.setTextColor(color)
+        self.raw_data_table.blockSignals(False)
+        
+             
         
     def _color_row(self, row):
         self.raw_data_table.blockSignals(True)
@@ -355,7 +374,62 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         if total_events is not None and total_no_events is not None:
             total_total = total_events + total_no_events
             self.raw_data_table.setItem(2, 2, \
-                                        QTableWidgetItem(str(total_total)))              
+                                        QTableWidgetItem(str(total_total)))  
+                                
+        total_total_events = self._get_int(2, 2) 
+                   
+        if total_total_events is not None:
+            total_events = self._get_int(2, 0)
+            total_no_events = self._get_int(2, 1)
+            if total_events is None and not total_no_events is None:
+                total_events = total_total_events - total_no_events
+                self.raw_data_table.setItem(2, 0, \
+                                            QTableWidgetItem(str(total_events)))
+            elif total_no_events is None and not total_events is None:
+                total_no_events = total_total_events - total_events
+                self.raw_data_table.setItem(2, 1, \
+                                            QTableWidgetItem(str(total_no_events)))
+            
+            n1 = self._get_int(0,2)
+            n2 = self._get_int(1,2)
+            if n1 is None and not n2 is None:
+                n1 = total_total_events - n2
+                self.raw_data_table.setItem(0, 2, \
+                                            QTableWidgetItem(str(n1)))
+            elif n2 is None and not n1 is None:
+                n2 = total_total_events - n1
+                self.raw_data_table.setItem(1, 2, \
+                                             QTableWidgetItem(str(n2)))
+            
+        self.incosistent = False
+        if not any([x is None or x=="" for x in (n1, n2)]):
+            if n1 < 0 or n2 < 0 or n1 + n2:
+                self._color_all()
+                self.inconsistent = True
+                
+        if not any([x is None or x=="" for x in (total_events, total_no_events)]):
+            if total_events < 0 or total_no_events < 0:
+                self._color_all()
+                self.inconsistent = True
+        
+        if not any([x is None or x=="" for x in (total_events, total_no_events, n1, n2)]):
+            if not (n1 + n2 == total_events + total_no_events == total_total_events):
+                self._color_all()
+                self.inconsistent = True
+        
+        # finally, check the whole thing for negative numbers
+        for row in range(3):
+            for col in range(3):
+                val = self._get_int(row, col)
+                if val is not None and val != "" and val < 0:
+                    self._color_all()
+                    self.inconsistent = True
+                
+        if not self.inconsistent:
+            self._color_all(color=OK_COLOR)
+                
+                                            
+            
         self.raw_data_table.blockSignals(False)
         
         
@@ -363,6 +437,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         val = self.raw_data_table.item(i,j)
         return val is None or val.text() == ""
         
+
     def _get_int(self, i, j):
         if not self._is_empty(i,j):
             int_val = int(float(self.raw_data_table.item(i, j).text()))
@@ -371,7 +446,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
     def try_to_update_cur_outcome(self):
         e1, n1, e2, n2 = self.ma_unit.get_raw_data_for_groups(self.cur_groups)
         # if None is in the raw data, should we clear out current outcome?
-        if not any([x is None for x in [e1, n1, e2, n2]]):
+        if not any([x is None or x == "" for x in [e1, n1, e2, n2]]):
             if self.cur_effect in BINARY_TWO_ARM_METRICS:
                 est_and_ci_d = meta_py_r.effect_for_study(e1, n1, e2, n2, metric=self.cur_effect)
             else:

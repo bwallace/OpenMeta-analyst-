@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'edit_dialog2.ui'
 #
-# Created: Mon Nov 01 09:09:51 2010
+# Created: Mon Nov 01 09:20:11 2010
 #      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -139,7 +139,7 @@ class Ui_edit_dialog(object):
         self.verticalLayout.addWidget(self.buttonBox)
 
         self.retranslateUi(edit_dialog)
-        self.edit_tab.setCurrentIndex(1)
+        self.edit_tab.setCurrentIndex(0)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL("accepted()"), edit_dialog.accept)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL("rejected()"), edit_dialog.reject)
         QtCore.QMetaObject.connectSlotsByName(edit_dialog)

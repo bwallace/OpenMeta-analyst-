@@ -16,14 +16,14 @@
 #                                     
 ##################################
 
+import pdb
 
 from PyQt4.Qt import *
+
 import ui_edit_dialog
 import edit_list_models
 import meta_py_r
 import add_new_dialogs
-import pdb
-
 import ma_dataset
 from ma_dataset import *
 
@@ -65,8 +65,14 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
                                                 outcome = self.selected_outcome, follow_up = self.selected_follow_up)
         self.group_list.setModel(self.groups_model)
         
+        
+        ### studies
+        self.studies_model = edit_list_models.StudiesModel(dataset = dataset)
+        self.study_list.setModel(self.studies_model)
+        
         self._setup_connections()
         self.dataset = dataset
+        
         
     def _setup_connections(self):
         ###
@@ -96,8 +102,16 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
                                     self.remove_follow_up)                          
         QObject.connect(self.follow_up_list, SIGNAL("clicked(QModelIndex)"),
                                     self.follow_up_selected)
-
                                     
+        ###
+        # studies
+        QObject.connect(self.add_study_btn, SIGNAL("pressed()"),
+                                    self.add_study)
+        QObject.connect(self.remove_study_btn, SIGNAL("pressed()"),
+                                    self.remove_study)                          
+        QObject.connect(self.study_list, SIGNAL("clicked(QModelIndex)"),
+                                    self.study_selected)
+                                  
     def add_group(self):
         form = add_new_dialogs.AddNewGroupForm(self)
         form.group_name_le.setFocus()        
@@ -132,7 +146,6 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
             self.outcome_list.model().dataset.add_outcome(Outcome(new_outcome_name, data_type))
             self.outcome_list.model().refresh_outcome_list()
             self.outcome_list.model().current_outcome = new_outcome_name
-            
             
     def get_selected_outcome(self):
         index = self.outcome_list.currentIndex()
@@ -186,6 +199,13 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         print "index is: %s" % index.row()
         print "here is the current follow-up list: %s" % self.follow_up_list.model().follow_up_list
         return self.follow_up_list.model().follow_up_list[index.row()]
+
+    def get_selected_study(self):
+        index = self.study_list.currentIndex().row()
+        return self.study_list.model().dataset.studies[index]
+        
+    def study_selected(self):
+        self.remove_study_btn.setEnabled(True) 
         
     def remove_follow_up(self):
         self.selected_follow_up = self.get_selected_follow_up()
@@ -208,3 +228,11 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         self.remove_group_btn.setEnabled(False)
         self.remove_follow_up_btn.setEnabled(False)
         self.remove_outcome_btn.setEnabled(False)
+        
+    def add_study(self):
+        pass
+    
+    def remove_study(self):
+        study = self.get_selected_study()
+        self.study_list.model().dataset.studies.remove(study)
+        self.study_list.model().update_study_list()
