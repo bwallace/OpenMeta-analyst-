@@ -346,6 +346,14 @@ class CommandCellEdit(QUndoCommand):
             model.blockSignals(False)
             # make the view reflect the update
             self.ma_data_table_view.model().reset()
+        
+        # here is where we check if there are enough studies to actually
+        # perform an analysis. if so, enable the menu options.
+        if len(self.ma_data_table_view.model().dataset) >= 2:
+            self.ma_data_table_view.main_gui.enable_menu_options_that_require_dataset()
+        else:
+            self.ma_data_table_view.main_gui.disable_menu_options_that_require_dataset()
+            
         self.ma_data_table_view.resizeColumnsToContents()
 
     def undo(self):
@@ -359,6 +367,13 @@ class CommandCellEdit(QUndoCommand):
         self.ma_data_table_view.model().reset()
         if self.added_study is not None:
             self.ma_data_table_view.model().remove_study(self.added_study)
+            
+        # here is where we check if there are enough studies to actually
+        # perform an analysis.
+        if len(self.ma_data_table_view.model().dataset) >= 2:
+            self.ma_data_table_view.main_gui.enable_menu_options_that_require_dataset()
+        else:
+            self.ma_data_table_view.main_gui.disable_menu_options_that_require_dataset()
         self.ma_data_table_view.resizeColumnsToContents()
         
     def _get_index(self):

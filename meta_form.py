@@ -72,7 +72,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             data_model = Dataset()
             self.model = DatasetModel(dataset=data_model)
             # no dataset; disable saving, editing, etc.
-            self.disable_menu_options_that_require_dataset
+            self.disable_menu_options_that_require_dataset()
 
         self.tableView.setModel(self.model)
         # attach a delegate for editing
@@ -99,9 +99,18 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.out_path = None
         
     
+    def toggle_menu_options_that_require_dataset(self, enable):
+        self.action_go.setEnabled(enable)
+        self.action_cum_ma.setEnabled(enable)
+        self.action_loo_ma.setEnabled(enable)
+        self.action_meta_regression.setEnabled(enable)
+        
     def disable_menu_options_that_require_dataset(self):
-        pass
+        self.toggle_menu_options_that_require_dataset(False)
 
+    def enable_menu_options_that_require_dataset(self):
+        self.toggle_menu_options_that_require_dataset(True)
+        
     def keyPressEvent(self, event):
         if (event.modifiers() & QtCore.Qt.ControlModifier):
             if event.key() == QtCore.Qt.Key_S:
@@ -608,6 +617,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         if state_dict is not None:
             self.model.set_state(state_dict)
         self._disconnections()
+        if len(data_model) >= 2:
+            self.enable_menu_options_that_require_dataset(True)
+        else:
+            self.enable_menu_options_that_require_dataset(False)
         self.tableView.setModel(self.model)
         self.model_updated()
         print "ok -- model set."
