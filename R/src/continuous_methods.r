@@ -95,8 +95,6 @@ continuous.random <- function(contData, params){
         #png(forest_path)
         plotData <- create.plot.data.continuous(contData, params, res)
         forest.plot(plotData, outpath=forest.path)
-        #forest.rma(res, digits=params$digits)
-        #dev.off()
     
         #
         # Now we package the results in a dictionary (technically, a named 
