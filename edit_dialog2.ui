@@ -72,7 +72,7 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="../OpenMeta/images/icons.qrc">
+           <iconset resource="images/icons.qrc">
             <normaloff>:/images/function_icon_set/add_48.png</normaloff>:/images/function_icon_set/add_48.png</iconset>
           </property>
           <property name="iconSize">
@@ -110,7 +110,7 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="../OpenMeta/images/icons.qrc">
+           <iconset resource="images/icons.qrc">
             <normaloff>:/images/function_icon_set/cancel_48.png</normaloff>:/images/function_icon_set/cancel_48.png</iconset>
           </property>
           <property name="iconSize">
@@ -168,7 +168,7 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="../OpenMeta/images/icons.qrc">
+           <iconset resource="images/icons.qrc">
             <normaloff>:/images/function_icon_set/cancel_48.png</normaloff>:/images/function_icon_set/cancel_48.png</iconset>
           </property>
           <property name="iconSize">
@@ -203,7 +203,7 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="../OpenMeta/images/icons.qrc">
+           <iconset resource="images/icons.qrc">
             <normaloff>:/images/function_icon_set/add_48.png</normaloff>:/images/function_icon_set/add_48.png</iconset>
           </property>
           <property name="iconSize">
@@ -261,7 +261,7 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="../OpenMeta/images/icons.qrc">
+           <iconset resource="images/icons.qrc">
             <normaloff>:/images/function_icon_set/add_48.png</normaloff>:/images/function_icon_set/add_48.png</iconset>
           </property>
           <property name="iconSize">
@@ -299,7 +299,7 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="../OpenMeta/images/icons.qrc">
+           <iconset resource="images/icons.qrc">
             <normaloff>:/images/function_icon_set/cancel_48.png</normaloff>:/images/function_icon_set/cancel_48.png</iconset>
           </property>
           <property name="iconSize">
@@ -345,7 +345,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../OpenMeta/images/icons.qrc">
+            <iconset resource="images/icons.qrc">
              <normaloff>:/images/function_icon_set/add_48.png</normaloff>:/images/function_icon_set/add_48.png</iconset>
            </property>
            <property name="iconSize">
@@ -377,7 +377,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../OpenMeta/images/icons.qrc">
+            <iconset resource="images/icons.qrc">
              <normaloff>:/images/function_icon_set/cancel_48.png</normaloff>:/images/function_icon_set/cancel_48.png</iconset>
            </property>
            <property name="iconSize">
@@ -407,7 +407,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../OpenMeta/images/icons.qrc"/>
+  <include location="images/icons.qrc"/>
  </resources>
  <connections>
   <connection>
