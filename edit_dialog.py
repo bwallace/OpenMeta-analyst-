@@ -109,7 +109,8 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
                                     self.add_study)
         QObject.connect(self.remove_study_btn, SIGNAL("pressed()"),
                                     self.remove_study)                          
-
+        QObject.connect(self.study_list, SIGNAL("clicked(QModelIndex)"),
+                                    self.study_selected)
                                   
     def add_group(self):
         form = add_new_dialogs.AddNewGroupForm(self)
@@ -198,6 +199,13 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         print "index is: %s" % index.row()
         print "here is the current follow-up list: %s" % self.follow_up_list.model().follow_up_list
         return self.follow_up_list.model().follow_up_list[index.row()]
+
+    def get_selected_study(self):
+        index = self.study_list.currentIndex().row()
+        return self.study_list.model().dataset.studies[index]
+        
+    def study_selected(self):
+        self.remove_study_btn.setEnabled(True) 
         
     def remove_follow_up(self):
         self.selected_follow_up = self.get_selected_follow_up()
@@ -225,4 +233,6 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         pass
     
     def remove_study(self):
-        pass
+        study = self.get_selected_study()
+        self.study_list.model().dataset.studies.remove(study)
+        self.study_list.model().update_study_list()

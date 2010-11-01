@@ -202,7 +202,9 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             
             # update the new state dict to reflect the currently selected
             # outcomes, etc.
-            new_state_dict["current_outcome"] = edit_window.outcome_list.model().current_outcome
+            new_state_dict["current_outcome"] = old_state_dict["current_outcome"]
+            if edit_window.outcome_list.model().current_outcome is not None:
+                new_state_dict["current_outcome"] = edit_window.outcome_list.model().current_outcome
             new_state_dict["current_time_point"] =  max(edit_window.follow_up_list.currentIndex(), 0)
             grp_list = edit_window.group_list.model().group_list
             if len(grp_list) >= 2:

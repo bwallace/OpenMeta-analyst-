@@ -86,6 +86,7 @@ class OutcomesModel(QAbstractTableModel):
     def __init__(self, filename=QString(), dataset=None):
         super(OutcomesModel, self).__init__()
         self.dataset = dataset
+        self.current_outcome = None
         self.outcome_list = self.dataset.get_outcome_names()
         
     def refresh_outcome_list(self):
@@ -221,8 +222,6 @@ class StudiesModel(QAbstractTableModel):
             return False
         
         
-        #self.dataset.change_study_name(old_name, new_name, \
-        #                outcome=self.current_outcome, follow_up=self.current_follow_up)
         study_object.name = new_name
         self.refresh_group_list(self.current_outcome, self.current_follow_up)
         return True
