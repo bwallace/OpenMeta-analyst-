@@ -638,9 +638,7 @@ class DatasetModel(QAbstractTableModel):
             self.current_effect = "MD"
         
     def max_study_id(self):
-        if len(self.dataset.studies) == 0:
-            return -1
-        return max([study.id for study in self.dataset.studies])
+        return self.dataset.max_study_id()
 
     def num_data_cols_for_current_unit(self):
         '''

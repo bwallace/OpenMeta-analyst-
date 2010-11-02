@@ -128,6 +128,11 @@ class Dataset:
                 return outcome_obj
         return None
         
+    def max_study_id(self):
+        if len(self.studies) == 0:
+            return -1
+        return max([study.id for study in self.studies])
+
     def remove_covariate(self, covariate):
         # first remove the covariate from the list of 
         # covariate objects for this dataset

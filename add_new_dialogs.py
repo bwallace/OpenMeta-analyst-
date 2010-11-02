@@ -3,6 +3,7 @@ import ui_new_group
 import ui_new_follow_up
 import ui_new_outcome
 import ui_new_covariate
+import ui_new_study
 
 class AddNewGroupForm(QDialog, ui_new_group.Ui_new_group_dialog):
     
@@ -31,6 +32,15 @@ class AddNewOutcomeForm(QDialog, ui_new_outcome.Ui_Dialog):
                                      [QVariant(i) for i in range(4)]):
             self.datatype_cbo_box.addItem(name, type_id)
         
+
+
+class AddNewStudyForm(QDialog, ui_new_study.Ui_new_study_dialog):
+    
+    def __init__(self, parent=None):
+        super(AddNewStudyForm, self).__init__(parent)
+        self.setupUi(self)
+        
+
 class AddNewCovariateForm(QDialog, ui_new_covariate.Ui_new_covariate_dialog):
     
     def __init__(self, parent=None):

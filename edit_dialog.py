@@ -230,8 +230,17 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         self.remove_outcome_btn.setEnabled(False)
         
     def add_study(self):
-        pass
-    
+        form = add_new_dialogs.AddNewStudyForm(self)
+        form.study_lbl.setFocus()
+        if form.exec_():
+            study_name = unicode(form.study_lbl.text().toUtf8(), "utf-8")
+            study_id = self.study_list.model().dataset.max_study_id()+1
+            new_study = Study(study_id, name = study_name)
+            self.study_list.model().dataset.add_study(new_study)
+            #pyqtRemoveInputHook()
+            #pdb.set_trace()
+            self.study_list.model().update_study_list()
+             
     def remove_study(self):
         study = self.get_selected_study()
         self.study_list.model().dataset.studies.remove(study)

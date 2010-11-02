@@ -173,7 +173,6 @@ class FollowUpsModel(QAbstractTableModel):
         new_follow_up_name = unicode(value.toString().toUtf8(), "utf-8")
         self.dataset.change_follow_up_name(self.current_outcome, old_follow_up_name, new_follow_up_name)
         self.refresh_follow_up_list()
-        #self.dataset.outcome_names_to_follow_ups[self.current_outcome]
         return True
         
         
@@ -193,7 +192,9 @@ class StudiesModel(QAbstractTableModel):
         self.update_study_list()
         
     def update_study_list(self):
-        self.studies_list = self.dataset.studies
+        self.studies_list = [study for study in self.dataset.studies if \
+                                    not study.name == "" or study.name is None]
+        self.reset()
         
     def data(self, index, role=Qt.DisplayRole):
         if not index.isValid() or not (0 <= index.row() < len(self.studies_list)):
@@ -220,7 +221,6 @@ class StudiesModel(QAbstractTableModel):
         # if this happens (typically this will be an accident on the user's part)
         if new_name == "":
             return False
-        
         
         study_object.name = new_name
         self.refresh_group_list(self.current_outcome, self.current_follow_up)
