@@ -221,7 +221,11 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             else:
                 new_state_dict["current_txs"] = ["tx A", "tx B"]
             modified_dataset = edit_window.dataset
-            
+            ### this is a rather unfortunate hack, but we append the 
+            # blank study original at the end of the dataset here because
+            # set_model assumes it should remove the last (blank)
+            # study in the dataset (see in-line comments there).
+            modified_dataset.add_study(edit_window.blank_study)
             redo_f = lambda : self.set_model(modified_dataset, new_state_dict)
             original_dataset = copy.deepcopy(self.model.dataset)
             undo_f = lambda : self.set_model(original_dataset, old_state_dict) 
@@ -609,8 +613,12 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # thus when the dataset was dumped (via pickle) it included this study,
         # but the model will append *another* blank study to the dataset
         # when it is opened. this was the easiest way to resolve this issue.
-
-        if state_dict is not None and state_dict["study_auto_added"] is not None:
+        # TODO we need a better solution for this pesky problem -- i.e.,
+        # the 'blank' study problem. this has caused problems, e.g., for our
+        # data editing step. for now I'm adding a switch to override the
+        # lopping off the last study (do_not_remove_last_study)
+        # 
+        if  state_dict is not None and state_dict["study_auto_added"] is not None:
             data_model.studies = data_model.studies[:-1]
             
         self.model = DatasetModel(dataset=data_model)

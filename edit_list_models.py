@@ -192,8 +192,9 @@ class StudiesModel(QAbstractTableModel):
         self.update_study_list()
         
     def update_study_list(self):
-        self.studies_list = [study for study in self.dataset.studies if \
-                                    not study.name == "" or study.name is None]
+        #self.studies_list = [study for study in self.dataset.studies if \
+        #                            not study.name == "" or study.name is None]
+        self.studies_list = self.dataset.studies
         self.reset()
         
     def data(self, index, role=Qt.DisplayRole):

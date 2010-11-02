@@ -67,6 +67,8 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         
         
         ### studies
+        self.blank_study = dataset.studies[-1]
+        dataset.studies = dataset.studies[:-1]
         self.studies_model = edit_list_models.StudiesModel(dataset = dataset)
         self.study_list.setModel(self.studies_model)
         

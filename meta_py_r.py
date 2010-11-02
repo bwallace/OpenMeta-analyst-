@@ -343,7 +343,7 @@ def gen_cov_str(dataset, studies):
     if len(dataset.covariates) > 0:
         study_order = [study.name for study in studies]
         ## notice again that we reverse the studies here;
-        # why are the backwards???
+        # why are they backwards???
         study_order.reverse()
         cov_strs = []
         for cov in dataset.covariates:
