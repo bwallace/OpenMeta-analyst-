@@ -19,6 +19,8 @@ library("grid")
 #####################################################
 #   functions for data manipulation and forest plot #
 #####################################################
+
+
 create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     scale.str <- "log"
     ## TODO resolve scaling
