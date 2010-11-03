@@ -40,7 +40,6 @@ class AddNewStudyForm(QDialog, ui_new_study.Ui_new_study_dialog):
         super(AddNewStudyForm, self).__init__(parent)
         self.setupUi(self)
         
-
 class AddNewCovariateForm(QDialog, ui_new_covariate.Ui_new_covariate_dialog):
     
     def __init__(self, parent=None):

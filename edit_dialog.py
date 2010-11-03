@@ -67,10 +67,16 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         
         
         ### studies
+        # this is sort of hacky; we lop off the last study, which is 
+        # always 'blank'. this is a recurring, rather annoying issue.
         self.blank_study = dataset.studies[-1]
         dataset.studies = dataset.studies[:-1]
         self.studies_model = edit_list_models.StudiesModel(dataset = dataset)
         self.study_list.setModel(self.studies_model)
+        
+        ### covariates
+        self.covariates_model = edit_list_models.CovariatesModel(dataset = dataset)
+        self.covariate_list.setModel(self.covariates_model)
         
         self._setup_connections()
         self.dataset = dataset
@@ -113,6 +119,16 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
                                     self.remove_study)                          
         QObject.connect(self.study_list, SIGNAL("clicked(QModelIndex)"),
                                     self.study_selected)
+                                    
+        ###
+        # covariates
+        QObject.connect(self.add_covariate_btn, SIGNAL("pressed()"),
+                                    self.add_covariate)
+        QObject.connect(self.remove_covariate_btn, SIGNAL("pressed()"),
+                                    self.remove_covariate)                          
+        QObject.connect(self.covariate_list, SIGNAL("clicked(QModelIndex)"),
+                                    self.covariate_selected)
+                                    
                                   
     def add_group(self):
         form = add_new_dialogs.AddNewGroupForm(self)
@@ -208,6 +224,15 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         
     def study_selected(self):
         self.remove_study_btn.setEnabled(True) 
+        
+    def covariate_selected(self):
+        self.remove_covariate_btn.setEnabled(True)
+        
+    def add_covariate(self):
+        pass
+        
+    def remove_covariate(self)    :
+        pass
         
     def remove_follow_up(self):
         self.selected_follow_up = self.get_selected_follow_up()

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'edit_dialog2.ui'
 #
-# Created: Mon Nov 01 09:20:11 2010
+# Created: Wed Nov 03 09:21:07 2010
 #      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -131,6 +131,35 @@ class Ui_edit_dialog(object):
         self.gridLayout_2.addWidget(self.remove_study_btn, 1, 1, 1, 1)
         self.verticalLayout_2.addLayout(self.gridLayout_2)
         self.edit_tab.addTab(self.tab_2, "")
+        self.tab_3 = QtGui.QWidget()
+        self.tab_3.setObjectName("tab_3")
+        self.horizontalLayout = QtGui.QHBoxLayout(self.tab_3)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.gridLayout_3 = QtGui.QGridLayout()
+        self.gridLayout_3.setObjectName("gridLayout_3")
+        self.covariate_list = QtGui.QListView(self.tab_3)
+        self.covariate_list.setAlternatingRowColors(True)
+        self.covariate_list.setObjectName("covariate_list")
+        self.gridLayout_3.addWidget(self.covariate_list, 0, 0, 1, 3)
+        self.add_covariate_btn = QtGui.QPushButton(self.tab_3)
+        self.add_covariate_btn.setMinimumSize(QtCore.QSize(32, 32))
+        self.add_covariate_btn.setMaximumSize(QtCore.QSize(32, 32))
+        self.add_covariate_btn.setText("")
+        self.add_covariate_btn.setIcon(icon)
+        self.add_covariate_btn.setIconSize(QtCore.QSize(32, 32))
+        self.add_covariate_btn.setObjectName("add_covariate_btn")
+        self.gridLayout_3.addWidget(self.add_covariate_btn, 1, 0, 1, 1)
+        self.remove_covariate_btn = QtGui.QPushButton(self.tab_3)
+        self.remove_covariate_btn.setEnabled(False)
+        self.remove_covariate_btn.setMinimumSize(QtCore.QSize(32, 32))
+        self.remove_covariate_btn.setMaximumSize(QtCore.QSize(32, 32))
+        self.remove_covariate_btn.setText("")
+        self.remove_covariate_btn.setIcon(icon1)
+        self.remove_covariate_btn.setIconSize(QtCore.QSize(32, 32))
+        self.remove_covariate_btn.setObjectName("remove_covariate_btn")
+        self.gridLayout_3.addWidget(self.remove_covariate_btn, 1, 1, 1, 1)
+        self.horizontalLayout.addLayout(self.gridLayout_3)
+        self.edit_tab.addTab(self.tab_3, "")
         self.verticalLayout.addWidget(self.edit_tab)
         self.buttonBox = QtGui.QDialogButtonBox(edit_dialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
@@ -151,5 +180,6 @@ class Ui_edit_dialog(object):
         self.groupBox.setTitle(QtGui.QApplication.translate("edit_dialog", "tx groups", None, QtGui.QApplication.UnicodeUTF8))
         self.edit_tab.setTabText(self.edit_tab.indexOf(self.tab), QtGui.QApplication.translate("edit_dialog", "outcomes/follow-ups/groups", None, QtGui.QApplication.UnicodeUTF8))
         self.edit_tab.setTabText(self.edit_tab.indexOf(self.tab_2), QtGui.QApplication.translate("edit_dialog", "studies", None, QtGui.QApplication.UnicodeUTF8))
+        self.edit_tab.setTabText(self.edit_tab.indexOf(self.tab_3), QtGui.QApplication.translate("edit_dialog", "covariates", None, QtGui.QApplication.UnicodeUTF8))
 
 import icons_rc
