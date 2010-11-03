@@ -438,10 +438,14 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             int_val = int(float(self.raw_data_table.item(i, j).text()))
             return int_val
             
+    def _none_or_empty(self, x):
+        return x is None or x == ""
+        
     def try_to_update_cur_outcome(self):
         e1, n1, e2, n2 = self.ma_unit.get_raw_data_for_groups(self.cur_groups)
         # if None is in the raw data, should we clear out current outcome?
-        if not any([x is None or x == "" for x in [e1, n1, e2, n2]]):
+        if not any([self._none_or_empty(x) for x in [e1, n1, e2, n2]]) or \
+                        (not any([self._none_or_empty(x) for x in [e1, n1]]) and self.cur_effect in BINARY_ONE_ARM_METRICS):
             if self.cur_effect in BINARY_TWO_ARM_METRICS:
                 est_and_ci_d = meta_py_r.effect_for_study(e1, n1, e2, n2, metric=self.cur_effect)
             else:

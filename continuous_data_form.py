@@ -22,6 +22,7 @@ from PyQt4.Qt import *
 from PyQt4 import QtGui
 
 import meta_py_r
+from meta_globals import *
 import ui_continuous_data_form
 from ui_continuous_data_form import Ui_ContinuousDataForm
 
@@ -265,21 +266,21 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         return None
         
     def try_to_update_cur_outcome(self):
-        e1, n1, e2, n2 = self.ma_unit.get_raw_data_for_groups(self.cur_groups)
-        # if None is in the raw data, should we clear out current outcome?
-        if not any([x is None or x == "" for x in [e1, n1, e2, n2]]):
-            if self.cur_effect in BINARY_TWO_ARM_METRICS:
-                est_and_ci_d = meta_py_r.effect_for_study(e1, n1, e2, n2, metric=self.cur_effect)
+        n1, m1, sd1, n2, m2, sd2 = self.ma_unit.get_raw_data_for_groups(self.cur_groups)
+        if not any([x is None or x == "" for x in [n1, m1, sd1, n2, m2, sd2 ]]) or \
+                    (not any([x is None or x == "" for x in [n1, m1, sd1]]) and self.cur_effect in CONTINUOUS_ONE_ARM_METRICS):
+            if self.cur_effect in CONTINUOUS_TWO_ARM_METRICS:
+                est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1, n2, m2, sd2, metric=self.cur_effect)
             else:
-                # binary, one-arm
-                est_and_ci_d = meta_py_r.effect_for_study(e1, n1, \
-                                            two_arm=False, metric=self.cur_effect)
-        
-            display_est, display_low, display_high = est_and_ci_d["display_scale"]
-            self.ma_unit.set_display_effect_and_ci(self.cur_effect, display_est, display_low, display_high)                            
-            est, low, high = est_and_ci_d["calc_scale"] # calculation (e.g., log) scale
-            self.ma_unit.set_effect_and_ci(self.cur_effect, est, low, high)
+                # continuous, one-arm metric
+                est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1, \
+                                      two_arm=False, metric=self.cur_effect)
             
+                display_est, display_low, display_high = est_and_ci_d["display_scale"]
+                self.ma_unit.set_display_effect_and_ci(self.cur_effect, display_est, display_low, display_high)                            
+                est, low, high = est_and_ci_d["calc_scale"] # calculation (e.g., log) scale
+                self.ma_unit.set_effect_and_ci(self.cur_effect, est, low, high)
+                
             self.set_current_effect()
             
 def isNaN(x):
