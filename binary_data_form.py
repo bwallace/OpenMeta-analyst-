@@ -79,12 +79,10 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             else:
                 txt_box.setText(QString(""))
             
-            
     def effect_changed(self):
         self.cur_effect = unicode(self.effect_cbo_box.currentText().toUtf8(), "utf-8")
         self.try_to_update_cur_outcome()
         self.set_current_effect()
-        
         
     def val_edit(self, val_str, display_scale_val):
         ''' val_str is one of `est`, `lower`, `upper` '''
@@ -458,7 +456,4 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             
             self.set_current_effect()
            
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
-        #est_and_ci_d['display_scale']
         

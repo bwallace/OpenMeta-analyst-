@@ -41,7 +41,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.raw_data_dict = {}
         for group in cur_txs:
             raw_data = self.ma_unit.get_raw_data_for_group(group)
-            self.raw_data_dict[group]  = raw_data
+            self.raw_data_dict[group] = raw_data
         self.cur_groups = cur_txs
         self.cur_effect = cur_effect
         self.alpha = .05
@@ -57,6 +57,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             
         self.grp_1_lbl.setText(QString(self.cur_groups[0]))
         self.grp_2_lbl.setText(QString(self.cur_groups[1]))
+        self._populate_effect_data()
         self.update_raw_data()
 
     def setup_signals_and_slots(self):
@@ -72,6 +73,8 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                                             lambda: self.impute_pre_post_data(self.g1_pre_post_table, 0))
         QObject.connect(self.g2_pre_post_table, SIGNAL("cellChanged (int, int)"),
                                             lambda: self.impute_pre_post_data(self.g2_pre_post_table, 1))
+        QObject.connect(self.effect_cbo_box, SIGNAL("currentIndexChanged(QString)"),
+                                                                                self.effect_changed) 
                                                                                 
     def _set_col_widths(self, table):
         for column in range(table.columnCount()):
@@ -103,6 +106,30 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         else:
             self.ci_label.setText(QString("(%s confidence interval)" % (1-self.alpha)))
 
+
+    def _populate_effect_data(self):
+        q_effects = sorted([QString(effect_str) for effect_str in self.ma_unit.effects_dict.keys()])
+        self.effect_cbo_box.blockSignals(True)
+        self.effect_cbo_box.addItems(q_effects)
+        self.effect_cbo_box.blockSignals(False)
+        self.effect_cbo_box.setCurrentIndex(q_effects.index(QString(self.cur_effect)))
+        # populate fields with current effect data
+        self.set_current_effect()
+        
+    def effect_changed(self):
+        self.cur_effect = unicode(self.effect_cbo_box.currentText().toUtf8(), "utf-8")
+        self.try_to_update_cur_outcome()
+        self.set_current_effect()
+        
+    def set_current_effect(self):
+        effect_dict = self.ma_unit.effects_dict[self.cur_effect]
+        for s, txt_box in zip(['display_est', 'display_lower', 'display_upper'], \
+                              [self.effect_txt_box, self.low_txt_box, self.high_txt_box]):
+            if effect_dict[s] is not None:
+                txt_box.setText(QString("%s" % round(effect_dict[s], NUM_DIGITS)))
+            else:
+                txt_box.setText(QString(""))
+        
         
     def update_raw_data(self):
         self.simple_table.blockSignals(True)
@@ -117,6 +144,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
           
     def _cell_changed(self, row, col):
         self._update_ma_unit()
+        self.try_to_update_cur_outcome()
     
     def _update_ma_unit(self):
         for row_index, group_name in enumerate(self.cur_groups):
@@ -180,7 +208,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         # now pass off what we have for this study to the
         # imputation routine
         results_from_r = meta_py_r.impute_pre_post_cont_data(params_dict, self.correlation, self.alpha)
-        #print results_from_r
+ 
         if results_from_r["succeeded"]:
             ### 
             # first update the simple table
@@ -195,7 +223,8 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                 if var_index < 3:
                     #self.ma_unit.tx_groups[group_name].raw_data[var_index] = computed_vals[var_name]
                     self.raw_data_dict[group_name][var_index] = computed_vals[var_name]
-                    
+            
+            self.try_to_update_cur_outcome()        
             self.simple_table.blockSignals(False)
             
             ###
@@ -235,6 +264,24 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             return float(table.item(i,j).text())
         return None
         
+    def try_to_update_cur_outcome(self):
+        e1, n1, e2, n2 = self.ma_unit.get_raw_data_for_groups(self.cur_groups)
+        # if None is in the raw data, should we clear out current outcome?
+        if not any([x is None or x == "" for x in [e1, n1, e2, n2]]):
+            if self.cur_effect in BINARY_TWO_ARM_METRICS:
+                est_and_ci_d = meta_py_r.effect_for_study(e1, n1, e2, n2, metric=self.cur_effect)
+            else:
+                # binary, one-arm
+                est_and_ci_d = meta_py_r.effect_for_study(e1, n1, \
+                                            two_arm=False, metric=self.cur_effect)
+        
+            display_est, display_low, display_high = est_and_ci_d["display_scale"]
+            self.ma_unit.set_display_effect_and_ci(self.cur_effect, display_est, display_low, display_high)                            
+            est, low, high = est_and_ci_d["calc_scale"] # calculation (e.g., log) scale
+            self.ma_unit.set_effect_and_ci(self.cur_effect, est, low, high)
+            
+            self.set_current_effect()
+            
 def isNaN(x):
     # there's no built-in for checking if a number is a NaN in
     # Python < 2.6. checking if a number is equal to itself

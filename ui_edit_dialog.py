@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'edit_dialog2.ui'
 #
-# Created: Wed Nov 03 09:21:07 2010
+# Created: Wed Nov 03 11:44:11 2010
 #      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!

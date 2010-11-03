@@ -689,11 +689,20 @@ class DatasetModel(QAbstractTableModel):
 
         self.reset()
 
-    def raw_data_is_complete_for_study(self, study_index):
+    def raw_data_is_complete_for_study(self, study_index, first_arm_only=False):
         if self.current_outcome is None or self.current_time_point is None:
             return False
 
         raw_data = self.get_cur_raw_data_for_study(study_index)
+        data_type = self.get_current_outcome_type(get_str=False)
+        # if first_arm_only is true, we are only concerned with whether
+        # or not there is sufficient raw data for the first arm of the study
+        if first_arm_only:
+            if data_type == BINARY:
+                raw_data = raw_data[:2]
+            elif data_type == CONTINUOUS:
+                raw_data = raw_data[:3]
+                
         return not "" in raw_data
 
     def try_to_update_outcomes(self):
@@ -708,8 +717,12 @@ class DatasetModel(QAbstractTableModel):
         '''
         est_and_ci_d = None
         
-        data_type = self.get_current_outcome_type(get_str=False)  
-        if self.raw_data_is_complete_for_study(study_index):
+        data_type = self.get_current_outcome_type(get_str=False) 
+        one_arm_effect = self.current_effect in BINARY_ONE_ARM_METRICS + CONTINUOUS_ONE_ARM_METRICS  
+        # we try to compute outcomes if either all raw data is there, or, if we have a one-arm
+        # metric then if sufficient raw data exists to compute this
+        if self.raw_data_is_complete_for_study(study_index) or \
+                (one_arm_effect and self.raw_data_is_complete_for_study(study_index, first_arm_only=True)):
             if data_type == BINARY:
                 e1, n1, e2, n2 = self.get_cur_raw_data_for_study(study_index)
                 print self.current_effect
@@ -720,9 +733,15 @@ class DatasetModel(QAbstractTableModel):
                     est_and_ci_d = meta_py_r.effect_for_study(e1, n1, \
                                         two_arm=False, metric=self.current_effect)
             elif data_type == CONTINUOUS:
-                n1, m1, se1, n2, m2, se2 = self.get_cur_raw_data_for_study(study_index)
-                est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, se1, n2, m2, se2)
-   
+                n1, m1, sd1, n2, m2, sd2 = self.get_cur_raw_data_for_study(study_index)
+                if self.current_effect in CONTINUOUS_TWO_ARM_METRICS:
+                    est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1, n2, m2, sd2, metric=self.current_effect)
+                else:
+                    # continuous, one-arm metric
+                    est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1, \
+                                          two_arm=False, metric=self.current_effect)
+                
+            
             est, lower, upper = None, None, None
             if est_and_ci_d is not None:
                 est, lower, upper = est_and_ci_d["calc_scale"] # calculation scale

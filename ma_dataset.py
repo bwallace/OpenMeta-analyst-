@@ -518,7 +518,7 @@ class MetaAnalyticUnit:
             for effect in meta_globals.CONTINUOUS_TWO_ARM_METRICS + meta_globals.CONTINUOUS_ONE_ARM_METRICS:
                 self.effects_dict[effect] = {"est":None, "lower":None, "upper":None, "SE":None,
                                              "display_est":None, "display_lower":None, "display_upper":None}
-                
+                 
     def set_effect(self, effect, value):
         self.effects_dict[effect]["est"] = value
        
