@@ -229,9 +229,16 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         self.remove_covariate_btn.setEnabled(True)
         
     def add_covariate(self):
-        pass
+        form = add_new_dialogs.AddNewCovariateForm(self)
+        form.covariate_name_le.setFocus()
+        if form.exec_():
+            new_covariate_name = unicode(form.covariate_name_le.text().toUtf8(), "utf-8")
+            new_covariate_type = str(form.datatype_cbo_box.currentText())
+            cov_obj = Covariate(new_covariate_name, new_covariate_type)
+            self.covariate_list.model().dataset.add_covariate(cov_obj)
+            self.covariate_list.model().update_covariates_list()
         
-    def remove_covariate(self)    :
+    def remove_covariate(self):
         pass
         
     def remove_follow_up(self):
