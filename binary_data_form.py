@@ -46,10 +46,10 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.cur_groups = cur_txs
         self.cur_effect = cur_effect
         self._update_raw_data()
-        self._update_data_table()
         self._populate_effect_data()
+        self._update_data_table()
         
-
+        
     def _setup_signals_and_slots(self):
         QObject.connect(self.raw_data_table, SIGNAL("cellChanged (int, int)"), 
                                                                                 self._cell_changed)
@@ -208,9 +208,6 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self._update_data_table()
         self.check_for_consistencies()
         
-        # @TODO refactor
-        #d = self._build_dict()
-        #meta_py_r.impute_two_by_two(d)
         
     def _build_dict(self):
         d =  dict(zip(["control.n.outcome", "control.N", "tx.n.outcome", "tx.N"], self.raw_data))
@@ -403,7 +400,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             
         self.incosistent = False
         if not any([x is None or x=="" for x in (n1, n2)]):
-            if n1 < 0 or n2 < 0 or n1 + n2:
+            if n1 < 0 or n2 < 0 or not (n1 + n2 == total_events + total_no_events == total_total_events):
                 self._color_all()
                 self.inconsistent = True
                 
