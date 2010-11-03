@@ -423,8 +423,6 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         if not self.inconsistent:
             self._color_all(color=OK_COLOR)
                 
-                                            
-            
         self.raw_data_table.blockSignals(False)
         
         
@@ -457,7 +455,6 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             self.ma_unit.set_display_effect_and_ci(self.cur_effect, display_est, display_low, display_high)                            
             est, low, high = est_and_ci_d["calc_scale"] # calculation (e.g., log) scale
             self.ma_unit.set_effect_and_ci(self.cur_effect, est, low, high)
-            
             self.set_current_effect()
            
         

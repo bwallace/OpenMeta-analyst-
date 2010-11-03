@@ -7,8 +7,11 @@
 #  Continuous data form module; for flexible entry of continuous
 #  outcome data.
 #
+# TODO there is some redundancy here with binary_data_form
+#      should likely refactor
+# 
 # Note that we don't make use of the table/custom model
-# design here. Rather, we edit the raw_data_dict 
+# design here. Rather, we edit the ma_unit object
 # directly, based on what the user inputs. This seemed a more
 # straightforward approach, because the table itself displays
 # many fields that do not ultimately belong in the raw_data --
@@ -77,6 +80,11 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         QObject.connect(self.effect_cbo_box, SIGNAL("currentIndexChanged(QString)"),
                                                                                 self.effect_changed) 
                                                                                 
+        QObject.connect(self.effect_txt_box, SIGNAL("textChanged(QString)"), lambda new_text : self.val_edit("est", new_text))
+        QObject.connect(self.low_txt_box, SIGNAL("textChanged(QString)"), lambda new_text : self.val_edit("lower", new_text))
+        QObject.connect(self.high_txt_box, SIGNAL("textChanged(QString)"), lambda new_text : self.val_edit("upper", new_text)) 
+        
+                                                                                
     def _set_col_widths(self, table):
         for column in range(table.columnCount()):
             table.setColumnWidth(column, default_col_width)
@@ -122,6 +130,30 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.try_to_update_cur_outcome()
         self.set_current_effect()
         
+    def val_edit(self, val_str, display_scale_val):
+        ''' val_str is one of `est`, `lower`, `upper` '''
+        
+        try:
+            display_scale_val = float(display_scale_val)
+        except:
+            # a number wasn't entered; ignore
+            # should probably clear out the box here, too.
+            print "fail."
+            return None
+            
+        calc_scale_val = meta_py_r.continuous_convert_scale(display_scale_val, \
+                                                    self.cur_effect, convert_to="calc.scale")
+                      
+        if val_str == "est":
+            self.ma_unit.set_effect(self.cur_effect, calc_scale_val)
+            self.ma_unit.set_display_effect(self.cur_effect, display_scale_val)
+        elif val_str == "lower":
+            self.ma_unit.set_lower(self.cur_effect, calc_scale_val)
+            self.ma_unit.set_display_lower(self.cur_effect, display_scale_val)
+        else:
+            self.ma_unit.set_upper(self.cur_effect, calc_scale_val)
+            self.ma_unit.set_display_upper(self.cur_effect, display_scale_val)
+            
     def set_current_effect(self):
         effect_dict = self.ma_unit.effects_dict[self.cur_effect]
         for s, txt_box in zip(['display_est', 'display_lower', 'display_upper'], \
@@ -130,7 +162,6 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                 txt_box.setText(QString("%s" % round(effect_dict[s], NUM_DIGITS)))
             else:
                 txt_box.setText(QString(""))
-        
         
     def update_raw_data(self):
         self.simple_table.blockSignals(True)
@@ -153,7 +184,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             for col_index in range(len(grp_raw_data)):
                 cur_val = self._get_float(row_index, col_index)
                 self.raw_data_dict[group_name][col_index] = cur_val
-               
+        
     def impute_data(self):
         ''' compute what we can for each study from what has been given '''
         # note that we rely on the variable names corresponding to what
@@ -187,7 +218,8 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                         self.raw_data_dict[group_name][var_index] = computed_vals[var_name]
                 self._update_ma_unit()
                 self.simple_table.blockSignals(False)
-
+        
+        
     def impute_pre_post_data(self, table, group_index):
         ''' 
         The row index corresponds to the group that will be
@@ -266,9 +298,12 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         return None
         
     def try_to_update_cur_outcome(self):
+
         n1, m1, sd1, n2, m2, sd2 = self.ma_unit.get_raw_data_for_groups(self.cur_groups)
+        
         if not any([x is None or x == "" for x in [n1, m1, sd1, n2, m2, sd2 ]]) or \
                     (not any([x is None or x == "" for x in [n1, m1, sd1]]) and self.cur_effect in CONTINUOUS_ONE_ARM_METRICS):
+            est_and_ci_d = None
             if self.cur_effect in CONTINUOUS_TWO_ARM_METRICS:
                 est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1, n2, m2, sd2, metric=self.cur_effect)
             else:
@@ -276,11 +311,13 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                 est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1, \
                                       two_arm=False, metric=self.cur_effect)
             
-                display_est, display_low, display_high = est_and_ci_d["display_scale"]
-                self.ma_unit.set_display_effect_and_ci(self.cur_effect, display_est, display_low, display_high)                            
-                est, low, high = est_and_ci_d["calc_scale"] # calculation (e.g., log) scale
-                self.ma_unit.set_effect_and_ci(self.cur_effect, est, low, high)
-                
+            
+            display_est, display_low, display_high = est_and_ci_d["display_scale"]
+            self.ma_unit.set_display_effect_and_ci(self.cur_effect, display_est, display_low, display_high)                            
+            
+            est, low, high = est_and_ci_d["calc_scale"] # calculation (e.g., log) scale
+            self.ma_unit.set_effect_and_ci(self.cur_effect, est, low, high)    
+            
             self.set_current_effect()
             
 def isNaN(x):
