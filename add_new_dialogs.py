@@ -28,8 +28,9 @@ class AddNewOutcomeForm(QDialog, ui_new_outcome.Ui_Dialog):
 
         
     def _populate_combo_box(self):
-        for name, type_id in zip([QString(s) for s in ["Binary", "Continuous", "Diagnostic", "Other"]],
-                                     [QVariant(i) for i in range(4)]):
+        # removing types 'diagnostic' and 'other' until we implement methods for these.
+        for name, type_id in zip([QString(s) for s in ["Binary", "Continuous"]],
+                                     [QVariant(i) for i in range(2)]):
             self.datatype_cbo_box.addItem(name, type_id)
         
 

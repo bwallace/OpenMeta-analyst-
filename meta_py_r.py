@@ -511,18 +511,27 @@ def _get_col(m, i):
         col_vals.append(x[i])
     return col_vals
 
-def continuous_effect_for_study(n1, m1, sd1, n2=None, m2=None, sd2=None, metric="MD", \
-                                    two_arm=True, conf_level=.975):
+def continuous_effect_for_study(n1, m1, sd1, se1=None, n2=None, \
+                                        m2=None, sd2=None, se2=None, \
+                                        metric="MD", two_arm=True, conf_level=.975):
     
     point_est, se = None, None
     if two_arm:
-        r_str = "escalc('%s', n1i=c(%s), n2i=c(%s), m1i=c(%s), m2i=c(%s), sd1i=c(%s), sd2i=c(%s))" %\
-                        (metric, n1, n2, m1, m2, sd1, sd2)
-        effect = ro.r(r_str)
-        # the first 0 indexes into the study; the second, into the point estimate
-        # (the escalc method is general and thus expects an array of studies)
-        point_est = effect[0][0]
-        se = math.sqrt(effect[1][0])
+        if not None in [se1, se2] and metric=="MD":
+            # in this case, we have means & standard errors (but no sample size/ sds)
+            # thus we compute the point estimate and se directly
+            point_est = m1-m2
+            se = math.sqrt(sum([x**2 for x in [se1, se2]]))
+        else:
+            r_str = "escalc('%s', n1i=c(%s), n2i=c(%s), m1i=c(%s), m2i=c(%s), sd1i=c(%s), sd2i=c(%s))" %\
+                                (metric, n1, n2, m1, m2, sd1, sd2)
+    
+            
+            effect = ro.r(r_str)
+            # the first 0 indexes into the study; the second, into the point estimate
+            # (the escalc method is general and thus expects an array of studies)
+            point_est = effect[0][0]
+            se = math.sqrt(effect[1][0])
     else:
         # only one-arm
         point_est = m1

@@ -168,8 +168,9 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         for row_index, group_name in enumerate(self.cur_groups):
             grp_raw_data = self.raw_data_dict[group_name]
             for col in range(len(grp_raw_data)):
-                val = QTableWidgetItem(str(grp_raw_data[col]))
-                self.simple_table.setItem(row_index, col, val)
+                if grp_raw_data[col] is not None:
+                    val = QTableWidgetItem(str(grp_raw_data[col]))
+                    self.simple_table.setItem(row_index, col, val)
         
         self.impute_data()
         self.simple_table.blockSignals(False)
@@ -294,18 +295,31 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             table = self.simple_table
             
         if not self._is_empty(i, j, table) and not table.item(i,j).text() == "NA":
-            return float(table.item(i,j).text())
+            try:
+                return float(table.item(i,j).text())
+            except:
+                pyqtRemoveInputHook()
+                pdb.set_trace()
         return None
+        
+    def no_val(self, x):
+        return x is None or x == ""
         
     def try_to_update_cur_outcome(self):
 
         n1, m1, sd1, n2, m2, sd2 = self.ma_unit.get_raw_data_for_groups(self.cur_groups)
+        se1, se2 = self._get_float(0, 3), self._get_float(1, 3)
         
-        if not any([x is None or x == "" for x in [n1, m1, sd1, n2, m2, sd2 ]]) or \
-                    (not any([x is None or x == "" for x in [n1, m1, sd1]]) and self.cur_effect in CONTINUOUS_ONE_ARM_METRICS):
+        # here we check whether or not we have sufficient data to compute an outcome
+        ## TODO we should make this conditional more readable.
+        if not any([self.no_val(x) for x in [n1, m1, sd1, n2, m2, sd2 ]]) or \
+                    not any([self.no_val(x) for x in [m1, se1, m2, se2]]) and self.cur_effect=="MD" or \
+                    not any([self.no_val(x) for x in [n1, m1, sd1]]) and self.cur_effect in CONTINUOUS_ONE_ARM_METRICS:
             est_and_ci_d = None
             if self.cur_effect in CONTINUOUS_TWO_ARM_METRICS:
-                est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1, n2, m2, sd2, metric=self.cur_effect)
+                est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1, se1=se1, \
+                                                        n2=n2, m2=m2, sd2=sd2, se2=se2,\
+                                                        metric=self.cur_effect)
             else:
                 # continuous, one-arm metric
                 est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1, \

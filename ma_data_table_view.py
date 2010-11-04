@@ -110,12 +110,8 @@ class MADataTable(QtGui.QTableView):
             if form.exec_():
                 # update the model; push this event onto the stack
                 ### TODO need to update to using CommandEditMAUnit!
-                pyqtRemoveInputHook()
-                pdb.set_trace()
                 ma_edit = CommandEditMAUnit(self, study_index, ma_unit, old_ma_unit)
                 self.undoStack.push(ma_edit)
-                #raw_data_edit = CommandEditRawData(ma_unit, self.model(), old_raw_data_dict, form.raw_data_dict)
-                #self.undoStack.push(raw_data_edit)
 
     def rowMoved(self, row, oldIndex, newIndex):
         pass

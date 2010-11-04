@@ -177,7 +177,14 @@ class DatasetModel(QAbstractTableModel):
                     cur_raw_data = self.get_current_ma_unit_for_study(index.row()).\
                                                         get_raw_data_for_groups(self.current_txs)                                 
                     if len(cur_raw_data) > adjusted_index:
-                        return QVariant(cur_raw_data[adjusted_index])
+                        val = cur_raw_data[adjusted_index]
+                        if val == "" or val is None:
+                            return QVariant(val)
+                        try:
+                            return QVariant(round(val, self.NUM_DIGITS))
+                        except:
+                            pyqtRemoveInputHook()
+                            pdb.set_trace()
                     else:
                         return QVariant("")
                 else:
