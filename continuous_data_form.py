@@ -171,7 +171,13 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                 if grp_raw_data[col] is not None:
                     val = QTableWidgetItem(str(grp_raw_data[col]))
                     self.simple_table.setItem(row_index, col, val)
-        
+            # also insert the SEs, if we have them
+            se_col = 3
+            se = self.ma_unit.SEs_dict[group_name]
+            if se is not None:
+                se_item = QTableWidgetItem(str(se))
+                self.simple_table.setItem(row_index, se_col, se_item)
+                
         self.impute_data()
         self.simple_table.blockSignals(False)
           
@@ -185,6 +191,10 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             for col_index in range(len(grp_raw_data)):
                 cur_val = self._get_float(row_index, col_index)
                 self.raw_data_dict[group_name][col_index] = cur_val
+
+            # also check if SEs have been entered directly
+            se_index = 3
+            self.ma_unit.SEs_dict[group_name] = self._get_float(row_index, se_index)
         
     def impute_data(self):
         ''' compute what we can for each study from what has been given '''
@@ -331,7 +341,6 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             
             est, low, high = est_and_ci_d["calc_scale"] # calculation (e.g., log) scale
             self.ma_unit.set_effect_and_ci(self.cur_effect, est, low, high)    
-            
             self.set_current_effect()
             
 def isNaN(x):

@@ -496,12 +496,18 @@ class MetaAnalyticUnit:
         
         self.raw_data_length = 2 if outcome.data_type is BINARY else 3
         raw_data = raw_data or [["" for n in range(self.raw_data_length)] for group in group_names]
+        
+        # this is a (temporary?) fix for cases where the SE for a given study is
+        # provided but not the sample size (in particular, this is for continuous data).
+        self.SEs_dict = {}
+        
         # add the two default groups: treatment and control; note that the raw data
         # is held at the *group* level
         for i, group in enumerate(group_names):
             self.add_group(group)
             self.tx_groups[group].raw_data = raw_data[i]
-            
+            self.SEs_dict[group] = None
+        
         self.effects_dict = {}
         # TODO this needs another level; effect sizes that are entered directly
         # must correspond to a particular pair of tx groups, moreover the 
@@ -522,6 +528,10 @@ class MetaAnalyticUnit:
     def set_effect(self, effect, value):
         self.effects_dict[effect]["est"] = value
        
+    def set_SE(self, se):
+        # we're assuming this is a continuous outcome!
+        self.effects_dict["SE"] = se
+        
     def set_display_effect(self, effect, value):
         self.effects_dict[effect]["display_est"] = value
          
