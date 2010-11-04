@@ -110,7 +110,7 @@ continuous.random <- function(contData, params){
         images <- c("forest plot"=forest.path)
         plot_names <- c("forest plot"="forest_plot")
         
-        results <- list("images"=images, "summary"=summaryDisp, "plot_names"=plot_names)
+        results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot_names)
     }
     results
 }
