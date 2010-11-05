@@ -33,6 +33,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
         QObject.connect(self.buttonBox, SIGNAL("accepted()"), self.run_ma)
         QObject.connect(self.buttonBox, SIGNAL("rejected()"), self.cancel)
+        QObject.connect(self.save_btn, SIGNAL("pressed()"), self.select_out_path)
         QObject.connect(self.method_cbo_box, SIGNAL("currentIndexChanged(QString)"),
                                              self.method_changed)
 
@@ -59,6 +60,16 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         print "(cancel)"
         self.reject()
 
+    def select_out_path(self):
+        out_f = "."
+        out_f = unicode(QFileDialog.getSaveFileName(self, "OpenMeta[analyst] - Plot Path",
+                                                    out_f, "png image files: (.png)"))
+        if out_f == "" or out_f == None:
+            return None
+        else:
+            self.image_path.setText(out_f)
+        
+        
     def run_ma(self):
         result = None
         ### add forest plot parameters
@@ -97,6 +108,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.current_param_vals["fp_col4_str"] = unicode(self.col4_str_edit.text().toUtf8(), "utf-8")
         
         self.current_param_vals["fp_xlabel"] = unicode(self.x_lbl_le.text().toUtf8(), "utf-8")
+        self.current_param_vals["outpath"] = unicode(self.image_path.text().toUtf8(), "utf-8")
         
     def disable_bin_only_fields(self):
         self.col3_str_edit.setEnabled(False)

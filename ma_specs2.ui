@@ -220,7 +220,11 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="x_lbl_le"/>
+          <widget class="QLineEdit" name="x_lbl_le">
+           <property name="text">
+            <string>Effect size</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
