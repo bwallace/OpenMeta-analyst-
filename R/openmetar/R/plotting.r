@@ -64,7 +64,7 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
         plot.data$covariate <- list(varname = selected.cov,
                                    values = cov.values)
     }
-
+    plot.data$fp_xlabel <- paste(params$fp_xlabel, sep = "")
     plot.data
 }
 
@@ -427,7 +427,7 @@ forest.plot <- function(forest.data, outpath){
                      unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
                      forest.plot.params$col.gap,   forest.plot.params$effect.col.width),
                  height = unit(rep(1, height)  , "lines"))))
-                 }
+                }
     #number.cols <- 2 + length(additional.cols)
     draw.label.col(study.col, 1)
     if (length(additional.cols)>0 )  {
@@ -443,12 +443,14 @@ forest.plot <- function(forest.data, outpath){
     effects.col$range <- forest.plot.params$effect.col.range
     effects.col$sizes <- forest.plot.params$effect.col.sizes
     effects.col$width <- forest.plot.params$effect.col.width
+    #c(paste(params$fp_col4_str, sep = "")
+    effect.size.str <- c(paste(forest.data$fp_xlabel, sep=""))
     draw.data.col(forest.data, effects.col, 2*length(additional.cols)+3,
                              color.overall = "lightblue",
                              color.subgroup = "yellow",
                              summary.line.col= "red",
                              summary.line.pat = "dashed",
-                             metric = "Effect size",
+                             metric = effect.size.str,
                              diam.size = 1.2,
                              user.ticks = NULL)
     #popViewport()
@@ -459,7 +461,6 @@ forest.plot <- function(forest.data, outpath){
 #######################################
 #       meta-regression scatter       #
 #######################################
-
 meta.regression.plot <- function(plot.data, outpath,
                                   symSize=1,
                                   lcol = "darkred",

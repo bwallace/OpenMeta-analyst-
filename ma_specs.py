@@ -44,7 +44,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             # the data type, only about the method name (e.g., cumulative)
             self.meta_f_str = ".".join((self.meta_f_str, self.data_type))
         
-        if self.data_type != BINARY:
+        if self.data_type != "binary":
             self.disable_bin_only_fields()
             
         self.current_widgets = []
@@ -63,8 +63,6 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         result = None
         ### add forest plot parameters
         self.add_plot_params()
-        pyqtRemoveInputHook()
-        pdb.set_trace()
         # dispatch on type; build an R object, then run the analysis
         if self.data_type == "binary":
             # note that this call creates a tmp object in R called
@@ -97,6 +95,8 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.current_param_vals["fp_col3_str"] = unicode(self.col3_str_edit.text().toUtf8(), "utf-8")
         self.current_param_vals["fp_show_col4"] = self.show_4.isChecked()
         self.current_param_vals["fp_col4_str"] = unicode(self.col4_str_edit.text().toUtf8(), "utf-8")
+        
+        self.current_param_vals["fp_xlabel"] = unicode(self.x_lbl_le.text().toUtf8(), "utf-8")
         
     def disable_bin_only_fields(self):
         self.col3_str_edit.setEnabled(False)
