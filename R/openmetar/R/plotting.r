@@ -65,6 +65,7 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
                                    values = cov.values)
     }
     plot.data$fp_xlabel <- paste(params$fp_xlabel, sep = "")
+    plot.data$fp_xticks <- params$fp_xticks
     plot.data
 }
 
@@ -443,8 +444,18 @@ forest.plot <- function(forest.data, outpath){
     effects.col$range <- forest.plot.params$effect.col.range
     effects.col$sizes <- forest.plot.params$effect.col.sizes
     effects.col$width <- forest.plot.params$effect.col.width
-    #c(paste(params$fp_col4_str, sep = "")
+
+    xticks <- forest.data$fp_xticks
+    if (!is.null(xticks)) {
+        if (xticks == "NULL"){
+            xticks <- NULL
+        }
+        else{
+            xticks <- eval(parse(text=paste("c(", xticks, ")", sep="")))
+        }
+    }
     effect.size.str <- c(paste(forest.data$fp_xlabel, sep=""))
+  
     draw.data.col(forest.data, effects.col, 2*length(additional.cols)+3,
                              color.overall = "lightblue",
                              color.subgroup = "yellow",
@@ -452,7 +463,7 @@ forest.plot <- function(forest.data, outpath){
                              summary.line.pat = "dashed",
                              metric = effect.size.str,
                              diam.size = 1.2,
-                             user.ticks = NULL)
+                             user.ticks = xticks)
     #popViewport()
     graphics.off()
 }

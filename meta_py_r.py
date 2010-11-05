@@ -387,8 +387,9 @@ def run_continuous_ma(function_name, params, res_name = "result", cont_data_name
     return parse_out_results(result)
     
 def run_binary_ma(function_name, params, res_name="result", bin_data_name="tmp_obj"):
-    params["fp_effect_lbl"] = "eggs"
     params_df = ro.r['data.frame'](**params)
+    pyqtRemoveInputHook()
+    pdb.set_trace()
     r_str = "%s<-%s(%s, %s)" % (res_name, function_name, bin_data_name, params_df.r_repr())
     print "\n\n(run_binary_ma): executing:\n %s\n" % r_str
     ro.r(r_str)

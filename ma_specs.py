@@ -69,11 +69,15 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         else:
             self.image_path.setText(out_f)
         
-        
     def run_ma(self):
         result = None
         ### add forest plot parameters
         self.add_plot_params()
+        # also add the metric to the parameters
+        # -- this is for scaling
+        
+        self.current_param_vals["measure"] = self.model.current_effect
+        
         # dispatch on type; build an R object, then run the analysis
         if self.data_type == "binary":
             # note that this call creates a tmp object in R called
@@ -108,7 +112,23 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.current_param_vals["fp_col4_str"] = unicode(self.col4_str_edit.text().toUtf8(), "utf-8")
         
         self.current_param_vals["fp_xlabel"] = unicode(self.x_lbl_le.text().toUtf8(), "utf-8")
-        self.current_param_vals["outpath"] = unicode(self.image_path.text().toUtf8(), "utf-8")
+        self.current_param_vals["fp_outpath"] = unicode(self.image_path.text().toUtf8(), "utf-8")
+        xticks = unicode(self.x_ticks_le.text().toUtf8(), "utf-8")
+        if xticks != "[default]" and self.seems_sane(xticks):
+            self.current_param_vals["fp_xticks"] = xticks
+        else:
+            self.current_param_vals["fp_xticks"] = "NULL"
+            
+    def seems_sane(self, xticks):
+        num_list = xticks.split(",")
+        if len(num_list) == 1:
+            return False
+        try:
+            num_list = [eval(x) for x in num_list]
+        except:
+            return False
+        return True
+        
         
     def disable_bin_only_fields(self):
         self.col3_str_edit.setEnabled(False)
@@ -122,6 +142,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             # note that this call creates a tmp object in R called
             # tmp_obj (though you can pass in whatever var name
             # you'd like)
+            #self.current_param_vals["metric"] = self.model.get
             meta_py_r.ma_dataset_to_simple_binary_robj(self.model)
             result = meta_py_r.run_cum_binary_ma(self.current_method, self.current_param_vals)
         elif self.data_type == "continuous":

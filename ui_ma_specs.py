@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ma_specs2.ui'
 #
-# Created: Fri Nov 05 16:53:53 2010
+# Created: Fri Nov 05 17:52:32 2010
 #      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -59,8 +59,8 @@ class Ui_Dialog(object):
         self.tabWidget.addTab(self.tab, "")
         self.tab_2 = QtGui.QWidget()
         self.tab_2.setObjectName("tab_2")
-        self.gridLayout_3 = QtGui.QGridLayout(self.tab_2)
-        self.gridLayout_3.setObjectName("gridLayout_3")
+        self.verticalLayout_2 = QtGui.QVBoxLayout(self.tab_2)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.groupBox = QtGui.QGroupBox(self.tab_2)
         self.groupBox.setObjectName("groupBox")
         self.horizontalLayout_2 = QtGui.QHBoxLayout(self.groupBox)
@@ -108,16 +108,23 @@ class Ui_Dialog(object):
         self.show_4.setObjectName("show_4")
         self.gridLayout_2.addWidget(self.show_4, 3, 2, 1, 1)
         self.horizontalLayout_2.addLayout(self.gridLayout_2)
-        self.gridLayout_3.addWidget(self.groupBox, 0, 0, 1, 1)
-        self.horizontalLayout_3 = QtGui.QHBoxLayout()
-        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.verticalLayout_2.addWidget(self.groupBox)
+        self.gridLayout_3 = QtGui.QGridLayout()
+        self.gridLayout_3.setObjectName("gridLayout_3")
         self.label_7 = QtGui.QLabel(self.tab_2)
+        self.label_7.setMaximumSize(QtCore.QSize(16777215, 50))
         self.label_7.setObjectName("label_7")
-        self.horizontalLayout_3.addWidget(self.label_7)
+        self.gridLayout_3.addWidget(self.label_7, 0, 0, 1, 1)
         self.x_lbl_le = QtGui.QLineEdit(self.tab_2)
         self.x_lbl_le.setObjectName("x_lbl_le")
-        self.horizontalLayout_3.addWidget(self.x_lbl_le)
-        self.gridLayout_3.addLayout(self.horizontalLayout_3, 1, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.x_lbl_le, 0, 1, 1, 1)
+        self.label_8 = QtGui.QLabel(self.tab_2)
+        self.label_8.setObjectName("label_8")
+        self.gridLayout_3.addWidget(self.label_8, 1, 0, 1, 1)
+        self.x_ticks_le = QtGui.QLineEdit(self.tab_2)
+        self.x_ticks_le.setObjectName("x_ticks_le")
+        self.gridLayout_3.addWidget(self.x_ticks_le, 1, 1, 1, 1)
+        self.verticalLayout_2.addLayout(self.gridLayout_3)
         self.horizontalLayout_4 = QtGui.QHBoxLayout()
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         self.label_3 = QtGui.QLabel(self.tab_2)
@@ -130,7 +137,7 @@ class Ui_Dialog(object):
         self.save_btn.setMaximumSize(QtCore.QSize(25, 16777215))
         self.save_btn.setObjectName("save_btn")
         self.horizontalLayout_4.addWidget(self.save_btn)
-        self.gridLayout_3.addLayout(self.horizontalLayout_4, 2, 0, 1, 1)
+        self.verticalLayout_2.addLayout(self.horizontalLayout_4)
         self.tabWidget.addTab(self.tab_2, "")
         self.verticalLayout.addWidget(self.tabWidget)
         self.buttonBox = QtGui.QDialogButtonBox(Dialog)
@@ -160,6 +167,9 @@ class Ui_Dialog(object):
         self.col4_str_edit.setText(QtGui.QApplication.translate("Dialog", "Ev/Ctrl", None, QtGui.QApplication.UnicodeUTF8))
         self.show_4.setText(QtGui.QApplication.translate("Dialog", "show", None, QtGui.QApplication.UnicodeUTF8))
         self.label_7.setText(QtGui.QApplication.translate("Dialog", "x label:", None, QtGui.QApplication.UnicodeUTF8))
+        self.x_lbl_le.setText(QtGui.QApplication.translate("Dialog", "Effect size", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_8.setText(QtGui.QApplication.translate("Dialog", "x ticks:", None, QtGui.QApplication.UnicodeUTF8))
+        self.x_ticks_le.setText(QtGui.QApplication.translate("Dialog", "[default]", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setText(QtGui.QApplication.translate("Dialog", "save image to:", None, QtGui.QApplication.UnicodeUTF8))
         self.image_path.setText(QtGui.QApplication.translate("Dialog", "./r_tmp/forest.png", None, QtGui.QApplication.UnicodeUTF8))
         self.save_btn.setText(QtGui.QApplication.translate("Dialog", "...", None, QtGui.QApplication.UnicodeUTF8))

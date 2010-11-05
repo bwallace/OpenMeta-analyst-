@@ -287,9 +287,9 @@ binary.fixed.inv.var <- function(binaryData, params){
         summaryDisp <- createSummaryDisp(res, params, degf, modelTitle)
         summaryDisp
         
-        forest_path <- "./r_tmp/forest.png"
+        forest.path <- paste(params$fp_outpath, sep="")
         plotData <- create.plot.data.binary(binaryData, params, res)
-        forest.plot(plotData, outpath=forest_path)
+        forest.plot(plotData, outpath=forest.path)
     
         #
         # Now we package the results in a dictionary (technically, a named 
@@ -298,7 +298,7 @@ binary.fixed.inv.var <- function(binaryData, params){
         # (mapping titles to pretty-printed text). In this case we have only one 
         # of each. 
         #     
-        images <- c("forest plot"=forest_path)
+        images <- c("forest plot"=forest.path)
         plot_names <- c("forest plot"="forest_plot")
         
         ###
@@ -315,13 +315,13 @@ binary.fixed.inv.var.parameters <- function(){
     binary_metrics <- c("OR", "RR", "RD")
     apply_adjustment_to = c("only0", "all")
     
-    params <- list("measure"=binary_metrics, "conf.level"="float", "digits"="float", 
+    params <- list("conf.level"="float", "digits"="float", 
                             "adjust"="float", "to"=apply_adjustment_to)
     
     # default values
-    defaults <- list("measure"="OR", "conf.level"=95, "digits"=3, "adjust"=.5, "to"="only0")
+    defaults <- list("conf.level"=95, "digits"=3, "adjust"=.5, "to"="only0")
     
-    var_order = c("measure", "conf.level", "digits", "adjust", "to")
+    var_order = c("conf.level", "digits", "adjust", "to")
     
     parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
 }
@@ -359,9 +359,9 @@ binary.fixed.mh <- function(binaryData, params){
         #
         # generate forest plot 
         #
-        forest_path <- "./r_tmp/forest.png"
+        forest.path <- paste(params$fp_outpath, sep="")
         plotData <- create.plot.data.binary(binaryData, params, res)
-        forest.plot(plotData, outpath=forest_path)
+        forest.plot(plotData, outpath=forest.path)
     
         #
         # Now we package the results in a dictionary (technically, a named 
@@ -370,9 +370,9 @@ binary.fixed.mh <- function(binaryData, params){
         # (mapping titles to pretty-printed text). In this case we have only one 
         # of each. 
         #     
-        images <- c("forest plot"=forest_path)
-        plot_names <- c("forest plot"="forest_plot")
-        results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot_names)
+        images <- c("forest plot"=forest.path)
+        plot.names <- c("forest plot"="forest_plot")
+        results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot.names)
     }
     results
 }
@@ -382,13 +382,13 @@ binary.fixed.mh.parameters <- function(){
     binary_metrics <- c("OR", "RR", "RD")
     apply_adjustment_to = c("only0", "all")
     
-    params <- list("measure"=binary_metrics, "conf.level"="float", "digits"="float",
+    params <- list("conf.level"="float", "digits"="float",
                             "adjust"="float", "to"=apply_adjustment_to)
     
     # default values
-    defaults <- list("measure"="OR", "conf.level"=95, "digits"=3, "adjust"=.5, "to"="only0")
+    defaults <- list("conf.level"=95, "digits"=3, "adjust"=.5, "to"="only0")
     
-    var_order = c("measure", "conf.level", "digits", "adjust", "to")
+    var_order = c("conf.level", "digits", "adjust", "to")
     
     # constraints
     parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
@@ -434,10 +434,9 @@ binary.fixed.peto <- function(binaryData, params){
         #
         # generate forest plot 
         #
-        forest_path <- "./r_tmp/forest.png"
-        png(forest_path)
-        forest_plot<-forest.rma(res, digits=params$digits)
-        dev.off()
+        forest.path <- paste(params$fp_outpath, sep="")
+        plotData <- create.plot.data.binary(binaryData, params, res)
+        forest.plot(plotData, outpath=forest.path)
     
         #
         # Now we package the results in a dictionary (technically, a named 
@@ -446,10 +445,10 @@ binary.fixed.peto <- function(binaryData, params){
         # (mapping titles to pretty-printed text). In this case we have only one 
         # of each. 
         #     
-        images <- c("forest plot"=forest_path)
-        plot_names <- c("forest plot"="forest_plot")
+        images <- c("forest plot"=forest.path)
+        plot.names <- c("forest plot"="forest_plot")
         
-        results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot_names)
+        results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot.names)
     }
     results
 }
@@ -522,11 +521,9 @@ binary.random <- function(binaryData, params){
         #
         # generate forest plot 
         #
-        getwd()
-        forest_path <- "./r_tmp/forest.png"
-        png(forest_path)
-        forest.rma(res, digits=params$digits)
-        dev.off()
+        forest.path <- paste(params$fp_outpath, sep="")
+        plotData <- create.plot.data.binary(binaryData, params, res)
+        forest.plot(plotData, outpath=forest.path)
     
         #
         # Now we package the results in a dictionary (technically, a named 
@@ -536,9 +533,9 @@ binary.random <- function(binaryData, params){
         # of each. 
         #     
         images <- c("forest plot"=forest_path)
-        plot_names <- c("forest plot"="forest_plot")
+        plot.names <- c("forest plot"="forest_plot")
         
-        results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot_names)
+        results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot.names)
     }
     results
 }
@@ -548,12 +545,13 @@ binary.random.parameters <- function(){
     # parameters
     binary_metrics <- c("OR", "RR", "RD")
     rm_method_ls <- c("HE", "DL", "SJ", "ML", "REML", "EB")
-    params <- list("rm.method"=rm_method_ls, "measure"=binary_metrics, "conf.level"="float", "digits"="float")
+    #params <- list("rm.method"=rm_method_ls, "measure"=binary_metrics, "conf.level"="float", "digits"="float")
+    params <- list("rm.method"=rm_method_ls, "conf.level"="float", "digits"="float")
     
     # default values
-    defaults <- list("rm.method"="DL", "measure"="OR", "conf.level"=95, "digits"=3)
+    defaults <- list("rm.method"="DL", "conf.level"=95, "digits"=3)
     
-    var_order <- c("rm.method", "measure", "conf.level", "digits")
+    var_order <- c("rm.method", "conf.level", "digits")
     parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
 }
 
