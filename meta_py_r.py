@@ -364,10 +364,16 @@ def cov_to_str(cov, study_names, dataset):
     cov_values = []
     for study in study_names:
         if cov.data_type == CONTINUOUS:
-            cov_values.append("%s" % cov_value_d[study])
+            if cov_value_d.has_key(study):
+                cov_values.append("%s" % cov_value_d[study])
+            else:
+                cov_values.append("NA")
         else:
-            # factor; note the string.
-            cov_values.append("'%s'" % cov_value_d[study])
+            if cov_value_d.has_key(study):
+                # factor; note the string.
+                cov_values.append("'%s'" % cov_value_d[study])
+            else:
+                cov_values.append("NA")
     cov_str += ",".join(cov_values) + ")"
     return cov_str
         

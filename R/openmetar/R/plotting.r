@@ -27,9 +27,9 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     ## TODO note that we're forcing the 'cont' scale -- thus
     # it's assumed everything is on the raw scale. may want to change
     # this.
-    plot.data <- list( label = c("Studies", om.data@studyNames, "Overall"),
-                types = c(3, rep(0, length(om.data@studyNames)), 2),
-                scale = "cont")
+    plot.data <- list( label = c(paste(params$fp_col1_str, sep = ""), om.data@studyNames, "Overall"),
+                    types = c(3, rep(0, length(om.data@studyNames)), 2),
+                    scale = "cont")
     alpha <- 1.0-(params$conf.level/100.0)
     mult <- abs(qnorm(alpha/2.0))
     ###
@@ -49,7 +49,8 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     y.overall.rounded <- round(y.overall, digits = params$digits)
     lb.overall.rounded <- round(lb.overall, digits = params$digits)
     ub.overall.rounded <- round(ub.overall, digits = params$digits)
-    additional.cols <- list(es = c("ES (LL, UL)", paste(y.rounded, " (", lb.rounded, " , ", ub.rounded, ")", sep = ""),
+    additional.cols <- list(es = c(paste(params$fp_col2_str, sep = ""),
+                                 paste(y.rounded, " (", lb.rounded, " , ", ub.rounded, ")", sep = ""),
                                  paste(y.overall.rounded, " (", lb.overall.rounded, " , ", ub.overall.rounded, ")", sep = "")))
     plot.data$additional.col.data <- additional.cols               
     effects <- list(ES = c(y, y.overall),
@@ -76,15 +77,15 @@ create.plot.data.binary <- function(binary.data, params, res, selected.cov = NUL
     plot.data <- create.plot.data.generic  (binary.data, params, res, selected.cov=selected.cov)
         
     # if we have raw data, add it to the additional columns field
-    if (length(binary.data@g1O1) > 0) {
+    if ((length(binary.data@g1O1) > 0) && (params$fp_show_col3=="TRUE")) {
         # TODO these strings ('ev/trt') shouldn't be hard-coded.
-        plot.data$additional.col.data$cases = c(paste(params$fp_effect_lbl, sep = ""), 
+        plot.data$additional.col.data$cases = c(paste(params$fp_col3_str, sep = ""), 
                                     paste(binary.data@g1O1, " / ", binary.data@g1O1 + binary.data@g1O2, sep = ""), 
                                     paste(sum(binary.data@g1O1), " / ", sum(binary.data@g1O1 + binary.data@g1O2), sep = ""))
     }
     
-    if (length(binary.data@g2O1) > 0){
-        plot.data$additional.col.data$controls = c("Ev/Ctrl", 
+    if ((length(binary.data@g2O1) > 0) && (params$fp_col4_str=="TRUE")){
+        plot.data$additional.col.data$controls = c(paste(params$fp_col4_str, sep = ""),
                                         paste(binary.data@g2O1, " / ", binary.data@g1O1 + binary.data@g2O2, sep = ""),
                                         paste(sum(binary.data@g2O1), " / ", sum(binary.data@g1O1 + binary.data@g2O2), sep = ""))
     }

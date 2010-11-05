@@ -18,7 +18,7 @@ import sip
 
 import ui_ma_specs
 import meta_py_r
-
+from meta_globals import *
 
 class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
@@ -44,6 +44,9 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             # the data type, only about the method name (e.g., cumulative)
             self.meta_f_str = ".".join((self.meta_f_str, self.data_type))
         
+        if self.data_type != BINARY:
+            self.disable_bin_only_fields()
+            
         self.current_widgets = []
         self.current_method = None
         self.current_params = None
@@ -94,6 +97,10 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.current_param_vals["fp_col3_str"] = unicode(self.col3_str_edit.text().toUtf8(), "utf-8")
         self.current_param_vals["fp_show_col4"] = self.show_4.isChecked()
         self.current_param_vals["fp_col4_str"] = unicode(self.col4_str_edit.text().toUtf8(), "utf-8")
+        
+    def disable_bin_only_fields(self):
+        self.col3_str_edit.setEnabled(False)
+        self.col4_str_edit.setEnabled(False)
         
         
     def run_cum_ma(self):

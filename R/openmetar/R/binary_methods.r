@@ -329,7 +329,7 @@ binary.fixed.inv.var.parameters <- function(){
 binary.fixed.inv.var.overall <- function(results) {
     # this parses out the overall from the computed result
     res <- results$summary
-    overall <- list(c("estimate"=res$b[1], "lower"=res$ci.lb, "upper"=res$ci.ub))
+    overall <- list("estimate"=res$b[1], "lower"=res$ci.lb, "upper"=res$ci.ub)
     overall
 }
 
