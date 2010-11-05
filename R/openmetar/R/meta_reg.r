@@ -15,18 +15,18 @@ binary.meta.regression <- function(binary.data, params, cov.name){
     res<-rma.uni(yi=binary.data@y, sei=binary.data@SE, slab=binary.data@studyNames,
                                 level=params$conf.level, digits=params$digits, method="DL", 
                                 mods=cov.vals)
-    
-                                                            
+    regDisp <- createRegressionDisp(res, params)
+    regDisp
+    #reg.display<-array(c("Slope", "Intercept", res$b[2], res$b[1]), dim=c(2,2)) 
     betas <- res$b
     fitted.line <- list(intercept=betas[1], slope=betas[2])
-    plot.data <- create.plot.data(binary.data, params, res, selected.cov=cov.name)
+    plot.data <- create.plot.data.binary(binary.data, params, res, selected.cov=cov.name)
     plot.data$fitted.line <- fitted.line
     plot.path <- "./r_tmp/reg_plot.png"
     meta.regression.plot(plot.data, plot.path)   
     images <- c("regression plot"=plot.path)
     plot.names <- c("forest plot"="reg.plot")
-    
-    results <- list("images"=images, "coefficients"=betas, "plot_names"=plot.names)
+    results <- list("images"=images, "Summary"=regDisp, "plot_names"=plot.names)
     results
 }
 
@@ -43,4 +43,4 @@ cont.meta.regression <- function(cont.data, params, cov.name){
     betas <- res$b
     fitted.line <- list(intercept=betas[1], slope=betas[2])
                                         
-}
+} 

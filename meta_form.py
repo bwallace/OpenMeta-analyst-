@@ -638,8 +638,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         ''' Call me when the model is changed. '''
         self.model.update_current_group_names()
         self.model.update_current_outcome()
-        pyqtRemoveInputHook()
-        pdb.set_trace()
         self.model.try_to_update_outcomes()
         self.model.update_current_time_points()
         # This is kind of subtle. We have to reconnect

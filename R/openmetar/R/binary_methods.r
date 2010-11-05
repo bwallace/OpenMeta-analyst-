@@ -91,68 +91,6 @@ extractData <- function(binaryData, params){
     return(rawData)
 }
 
-# TODO this should be moved to plotting.r
-
-create.plot.data <- function(binaryData, params, res, selected.cov = NULL, include.overall=TRUE){
-    # Creates a data structure that can be passed to forest.plot
-    # res is the output of a call to the Metafor function rma
-    plotData <- list( label = c("Studies", binaryData@studyNames, "Overall"),
-                types = c(3, rep(0, length(binaryData@studyNames)), 2),
-                scale = "log" )
-
-    alpha <- 1.0-(params$conf.level/100.0)
-    mult <- abs(qnorm(alpha/2.0))
-    lb <- binaryData@y - mult*binaryData@SE
-    ub <- binaryData@y + mult*binaryData@SE
-
-
-    ### TODO only do this for appropriate metrics
-    # i.e., ratios, which will be on the log-scale
-    # exponentiate effect sizes and bounds.
-    y <- exp(binaryData@y)
-    lb <- exp(lb)
-    ub <- exp(ub)
-
-    yOverall <- exp(res$b[1])
-    lbOverall <- exp(res$ci.lb[1])
-    ubOverall <- exp(res$ci.ub[1])
-
-    # round results for display.
-    yRounded <- round(y, digits = params$digits)
-    lbRounded <- round(lb, digits = params$digits)
-    ubRounded <- round(ub, digits = params$digits)
-    yOverallRounded <- round(yOverall, digits = params$digits)
-    lbOverallRounded <- round(lbOverall, digits = params$digits)
-    ubOverallRounded <- round(ubOverall, digits = params$digits)
-
-    additional.cols <- list(es = c("ES (LL, UL)", paste(yRounded, " (", lbRounded, " , ", ubRounded, ")", sep = ""),
-                                 paste(yOverallRounded, " (", lbOverallRounded, " , ", ubOverallRounded, ")", sep = "")))
-        
-    # if we have raw data, add it to the additional columns
-    if (length(binaryData@g1O1) > 0) {
-        additional.cols$cases = c("Ev/Trt", 
-                                    paste(binaryData@g1O1, " / ", binaryData@g1O1 + binaryData@g1O2, sep = ""), 
-                                    paste(sum(binaryData@g1O1), " / ", sum(binaryData@g1O1 + binaryData@g1O2), sep = ""))
-        additional.cols$controls = c("Ev/Ctrl", 
-                                        paste(binaryData@g1O1, " / ", binaryData@g1O1 + binaryData@g1O2, sep = ""),
-                                        paste(sum(binaryData@g1O1), " / ", sum(binaryData@g1O1 + binaryData@g1O2), sep = ""))
-    }
-
-    plotData$additional.col.data <- additional.cols
-    if (!is.null(selected.cov)){
-        cov.val.str <- paste("binaryData@covariates$", selected.cov, sep="")
-        cov.values <- eval(parse(text=cov.val.str))
-        plotData$covariate <- list(varname = selected.cov,
-                                   values = cov.values)
-    }
-    
-    effects <- list(ES = c(y, yOverall),
-                    LL = c(lb, lbOverall),
-                    UL = c(ub, ubOverall))
-    plotData$effects <- effects
-    plotData
-}
-
 print.summaryDisplay <- function(results,...) {
     # Prints results summary
     cat(results$modelTitle)
@@ -177,6 +115,7 @@ print.summaryDisplay <- function(results,...) {
         altTable <- list2Array(results$altData)
         print(altTable)
     }
+
     #if (length(binaryData@g1O1) > 0) {
     #    rawData<-extractData(binaryData, params)
     #    cat("  Data\n")
@@ -184,15 +123,25 @@ print.summaryDisplay <- function(results,...) {
     #}
 }
 
+print.regDisplay <- function(regDisp, ...) {
+     # Prints regression statistics
+     regTable <- list2Array(regDisp)
+     print(regTable)
+}
+
 list2Array <- function(dataList) {
     # Accepts a named list dataList and converts it to an array in which 
     # first row is the names and second row is the values.
-    # dataList$Labels and dataList$Labels must have the same length. 
-    if (length(dataList$Labels) == length(dataList$Values)) {
+    # dataList$Labels and dataList$Labels must have the same length.
+    if (length(dataList$Labels) == length(dataList$Values[1,])) {
       listVals <- dataList$Values
-      arr <- array(dim=c(2,length(listVals)))
+      numValRows <- length(listVals[,1])
+      numCols <- length(listVals[1,])
+      arr <- array(dim=c(numValRows + 1,numCols))
       arr[1,] <- dataList$Labels
-      arr[2,] <- listVals
+      for (count in 1:numValRows) {
+          arr[count+1,] <- listVals[count,]
+      }
       class(arr) <- "Table"
     }
     else {
@@ -203,7 +152,6 @@ list2Array <- function(dataList) {
 
 print.Table <- function(tableData) {
     # Prints an array tableData with lines separating rows and columns.
-    tableRow <- "|"
     #rowLength <- 1
     numRows <- length(tableData[,1])
     numCols <- length(tableData[1,])
@@ -254,15 +202,6 @@ padEntry <- function(entry, colWidth) {
     return(entry)
 }
 
-#roundedQEDisplay <- function(x, digits) {
-    # Prints "< 10^(-digits)" if x is < 10^(-digits) or "= x" otherwise
-    #xDisp <- paste("= ", x, sep = "", collapse = "")
-    #if (x < 10^(-digits)) {
-    #    xDisp <- paste("< ", 10^(-digits), sep = "", collapse = "")
-    #}
-    #return(xDisp)
-#}
-
 roundedDisplay <- function(x, digits) {
     # Prints "< 10^(-digits)" if x is < 10^(-digits) or "x" otherwise
     xDisp <- round(x, digits)
@@ -281,7 +220,7 @@ createSummaryDisp <- function(res, params, degf, modelTitle) {
     QE <- round(res$QE, digits=params$digits)
     QEp <- roundedDisplay(res$QEp, digits=params$digits)
     hetTestData <- list("Title" = "  Test for Heterogeneity", "Labels" = c(QLabel, "p-Value", "I^2"),
-                        "Values" = c(QE, QEp, I2))
+                        "Values" = array(c(QE, QEp, I2), dim=c(1,3)))
     estDisp <- round(binary.transform.f(params$measure)$display.scale(res$b), digits=params$digits) 
     lbDisp <- round(binary.transform.f(params$measure)$display.scale(res$ci.lb), digits=params$digits)
     ubDisp <- round(binary.transform.f(params$measure)$display.scale(res$ci.ub), digits=params$digits)
@@ -292,25 +231,37 @@ createSummaryDisp <- function(res, params, degf, modelTitle) {
     if (binary.transform.f(params$measure)$display.scale(1)!= binary.transform.f(params$measure)$calc.scale(1)) { 
          resultData <- list("Title" = "  Model Results (reporting scale)",
                         "Labels" = c("Estimate", "p-Value", "Z-Value", "Lower bound", "Upper bound"),
-                        "Values" = c(estDisp, pVal, zVal, lbDisp, ubDisp))
+                        "Values" = array(c(estDisp, pVal, zVal, lbDisp, ubDisp), dim=c(1,5)))
          estCalc <- round(res$b, digits=params$digits) 
          lbCalc <- round(res$ci.lb, digits=params$digits)
          ubCalc <- round(res$ci.ub, digits=params$digits)
          altData <- list("Title" = "  Model Results (calculation scale)",
                       "Labels" = c("Estimate", "SE", "Lower bound", "Upper bound"),
-                      "Values" = c(estCalc, se, lbCalc, ubCalc))        
+                      "Values" = array(c(estCalc, se, lbCalc, ubCalc), dim=c(1,4)))        
     }    
      
     else {
         resultData <- list("Title" = "  Model Results (reporting scale)",
                         "Labels" = c("Estimate", "SE", "p-Value", "Z-Value", "Lower bound", "Upper bound"),
-                        "Values" = c(estDisp, se, pVal, zVal, lbDisp, ubDisp))
+                        "Values" = array(c(estDisp, se, pVal, zVal, lbDisp, ubDisp), dim=c(1,6)))
         altData <- list("Title" = NA)
     }
     summaryDisp <- list("digits" = params$digits, "modelTitle" = modelTitle, "hetTestData" = hetTestData, "resultData" = resultData,
                         "altData" = altData)
     class(summaryDisp) <- "summaryDisplay"                     
     return(summaryDisp)
+}
+
+createRegressionDisp <- function(res, params) {
+    coeffs <- round(res$b, digits=params$digits)
+    pvals <- roundedDisplay(res$pval, digits=params$digits)
+    lbs <- round(res$ci.lb, digits=params$digits)
+    ubs <- round(res$ci.ub, digits=params$digits)
+    regDisp <- list("Labels" = c("", "Estimate", "p-Value", "Lower bound", "Upper bound"),
+                      "Values" = array(c("Intercept", "Slope", coeffs[1], coeffs[2], pvals[1], pvals[2],
+                      lbs[1], lbs[2], ubs[1], ubs[2]), dim=c(2, 5)))
+    class(regDisp) <-  "regDisplay"                
+    return(regDisp)
 }
 
 ###################################################
@@ -354,7 +305,7 @@ binary.fixed.inv.var <- function(binaryData, params){
         # should we return the name of the result object & the name of the
         # plotting function as well here? perhaps only for the forest plot? 
         # this would allow interactive plot refinement via the console...
-        results <- list("images"=images, "summary"=summaryDisp, "plot_names"=plot_names)
+        results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot_names)
     }
     results
 }
@@ -421,7 +372,7 @@ binary.fixed.mh <- function(binaryData, params){
         #     
         images <- c("forest plot"=forest_path)
         plot_names <- c("forest plot"="forest_plot")
-        results <- list("images"=images, "summary"=summaryDisp, "plot_names"=plot_names)
+        results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot_names)
     }
     results
 }
@@ -498,7 +449,7 @@ binary.fixed.peto <- function(binaryData, params){
         images <- c("forest plot"=forest_path)
         plot_names <- c("forest plot"="forest_plot")
         
-        results <- list("images"=images, "summary"=summaryDisp, "plot_names"=plot_names)
+        results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot_names)
     }
     results
 }
@@ -587,7 +538,7 @@ binary.random <- function(binaryData, params){
         images <- c("forest plot"=forest_path)
         plot_names <- c("forest plot"="forest_plot")
         
-        results <- list("images"=images, "summary"=summaryDisp, "plot_names"=plot_names)
+        results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot_names)
     }
     results
 }

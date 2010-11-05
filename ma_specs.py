@@ -58,6 +58,10 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
     def run_ma(self):
         result = None
+        ### add forest plot parameters
+        self.add_plot_params()
+        pyqtRemoveInputHook()
+        pdb.set_trace()
         # dispatch on type; build an R object, then run the analysis
         if self.data_type == "binary":
             # note that this call creates a tmp object in R called
@@ -80,6 +84,18 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.parent().analysis(result)
         self.accept()
     
+    def add_plot_params(self):
+        ### TODO shouldn't couple R plotting routine with UI so tightly
+        self.current_param_vals["fp_show_col1"] = self.show_1.isChecked()
+        self.current_param_vals["fp_col1_str"] = unicode(self.col1_str_edit.text().toUtf8(), "utf-8")
+        self.current_param_vals["fp_show_col2"] = self.show_2.isChecked()
+        self.current_param_vals["fp_col2_str"] = unicode(self.col2_str_edit.text().toUtf8(), "utf-8")
+        self.current_param_vals["fp_show_col3"] = self.show_3.isChecked()
+        self.current_param_vals["fp_col3_str"] = unicode(self.col3_str_edit.text().toUtf8(), "utf-8")
+        self.current_param_vals["fp_show_col4"] = self.show_4.isChecked()
+        self.current_param_vals["fp_col4_str"] = unicode(self.col4_str_edit.text().toUtf8(), "utf-8")
+        
+        
     def run_cum_ma(self):
         result = None
         # dispatch on type; build an R object, then run the analysis

@@ -152,7 +152,7 @@ def get_available_methods(for_data_type=None, data_obj_name=None):
     # start with the name of the data type. furthermore, the parameters
     # for those methods are returned by a method with a name
     # ending in ".parameters"
-    special_endings = [".parameters", ".is.feasible", ".overall", ".regression"]
+    special_endings = [".parameters", ".is.feasible", ".overall", ".regression", "transform.f"]
     is_special = lambda f: any([f.endswith(ending) for ending in special_endings])
     all_methods = [method for method in method_list if not is_special(method)]
     if for_data_type is not None:
@@ -381,6 +381,7 @@ def run_continuous_ma(function_name, params, res_name = "result", cont_data_name
     return parse_out_results(result)
     
 def run_binary_ma(function_name, params, res_name="result", bin_data_name="tmp_obj"):
+    params["fp_effect_lbl"] = "eggs"
     params_df = ro.r['data.frame'](**params)
     r_str = "%s<-%s(%s, %s)" % (res_name, function_name, bin_data_name, params_df.r_repr())
     print "\n\n(run_binary_ma): executing:\n %s\n" % r_str
