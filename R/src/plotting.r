@@ -107,6 +107,46 @@ create.plot.data.continuous <- function(cont.data, params, res, selected.cov = N
     plot.data
 }
 
+create.plot.data.cumulative <- function(binary.data, params, res, studyNames, selected.cov=NULL){
+    scale.str <- "log"
+    ## TODO resolve scaling
+    
+    # Creates a cumulative data structure that can be passed to forest.plot
+    # res is the output of a call to cum.ma.binary, which in turn calls the Metafor function rma
+    ## TODO note that we're forcing the 'cont' scale -- thus
+    # it's assumed everything is on the raw scale. may want to change
+    # this.
+    
+    studyNames[1] <- paste("   ", studyNames[1], sep="")
+    plot.data <- list( label = c("Studies", studyNames),
+                types = c(3, rep(0, length(studyNames))),
+                scale = "cont")
+    y <- res[,1]
+    lb <- res[,2]
+    ub <- res[,3]
+    # round results for display.
+    y.rounded <- round(y, digits = params$digits)
+    lb.rounded <- round(lb, digits = params$digits)
+    ub.rounded <- round(ub, digits = params$digits)
+       
+    additional.cols <- list(es = c("ES (LL, UL)", paste(y.rounded, " (", lb.rounded, " , ", ub.rounded, ")", sep = "")))
+                               
+    plot.data$additional.col.data <- additional.cols               
+    effects <- list(ES = y,
+                    LL = lb,
+                    UL = ub)
+    plot.data$effects <- effects
+    
+    # covariates
+    if (!is.null(selected.cov)){
+        cov.val.str <- paste("binary.data@covariates$", selected.cov, sep="")
+        cov.values <- eval(parse(text=cov.val.str))
+        plot.data$covariate <- list(varname = selected.cov,
+                                   values = cov.values)
+    }
+
+    plot.data
+}
 
 # get data for the study column
 study.column <- function(forest.data, title.font="bold") {

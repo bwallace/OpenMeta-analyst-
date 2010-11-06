@@ -98,24 +98,21 @@ print.summaryDisplay <- function(results,...) {
     if (!is.na(results$hetTestData$Title)) {
         cat(results$hetTestData$Title)
         cat("\n")
-        hetTable <- list2Array(results$hetTestData)
-        print(hetTable)
+        print(results$hetTestData$hetTable)
         cat("\n")
     }                   
     if (!is.na(results$resultData$Title)) {
         cat(results$resultData$Title)
         cat("\n")
-        resultsTable <- list2Array(results$resultData)
-        print(resultsTable)
+        print(results$resultData$resultTable)
         cat("\n")
     }
     if (!is.na(results$altData$Title)) {
         cat(results$altData$Title)
         cat("\n")
-        altTable <- list2Array(results$altData)
-        print(altTable)
+        print(results$altData$altTable)
     }
-
+  
     #if (length(binaryData@g1O1) > 0) {
     #    rawData<-extractData(binaryData, params)
     #    cat("  Data\n")
@@ -125,13 +122,18 @@ print.summaryDisplay <- function(results,...) {
 
 print.regDisplay <- function(regDisp, ...) {
      # Prints regression statistics
-     regTable <- list2Array(regDisp)
-     print(regTable)
+     print(regDisp$regData$regTable)
+}
+
+print.cumDisplay <- function(cumDisp, ...) {
+    # Prints cumulative analysis results summary
+    print(cumDisp$cumData$cumTable)
 }
 
 list2Array <- function(dataList) {
     # Accepts a named list dataList and converts it to an array in which 
-    # first row is the names and second row is the values.
+    # first row is the names and all subsequent rows are the values. Assumes that
+    # all values are vectors of the same length.
     # dataList$Labels and dataList$Labels must have the same length.
     if (length(dataList$Labels) == length(dataList$Values[1,])) {
       listVals <- dataList$Values
@@ -219,8 +221,9 @@ createSummaryDisp <- function(res, params, degf, modelTitle) {
     I2 <- paste(100 * round(I2, digits = 2), "%")
     QE <- round(res$QE, digits=params$digits)
     QEp <- roundedDisplay(res$QEp, digits=params$digits)
-    hetTestData <- list("Title" = "  Test for Heterogeneity", "Labels" = c(QLabel, "p-Value", "I^2"),
-                        "Values" = array(c(QE, QEp, I2), dim=c(1,3)))
+    hetArr <-  array(c(QLabel, QE, "p-Value", QEp, "I^2", I2), dim=c(2,3))
+    class(hetArr) <- "Table"
+    hetTestData <- list("Title" = "  Test for Heterogeneity", "hetTable" = hetArr)
     estDisp <- round(binary.transform.f(params$measure)$display.scale(res$b), digits=params$digits) 
     lbDisp <- round(binary.transform.f(params$measure)$display.scale(res$ci.lb), digits=params$digits)
     ubDisp <- round(binary.transform.f(params$measure)$display.scale(res$ci.ub), digits=params$digits)
@@ -228,26 +231,29 @@ createSummaryDisp <- function(res, params, degf, modelTitle) {
     pVal <- roundedDisplay(res$pval, digits=params$digits)
     zVal <- round(res$zval, digits=params$digits)
     se <- round(res$se, digits=params$digits)
+    
     if (binary.transform.f(params$measure)$display.scale(1)!= binary.transform.f(params$measure)$calc.scale(1)) { 
-         resultData <- list("Title" = "  Model Results (reporting scale)",
-                        "Labels" = c("Estimate", "p-Value", "Z-Value", "Lower bound", "Upper bound"),
-                        "Values" = array(c(estDisp, pVal, zVal, lbDisp, ubDisp), dim=c(1,5)))
+         resArr <- array(c("Estimate", estDisp, "p-Value", pVal, "Z-Value", zVal, "Lower bound", lbDisp,
+                                        "Upper bound", ubDisp), dim=c(2,5))
+         class(resArr) <- "Table"   
+         resultData <- list("Title" = "  Model Results (reporting scale)", "resultTable" = resArr)
          estCalc <- round(res$b, digits=params$digits) 
          lbCalc <- round(res$ci.lb, digits=params$digits)
          ubCalc <- round(res$ci.ub, digits=params$digits)
-         altData <- list("Title" = "  Model Results (calculation scale)",
-                      "Labels" = c("Estimate", "SE", "Lower bound", "Upper bound"),
-                      "Values" = array(c(estCalc, se, lbCalc, ubCalc), dim=c(1,4)))        
+         altArr <- array(c("Estimate", estCalc, "SE", se, "Lower bound", lbCalc, "Upper bound", ubCalc), dim=c(2,4))
+         class(altArr) <- "Table"
+         altData <- list("Title" = "  Model Results (calculation scale)", "altTable" = altArr)        
     }    
      
     else {
-        resultData <- list("Title" = "  Model Results (reporting scale)",
-                        "Labels" = c("Estimate", "SE", "p-Value", "Z-Value", "Lower bound", "Upper bound"),
-                        "Values" = array(c(estDisp, se, pVal, zVal, lbDisp, ubDisp), dim=c(1,6)))
+        resArr <- array(c("Estimate", estDisp, "SE", se, "p-Value", pVal, "Z-Value", zVal, "Lower bound", lbDisp,
+                                        "Upper bound", ubDisp), dim=c(2,6))
+        class(resArr) <- "Table"                                
+        resultData <- list("Title" = "  Model Results (reporting scale)", "resTable" = resArr)
         altData <- list("Title" = NA)
     }
-    summaryDisp <- list("digits" = params$digits, "modelTitle" = modelTitle, "hetTestData" = hetTestData, "resultData" = resultData,
-                        "altData" = altData)
+    summaryDisp <- list("modelTitle" = modelTitle, "hetTestData" = hetTestData, "resultData" = resultData,
+                        "altData" = altData, "rawResults" = res)
     class(summaryDisp) <- "summaryDisplay"                     
     return(summaryDisp)
 }
@@ -257,11 +263,24 @@ createRegressionDisp <- function(res, params) {
     pvals <- roundedDisplay(res$pval, digits=params$digits)
     lbs <- round(res$ci.lb, digits=params$digits)
     ubs <- round(res$ci.ub, digits=params$digits)
-    regDisp <- list("Labels" = c("", "Estimate", "p-Value", "Lower bound", "Upper bound"),
-                      "Values" = array(c("Intercept", "Slope", coeffs[1], coeffs[2], pvals[1], pvals[2],
-                      lbs[1], lbs[2], ubs[1], ubs[2]), dim=c(2, 5)))
+    regArr <- array(c("", "Intercept", "Slope", "Estimates", coeffs[1], coeffs[2], "p-Values", pvals[1], pvals[2],
+                      "Lower bounds", lbs[1], lbs[2], "Upper bounds", ubs[1], ubs[2]), dim=c(3, 5))
+    class(regArr) <- "Table"
+    regData <- list("Title" = "", "regTable" = regArr)
+    regDisp <- list("regData" = regData)
     class(regDisp) <-  "regDisplay"                
     return(regDisp)
+}
+
+createCumulativeDisp <- function(res, studyNames, params) {
+    res <- round(res, digits <- params$digits)
+    cumArr <- array(c("", studyNames, "Estimates", res[,1], "Lower bounds", res[,2],"Upper bounds", res[,3]),
+                    dim=c(length(studyNames) + 1, 4))
+    class(cumArr) <- "Table"
+    cumData <- list("Title" = "", "cumTable" = cumArr)  
+    cumDisp <- list("cumData" = cumData)
+    class(cumDisp) <- "cumDisplay"
+    return(cumDisp)
 }
 
 ###################################################
@@ -274,7 +293,7 @@ binary.fixed.inv.var <- function(binaryData, params){
     results <- NULL
     if (length(binaryData@g1O1) == 1 || length(binaryData@y) == 1){
         res <- get.res.for.one.binary.study(binaryData, params)
-        results <- list("summary"=res)
+        results <- list("Summary"=list("rawResults" = res))
     }
     else{
         # call out to the metafor package
@@ -286,7 +305,6 @@ binary.fixed.inv.var <- function(binaryData, params){
         modelTitle <- paste("Fixed-Effects Model - Inverse Variance (k = ", res$k, ")", sep="")
         summaryDisp <- createSummaryDisp(res, params, degf, modelTitle)
         summaryDisp
-        
         forest_path <- "./r_tmp/forest.png"
         plotData <- create.plot.data.binary(binaryData, params, res)
         forest.plot(plotData, outpath=forest_path)
@@ -328,8 +346,8 @@ binary.fixed.inv.var.parameters <- function(){
 
 binary.fixed.inv.var.overall <- function(results) {
     # this parses out the overall from the computed result
-    res <- results$summary
-    overall <- list(c("estimate"=res$b[1], "lower"=res$ci.lb, "upper"=res$ci.ub))
+    res <- results$Summary$rawResults
+    overall <- list("estimate"=res$b[1], "lower"=res$ci.lb, "upper"=res$ci.ub)
     overall
 }
 
@@ -343,7 +361,7 @@ binary.fixed.mh <- function(binaryData, params){
     results <- NULL
     if (length(binaryData@g1O1) == 1 || length(binaryData@y) == 1){
         res <- get.res.for.one.binary.study(binaryData, params)
-        results <- list("summary"=res)
+        results <- list("raw_results"=res)
     }
     else{
         res<-rma.mh(ai=binaryData@g1O1, bi=binaryData@g1O2, 
@@ -404,8 +422,8 @@ binary.fixed.mh.is.feasible <- function(binaryData){
 
 binary.fixed.mh.overall <- function(results) {
     # this parses out the overall from the computed result
-    res <- results$summary
-    overall <- list(c("estimate"=res$b[1], "lower"=res$ci.lb, "upper"=res$ci.ub))
+    res <- results$Summary$rawResults
+    overall <- list(c("estimate"=res$estimate, "lower"=res$lowerBound, "upper"=res$upperBound))
     overall
 }
                                                                                                                          
@@ -480,8 +498,8 @@ binary.fixed.peto.is.feasible <- function(binaryData){
 
 binary.fixed.peto.overall <- function(results) {
     # this parses out the overall from the computed result
-    res <- results$summary
-    overall <- list(c("estimate"=res$b[1], "lower"=res$ci.lb, "upper"=res$ci.ub))
+    res <- results$Summary$rawResults
+    overall <- list(c("estimate"=res$estimate, "lower"=res$lowerBound, "upper"=res$upperBound))
     overall
 }
 
@@ -559,7 +577,7 @@ binary.random.parameters <- function(){
 
 binary.random.overall <- function(results) {
     # this parses out the overall from the computed result
-    res <- results$summary
-    overall <- list(c("estimate"=res$b[1], "lower"=res$ci.lb, "upper"=res$ci.ub))
+    res <- results$Summary$rawResults
+    overall <- list(c("estimate"=res$estimate, "lower"=res$lowerBound, "upper"=res$upperBound))
     overall
 }

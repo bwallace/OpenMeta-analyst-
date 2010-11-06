@@ -17,7 +17,6 @@ binary.meta.regression <- function(binary.data, params, cov.name){
                                 mods=cov.vals)
     regDisp <- createRegressionDisp(res, params)
     regDisp
-    #reg.display<-array(c("Slope", "Intercept", res$b[2], res$b[1]), dim=c(2,2)) 
     betas <- res$b
     fitted.line <- list(intercept=betas[1], slope=betas[2])
     plot.data <- create.plot.data.binary(binary.data, params, res, selected.cov=cov.name)
