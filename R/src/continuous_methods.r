@@ -131,7 +131,7 @@ continuous.random.parameters <- function(){
 
 continuous.random.overall <- function(results){
     # this parses out the overall from the computed result
-    res <- results$summary
-    overall <- list(c("estimate"=res$b[1], "lower"=res$ci.lb, "upper"=res$ci.ub))
+    res <- results$Summary$rawResults
+    overall <- list(c("estimate"=res$estimate, "lower"=res$lowerBound, "upper"=res$upperBound))
     overall
 }
