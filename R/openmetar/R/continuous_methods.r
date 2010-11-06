@@ -89,14 +89,13 @@ continuous.random <- function(contData, params){
         degf <- res$k - res$p
         modelTitle <- paste("Continuous Random-Effects Model (k = ", res$k, ")", sep="")
         summaryDisp <- createSummaryDisp(res, params, degf, modelTitle)
-        #summaryDisp$modelTitle <- paste("Random-Effects Model - Inverse Variance (k = ", res$k, ")", sep="")
         summaryDisp
+        
         #
         # generate forest plot 
         #
         getwd()
-        forest.path <- "./r_tmp/forest.png"
-        #png(forest_path)
+        forest.path <- paste(params$fp_outpath, sep="")
         plotData <- create.plot.data.continuous(contData, params, res)
         forest.plot(plotData, outpath=forest.path)
     
@@ -108,9 +107,9 @@ continuous.random <- function(contData, params){
         # of each. 
         #     
         images <- c("forest plot"=forest.path)
-        plot_names <- c("forest plot"="forest_plot")
+        plot.names <- c("forest plot"="forest_plot")
         
-        results <- list("images"=images, "summary"=summaryDisp, "plot_names"=plot_names)
+        results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot.names)
     }
     results
 }

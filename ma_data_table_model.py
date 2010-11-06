@@ -742,7 +742,8 @@ class DatasetModel(QAbstractTableModel):
             elif data_type == CONTINUOUS:
                 n1, m1, sd1, n2, m2, sd2 = self.get_cur_raw_data_for_study(study_index)
                 if self.current_effect in CONTINUOUS_TWO_ARM_METRICS:
-                    est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1, n2, m2, sd2, metric=self.current_effect)
+                    est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1, \
+                                        n2=n2, m2=m2, sd2=sd2, metric=self.current_effect)
                 else:
                     # continuous, one-arm metric
                     est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1, \

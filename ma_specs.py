@@ -18,7 +18,7 @@ import sip
 
 import ui_ma_specs
 import meta_py_r
-
+from meta_globals import *
 
 class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
@@ -33,6 +33,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
         QObject.connect(self.buttonBox, SIGNAL("accepted()"), self.run_ma)
         QObject.connect(self.buttonBox, SIGNAL("rejected()"), self.cancel)
+        QObject.connect(self.save_btn, SIGNAL("pressed()"), self.select_out_path)
         QObject.connect(self.method_cbo_box, SIGNAL("currentIndexChanged(QString)"),
                                              self.method_changed)
 
@@ -44,6 +45,9 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             # the data type, only about the method name (e.g., cumulative)
             self.meta_f_str = ".".join((self.meta_f_str, self.data_type))
         
+        if self.data_type != "binary":
+            self.disable_bin_only_fields()
+            
         self.current_widgets = []
         self.current_method = None
         self.current_params = None
@@ -56,8 +60,24 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         print "(cancel)"
         self.reject()
 
+    def select_out_path(self):
+        out_f = "."
+        out_f = unicode(QFileDialog.getSaveFileName(self, "OpenMeta[analyst] - Plot Path",
+                                                    out_f, "png image files: (.png)"))
+        if out_f == "" or out_f == None:
+            return None
+        else:
+            self.image_path.setText(out_f)
+        
     def run_ma(self):
         result = None
+        ### add forest plot parameters
+        self.add_plot_params()
+        # also add the metric to the parameters
+        # -- this is for scaling
+        
+        self.current_param_vals["measure"] = self.model.current_effect
+        
         # dispatch on type; build an R object, then run the analysis
         if self.data_type == "binary":
             # note that this call creates a tmp object in R called
@@ -80,6 +100,41 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.parent().analysis(result)
         self.accept()
     
+    def add_plot_params(self):
+        ### TODO shouldn't couple R plotting routine with UI so tightly
+        self.current_param_vals["fp_show_col1"] = self.show_1.isChecked()
+        self.current_param_vals["fp_col1_str"] = unicode(self.col1_str_edit.text().toUtf8(), "utf-8")
+        self.current_param_vals["fp_show_col2"] = self.show_2.isChecked()
+        self.current_param_vals["fp_col2_str"] = unicode(self.col2_str_edit.text().toUtf8(), "utf-8")
+        self.current_param_vals["fp_show_col3"] = self.show_3.isChecked()
+        self.current_param_vals["fp_col3_str"] = unicode(self.col3_str_edit.text().toUtf8(), "utf-8")
+        self.current_param_vals["fp_show_col4"] = self.show_4.isChecked()
+        self.current_param_vals["fp_col4_str"] = unicode(self.col4_str_edit.text().toUtf8(), "utf-8")
+        
+        self.current_param_vals["fp_xlabel"] = unicode(self.x_lbl_le.text().toUtf8(), "utf-8")
+        self.current_param_vals["fp_outpath"] = unicode(self.image_path.text().toUtf8(), "utf-8")
+        xticks = unicode(self.x_ticks_le.text().toUtf8(), "utf-8")
+        if xticks != "[default]" and self.seems_sane(xticks):
+            self.current_param_vals["fp_xticks"] = xticks
+        else:
+            self.current_param_vals["fp_xticks"] = "NULL"
+            
+    def seems_sane(self, xticks):
+        num_list = xticks.split(",")
+        if len(num_list) == 1:
+            return False
+        try:
+            num_list = [eval(x) for x in num_list]
+        except:
+            return False
+        return True
+        
+        
+    def disable_bin_only_fields(self):
+        self.col3_str_edit.setEnabled(False)
+        self.col4_str_edit.setEnabled(False)
+        
+        
     def run_cum_ma(self):
         result = None
         # dispatch on type; build an R object, then run the analysis
@@ -87,6 +142,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             # note that this call creates a tmp object in R called
             # tmp_obj (though you can pass in whatever var name
             # you'd like)
+            #self.current_param_vals["metric"] = self.model.get
             meta_py_r.ma_dataset_to_simple_binary_robj(self.model)
             result = meta_py_r.run_cum_binary_ma(self.current_method, self.current_param_vals)
         elif self.data_type == "continuous":

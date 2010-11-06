@@ -152,7 +152,7 @@ def get_available_methods(for_data_type=None, data_obj_name=None):
     # start with the name of the data type. furthermore, the parameters
     # for those methods are returned by a method with a name
     # ending in ".parameters"
-    special_endings = [".parameters", ".is.feasible", ".overall", ".regression"]
+    special_endings = [".parameters", ".is.feasible", ".overall", ".regression", "transform.f"]
     is_special = lambda f: any([f.endswith(ending) for ending in special_endings])
     all_methods = [method for method in method_list if not is_special(method)]
     if for_data_type is not None:
@@ -364,10 +364,16 @@ def cov_to_str(cov, study_names, dataset):
     cov_values = []
     for study in study_names:
         if cov.data_type == CONTINUOUS:
-            cov_values.append("%s" % cov_value_d[study])
+            if cov_value_d.has_key(study):
+                cov_values.append("%s" % cov_value_d[study])
+            else:
+                cov_values.append("NA")
         else:
-            # factor; note the string.
-            cov_values.append("'%s'" % cov_value_d[study])
+            if cov_value_d.has_key(study):
+                # factor; note the string.
+                cov_values.append("'%s'" % cov_value_d[study])
+            else:
+                cov_values.append("NA")
     cov_str += ",".join(cov_values) + ")"
     return cov_str
         
@@ -382,6 +388,8 @@ def run_continuous_ma(function_name, params, res_name = "result", cont_data_name
     
 def run_binary_ma(function_name, params, res_name="result", bin_data_name="tmp_obj"):
     params_df = ro.r['data.frame'](**params)
+    pyqtRemoveInputHook()
+    pdb.set_trace()
     r_str = "%s<-%s(%s, %s)" % (res_name, function_name, bin_data_name, params_df.r_repr())
     print "\n\n(run_binary_ma): executing:\n %s\n" % r_str
     ro.r(r_str)
