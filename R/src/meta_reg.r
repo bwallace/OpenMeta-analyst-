@@ -21,7 +21,7 @@ binary.meta.regression <- function(binary.data, params, cov.name){
     fitted.line <- list(intercept=betas[1], slope=betas[2])
     plot.data <- create.plot.data.binary(binary.data, params, res, selected.cov=cov.name)
     plot.data$fitted.line <- fitted.line
-    plot.path <- "./r_tmp/reg_plot.png"
+    plot.path <- paste(params$fp_outpath, sep="")
     meta.regression.plot(plot.data, plot.path)   
     images <- c("regression plot"=plot.path)
     plot.names <- c("forest plot"="reg.plot")

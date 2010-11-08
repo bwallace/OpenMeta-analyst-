@@ -235,8 +235,8 @@ createSummaryDisp <- function(res, params, degf, modelTitle) {
     if (binary.transform.f(params$measure)$display.scale(1)!= binary.transform.f(params$measure)$calc.scale(1)) { 
          resArr <- array(c("Estimate", estDisp, "p-Value", pVal, "Z-Value", zVal, "Lower bound", lbDisp,
                                         "Upper bound", ubDisp), dim=c(2,5))
-         class(resArr) <- "Table"   
-         resultData <- list("Title" = "  Model Results (reporting scale)", "resultTable" = resArr)
+         #class(resArr) <- "Table"   
+         #resultData <- list("Title" = "  Model Results (reporting scale)", "resultTable" = resArr)
          estCalc <- round(res$b, digits=params$digits) 
          lbCalc <- round(res$ci.lb, digits=params$digits)
          ubCalc <- round(res$ci.ub, digits=params$digits)
@@ -248,10 +248,11 @@ createSummaryDisp <- function(res, params, degf, modelTitle) {
     else {
         resArr <- array(c("Estimate", estDisp, "SE", se, "p-Value", pVal, "Z-Value", zVal, "Lower bound", lbDisp,
                                         "Upper bound", ubDisp), dim=c(2,6))
-        class(resArr) <- "Table"                                
-        resultData <- list("Title" = "  Model Results (reporting scale)", "resTable" = resArr)
+        
         altData <- list("Title" = NA)
     }
+    class(resArr) <- "Table"                                
+    resultData <- list("Title" = "  Model Results (reporting scale)", "resultTable" = resArr)
     summaryDisp <- list("modelTitle" = modelTitle, "hetTestData" = hetTestData, "resultData" = resultData,
                         "altData" = altData, "rawResults" = res)
     class(summaryDisp) <- "summaryDisplay"                     
@@ -500,7 +501,7 @@ binary.fixed.peto.is.feasible <- function(binaryData){
 binary.fixed.peto.overall <- function(results) {
     # this parses out the overall from the computed result
     res <- results$Summary$rawResults
-    overall <- list(c("estimate"=res$estimate, "lower"=res$lowerBound, "upper"=res$upperBound))
+    overall <- list("estimate"=res$estimate, "lower"=res$lowerBound, "upper"=res$upperBound)
     overall
 }
 
@@ -578,6 +579,6 @@ binary.random.parameters <- function(){
 binary.random.overall <- function(results) {
     # this parses out the overall from the computed result
     res <- results$Summary$rawResults
-    overall <- list(c("estimate"=res$estimate, "lower"=res$lowerBound, "upper"=res$upperBound))
+    overall <- list("estimate"=res$estimate, "lower"=res$lowerBound, "upper"=res$upperBound)
     overall
 }
