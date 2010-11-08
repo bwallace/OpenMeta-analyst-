@@ -88,9 +88,7 @@ loo.ma.binary <- function(fname, binary.data, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
     
-    cum.results <- array(dim=c(length(binary.data@studyNames),3))
-    loo.results <- list()
-    loo.labels <- list()
+    loo.results <- array(dim=c(length(binary.data@studyNames),3))
     N <- length(binary.data@studyNames)
     for (i in 1:N){
         # get a list of indices, i.e., the subset
@@ -134,13 +132,22 @@ loo.ma.binary <- function(fname, binary.data, params){
         # it's passing!
         cur.res <- eval(call(fname, bin.data.tmp, params))
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
-        loo.results <- c(loo.results, cur.overall)
-        loo.labels <- c(loo.labels, paste("- Study", i))
+        loo.results[i,] <- c(cur.overall$estimate, cur.overall$lower, cur.overall$upper)
     }
+    
+    studyNames <- binary.data@studyNames[1] 
+    for (count in 2:length(binary.data@studyNames)) {
+        studyNames <- c(studyNames, paste("+ ",binary.data@studyNames[count], sep=""))
+    }
+    looDisp <- createCumulativeDisp(loo.results, studyNames, params)
+    looDisp
+    forest_path <- "./r_tmp/loo_forest.png"
+    plotData <- create.plot.data.cumulative(binary.data, params, cum.results, studyNames)
+    forest.plot(plotData, outpath=forest_path)
     
     ### @TODO 
     # generate loo MA plot
-    forest.path <- "./r_tmp/cum_forest.png"
+    #forest.path <- "./r_tmp/cum_forest.png"
     #png(forest.path)
     #forest(res)
     #dev.off()
@@ -155,7 +162,7 @@ loo.ma.binary <- function(fname, binary.data, params){
     images <- c("loo forest plot"=forest_path)
     plot.names <- c("loo forest plot"="loo_forest_plot")
     
-    results <- list("images"=images, "loo_results"=loo.results, "loo_labels"=loo.labels, "plot_names"=plot.names)
+    results <- list("images"=images, "Summary"=looDisp, "plot_names"=plot.names)
     results
 }
 
@@ -170,8 +177,7 @@ cum.ma.continuous <- function(fname, cont.data, params){
     
     # iterate over the continuousData elements, adding one study at a time
     cum.results <- array(dim=c(length(cont.data@studyNames),3))
-    cum.labels <- list()
-    
+   
     for (i in 1:length(cont.data@studyNames)){
         # build a ContinuousData object including studies
         # 1 through i
@@ -208,15 +214,16 @@ cum.ma.continuous <- function(fname, cont.data, params){
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
         #cum.results <- c(cum.results, cur.overall)
         cum.results[i,] <- c(cur.overall$estimate, cur.overall$lower, cur.overall$upper)
-        cum.labels <- c(cum.labels, paste("+ Study", i))
     }
     
-    
-    #res <- cumul(res)
+    studyNames <- binary.data@studyNames[1] 
+    for (count in 2:length(binary.data@studyNames)) {
+        studyNames <- c(studyNames, paste("+ ",binary.data@studyNames[count], sep=""))
+    }
     cumDisp <- createCumulativeDisp(cum.results, studyNames, params)
     cumDisp
     forest_path <- "./r_tmp/cum_forest.png"
-    plotData <- create.plot.data.cumulative(cont.data, params, cum.results, studyNames)
+    plotData <- create.plot.data.cumulative(binary.data, params, cum.results, studyNames)
     forest.plot(plotData, outpath=forest_path)
     
     #
@@ -229,7 +236,7 @@ cum.ma.continuous <- function(fname, cont.data, params){
     images <- c("cumulative forest plot"=forest.path)
     plot.names <- c("cumulative forest plot"="cumulative forest_plot")
     
-    results <- list("images"=images, "cum_results"=cum.results, "cum_labels"=cum.labels, "plot_names"=plot.names)
+    results <- list("images"=images, "Summary"=cumDisp, "plot_names"=plot.names)
     results
 }
 
