@@ -122,6 +122,8 @@ print.summaryDisplay <- function(results,...) {
 
 print.regDisplay <- function(regDisp, ...) {
      # Prints regression statistics
+     cat(regDisp$regData$Title)
+        cat("\n")
      print(regDisp$regData$regTable)
 }
 
@@ -267,13 +269,13 @@ createRegressionDisp <- function(res, params) {
     regArr <- array(c("", "Intercept", "Slope", "Estimates", coeffs[1], coeffs[2], "p-Values", pvals[1], pvals[2],
                       "Lower bounds", lbs[1], lbs[2], "Upper bounds", ubs[1], ubs[2]), dim=c(3, 5))
     class(regArr) <- "Table"
-    regData <- list("Title" = "", "regTable" = regArr)
+    regData <- list("Title" = "Regression Statistics", "regTable" = regArr)
     regDisp <- list("regData" = regData)
     class(regDisp) <-  "regDisplay"                
     return(regDisp)
 }
 
-createCumulativeDisp <- function(res, studyNames, params) {
+createOverallDisp <- function(res, studyNames, params) {
     res
     params$digits
     res <- round(res, digits = params$digits)
@@ -295,7 +297,7 @@ binary.fixed.inv.var <- function(binaryData, params){
     
     results <- NULL
     if (length(binaryData@g1O1) == 1 || length(binaryData@y) == 1){
-        res <- get.res.for.one.binary.study(binaryData, params)
+        res <- get.res.for.one.binary.study(binaryData, params) 
         results <- list("Summary"=list("rawResults" = res))
     }
     else{
@@ -308,6 +310,7 @@ binary.fixed.inv.var <- function(binaryData, params){
         modelTitle <- paste("Fixed-Effects Model - Inverse Variance (k = ", res$k, ")", sep="")
         summaryDisp <- createSummaryDisp(res, params, degf, modelTitle)
         summaryDisp
+        
         forest.path <- paste(params$fp_outpath, sep="")
         plotData <- create.plot.data.binary(binaryData, params, res)
         forest.plot(plotData, outpath=forest.path)
@@ -318,7 +321,8 @@ binary.fixed.inv.var <- function(binaryData, params){
         # a dictionary of images (mapping titles to image paths) and a list of texts
         # (mapping titles to pretty-printed text). In this case we have only one 
         # of each. 
-        #     
+        #  
+           
         images <- c("forest plot"=forest.path)
         plot_names <- c("forest plot"="forest_plot")
         
@@ -326,6 +330,7 @@ binary.fixed.inv.var <- function(binaryData, params){
         # should we return the name of the result object & the name of the
         # plotting function as well here? perhaps only for the forest plot? 
         # this would allow interactive plot refinement via the console...
+        #
         results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot_names)
     }
     results
@@ -350,7 +355,7 @@ binary.fixed.inv.var.parameters <- function(){
 binary.fixed.inv.var.overall <- function(results) {
     # this parses out the overall from the computed result
     res <- results$Summary$rawResults
-    overall <- list("estimate"=res$b[1], "lower"=res$ci.lb, "upper"=res$ci.ub)
+    overall <- c(res$b[1], res$ci.lb, res$ci.ub)
     overall
 }
 
@@ -426,7 +431,7 @@ binary.fixed.mh.is.feasible <- function(binaryData){
 binary.fixed.mh.overall <- function(results) {
     # this parses out the overall from the computed result
     res <- results$Summary$rawResults
-    overall <- list(c("estimate"=res$estimate, "lower"=res$lowerBound, "upper"=res$upperBound))
+    overall <- c(res$b[1], res$ci.lb, res$ci.ub)
     overall
 }
                                                                                                                          
@@ -501,7 +506,7 @@ binary.fixed.peto.is.feasible <- function(binaryData){
 binary.fixed.peto.overall <- function(results) {
     # this parses out the overall from the computed result
     res <- results$Summary$rawResults
-    overall <- list("estimate"=res$estimate, "lower"=res$lowerBound, "upper"=res$upperBound)
+    overall <- c(res$b[1], res$ci.lb, res$ci.ub)
     overall
 }
 
@@ -579,6 +584,6 @@ binary.random.parameters <- function(){
 binary.random.overall <- function(results) {
     # this parses out the overall from the computed result
     res <- results$Summary$rawResults
-    overall <- list("estimate"=res$estimate, "lower"=res$lowerBound, "upper"=res$upperBound)
+    overall <- c(res$b[1], res$ci.lb, res$ci.ub)
     overall
 }
