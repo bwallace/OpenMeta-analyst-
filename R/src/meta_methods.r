@@ -67,19 +67,6 @@ cum.ma.binary <- function(fname, binary.data, params){
     plotData <- create.plot.data.cumulative(binary.data, params, cum.results, studyNames)
     forest.plot(plotData, outpath=forest_path)
 
-
-    #res <- cumul(res)
-    
-    ### @TODO 
-    # generate cum MA plot
-    
-    
-    #forest.path <- "./r_tmp/cum_forest.png"
-    #png(forest_path)
-    #forest(res)
-    #dev.off()
-
-    #
     # Now we package the results in a dictionary (technically, a named 
     # vector). In particular, there are two fields that must be returned; 
     # a dictionary of images (mapping titles to image paths) and a list of texts
@@ -87,9 +74,9 @@ cum.ma.binary <- function(fname, binary.data, params){
     # of each. 
     #     
     images <- c("cumulative forest plot"=forest_path)
-    plot.names <- c("cumulative forest plot"="cumulative forest_plot")
+    plot.names <- c("cumulative forest plot"="cumulative_forest_plot")
     
-    results <- list("images"=images, "Summary"=cumDisp, "plot_names"=plot.names)
+    results <- list("images"=images, "summary"=cumDisp, "plot_names"=plot.names)
     results
 }
 
@@ -181,7 +168,7 @@ cum.ma.continuous <- function(fname, cont.data, params){
     if (!("ContinuousData" %in% class(cont.data))) stop("Continuous data expected.")
     
     # iterate over the continuousData elements, adding one study at a time
-    cum.results <- list()
+    cum.results <- array(dim=c(length(cont.data@studyNames),3))
     cum.labels <- list()
     
     for (i in 1:length(cont.data@studyNames)){
@@ -218,20 +205,19 @@ cum.ma.continuous <- function(fname, cont.data, params){
         # it's passing!
         cur.res <- eval(call(fname, cont.data.tmp, params))
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
-        cum.results <- c(cum.results, cur.overall)
+        #cum.results <- c(cum.results, cur.overall)
+        cum.results[i,] <- c(cur.overall$estimate, cur.overall$lower, cur.overall$upper)
         cum.labels <- c(cum.labels, paste("+ Study", i))
     }
     
     
     #res <- cumul(res)
+    cumDisp <- createCumulativeDisp(cum.results, studyNames, params)
+    cumDisp
+    forest_path <- "./r_tmp/cum_forest.png"
+    plotData <- create.plot.data.cumulative(cont.data, params, cum.results, studyNames)
+    forest.plot(plotData, outpath=forest_path)
     
-    ### @TODO 
-    # generate cum MA plot
-    forest.path <- "./r_tmp/cum_forest.png"
-    png(forest.path)
-    forest(res)
-    #dev.off()
-
     #
     # Now we package the results in a dictionary (technically, a named 
     # vector). In particular, there are two fields that must be returned; 

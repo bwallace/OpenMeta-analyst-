@@ -273,7 +273,9 @@ createRegressionDisp <- function(res, params) {
 }
 
 createCumulativeDisp <- function(res, studyNames, params) {
-    res <- round(res, digits <- params$digits)
+    res
+    params$digits
+    res <- round(res, digits = params$digits)
     cumArr <- array(c("", studyNames, "Estimates", res[,1], "Lower bounds", res[,2],"Upper bounds", res[,3]),
                     dim=c(length(studyNames) + 1, 4))
     class(cumArr) <- "Table"
@@ -390,7 +392,7 @@ binary.fixed.mh <- function(binaryData, params){
         #     
         images <- c("forest plot"=forest.path)
         plot.names <- c("forest plot"="forest_plot")
-        results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot.names)
+        results <- list("images"=images, "summary"=summaryDisp, "plot_names"=plot.names)
     }
     results
 }
@@ -466,7 +468,7 @@ binary.fixed.peto <- function(binaryData, params){
         images <- c("forest plot"=forest.path)
         plot.names <- c("forest plot"="forest_plot")
         
-        results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot.names)
+        results <- list("images"=images, "summary"=summaryDisp, "plot_names"=plot.names)
     }
     results
 }
@@ -553,7 +555,7 @@ binary.random <- function(binaryData, params){
         images <- c("forest plot"=forest_path)
         plot.names <- c("forest plot"="forest_plot")
         
-        results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot.names)
+        results <- list("images"=images, "summary"=summaryDisp, "plot_names"=plot.names)
     }
     results
 }
