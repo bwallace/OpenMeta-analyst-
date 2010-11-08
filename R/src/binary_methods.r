@@ -498,7 +498,7 @@ binary.fixed.peto.is.feasible <- function(binaryData){
 binary.fixed.peto.overall <- function(results) {
     # this parses out the overall from the computed result
     res <- results$Summary$rawResults
-    overall <- list(c("estimate"=res$estimate, "lower"=res$lowerBound, "upper"=res$upperBound))
+    overall <- list("estimate"=res$estimate, "lower"=res$lowerBound, "upper"=res$upperBound)
     overall
 }
 
@@ -576,6 +576,6 @@ binary.random.parameters <- function(){
 binary.random.overall <- function(results) {
     # this parses out the overall from the computed result
     res <- results$Summary$rawResults
-    overall <- list(c("estimate"=res$estimate, "lower"=res$lowerBound, "upper"=res$upperBound))
+    overall <- list("estimate"=res$estimate, "lower"=res$lowerBound, "upper"=res$upperBound)
     overall
 }
