@@ -44,7 +44,8 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             # name. thus the caller (meta_form) needn't worry about
             # the data type, only about the method name (e.g., cumulative)
             self.meta_f_str = ".".join((self.meta_f_str, self.data_type))
-        
+            
+            
         if self.data_type != "binary":
             self.disable_bin_only_fields()
             
@@ -133,23 +134,6 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
     def disable_bin_only_fields(self):
         self.col3_str_edit.setEnabled(False)
         self.col4_str_edit.setEnabled(False)
-        
-        
-    def run_cum_ma(self):
-        result = None
-        # dispatch on type; build an R object, then run the analysis
-        if self.data_type == "binary":
-            # note that this call creates a tmp object in R called
-            # tmp_obj (though you can pass in whatever var name
-            # you'd like)
-            #self.current_param_vals["metric"] = self.model.get
-            meta_py_r.ma_dataset_to_simple_binary_robj(self.model)
-            result = meta_py_r.run_cum_binary_ma(self.current_method, self.current_param_vals)
-        elif self.data_type == "continuous":
-            meta_py_r.ma_dataset_to_simple_continuous_robj(self.model)
-            result = meta_py_r.run_cum_continuous_ma(self.current_method, self.current_param_vals)
-        self.parent().analysis(result)
-        self.accept()
          
 
     def method_changed(self):
