@@ -101,6 +101,7 @@ loo.ma.binary <- function(fname, binary.data, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
     
+    cum.results <- array(dim=c(length(binary.data@studyNames),3))
     loo.results <- list()
     loo.labels <- list()
     N <- length(binary.data@studyNames)
