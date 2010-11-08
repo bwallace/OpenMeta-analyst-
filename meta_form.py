@@ -58,6 +58,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         #
         # TODO should also allow a (path to a) dataset
         # to be given on the console.
+        self.model = None
         if len(sys.argv)>1 and sys.argv[-1]=="--toy-data":
             # toy data for now
             data_model = _gen_some_data()
@@ -69,10 +70,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.model.reset()
             self.tableView.resizeColumnsToContents()
         else:
-            data_model = Dataset()
-            self.model = DatasetModel(dataset=data_model)
-            # no dataset; disable saving, editing, etc.
-            self.disable_menu_options_that_require_dataset()
+            self.new_dataset()
 
         self.tableView.setModel(self.model)
         # attach a delegate for editing
@@ -99,6 +97,20 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.out_path = None
         
     
+    def new_dataset(self):
+        data_model = Dataset()
+        if self.model is not None:
+            original_dataset = copy.deepcopy(self.model.dataset)
+            old_state_dict = self.tableView.model().get_stateful_dict()
+            undo_f = lambda : self.set_model(original_dataset, old_state_dict) 
+            redo_f = lambda : self.set_model(data_model)
+            edit_command = CommandGenericDo(redo_f, undo_f)
+            self.tableView.undoStack.push(edit_command)
+        else:
+            self.model = DatasetModel(dataset=data_model)
+            # no dataset; disable saving, editing, etc.
+            self.disable_menu_options_that_require_dataset()
+            
     def toggle_menu_options_that_require_dataset(self, enable):
         self.action_go.setEnabled(enable)
         self.action_cum_ma.setEnabled(enable)
@@ -155,10 +167,14 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     
             QObject.connect(self.action_save, SIGNAL("triggered()"), self.save)
             QObject.connect(self.action_open, SIGNAL("triggered()"), self.open)
+            QObject.connect(self.action_new_dataset, SIGNAL("triggered()"), self.new_dataset)
             QObject.connect(self.action_quit, SIGNAL("triggered()"), self.quit)
             QObject.connect(self.action_go, SIGNAL("triggered()"), self.go)
             QObject.connect(self.action_cum_ma, SIGNAL("triggered()"), self.cum_ma)
             QObject.connect(self.action_loo_ma, SIGNAL("triggered()"), self.loo_ma)
+            
+            QObject.connect(self.action_undo, SIGNAL("triggered()"), self.undo)
+            QObject.connect(self.action_redo, SIGNAL("triggered()"), self.redo)
             
             QObject.connect(self.action_edit, SIGNAL("triggered()"), self.edit_dataset)
             QObject.connect(self.action_view_network, SIGNAL("triggered()"), self.view_network)
@@ -195,6 +211,12 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         form =  ma_specs.MA_Specs(self.model, meta_f_str="loo.ma", parent=self)
         form.show()
 
+    def undo(self):
+        self.tableView.undoStack.undo()
+        
+    def redo(self):
+        self.tableView.undoStack.redo()
+        
     def edit_dataset(self):
         cur_dataset = copy.deepcopy(self.model.dataset)
         edit_window =  edit_dialog.EditDialog(cur_dataset, parent=self)

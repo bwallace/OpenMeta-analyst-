@@ -200,9 +200,9 @@ class Dataset:
         if len(cur_group_names) == 0:
             cur_group_names = None
         
-        follow_up = "baseline"
+        follow_up = "first"
         self.outcome_names_to_follow_ups[outcome.name] = two_way_dict.TwoWayDict()
-        self.outcome_names_to_follow_ups[outcome.name][0] = "baseline"
+        self.outcome_names_to_follow_ups[outcome.name][0] = follow_up
         for study in self.studies:
             study.add_outcome(outcome, follow_up, group_names=cur_group_names)
     
@@ -419,7 +419,7 @@ class Study:
         self.covariate_dict = {}
         self.manually_excluded = False
         
-    def add_outcome(self, outcome, follow_up_name="baseline", group_names=None):
+    def add_outcome(self, outcome, follow_up_name="first", group_names=None):
         ''' Adds a new, blank outcome (i.e., no raw data) '''
         if outcome.name in self.outcomes_to_follow_ups.keys():
             raise Exception, "Study already contains an outcome named %s" % outcome.name

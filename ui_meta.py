@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'meta.ui'
 #
-# Created: Thu Oct 14 09:48:27 2010
+# Created: Mon Nov 08 12:48:36 2010
 #      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -167,6 +167,8 @@ class Ui_MainWindow(object):
         self.menuMetric.setObjectName("menuMetric")
         self.menuDataset = QtGui.QMenu(self.menu_bar)
         self.menuDataset.setObjectName("menuDataset")
+        self.menuEdit = QtGui.QMenu(self.menu_bar)
+        self.menuEdit.setObjectName("menuEdit")
         MainWindow.setMenuBar(self.menu_bar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -199,10 +201,14 @@ class Ui_MainWindow(object):
         self.actionYo.setObjectName("actionYo")
         self.actionNew_dataset = QtGui.QAction(MainWindow)
         self.actionNew_dataset.setObjectName("actionNew_dataset")
-        self.actionNew_dataset_2 = QtGui.QAction(MainWindow)
-        self.actionNew_dataset_2.setObjectName("actionNew_dataset_2")
+        self.action_new_dataset = QtGui.QAction(MainWindow)
+        self.action_new_dataset.setObjectName("action_new_dataset")
         self.action_meta_regression = QtGui.QAction(MainWindow)
         self.action_meta_regression.setObjectName("action_meta_regression")
+        self.action_undo = QtGui.QAction(MainWindow)
+        self.action_undo.setObjectName("action_undo")
+        self.action_redo = QtGui.QAction(MainWindow)
+        self.action_redo.setObjectName("action_redo")
         self.menu_file.addAction(self.action_save)
         self.menu_file.addAction(self.action_open)
         self.menu_file.addAction(self.action_quit)
@@ -214,12 +220,15 @@ class Ui_MainWindow(object):
         self.menuAnalysis.addAction(self.action_loo_ma)
         self.menuAnalysis.addSeparator()
         self.menuAnalysis.addAction(self.action_meta_regression)
-        self.menuDataset.addAction(self.actionNew_dataset_2)
+        self.menuDataset.addAction(self.action_new_dataset)
         self.menuDataset.addSeparator()
         self.menuDataset.addAction(self.action_edit)
         self.menuDataset.addAction(self.action_view_network)
         self.menuDataset.addAction(self.action_add_covariate)
+        self.menuEdit.addAction(self.action_undo)
+        self.menuEdit.addAction(self.action_redo)
         self.menu_bar.addAction(self.menu_file.menuAction())
+        self.menu_bar.addAction(self.menuEdit.menuAction())
         self.menu_bar.addAction(self.menuAnalysis.menuAction())
         self.menu_bar.addAction(self.menuDataset.menuAction())
 
@@ -234,6 +243,7 @@ class Ui_MainWindow(object):
         self.menuAnalysis.setTitle(QtGui.QApplication.translate("MainWindow", "Analysis", None, QtGui.QApplication.UnicodeUTF8))
         self.menuMetric.setTitle(QtGui.QApplication.translate("MainWindow", "metric", None, QtGui.QApplication.UnicodeUTF8))
         self.menuDataset.setTitle(QtGui.QApplication.translate("MainWindow", "Dataset", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuEdit.setTitle(QtGui.QApplication.translate("MainWindow", "Edit", None, QtGui.QApplication.UnicodeUTF8))
         self.action_save.setText(QtGui.QApplication.translate("MainWindow", "save", None, QtGui.QApplication.UnicodeUTF8))
         self.action_open.setText(QtGui.QApplication.translate("MainWindow", "open...", None, QtGui.QApplication.UnicodeUTF8))
         self.action_quit.setText(QtGui.QApplication.translate("MainWindow", "quit", None, QtGui.QApplication.UnicodeUTF8))
@@ -248,7 +258,9 @@ class Ui_MainWindow(object):
         self.actionTX_Mean_one_arm.setText(QtGui.QApplication.translate("MainWindow", "TX Mean (one-arm)", None, QtGui.QApplication.UnicodeUTF8))
         self.actionYo.setText(QtGui.QApplication.translate("MainWindow", "yo", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNew_dataset.setText(QtGui.QApplication.translate("MainWindow", "new dataset...", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionNew_dataset_2.setText(QtGui.QApplication.translate("MainWindow", "new dataset...", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_new_dataset.setText(QtGui.QApplication.translate("MainWindow", "new dataset...", None, QtGui.QApplication.UnicodeUTF8))
         self.action_meta_regression.setText(QtGui.QApplication.translate("MainWindow", "meta-regression", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_undo.setText(QtGui.QApplication.translate("MainWindow", "undo (ctrl + z)", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_redo.setText(QtGui.QApplication.translate("MainWindow", "redo (ctrl + y)", None, QtGui.QApplication.UnicodeUTF8))
 
 import icons_rc

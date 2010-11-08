@@ -391,13 +391,21 @@
     <property name="title">
      <string>Dataset</string>
     </property>
-    <addaction name="actionNew_dataset_2"/>
+    <addaction name="action_new_dataset"/>
     <addaction name="separator"/>
     <addaction name="action_edit"/>
     <addaction name="action_view_network"/>
     <addaction name="action_add_covariate"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="action_undo"/>
+    <addaction name="action_redo"/>
+   </widget>
    <addaction name="menu_file"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuAnalysis"/>
    <addaction name="menuDataset"/>
   </widget>
@@ -472,7 +480,7 @@
     <string>new dataset...</string>
    </property>
   </action>
-  <action name="actionNew_dataset_2">
+  <action name="action_new_dataset">
    <property name="text">
     <string>new dataset...</string>
    </property>
@@ -480,6 +488,16 @@
   <action name="action_meta_regression">
    <property name="text">
     <string>meta-regression</string>
+   </property>
+  </action>
+  <action name="action_undo">
+   <property name="text">
+    <string>undo (ctrl + z)</string>
+   </property>
+  </action>
+  <action name="action_redo">
+   <property name="text">
+    <string>redo (ctrl + y)</string>
    </property>
   </action>
  </widget>

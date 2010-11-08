@@ -30,7 +30,6 @@ class MADataTable(QtGui.QTableView):
         # None maps to the special, no outcome/no follow up
         # undo stack
         self.undo_stack_dict = {None:QUndoStack(self)}
-        # self.undoStack = self.undo_stack_dict[None]
         self.undoStack = QUndoStack(self)
 
         header = self.horizontalHeader()
@@ -68,8 +67,7 @@ class MADataTable(QtGui.QTableView):
                 # if the command hasn't anything to do with the table view
                 # in particular, we pass the event up to the main UI
                 self.main_gui.keyPressEvent(event)
-        
-        
+           
     def row_header_clicked(self, row):
         # dispatch on the data type
         form = None
