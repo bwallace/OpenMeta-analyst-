@@ -159,14 +159,43 @@ loo.ma.binary <- function(fname, binary.data, params){
     # (mapping titles to pretty-printed text). In this case we have only one 
     # of each. 
     #     
-    images <- c("Leave-one-out Forest Plot"=forest_path)
+
+    images <- c("loo forest plot"=forest.path)
     plot.names <- c("loo forest plot"="loo_forest_plot")
-    
-    results <- list("images"=images, "Summary"=looDisp, "plot_names"=plot.names)
+    loo.results <- print.Table(LOO.display.frame(extractDataLOO(loo.results, params)))
+    results <- list("images"=images, "loo_results"=loo.results, "loo_labels"=loo.labels, "plot_names"=plot.names)
+
     results
 }
 
+extractDataLOO <- function(results , params, title = "Leave-one-out sensitivity analysis") { 
+    #loo.results, loo.labels
+    # Extracts data from loo.results
+    # Compute bounds on confidence intervals.
+    alpha <- 1.0-(params$conf.level/100.0)
+    mult <- abs(qnorm(alpha/2.0))
+    LL <- round(exp(results$loo_results$y - mult*results$loo_results$SE), digits = params$digits)
+    UL <- round(exp(results$loo_results$y + mult*results$loo_results$SE), digits = params$digits)
+    running.summary.es <- round(exp(results$loo_results$y), digits = params$digits)
+    # Extract labels
+    removed.labels <- results$loo_labels
+    data.to.present <- list(excluded.study = removed.labels, summary.estimates = running.summary.es, 
+                       lower.bound = LL, upper.bound = UL)
+    data.to.present
+}
 
+LOO.display.frame <- function(data.to.present) {
+    LOO.estimates <- NULL
+    for (i in 1:length(data.to.present$summary.estimates) ) {
+        LOO.estimates[i] <- paste(data.to.present$summary.estimates[i] ,"(", 
+                                  data.to.present$lower.bound[i]," to " , 
+                                  data.to.present$upper.bound[i] , ")") 
+            }
+    estimate.title <- eval(paste("Summary estimate " , "(" , params$conf.level , "% CI)" , sep = "" )  )
+    table.data <- array(data = c("Excluded study" , data.to.present$excluded.study , 
+                      estimate.title, c(LOO.estimates)), dim = c(length(LOO.estimates)+1,2))
+    table.data  
+}
 
 ##################################
 #  continuous cumulative MA      #
