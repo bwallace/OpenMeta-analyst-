@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ma_specs2.ui'
 #
-# Created: Fri Nov 05 17:52:32 2010
+# Created: Mon Nov 08 09:15:16 2010
 #      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -146,7 +146,7 @@ class Ui_Dialog(object):
         self.verticalLayout.addWidget(self.buttonBox)
 
         self.retranslateUi(Dialog)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):

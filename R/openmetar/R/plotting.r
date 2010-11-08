@@ -27,7 +27,7 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     ## TODO note that we're forcing the 'cont' scale -- thus
     # it's assumed everything is on the raw scale. may want to change
     # this.
-    plot.data <- list( label = c(paste(params$fp_col1_str, sep = ""), om.data@studyNames, "Overall"),
+    plot.data <- list(label = c(paste(params$fp_col1_str, sep = ""), om.data@studyNames, "Overall"),
                     types = c(3, rep(0, length(om.data@studyNames)), 2),
                     scale = "cont")
     alpha <- 1.0-(params$conf.level/100.0)
@@ -102,6 +102,33 @@ create.plot.data.continuous <- function(cont.data, params, res, selected.cov = N
     plot.data
 }
 
+create.plot.data.cumulative <- function(binary.data, params, res, studyNames, selected.cov=NULL){
+    scale.str <- "log"
+
+    studyNames[1] <- paste("   ", studyNames[1], sep="")
+    plot.data <- list( label = c("Studies", studyNames),
+                types = c(3, rep(0, length(studyNames))),
+                scale = "cont")
+    y <- res[,1]
+    lb <- res[,2]
+    ub <- res[,3]
+    # round results for display.
+    y.rounded <- round(y, digits = params$digits)
+    lb.rounded <- round(lb, digits = params$digits)
+    ub.rounded <- round(ub, digits = params$digits)
+       
+    additional.cols <- list(es = c("ES (LL, UL)", 
+                            paste(y.rounded, " (", lb.rounded, " , ", ub.rounded, ")", 
+                            sep = "")))
+                               
+    plot.data$additional.col.data <- additional.cols               
+    effects <- list(ES = y,
+                    LL = lb,
+                    UL = ub)
+    plot.data$effects <- effects
+
+    plot.data
+}
 
 # get data for the study column
 study.column <- function(forest.data, title.font="bold") {

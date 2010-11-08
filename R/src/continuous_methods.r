@@ -109,7 +109,7 @@ continuous.random <- function(contData, params){
         images <- c("forest plot"=forest.path)
         plot.names <- c("forest plot"="forest_plot")
         
-        results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot.names)
+        results <- list("images"=images, "summary"=summaryDisp, "plot_names"=plot.names)
     }
     results
 }
@@ -131,6 +131,7 @@ continuous.random.parameters <- function(){
 continuous.random.overall <- function(results){
     # this parses out the overall from the computed result
     res <- results$Summary$rawResults
-    overall <- list(c("estimate"=res$estimate, "lower"=res$lowerBound, "upper"=res$upperBound))
+    overall <- list("estimate"=res$b[1], "lower"=res$ci.lb, "upper"=res$ci.ub)
+    #overall <- list("estimate"=res$estimate, "lower"=res$lowerBound, "upper"=res$upperBound)
     overall
 }

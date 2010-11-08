@@ -27,7 +27,7 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     ## TODO note that we're forcing the 'cont' scale -- thus
     # it's assumed everything is on the raw scale. may want to change
     # this.
-    plot.data <- list( label = c(paste(params$fp_col1_str, sep = ""), om.data@studyNames, "Overall"),
+    plot.data <- list(label = c(paste(params$fp_col1_str, sep = ""), om.data@studyNames, "Overall"),
                     types = c(3, rep(0, length(om.data@studyNames)), 2),
                     scale = "cont")
     alpha <- 1.0-(params$conf.level/100.0)
@@ -104,14 +104,7 @@ create.plot.data.continuous <- function(cont.data, params, res, selected.cov = N
 
 create.plot.data.cumulative <- function(binary.data, params, res, studyNames, selected.cov=NULL){
     scale.str <- "log"
-    ## TODO resolve scaling
-    
-    # Creates a cumulative data structure that can be passed to forest.plot
-    # res is the output of a call to cum.ma.binary, which in turn calls the Metafor function rma
-    ## TODO note that we're forcing the 'cont' scale -- thus
-    # it's assumed everything is on the raw scale. may want to change
-    # this.
-    
+
     studyNames[1] <- paste("   ", studyNames[1], sep="")
     plot.data <- list( label = c("Studies", studyNames),
                 types = c(3, rep(0, length(studyNames))),
@@ -124,21 +117,15 @@ create.plot.data.cumulative <- function(binary.data, params, res, studyNames, se
     lb.rounded <- round(lb, digits = params$digits)
     ub.rounded <- round(ub, digits = params$digits)
        
-    additional.cols <- list(es = c("ES (LL, UL)", paste(y.rounded, " (", lb.rounded, " , ", ub.rounded, ")", sep = "")))
+    additional.cols <- list(es = c("ES (LL, UL)", 
+                            paste(y.rounded, " (", lb.rounded, " , ", ub.rounded, ")", 
+                            sep = "")))
                                
     plot.data$additional.col.data <- additional.cols               
     effects <- list(ES = y,
                     LL = lb,
                     UL = ub)
     plot.data$effects <- effects
-    
-    # covariates
-    if (!is.null(selected.cov)){
-        cov.val.str <- paste("binary.data@covariates$", selected.cov, sep="")
-        cov.values <- eval(parse(text=cov.val.str))
-        plot.data$covariate <- list(varname = selected.cov,
-                                   values = cov.values)
-    }
 
     plot.data
 }
