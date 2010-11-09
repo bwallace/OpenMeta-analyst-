@@ -25,7 +25,7 @@ cum.ma.binary <- function(fname, binary.data, params){
     
     # iterate over the binaryData elements, adding one study at a time
     cum.results <- array(dim=c(length(binary.data@studyNames),3))
-    params <- c(params, list("createPlot" <- FALSE))
+    params$createPlot <- FALSE
     for (i in 1:length(binary.data@studyNames)){
         # build a BinaryData object including studies
         # 1 through i
@@ -89,7 +89,7 @@ loo.ma.binary <- function(fname, binary.data, params){
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
     
     loo.results <- array(dim=c(length(binary.data@studyNames),3))
-    params <- c(params, list("createPlot" <- FALSE))
+    params$createPlot <- FALSE
     N <- length(binary.data@studyNames)
     for (i in 1:N){
         # get a list of indices, i.e., the subset
@@ -201,7 +201,7 @@ cum.ma.continuous <- function(fname, cont.data, params){
     
     # iterate over the continuousData elements, adding one study at a time
     cum.results <- array(dim=c(length(cont.data@studyNames),3))
-    params <- c(params, list("createPlot" <- FALSE))
+    params$createPlot <- FALSE
     for (i in 1:length(cont.data@studyNames)){
         # build a ContinuousData object including studies
         # 1 through i
@@ -272,7 +272,7 @@ loo.ma.continuous <- function(fname, cont.data, params){
     if (!("ContinuousData" %in% class(cont.data))) stop("Continuous data expected.")
     
     loo.results <- array(dim=c(length(cont.data@studyNames),3))
-    params <- c(params, list("createPlot" <- FALSE))
+    params$createPlot <- FALSE
     N <- length(cont.data@studyNames)
     for (i in 1:N){
         # get a list of indices, i.e., the subset
