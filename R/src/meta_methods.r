@@ -141,16 +141,10 @@ loo.ma.binary <- function(fname, binary.data, params){
     }
     looDisp <- createOverallDisp(loo.results, studyNames, params)
     looDisp
-    forest_path <- "./r_tmp/loo_forest.png"
+    forest.path <- "./r_tmp/loo_forest.png"
     plotData <- create.plot.data.overall(binary.data, params, loo.results, studyNames)
-    forest.plot(plotData, outpath=forest_path)
+    forest.plot(plotData, outpath=forest.path)
     
-    ### @TODO 
-    # generate loo MA plot
-    #forest.path <- "./r_tmp/cum_forest.png"
-    #png(forest.path)
-    #forest(res)
-    #dev.off()
 
     #
     # Now we package the results in a dictionary (technically, a named 
@@ -162,8 +156,8 @@ loo.ma.binary <- function(fname, binary.data, params){
 
     images <- c("loo forest plot"=forest.path)
     plot.names <- c("loo forest plot"="loo_forest_plot")
-    loo.results <- print.Table(LOO.display.frame(extractDataLOO(loo.results, params)))
-    results <- list("images"=images, "loo_results"=loo.results, "loo_labels"=loo.labels, "plot_names"=plot.names)
+    #loo.results <- print.Table(LOO.display.frame(extractDataLOO(loo.results, params)))
+    results <- list("images"=images, "loo_results"=looDisp, "plot_names"=plot.names)
 
     results
 }
@@ -335,6 +329,7 @@ loo.ma.continuous <- function(fname, cont.data, params){
     }
     looDisp <- createOverallDisp(loo.results, studyNames, params)
     looDisp
+
     forest_path <- "./r_tmp/loo_forest.png"
     plotData <- create.plot.data.overall(cont.data, params, loo.results, studyNames)
     forest.plot(plotData, outpath=forest_path)
@@ -353,7 +348,7 @@ loo.ma.continuous <- function(fname, cont.data, params){
     # (mapping titles to pretty-printed text). In this case we have only one 
     # of each. 
     #     
-    images <- c("Leave-one-out Forest Pplot"=forest.path)
+    images <- c("Leave-one-out Forest plot"=forest.path)
     plot.names <- c("loo forest plot"="loo_forest_plot")
     
     results <- list("images"=images, "Summary"=looDisp, "plot_names"=plot.names)

@@ -49,10 +49,12 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     y.overall.rounded <- round(y.overall, digits = params$digits)
     lb.overall.rounded <- round(lb.overall, digits = params$digits)
     ub.overall.rounded <- round(ub.overall, digits = params$digits)
-    additional.cols <- list(es = c(paste(params$fp_col2_str, sep = ""),
+    if (params$fp_show_col2=='TRUE') {
+        additional.cols <- list(es = c(paste(params$fp_col2_str, sep = ""),
                                  paste(y.rounded, " (", lb.rounded, " , ", ub.rounded, ")", sep = ""),
                                  paste(y.overall.rounded, " (", lb.overall.rounded, " , ", ub.overall.rounded, ")", sep = "")))
-    plot.data$additional.col.data <- additional.cols               
+        plot.data$additional.col.data <- additional.cols 
+    }              
     effects <- list(ES = c(y, y.overall),
                     LL = c(lb, lb.overall),
                     UL = c(ub, ub.overall))
@@ -102,7 +104,7 @@ create.plot.data.continuous <- function(cont.data, params, res, selected.cov = N
     plot.data
 }
 
-create.plot.data.cumulative <- function(binary.data, params, res, studyNames, selected.cov=NULL){
+create.plot.data.overall <- function(binary.data, params, res, studyNames, selected.cov=NULL){
     scale.str <- "log"
 
     studyNames[1] <- paste("   ", studyNames[1], sep="")
