@@ -297,8 +297,10 @@ binary.fixed.inv.var <- function(binaryData, params){
     
     results <- NULL
     if (length(binaryData@g1O1) == 1 || length(binaryData@y) == 1){
-        res <- get.res.for.one.binary.study(binaryData, params) 
-        results <- list("Summary"=list("rawResults" = res))
+        res <- get.res.for.one.binary.study(binaryData, params)
+        # Package res for use by overall method.
+        Res <- list("rawResults" = res) 
+        results <- list("Summary"=Res)
     }
     else{
         # call out to the metafor package
@@ -310,28 +312,27 @@ binary.fixed.inv.var <- function(binaryData, params){
         modelTitle <- paste("Fixed-Effects Model - Inverse Variance (k = ", res$k, ")", sep="")
         summaryDisp <- createSummaryDisp(res, params, degf, modelTitle)
         summaryDisp
-        
-        forest.path <- paste(params$fp_outpath, sep="")
-        plotData <- create.plot.data.binary(binaryData, params, res)
-        forest.plot(plotData, outpath=forest.path)
-    
-        #
-        # Now we package the results in a dictionary (technically, a named 
-        # vector). In particular, there are two fields that must be returned; 
-        # a dictionary of images (mapping titles to image paths) and a list of texts
-        # (mapping titles to pretty-printed text). In this case we have only one 
-        # of each. 
-        #  
-           
-        images <- c("forest plot"=forest.path)
-        plot_names <- c("forest plot"="forest_plot")
-        
-        ###
-        # should we return the name of the result object & the name of the
-        # plotting function as well here? perhaps only for the forest plot? 
-        # this would allow interactive plot refinement via the console...
-        #
-        results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot_names)
+
+        results <- list("Summary"=summaryDisp, "images"=c())
+        if ((is.null(params$createPlot)) || params$createPlot) {
+            forest.path <- paste(params$fp_outpath, sep="")
+            plotData <- create.plot.data.binary(binaryData, params, res)
+            forest.plot(plotData, outpath=forest.path)
+            #
+            # Now we package the results in a dictionary (technically, a named 
+            # vector). In particular, there are two fields that must be returned; 
+            # a dictionary of images (mapping titles to image paths) and a list of texts
+            # (mapping titles to pretty-printed text). In this case we have only one 
+            # of each. 
+            #  
+            images <- c("forest plot"=forest.path)
+            plot.names <- c("forest plot"="forest_plot")
+            results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot.names)
+
+        }
+        else {
+            results <- list("Summary"=summaryDisp)
+        }    
     }
     results
 }
@@ -369,7 +370,9 @@ binary.fixed.mh <- function(binaryData, params){
     results <- NULL
     if (length(binaryData@g1O1) == 1 || length(binaryData@y) == 1){
         res <- get.res.for.one.binary.study(binaryData, params)
-        results <- list("Summary"=list("rawResults" = res))
+         # Package res for use by overall method.
+        Res <- list("rawResults" = res) 
+        results <- list("Summary"=Res)
     }
     else{
         res<-rma.mh(ai=binaryData@g1O1, bi=binaryData@g1O2, 
@@ -385,9 +388,10 @@ binary.fixed.mh <- function(binaryData, params){
         #
         # generate forest plot 
         #
-        forest.path <- paste(params$fp_outpath, sep="")
-        plotData <- create.plot.data.binary(binaryData, params, res)
-        forest.plot(plotData, outpath=forest.path)
+        if ((is.null(params$createPlot)) || (params$createPlot == TRUE)) {
+            forest.path <- paste(params$fp_outpath, sep="")
+            plotData <- create.plot.data.binary(binaryData, params, res)
+            forest.plot(plotData, outpath=forest.path)
     
         #
         # Now we package the results in a dictionary (technically, a named 
@@ -396,9 +400,13 @@ binary.fixed.mh <- function(binaryData, params){
         # (mapping titles to pretty-printed text). In this case we have only one 
         # of each. 
         #     
-        images <- c("forest plot"=forest.path)
-        plot.names <- c("forest plot"="forest_plot")
-        results <- list("images"=images, "summary"=summaryDisp, "plot_names"=plot.names)
+            images <- c("Forest Plot"=forest.path)
+            plot.names <- c("forest plot"="forest_plot")
+            results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot.names)
+        }
+        else {
+            results <- list("Summary"=summaryDisp)
+        }    
     }
     results
 }
@@ -444,7 +452,9 @@ binary.fixed.peto <- function(binaryData, params){
 
     if (length(binaryData@g1O1) == 1){
         res <- get.res.for.one.binary.study(binaryData, params)
-        results <- list("Summary"=list("rawResults" = res))
+         # Package res for use by overall method.
+        Res <- list("rawResults" = res) 
+        results <- list("Summary"=Res)
     }
     else{  
         res <- rma.peto(ai=binaryData@g1O1, bi=binaryData@g1O2, 
@@ -460,9 +470,10 @@ binary.fixed.peto <- function(binaryData, params){
         #
         # generate forest plot 
         #
-        forest.path <- paste(params$fp_outpath, sep="")
-        plotData <- create.plot.data.binary(binaryData, params, res)
-        forest.plot(plotData, outpath=forest.path)
+        if ((is.null(params$createPlot)) || (params$createPlot == TRUE)) {
+            forest.path <- paste(params$fp_outpath, sep="")
+            plotData <- create.plot.data.binary(binaryData, params, res)
+            forest.plot(plotData, outpath=forest.path)
     
         #
         # Now we package the results in a dictionary (technically, a named 
@@ -471,10 +482,13 @@ binary.fixed.peto <- function(binaryData, params){
         # (mapping titles to pretty-printed text). In this case we have only one 
         # of each. 
         #     
-        images <- c("forest plot"=forest.path)
-        plot.names <- c("forest plot"="forest_plot")
-        
-        results <- list("images"=images, "summary"=summaryDisp, "plot_names"=plot.names)
+            images <- c("Forest Plot"=forest.path)
+            plot.names <- c("forest plot"="forest_plot")
+            results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot.names)
+        }
+        else {
+            results <- list("Summary"=summaryDisp)
+        }    
     }
     results
 }
@@ -521,7 +535,9 @@ binary.random <- function(binaryData, params){
     results <- NULL
     if (length(binaryData@g1O1) == 1 || length(binaryData@y) == 1){
         res <- get.res.for.one.binary.study(binaryData, params)
-        results <- list("Summary"=list("rawResults" = res))
+         # Package res for use by overall method.
+        Res <- list("rawResults" = res) 
+        results <- list("Summary"=Res)
     }
     else{     
         # call out to the metafor package
@@ -547,10 +563,11 @@ binary.random <- function(binaryData, params){
         #
         # generate forest plot 
         #
-        forest.path <- paste(params$fp_outpath, sep="")
-        plotData <- create.plot.data.binary(binaryData, params, res)
-        forest.plot(plotData, outpath=forest.path)
-    
+        if ((is.null(params$createPlot)) || (params$createPlot == TRUE)) {
+            forest.path <- paste(params$fp_outpath, sep="")
+            plotData <- create.plot.data.binary(binaryData, params, res)
+            forest.plot(plotData, outpath=forest.path)
+        
         #
         # Now we package the results in a dictionary (technically, a named 
         # vector). In particular, there are two fields that must be returned; 
@@ -558,10 +575,13 @@ binary.random <- function(binaryData, params){
         # (mapping titles to pretty-printed text). In this case we have only one 
         # of each. 
         #     
-        images <- c("forest plot"=forest_path)
-        plot.names <- c("forest plot"="forest_plot")
-        
-        results <- list("images"=images, "summary"=summaryDisp, "plot_names"=plot.names)
+            images <- c("Forest Plot"=forest_path)
+            plot.names <- c("forest plot"="forest_plot")
+            results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot.names)
+        }
+        else {
+            results <- list("Summary"=summaryDisp)
+        }    
     }
     results
 }

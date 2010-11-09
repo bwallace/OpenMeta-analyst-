@@ -68,7 +68,9 @@ continuous.random <- function(contData, params){
     if (length(contData@studyNames) == 1){
         # handle the case where only one study was passed in
         res <- get.res.for.one.cont.study(contData, params)   
-        results <- list("Summary"=list("rawResults" = res))
+         # Package res for use by overall method.
+        Res <- list("rawResults" = res) 
+        results <- list("Summary"=Res)
     }
     else{
         # otherwise, call out to the metafor package
@@ -95,9 +97,11 @@ continuous.random <- function(contData, params){
         # generate forest plot 
         #
         getwd()
-        forest.path <- paste(params$fp_outpath, sep="")
-        plotData <- create.plot.data.continuous(contData, params, res)
-        forest.plot(plotData, outpath=forest.path)
+
+        if ((is.null(params$createPlot)) || (params$createPlot == TRUE)) {
+            forest.path <- paste(params$fp_outpath, sep="")
+            plotData <- create.plot.data.continuous(contData, params, res)
+            forest.plot(plotData, outpath=forest.path)
     
         #
         # Now we package the results in a dictionary (technically, a named 
@@ -106,10 +110,13 @@ continuous.random <- function(contData, params){
         # (mapping titles to pretty-printed text). In this case we have only one 
         # of each. 
         #     
-        images <- c("forest plot"=forest.path)
-        plot.names <- c("forest plot"="forest_plot")
-        
-        results <- list("images"=images, "summary"=summaryDisp, "plot_names"=plot.names)
+            images <- c("Forest Plot"=forest.path)
+            plot.names <- c("forest plot"="forest_plot")
+            results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot.names)
+        }
+        else {
+            results <- list("Summary"=summaryDisp)
+        } 
     }
     results
 }

@@ -312,22 +312,23 @@ binary.fixed.inv.var <- function(binaryData, params){
         modelTitle <- paste("Fixed-Effects Model - Inverse Variance (k = ", res$k, ")", sep="")
         summaryDisp <- createSummaryDisp(res, params, degf, modelTitle)
         summaryDisp
-        
-        if ((is.null(params$createPlot)) || (params$createPlot == TRUE)) {
+
+        results <- list("Summary"=summaryDisp, "images"=c())
+        if ((is.null(params$createPlot)) || params$createPlot) {
             forest.path <- paste(params$fp_outpath, sep="")
             plotData <- create.plot.data.binary(binaryData, params, res)
             forest.plot(plotData, outpath=forest.path)
-    
-        #
-        # Now we package the results in a dictionary (technically, a named 
-        # vector). In particular, there are two fields that must be returned; 
-        # a dictionary of images (mapping titles to image paths) and a list of texts
-        # (mapping titles to pretty-printed text). In this case we have only one 
-        # of each. 
-        #  
+            #
+            # Now we package the results in a dictionary (technically, a named 
+            # vector). In particular, there are two fields that must be returned; 
+            # a dictionary of images (mapping titles to image paths) and a list of texts
+            # (mapping titles to pretty-printed text). In this case we have only one 
+            # of each. 
+            #  
             images <- c("forest plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
             results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot.names)
+
         }
         else {
             results <- list("Summary"=summaryDisp)
