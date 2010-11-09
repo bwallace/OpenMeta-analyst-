@@ -21,7 +21,11 @@ library("grid")
 #####################################################
 
 create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
-    scale.str <- "log"
+    scale.str <- "cont"
+    if (metric.is.log.scale(params$measure)){
+        scale.str <- "log" 
+    }
+    
     # Creates a data structure that can be passed to forest.plot
     # res is the output of a call to the Metafor function rma
     ## TODO note that we're forcing the 'cont' scale -- thus
@@ -29,7 +33,7 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     # this.
     plot.data <- list(label = c(paste(params$fp_col1_str, sep = ""), om.data@studyNames, "Overall"),
                     types = c(3, rep(0, length(om.data@studyNames)), 2),
-                    scale = "cont")
+                    scale = scale.str)
     alpha <- 1.0-(params$conf.level/100.0)
     mult <- abs(qnorm(alpha/2.0))
     ###
@@ -105,12 +109,14 @@ create.plot.data.continuous <- function(cont.data, params, res, selected.cov = N
 }
 
 create.plot.data.overall <- function(binary.data, params, res, studyNames, selected.cov=NULL){
-    scale.str <- "log"
-
+    scale.str <- "cont"
+    if (metric.is.log.scale(params$measure)){
+        scale.str <- "log" 
+    }
     studyNames[1] <- paste("   ", studyNames[1], sep="")
     plot.data <- list( label = c("Studies", studyNames),
                 types = c(3, rep(0, length(studyNames))),
-                scale = "cont")
+                scale = scale.str)
     y <- res[,1]
     lb <- res[,2]
     ub <- res[,3]
