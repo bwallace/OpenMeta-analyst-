@@ -85,7 +85,6 @@ create.plot.data.binary <- function(binary.data, params, res, selected.cov = NUL
         
     # if we have raw data, add it to the additional columns field
     if ((length(binary.data@g1O1) > 0) && (params$fp_show_col3=="TRUE")) {
-        # TODO these strings ('ev/trt') shouldn't be hard-coded.
         plot.data$additional.col.data$cases = c(paste(params$fp_col3_str, sep = ""), 
                                     paste(binary.data@g1O1, " / ", binary.data@g1O1 + binary.data@g1O2, sep = ""), 
                                     paste(sum(binary.data@g1O1), " / ", sum(binary.data@g1O1 + binary.data@g1O2), sep = ""))
