@@ -63,9 +63,9 @@ cum.ma.binary <- function(fname, binary.data, params){
     }
     cumDisp <- createOverallDisp(cum.results, studyNames, params)
     cumDisp
-    forest_path <- "./r_tmp/cum_forest.png"
+    forest.path <- "./r_tmp/cum_forest.png"
     plotData <- create.plot.data.overall(binary.data, params, cum.results, studyNames)
-    forest.plot(plotData, outpath=forest_path)
+    forest.plot(plotData, outpath=forest.path)
 
     # Now we package the results in a dictionary (technically, a named 
     # vector). In particular, there are two fields that must be returned; 
@@ -73,7 +73,7 @@ cum.ma.binary <- function(fname, binary.data, params){
     # (mapping titles to pretty-printed text). In this case we have only one 
     # of each. 
     #     
-    images <- c("Cumulative Forest Plot"=forest_path)
+    images <- c("Cumulative Forest Plot"=forest.path)
     plot.names <- c("cumulative forest plot"="cumulative_forest_plot")
     
     results <- list("images"=images, "Summary"=cumDisp, "plot_names"=plot.names)
@@ -246,9 +246,9 @@ cum.ma.continuous <- function(fname, cont.data, params){
     }
     cumDisp <- createOverallDisp(cum.results, studyNames, params)
     cumDisp
-    forest_path <- "./r_tmp/cum_forest.png"
+    forest.path <- "./r_tmp/cum_forest.png"
     plotData <- create.plot.data.overall(cont.data, params, cum.results, studyNames)
-    forest.plot(plotData, outpath=forest_path)
+    forest.plot(plotData, outpath=forest.path)
     
     #
     # Now we package the results in a dictionary (technically, a named 
@@ -332,9 +332,9 @@ loo.ma.continuous <- function(fname, cont.data, params){
     looDisp <- createOverallDisp(loo.results, studyNames, params)
     looDisp
 
-    forest_path <- "./r_tmp/loo_forest.png"
+    forest.path <- "./r_tmp/loo_forest.png"
     plotData <- create.plot.data.overall(cont.data, params, loo.results, studyNames)
-    forest.plot(plotData, outpath=forest_path)
+    forest.plot(plotData, outpath=forest.path)
     
     ### @TODO 
     # generate loo MA plot

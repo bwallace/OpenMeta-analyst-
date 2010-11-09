@@ -19,12 +19,26 @@ binary.meta.regression <- function(binary.data, params, cov.name){
     regDisp
     betas <- res$b
     fitted.line <- list(intercept=betas[1], slope=betas[2])
-    hideCols <- list("fp_show_col2"=FALSE, "fp_show_col3"=FALSE, "fp_show_col4"=FALSE, "fp_col4_str"=FALSE) 
-    params<-c(params, hideCols)
+    params$fp_show_col2 <- FALSE
+    params$fp_show_col3 <- FALSE
+    params$fp_show_col4 <- FALSE
+    params$fp_col4_str <- FALSE
+    params$measure <- "cont"
+    ## TODO Setting params$measure to "cont" is a hack to make create.plot.data.binary work.
+    # Should create a new function create.plot.data.reg in plotting.r for regression plots.
+    #
     plot.data <- create.plot.data.binary(binary.data, params, res, selected.cov=cov.name)
     plot.data$fitted.line <- fitted.line
-    plot.path <- paste(params$fp_outpath, sep="")
-    meta.regression.plot(plot.data, plot.path)   
+    plot.path <- "./r_tmp/reg.png"
+    meta.regression.plot(plot.data, plot.path, symSize=1,
+                                  lcol = "darkred",
+                                  metric = "Effect size",
+                                  xlabel= plot.data$covariate$varname,
+                                  lweight = 3,
+                                  lpatern = "dotted",
+                                  plotregion = "n",
+                                  mcolor = "darkgreen",
+                                  regline = TRUE)   
     images <- c("regression plot"=plot.path)
     plot.names <- c("forest plot"="reg.plot")
     results <- list("images"=images, "Summary"=regDisp, "plot_names"=plot.names)
