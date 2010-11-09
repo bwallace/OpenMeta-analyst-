@@ -312,7 +312,7 @@ binary.fixed.inv.var <- function(binaryData, params){
         summaryDisp
         
         results <- list("Summary"=summaryDisp)
-        if (params$createPlot == TRUE) {
+        if ((is.null(params$createPlot)) || (params$createPlot == TRUE)) {
             forest.path <- paste(params$fp_outpath, sep="")
             plotData <- create.plot.data.binary(binaryData, params, res)
             forest.plot(plotData, outpath=forest.path)
@@ -389,7 +389,7 @@ binary.fixed.mh <- function(binaryData, params){
         # generate forest plot 
         #
         results <- list("Summary"=summaryDisp)
-        if (params$createPlot == TRUE) {
+        if ((is.null(params$createPlot)) || (params$createPlot == TRUE)) {
             forest.path <- paste(params$fp_outpath, sep="")
             plotData <- create.plot.data.binary(binaryData, params, res)
             forest.plot(plotData, outpath=forest.path)
@@ -467,7 +467,7 @@ binary.fixed.peto <- function(binaryData, params){
         # generate forest plot 
         #
         results <- list("Summary"=summaryDisp)
-        if (params$createPlot == TRUE) {
+        if ((is.null(params$createPlot)) || (params$createPlot == TRUE)) {
             forest.path <- paste(params$fp_outpath, sep="")
             plotData <- create.plot.data.binary(binaryData, params, res)
             forest.plot(plotData, outpath=forest.path)
@@ -479,7 +479,7 @@ binary.fixed.peto <- function(binaryData, params){
         # (mapping titles to pretty-printed text). In this case we have only one 
         # of each. 
         #     
-            images <- c("forest plot"=forest.path)
+            images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
             results <- c(results, list("images"=images, "plot_names"=plot_names))
     }
@@ -555,7 +555,7 @@ binary.random <- function(binaryData, params){
         # generate forest plot 
         #
         results <- list("Summary"=summaryDisp)
-        if (params$createPlot == TRUE) {
+        if ((is.null(params$createPlot)) || (params$createPlot == TRUE)) {
             forest.path <- paste(params$fp_outpath, sep="")
             plotData <- create.plot.data.binary(binaryData, params, res)
             forest.plot(plotData, outpath=forest.path)
@@ -567,7 +567,7 @@ binary.random <- function(binaryData, params){
         # (mapping titles to pretty-printed text). In this case we have only one 
         # of each. 
         #     
-            images <- c("forest plot"=forest_path)
+            images <- c("Forest Plot"=forest_path)
             plot.names <- c("forest plot"="forest_plot")
             results <- c(results, list("images"=images, "plot_names"=plot_names))
         }

@@ -96,7 +96,7 @@ continuous.random <- function(contData, params){
         #
         getwd()
         results <- list("Summary"=summaryDisp)
-        if (params$createPlot == TRUE) {
+        if ((is.null(params$createPlot)) || (params$createPlot == TRUE)) {
             forest.path <- paste(params$fp_outpath, sep="")
             plotData <- create.plot.data.continuous(contData, params, res)
             forest.plot(plotData, outpath=forest.path)
@@ -108,7 +108,7 @@ continuous.random <- function(contData, params){
         # (mapping titles to pretty-printed text). In this case we have only one 
         # of each. 
         #     
-            images <- c("forest plot"=forest.path)
+            images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
             results <- c(results, list("images"=images, "plot_names"=plot_names))
     }
