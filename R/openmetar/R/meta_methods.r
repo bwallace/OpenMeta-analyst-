@@ -25,7 +25,7 @@ cum.ma.binary <- function(fname, binary.data, params){
     
     # iterate over the binaryData elements, adding one study at a time
     cum.results <- array(dim=c(length(binary.data@studyNames),3))
-    params <- c(params, list("createPlot" <- FALSE))
+    params$createPlot <- FALSE
     for (i in 1:length(binary.data@studyNames)){
         # build a BinaryData object including studies
         # 1 through i
@@ -89,7 +89,7 @@ loo.ma.binary <- function(fname, binary.data, params){
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
     
     loo.results <- array(dim=c(length(binary.data@studyNames),3))
-    params <- c(params, list("createPlot" <- FALSE))
+    params$createPlot <- FALSE
     N <- length(binary.data@studyNames)
     for (i in 1:N){
         # get a list of indices, i.e., the subset
@@ -201,7 +201,7 @@ cum.ma.continuous <- function(fname, cont.data, params){
     
     # iterate over the continuousData elements, adding one study at a time
     cum.results <- array(dim=c(length(cont.data@studyNames),3))
-    params <- c(params, list("createPlot" <- FALSE))
+    params$createPlot <- FALSE
     for (i in 1:length(cont.data@studyNames)){
         # build a ContinuousData object including studies
         # 1 through i
@@ -236,7 +236,6 @@ cum.ma.continuous <- function(fname, cont.data, params){
         # it's passing!
         cur.res <- eval(call(fname, cont.data.tmp, params))
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
-        #cum.results <- c(cum.results, cur.overall)
         cum.results[i,] <- cur.overall
     }
     
@@ -246,9 +245,9 @@ cum.ma.continuous <- function(fname, cont.data, params){
     }
     cumDisp <- createOverallDisp(cum.results, studyNames, params)
     cumDisp
-    forest_path <- "./r_tmp/cum_forest.png"
+    forest.path <- "./r_tmp/cum_forest.png"
     plotData <- create.plot.data.overall(cont.data, params, cum.results, studyNames)
-    forest.plot(plotData, outpath=forest_path)
+    forest.plot(plotData, outpath=forest.path)
     
     #
     # Now we package the results in a dictionary (technically, a named 
@@ -272,7 +271,7 @@ loo.ma.continuous <- function(fname, cont.data, params){
     if (!("ContinuousData" %in% class(cont.data))) stop("Continuous data expected.")
     
     loo.results <- array(dim=c(length(cont.data@studyNames),3))
-    params <- c(params, list("createPlot" <- FALSE))
+    params$createPlot <- FALSE
     N <- length(cont.data@studyNames)
     for (i in 1:N){
         # get a list of indices, i.e., the subset
@@ -322,7 +321,7 @@ loo.ma.continuous <- function(fname, cont.data, params){
         # it's passing!
         cur.res <- eval(call(fname, cont.data.tmp, params))
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
-        loo.results <- cur.overall
+        loo.results[i,] <- cur.overall
     }
     
     studyNames <- cont.data@studyNames[1] 
@@ -332,17 +331,10 @@ loo.ma.continuous <- function(fname, cont.data, params){
     looDisp <- createOverallDisp(loo.results, studyNames, params)
     looDisp
 
-    forest_path <- "./r_tmp/loo_forest.png"
+    forest.path <- "./r_tmp/loo_forest.png"
     plotData <- create.plot.data.overall(cont.data, params, loo.results, studyNames)
-    forest.plot(plotData, outpath=forest_path)
+    forest.plot(plotData, outpath=forest.path)
     
-    ### @TODO 
-    # generate loo MA plot
-    #forest.path <- "./r_tmp/cum_forest.png"
-    #png(forest_path)
-    #forest(res)
-    #dev.off()
-
     #
     # Now we package the results in a dictionary (technically, a named 
     # vector). In particular, there are two fields that must be returned; 

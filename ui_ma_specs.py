@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ma_specs2.ui'
 #
-# Created: Tue Nov 09 09:29:09 2010
+# Created: Tue Nov 09 15:13:36 2010
 #      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!

@@ -236,7 +236,6 @@ cum.ma.continuous <- function(fname, cont.data, params){
         # it's passing!
         cur.res <- eval(call(fname, cont.data.tmp, params))
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
-        #cum.results <- c(cum.results, cur.overall)
         cum.results[i,] <- cur.overall
     }
     
@@ -246,9 +245,9 @@ cum.ma.continuous <- function(fname, cont.data, params){
     }
     cumDisp <- createOverallDisp(cum.results, studyNames, params)
     cumDisp
-    forest_path <- "./r_tmp/cum_forest.png"
+    forest.path <- "./r_tmp/cum_forest.png"
     plotData <- create.plot.data.overall(cont.data, params, cum.results, studyNames)
-    forest.plot(plotData, outpath=forest_path)
+    forest.plot(plotData, outpath=forest.path)
     
     #
     # Now we package the results in a dictionary (technically, a named 
@@ -322,7 +321,7 @@ loo.ma.continuous <- function(fname, cont.data, params){
         # it's passing!
         cur.res <- eval(call(fname, cont.data.tmp, params))
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
-        loo.results <- cur.overall
+        loo.results[i,] <- cur.overall
     }
     
     studyNames <- cont.data@studyNames[1] 
@@ -332,17 +331,10 @@ loo.ma.continuous <- function(fname, cont.data, params){
     looDisp <- createOverallDisp(loo.results, studyNames, params)
     looDisp
 
-    forest_path <- "./r_tmp/loo_forest.png"
+    forest.path <- "./r_tmp/loo_forest.png"
     plotData <- create.plot.data.overall(cont.data, params, loo.results, studyNames)
-    forest.plot(plotData, outpath=forest_path)
+    forest.plot(plotData, outpath=forest.path)
     
-    ### @TODO 
-    # generate loo MA plot
-    #forest.path <- "./r_tmp/cum_forest.png"
-    #png(forest_path)
-    #forest(res)
-    #dev.off()
-
     #
     # Now we package the results in a dictionary (technically, a named 
     # vector). In particular, there are two fields that must be returned; 
