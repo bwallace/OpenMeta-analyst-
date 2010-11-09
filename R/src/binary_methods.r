@@ -297,8 +297,10 @@ binary.fixed.inv.var <- function(binaryData, params){
     
     results <- NULL
     if (length(binaryData@g1O1) == 1 || length(binaryData@y) == 1){
-        res <- get.res.for.one.binary.study(binaryData, params) 
-        results <- list("Summary"=list("rawResults" = res))
+        res <- get.res.for.one.binary.study(binaryData, params)
+        # Package res for use by overall method.
+        Res <- list("rawResults" = res) 
+        results <- list("Summary"=Res)
     }
     else{
         # call out to the metafor package
@@ -311,7 +313,6 @@ binary.fixed.inv.var <- function(binaryData, params){
         summaryDisp <- createSummaryDisp(res, params, degf, modelTitle)
         summaryDisp
         
-        results <- list("Summary"=summaryDisp)
         if ((is.null(params$createPlot)) || (params$createPlot == TRUE)) {
             forest.path <- paste(params$fp_outpath, sep="")
             plotData <- create.plot.data.binary(binaryData, params, res)
@@ -324,17 +325,13 @@ binary.fixed.inv.var <- function(binaryData, params){
         # (mapping titles to pretty-printed text). In this case we have only one 
         # of each. 
         #  
-           
-            images <- c("Forest Plot"=forest.path)
-            plot_names <- c("forest plot"="forest_plot")
-        
-        ###
-        # should we return the name of the result object & the name of the
-        # plotting function as well here? perhaps only for the forest plot? 
-        # this would allow interactive plot refinement via the console...
-        #
-            results <- c(results, list("images"=images, "plot_names"=plot_names))
+            images <- c("forest plot"=forest.path)
+            plot.names <- c("forest plot"="forest_plot")
+            results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot.names)
         }
+        else {
+            results <- list("Summary"=summaryDisp)
+        }    
     }
     results
 }
@@ -372,7 +369,9 @@ binary.fixed.mh <- function(binaryData, params){
     results <- NULL
     if (length(binaryData@g1O1) == 1 || length(binaryData@y) == 1){
         res <- get.res.for.one.binary.study(binaryData, params)
-        results <- list("Summary"=list("rawResults" = res))
+         # Package res for use by overall method.
+        Res <- list("rawResults" = res) 
+        results <- list("Summary"=Res)
     }
     else{
         res<-rma.mh(ai=binaryData@g1O1, bi=binaryData@g1O2, 
@@ -388,7 +387,6 @@ binary.fixed.mh <- function(binaryData, params){
         #
         # generate forest plot 
         #
-        results <- list("Summary"=summaryDisp)
         if ((is.null(params$createPlot)) || (params$createPlot == TRUE)) {
             forest.path <- paste(params$fp_outpath, sep="")
             plotData <- create.plot.data.binary(binaryData, params, res)
@@ -403,8 +401,11 @@ binary.fixed.mh <- function(binaryData, params){
         #     
             images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
-            results <- c(results, list("images"=images, "plot_names"=plot_names))
+            results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot.names)
         }
+        else {
+            results <- list("Summary"=summaryDisp)
+        }    
     }
     results
 }
@@ -450,7 +451,9 @@ binary.fixed.peto <- function(binaryData, params){
 
     if (length(binaryData@g1O1) == 1){
         res <- get.res.for.one.binary.study(binaryData, params)
-        results <- list("Summary"=list("rawResults" = res))
+         # Package res for use by overall method.
+        Res <- list("rawResults" = res) 
+        results <- list("Summary"=Res)
     }
     else{  
         res <- rma.peto(ai=binaryData@g1O1, bi=binaryData@g1O2, 
@@ -466,7 +469,6 @@ binary.fixed.peto <- function(binaryData, params){
         #
         # generate forest plot 
         #
-        results <- list("Summary"=summaryDisp)
         if ((is.null(params$createPlot)) || (params$createPlot == TRUE)) {
             forest.path <- paste(params$fp_outpath, sep="")
             plotData <- create.plot.data.binary(binaryData, params, res)
@@ -481,8 +483,11 @@ binary.fixed.peto <- function(binaryData, params){
         #     
             images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
-            results <- c(results, list("images"=images, "plot_names"=plot_names))
+            results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot.names)
         }
+        else {
+            results <- list("Summary"=summaryDisp)
+        }    
     }
     results
 }
@@ -529,7 +534,9 @@ binary.random <- function(binaryData, params){
     results <- NULL
     if (length(binaryData@g1O1) == 1 || length(binaryData@y) == 1){
         res <- get.res.for.one.binary.study(binaryData, params)
-        results <- list("Summary"=list("rawResults" = res))
+         # Package res for use by overall method.
+        Res <- list("rawResults" = res) 
+        results <- list("Summary"=Res)
     }
     else{     
         # call out to the metafor package
@@ -555,7 +562,6 @@ binary.random <- function(binaryData, params){
         #
         # generate forest plot 
         #
-        results <- list("Summary"=summaryDisp)
         if ((is.null(params$createPlot)) || (params$createPlot == TRUE)) {
             forest.path <- paste(params$fp_outpath, sep="")
             plotData <- create.plot.data.binary(binaryData, params, res)
@@ -570,8 +576,11 @@ binary.random <- function(binaryData, params){
         #     
             images <- c("Forest Plot"=forest_path)
             plot.names <- c("forest plot"="forest_plot")
-            results <- c(results, list("images"=images, "plot_names"=plot_names))
+            results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot.names)
         }
+        else {
+            results <- list("Summary"=summaryDisp)
+        }    
     }
     results
 }

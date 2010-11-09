@@ -68,7 +68,9 @@ continuous.random <- function(contData, params){
     if (length(contData@studyNames) == 1){
         # handle the case where only one study was passed in
         res <- get.res.for.one.cont.study(contData, params)   
-        results <- list("Summary"=list("rawResults" = res))
+         # Package res for use by overall method.
+        Res <- list("rawResults" = res) 
+        results <- list("Summary"=Res)
     }
     else{
         # otherwise, call out to the metafor package
@@ -95,7 +97,7 @@ continuous.random <- function(contData, params){
         # generate forest plot 
         #
         getwd()
-        results <- list("Summary"=summaryDisp)
+
         if ((is.null(params$createPlot)) || (params$createPlot == TRUE)) {
             forest.path <- paste(params$fp_outpath, sep="")
             plotData <- create.plot.data.continuous(contData, params, res)
@@ -110,8 +112,11 @@ continuous.random <- function(contData, params){
         #     
             images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
-            results <- c(results, list("images"=images, "plot_names"=plot_names))
+            results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot.names)
         }
+        else {
+            results <- list("Summary"=summaryDisp)
+        } 
     }
     results
 }
