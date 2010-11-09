@@ -25,7 +25,7 @@ cum.ma.binary <- function(fname, binary.data, params){
     
     # iterate over the binaryData elements, adding one study at a time
     cum.results <- array(dim=c(length(binary.data@studyNames),3))
-    
+    params <- c(params, list("createPlot" <- FALSE))
     for (i in 1:length(binary.data@studyNames)){
         # build a BinaryData object including studies
         # 1 through i
@@ -89,6 +89,7 @@ loo.ma.binary <- function(fname, binary.data, params){
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
     
     loo.results <- array(dim=c(length(binary.data@studyNames),3))
+    params <- c(params, list("createPlot" <- FALSE))
     N <- length(binary.data@studyNames)
     for (i in 1:N){
         # get a list of indices, i.e., the subset
@@ -137,7 +138,7 @@ loo.ma.binary <- function(fname, binary.data, params){
     
     studyNames <- binary.data@studyNames[1] 
     for (count in 2:length(binary.data@studyNames)) {
-        studyNames <- c(studyNames, paste("+ ",binary.data@studyNames[count], sep=""))
+        studyNames <- c(studyNames, paste("- ",binary.data@studyNames[count], sep=""))
     }
     looDisp <- createOverallDisp(loo.results, studyNames, params)
     looDisp
@@ -154,7 +155,7 @@ loo.ma.binary <- function(fname, binary.data, params){
     # of each. 
     #     
 
-    images <- c("loo forest plot"=forest.path)
+    images <- c("Leave-one-out Forest plot"=forest.path)
     plot.names <- c("loo forest plot"="loo_forest_plot")
     #loo.results <- print.Table(LOO.display.frame(extractDataLOO(loo.results, params)))
     results <- list("images"=images, "loo_results"=looDisp, "plot_names"=plot.names)
@@ -200,7 +201,7 @@ cum.ma.continuous <- function(fname, cont.data, params){
     
     # iterate over the continuousData elements, adding one study at a time
     cum.results <- array(dim=c(length(cont.data@studyNames),3))
-   
+    params <- c(params, list("createPlot" <- FALSE))
     for (i in 1:length(cont.data@studyNames)){
         # build a ContinuousData object including studies
         # 1 through i
@@ -239,14 +240,14 @@ cum.ma.continuous <- function(fname, cont.data, params){
         cum.results[i,] <- cur.overall
     }
     
-    studyNames <- binary.data@studyNames[1] 
-    for (count in 2:length(binary.data@studyNames)) {
-        studyNames <- c(studyNames, paste("+ ",binary.data@studyNames[count], sep=""))
+    studyNames <- cont.data@studyNames[1] 
+    for (count in 2:length(cont.data@studyNames)) {
+        studyNames <- c(studyNames, paste("+ ",cont.data@studyNames[count], sep=""))
     }
     cumDisp <- createOverallDisp(cum.results, studyNames, params)
     cumDisp
     forest_path <- "./r_tmp/cum_forest.png"
-    plotData <- create.plot.data.overall(binary.data, params, cum.results, studyNames)
+    plotData <- create.plot.data.overall(cont.data, params, cum.results, studyNames)
     forest.plot(plotData, outpath=forest_path)
     
     #
@@ -270,7 +271,8 @@ loo.ma.continuous <- function(fname, cont.data, params){
     # assert that the argument is the correct type
     if (!("ContinuousData" %in% class(cont.data))) stop("Continuous data expected.")
     
-    loo.results <- array(dim=c(length(binary.data@studyNames),3))
+    loo.results <- array(dim=c(length(cont.data@studyNames),3))
+    params <- c(params, list("createPlot" <- FALSE))
     N <- length(cont.data@studyNames)
     for (i in 1:N){
         # get a list of indices, i.e., the subset
@@ -323,14 +325,15 @@ loo.ma.continuous <- function(fname, cont.data, params){
         loo.results <- cur.overall
     }
     
-    studyNames <- binary.data@studyNames[1] 
-    for (count in 2:length(binary.data@studyNames)) {
-        studyNames <- c(studyNames, paste("+ ",binary.data@studyNames[count], sep=""))
+    studyNames <- cont.data@studyNames[1] 
+    for (count in 2:length(cont.data@studyNames)) {
+        studyNames <- c(studyNames, paste("- ",cont.data@studyNames[count], sep=""))
     }
     looDisp <- createOverallDisp(loo.results, studyNames, params)
     looDisp
-    forest.path <- "./r_tmp/loo_forest.png"
-    plotData <- create.plot.data.overall(binary.data, params, loo.results, studyNames)
+
+    forest_path <- "./r_tmp/loo_forest.png"
+    plotData <- create.plot.data.overall(cont.data, params, loo.results, studyNames)
     forest.plot(plotData, outpath=forest_path)
     
     ### @TODO 

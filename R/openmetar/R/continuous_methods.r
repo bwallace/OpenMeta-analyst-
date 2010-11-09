@@ -95,9 +95,11 @@ continuous.random <- function(contData, params){
         # generate forest plot 
         #
         getwd()
-        forest.path <- paste(params$fp_outpath, sep="")
-        plotData <- create.plot.data.continuous(contData, params, res)
-        forest.plot(plotData, outpath=forest.path)
+        results <- list("Summary"=summaryDisp)
+        if ((is.null(params$createPlot)) || (params$createPlot == TRUE)) {
+            forest.path <- paste(params$fp_outpath, sep="")
+            plotData <- create.plot.data.continuous(contData, params, res)
+            forest.plot(plotData, outpath=forest.path)
     
         #
         # Now we package the results in a dictionary (technically, a named 
@@ -106,10 +108,10 @@ continuous.random <- function(contData, params){
         # (mapping titles to pretty-printed text). In this case we have only one 
         # of each. 
         #     
-        images <- c("forest plot"=forest.path)
-        plot.names <- c("forest plot"="forest_plot")
-        
-        results <- list("images"=images, "summary"=summaryDisp, "plot_names"=plot.names)
+            images <- c("Forest Plot"=forest.path)
+            plot.names <- c("forest plot"="forest_plot")
+            results <- c(results, list("images"=images, "plot_names"=plot_names))
+        }
     }
     results
 }

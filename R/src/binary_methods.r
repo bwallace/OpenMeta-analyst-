@@ -311,29 +311,30 @@ binary.fixed.inv.var <- function(binaryData, params){
         summaryDisp <- createSummaryDisp(res, params, degf, modelTitle)
         summaryDisp
         
-        results <- list("Summary"=summaryDisp)
-        if ((is.null(params$createPlot)) || (params$createPlot == TRUE)) {
+        results <- list("Summary"=summaryDisp, "images"=c())
+        if ((is.null(params$createPlot)) || params$createPlot) {
             forest.path <- paste(params$fp_outpath, sep="")
             plotData <- create.plot.data.binary(binaryData, params, res)
             forest.plot(plotData, outpath=forest.path)
     
-        #
-        # Now we package the results in a dictionary (technically, a named 
-        # vector). In particular, there are two fields that must be returned; 
-        # a dictionary of images (mapping titles to image paths) and a list of texts
-        # (mapping titles to pretty-printed text). In this case we have only one 
-        # of each. 
-        #  
+            #
+            # Now we package the results in a dictionary (technically, a named 
+            # vector). In particular, there are two fields that must be returned; 
+            # a dictionary of images (mapping titles to image paths) and a list of texts
+            # (mapping titles to pretty-printed text). In this case we have only one 
+            # of each. 
+            #  
            
             images <- c("Forest Plot"=forest.path)
             plot_names <- c("forest plot"="forest_plot")
         
-        ###
-        # should we return the name of the result object & the name of the
-        # plotting function as well here? perhaps only for the forest plot? 
-        # this would allow interactive plot refinement via the console...
-        #
-            results <- c(results, list("images"=images, "plot_names"=plot_names))
+            ###
+            # should we return the name of the result object & the name of the
+            # plotting function as well here? perhaps only for the forest plot? 
+            # this would allow interactive plot refinement via the console...
+            #
+
+            results <- list("Summary"=summaryDisp, "images"=images, "plot_names"=plot_names)
         }
     }
     results
