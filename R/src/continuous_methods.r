@@ -108,9 +108,9 @@ continuous.random <- function(contData, params){
             # (mapping titles to pretty-printed text). In this case we have only one 
             # of each. 
             #     
-            images <- c("Forest Plot"=forest_path)
+            images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
-            results <- list("images"=images, "Summary"=summaryDisp, "plot.names"=plot.names)
+            results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot.names)
         }
         else {
             results <- list("Summary"=summaryDisp)

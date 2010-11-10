@@ -325,7 +325,7 @@ binary.fixed.inv.var <- function(binaryData, params){
             # (mapping titles to pretty-printed text). In this case we have only one 
             # of each. 
             #  
-            images <- c("forest plot"=forest.path)
+            images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
             results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot.names)
 
@@ -575,7 +575,7 @@ binary.random <- function(binaryData, params){
         # (mapping titles to pretty-printed text). In this case we have only one 
         # of each. 
         #     
-            images <- c("Forest Plot"=forest_path)
+            images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
             results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot.names)
         }
