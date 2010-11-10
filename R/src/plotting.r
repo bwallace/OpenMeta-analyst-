@@ -107,12 +107,15 @@ create.plot.data.continuous <- function(cont.data, params, res, selected.cov = N
     plot.data
 }
 
-create.plot.data.overall <- function(binary.data, params, res, studyNames, selected.cov=NULL){
+create.plot.data.overall <- function(binary.data, params, res, studyNames, addRow1Space, selected.cov=NULL){
     scale.str <- "cont"
     if (metric.is.log.scale(params$measure)){
         scale.str <- "log" 
     }
-    studyNames[1] <- paste("   ", studyNames[1], sep="")
+    # Add space to row 1 for cumulative ma to align study names.
+    if (addRow1Space == TRUE) {
+        studyNames[1] <- paste("   ", studyNames[1], sep="")
+    }
     plot.data <- list( label = c("Studies", studyNames),
                 types = c(3, rep(0, length(studyNames))),
                 scale = scale.str)

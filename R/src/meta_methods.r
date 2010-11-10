@@ -64,7 +64,8 @@ cum.ma.binary <- function(fname, binary.data, params){
     cumDisp <- createOverallDisp(cum.results, studyNames, params)
     cumDisp
     forest.path <- "./r_tmp/cum_forest.png"
-    plotData <- create.plot.data.overall(binary.data, params, cum.results, studyNames)
+    addRow1Space <- TRUE
+    plotData <- create.plot.data.overall(binary.data, params, cum.results, studyNames, addRow1Space)
     forest.plot(plotData, outpath=forest.path)
 
     # Now we package the results in a dictionary (technically, a named 
@@ -136,14 +137,15 @@ loo.ma.binary <- function(fname, binary.data, params){
         loo.results[i,] <- cur.overall
     }
     
-    studyNames <- binary.data@studyNames[1] 
-    for (count in 2:length(binary.data@studyNames)) {
+    studyNames <- NULL 
+    for (count in 1:length(binary.data@studyNames)) {
         studyNames <- c(studyNames, paste("- ",binary.data@studyNames[count], sep=""))
     }
     looDisp <- createOverallDisp(loo.results, studyNames, params)
     looDisp
     forest.path <- "./r_tmp/loo_forest.png"
-    plotData <- create.plot.data.overall(binary.data, params, loo.results, studyNames)
+    addRow1Space <- FALSE
+    plotData <- create.plot.data.overall(binary.data, params, loo.results, studyNames, addRow1Space)
     forest.plot(plotData, outpath=forest.path)
     
 
@@ -246,7 +248,8 @@ cum.ma.continuous <- function(fname, cont.data, params){
     cumDisp <- createOverallDisp(cum.results, studyNames, params)
     cumDisp
     forest.path <- "./r_tmp/cum_forest.png"
-    plotData <- create.plot.data.overall(cont.data, params, cum.results, studyNames)
+    addRow1Space <- TRUE
+    plotData <- create.plot.data.overall(cont.data, params, cum.results, studyNames, addRow1Space)
     forest.plot(plotData, outpath=forest.path)
     
     #
@@ -324,15 +327,16 @@ loo.ma.continuous <- function(fname, cont.data, params){
         loo.results[i,] <- cur.overall
     }
     
-    studyNames <- cont.data@studyNames[1] 
-    for (count in 2:length(cont.data@studyNames)) {
+    studyNames <- NULL
+    for (count in 1:length(cont.data@studyNames)) {
         studyNames <- c(studyNames, paste("- ",cont.data@studyNames[count], sep=""))
     }
     looDisp <- createOverallDisp(loo.results, studyNames, params)
     looDisp
 
     forest.path <- "./r_tmp/loo_forest.png"
-    plotData <- create.plot.data.overall(cont.data, params, loo.results, studyNames)
+    addRow1Space <- FALSE
+    plotData <- create.plot.data.overall(cont.data, params, loo.results, studyNames, addRow1Space)
     forest.plot(plotData, outpath=forest.path)
     
     #
