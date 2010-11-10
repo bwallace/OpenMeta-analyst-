@@ -14,7 +14,7 @@ library(metafor)
 # params <- list(measure="MD", conf.level=95, digits=3)
 
 compute.for.one.cont.study <- function(contData, params){
-    res <- escalc(params$metric, 
+    res <- escalc(params$measure, 
                   n1i=contData@N1, m1i=contData@mean1, sd1i=contData@sd1,
                   n2i=contData@N2, m2i=contData@mean2, sd2i=contData@sd2)
                   
@@ -108,7 +108,7 @@ continuous.random <- function(contData, params){
             # (mapping titles to pretty-printed text). In this case we have only one 
             # of each. 
             #     
-            images <- c("Forest Plot"=forest.path)
+            images <- c("Forest Plot"=forest_path)
             plot.names <- c("forest plot"="forest_plot")
             results <- list("images"=images, "Summary"=summaryDisp, "plot.names"=plot.names)
         }
