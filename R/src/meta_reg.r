@@ -41,7 +41,7 @@ binary.meta.regression <- function(binary.data, params, cov.name){
                                   regline = TRUE)   
     images <- c("Regression Plot"=plot.path)
     plot.names <- c("forest plot"="reg.plot")
-    results <- list("images"=images, "Summary"=regDisp, "plot_names"=plot.names)
+    results <- list("images"=images, "Regression Summary"=regDisp, "plot_names"=plot.names)
     results
 }
 

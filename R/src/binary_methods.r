@@ -122,8 +122,6 @@ print.summaryDisplay <- function(results,...) {
 
 print.regDisplay <- function(regDisp, ...) {
      # Prints regression statistics
-     cat(regDisp$regData$Title)
-        cat("\n")
      print(regDisp$regData$regTable)
 }
 
@@ -269,7 +267,7 @@ createRegressionDisp <- function(res, params) {
     regArr <- array(c("", "Intercept", "Slope", "Estimates", coeffs[1], coeffs[2], "p-Values", pvals[1], pvals[2],
                       "Lower bounds", lbs[1], lbs[2], "Upper bounds", ubs[1], ubs[2]), dim=c(3, 5))
     class(regArr) <- "Table"
-    regData <- list("Title" = "Regression Statistics", "regTable" = regArr)
+    regData <- list("Title" = "", "regTable" = regArr)
     regDisp <- list("regData" = regData)
     class(regDisp) <-  "regDisplay"                
     return(regDisp)

@@ -77,7 +77,7 @@ cum.ma.binary <- function(fname, binary.data, params){
     images <- c("Cumulative Forest Plot"=forest.path)
     plot.names <- c("cumulative forest plot"="cumulative_forest_plot")
     
-    results <- list("images"=images, "Summary"=cumDisp, "plot_names"=plot.names)
+    results <- list("images"=images, "Cumulative Summary"=cumDisp, "plot_names"=plot.names)
     results
 }
 
@@ -160,7 +160,7 @@ loo.ma.binary <- function(fname, binary.data, params){
     images <- c("Leave-one-out Forest plot"=forest.path)
     plot.names <- c("loo forest plot"="loo_forest_plot")
     #loo.results <- print.Table(LOO.display.frame(extractDataLOO(loo.results, params)))
-    results <- list("images"=images, "loo_results"=looDisp, "plot_names"=plot.names)
+    results <- list("images"=images, "Leave-one-out Summary"=looDisp, "plot_names"=plot.names)
 
     results
 }
@@ -262,7 +262,7 @@ cum.ma.continuous <- function(fname, cont.data, params){
     images <- c("Cumulative Forest Plot"=forest.path)
     plot.names <- c("cumulative forest plot"="cumulative forest_plot")
     
-    results <- list("images"=images, "Summary"=cumDisp, "plot_names"=plot.names)
+    results <- list("images"=images, "Cumulative Summary"=cumDisp, "plot_names"=plot.names)
     results
 }
 
@@ -349,6 +349,6 @@ loo.ma.continuous <- function(fname, cont.data, params){
     images <- c("Leave-one-out Forest plot"=forest.path)
     plot.names <- c("loo forest plot"="loo_forest_plot")
     
-    results <- list("images"=images, "Summary"=looDisp, "plot_names"=plot.names)
+    results <- list("images"=images, "Leave-one-out Summary"=looDisp, "plot_names"=plot.names)
     results
 }
