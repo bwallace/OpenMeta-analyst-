@@ -90,7 +90,7 @@ create.plot.data.binary <- function(binary.data, params, res, selected.cov = NUL
                                     paste(sum(binary.data@g1O1), " / ", sum(binary.data@g1O1 + binary.data@g1O2), sep = ""))
     }
     
-    if ((length(binary.data@g2O1) > 0) && (params$fp_col4_str=="TRUE")){
+    if ((length(binary.data@g2O1) > 0) && (params$fp_show_col4=="TRUE")){
         plot.data$additional.col.data$controls = c(paste(params$fp_col4_str, sep = ""),
                                         paste(binary.data@g2O1, " / ", binary.data@g1O1 + binary.data@g2O2, sep = ""),
                                         paste(sum(binary.data@g2O1), " / ", sum(binary.data@g1O1 + binary.data@g2O2), sep = ""))
