@@ -65,7 +65,7 @@ cum.ma.binary <- function(fname, binary.data, params){
     cumDisp
     forest.path <- "./r_tmp/cum_forest.png"
     addRow1Space <- TRUE
-    plotData <- create.plot.data.overall(binary.data, params, cum.results, studyNames, addRow1Space)
+    plotData <- create.plot.data.overall(params, cum.results, studyNames, addRow1Space)
     forest.plot(plotData, outpath=forest.path)
 
     # Now we package the results in a dictionary (technically, a named 
@@ -145,7 +145,7 @@ loo.ma.binary <- function(fname, binary.data, params){
     looDisp
     forest.path <- "./r_tmp/loo_forest.png"
     addRow1Space <- FALSE
-    plotData <- create.plot.data.overall(binary.data, params, loo.results, studyNames, addRow1Space)
+    plotData <- create.plot.data.overall(params, loo.results, studyNames, addRow1Space)
     forest.plot(plotData, outpath=forest.path)
     
 
@@ -249,7 +249,7 @@ cum.ma.continuous <- function(fname, cont.data, params){
     cumDisp
     forest.path <- "./r_tmp/cum_forest.png"
     addRow1Space <- TRUE
-    plotData <- create.plot.data.overall(cont.data, params, cum.results, studyNames, addRow1Space)
+    plotData <- create.plot.data.overall(params, cum.results, studyNames, addRow1Space)
     forest.plot(plotData, outpath=forest.path)
     
     #
@@ -336,7 +336,7 @@ loo.ma.continuous <- function(fname, cont.data, params){
 
     forest.path <- "./r_tmp/loo_forest.png"
     addRow1Space <- FALSE
-    plotData <- create.plot.data.overall(cont.data, params, loo.results, studyNames, addRow1Space)
+    plotData <- create.plot.data.overall(params, loo.results, studyNames, addRow1Space)
     forest.plot(plotData, outpath=forest.path)
     
     #

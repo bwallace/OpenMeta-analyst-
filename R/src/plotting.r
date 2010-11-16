@@ -107,7 +107,7 @@ create.plot.data.continuous <- function(cont.data, params, res, selected.cov = N
     plot.data
 }
 
-create.plot.data.overall <- function(binary.data, params, res, studyNames, addRow1Space, selected.cov=NULL){
+create.plot.data.overall <- function(params, res, studyNames, addRow1Space, selected.cov=NULL){
     scale.str <- "cont"
     if (metric.is.log.scale(params$measure)){
         scale.str <- "log" 
@@ -126,12 +126,17 @@ create.plot.data.overall <- function(binary.data, params, res, studyNames, addRo
     y.rounded <- round(y, digits = params$digits)
     lb.rounded <- round(lb, digits = params$digits)
     ub.rounded <- round(ub, digits = params$digits)
-       
-    additional.cols <- list(es = c("ES (LL, UL)", 
-                            paste(y.rounded, " (", lb.rounded, " , ", ub.rounded, ")", 
-                            sep = "")))
+    
+    if (params$fp_show_col2=='TRUE') {
+        additional.cols <- list(es = c(paste(params$fp_col2_str, sep = ""),
+                                 paste(y.rounded, " (", lb.rounded, " , ", ub.rounded, ")", sep = "")))
+        plot.data$additional.col.data <- additional.cols 
+    }      
+    #additional.cols <- list(es = c("ES (LL, UL)", 
+    #                        paste(y.rounded, " (", lb.rounded, " , ", ub.rounded, ")", 
+    #                        sep = "")))
                                
-    plot.data$additional.col.data <- additional.cols               
+    #plot.data$additional.col.data <- additional.cols               
     effects <- list(ES = y,
                     LL = lb,
                     UL = ub)
