@@ -1,8 +1,0 @@
-# This is a Pfaide project ignore file.
-# Ignored files do not show up in Project Explorer, search results,
-# location bar, etc. (effectively in anything the IDE does with the project files.) 
-.hg
-.svn
-.git
-.cvs
-*.pyc
