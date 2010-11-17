@@ -8,10 +8,10 @@
 ####################################
 
 
-#bd <- new('BinaryData', g1O1=c(30, 20, 10), g1O2=c(270, 180, 90), g2O1=c(35, 25, 15), g2O2=c(265, 175, 85), y=c(0.62962962963, 0.777777777778, 0.84126984127), SE=c(0.432831413165, 0.343592092809, 0.290047070662), studyNames=c('lau', 'wallace', 'trik'), covariates=list(hi=c(1,2,3)))
+#bd <- new('BinaryData', g1O1=c(30, 20, 10), g1O2=c(270, 180, 90), g2O1=c(35, 25, 15), g2O2=c(265, 175, 85), y=c(0.62962962963, 0.777777777778, 0.84126984127), SE=c(0.432831413165, 0.343592092809, 0.290047070662), study.names=c('lau', 'wallace', 'trik'), covariates=list(hi=c(1,2,3)))
 
 
-# bd <- new("BinaryData", g1O1=c(10, 20, 30), g1O2=c(90, 180, 270), g2O1=c(15, 25, 35), g2O2=c(85, 175, 265),                       studyNames=c("1", "2", "3")
+# bd <- new("BinaryData", g1O1=c(10, 20, 30), g1O2=c(90, 180, 270), g2O1=c(15, 25, 35), g2O2=c(85, 175, 265),                       study.names=c("1", "2", "3")
 # params <- list(measure="OR", conf.level=95, digits=3)
 
 library(metafor)
@@ -47,19 +47,19 @@ binary.transform.f <- function(metric.str){
     list(display.scale = display.scale, calc.scale = calc.scale)
 }
 
-get.res.for.one.binary.study <- function(binaryData, params){
+get.res.for.one.binary.study <- function(binary.data, params){
     # this method can be called when there is only one study to 
     # get the point estimate and lower/upper bounds.
     y<-NULL
     se<-NULL
-    if (is.na(binaryData@y)){
-        res <- compute.for.one.bin.study(binaryData, params)    
+    if (is.na(binary.data@y)){
+        res <- compute.for.one.bin.study(binary.data, params)    
         y <- res$yi[1]
         se <- sqrt(res$vi[1])
     }
     else{
-        y <- binaryData@y[1]
-        se <- binaryData@SE[1]
+        y <- binary.data@y[1]
+        se <- binary.data@SE[1]
     }
     # note: conf.level is given as, e.g., 95, rather than .95.
     alpha <- 1.0-(params$conf.level/100.0)
@@ -71,284 +71,56 @@ get.res.for.one.binary.study <- function(binaryData, params){
     res
 }
 
-extractData <- function(binaryData, params){
-    # Extracts data from binaryData into an array and computes bounds on confidence intervals.
+extract.data <- function(binary.data, params){
+    # Extracts data from binary.data into an array and computes bounds on confidence intervals.
     # Compute bounds on confidence intervals.
     alpha <- 1.0-(params$conf.level/100.0)
     mult <- abs(qnorm(alpha/2.0))
-    LL <- round(exp(binaryData@y - mult*binaryData@SE), digits = params$digits)
-    UL <- round(exp(binaryData@y + mult*binaryData@SE), digits = params$digits)
-    # Extract the data from binaryData and round
-    eventT <- round(binaryData@g1O1, digits = params$digits)
-    subjectT <- round(binaryData@g1O1 + binaryData@g1O2, digits = params$digits)
-    eventC <- round(binaryData@g2O1, digits = params$digits)
-    subjectC <- round(binaryData@g2O1 + binaryData@g2O2, digits = params$digits)
-    y <- round(binaryData@y, digits = params$digits) 
-    rawData <- array(c("Study", binaryData@studyNames, "Events (T)", eventT, "Subjects (T)", subjectT, "Events (C)", eventC, 
+    LL <- round(exp(binary.data@y - mult*binary.data@SE), digits = params$digits)
+    UL <- round(exp(binary.data@y + mult*binary.data@SE), digits = params$digits)
+    # Extract the data from binary.data and round
+    eventT <- round(binary.data@g1O1, digits = params$digits)
+    subjectT <- round(binary.data@g1O1 + binary.data@g1O2, digits = params$digits)
+    eventC <- round(binary.data@g2O1, digits = params$digits)
+    subjectC <- round(binary.data@g2O1 + binary.data@g2O2, digits = params$digits)
+    y <- round(binary.data@y, digits = params$digits) 
+    raw.data <- array(c("Study", binary.data@study.names, "Events (T)", eventT, "Subjects (T)", subjectT, "Events (C)", eventC, 
                     "Subjects (C)", subjectC, "Effect size", y, "Lower bound", LL, "Upper bound", UL), 
-                    dim=c(length(binaryData@studyNames) + 1, 8))
-    class(rawData) <- "Table" 
-    return(rawData)
-}
-
-print.summaryDisplay <- function(results,...) {
-    # Prints results summary
-    cat(results$modelTitle)
-    cat("\n\n")
-    if (!is.na(results$hetTestData$Title)) {
-        cat(results$hetTestData$Title)
-        cat("\n")
-        print(results$hetTestData$hetTable)
-        cat("\n")
-    }                   
-    if (!is.na(results$resultData$Title)) {
-        cat(results$resultData$Title)
-        cat("\n")
-        print(results$resultData$resultTable)
-        cat("\n")
-    }
-    if (!is.na(results$altData$Title)) {
-        cat(results$altData$Title)
-        cat("\n")
-        print(results$altData$altTable)
-    }
-  
-    #if (length(binaryData@g1O1) > 0) {
-    #    rawData<-extractData(binaryData, params)
-    #    cat("  Data\n")
-    #    print(rawData)
-    #}
-}
-
-print.regDisplay <- function(regDisp, ...) {
-     # Prints regression statistics
-     print(regDisp$regData$regTable)
-}
-
-print.cumDisplay <- function(cumDisp, ...) {
-    # Prints cumulative analysis results summary
-    print(cumDisp$cumData$cumTable)
-}
-
-# This function is unnecessary, since we're now creating arrays within the
-# display structures.
-list2Array <- function(dataList) {
-    # Accepts a named list dataList and converts it to an array in which 
-    # first row is the names and all subsequent rows are the values. Assumes that
-    # all values are vectors of the same length.
-    # dataList$Labels and dataList$Labels must have the same length.
-    if (length(dataList$Labels) == length(dataList$Values[1,])) {
-      listVals <- dataList$Values
-      numValRows <- length(listVals[,1])
-      numCols <- length(listVals[1,])
-      arr <- array(dim=c(numValRows + 1,numCols))
-      arr[1,] <- dataList$Labels
-      for (count in 1:numValRows) {
-          arr[count+1,] <- listVals[count,]
-      }
-      class(arr) <- "Table"
-    }
-    else {
-        arr = "Labels list and values list have different lengths."
-    }
-    return(arr)
-}
-
-print.Table <- function(tableData) {
-    # Prints an array tableData with lines separating rows and columns.
-    #rowLength <- 1
-    numRows <- length(tableData[,1])
-    numCols <- length(tableData[1,])
-    # Compute column widths
-    colWidths <- NULL
-    for (colIndex in 1:numCols) {
-      colWidths <- c(colWidths, max(nchar(tableData[,colIndex])) + 4)
-    }
-    tableWidth <- sum(colWidths) + numCols + 1 
-    # Create line of dashes of length tableWidth - 2
-    dashLine <- NULL
-    for (count in 1:(tableWidth - 2)) {
-        dashLine <- paste(dashLine, "-", sep="")
-    }
-    topLine <- paste("+", dashLine, "+", sep="")
-    middleLine <- paste("|", dashLine, "|", sep="")
-      
-    # Build table
-    cat(topLine)
-    cat("\n")
-    for (rowIndex in 1:numRows) {
-        tableRow <- "|"
-        for (colIndex in 1:numCols) {
-            colWidth <- colWidths[colIndex]
-            entry <- padEntry(tableData[rowIndex,colIndex], colWidth)
-            tableRow <- paste(tableRow, entry, "|", sep="")
-        }
-        cat(tableRow)
-        cat("\n")
-        if (rowIndex < numRows) {
-            cat(middleLine) 
-            cat("\n")
-        } 
-    } 
-    cat(topLine)
-    cat("\n")
-}    
-
-padEntry <- function(entry, colWidth) {
-    # Adds spaces to entry so that it will be centered in a column of width colWidth.
-    # Pad a table entry with zeros
-    for (i in 1:floor((colWidth - nchar(entry))/2)) {
-        entry <- paste(" ", entry, sep="")
-    }
-    for (i in 1:ceiling(colWidth - nchar(entry))/2) {
-        entry <- paste(entry, " ", sep="")
-    }
-    return(entry)
-}
-
-roundedDisplay <- function(x, digits) {
-    # Prints "< 10^(-digits)" if x is < 10^(-digits) or "x" otherwise
-    xDisp <- round(x, digits)
-    for (count in 1:length(x)) {
-        if (abs(xDisp[count]) < 10^(-digits)) {
-          xDisp[count] <- paste("< ", 10^(-digits), sep = "", collapse = "")
-        }
-    }
-    return(xDisp)
-} 
-
-roundWithZeros <- function(x, digits) {
-    # Rounds a number according to digits and pads  with zeros at the end, if necessary, 
-    # so that there are digits symbols after the decimal point.
-    y <- NULL
-    for (i in 1:length(x)) {
-      xRounded <- round(x[i], digits = digits)
-      numZeros <- NULL
-      if (floor(x[i]) == x[i]) {
-        # x is an integer
-        if (digits > 0) {
-          xRounded <- paste(xRounded, ".", sep="")
-          for (count in 1:digits) {
-            xRounded <- paste(xRounded, "0", sep="")
-          }
-        }
-      }
-      else {  
-        pow <- 10**digits * xRounded
-        # Calculate how many zeros should be added on the right.
-        while (floor(pow) == pow) {
-          pow <- pow/10;
-          if (floor(pow) == pow) {
-            xRounded <- paste(xRounded, "0", sep="")
-          }
-        }
-      }
-      y <- c(y, toString(xRounded))
-    }
-    return(y)
-}
-
-createSummaryDisp <- function(res, params, degf, modelTitle) {
-    QLabel =  paste("Q(df = ", degf, ")", sep="")
-    I2 <- max(0, (res$QE - degf)/res$QE)
-    I2 <- paste(100 * round(I2, digits = 2), "%")
-    QE <- round(res$QE, digits=params$digits)
-    QEp <- roundedDisplay(res$QEp, digits=params$digits)
-    hetArr <-  array(c(QLabel, QE, "p-Value", QEp, "I^2", I2), dim=c(2,3))
-    class(hetArr) <- "Table"
-    hetTestData <- list("Title" = "  Test for Heterogeneity", "hetTable" = hetArr)
-    estDisp <- round(binary.transform.f(params$measure)$display.scale(res$b), digits=params$digits) 
-    lbDisp <- round(binary.transform.f(params$measure)$display.scale(res$ci.lb), digits=params$digits)
-    ubDisp <- round(binary.transform.f(params$measure)$display.scale(res$ci.ub), digits=params$digits)
-    
-    pVal <- roundedDisplay(res$pval, digits=params$digits)
-    zVal <- round(res$zval, digits=params$digits)
-    se <- round(res$se, digits=params$digits)
-    
-    if (binary.transform.f(params$measure)$display.scale(1)!= binary.transform.f(params$measure)$calc.scale(1)) { 
-         resArr <- array(c("Estimate", estDisp, "p-Value", pVal, "Z-Value", zVal, "Lower bound", lbDisp,
-                                        "Upper bound", ubDisp), dim=c(2,5))
-         #class(resArr) <- "Table"   
-         #resultData <- list("Title" = "  Model Results (reporting scale)", "resultTable" = resArr)
-         estCalc <- round(res$b, digits=params$digits) 
-         lbCalc <- round(res$ci.lb, digits=params$digits)
-         ubCalc <- round(res$ci.ub, digits=params$digits)
-         altArr <- array(c("Estimate", estCalc, "SE", se, "Lower bound", lbCalc, "Upper bound", ubCalc), dim=c(2,4))
-         class(altArr) <- "Table"
-         altData <- list("Title" = "  Model Results (calculation scale)", "altTable" = altArr)        
-    }    
-     
-    else {
-        resArr <- array(c("Estimate", estDisp, "SE", se, "p-Value", pVal, "Z-Value", zVal, "Lower bound", lbDisp,
-                                        "Upper bound", ubDisp), dim=c(2,6))
-        
-        altData <- list("Title" = NA)
-    }
-    class(resArr) <- "Table"                                
-    resultData <- list("Title" = "  Model Results (reporting scale)", "resultTable" = resArr)
-    summaryDisp <- list("modelTitle" = modelTitle, "hetTestData" = hetTestData, "resultData" = resultData,
-                        "altData" = altData, "rawResults" = res)
-    class(summaryDisp) <- "summaryDisplay"                     
-    return(summaryDisp)
-}
-
-createRegressionDisp <- function(res, params) {
-    coeffs <- round(res$b, digits=params$digits)
-    pvals <- roundedDisplay(res$pval, digits=params$digits)
-    lbs <- round(res$ci.lb, digits=params$digits)
-    ubs <- round(res$ci.ub, digits=params$digits)
-    regArr <- array(c("", "Intercept", "Slope", "Estimates", coeffs[1], coeffs[2], "p-Values", pvals[1], pvals[2],
-                      "Lower bounds", lbs[1], lbs[2], "Upper bounds", ubs[1], ubs[2]), dim=c(3, 5))
-    class(regArr) <- "Table"
-    regData <- list("Title" = "", "regTable" = regArr)
-    regDisp <- list("regData" = regData)
-    class(regDisp) <-  "regDisplay"                
-    return(regDisp)
-}
-
-createOverallDisp <- function(res, studyNames, params) {
-    res
-    params$digits
-    res <- round(res, digits = params$digits)
-    cumArr <- array(c("", studyNames, "Estimates", res[,1], "Lower bounds", res[,2],"Upper bounds", res[,3]),
-                    dim=c(length(studyNames) + 1, 4))
-    class(cumArr) <- "Table"
-    cumData <- list("Title" = "", "cumTable" = cumArr)  
-    cumDisp <- list("cumData" = cumData)
-    class(cumDisp) <- "cumDisplay"
-    return(cumDisp)
+                    dim=c(length(binary.data@study.names) + 1, 8))
+    class(raw.data) <- "Table" 
+    return(raw.data)
 }
 
 ###################################################
 # binary fixed effects -- inverse variance        #
 ###################################################
-binary.fixed.inv.var <- function(binaryData, params){
+binary.fixed.inv.var <- function(binary.data, params){
     # assert that the argument is the correct type
-    if (!("BinaryData" %in% class(binaryData))) stop("Binary data expected.")  
+    if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")  
     
     results <- NULL
-    if (length(binaryData@g1O1) == 1 || length(binaryData@y) == 1){
-        res <- get.res.for.one.binary.study(binaryData, params)
+    if (length(binary.data@g1O1) == 1 || length(binary.data@y) == 1){
+        res <- get.res.for.one.binary.study(binary.data, params)
         # Package res for use by overall method.
         Res <- list("rawResults" = res) 
         results <- list("Summary"=Res)
     }
     else{
         # call out to the metafor package
-        res<-rma.uni(yi=binaryData@y, sei=binaryData@SE, slab=binaryData@studyNames,
+        res<-rma.uni(yi=binary.data@y, sei=binary.data@SE, slab=binary.data@study.names,
                                 level=params$conf.level, digits=params$digits, method="FE", add=params$adjust,
                                 to=params$to)
         # Create list to display summary of results
         degf <- res$k - res$p
-        modelTitle <- paste("Fixed-Effects Model - Inverse Variance (k = ", res$k, ")", sep="")
-        summaryDisp <- createSummaryDisp(res, params, degf, modelTitle)
-        summaryDisp
+        model.title <- paste("Fixed-Effects Model - Inverse Variance (k = ", res$k, ")", sep="")
+        summary.disp <- create.summary.disp(res, params, degf, model.title)
+        summary.disp
 
-        results <- list("Summary"=summaryDisp, "images"=c())
-        if ((is.null(params$createPlot)) || params$createPlot) {
+        results <- list("Summary"=summary.disp, "images"=c())
+        if ((is.null(params$create.plot)) || params$create.plot == TRUE) {
             forest.path <- paste(params$fp_outpath, sep="")
-            plotData <- create.plot.data.binary(binaryData, params, res)
-            forest.plot(plotData, outpath=forest.path)
+            plot.data <- create.plot.data.binary(binary.data, params, res)
+            forest.plot(plot.data, outpath=forest.path)
             #
             # Now we package the results in a dictionary (technically, a named 
             # vector). In particular, there are two fields that must be returned; 
@@ -358,11 +130,11 @@ binary.fixed.inv.var <- function(binaryData, params){
             #  
             images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
-            results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot.names)
+            results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
 
         }
         else {
-            results <- list("Summary"=summaryDisp)
+            results <- list("Summary"=summary.disp)
         }    
     }
     results
@@ -394,35 +166,35 @@ binary.fixed.inv.var.overall <- function(results) {
 ############################################
 #  binary fixed effects -- mantel haenszel #
 ############################################
-binary.fixed.mh <- function(binaryData, params){
+binary.fixed.mh <- function(binary.data, params){
     # assert that the argument is the correct type
-    if (!("BinaryData" %in% class(binaryData))) stop("Binary data expected.")  
+    if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")  
 
     results <- NULL
-    if (length(binaryData@g1O1) == 1 || length(binaryData@y) == 1){
-        res <- get.res.for.one.binary.study(binaryData, params)
+    if (length(binary.data@g1O1) == 1 || length(binary.data@y) == 1){
+        res <- get.res.for.one.binary.study(binary.data, params)
          # Package res for use by overall method.
         Res <- list("rawResults" = res) 
         results <- list("Summary"=Res)
     }
     else{
-        res<-rma.mh(ai=binaryData@g1O1, bi=binaryData@g1O2, 
-                                ci=binaryData@g2O1, di=binaryData@g2O2, slab=binaryData@studyNames,
+        res<-rma.mh(ai=binary.data@g1O1, bi=binary.data@g1O2, 
+                                ci=binary.data@g2O1, di=binary.data@g2O2, slab=binary.data@study.names,
                                 level=params$conf.level, digits=params$digits, measure=params$measure) 
         #                        
         # Create list to display summary of results
         #
         degf <- res$k.yi - 1
-        modelTitle <- paste("Fixed-Effects Model - Mantel Haenszel (k = ", res$k, ")", sep="")
-        summaryDisp <- createSummaryDisp(res, params, degf, modelTitle)
-        summaryDisp                                                                               
+        model.title <- paste("Fixed-Effects Model - Mantel Haenszel (k = ", res$k, ")", sep="")
+        summary.disp <- create.summary.disp(res, params, degf, model.title)
+        summary.disp                                                                               
         #
         # generate forest plot 
         #
-        if ((is.null(params$createPlot)) || (params$createPlot == TRUE)) {
+        if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
             forest.path <- paste(params$fp_outpath, sep="")
-            plotData <- create.plot.data.binary(binaryData, params, res)
-            forest.plot(plotData, outpath=forest.path)
+            plot.data <- create.plot.data.binary(binary.data, params, res)
+            forest.plot(plot.data, outpath=forest.path)
     
         #
         # Now we package the results in a dictionary (technically, a named 
@@ -433,10 +205,10 @@ binary.fixed.mh <- function(binaryData, params){
         #     
             images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
-            results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot.names)
+            results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
         }
         else {
-            results <- list("Summary"=summaryDisp)
+            results <- list("Summary"=summary.disp)
         }    
     }
     results
@@ -459,12 +231,12 @@ binary.fixed.mh.parameters <- function(){
     parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
 }
 
-binary.fixed.mh.is.feasible <- function(binaryData){
+binary.fixed.mh.is.feasible <- function(binary.data){
     # only feasible if we have raw (2x2) data for all studies
-    length(binaryData@g1O1)==length(binaryData@g1O2) &&
-    length(binaryData@g1O2)==length(binaryData@g2O1) &&
-    length(binaryData@g2O1)==length(binaryData@g2O2) &&
-         length(binaryData@g1O1) > 0
+    length(binary.data@g1O1)==length(binary.data@g1O2) &&
+    length(binary.data@g1O2)==length(binary.data@g2O1) &&
+    length(binary.data@g2O1)==length(binary.data@g2O2) &&
+         length(binary.data@g1O1) > 0
 }
 
 binary.fixed.mh.overall <- function(results) {
@@ -477,34 +249,34 @@ binary.fixed.mh.overall <- function(results) {
 ##################################################
 #       binary fixed effects -- Peto             #
 ##################################################
-binary.fixed.peto <- function(binaryData, params){
+binary.fixed.peto <- function(binary.data, params){
     # assert that the argument is the correct type
-    if (!("BinaryData" %in% class(binaryData))) stop("Binary data expected.")  
+    if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")  
 
-    if (length(binaryData@g1O1) == 1){
-        res <- get.res.for.one.binary.study(binaryData, params)
+    if (length(binary.data@g1O1) == 1){
+        res <- get.res.for.one.binary.study(binary.data, params)
          # Package res for use by overall method.
         Res <- list("rawResults" = res) 
         results <- list("Summary"=Res)
     }
     else{  
-        res <- rma.peto(ai=binaryData@g1O1, bi=binaryData@g1O2, 
-                                ci=binaryData@g2O1, di=binaryData@g2O2, slab=binaryData@studyNames,
+        res <- rma.peto(ai=binary.data@g1O1, bi=binary.data@g1O2, 
+                                ci=binary.data@g2O1, di=binary.data@g2O2, slab=binary.data@study.names,
                                 level=params$conf.level, digits=params$digits)              
         #                        
         # Create list to display summary of results
         #
         degf <- res$k.yi - 1
-        modelTitle <- paste("Fixed-Effects Model - Peto (k = ", res$k, ")", sep="")
-        summaryDisp <- createSummaryDisp(res, params, degf, modelTitle)
-        summaryDisp                                                 
+        model.title <- paste("Fixed-Effects Model - Peto (k = ", res$k, ")", sep="")
+        summary.disp <- create.summary.disp(res, params, degf, model.title)
+        summary.disp                                                 
         #
         # generate forest plot 
         #
-        if ((is.null(params$createPlot)) || (params$createPlot == TRUE)) {
+        if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
             forest.path <- paste(params$fp_outpath, sep="")
-            plotData <- create.plot.data.binary(binaryData, params, res)
-            forest.plot(plotData, outpath=forest.path)
+            plot.data <- create.plot.data.binary(binary.data, params, res)
+            forest.plot(plot.data, outpath=forest.path)
     
         #
         # Now we package the results in a dictionary (technically, a named 
@@ -515,10 +287,10 @@ binary.fixed.peto <- function(binaryData, params){
         #     
             images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
-            results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot.names)
+            results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
         }
         else {
-            results <- list("Summary"=summaryDisp)
+            results <- list("Summary"=summary.disp)
         }    
     }
     results
@@ -540,12 +312,12 @@ binary.fixed.peto.parameters <- function(){
     parameters <- list("parameters"=params, "defaults"=defaults,  "var_order"=var_order)
 }
 
-binary.fixed.peto.is.feasible <- function(binaryData){
+binary.fixed.peto.is.feasible <- function(binary.data){
     # only feasible if we have raw (2x2) data for all studies
-    length(binaryData@g1O1)==length(binaryData@g1O2) &&
-    length(binaryData@g1O2)==length(binaryData@g2O1) &&
-    length(binaryData@g2O1)==length(binaryData@g2O2) &&
-         length(binaryData@g1O1) > 0
+    length(binary.data@g1O1)==length(binary.data@g1O2) &&
+    length(binary.data@g1O2)==length(binary.data@g2O1) &&
+    length(binary.data@g2O1)==length(binary.data@g2O2) &&
+         length(binary.data@g1O1) > 0
 }
 
 binary.fixed.peto.overall <- function(results) {
@@ -559,28 +331,28 @@ binary.fixed.peto.overall <- function(results) {
 ##################################
 #  binary random effects         #
 ##################################
-binary.random <- function(binaryData, params){
+binary.random <- function(binary.data, params){
     # assert that the argument is the correct type
-    if (!("BinaryData" %in% class(binaryData))) stop("Binary data expected.")
+    if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
     
     results <- NULL
-    if (length(binaryData@g1O1) == 1 || length(binaryData@y) == 1){
-        res <- get.res.for.one.binary.study(binaryData, params)
+    if (length(binary.data@g1O1) == 1 || length(binary.data@y) == 1){
+        res <- get.res.for.one.binary.study(binary.data, params)
          # Package res for use by overall method.
         Res <- list("rawResults" = res) 
         results <- list("Summary"=Res)
     }
     else{     
         # call out to the metafor package
-        if (length(binaryData@g1O1) > 0) {
-            res<-rma.uni(ai=binaryData@g1O1, bi=binaryData@g1O2, 
-                                        ci=binaryData@g2O1, di=binaryData@g2O2, slab=binaryData@studyNames,
+        if (length(binary.data@g1O1) > 0) {
+            res<-rma.uni(ai=binary.data@g1O1, bi=binary.data@g1O2, 
+                                        ci=binary.data@g2O1, di=binary.data@g2O2, slab=binary.data@study.names,
                                         method=params$rm.method, measure=params$measure,
                                         level=params$conf.level, digits=params$digits)
         }
         else{
-           res<-rma.uni(yi=binaryData@y, sei=binaryData@SE, 
-                                        slab=binaryData@studyNames,
+           res<-rma.uni(yi=binary.data@y, sei=binary.data@SE, 
+                                        slab=binary.data@study.names,
                                         method=params$rm.method, level=params$conf.level,
                                         digits=params$digits)
         }
@@ -588,16 +360,16 @@ binary.random <- function(binaryData, params){
         # Create list to display summary of results
         #
         degf <- res$k.yi - 1
-        modelTitle <- paste("Binary Random-Effects Model (k = ", res$k, ")", sep="")
-        summaryDisp <- createSummaryDisp(res, params, degf, modelTitle)
-        summaryDisp       
+        model.title <- paste("Binary Random-Effects Model (k = ", res$k, ")", sep="")
+        summary.disp <- create.summary.disp(res, params, degf, model.title)
+        summary.disp       
         #
         # generate forest plot 
         #
-        if ((is.null(params$createPlot)) || (params$createPlot == TRUE)) {
+        if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
             forest.path <- paste(params$fp_outpath, sep="")
-            plotData <- create.plot.data.binary(binaryData, params, res)
-            forest.plot(plotData, outpath=forest.path)
+            plot.data <- create.plot.data.binary(binary.data, params, res)
+            forest.plot(plot.data, outpath=forest.path)
         
         #
         # Now we package the results in a dictionary (technically, a named 
@@ -608,10 +380,10 @@ binary.random <- function(binaryData, params){
         #     
             images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
-            results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot.names)
+            results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
         }
         else {
-            results <- list("Summary"=summaryDisp)
+            results <- list("Summary"=summary.disp)
         }    
     }
     results

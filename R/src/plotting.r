@@ -31,8 +31,8 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     ## TODO note that we're forcing the 'cont' scale -- thus
     # it's assumed everything is on the raw scale. may want to change
     # this.
-    plot.data <- list(label = c(paste(params$fp_col1_str, sep = ""), om.data@studyNames, "Overall"),
-                    types = c(3, rep(0, length(om.data@studyNames)), 2),
+    plot.data <- list(label = c(paste(params$fp_col1_str, sep = ""), om.data@study.names, "Overall"),
+                    types = c(3, rep(0, length(om.data@study.names)), 2),
                     scale = scale.str)
     alpha <- 1.0-(params$conf.level/100.0)
     mult <- abs(qnorm(alpha/2.0))
@@ -50,12 +50,12 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     lb.overall <- binary.transform.f(params$measure)$display.scale(res$ci.lb[1])
     ub.overall <- binary.transform.f(params$measure)$display.scale(res$ci.ub[1])
     # round results for display.
-    y.rounded <- roundWithZeros(y, params$digits)
-    lb.rounded <- roundWithZeros(lb, params$digits)
-    ub.rounded <- roundWithZeros(ub, params$digits)
-    y.overall.rounded <- roundWithZeros(y.overall, params$digits)
-    lb.overall.rounded <- roundWithZeros(lb.overall, params$digits)
-    ub.overall.rounded <- roundWithZeros(ub.overall, params$digits)
+    y.rounded <- round.with.zeros(y, params$digits)
+    lb.rounded <- round.with.zeros(lb, params$digits)
+    ub.rounded <- round.with.zeros(ub, params$digits)
+    y.overall.rounded <- round.with.zeros(y.overall, params$digits)
+    lb.overall.rounded <- round.with.zeros(lb.overall, params$digits)
+    ub.overall.rounded <- round.with.zeros(ub.overall, params$digits)
     if (params$fp_show_col2=='TRUE') {
         additional.cols <- list(es = c(paste(params$fp_col2_str, sep = ""),
                                  paste(y.rounded, " (", lb.rounded, " , ", ub.rounded, ")", sep = ""),
@@ -110,36 +110,32 @@ create.plot.data.continuous <- function(cont.data, params, res, selected.cov = N
     plot.data
 }
 
-create.plot.data.overall <- function(params, res, studyNames, addRow1Space, selected.cov=NULL){
+create.plot.data.overall <- function(params, res, study.names, addRow1Space, selected.cov=NULL){
     scale.str <- "cont"
     if (metric.is.log.scale(params$measure)){
         scale.str <- "log" 
     }
     # Add space to row 1 for cumulative ma to align study names.
     if (addRow1Space == TRUE) {
-        studyNames[1] <- paste("   ", studyNames[1], sep="")
+        study.names[1] <- paste("   ", study.names[1], sep="")
     }
-    plot.data <- list( label = c("Studies", studyNames),
-                types = c(3, rep(0, length(studyNames))),
+    plot.data <- list( label = c("Studies", study.names),
+                types = c(3, rep(0, length(study.names))),
                 scale = scale.str)
     y <- res[,1]
     lb <- res[,2]
     ub <- res[,3]
     # round results for display.
-    y.rounded <- roundWithZeros(y, params$digits)
-    lb.rounded <- roundWithZeros(lb, params$digits)
-    ub.rounded <- roundWithZeros(ub, params$digits)
+    y.rounded <- round.with.zeros(y, params$digits)
+    lb.rounded <- round.with.zeros(lb, params$digits)
+    ub.rounded <- round.with.zeros(ub, params$digits)
     
     if (params$fp_show_col2=='TRUE') {
         additional.cols <- list(es = c(paste(params$fp_col2_str, sep = ""),
                                  paste(y.rounded, " (", lb.rounded, " , ", ub.rounded, ")", sep = "")))
         plot.data$additional.col.data <- additional.cols 
     }      
-    #additional.cols <- list(es = c("ES (LL, UL)", 
-    #                        paste(y.rounded, " (", lb.rounded, " , ", ub.rounded, ")", 
-    #                        sep = "")))
-                               
-    #plot.data$additional.col.data <- additional.cols               
+      
     effects <- list(ES = y,
                     LL = lb,
                     UL = ub)

@@ -12,11 +12,11 @@ library(metafor)
 binary.meta.regression <- function(binary.data, params, cov.name){
     cov.val.str <- paste("binary.data@covariates$", cov.name, sep="")
     cov.vals <- eval(parse(text=cov.val.str))
-    res<-rma.uni(yi=binary.data@y, sei=binary.data@SE, slab=binary.data@studyNames,
+    res<-rma.uni(yi=binary.data@y, sei=binary.data@SE, slab=binary.data@study.names,
                                 level=params$conf.level, digits=params$digits, method="DL", 
                                 mods=cov.vals)
-    regDisp <- createRegressionDisp(res, params)
-    regDisp
+    reg.disp <- create.regression.disp(res, params)
+    reg.disp
     betas <- res$b
     fitted.line <- list(intercept=betas[1], slope=betas[2])
     params$fp_show_col2 <- FALSE
@@ -41,7 +41,7 @@ binary.meta.regression <- function(binary.data, params, cov.name){
                                   regline = TRUE)   
     images <- c("Regression Plot"=plot.path)
     plot.names <- c("forest plot"="reg.plot")
-    results <- list("images"=images, "Regression Summary"=regDisp, "plot_names"=plot.names)
+    results <- list("images"=images, "Regression Summary"=reg.disp, "plot_names"=plot.names)
     results
 }
 
@@ -50,8 +50,8 @@ binary.meta.regression <- function(binary.data, params, cov.name){
 # and the above (binary.meta.regression) function --
 # should probably refactor
 cont.meta.regression <- function(cont.data, params, cov.name){
-    res<-rma.uni(yi=contData@y, sei=contData@SE, 
-                                        slab=contData@studyNames,
+    res<-rma.uni(yi=cont.data@y, sei=cont.data@SE, 
+                                        slab=cont.data@study.names,
                                         method=params$rm.method, level=params$conf.level,
                                         digits=params$digits)
     

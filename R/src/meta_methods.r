@@ -24,14 +24,14 @@ cum.ma.binary <- function(fname, binary.data, params){
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
     
     # iterate over the binaryData elements, adding one study at a time
-    cum.results <- array(dim=c(length(binary.data@studyNames),3))
-    params$createPlot <- FALSE
-    for (i in 1:length(binary.data@studyNames)){
+    cum.results <- array(dim=c(length(binary.data@study.names),3))
+    params$create.plot <- FALSE
+    for (i in 1:length(binary.data@study.names)){
         # build a BinaryData object including studies
         # 1 through i
         y.tmp <- binary.data@y[1:i]
         SE.tmp <- binary.data@SE[1:i]
-        names.tmp <- binary.data@studyNames[1:i]
+        names.tmp <- binary.data@study.names[1:i]
         bin.data.tmp <- NULL
         if (length(binary.data@g1O1) > 0){
             # if we have group level data for 
@@ -43,10 +43,10 @@ cum.ma.binary <- function(fname, binary.data, params){
             g2O2.tmp <- binary.data@g2O2[1:i]
             bin.data.tmp <- new('BinaryData', g1O1=g1O1.tmp, 
                                g1O2=g1O2.tmp , g2O1=g2O1.tmp, 
-                               g2O2=g2O2.tmp, y=y.tmp, SE=SE.tmp, studyNames=names.tmp)
+                               g2O2=g2O2.tmp, y=y.tmp, SE=SE.tmp, study.names=names.tmp)
         }
         else{
-            bin.data.tmp <- new('BinaryData', y=y.tmp, SE=SE.tmp, studyNames=names.tmp)
+            bin.data.tmp <- new('BinaryData', y=y.tmp, SE=SE.tmp, study.names=names.tmp)
         }
         # call the parametric function by name, passing along the 
         # data and parameters. Notice that this method knows
@@ -57,15 +57,15 @@ cum.ma.binary <- function(fname, binary.data, params){
         cum.results[i,] <- cur.overall
     }
     
-    studyNames <- binary.data@studyNames[1] 
-    for (count in 2:length(binary.data@studyNames)) {
-        studyNames <- c(studyNames, paste("+ ",binary.data@studyNames[count], sep=""))
+    study.names <- binary.data@study.names[1] 
+    for (count in 2:length(binary.data@study.names)) {
+        study.names <- c(study.names, paste("+ ",binary.data@study.names[count], sep=""))
     }
-    cumDisp <- createOverallDisp(cum.results, studyNames, params)
-    cumDisp
+    cum.disp <- create.overall.display(cum.results, study.names, params)
+    cum.disp
     forest.path <- "./r_tmp/cum_forest.png"
     addRow1Space <- TRUE
-    plotData <- create.plot.data.overall(params, cum.results, studyNames, addRow1Space)
+    plotData <- create.plot.data.overall(params, cum.results, study.names, addRow1Space)
     forest.plot(plotData, outpath=forest.path)
 
     # Now we package the results in a dictionary (technically, a named 
@@ -77,7 +77,7 @@ cum.ma.binary <- function(fname, binary.data, params){
     images <- c("Cumulative Forest Plot"=forest.path)
     plot.names <- c("cumulative forest plot"="cumulative_forest_plot")
     
-    results <- list("images"=images, "Cumulative Summary"=cumDisp, "plot_names"=plot.names)
+    results <- list("images"=images, "Cumulative Summary"=cum.disp, "plot_names"=plot.names)
     results
 }
 
@@ -89,9 +89,9 @@ loo.ma.binary <- function(fname, binary.data, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
     
-    loo.results <- array(dim=c(length(binary.data@studyNames),3))
-    params$createPlot <- FALSE
-    N <- length(binary.data@studyNames)
+    loo.results <- array(dim=c(length(binary.data@study.names),3))
+    params$create.plot <- FALSE
+    N <- length(binary.data@study.names)
     for (i in 1:N){
         # get a list of indices, i.e., the subset
         # that is 1:N with i left out
@@ -110,7 +110,7 @@ loo.ma.binary <- function(fname, binary.data, params){
         # ith study removed.  
         y.tmp <- binary.data@y[index.ls]
         SE.tmp <- binary.data@SE[index.ls]
-        names.tmp <- binary.data@studyNames[index.ls]
+        names.tmp <- binary.data@study.names[index.ls]
         bin.data.tmp <- NULL
         
         if (length(binary.data@g1O1) > 0){
@@ -123,10 +123,10 @@ loo.ma.binary <- function(fname, binary.data, params){
             g2O2.tmp <- binary.data@g2O2[index.ls]
             bin.data.tmp <- new('BinaryData', g1O1=g1O1.tmp, 
                                g1O2=g1O2.tmp , g2O1=g2O1.tmp, 
-                               g2O2=g2O2.tmp, y=y.tmp, SE=SE.tmp, studyNames=names.tmp)
+                               g2O2=g2O2.tmp, y=y.tmp, SE=SE.tmp, study.names=names.tmp)
         }
         else{
-            bin.data.tmp <- new('BinaryData', y=y.tmp, SE=SE.tmp, studyNames=names.tmp)
+            bin.data.tmp <- new('BinaryData', y=y.tmp, SE=SE.tmp, study.names=names.tmp)
         }
         # call the parametric function by name, passing along the 
         # data and parameters. Notice that this method knows
@@ -137,15 +137,15 @@ loo.ma.binary <- function(fname, binary.data, params){
         loo.results[i,] <- cur.overall
     }
     
-    studyNames <- NULL 
-    for (count in 1:length(binary.data@studyNames)) {
-        studyNames <- c(studyNames, paste("- ",binary.data@studyNames[count], sep=""))
+    study.names <- NULL 
+    for (count in 1:length(binary.data@study.names)) {
+        study.names <- c(study.names, paste("- ",binary.data@study.names[count], sep=""))
     }
-    looDisp <- createOverallDisp(loo.results, studyNames, params)
-    looDisp
+    loo.disp <- create.overall.display(loo.results, study.names, params)
+    loo.disp
     forest.path <- "./r_tmp/loo_forest.png"
     addRow1Space <- FALSE
-    plotData <- create.plot.data.overall(params, loo.results, studyNames, addRow1Space)
+    plotData <- create.plot.data.overall(params, loo.results, study.names, addRow1Space)
     forest.plot(plotData, outpath=forest.path)
     
 
@@ -160,7 +160,7 @@ loo.ma.binary <- function(fname, binary.data, params){
     images <- c("Leave-one-out Forest plot"=forest.path)
     plot.names <- c("loo forest plot"="loo_forest_plot")
     #loo.results <- print.Table(LOO.display.frame(extractDataLOO(loo.results, params)))
-    results <- list("images"=images, "Leave-one-out Summary"=looDisp, "plot_names"=plot.names)
+    results <- list("images"=images, "Leave-one-out Summary"=loo.disp, "plot_names"=plot.names)
 
     results
 }
@@ -202,14 +202,14 @@ cum.ma.continuous <- function(fname, cont.data, params){
     if (!("ContinuousData" %in% class(cont.data))) stop("Continuous data expected.")
     
     # iterate over the continuousData elements, adding one study at a time
-    cum.results <- array(dim=c(length(cont.data@studyNames),3))
-    params$createPlot <- FALSE
-    for (i in 1:length(cont.data@studyNames)){
+    cum.results <- array(dim=c(length(cont.data@study.names),3))
+    params$create.plot <- FALSE
+    for (i in 1:length(cont.data@study.names)){
         # build a ContinuousData object including studies
         # 1 through i
         y.tmp <- cont.data@y[1:i]
         SE.tmp <- cont.data@SE[1:i]
-        names.tmp <- cont.data@studyNames[1:i]
+        names.tmp <- cont.data@study.names[1:i]
         cont.data.tmp <- NULL
         if (length(cont.data@N1) > 0){
             # if we have group level data for 
@@ -225,12 +225,12 @@ cum.ma.continuous <- function(fname, cont.data, params){
                                N1=N1.tmp, mean1=mean1.tmp , sd1=sd1.tmp, 
                                N2=N2.tmp, mean2=mean2.tmp, sd2=sd2.tmp,
                                y=y.tmp, SE=SE.tmp, 
-                               studyNames=names.tmp)
+                               study.names=names.tmp)
         }
         else{
             cont.data.tmp <- new('ContinuousData', 
                                 y=y.tmp, SE=SE.tmp, 
-                                studyNames=names.tmp)
+                                study.names=names.tmp)
         }
         # call the parametric function by name, passing along the 
         # data and parameters. Notice that this method knows
@@ -241,15 +241,15 @@ cum.ma.continuous <- function(fname, cont.data, params){
         cum.results[i,] <- cur.overall
     }
     
-    studyNames <- cont.data@studyNames[1] 
-    for (count in 2:length(cont.data@studyNames)) {
-        studyNames <- c(studyNames, paste("+ ",cont.data@studyNames[count], sep=""))
+    study.names <- cont.data@study.names[1] 
+    for (count in 2:length(cont.data@study.names)) {
+        study.names <- c(study.names, paste("+ ",cont.data@study.names[count], sep=""))
     }
-    cumDisp <- createOverallDisp(cum.results, studyNames, params)
-    cumDisp
+    cum.disp <- create.overall.display(cum.results, study.names, params)
+    cum.disp
     forest.path <- "./r_tmp/cum_forest.png"
     addRow1Space <- TRUE
-    plotData <- create.plot.data.overall(params, cum.results, studyNames, addRow1Space)
+    plotData <- create.plot.data.overall(params, cum.results, study.names, addRow1Space)
     forest.plot(plotData, outpath=forest.path)
     
     #
@@ -262,7 +262,7 @@ cum.ma.continuous <- function(fname, cont.data, params){
     images <- c("Cumulative Forest Plot"=forest.path)
     plot.names <- c("cumulative forest plot"="cumulative forest_plot")
     
-    results <- list("images"=images, "Cumulative Summary"=cumDisp, "plot_names"=plot.names)
+    results <- list("images"=images, "Cumulative Summary"=cum.disp, "plot_names"=plot.names)
     results
 }
 
@@ -273,9 +273,9 @@ loo.ma.continuous <- function(fname, cont.data, params){
     # assert that the argument is the correct type
     if (!("ContinuousData" %in% class(cont.data))) stop("Continuous data expected.")
     
-    loo.results <- array(dim=c(length(cont.data@studyNames),3))
-    params$createPlot <- FALSE
-    N <- length(cont.data@studyNames)
+    loo.results <- array(dim=c(length(cont.data@study.names),3))
+    params$create.plot <- FALSE
+    N <- length(cont.data@study.names)
     for (i in 1:N){
         # get a list of indices, i.e., the subset
         # that is 1:N with i left out
@@ -294,7 +294,7 @@ loo.ma.continuous <- function(fname, cont.data, params){
         # ith study removed.  
         y.tmp <- cont.data@y[index.ls]
         SE.tmp <- cont.data@SE[index.ls]
-        names.tmp <- cont.data@studyNames[index.ls]
+        names.tmp <- cont.data@study.names[index.ls]
         cont.data.tmp <- NULL
         
         if (length(cont.data@N1) > 0){
@@ -311,12 +311,12 @@ loo.ma.continuous <- function(fname, cont.data, params){
                                N1=N1.tmp, mean1=mean1.tmp , sd1=sd1.tmp, 
                                N2=N2.tmp, mean2=mean2.tmp, sd2=sd2.tmp,
                                y=y.tmp, SE=SE.tmp, 
-                               studyNames=names.tmp)
+                               study.names=names.tmp)
         }
         else{
             cont.data.tmp <- new('ContinuousData', 
                                 y=y.tmp, SE=SE.tmp, 
-                                studyNames=names.tmp)
+                                study.names=names.tmp)
         }
         # call the parametric function by name, passing along the 
         # data and parameters. Notice that this method knows
@@ -327,16 +327,16 @@ loo.ma.continuous <- function(fname, cont.data, params){
         loo.results[i,] <- cur.overall
     }
     
-    studyNames <- NULL
-    for (count in 1:length(cont.data@studyNames)) {
-        studyNames <- c(studyNames, paste("- ",cont.data@studyNames[count], sep=""))
+    study.names <- NULL
+    for (count in 1:length(cont.data@study.names)) {
+        study.names <- c(study.names, paste("- ",cont.data@study.names[count], sep=""))
     }
-    looDisp <- createOverallDisp(loo.results, studyNames, params)
-    looDisp
+    loo.disp <- create.overall.display(loo.results, study.names, params)
+    loo.disp
 
     forest.path <- "./r_tmp/loo_forest.png"
     addRow1Space <- FALSE
-    plotData <- create.plot.data.overall(params, loo.results, studyNames, addRow1Space)
+    plotData <- create.plot.data.overall(params, loo.results, study.names, addRow1Space)
     forest.plot(plotData, outpath=forest.path)
     
     #
@@ -349,6 +349,6 @@ loo.ma.continuous <- function(fname, cont.data, params){
     images <- c("Leave-one-out Forest plot"=forest.path)
     plot.names <- c("loo forest plot"="loo_forest_plot")
     
-    results <- list("images"=images, "Leave-one-out Summary"=looDisp, "plot_names"=plot.names)
+    results <- list("images"=images, "Leave-one-out Summary"=loo.disp, "plot_names"=plot.names)
     results
 }

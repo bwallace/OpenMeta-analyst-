@@ -10,13 +10,13 @@
 
 library(metafor)
 
-# cd <- new('ContinuousData', N1=c(20, 90), mean1=c(1.2, .9), sd1=c(.2, .2), N2=c(30, 50), mean2=c(2, 2), sd2=c(.1, .1), studyNames=c("1", "2"))
+# cd <- new('ContinuousData', N1=c(20, 90), mean1=c(1.2, .9), sd1=c(.2, .2), N2=c(30, 50), mean2=c(2, 2), sd2=c(.1, .1), study.names=c("1", "2"))
 # params <- list(measure="MD", conf.level=95, digits=3)
 
-compute.for.one.cont.study <- function(contData, params){
+compute.for.one.cont.study <- function(cont.data, params){
     res <- escalc(params$measure, 
-                  n1i=contData@N1, m1i=contData@mean1, sd1i=contData@sd1,
-                  n2i=contData@N2, m2i=contData@mean2, sd2i=contData@sd2)
+                  n1i=cont.data@N1, m1i=cont.data@mean1, sd1i=cont.data@sd1,
+                  n2i=cont.data@N2, m2i=cont.data@mean2, sd2i=cont.data@sd2)
                   
     res      
 }
@@ -33,19 +33,19 @@ continuous.transform.f <- function(metric.str){
     list(display.scale = display.scale, calc.scale = calc.scale)
 }
 
-get.res.for.one.cont.study <- function(contData, params){
+get.res.for.one.cont.study <- function(cont.data, params){
     # this method can be called when there is only one study to 
     # get the point estimate and lower/upper bounds.
     y<-NULL
     se<-NULL
-    if (length(contData@y) == 0 || is.na(contData@y)){
-        res <- compute.for.one.cont.study(contData, params)    
+    if (length(cont.data@y) == 0 || is.na(cont.data@y)){
+        res <- compute.for.one.cont.study(cont.data, params)    
         y <- res$yi[1]
         se <- sqrt(res$vi[1])
     }
     else{
-        y <- contData@y[1]
-        se <- contData@SE[1]
+        y <- cont.data@y[1]
+        se <- cont.data@SE[1]
     }
     # note: conf.level is given as, e.g., 95, rather than .95.
     alpha <- 1.0-(params$conf.level/100.0)
@@ -60,46 +60,46 @@ get.res.for.one.cont.study <- function(contData, params){
 ###############################
 #  continuous random effects  #
 ###############################
-continuous.random <- function(contData, params){
+continuous.random <- function(cont.data, params){
     # assert that the argument is the correct type
-    if (!("ContinuousData" %in% class(contData))) stop("Continuous data expected.")
+    if (!("ContinuousData" %in% class(cont.data))) stop("Continuous data expected.")
     
     results <- NULL
-    if (length(contData@studyNames) == 1){
+    if (length(cont.data@study.names) == 1){
         # handle the case where only one study was passed in
-        res <- get.res.for.one.cont.study(contData, params)   
+        res <- get.res.for.one.cont.study(cont.data, params)   
          # Package res for use by overall method.
         Res <- list("rawResults" = res) 
         results <- list("Summary"=Res)
     }
     else{
         # otherwise, call out to the metafor package
-        if (length(contData@mean1) > 0) {
-            res<-rma.uni(n1i=contData@N1, n2i=contData@N2, 
-                                        m1i=contData@mean1, m2i=contData@mean2,
-                                        sd1i=contData@sd1, sd2i=contData@sd2,
-                                        slab=contData@studyNames,
+        if (length(cont.data@mean1) > 0) {
+            res<-rma.uni(n1i=cont.data@N1, n2i=cont.data@N2, 
+                                        m1i=cont.data@mean1, m2i=cont.data@mean2,
+                                        sd1i=cont.data@sd1, sd2i=cont.data@sd2,
+                                        slab=cont.data@study.names,
                                         method=params$rm.method, measure=params$measure,
                                         level=params$conf.level, digits=params$digits)
         }
         else{
-           res<-rma.uni(yi=contData@y, sei=contData@SE, 
-                                        slab=contData@studyNames,
+           res<-rma.uni(yi=cont.data@y, sei=cont.data@SE, 
+                                        slab=cont.data@study.names,
                                         method=params$rm.method, level=params$conf.level,
                                         digits=params$digits)
         }
         degf <- res$k - res$p
-        modelTitle <- paste("Continuous Random-Effects Model (k = ", res$k, ")", sep="")
-        summaryDisp <- createSummaryDisp(res, params, degf, modelTitle)
-        summaryDisp
+        model.title <- paste("Continuous Random-Effects Model (k = ", res$k, ")", sep="")
+        summary.disp <- create.summary.disp(res, params, degf, model.title)
+        summary.disp
         
         #
         # generate forest plot 
         #
         if ((is.null(params$createPlot)) || (params$createPlot == TRUE)) {
             forest.path <- paste(params$fp_outpath, sep="")
-            plotData <- create.plot.data.continuous(contData, params, res)
-            forest.plot(plotData, outpath=forest.path)
+            plot.data <- create.plot.data.continuous(cont.data, params, res)
+            forest.plot(plot.data, outpath=forest.path)
     
             #
             # Now we package the results in a dictionary (technically, a named 
@@ -110,10 +110,10 @@ continuous.random <- function(contData, params){
             #     
             images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
-            results <- list("images"=images, "Summary"=summaryDisp, "plot_names"=plot.names)
+            results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
         }
         else {
-            results <- list("Summary"=summaryDisp)
+            results <- list("Summary"=summary.disp)
         } 
     }
     results
