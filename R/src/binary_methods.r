@@ -130,6 +130,8 @@ print.cumDisplay <- function(cumDisp, ...) {
     print(cumDisp$cumData$cumTable)
 }
 
+# This function is unnecessary, since we're now creating arrays within the
+# display structures.
 list2Array <- function(dataList) {
     # Accepts a named list dataList and converts it to an array in which 
     # first row is the names and all subsequent rows are the values. Assumes that
@@ -214,6 +216,37 @@ roundedDisplay <- function(x, digits) {
     }
     return(xDisp)
 } 
+
+roundWithZeros <- function(x, digits) {
+    # Rounds a number according to digits and pads  with zeros at the end, if necessary, 
+    # so that there are digits symbols after the decimal point.
+    y <- NULL
+    for (i in 1:length(x)) {
+      xRounded <- round(x[i], digits = digits)
+      numZeros <- NULL
+      if (floor(x[i]) == x[i]) {
+        # x is an integer
+        if (digits > 0) {
+          xRounded <- paste(xRounded, ".", sep="")
+          for (count in 1:digits) {
+            xRounded <- paste(xRounded, "0", sep="")
+          }
+        }
+      }
+      else {  
+        pow <- 10**digits * xRounded
+        # Calculate how many zeros should be added on the right.
+        while (floor(pow) == pow) {
+          pow <- pow/10;
+          if (floor(pow) == pow) {
+            xRounded <- paste(xRounded, "0", sep="")
+          }
+        }
+      }
+      y <- c(y, toString(xRounded))
+    }
+    return(y)
+}
 
 createSummaryDisp <- function(res, params, degf, modelTitle) {
     QLabel =  paste("Q(df = ", degf, ")", sep="")

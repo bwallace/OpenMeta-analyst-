@@ -43,16 +43,19 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     lb <- om.data@y - mult*om.data@SE
     ub <- om.data@y + mult*om.data@SE
     y <- om.data@y
-    y.overall <- res$b[1]
-    lb.overall <- res$ci.lb[1]
-    ub.overall <- res$ci.ub[1]
+    lb <- binary.transform.f(params$measure)$display.scale(lb)
+    ub <- binary.transform.f(params$measure)$display.scale(ub)
+    y <- binary.transform.f(params$measure)$display.scale(y)
+    y.overall <- binary.transform.f(params$measure)$display.scale(res$b[1])
+    lb.overall <- binary.transform.f(params$measure)$display.scale(res$ci.lb[1])
+    ub.overall <- binary.transform.f(params$measure)$display.scale(res$ci.ub[1])
     # round results for display.
-    y.rounded <- round(y, digits = params$digits)
-    lb.rounded <- round(lb, digits = params$digits)
-    ub.rounded <- round(ub, digits = params$digits)
-    y.overall.rounded <- round(y.overall, digits = params$digits)
-    lb.overall.rounded <- round(lb.overall, digits = params$digits)
-    ub.overall.rounded <- round(ub.overall, digits = params$digits)
+    y.rounded <- roundWithZeros(y, params$digits)
+    lb.rounded <- roundWithZeros(lb, params$digits)
+    ub.rounded <- roundWithZeros(ub, params$digits)
+    y.overall.rounded <- roundWithZeros(y.overall, params$digits)
+    lb.overall.rounded <- roundWithZeros(lb.overall, params$digits)
+    ub.overall.rounded <- roundWithZeros(ub.overall, params$digits)
     if (params$fp_show_col2=='TRUE') {
         additional.cols <- list(es = c(paste(params$fp_col2_str, sep = ""),
                                  paste(y.rounded, " (", lb.rounded, " , ", ub.rounded, ")", sep = ""),
@@ -123,9 +126,9 @@ create.plot.data.overall <- function(params, res, studyNames, addRow1Space, sele
     lb <- res[,2]
     ub <- res[,3]
     # round results for display.
-    y.rounded <- round(y, digits = params$digits)
-    lb.rounded <- round(lb, digits = params$digits)
-    ub.rounded <- round(ub, digits = params$digits)
+    y.rounded <- roundWithZeros(y, params$digits)
+    lb.rounded <- roundWithZeros(lb, params$digits)
+    ub.rounded <- roundWithZeros(ub, params$digits)
     
     if (params$fp_show_col2=='TRUE') {
         additional.cols <- list(es = c(paste(params$fp_col2_str, sep = ""),
