@@ -232,7 +232,7 @@ def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj"):
         r_str = "%s <- new('ContinuousData', \
                                      N1=c(%s), mean1=c(%s), sd1=c(%s), \
                                      N2=c(%s), mean2=c(%s), sd2=c(%s), \
-                                     y=c(%s), SE=c(%s), studyNames=c(%s), covariates=%s)" \
+                                     y=c(%s), SE=c(%s), study.names=c(%s), covariates=%s)" \
                         % (var_name, Ns1_str, means1_str, SDs1_str, \
                             Ns2_str, means2_str, SDs2_str, \
                             ests_str, SEs_str, study_names, cov_str)
@@ -240,7 +240,7 @@ def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj"):
     else:
         print "no raw data... using effects"
         r_str = "%s <- new('ContinuousData', \
-                                     y=c(%s), SE=c(%s), studyNames=c(%s))" \
+                                     y=c(%s), SE=c(%s), study.names=c(%s))" \
                         % (var_name, ests_str, SEs_str, study_names)
     
     print "executing: %s" % r_str
@@ -297,19 +297,19 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
         raw_data = table_model.get_cur_raw_data()
     
         g1_events = _get_col(raw_data, 0)
-        g1_events.reverse()
+        
         g1O1_str = ", ".join(_to_strs(g1_events))
         g1_totals = _get_col(raw_data, 1)
-        g1_totals.reverse()
+        
         g1O2 = [(total_i-event_i) for total_i, event_i in zip(g1_totals, g1_events)]
         g1O2_str = ", ".join(_to_strs(g1O2))
     
         # now, for group 2
         g2_events = _get_col(raw_data, 2)
-        g2_events.reverse()
+        
         g2O1_str = ", ".join(_to_strs(g2_events))
         g2_totals = _get_col(raw_data, 3)
-        g2_totals.reverse()
+        
         g2O2 = [(total_i-event_i) for total_i, event_i in zip(g2_totals, g2_events)]
         g2O2_str = ", ".join(_to_strs(g2O2))
                 
@@ -318,14 +318,14 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
         # python side, but this would require more work and I'm not sure what the benefits
         # would be
         r_str = "%s <- new('BinaryData', g1O1=c(%s), g1O2=c(%s), g2O1=c(%s), g2O2=c(%s), \
-                            y=c(%s), SE=c(%s), studyNames=c(%s), covariates=%s)" % \
+                            y=c(%s), SE=c(%s), study.names=c(%s), covariates=%s)" % \
                             (var_name, g1O1_str, g1O2_str, g2O1_str, g2O2_str, \
                              ests_str, SEs_str, study_names, cov_str)
         
     elif table_model.included_studies_have_point_estimates():
         print "not sufficient raw data, but studies have point estimates..."
 
-        r_str = "%s <- new('BinaryData', y=c(%s), SE=c(%s), studyNames=c(%s),  covariates=%s)" \
+        r_str = "%s <- new('BinaryData', y=c(%s), SE=c(%s), study.names=c(%s),  covariates=%s)" \
                             % (var_name, ests_str, SEs_str, study_names, cov_str)
                             
     else:
