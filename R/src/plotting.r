@@ -40,22 +40,29 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     # TODO we're making tacit assumptions here
     # about the subclass of OmData; namely
     # that it includes a y and SE field.
-    lb <- om.data@y - mult*om.data@SE
-    ub <- om.data@y + mult*om.data@SE
     y <- om.data@y
-    lb <- binary.transform.f(params$measure)$display.scale(lb)
-    ub <- binary.transform.f(params$measure)$display.scale(ub)
-    y <- binary.transform.f(params$measure)$display.scale(y)
-    y.overall <- binary.transform.f(params$measure)$display.scale(res$b[1])
-    lb.overall <- binary.transform.f(params$measure)$display.scale(res$ci.lb[1])
-    ub.overall <- binary.transform.f(params$measure)$display.scale(res$ci.ub[1])
-    # round results for display.
-    y.rounded <- round.with.zeros(y, params$digits)
-    lb.rounded <- round.with.zeros(lb, params$digits)
-    ub.rounded <- round.with.zeros(ub, params$digits)
-    y.overall.rounded <- round.with.zeros(y.overall, params$digits)
-    lb.overall.rounded <- round.with.zeros(lb.overall, params$digits)
-    ub.overall.rounded <- round.with.zeros(ub.overall, params$digits)
+    lb <- y - mult*om.data@SE
+    ub <- y + mult*om.data@SE
+   
+    y.overall <- res$b[1]
+    lb.overall <- res$ci.lb[1]
+    ub.overall <- res$ci.ub[1]
+    
+    # put results in display scale and round.
+    y.rounded <- binary.transform.f(params$measure)$display.scale(y)
+    y.rounded <- round.with.zeros(y.rounded, params$digits)
+    lb.rounded <- binary.transform.f(params$measure)$display.scale(lb)
+    lb.rounded <- round.with.zeros(lb.rounded, params$digits)
+    ub.rounded <- binary.transform.f(params$measure)$display.scale(ub)
+    ub.rounded <- round.with.zeros(ub.rounded, params$digits)
+    
+    y.overall.rounded <- binary.transform.f(params$measure)$display.scale(y.overall)
+    y.overall.rounded <- round.with.zeros(y.overall.rounded, params$digits)
+    lb.overall.rounded <- binary.transform.f(params$measure)$display.scale(lb.overall)
+    lb.overall.rounded <- round.with.zeros(lb.overall.rounded, params$digits)
+    ub.overall.rounded <- binary.transform.f(params$measure)$display.scale(ub.overall)
+    ub.overall.rounded <- round.with.zeros(ub.overall.rounded, params$digits)
+  
     if (params$fp_show_col2=='TRUE') {
         additional.cols <- list(es = c(paste(params$fp_col2_str, sep = ""),
                                  paste(y.rounded, " (", lb.rounded, " , ", ub.rounded, ")", sep = ""),
@@ -125,10 +132,15 @@ create.plot.data.overall <- function(params, res, study.names, addRow1Space, sel
     y <- res[,1]
     lb <- res[,2]
     ub <- res[,3]
-    # round results for display.
-    y.rounded <- round.with.zeros(y, params$digits)
-    lb.rounded <- round.with.zeros(lb, params$digits)
-    ub.rounded <- round.with.zeros(ub, params$digits)
+   
+    # put results in display scale and round.
+    y.rounded <- binary.transform.f(params$measure)$display.scale(y)
+    lb.rounded <- binary.transform.f(params$measure)$display.scale(lb)
+    ub.rounded <- binary.transform.f(params$measure)$display.scale(ub)
+    
+    y.rounded <- round.with.zeros(y.rounded, params$digits)
+    lb.rounded <- round.with.zeros(lb.rounded, params$digits)
+    ub.rounded <- round.with.zeros(ub.rounded, params$digits)
     
     if (params$fp_show_col2=='TRUE') {
         additional.cols <- list(es = c(paste(params$fp_col2_str, sep = ""),

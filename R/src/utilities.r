@@ -43,14 +43,14 @@ print.reg.display <- function(reg.disp, ...) {
      print(reg.disp$reg.data$reg.table)
 }
 
-print.cum.display <- function(cum.disp, ...) {
-    # Prints cumulative analysis results summary
-    print(cum.disp$cum.data$cum.table)
+print.overall.display <- function(overall.disp, ...) {
+    # Prints cumulative or loo analysis results summary
+    print(overall.disp$overall.data$overall.table)
 }
 
 print.table <- function(table.data) {
     # Prints an array table.data with lines separating rows and columns.
-    #rowLength <- 1
+    # rowLength <- 1
     num.rows <- length(table.data[,1])
     num.cols <- length(table.data[1,])
     # Compute column widths
@@ -204,11 +204,31 @@ create.overall.display <- function(res, study.names, params) {
     res
     params$digits
     res <- round(res, digits = params$digits)
-    cum.array <- array(c("", study.names, "Estimates", res[,1], "Lower bounds", res[,2],"Upper bounds", res[,3]),
+    overall.array <- array(c("", study.names, "Estimates", res[,1], "Lower bounds", res[,2],"Upper bounds", res[,3]),
                     dim=c(length(study.names) + 1, 4))
-    class(cum.array) <- "table"
-    cum.data <- list("Title" = "", "cum.table" = cum.array)
-    cum.disp <- list("cum.data" = cum.data)
-    class(cum.disp) <- "cum.display"
-    return(cum.disp)
+    class(overall.array) <- "table"
+    overall.data <- list("Title" = "", "overall.table" = overall.array)
+    overall.disp <- list("overall.data" = overall.data)
+    class(overall.disp) <- "overall.display"
+    return(overall.disp)
+}
+
+extract.data <- function(binary.data, params){
+    # Extracts data from binary.data into an array and computes bounds on confidence intervals.
+    # Compute bounds on confidence intervals.
+    alpha <- 1.0-(params$conf.level/100.0)
+    mult <- abs(qnorm(alpha/2.0))
+    LL <- round(exp(binary.data@y - mult*binary.data@SE), digits = params$digits)
+    UL <- round(exp(binary.data@y + mult*binary.data@SE), digits = params$digits)
+    # Extract the data from binary.data and round
+    eventT <- round(binary.data@g1O1, digits = params$digits)
+    subjectT <- round(binary.data@g1O1 + binary.data@g1O2, digits = params$digits)
+    eventC <- round(binary.data@g2O1, digits = params$digits)
+    subjectC <- round(binary.data@g2O1 + binary.data@g2O2, digits = params$digits)
+    y <- round(binary.data@y, digits = params$digits) 
+    raw.data <- array(c("Study", binary.data@study.names, "Events (T)", eventT, "Subjects (T)", subjectT, "Events (C)", eventC, 
+                    "Subjects (C)", subjectC, "Effect size", y, "Lower bound", LL, "Upper bound", UL), 
+                    dim=c(length(binary.data@study.names) + 1, 8))
+    class(raw.data) <- "table" 
+    return(raw.data)
 }
