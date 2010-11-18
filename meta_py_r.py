@@ -297,19 +297,19 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
         raw_data = table_model.get_cur_raw_data()
     
         g1_events = _get_col(raw_data, 0)
-        g1_events.reverse()
+        
         g1O1_str = ", ".join(_to_strs(g1_events))
         g1_totals = _get_col(raw_data, 1)
-        g1_totals.reverse()
+        
         g1O2 = [(total_i-event_i) for total_i, event_i in zip(g1_totals, g1_events)]
         g1O2_str = ", ".join(_to_strs(g1O2))
     
         # now, for group 2
         g2_events = _get_col(raw_data, 2)
-        g2_events.reverse()
+        
         g2O1_str = ", ".join(_to_strs(g2_events))
         g2_totals = _get_col(raw_data, 3)
-        g2_totals.reverse()
+        
         g2O2 = [(total_i-event_i) for total_i, event_i in zip(g2_totals, g2_events)]
         g2O2_str = ", ".join(_to_strs(g2O2))
                 
