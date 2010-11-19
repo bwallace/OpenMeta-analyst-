@@ -9,26 +9,18 @@
 
 library(metafor)
 
-binary.meta.regression <- function(binary.data, params, cov.name){
-    cov.val.str <- paste("binary.data@covariates$", cov.name, sep="")
+meta.regression <- function(reg.data, params, cov.name){
+    cov.val.str <- paste("reg.data@covariates$", cov.name, sep="")
     cov.vals <- eval(parse(text=cov.val.str))
-    res<-rma.uni(yi=binary.data@y, sei=binary.data@SE, slab=binary.data@study.names,
+    res<-rma.uni(yi=reg.data@y, sei=reg.data@SE, slab=reg.data@study.names,
                                 level=params$conf.level, digits=params$digits, method="DL", 
                                 mods=cov.vals)
     reg.disp <- create.regression.disp(res, params)
     reg.disp
     betas <- res$b
     fitted.line <- list(intercept=betas[1], slope=betas[2])
-    params$fp_show_col2 <- FALSE
-    params$fp_show_col3 <- FALSE
-    params$fp_show_col4 <- FALSE
-    params$fp_col4_str <- FALSE
-    params$measure <- "cont"
-    ## TODO Setting params$measure to "cont" is a hack to make create.plot.data.binary work.
-    # Should create a new function create.plot.data.reg in plotting.r for regression plots.
-    #
-    plot.data <- create.plot.data.binary(binary.data, params, res, selected.cov=cov.name)
-    plot.data$fitted.line <- fitted.line
+   
+    plot.data <- create.plot.data.reg(reg.data, params, fitted.line, selected.cov=cov.name)
     plot.path <- "./r_tmp/reg.png"
     meta.regression.plot(plot.data, plot.path, symSize=1,
                                   lcol = "darkred",

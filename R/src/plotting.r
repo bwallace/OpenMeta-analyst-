@@ -152,8 +152,35 @@ create.plot.data.overall <- function(params, res, study.names, addRow1Space, sel
                     LL = lb,
                     UL = ub)
     plot.data$effects <- effects
-
     plot.data
+}
+
+# create regression plot data
+create.plot.data.reg <- function(reg.data, params, fitted.line, selected.cov=cov.name) {
+     scale.str <- "cont"
+     if (metric.is.log.scale(params$measure)){
+        scale.str <- "log" 
+     }
+     plot.data <- list("fitted.line" = fitted.line,
+                    types = c(rep(0, length(reg.data@study.names))),
+                    scale = scale.str)
+     alpha <- 1.0-(params$conf.level/100.0)
+     mult <- abs(qnorm(alpha/2.0))
+    
+     y <- reg.data@y
+     lb <- y - mult*reg.data@SE
+     ub <- y + mult*reg.data@SE               
+     if (!is.null(selected.cov)){
+        cov.val.str <- paste("reg.data@covariates$", selected.cov, sep="")
+        cov.values <- eval(parse(text=cov.val.str))
+        plot.data$covariate <- list(varname = selected.cov,
+                                   values = cov.values)
+     } 
+     effects <- list(ES = y,
+                    LL = lb,
+                    UL = ub)
+     plot.data$effects <- effects
+     plot.data
 }
 
 # get data for the study column
@@ -537,15 +564,14 @@ meta.regression.plot <- function(plot.data, outpath,
                                   regline = TRUE) {
 
 
-    # make the data data.frame and exclude the first element of 
-    # types (it's just a clumn heading)
-    data.reg <- data.frame(plot.data$effects, types = plot.data$types[-1])
+    # make the data data.frame
+    data.reg <- data.frame(plot.data$effects, types = plot.data$types)
     # data for plot (only keep the studies - not the summaries)
     data.reg <- subset(data.reg, types==0)
     
     # area of circles
     precision = NULL
-    mult = 1.96 # again, 1.96 is a convention for scalling, no need to parameterize
+    mult = 1.96 # again, 1.96 is a convention for scaling, no need to parameterize
     if (plot.data$scale == "log"){
          precision <- 1 / ((data.reg$UL - data.reg$LL)/(2*mult))
     }
@@ -584,17 +610,17 @@ meta.regression.plot <- function(plot.data, outpath,
 #   meta-regression usage example   #
 #####################################
 
-reg.data <- list(label = c("Studies",  "study3" , "subgroup1" , "study3" , "study4" , "subgroup2" ,
+reg.data <- list(label = c("study3" , "subgroup1" , "study3" , "study4" , "subgroup2" ,
                "study1" , "study2", "study3" , "subgroup1" , "study4" , "subgroup2" , "study1" , "study2",
                "study3" , "subgroup1" , "study3" , "study4" , "subgroup2" ,
-               "study1" , "study2", "study3" , "subgroup1" , "study3" , "study4" , "subgroup2" , "Overall"),
-            types = c(3,0,0,0,0,1,0,0,0,1,0,0,1,0,0,1,0,0,1,0,0,0,1,0,0,1,2),
+               "study1" , "study2", "study3" , "subgroup1" , "study3" , "study4" , "subgroup2"),
+            types = c(0,0,0,0,1,0,0,0,1,0,0,1,0,0,1,0,0,1,0,0,0,1,0,0,1),
             scale = "log" )
 
-reg.data$additional.col.data <- list( col1= c("xxxxx", "study3" , "subgroup1" , "study3" , "study4" , "subgroup2" ,
+reg.data$additional.col.data <- list( col1= c("study3" , "subgroup1" , "study3" , "study4" , "subgroup2" ,
                "study1" , "study2", "study3" , "subgroup1" , "study3" ,  "subgroup2" , "study1" , "study2",
                "study3" , "subgroup1" , "study3" , "study4" , "subgroup2" ,
-               "study1" , "study2", "study3" , "subgroup1" , "study3" , "study4" , "subgroup2", "all results")     )
+               "study1" , "study2", "study3" , "subgroup1" , "study3" , "study4" , "subgroup2")     )
 
 # these are the effect size, again, identical
 
@@ -631,17 +657,17 @@ reg.data$additional.col.data <- list( col1= c("xxxxx", "study3" , "subgroup1" , 
 #              UL= log(c(2, 1.1, 10000000, rep(34, 20), 59, 72,  70)/17) 
 #              )
 
-reg.data$effects <- list(
-              ES= log(c(1, 0.5, 0.8,  rep(0.3, 20), 1.3,   1.3,  1.1)) ,
-              LL= log(c(0.01, 0.3, 0.78, rep(0.2, 20), 0.9, 0.99, 0.8))  ,
-              UL= log(c(7, 0.7,  0.9,  rep(0.5, 20), 1.8,   1.6,  1.4)) 
-              )
+#reg.data$effects <- list(
+#              ES= log(c(1, 0.5, 0.8,  rep(0.3, 20), 1.3,   1.3,  1.1)) ,
+#              LL= log(c(0.01, 0.3, 0.78, rep(0.2, 20), 0.9, 0.99, 0.8))  ,
+#              UL= log(c(7, 0.7,  0.9,  rep(0.5, 20), 1.8,   1.6,  1.4)) 
+#              )
               
               
 reg.data$effects <- list(
-              ES= log(c(rep(1.1, 25), 1 )) ,
-              LL= log(c(rep(0.8, 25), 0.9)),
-              UL= log(c(rep(1.4, 25), 1.1)) 
+              ES= log(c(rep(1.1, 25))) ,
+              LL= log(c(rep(0.8, 25))),
+              UL= log(c(rep(1.4, 25))) 
               )
               
 
@@ -650,8 +676,8 @@ reg.data$effects <- list(
 # it is not meaningful to plot the summary estimates - overall or subgroup
 reg.data$covariate <- list(varname = "lala",
                            values = c( -2, 0, 1.17, 2.97, 1.86, 1.05,
-                                      1.27, 1.17, 1.17, 2.97, 1.86, 2.01, 
-                                      1.27, 1.17, 1.17, 1.8, 1.86, 2.01))
+                                     1.27, 1.17, 1.17, 2.97, 1.86, 2.01, 
+                                     1.27, 1.17, 1.17, 1.8, 1.86, 2.01))
 
 
 reg.data$fitted.line <-list(intercept = -1, slope = 1.7)
@@ -670,4 +696,4 @@ meta.regression.plot(reg.data,
                         mcolor = "darkgreen",
                         regline = TRUE)
 
-forest.plot(reg.data, "lalalalala.png")
+#forest.plot(reg.data, "lalalalala.png")
