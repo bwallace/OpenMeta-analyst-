@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Sparse QR decomposition of a sparse matrix</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for sparseQR-class {Matrix}"><tr><td>sparseQR-class {Matrix}</td><td align="right">R Documentation</td></tr></table>
+<h2>Sparse QR decomposition of a sparse matrix</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Objects of this class represent a QR decomposition of a
+sparse rectangular matrix.
+</p>
+
+
+<h3>Details</h3>
+
+<p>
+The decomposition is of the form <code>A[p+1,] == Q %*% R</code>, if
+the <code>q</code> slot if of length 0 or <code>A[p+1,q+1] == Q %*% R</code>
+where A is a sparse <i>m by n</i> matrix (<i>m &gt;= n</i>),
+<i>R</i> is an <i>m by n</i> matrix that is zero below the
+main diagonal.  The <code>p</code> slot is a 0-based permutation of
+<code>1:m</code> applied to the rows of the original matrix.  If the <code>q</code>
+slot has length <code>n</code> it is a 0-based permutation of <code>1:n</code>
+applied to the columns of the original matrix to reduce the amount
+of "fill-in" in the matrix <i>R</i>.
+</p>
+<p>
+The matrix <i>Q</i> is a "virtual matrix".  It is the product of
+<i>n</i> Householder transformations.  The information to generate
+these Householder transformations is stored in the <code>V</code> and
+<code>beta</code> slots.
+</p>
+<p>
+The <code>"sparseQR"</code> methods for the <code>qr.*</code> functions return
+objects of class <code>"dgeMatrix"</code> (see
+<code><a href="dgeMatrix-class.html">dgeMatrix</a></code>).  Results from <code>qr.coef</code>,
+<code>qr.resid</code> and <code>qr.fitted</code> (when <code>k == ncol(R)</code>) are
+well-defined and should match those from the corresponding dense matrix
+calculations.  However, because the matrix <code>Q</code> is not uniquely
+defined, the results of <code>qr.qy</code> and <code>qr.qty</code> do not
+necessarily match those from the corresponding dense matrix
+calculations.
+</p>
+<p>
+Also, the results of <code>qr.qy</code> and <code>qr.qty</code> apply to the
+permuted column order when the <code>q</code>  slot has length <code>n</code>.
+</p>
+
+
+<h3>Objects from the Class</h3>
+
+<p>
+Objects can be created by calls of the form <code>new("sparseQR", ...)</code>
+but are more commonly created by function <code><a href="../../base/html/qr.html">qr</a></code> applied
+to a sparse matrix such as a matrix of class
+<code><a href="dgCMatrix-class.html">dgCMatrix</a></code>.
+</p>
+
+
+<h3>Slots</h3>
+
+<dl>
+<dt><code>V</code>:</dt><dd>Object of class <code>"dgCMatrix"</code>.  The columns of
+<code>V</code> are the vectors that generate the Householder
+transformations of which the matrix Q is composed.</dd>
+<dt><code>beta</code>:</dt><dd>Object of class <code>"numeric"</code>, the normalizing
+factors for the Householder transformations.</dd>
+<dt><code>p</code>:</dt><dd>Object of class <code>"integer"</code>: Permutation
+(of <code>0:(n-1)</code>) applied to the rows of the original matrix.</dd>
+<dt><code>R</code>:</dt><dd>Object of class <code>"dgCMatrix"</code> An upper
+triangular matrix of dimension  </dd> 
+<dt><code>q</code>:</dt><dd>Object of class <code>"integer"</code>: Permutation
+applied from the right. Can be of length 0 which implies no
+permutation.</dd>
+</dl>
+
+<h3>Methods</h3>
+
+<dl>
+<dt>qr.R</dt><dd><code>signature(qr = "sparseQR")</code>: ... </dd>
+<dt>qr.coef</dt><dd><code>signature(qr = "sparseQR", y = "dgeMatrix")</code>: ... </dd>
+<dt>qr.coef</dt><dd><code>signature(qr = "sparseQR", y = "matrix")</code>: ... </dd>
+<dt>qr.coef</dt><dd><code>signature(qr = "sparseQR", y = "numeric")</code>: ... </dd>
+<dt>qr.fitted</dt><dd><code>signature(qr = "sparseQR", y = "dgeMatrix")</code>: ... </dd>
+<dt>qr.fitted</dt><dd><code>signature(qr = "sparseQR", y = "matrix")</code>: ... </dd>
+<dt>qr.fitted</dt><dd><code>signature(qr = "sparseQR", y = "numeric")</code>: ... </dd>
+<dt>qr.qty</dt><dd><code>signature(qr = "sparseQR", y = "dgeMatrix")</code>: ... </dd>
+<dt>qr.qty</dt><dd><code>signature(qr = "sparseQR", y = "matrix")</code>: ... </dd>
+<dt>qr.qty</dt><dd><code>signature(qr = "sparseQR", y = "numeric")</code>: ... </dd>
+<dt>qr.qy</dt><dd><code>signature(qr = "sparseQR", y = "dgeMatrix")</code>: ... </dd>
+<dt>qr.qy</dt><dd><code>signature(qr = "sparseQR", y = "matrix")</code>: ... </dd>
+<dt>qr.qy</dt><dd><code>signature(qr = "sparseQR", y = "numeric")</code>: ... </dd>
+<dt>qr.resid</dt><dd><code>signature(qr = "sparseQR", y = "dgeMatrix")</code>: ... </dd>
+<dt>qr.resid</dt><dd><code>signature(qr = "sparseQR", y = "matrix")</code>: ... </dd>
+<dt>qr.resid</dt><dd><code>signature(qr = "sparseQR", y = "numeric")</code>: ... </dd>
+
+
+<dt>solve</dt><dd><code>signature(a = "sparseQR", b = "ANY")</code>: simply
+uses <code>qr.coef(a,b)</code>.</dd>
+</dl>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../base/html/qr.html">qr</a></code>, <code><a href="../../base/html/qr.Q.html">qr.Q</a></code>,
+<code><a href="../../base/html/qr.R.html">qr.R</a></code>, <code><a href="../../base/html/qr.fitted.html">qr.fitted</a></code>,
+<code><a href="../../base/html/qr.resid.html">qr.resid</a></code>, <code><a href="../../base/html/qr.coef.html">qr.coef</a></code>,
+<code><a href="../../base/html/qr.qty.html">qr.qty</a></code>, <code><a href="../../base/html/qr.qy.html">qr.qy</a></code>,
+<code><a href="dgCMatrix-class.html">dgCMatrix</a></code>, <code><a href="dgeMatrix-class.html">dgeMatrix</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(KNex); mm &lt;- KNex$mm
+str(mmQR &lt;- qr(mm))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>Matrix</em> version 0.999375-30 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

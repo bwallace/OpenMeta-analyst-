@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Scatter Plot with Smooth Curve Fitted by Loess</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for scatter.smooth {stats}"><tr><td>scatter.smooth {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>Scatter Plot with Smooth Curve Fitted by Loess</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Plot and add a smooth curve computed by <code>loess</code> to a scatter plot.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+scatter.smooth(x, y = NULL, span = 2/3, degree = 1,
+    family = c("symmetric", "gaussian"),
+    xlab = NULL, ylab = NULL,
+    ylim = range(y, prediction$y, na.rm = TRUE),
+    evaluation = 50, ...)
+
+loess.smooth(x, y, span = 2/3, degree = 1,
+    family = c("symmetric", "gaussian"), evaluation = 50, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x,y</code></td>
+<td>
+the <code>x</code> and <code>y</code> arguments provide the x and y
+coordinates for the plot.  Any reasonable way of defining the
+coordinates is acceptable.  See the function <code><a href="../../grDevices/html/xy.coords.html">xy.coords</a></code>
+for details.</td></tr>
+<tr valign="top"><td><code>span</code></td>
+<td>
+smoothness parameter for <code>loess</code>.</td></tr>
+<tr valign="top"><td><code>degree</code></td>
+<td>
+degree of local polynomial used.</td></tr>
+<tr valign="top"><td><code>family</code></td>
+<td>
+if <code>"gaussian"</code> fitting is by least-squares, and if
+<code>family="symmetric"</code> a re-descending M estimator is used.</td></tr>
+<tr valign="top"><td><code>xlab</code></td>
+<td>
+label for x axis.</td></tr>
+<tr valign="top"><td><code>ylab</code></td>
+<td>
+label for y axis.</td></tr>
+<tr valign="top"><td><code>ylim</code></td>
+<td>
+the y limits of the plot.</td></tr>
+<tr valign="top"><td><code>evaluation</code></td>
+<td>
+number of points at which to evaluate the smooth
+curve.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+graphical parameters.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>loess.smooth</code> is an auxiliary function which evaluates the
+<code>loess</code> smooth at <code>evaluation</code> equally spaced points
+covering the range of <code>x</code>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+For <code>scatter.smooth</code>, none.
+<br>
+For <code>loess.smooth</code>, a list with two components, <code>x</code> (the
+grid of evaluation points) and <code>y</code> (the smoothed values at the
+grid points).</p>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="loess.html">loess</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+require(graphics)
+
+with(cars, scatter.smooth(speed, dist))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Packed triangular dense matrices</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for dtpMatrix-class {Matrix}"><tr><td>dtpMatrix-class {Matrix}</td><td align="right">R Documentation</td></tr></table>
+<h2>Packed triangular dense matrices</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The <code>"dtpMatrix"</code> class is the class of triangular,
+dense, numeric matrices in packed storage.  The <code>"dtrMatrix"</code>
+class is the same except in nonpacked storage.
+</p>
+
+
+<h3>Objects from the Class</h3>
+
+<p>
+Objects can be created by calls of the form <code>new("dtpMatrix",
+    ...)</code> or by coercion from other classes of matrices.
+</p>
+
+
+<h3>Slots</h3>
+
+<dl>
+<dt><code>uplo</code>:</dt><dd>Object of class <code>"character"</code>. Must be
+either "U", for upper triangular, and "L", for lower triangular.</dd>
+<dt><code>diag</code>:</dt><dd>Object of class <code>"character"</code>. Must be
+either <code>"U"</code>, for unit triangular (diagonal is all ones), or
+<code>"N"</code>; see <code><a href="triangularMatrix-class.html">triangularMatrix</a></code>.</dd>
+<dt><code>x</code>:</dt><dd>Object of class <code>"numeric"</code>. The numeric
+values that constitute the matrix, stored in column-major order.
+For a packed square matrix of dimension <i>d * d</i>,
+<code>length(x)</code> is of length <i>d(d+1)/2</i> (also when
+<code>diag == "U"</code>!).</dd>
+<dt><code>Dim</code>,<code>Dimnames</code>:</dt><dd>The dimension (a length-2
+<code>"integer"</code>) and corresponding names (or <code>NULL</code>),
+inherited from the <code><a href="Matrix-class.html">Matrix</a></code>, see there.</dd>
+</dl>
+
+<h3>Extends</h3>
+
+<p>
+Class <code>"ddenseMatrix"</code>, directly.
+Class <code>"triangularMatrix"</code>, directly.
+Class <code>"dMatrix"</code> and more by class <code>"ddenseMatrix"</code> etc, see
+the examples.
+</p>
+
+
+<h3>Methods</h3>
+
+<dl>
+<dt>%*%</dt><dd><code>signature(x = "dtpMatrix", y = "dgeMatrix")</code>:
+Matrix multiplication; ditto for several other signature
+combinations, see <code>showMethods("%*%", class = "dtpMatrix")</code>.</dd>
+<dt>coerce</dt><dd><code>signature(from = "dtpMatrix", to = "dtrMatrix")</code></dd>
+<dt>coerce</dt><dd><code>signature(from = "dtpMatrix", to = "matrix")</code></dd>
+<dt>determinant</dt><dd><code>signature(x = "dtpMatrix", logarithm = "missing")</code>: ... </dd>
+<dt>determinant</dt><dd><code>signature(x = "dtpMatrix", logarithm = "logical")</code>: ... </dd>
+<dt>diag</dt><dd><code>signature(x = "dtpMatrix")</code>: ... </dd>
+<dt>norm</dt><dd><code>signature(x = "dtpMatrix", type = "character")</code>: ... </dd>
+<dt>norm</dt><dd><code>signature(x = "dtpMatrix", type = "missing")</code>: ... </dd>
+<dt>rcond</dt><dd><code>signature(x = "dtpMatrix", norm = "character")</code>: ... </dd>
+<dt>rcond</dt><dd><code>signature(x = "dtpMatrix", norm = "missing")</code>: ... </dd>
+<dt>solve</dt><dd><code>signature(a = "dtpMatrix", b = "missing")</code>: ... </dd>
+<dt>solve</dt><dd><code>signature(a = "dtpMatrix", b = "matrix")</code>: ... </dd>
+<dt>t</dt><dd><code>signature(x = "dtpMatrix")</code>: ... </dd>
+<dt>unpack</dt><dd><code>signature(x = "dtpMatrix")</code>: ... </dd>
+</dl>
+
+<h3>See Also</h3>
+
+<p>
+Class <code><a href="dtrMatrix-class.html">dtrMatrix</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+showClass("dtrMatrix")
+
+example("dtrMatrix-class")
+(p1 &lt;- as(T2, "dtpMatrix"))
+str(p1)
+(pp &lt;- as(T, "dtpMatrix"))
+stopifnot(length(p1@x) == 3, length(pp@x) == 3,
+          p1 @ uplo == T2 @ uplo, pp @ uplo == T @ uplo)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>Matrix</em> version 0.999375-30 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

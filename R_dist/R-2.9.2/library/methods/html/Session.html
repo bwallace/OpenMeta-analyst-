@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Deprecated:  Session Data and Debugging Tools</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for Session {methods}"><tr><td>Session {methods}</td><td align="right">R Documentation</td></tr></table>
+<h2>Deprecated:  Session Data and Debugging Tools</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The functions <code>traceOn</code> and <code>traceOff</code> have been replaced by
+extended versions of the functions <code><a href="../../base/html/trace.html">trace</a></code> and
+<code><a href="../../base/html/trace.html">untrace</a></code>, and should not be used.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+sessionData()
+
+traceOn(what, tracer=browseAll, exit=NULL)
+
+traceOff(what)
+
+browseAll()
+
+</pre>
+
+
+<h3>Details</h3>
+
+<dl>
+<dt><code>sessionData</code>:</dt><dd>return the index of the session data in the search list,
+attaching it if it is not attached.
+</dd>
+
+
+<dt><code>traceOn</code>:</dt><dd>initialize tracing on calls to function <code>what</code>.  The function
+or expression <code>tracer</code> is called on entry, and the function
+or expression <code>exit</code> on exit.
+</dd>
+
+
+<dt><code>traceOff</code>:</dt><dd>turn off tracing of this function.
+</dd>
+
+
+<dt><code>browseAll</code>:</dt><dd>browse the current stack of function calls.
+</p>
+<p>
+Uses the function <code>debugger</code> to set up browser calls on the
+frames.  On exit from that function, computation continues after
+the call to <code>browseAll</code>.  Computations done in the frames
+will have no effect.
+</dd>
+</dl>
+
+<h3>References</h3>
+
+<p>
+Chambers, John M. (2008)
+<EM>Software for Data Analysis: Programming with R</EM>
+Springer.  (For the R version.)
+</p>
+<p>
+Chambers, John M. (1998)
+<EM>Programming with Data</EM>
+Springer (For the original S4 version.)
+</p>
+
+
+
+<hr><div align="center">[Package <em>methods</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,312 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Plot to assess funnel plot asymmetry</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for funnel.meta {meta}"><tr><td>funnel.meta {meta}</td><td align="right">R Documentation</td></tr></table>
+<h2>Plot to assess funnel plot asymmetry</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Draw a funnel or radial plot to assess funnel plot asymmetry in the
+active graphics window.
+</p>
+<p>
+A contour-enhanced funnel plot can be produced for assessing causes of
+funnel plot asymmetry.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## Default S3 method:
+funnel(x, y,
+                         xlim=NULL, ylim=NULL, xlab=NULL, ylab=NULL,
+                         comb.fixed=FALSE, comb.random=FALSE,
+                         axes=TRUE,
+                         pch=21, text=NULL, cex=1,
+                         lty.fixed=2, lty.random=9,
+                         lwd=1, lwd.fixed=lwd, lwd.random=lwd,
+                         col="black", bg="darkgray",
+                         col.fixed="black", col.random="black",
+                         log="", yaxis="se", sm=NULL,
+                         contour.levels=NULL, col.contour,
+                         ref=ifelse(sm %in% c("RR", "OR", "HR"), 1, 0),
+                         level=NULL,
+                         studlab=FALSE, cex.studlab=0.8,
+                         ...)
+
+## S3 method for class 'meta':
+funnel(x, y,
+                      xlim=NULL, ylim=NULL, xlab=NULL, ylab=NULL,
+                      comb.fixed=x$comb.fixed, comb.random=x$comb.random,
+                      axes=TRUE,
+                      pch=21, text=NULL, cex=1,
+                      lty.fixed=2, lty.random=9,
+                      lwd=1, lwd.fixed=lwd, lwd.random=lwd,
+                      col="black", bg="darkgray",
+                      col.fixed="black", col.random="black",
+                      log="", yaxis="se", sm=NULL,
+                      contour.levels=NULL, col.contour,
+                      ref=ifelse(x$sm %in% c("RR", "OR", "HR"), 1, 0),
+                      level=x$level,
+                      studlab=FALSE, cex.studlab=0.8,
+                      ...)
+
+radial(x, y, xlim=NULL, ylim=NULL,
+       xlab="Inverse of standard error",
+       ylab="Standardised treatment effect (z-score)",
+       comb.fixed=TRUE, axes=TRUE,
+       pch=1, text=NULL, cex=1, col=NULL,
+       level=NULL, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+An object of class <code>meta</code>, or estimated treatment
+effect in individual studies.</td></tr>
+<tr valign="top"><td><code>y</code></td>
+<td>
+Standard error of estimated treatment effect (mandatory if
+<code>x</code> not of class <code>meta</code>).</td></tr>
+<tr valign="top"><td><code>xlim</code></td>
+<td>
+The x limits (min,max) of the plot.</td></tr>
+<tr valign="top"><td><code>ylim</code></td>
+<td>
+The y limits (min,max) of the plot.</td></tr>
+<tr valign="top"><td><code>xlab</code></td>
+<td>
+A label for the x axis.</td></tr>
+<tr valign="top"><td><code>ylab</code></td>
+<td>
+A label for the y axis.</td></tr>
+<tr valign="top"><td><code>comb.fixed</code></td>
+<td>
+A logical indicating whether the pooled fixed effect
+estimate should be plotted.</td></tr>
+<tr valign="top"><td><code>comb.random</code></td>
+<td>
+A logical indicating whether the pooled random
+effects estimate should be plotted.</td></tr>
+<tr valign="top"><td><code>axes</code></td>
+<td>
+A logical indicating whether axes should be drawn on the
+plot.</td></tr>
+<tr valign="top"><td><code>pch</code></td>
+<td>
+The plotting symbol used for individual studies.</td></tr>
+<tr valign="top"><td><code>text</code></td>
+<td>
+A character vector specifying the text to be used instead
+of plotting symbol.</td></tr>
+<tr valign="top"><td><code>cex</code></td>
+<td>
+The magnification to be used for plotting symbol.</td></tr>
+<tr valign="top"><td><code>lty.fixed</code></td>
+<td>
+Line type (pooled fixed effect estimate).</td></tr>
+<tr valign="top"><td><code>lty.random</code></td>
+<td>
+Line type (pooled random effects estimate).</td></tr>
+<tr valign="top"><td><code>col</code></td>
+<td>
+A vector with colour of plotting symbols.</td></tr>
+<tr valign="top"><td><code>bg</code></td>
+<td>
+A vector with background colour of plotting symbols (only
+used if <code>pch</code> in <code>21:25</code>).</td></tr>
+<tr valign="top"><td><code>col.fixed</code></td>
+<td>
+Color of line representign fixed effect estimate.</td></tr>
+<tr valign="top"><td><code>col.random</code></td>
+<td>
+Color of line representign random effects estimate.</td></tr>
+<tr valign="top"><td><code>lwd</code></td>
+<td>
+The line width for confidence intervals (if <code>level</code> is
+not <code>NULL</code>).</td></tr>
+<tr valign="top"><td><code>lwd.fixed</code></td>
+<td>
+The line width for fixed effect estimate (if
+<code>comb.fixed</code> is not <code>NULL</code>).</td></tr>
+<tr valign="top"><td><code>lwd.random</code></td>
+<td>
+The line width for random effects estimate (if
+<code>comb.random</code> is not <code>NULL</code>).</td></tr>
+<tr valign="top"><td><code>log</code></td>
+<td>
+A character string which contains <code>"x"</code> if the x axis
+is to be logarithmic, <code>"y"</code> if the y axis is to be logarithmic
+and <code>"xy"</code> or <code>"yx"</code> if both axes are to be logarithmic
+(applies only to function <code>funnel</code>).</td></tr>
+<tr valign="top"><td><code>yaxis</code></td>
+<td>
+A character string indicating which type of weights are
+to be used. Either <code>"se"</code>, <code>"invvar"</code>, <code>"invse"</code>, or <code>"size"</code>
+(applies only to function <code>funnel</code>). </td></tr>
+<tr valign="top"><td><code>sm</code></td>
+<td>
+A character string indicating underlying summary measure,
+e.g., <code>"RD"</code>, <code>"RR"</code>, <code>"OR"</code>, <code>"AS"</code>, <code>"MD"</code>,
+<code>"SMD"</code> (applies only to function <code>funnel</code>).</td></tr>
+<tr valign="top"><td><code>contour.levels</code></td>
+<td>
+A numeric vector specifying contour levels to
+produce contour-enhanced funnel plot.</td></tr>
+<tr valign="top"><td><code>col.contour</code></td>
+<td>
+Colour of contours.</td></tr>
+<tr valign="top"><td><code>ref</code></td>
+<td>
+Reference value (null effect) used to produce
+contour-enhanced funnel plot.</td></tr>
+<tr valign="top"><td><code>level</code></td>
+<td>
+The confidence level utilised in the plot. For the funnel
+plot, confidence limits are not drawn if <code>yaxis="size"</code>.</td></tr>
+<tr valign="top"><td><code>studlab</code></td>
+<td>
+A logical indicating whether study labels should be
+printed in the graph. A vector with study labels can also be
+provided (must be of same length as <code>x$TE</code> then).</td></tr>
+<tr valign="top"><td><code>cex.studlab</code></td>
+<td>
+Size of study labels.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+Graphical parameters as in <code>par</code> may also be
+passed as arguments.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+A funnel plot or radial plot, also called Galbraith plot, is drawn in
+the active graphics window. If <code>comb.fixed</code> is TRUE, the pooled
+estimate of the fixed effect model is plotted. If <code>level</code> is not
+NULL, the corresponding confidence limits are drawn.
+</p>
+<p>
+In the funnel plot, if <code>yaxis</code> is <code>"se"</code>, the standard error
+of the treatment estimates is plotted on the y axis which is likely to
+be the best choice (Sterne &amp; Egger, 2001). Other possible choices for
+<code>yaxis</code> are <code>"invvar"</code> (inverse of the variance),
+<code>"invse"</code> (inverse of the standard error), and <code>"size"</code>
+(study size).
+</p>
+<p>
+For <code>yaxis!="size"</code>, contour-enhanced funnel plots can be
+produced (Peters et al., 2008) by specifying the contour levels
+(argument <code>contour.levels</code>). By default (argument
+<code>col.contour</code> missing), suitable gray levels will be used to
+distinguish the contours. Different colours can be chosen by argument
+<code>col.contour</code>.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Guido Schwarzer <a href="mailto:sc@imbi.uni-freiburg.de">sc@imbi.uni-freiburg.de</a>, Petra Graham <a href="mailto:pgraham@efs.mq.edu.au">pgraham@efs.mq.edu.au</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Galbraith RF (1988a),
+Graphical display of estimates having differing standard
+errors. <EM>Technometrics</EM>, <B>30</B>, 271&ndash;281.
+</p>
+<p>
+Galbraith RF (1988b),
+A note on graphical presentation of estimated odds ratios from several
+clinical trials. <EM>Statistics in Medicine</EM>, <B>7</B>, 889&ndash;894.
+</p>
+<p>
+Light RJ &amp; Pillemer DB (1984),
+<EM>Summing Up. The Science of Reviewing Research</EM>.
+Cambridge: Harvard University Press.
+</p>
+<p>
+Peters JL, Sutton AJ, Jones DR, Abrams KR, Rushton L (2008),
+Contour-enhanced meta-analysis funnel plots help distinguish
+publication bias from other causes of asymmetry. <EM>Journal of
+Clinical Epidemiology</EM>, <B>61</B>, 991&ndash;996.
+</p>
+<p>
+Sterne JAC &amp; Egger M (2001),
+Funnel plots for detecting bias in meta-analysis: Guidelines on choice
+of axis. <EM>Journal of Clinical Epidemiology</EM>, <B>54</B>,
+1046&ndash;1055.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="metabias.html">metabias</a></code>, <code><a href="metabin.html">metabin</a></code>, <code><a href="metagen.html">metagen</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(Olkin95)
+meta1 &lt;- metabin(event.e, n.e, event.c, n.c,
+                 data=Olkin95, subset=c(41,47,51,59),
+                 studlab=paste(author, year),
+                 sm="RR", meth="I")
+
+##
+## Radial plot
+##
+radial(meta1, level=0.95)
+
+oldpar &lt;- par(mfrow=c(2, 2))
+
+##
+## Funnel plots
+##
+funnel(meta1)
+##
+## Same result as code above:
+##
+funnel(meta1$TE, meta1$seTE, sm="RR")
+
+##
+## Funnel plot with confidence intervals,
+## fixed effect estimate and contours
+##
+cc &lt;- funnel(meta1, comb.fixed=TRUE,
+             level=0.95, contour=c(0.9, 0.95, 0.99))$col.contour
+legend(0.05, 0.05,
+       c("0.1 &gt; p &gt; 0.05", "0.05 &gt; p &gt; 0.01", "&lt; 0.01"), fill=cc)
+##
+## Contour-enhanced funnel plot with user-chosen colours
+##
+funnel(meta1, comb.fixed=TRUE,
+       level=0.95, contour=c(0.9, 0.95, 0.99),
+       col.contour=c("darkgreen", "green", "lightgreen"),
+       lwd=2, cex=2, pch=16, studlab=TRUE, cex.studlab=1.25)
+legend(0.05, 0.05,
+       c("0.1 &gt; p &gt; 0.05", "0.05 &gt; p &gt; 0.01", "&lt; 0.01"),
+       fill=c("darkgreen", "green", "lightgreen"))
+
+par(oldpar)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>meta</em> version 1.1-8 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

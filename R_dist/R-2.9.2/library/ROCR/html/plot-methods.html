@@ -1,0 +1,190 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Plot method for performance objects</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for plot-methods {ROCR}"><tr><td>plot-methods {ROCR}</td><td align="right">R Documentation</td></tr></table>
+<h2>Plot method for performance objects</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This is the method to plot all objects of class
+performance.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S4 method for signature 'performance, missing':
+plot(x, y, ..., avg="none", spread.estimate="none",
+  spread.scale=1, show.spread.at=c(), colorize=F,
+  colorize.palette=rev(rainbow(256,start=0, end=4/6)),
+  colorkey=colorize, colorkey.relwidth=0.25, colorkey.pos="right",
+  print.cutoffs.at=c(), cutoff.label.function=function(x) { round(x,2) },
+  downsampling=0, add=FALSE )
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+an object of class <code>performance</code></td></tr>
+<tr valign="top"><td><code>y</code></td>
+<td>
+not used</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+Optional graphical parameters to adjust different components of
+the performance plot. Parameters are directed to their target component by
+prefixing them with the name of the component
+(<code>component.parameter</code>, e.g. <code>text.cex</code>). The following
+components are available: <code>xaxis</code>, <code>yaxis</code>,
+<code>coloraxis</code>, <code>box</code> (around the plotting region),
+<code>points</code>, <code>text</code>, <code>plotCI</code> (error bars),
+<code>boxplot</code>. The names of these components are influenced by the R
+functions that are used to create them. Thus, <code>par(component)</code>
+can be used to see which parameters are available for a
+given component (with the expection of the three axes; use
+<code>par(axis)</code> here). To adjust the canvas or the performance
+curve(s), the standard <code>plot</code> parameters can be used without any prefix.</td></tr>
+<tr valign="top"><td><code>avg</code></td>
+<td>
+If the performance object describes several curves
+(from cross-validation runs or bootstrap evaluations of one
+particular method), the curves from each of the runs can be
+averaged. Allowed values are <code>none</code> (plot all curves separately), <code>horizontal</code>
+(horizontal averaging), <code>vertical</code> (vertical averaging), and
+<code>threshold</code> (threshold (=cutoff) averaging). Note that while
+threshold averaging is always feasible, vertical and horizontal
+averaging are not well-defined if the graph cannot be represented as
+a function x-&gt;y and y-&gt;x, respectively.</td></tr>
+<tr valign="top"><td><code>spread.estimate</code></td>
+<td>
+When curve averaging is enabled, the variation
+around the average curve can be visualized as standard error bars
+(<code>stderror</code>), standard deviation bars (<code>stddev</code>), or by using
+box plots (<code>boxplot</code>). Note that the function <code>plotCI</code>,
+which is used internally by ROCR to draw error bars, might raise a
+warning if the spread of the curves at certain positions is 0.</td></tr>
+<tr valign="top"><td><code>spread.scale</code></td>
+<td>
+For <code>stderror</code> or <code>stddev</code>, this is a
+scalar factor to be multiplied with the length of the standard
+error/deviation bar. For example, under normal assumptions,
+<code>spread.scale=2</code> can be used to get approximate 95% confidence
+intervals.</td></tr>
+<tr valign="top"><td><code>show.spread.at</code></td>
+<td>
+For vertical averaging, this vector determines the x
+positions for which the spread estimates should be
+visualized. In contrast, for horizontal and threshold averaging, the
+y positions and cutoffs are determined, respectively. By default,
+spread estimates are shown at 11 equally spaced positions.</td></tr>
+<tr valign="top"><td><code>colorize</code></td>
+<td>
+This logical determines whether the curve(s) should be
+colorized according to cutoff.</td></tr>
+<tr valign="top"><td><code>colorize.palette</code></td>
+<td>
+If curve colorizing is enabled, this determines the
+color palette onto which the cutoff range is mapped.</td></tr>
+<tr valign="top"><td><code>colorkey</code></td>
+<td>
+If true, a color key is drawn into the 4% border
+region (default of <code>par(xaxs)</code> and <code>par(yaxs)</code>) of the
+plot. The color key visualizes the mapping from cutoffs to colors.</td></tr>
+<tr valign="top"><td><code>colorkey.relwidth</code></td>
+<td>
+Scalar between 0 and 1 that determines the
+fraction of the 4% border region that is occupied by the colorkey.</td></tr>
+<tr valign="top"><td><code>colorkey.pos</code></td>
+<td>
+Determines if the colorkey is drawn vertically at
+the <code>right</code> side, or horizontally at the <code>top</code> of the
+plot.</td></tr>
+<tr valign="top"><td><code>print.cutoffs.at</code></td>
+<td>
+This vector specifies the cutoffs which should
+be printed as text along the curve at the corresponding curve positions.</td></tr>
+<tr valign="top"><td><code>cutoff.label.function</code></td>
+<td>
+By default, cutoff annotations along the
+curve or at the color key are rounded to two decimal places
+before printing. Using a custom <code>cutoff.label.function</code>, any other 
+transformation can be performed on the cutoffs instead (e.g. rounding with
+different precision or taking the logarithm).</td></tr>
+<tr valign="top"><td><code>downsampling</code></td>
+<td>
+ROCR can efficiently compute most performance measures
+even for data sets with millions of elements. However, plotting of
+large data sets can be slow and lead to PS/PDF documents of
+considerable size. In that case, performance curves that are
+indistinguishable from the original can be obtained by using only a
+fraction of the computed performance values. Values for downsampling
+between 0 and 1 indicate the fraction of the original data set size to which
+the performance object should be downsampled, integers above
+1 are interpreted as the actual number of performance values to which the
+curve(s) should be downsampled.</td></tr>
+<tr valign="top"><td><code>add</code></td>
+<td>
+If <code>TRUE</code>, the curve(s) is/are added to an already
+existing plot; otherwise a new plot is drawn.</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Tobias Sing <a href="mailto:tobias.sing@mpi-sb.mpg.de">tobias.sing@mpi-sb.mpg.de</a>,
+Oliver Sander <a href="mailto:osander@mpi-sb.mpg.de">osander@mpi-sb.mpg.de</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+A detailed list of references can be found on the ROCn'COST
+homepage at <a href="http://rocr.bioinf.mpi-sb.mpg.de">http://rocr.bioinf.mpi-sb.mpg.de</a>.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="prediction.html">prediction</a></code>, <code><a href="performance.html">performance</a></code>,
+<code><a href="prediction-class.html">prediction-class</a></code>, <code><a href="performance-class.html">performance-class</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+# plotting a ROC curve:
+library(ROCR)
+data(ROCR.simple)
+pred &lt;- prediction( ROCR.simple$predictions, ROCR.simple$labels )
+perf &lt;- performance( pred, "tpr", "fpr" )
+plot( perf )
+
+# To entertain your children, make your plots nicer
+# using ROCR's flexible parameter passing mechanisms
+# (much cheaper than a finger painting set)
+par(bg="lightblue", mai=c(1.2,1.5,1,1))
+plot(perf, main="ROCR fingerpainting toolkit", colorize=TRUE,
+  xlab="Mary's axis", ylab="", box.lty=7, box.lwd=5,
+  box.col="gold", lwd=17, colorkey.relwidth=0.5, xaxis.cex.axis=2,
+  xaxis.col='blue', xaxis.col.axis="blue", yaxis.col='green', yaxis.cex.axis=2,
+  yaxis.at=c(0,0.5,0.8,0.85,0.9,1), yaxis.las=1, xaxis.lwd=2, yaxis.lwd=3,
+  yaxis.col.axis="orange", cex.lab=2, cex.main=2)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>ROCR</em> version 1.0-2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

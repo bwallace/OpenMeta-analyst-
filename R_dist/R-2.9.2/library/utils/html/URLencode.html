@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Encode or Decode a (partial) URL</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for URLencode {utils}"><tr><td>URLencode {utils}</td><td align="right">R Documentation</td></tr></table>
+<h2>Encode or Decode a (partial) URL</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Functions to encode or decode characters in URLs.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+URLencode(URL, reserved = FALSE)
+URLdecode(URL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>URL</code></td>
+<td>
+A character string.</td></tr>
+<tr valign="top"><td><code>reserved</code></td>
+<td>
+should reserved characters be encoded?  See
+&lsquo;Details&rsquo;.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Characters in a URL other than the English alphanumeric characters and
+<span class="samp">$ - _ . + ! * ' ( ) ,</span> should be encoded as <code>%</code>
+plus a two-digit hexadecimal representation, and any single-byte
+character can be so encoded. (Multi-byte characters are encoded as
+byte-by-byte.)
+</p>
+<p>
+In addition, <span class="samp">; / ? : @ = &amp;</span> are reserved characters, and should
+be encoded unless used in their reserved sense, which is scheme
+specific.  The default in <code>URLencode</code> is to leave them alone, which
+is appropriate for <span class="samp">file://</span> URLs, but probably not for
+<span class="samp">http://</span> ones.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A character string.</p>
+
+<h3>References</h3>
+
+<p>
+RFC1738, <a href="http://www.rfc-editor.org/rfc/rfc1738.txt">http://www.rfc-editor.org/rfc/rfc1738.txt</a>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+(y &lt;- URLencode("a url with spaces and / and @"))
+URLdecode(y)
+(y &lt;- URLencode("a url with spaces and / and @", reserved=TRUE))
+URLdecode(y)
+URLdecode("ab%20cd")
+</pre>
+
+
+
+<hr><div align="center">[Package <em>utils</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

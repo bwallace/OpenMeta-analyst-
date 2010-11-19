@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Cross Tabulation</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for xtabs {stats}"><tr><td>xtabs {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>Cross Tabulation</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Create a contingency table from cross-classifying factors, usually
+contained in a data frame, using a formula interface.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+xtabs(formula = ~., data = parent.frame(), subset, na.action,
+      exclude = c(NA, NaN), drop.unused.levels = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>formula</code></td>
+<td>
+a <a href="formula.html">formula</a> object with the cross-classifying variables
+(separated by <code>+</code>) on the right hand side (or an object which
+can be coerced to a formula).  Interactions are not allowed.  On the
+left hand side, one may optionally give a vector or a matrix of
+counts; in the latter case, the columns are interpreted as
+corresponding to the levels of a variable.  This is useful if the
+data have already been tabulated, see the examples below.</td></tr>
+<tr valign="top"><td><code>data</code></td>
+<td>
+an optional matrix or data frame (or similar: see
+<code><a href="model.frame.html">model.frame</a></code>) containing the variables in the
+formula <code>formula</code>.  By default the variables are taken from
+<code>environment(formula)</code>.</td></tr>
+<tr valign="top"><td><code>subset</code></td>
+<td>
+an optional vector specifying a subset of observations
+to be used.</td></tr>
+<tr valign="top"><td><code>na.action</code></td>
+<td>
+a function which indicates what should happen when
+the data contain <code>NA</code>s.</td></tr>
+<tr valign="top"><td><code>exclude</code></td>
+<td>
+a vector of values to be excluded when forming the
+set of levels of the classifying factors.</td></tr>
+<tr valign="top"><td><code>drop.unused.levels</code></td>
+<td>
+a logical indicating whether to drop unused
+levels in the classifying factors.  If this is <code>FALSE</code> and
+there are unused levels, the table will contain zero marginals, and
+a subsequent chi-squared test for independence of the factors will
+not work.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+There is a <code>summary</code> method for contingency table objects created
+by <code>table</code> or <code>xtabs</code>, which gives basic information and
+performs a chi-squared test for independence of factors (note that the
+function <code><a href="chisq.test.html">chisq.test</a></code> currently only handles 2-d tables).
+</p>
+<p>
+If a left hand side is given in <code>formula</code>, its entries are simply
+summed over the cells corresponding to the right hand side; this also
+works if the lhs does not give counts.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A contingency table in array representation of class <code>c("xtabs",
+    "table")</code>, with a <code>"call"</code> attribute storing the matched call.</p>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../base/html/table.html">table</a></code> for traditional cross-tabulation, and
+<code><a href="../../base/html/table.html">as.data.frame.table</a></code> which is the inverse operation of
+<code>xtabs</code> (see the <code>DF</code> example below).
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## 'esoph' has the frequencies of cases and controls for all levels of
+## the variables 'agegp', 'alcgp', and 'tobgp'.
+xtabs(cbind(ncases, ncontrols) ~ ., data = esoph)
+## Output is not really helpful ... flat tables are better:
+ftable(xtabs(cbind(ncases, ncontrols) ~ ., data = esoph))
+## In particular if we have fewer factors ...
+ftable(xtabs(cbind(ncases, ncontrols) ~ agegp, data = esoph))
+
+## This is already a contingency table in array form.
+DF &lt;- as.data.frame(UCBAdmissions)
+## Now 'DF' is a data frame with a grid of the factors and the counts
+## in variable 'Freq'.
+DF
+## Nice for taking margins ...
+xtabs(Freq ~ Gender + Admit, DF)
+## And for testing independence ...
+summary(xtabs(Freq ~ ., DF))
+
+## Create a nice display for the warp break data.
+warpbreaks$replicate &lt;- rep(1:9, len = 54)
+ftable(xtabs(breaks ~ wool + tension + replicate, data = warpbreaks))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

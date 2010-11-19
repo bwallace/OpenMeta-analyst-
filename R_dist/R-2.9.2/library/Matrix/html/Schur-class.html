@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Class "Schur" of Schur Matrix Factorizations</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for Schur-class {Matrix}"><tr><td>Schur-class {Matrix}</td><td align="right">R Documentation</td></tr></table>
+<h2>Class "Schur" of Schur Matrix Factorizations</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Class <code>"Schur"</code> is the class of Schur matrix
+factorizations.  These are a generalization of eigen value (or
+&ldquo;spectral&rdquo;) decompositions for general (possibly asymmmetric)
+square matrices, see the <code><a href="Schur.html">Schur</a>()</code> function.
+</p>
+
+
+<h3>Objects from the Class</h3>
+
+<p>
+Objects of class <code>"Schur"</code> are typically created by
+<code><a href="Schur.html">Schur</a>()</code>.
+</p>
+
+
+<h3>Slots</h3>
+
+<p>
+<code>"Schur"</code> has slots
+<dl>
+<dt><code>T</code>:</dt><dd>Upper Block-triangular <code><a href="Matrix-class.html">Matrix</a></code>
+object.</dd>
+<dt><code>Q</code>:</dt><dd>Square <EM>orthogonal</EM> <code>"Matrix"</code>.</dd>
+<dt><code>EValues</code>:</dt><dd>numeric or complex vector of eigenvalues of <code>T</code>.</dd>
+<dt><code>Dim</code>:</dt><dd>the matrix dimension: equal to <code>c(n,n)</code> of
+class <code>"integer"</code>.</dd>
+</dl>
+
+<h3>Extends</h3>
+
+<p>
+Class <code>"<a href="MatrixFactorization-class.html">MatrixFactorization</a>"</code>, directly.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="Schur.html">Schur</a>()</code> for object creation;
+<code><a href="MatrixFactorization-class.html">MatrixFactorization</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+showClass("Schur")
+Schur(M &lt;- Matrix(c(1:7, 10:2), 4,4))
+## Trivial, of course:
+str(Schur(Diagonal(5)))
+
+## for more examples, see Schur()
+</pre>
+
+
+
+<hr><div align="center">[Package <em>Matrix</em> version 0.999375-30 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

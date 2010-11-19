@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Summary Method for LTS objects</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for summary.lts {robustbase}"><tr><td>summary.lts {robustbase}</td><td align="right">R Documentation</td></tr></table>
+<h2>Summary Method for LTS objects</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>summary</code> method for class <code>"lts"</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'lts':
+summary(object, correlation = FALSE, ...)
+
+## S3 method for class 'summary.lts':
+print(x, digits = max(3, getOption("digits") - 3),
+     signif.stars = getOption("show.signif.stars"), ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>object</code></td>
+<td>
+an object of class <code>"lts"</code>, usually, a result of a call to <code><a href="ltsReg.html">ltsReg</a></code>.</td></tr>
+<tr valign="top"><td><code>correlation</code></td>
+<td>
+logical; if <code>TRUE</code>, the correlation matrix of the estimated parameters is returned and printed.</td></tr>
+<tr valign="top"><td><code>x</code></td>
+<td>
+an object of class <code>"summary.lts"</code>, usually, a result of a call to <code>summary.lts</code>.</td></tr>
+<tr valign="top"><td><code>digits</code></td>
+<td>
+the number of significant digits to use when printing.</td></tr>
+<tr valign="top"><td><code>signif.stars</code></td>
+<td>
+logical indicating if &ldquo;significance stars&rdquo;
+should be printer, see <code><a href="../../stats/html/printCoefmat.html">printCoefmat</a></code>.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+further arguments passed to or from other methods.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+These functions compute and print summary statistics for weighted
+least square estimates with weights based on LTS estimates.  Therefore
+the statistics are similar to those for LS but all terms are
+multiplied by the corresponding weight.
+</p>
+<p>
+Correlations are printed to two decimal places: to see the actual correlations
+print <code>summary(object)$correlation</code> directly.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+The function <code>summary.lts</code> computes and returns a list of summary
+statistics of the fitted linear model given in <code>object</code>, using
+the components of this object (list elements).
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>residuals</code></td>
+<td>
+the residuals - a vector like the response <code>y</code>
+containing the residuals from the weighted least squares regression.</td></tr>
+<tr valign="top"><td><code>coefficients</code></td>
+<td>
+a <i>p x 4</i> matrix with columns for
+the estimated coefficient, its standard error, t-statistic and
+corresponding (two-sided) p-value. </td></tr>
+<tr valign="top"><td><code>sigma</code></td>
+<td>
+the estimated scale of the reweighted residuals
+</p><p align="center"><i>sigma^2 = 1/(n-p) Sum(R[i]^2),</i></p><p>
+where <i>R[i]</i> is the <i>i</i>-th residual, <code>residuals[i]</code>.</td></tr>
+<tr valign="top"><td><code>df</code></td>
+<td>
+degrees of freedom, a 3-vector <i>(p, n-p, p*)</i>, the last
+being the number of non-aliased coefficients.</td></tr>
+<tr valign="top"><td><code>fstatistic</code></td>
+<td>
+(for models including non-intercept terms)
+a 3-vector with the value of the F-statistic with
+its numerator and denominator degrees of freedom.</td></tr>
+<tr valign="top"><td><code>r.squared</code></td>
+<td>
+<i>R^2</i>, the &ldquo;fraction of variance explained by
+the model&rdquo;,
+</p><p align="center"><i>R^2 = 1 - Sum(R[i]^2) / Sum((y[i]- y*)^2),</i></p><p>
+where <i>y*</i> is the mean of <i>y[i]</i> if there is an
+intercept and zero otherwise.</td></tr>
+<tr valign="top"><td><code>adj.r.squared</code></td>
+<td>
+the above <i>R^2</i> statistic
+&ldquo;<EM>adjusted</EM>&rdquo;, penalizing for higher <i>p</i>.</td></tr>
+<tr valign="top"><td><code>cov.unscaled</code></td>
+<td>
+a <i>p x p</i> matrix of (unscaled)
+covariances of the <i>coef[j]</i>, <i>j=1, ..., p</i>.</td></tr>
+<tr valign="top"><td><code>correlation</code></td>
+<td>
+the correlation matrix corresponding to the above
+<code>cov.unscaled</code>, if <code>correlation = TRUE</code> is specified.</td></tr>
+</table>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="ltsReg.html">ltsReg</a></code>; the generic <code><a href="../../Zelig/html/summary.zelig.html">summary</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(Animals2)
+ltsA &lt;- ltsReg(log(brain) ~ log(body), data = Animals2)
+(slts &lt;- summary(ltsA))
+## non-default options for printing the summary:
+print(slts, digits = 5, signif.stars = FALSE)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>robustbase</em> version 0.4-5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

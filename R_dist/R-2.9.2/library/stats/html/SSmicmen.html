@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Michaelis-Menten Model</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for SSmicmen {stats}"><tr><td>SSmicmen {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>Michaelis-Menten Model</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This <code>selfStart</code> model evaluates the Michaelis-Menten model and
+its gradient.  It has an <code>initial</code> attribute that
+will evaluate initial estimates of the parameters <code>Vm</code> and <code>K</code>
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+SSmicmen(input, Vm, K)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>input</code></td>
+<td>
+a numeric vector of values at which to evaluate the model.</td></tr>
+<tr valign="top"><td><code>Vm</code></td>
+<td>
+a numeric parameter representing the maximum value of the response.</td></tr>
+<tr valign="top"><td><code>K</code></td>
+<td>
+a numeric parameter representing the <code>input</code> value at
+which half the maximum response is attained.  In the field of enzyme
+kinetics this is called the Michaelis parameter.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+a numeric vector of the same length as <code>input</code>.  It is the value of
+the expression <code>Vm*input/(K+input)</code>.  If both
+the arguments <code>Vm</code> and <code>K</code> are
+names of objects, the gradient matrix with respect to these names is
+attached as an attribute named <code>gradient</code>.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Jose Pinheiro and Douglas Bates
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="nls.html">nls</a></code>, <code><a href="selfStart.html">selfStart</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+PurTrt &lt;- Puromycin[ Puromycin$state == "treated", ]
+SSmicmen( PurTrt$conc, 200, 0.05 )  # response only
+Vm &lt;- 200; K &lt;- 0.05
+SSmicmen( PurTrt$conc, Vm, K ) # response and gradient
+getInitial(rate ~ SSmicmen(conc, Vm, K), data = PurTrt)
+## Initial values are in fact the converged values
+fm1 &lt;- nls(rate ~ SSmicmen(conc, Vm, K), data = PurTrt)
+summary( fm1 )
+## Alternative call using the subset argument
+fm2 &lt;- nls(rate ~ SSmicmen(conc, Vm, K), data = Puromycin,
+           subset = state == "treated")
+summary(fm2)
+
+</pre>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

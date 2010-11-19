@@ -1,0 +1,55 @@
+\HeaderA{binary.fixed.inv.var}{}{binary.fixed.inv.var}
+\keyword{~kwd1}{binary.fixed.inv.var}
+\keyword{~kwd2}{binary.fixed.inv.var}
+\begin{Usage}
+\begin{verbatim}
+binary.fixed.inv.var(binaryData, params)
+\end{verbatim}
+\end{Usage}
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{binaryData}] 
+\item[\code{params}] 
+\end{ldescription}
+\end{Arguments}
+\begin{Examples}
+\begin{ExampleCode}
+##---- Should be DIRECTLY executable !! ----
+##-- ==>  Define data, use random,
+##--    or do  help(data=index)  for the standard data sets.
+
+## The function is currently defined as
+function (binaryData, params) 
+{
+    if (!("BinaryData" %in% class(binaryData))) 
+        stop("Binary data expected.")
+    results <- NULL
+    if (length(binaryData@g1O1) == 1 || length(binaryData@y) == 
+        1) {
+        res <- get.res.for.one.binary.study(binaryData, params)
+        results <- list(summary = res)
+    }
+    else {
+        res <- rma.uni(yi = binaryData@y, sei = binaryData@SE, 
+            slab = binaryData@studyNames, level = params$conf.level, 
+            digits = params$digits, method = "FE", add = params$adjust, 
+            to = params$to)
+        degf <- res$k - res$p
+        summaryDisp <- createSummaryDisp(res, params, degf)
+        summaryDisp$modelTitle <- paste("Fixed-Effects Model - Inverse Variance (k = ", 
+            res$k, ")", sep = "")
+        summaryDisp
+        forest_path <- "./r_tmp/forest.png"
+        plotData <- create.plot.data.binary(binaryData, params, 
+            res)
+        forest.plot(plotData, outpath = forest_path)
+        images <- c(`forest plot` = forest_path)
+        plot_names <- c(`forest plot` = "forest_plot")
+        results <- list(images = images, summary = summaryDisp, 
+            plot_names = plot_names)
+    }
+    results
+  }
+\end{ExampleCode}
+\end{Examples}
+

@@ -1,0 +1,54 @@
+### Name: fillin.2x2.simple
+
+### Aliases: fillin.2x2.simple
+### Keywords: ~kwd1 ~kwd2
+
+### ** Examples
+
+##---- Should be DIRECTLY executable !! ----
+##-- ==>  Define data, use random,
+##--    or do  help(data=index)  for the standard data sets.
+
+## The function is currently defined as
+function (c11 = NA, c12 = NA, c21 = NA, c22 = NA, r1sum = NA, 
+    r2sum = NA, c1sum = NA, c2sum = NA, total = NA, touse = rep(TRUE, 
+        9)) 
+{
+    y <- c(rep(c11, 4), rep(c12, 4), rep(c21, 4), res <- rep(c22, 
+        4), rep(r1sum, 3), rep(r2sum, 3), rep(c1sum, 3), rep(c2sum, 
+        3), rep(total, 8))
+    select <- c(rep(touse[1], 4), rep(touse[2], 4), rep(touse[3], 
+        4), rep(touse[4], 4), rep(touse[5], 3), rep(touse[6], 
+        3), rep(touse[7], 3), rep(touse[8], 3), rep(touse[9], 
+        8))
+    X <- c(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 
+        0, 0, 0, -1, 0, 0, 0, 1, 0, 0, 0, -1, -1, -1, 0, 0, 0, 
+        0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 1, 0, 0, 
+        0, 0, 0, 0, 0, -1, 0, 0, 0, 1, 0, -1, 0, -1, -1, 0, 0, 
+        0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 1, 
+        0, 0, 0, -1, 0, 0, 0, 0, 0, 1, 0, 0, -1, -1, 0, -1, 0, 
+        0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 
+        1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 1, 0, -1, -1, -1, 0, 
+        0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 
+        0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+        -1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 1, 0, 0, 0, 0, 
+        0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+        0, 0, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 
+        0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 
+        0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 
+        0, 0, 0, 1, 0)
+    X <- matrix(X, ncol = 9, byrow = TRUE)
+    my.frame <- as.data.frame(X)
+    colnames(my.frame) <- c("c11", "c12", "c21", "c22", "r1sum", 
+        "r2sum", "c1sum", "c2sum", "total")
+    my.frame <- cbind(y, my.frame)
+    res <- lm(y ~ c11 + c12 + c21 + c22 + r1sum + r2sum + c1sum + 
+        c2sum + total + (-1), data = my.frame)
+    return(res)
+  }
+
+
+

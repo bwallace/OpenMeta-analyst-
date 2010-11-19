@@ -1,0 +1,80 @@
+Changes in metafor version 0.5-7
+
+   o added permutest() function for permutation tests
+   o added metafor.news() function to display the NEWS file
+     of the metafor package within R (based on the same idea
+     in the animate package by Yihui Xie)
+   o added some checks for values below machine precision
+   o a bit of code reorganization (nothing that affects how
+     the functions work)
+
+Changes in metafor version 0.5-6
+
+   o small changes to the computation of the DFFITS and DFBETAS 
+     values in the influence() function, so that these statistics 
+     are more in line with their definitions in regular linear 
+     regression models
+   o added option to the plot function for objects returned by
+     influence() to allow plotting the covariance ratios on a 
+     log scale (now the default)
+   o slight adjustments to various print() functions (to catch
+     some errors when certain values were NA)
+   o added a control option to rma() to adjust the step length of
+     the Fisher scoring algorithm by a constant factor (this may
+     be useful when the algorithm does not converge)
+
+Changes in metafor version 0.5-5
+
+   o added the phi coefficient (measure="PHI"), Yule's Q ("YUQ"),
+     and Yule's Y ("YUY") as additional measures to the escalc() 
+     function for 2x2 table data 
+   o forest plots now order the studies so that the first study
+     is at the top of the plot and the last study at the bottom
+     (the order can still be set with the order/subset arguments)
+   o added cumul() function for cumulative meta-analyses (with a
+     corresponding forest() method to plot the cumulative results)
+   o added leave1out() function for leave-one-out diagnostics
+   o added option to qqnorm.rma.uni() so that the user can choose
+     whether to apply the Bonferroni correction to the bounds of
+     the pseudo confidence envelope
+   o some internal changes to the class and methods names
+   o some small corrections to the documentation
+
+Changes in metafor version 0.5-4
+
+   o corrected the trimfill() function
+   o improvements to various print functions
+   o added a regtest() function for various regression tests of
+     funnel plot asymmetry (e.g., Egger's regression test)
+   o made ranktest() generic and added a method for objects of 
+     class "rma" so that the test can be carried out after fitting
+   o added anova() function for full vs reduced model comparisons
+     via fit statistics and likelihood ratio tests
+   o added the Orwin and Rosenberg approaches to fsn()
+   o added H^2 measure to the output for random-effects models
+   o in escalc(), measure="COR" is now used for the (usual) raw
+     correlation coefficient and measure="UCOR" for the bias
+     corrected correlation coefficients
+   o some small corrections to the documentation
+
+Changes in metafor version 0.5-3
+
+   o small changes to some of the examples
+   o added the log transformed proportion (measure="PLN") as another 
+     measure to the escalc() function; changed "PL" to "PLO" for the 
+     logit (i.e., log odds) transformation for proportions
+
+Changes in metafor version 0.5-2
+
+   o added an option in plot.infl.rma.uni() to open a new device 
+     for plotting the DFBETAS values
+   o thanks to Jim Lemon, added a much better method of adjusting 
+     the size of the labels, annotations, and symbols in the forest() 
+     function when the number of studies is large
+
+Changes in metafor version 0.5-1
+
+   o made some small changes to the documentation (some typos 
+     corrected, some confusing points clarified)
+
+First version released on CRAN: 0.5-0

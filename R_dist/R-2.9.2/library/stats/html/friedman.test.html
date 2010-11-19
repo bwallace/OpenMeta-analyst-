@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Friedman Rank Sum Test</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for friedman.test {stats}"><tr><td>friedman.test {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>Friedman Rank Sum Test</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Performs a Friedman rank sum test with unreplicated blocked data.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+friedman.test(y, ...)
+
+## Default S3 method:
+friedman.test(y, groups, blocks, ...)
+
+## S3 method for class 'formula':
+friedman.test(formula, data, subset, na.action, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>y</code></td>
+<td>
+either a numeric vector of data values, or a data matrix.</td></tr>
+<tr valign="top"><td><code>groups</code></td>
+<td>
+a vector giving the group for the corresponding
+elements of <code>y</code> if this is a vector;  ignored if <code>y</code>
+is a matrix.  If not a factor object, it is coerced to one.</td></tr>
+<tr valign="top"><td><code>blocks</code></td>
+<td>
+a vector giving the block for the corresponding
+elements of <code>y</code> if this is a vector;  ignored if <code>y</code>
+is a matrix.  If not a factor object, it is coerced to one.</td></tr>
+<tr valign="top"><td><code>formula</code></td>
+<td>
+a formula of the form <code>a ~ b | c</code>, where <code>a</code>,
+<code>b</code> and <code>c</code> give the data values and corresponding groups
+and blocks, respectively.</td></tr>
+<tr valign="top"><td><code>data</code></td>
+<td>
+an optional matrix or data frame (or similar: see
+<code><a href="model.frame.html">model.frame</a></code>) containing the variables in the
+formula <code>formula</code>.  By default the variables are taken from
+<code>environment(formula)</code>.</td></tr>
+<tr valign="top"><td><code>subset</code></td>
+<td>
+an optional vector specifying a subset of observations
+to be used.</td></tr>
+<tr valign="top"><td><code>na.action</code></td>
+<td>
+a function which indicates what should happen when
+the data contain <code>NA</code>s.  Defaults to
+<code>getOption("na.action")</code>.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+further arguments to be passed to or from methods.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>friedman.test</code> can be used for analyzing unreplicated complete
+block designs (i.e., there is exactly one observation in <code>y</code>
+for each combination of levels of <code>groups</code> and <code>blocks</code>)
+where the normality assumption may be violated.
+</p>
+<p>
+The null hypothesis is that apart from an effect of <code>blocks</code>,
+the location parameter of <code>y</code> is the same in each of the
+<code>groups</code>. 
+</p>
+<p>
+If <code>y</code> is a matrix, <code>groups</code> and <code>blocks</code> are
+obtained from the column and row indices, respectively.  <code>NA</code>'s
+are not allowed in <code>groups</code> or <code>blocks</code>;  if <code>y</code>
+contains <code>NA</code>'s, corresponding blocks are removed.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A list with class <code>"htest"</code> containing the following components:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>statistic</code></td>
+<td>
+the value of Friedman's chi-squared statistic.</td></tr>
+<tr valign="top"><td><code>parameter</code></td>
+<td>
+the degrees of freedom of the approximate
+chi-squared distribution of the test statistic.</td></tr>
+<tr valign="top"><td><code>p.value</code></td>
+<td>
+the p-value of the test.</td></tr>
+<tr valign="top"><td><code>method</code></td>
+<td>
+the character string <code>"Friedman rank sum test"</code>.</td></tr>
+<tr valign="top"><td><code>data.name</code></td>
+<td>
+a character string giving the names of the data.</td></tr>
+</table>
+
+<h3>References</h3>
+
+<p>
+Myles Hollander and Douglas A. Wolfe (1973),
+<EM>Nonparametric Statistical Methods.</EM>
+New York: John Wiley &amp; Sons.
+Pages 139&ndash;146.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="quade.test.html">quade.test</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## Hollander &amp; Wolfe (1973), p. 140ff.
+## Comparison of three methods ("round out", "narrow angle", and
+##  "wide angle") for rounding first base.  For each of 18 players
+##  and the three method, the average time of two runs from a point on
+##  the first base line 35ft from home plate to a point 15ft short of
+##  second base is recorded.
+RoundingTimes &lt;-
+matrix(c(5.40, 5.50, 5.55,
+         5.85, 5.70, 5.75,
+         5.20, 5.60, 5.50,
+         5.55, 5.50, 5.40,
+         5.90, 5.85, 5.70,
+         5.45, 5.55, 5.60,
+         5.40, 5.40, 5.35,
+         5.45, 5.50, 5.35,
+         5.25, 5.15, 5.00,
+         5.85, 5.80, 5.70,
+         5.25, 5.20, 5.10,
+         5.65, 5.55, 5.45,
+         5.60, 5.35, 5.45,
+         5.05, 5.00, 4.95,
+         5.50, 5.50, 5.40,
+         5.45, 5.55, 5.50,
+         5.55, 5.55, 5.35,
+         5.45, 5.50, 5.55,
+         5.50, 5.45, 5.25,
+         5.65, 5.60, 5.40,
+         5.70, 5.65, 5.55,
+         6.30, 6.30, 6.25),
+       nrow = 22,
+       byrow = TRUE,
+       dimnames = list(1 : 22,
+                       c("Round Out", "Narrow Angle", "Wide Angle")))
+friedman.test(RoundingTimes)
+## =&gt; strong evidence against the null that the methods are equivalent
+##    with respect to speed
+
+wb &lt;- aggregate(warpbreaks$breaks,
+                by = list(w = warpbreaks$wool,
+                          t = warpbreaks$tension),
+                FUN = mean)
+wb
+friedman.test(wb$x, wb$w, wb$t)
+friedman.test(x ~ w | t, data = wb)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

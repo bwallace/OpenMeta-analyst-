@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Compressed, sparse, column-oriented numeric matrices</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for dgCMatrix-class {Matrix}"><tr><td>dgCMatrix-class {Matrix}</td><td align="right">R Documentation</td></tr></table>
+<h2>Compressed, sparse, column-oriented numeric matrices</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The <code>dgCMatrix</code> class is a class of sparse numeric
+matrices in the compressed, sparse, column-oriented format.  In this
+implementation the non-zero elements in the columns are sorted into
+increasing row order.  <code>dgCMatrix</code> is the
+<EM>&ldquo;standard&rdquo;</EM> class for sparse numeric matrices in the
+<span class="pkg">Matrix</span> package.
+</p>
+
+
+<h3>Objects from the Class</h3>
+
+<p>
+Objects can be created by calls of the form <code>new("dgCMatrix", ...)</code> or
+often more easily via <code><a href="Matrix.html">Matrix</a>(*, sparse = TRUE)</code>.
+</p>
+
+
+<h3>Slots</h3>
+
+<dl>
+<dt><code>x</code>:</dt><dd>Object of class <code>"numeric"</code> - the non-zero
+elements of the matrix.</dd>
+<dt>...</dt><dd>all other slots are inherited from the superclass
+<code>"<a href="CsparseMatrix-class.html">CsparseMatrix</a>"</code>.
+</dd>
+</dl>
+
+<h3>Methods</h3>
+
+<dl>
+<dt>coerce</dt><dd><code>signature(from = "matrix", to = "dgCMatrix")</code></dd>
+<dt>coerce</dt><dd><code>signature(from = "dgCMatrix", to = "matrix")</code></dd>
+<dt>coerce</dt><dd><code>signature(from = "dgCMatrix", to = "dgTMatrix")</code></dd>
+<dt>crossprod</dt><dd><code>signature(x = "dgCMatrix", y = "missing")</code>
+returns <code>t(x) %*% x</code> as an <code>dsCMatrix</code> object.</dd>
+<dt>crossprod</dt><dd><code>signature(x = "dgCMatrix", y = "matrix")</code>: ... </dd>
+<dt>crossprod</dt><dd><code>signature(x = "dgCMatrix", y = "numeric")</code>: ... </dd>
+<dt>diag</dt><dd><code>signature(x = "dgCMatrix")</code>: returns the diagonal
+of <code>x</code></dd>
+<dt>dim</dt><dd><code>signature(x = "dgCMatrix")</code>: returns the dimensions
+of <code>x</code></dd>
+<dt>image</dt><dd><code>signature(x = "dgCMatrix")</code>: plots an image of
+<code>x</code> using the <code><a href="../../lattice/html/levelplot.html">levelplot</a></code> function</dd>
+<dt>lu</dt><dd><code>signature(x = "dgCMatrix")</code>: computes the LU
+decomposition of a square <code>dgCMatrix</code> object</dd>
+</dl>
+
+<h3>See Also</h3>
+
+<p>
+Classes <code><a href="dsCMatrix-class.html">dsCMatrix</a></code>,
+<code><a href="dtCMatrix-class.html">dtCMatrix</a></code>, <code><a href="lu.html">lu</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+(m &lt;- Matrix(c(0,0,2:0), 3,5))
+str(m)
+m[,1]
+
+</pre>
+
+
+
+<hr><div align="center">[Package <em>Matrix</em> version 0.999375-30 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Triangular, dense, numeric matrices</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for dtrMatrix-class {Matrix}"><tr><td>dtrMatrix-class {Matrix}</td><td align="right">R Documentation</td></tr></table>
+<h2>Triangular, dense, numeric matrices</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The <code>"dtrMatrix"</code> class is the class of triangular, dense,
+numeric matrices in nonpacked storage.  The <code>"dtpMatrix"</code> class
+is the same except in packed storage.
+</p>
+
+
+<h3>Objects from the Class</h3>
+
+<p>
+Objects can be created by calls of the form <code>new("dtrMatrix", ...)</code>.
+</p>
+
+
+<h3>Slots</h3>
+
+<dl>
+<dt><code>uplo</code>:</dt><dd>Object of class <code>"character"</code>. Must be
+either "U", for upper triangular, and "L", for lower triangular.</dd>
+<dt><code>diag</code>:</dt><dd>Object of class <code>"character"</code>. Must be
+either <code>"U"</code>, for unit triangular (diagonal is all ones), or
+<code>"N"</code>; see <code><a href="triangularMatrix-class.html">triangularMatrix</a></code>.</dd>
+<dt><code>x</code>:</dt><dd>Object of class <code>"numeric"</code>. The numeric
+values that constitute the matrix, stored in column-major order.</dd>
+<dt><code>Dim</code>:</dt><dd>Object of class <code>"integer"</code>. The dimensions
+of the matrix which must be a two-element vector of non-negative
+integers.</dd>
+</dl>
+
+<h3>Extends</h3>
+
+<p>
+Class <code>"ddenseMatrix"</code>, directly.
+Class <code>"triangularMatrix"</code>, directly.
+Class <code>"Matrix"</code> and others, by class <code>"ddenseMatrix"</code>.
+</p>
+
+
+<h3>Methods</h3>
+
+<dl>
+<dt>%*%</dt><dd><code>signature(x = "dtrMatrix", y = "matrix")</code> and other
+signatures (use <code>showMethods("%*%", class="dtrMatrix")</code>):
+matrix multiplication.</dd>
+<dt>coerce</dt><dd><code>signature(from = "dgeMatrix", to = "dtrMatrix")</code></dd>
+<dt>coerce</dt><dd><code>signature(from = "dtrMatrix", to = "matrix")</code></dd>
+<dt>coerce</dt><dd><code>signature(from = "dtrMatrix", to = "ltrMatrix")</code></dd>
+<dt>coerce</dt><dd><code>signature(from = "dtrMatrix", to = "matrix")</code></dd>
+<dt>coerce</dt><dd><code>signature(from = "matrix",    to = "dtrMatrix")</code></dd>
+
+
+<dt>norm</dt><dd><code>signature(x = "dtrMatrix", type = "character")</code></dd>
+<dt>rcond</dt><dd><code>signature(x = "dtrMatrix", norm = "character")</code></dd>
+<dt>solve</dt><dd><code>signature(a = "dtrMatrix", b = "missing")</code></dd>
+<dt>solve</dt><dd><code>signature(a = "dtrMatrix", b = "matrix")</code></dd>
+</dl>
+
+<h3>See Also</h3>
+
+<p>
+Classes <code><a href="ddenseMatrix-class.html">ddenseMatrix</a></code>, <code><a href="dtpMatrix-class.html">dtpMatrix</a></code>,
+<code><a href="triangularMatrix-class.html">triangularMatrix</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+(m &lt;- rbind(2:3, 0:-1))
+(M &lt;- as(m, "dgeMatrix"))
+
+(T &lt;- as(M, "dtrMatrix")) ## upper triangular is default
+(T2 &lt;- as(t(M), "dtrMatrix"))
+stopifnot(T@uplo == "U", T2@uplo == "L", identical(T2, t(T)))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>Matrix</em> version 0.999375-30 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

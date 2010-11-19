@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Set Parameters for Loess</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for loess.control {stats}"><tr><td>loess.control {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>Set Parameters for Loess</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Set control parameters for <code>loess</code> fits.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+loess.control(surface = c("interpolate", "direct"),
+              statistics = c("approximate", "exact"),
+              trace.hat = c("exact", "approximate"),
+              cell = 0.2, iterations = 4, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>surface</code></td>
+<td>
+should be fitted surface be computed exactly or via
+interpolation from a kd tree?</td></tr>
+<tr valign="top"><td><code>statistics</code></td>
+<td>
+should the statistics be computed exactly or
+approximately? Exact computation can be very slow.</td></tr>
+<tr valign="top"><td><code>trace.hat</code></td>
+<td>
+should the trace of the smoother matrix be computed
+exactly or approximately? It is recommended to use the approximation
+for more than about 1000 data points.</td></tr>
+<tr valign="top"><td><code>cell</code></td>
+<td>
+if interpolation is used this controls the accuracy of the
+approximation via the maximum number of points in a  cell in the kd
+tree. Cells with more than <code>floor(n*span*cell)</code> points are subdivided.</td></tr>
+<tr valign="top"><td><code>iterations</code></td>
+<td>
+the number of iterations used in robust fitting.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+further arguments which are ignored.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+A list with components
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>surface</code></td>
+<td>
+</td></tr>
+<tr valign="top"><td><code>statistics</code></td>
+<td>
+</td></tr>
+<tr valign="top"><td><code>trace.hat</code></td>
+<td>
+</td></tr>
+<tr valign="top"><td><code>cell</code></td>
+<td>
+</td></tr>
+<tr valign="top"><td><code>iterations</code></td>
+<td>
+</td></tr>
+</table>
+<p>
+
+with meanings as explained under &lsquo;Arguments&rsquo;.</p>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="loess.html">loess</a></code>
+</p>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

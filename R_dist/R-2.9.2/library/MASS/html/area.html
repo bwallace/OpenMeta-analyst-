@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Adaptive Numerical Integration</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for area {MASS}"><tr><td>area {MASS}</td><td align="right">R Documentation</td></tr></table>
+<h2>Adaptive Numerical Integration</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Integrate a function of one variable over a finite range using a
+recursive adaptive method.  This function is mainly for
+demonstration purposes.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+area(f, a, b, ..., fa = f(a, ...), fb = f(b, ...),
+     limit = 10, eps = 1e-05)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>f</code></td>
+<td>
+The integrand as an <code>S</code> function object.  The variable of integration must be
+the first argument.
+</td></tr>
+<tr valign="top"><td><code>a</code></td>
+<td>
+Lower limit of integration.
+</td></tr>
+<tr valign="top"><td><code>b</code></td>
+<td>
+Upper limit of integration.
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+Additional arguments needed by the integrand.
+</td></tr>
+<tr valign="top"><td><code>fa</code></td>
+<td>
+Function value at the lower limit.
+</td></tr>
+<tr valign="top"><td><code>fb</code></td>
+<td>
+Function value at the upper limit.
+</td></tr>
+<tr valign="top"><td><code>limit</code></td>
+<td>
+Limit on the depth to which recursion is allowed to go.
+</td></tr>
+<tr valign="top"><td><code>eps</code></td>
+<td>
+Error tolerance to control the process.
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The method divides the interval in two and compares the values given by
+Simpson's rule and the trapezium rule.  If these are within eps of each
+other the Simpson's rule result is given, otherwise the process is applied
+separately to each half of the interval and the results added together.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+The integral from <code>a</code> to <code>b</code> of <code>f(x)</code>.</p>
+
+<h3>References</h3>
+
+<p>
+Venables, W. N. and Ripley, B. D. (1994)
+<EM>Modern Applied Statistics with S-Plus.</EM> Springer.
+pp. 105&ndash;110.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+area(sin, 0, pi)  # integrate the sin function from 0 to pi.
+</pre>
+
+
+
+<hr><div align="center">[Package <em>MASS</em> version 7.2-48 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

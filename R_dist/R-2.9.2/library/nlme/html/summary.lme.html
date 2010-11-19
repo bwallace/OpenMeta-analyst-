@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Summarize an lme Object</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for summary.lme {nlme}"><tr><td>summary.lme {nlme}</td><td align="right">R Documentation</td></tr></table>
+<h2>Summarize an lme Object</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Additional information about the linear mixed-effects fit represented
+by <code>object</code> is extracted and included as components of
+<code>object</code>. The returned object is suitable for printing with the
+<code>print.summary.lme</code> method.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'lme':
+summary(object, adjustSigma, verbose, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>object</code></td>
+<td>
+an object inheriting from class <code>lme</code>, representing
+a fitted linear mixed-effects model.</td></tr>
+<tr valign="top"><td><code>adjustSigma</code></td>
+<td>
+an optional logical value. If <code>TRUE</code> and the
+estimation method used to obtain <code>object</code> was maximum
+likelihood, the residual standard error is multiplied by
+<i>sqrt(nobs/(nobs - npar))</i>,
+converting it to a REML-like estimate. This argument is only used
+when a single fitted object is passed to the function. Default is
+<code>TRUE</code>.</td></tr>
+<tr valign="top"><td><code>verbose</code></td>
+<td>
+an optional logical value used to control the amount of
+output in the <code>print.summary.lme</code> method. Defaults to
+<code>FALSE</code>.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+some methods for this generic require additional
+arguments.  None are used in this method.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+an object inheriting from class <code>summary.lme</code> with all components
+included in <code>object</code> (see <code><a href="lmeObject.html">lmeObject</a></code> for a full
+description of the components) plus the following components:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>corFixed</code></td>
+<td>
+approximate correlation matrix for the fixed effects
+estimates </td></tr>
+<tr valign="top"><td><code>tTable</code></td>
+<td>
+a data frame with columns <code>Value</code>,
+<code>Std. Error</code>, <code>DF</code>, <code>t-value</code>, and <code>p-value</code> representing
+respectively the fixed effects estimates, their approximate standard
+errors, the denominator degrees of freedom, the ratios between the
+estimates and their standard errors, 
+and the associated p-value from a t distribution. Rows
+correspond to the different fixed effects.</td></tr>
+<tr valign="top"><td><code>residuals</code></td>
+<td>
+if more than five observations are used in the
+<code>lme</code> fit, a vector with the minimum, first quartile, median, third
+quartile, and maximum of the innermost grouping level residuals
+distribution; else the innermost grouping level residuals.</td></tr>
+<tr valign="top"><td><code>AIC</code></td>
+<td>
+the Akaike Information Criterion corresponding to
+<code>object</code>.</td></tr>
+<tr valign="top"><td><code>BIC</code></td>
+<td>
+the Bayesian Information Criterion corresponding to
+<code>object</code>.</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Jose Pinheiro <a href="mailto:Jose.Pinheiro@pharma.novartis.com">Jose.Pinheiro@pharma.novartis.com</a> and Douglas Bates <a href="mailto:bates@stat.wisc.edu">bates@stat.wisc.edu</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../stats/html/AIC.html">AIC</a></code>,
+<code><a href="BIC.html">BIC</a></code>,
+<code><a href="lme.html">lme</a></code>,
+<code>print.summary.lme</code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+fm1 &lt;- lme(distance ~ age, Orthodont, random = ~ age | Subject)
+summary(fm1)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>nlme</em> version 3.1-93 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

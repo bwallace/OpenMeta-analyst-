@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Get and Set Contrast Matrices</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for contrasts {stats}"><tr><td>contrasts {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>Get and Set Contrast Matrices</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Set and view the contrasts associated with a factor.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+contrasts(x, contrasts = TRUE)
+contrasts(x, how.many) &lt;- value
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+a factor or a logical variable.</td></tr>
+<tr valign="top"><td><code>contrasts</code></td>
+<td>
+logical.  See &lsquo;Details&rsquo;.</td></tr>
+<tr valign="top"><td><code>how.many</code></td>
+<td>
+How many contrasts should be made. Defaults to one
+less than the number of levels of <code>x</code>.  This need not be the
+same as the number of columns of <code>value</code>.</td></tr>
+<tr valign="top"><td><code>value</code></td>
+<td>
+either a numeric matrix whose columns give coefficients for
+contrasts in the levels of <code>x</code>, or the (quoted) name of a
+function which computes such matrices.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+If contrasts are not set for a factor the default functions from
+<code><a href="../../base/html/options.html">options</a>("contrasts")</code> are used.
+</p>
+<p>
+A logical vector <code>x</code> is converted into a two-level factor with
+levels <code>c(FALSE, TRUE)</code> (regardless of which levels occur in the
+variable).
+</p>
+<p>
+The argument <code>contrasts</code> is ignored if <code>x</code> has a matrix
+<code>contrasts</code> attribute set.  Otherwise if <code>contrasts = TRUE</code>
+it is passed to a contrasts function such as
+<code><a href="contrast.html">contr.treatment</a></code> and if <code>contrasts = FALSE</code>
+an identity matrix is returned.  Suitable functions have a first
+argument which is the character vector of levels and a named argument
+<code>contrasts</code> (always called with <code>contrasts = TRUE</code>).
+</p>
+<p>
+If <code>value</code> supplies more than <code>how.many</code> contrasts, the
+first <code>how.many</code> are used.  If too few are supplied, a suitable
+contrast matrix is created by extending <code>value</code> after ensuring
+its columns are contrasts (orthogonal to the constant term) and not
+collinear.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Chambers, J. M. and Hastie, T. J. (1992)
+<EM>Statistical models.</EM>
+Chapter 2 of <EM>Statistical Models in S</EM>
+eds J. M. Chambers and T. J. Hastie, Wadsworth &amp; Brooks/Cole.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="zC.html">C</a></code>,
+<code><a href="contrast.html">contr.helmert</a></code>,
+<code><a href="contrast.html">contr.poly</a></code>,
+<code><a href="contrast.html">contr.sum</a></code>,
+<code><a href="contrast.html">contr.treatment</a></code>;
+<code><a href="glm.html">glm</a></code>,
+<code><a href="aov.html">aov</a></code>,
+<code><a href="lm.html">lm</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+utils::example(factor)
+fff &lt;- ff[, drop=TRUE]  # reduce to 5 levels.
+contrasts(fff) # treatment contrasts by default
+contrasts(C(fff, sum))
+contrasts(fff, contrasts = FALSE) # the 5x5 identity matrix
+
+contrasts(fff) &lt;- contr.sum(5); contrasts(fff)  # set sum contrasts
+contrasts(fff, 2) &lt;- contr.sum(5); contrasts(fff)  # set 2 contrasts
+# supply 2 contrasts, compute 2 more to make full set of 4.
+contrasts(fff) &lt;- contr.sum(5)[,1:2]; contrasts(fff)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

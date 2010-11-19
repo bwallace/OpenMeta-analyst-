@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Call an Inherited Method</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for callNextMethod {methods}"><tr><td>callNextMethod {methods}</td><td align="right">R Documentation</td></tr></table>
+<h2>Call an Inherited Method</h2>
+
+
+<h3>Description</h3>
+
+<p>
+A call to <code>callNextMethod</code> can only appear inside a method
+definition.  It then results in a call to the first inherited method
+after the current method, with the arguments to the current method
+passed down to the next method.  The value of that method call is the
+value of <code>callNextMethod</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+callNextMethod(...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>...</code></td>
+<td>
+Optionally, the arguments to the function in its next call
+(but note that the dispatch is as in the detailed description below;
+the arguments have no effect on selecting the next method.)
+<br>
+If no arguments are included in the call to <code>callNextMethod</code>, the
+effect is to call the method with the current arguments.
+See the detailed description for what this really means.
+<br>
+Calling with no arguments is often the natural way to use
+<code>callNextMethod</code>; see the examples.
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The &lsquo;next&rsquo; method (i.e., the first inherited method) is defined
+to be that method which <EM>would</EM> have been called if the current
+method did not exist. This is more-or-less literally what happens: The
+current method (to be precise, the method with signature given by the
+<code>defined</code> slot of the method from which <code>callNextMethod</code> is
+called) is deleted from a copy of the methods for the current generic,
+and <code><a href="getMethod.html">selectMethod</a></code> is called to find the next method (the
+result is cached in a special object, so the search only typically
+happens once per session per combination of argument classes).
+</p>
+<p>
+Note that the preceding definition means that the next method is
+defined uniquely when <code>setMethod</code> inserts the method containing
+the <code>callNextMethod</code> call, given the definitions of the classes
+in the signature. The choice does not depend on the path that gets us
+to that method (for example, through inheritance or from another
+<code>callNextMethod</code> call). This definition was not enforced in
+versions of <font face="Courier New,Courier" color="#666666"><b>R</b></font> prior to 2.3.0, where the method was selected based on
+the target signature, and so could vary depending on the actual
+arguments.
+</p>
+<p>
+It is also legal, and often useful, for the method called by
+<code>callNextMethod</code> to itself have a call to
+<code>callNextMethod</code>. This generally works as you would expect, but
+for completeness be aware that it is possible to have ambiguous
+inheritance in the S structure, in the sense that the same two
+classes can appear as superclasses <EM>in the opposite order</EM> in
+two other class definitions.  In this case the effect of a nested
+instance of <code>callNextMethod</code> is not well defined.  Such
+inconsistent class hierarchies are both rare and nearly always the
+result of bad design, but they are possible, and currently undetected.
+</p>
+<p>
+The statement that the method is called with the current arguments is
+more precisely as follows.  Arguments that were missing in the current
+call are still missing (remember that <code>"missing"</code> is a valid
+class in a method signature).  For a formal argument, say <code>x</code>, that
+appears in the original call, there is a corresponding argument in the
+next method call equivalent to <code>x = x</code>.  In effect, this
+means that the next method sees the same actual arguments, but
+arguments are evaluated only once.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+The value returned by the selected method.</p>
+
+<h3>References</h3>
+
+<p>
+Chambers, John M. (2008)
+<EM>Software for Data Analysis: Programming with R</EM>
+Springer.  (For the R version.)
+</p>
+<p>
+Chambers, John M. (1998)
+<EM>Programming with Data</EM>
+Springer (For the original S4 version.)
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="callGeneric.html">callGeneric</a></code> to call the generic function with the current
+dispatch rules (typically for a group generic function); <a href="Methods.html">Methods</a> for the general behavior of method dispatch
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+
+## some class definitions with simple inheritance
+setClass("B0" , representation(b0 = "numeric"))
+
+setClass("B1", representation(b1 = "character"), contains = "B0")
+
+setClass("B2", representation(b2 = "logical"), contains = "B1")
+
+## and a rather silly function to illustrate callNextMethod
+
+f &lt;- function(x) class(x)
+
+setMethod("f", "B0", function(x) c(x@b0^2, callNextMethod()))
+setMethod("f", "B1", function(x) c(paste(x@b1,":"), callNextMethod()))
+setMethod("f", "B2", function(x) c(x@b2, callNextMethod()))
+
+b1 &lt;- new("B1", b0 = 2, b1 = "Testing")
+
+b2 &lt;- new("B2", b2 = FALSE, b1 = "More testing", b0 = 10)
+
+f(b2)
+stopifnot(identical(f(b2), c(b2@b2, paste(b2@b1,":"), b2@b0^2, "B2")))
+
+f(b1)
+
+## a sneakier method: the *changed* x is used:
+setMethod("f", "B2", function(x) {x@b0 &lt;- 111; c(x@b2, callNextMethod())})
+f(b2)
+stopifnot(identical(f(b2), c(b2@b2, paste(b2@b1,":"), 111^2, "B2")))
+
+
+
+</pre>
+
+
+
+<hr><div align="center">[Package <em>methods</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

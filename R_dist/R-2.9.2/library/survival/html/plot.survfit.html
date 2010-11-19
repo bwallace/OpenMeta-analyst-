@@ -1,0 +1,201 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Plot Method for 'survfit'</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for plot.survfit {survival}"><tr><td>plot.survfit {survival}</td><td align="right">R Documentation</td></tr></table>
+<h2>Plot Method for 'survfit'</h2>
+
+
+<h3>Description</h3>
+
+<p>
+A plot of survival curves is produced, one curve for each strata. 
+The <code>log=T</code> option does extra work to avoid log(0), and to try to create a 
+pleasing result.  If there are zeros, they are plotted by default at 
+0.8 times the smallest non-zero value on the curve(s).
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'survfit':
+plot(x, conf.int=, mark.time=TRUE, 
+ mark=3, col=1, lty=1, lwd=1, cex=1, log=FALSE, xscale=1, yscale=1,  
+ firstx=0, firsty=1, xmax, ymin=0, fun, 
+ xlab="", ylab="", xaxs="S", ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+an object of class <code>survfit</code>, usually returned by the
+<code>survfit</code> function. 
+</td></tr>
+<tr valign="top"><td><code>conf.int</code></td>
+<td>
+determines whether confidence intervals will be plotted.  The default is to 
+do so if there is only 1 curve, i.e., no strata. 
+</td></tr>
+<tr valign="top"><td><code>mark.time</code></td>
+<td>
+controls the labeling of the curves.  If set to <code>FALSE</code>, no
+labeling is done. 
+If <code>TRUE</code>, then curves are marked at each censoring time which
+is not also a death time.  If <code>mark.time</code> is a 
+numeric vector, then curves are marked at the specified time points. 
+</td></tr>
+<tr valign="top"><td><code>mark</code></td>
+<td>
+vector of mark parameters, which will be used to label the curves. 
+The <code>lines</code> help file contains examples of the possible marks. 
+The vector is reused cyclically if it is shorter than the number of curves. 
+</td></tr>
+<tr valign="top"><td><code>col</code></td>
+<td>
+a vector of integers specifying colors for each curve. 
+The default value is 1. 
+</td></tr>
+<tr valign="top"><td><code>lty</code></td>
+<td>
+a vector of integers specifying line types for each curve. 
+The default value is 1. 
+</td></tr>
+<tr valign="top"><td><code>lwd</code></td>
+<td>
+a vector of numeric values for line widths. The default value is 1. 
+</td></tr>
+<tr valign="top"><td><code>cex</code></td>
+<td>
+a numeric value specifying the size of the marks. 
+This is not treated as a vector; all marks have the same size.
+</td></tr>
+<tr valign="top"><td><code>log</code></td>
+<td>
+a logical value, if TRUE the y axis wll be on a log scale. 
+Alternately, one of the standard character strings "x", "y", or "xy"
+can be given to specific logarithmic horizontal and/or vertical axes.
+</td></tr>
+<tr valign="top"><td><code>yscale</code></td>
+<td>
+a numeric value used to multiply the labels on the y axis. 
+A value of 100, for instance, would be used to give a percent scale. 
+Only the labels are 
+changed, not the actual plot coordinates, so that adding a curve with 
+"<code>lines(surv.exp(...))</code>", say,  
+will perform as it did without the <code>yscale</code> argument. 
+</td></tr>
+<tr valign="top"><td><code>xscale</code></td>
+<td>
+a numeric value used like <code>yscale</code> for labels on the x axis.  
+A value of 365.25 will give labels in years instead of the original days.  
+</td></tr>
+<tr valign="top"><td><code>firstx, firsty</code></td>
+<td>
+the starting point for the survival curves.  If either of these is set to 
+<code>NA</code> the plot will start at the first time point of the curve. 
+By default, the plot program obeys tradition by having the plot start at
+(0,0).
+<br>
+If <code>start.time</code> argument is used in <code>survfit</code>, <code>firstx</code>
+is set to that value.
+</td></tr>
+<tr valign="top"><td><code>xmax</code></td>
+<td>
+the maximum horizontal plot coordinate.  This can be used to shrink
+the range of a plot.  It shortens the curve before plotting it, so
+that unlike using the <code>xlim</code> graphical parameter, warning
+messages about out of bounds points are not generated.
+</td></tr>
+<tr valign="top"><td><code>ymin</code></td>
+<td>
+lower boundary for y values.  Survival curves are most often drawn in the 
+range of 0-1, even if none of the curves approach zero. 
+The parameter is ignored if the <code>fun</code> argument is present,
+or if it has been set to <code>NA</code>. 
+</td></tr>
+<tr valign="top"><td><code>fun</code></td>
+<td>
+an arbitrary function defining a transformation of the survival curve. 
+For example <code>fun=log</code> is an alternative way to draw a log-survival curve 
+(but with the axis labeled with log(S) values), 
+and <code>fun=sqrt</code> would generate a curve on square root scale. 
+Four often used transformations can be specified with a character 
+argument instead: <code>"log"</code> is the same as using the <code>log=T</code> option, 
+<code>"event"</code> plots cumulative events (f(y) = 1-y),  
+<code>"cumhaz"</code> plots the cumulative hazard function (f(y) = -log(y)), and 
+<code>"cloglog"</code> creates a complimentary log-log survival plot (f(y) = 
+log(-log(y)) along with log scale for the x-axis).  
+</td></tr>
+<tr valign="top"><td><code>xlab</code></td>
+<td>
+label given to the x-axis. 
+</td></tr>
+<tr valign="top"><td><code>ylab</code></td>
+<td>
+label given to the y-axis. 
+</td></tr>
+<tr valign="top"><td><code>xaxs</code></td>
+<td>
+either <code>"S"</code> for a survival curve or a standard x axis style as
+listed in <code>par</code>.
+Survival curves are usually displayed with the curve touching the y-axis,
+but not touching the bounding box of the plot on the other 3 sides.
+Type <code>"S"</code> accomplishes this by manipulating the plot range and
+then using the <code>"i"</code> style internally.
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+for future methods</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+a list with components <code>x</code> and <code>y</code>, containing the coordinates of the last point 
+on each of the curves (but not the confidence limits).   
+This may be useful for labeling.</p>
+
+<h3>Bugs</h3>
+
+<p>
+Survival curve objects created from a <code>coxph</code> model does not include
+the censoring times. Therefore, specifying <code>mark.time=T</code> does not work.
+If you want to mark censoring times on the curve(s) resulting   
+from a <code>coxph</code> fit, provide a vector of times as the
+<code>mark.time</code> argument  
+in the call to <code>plot.survfit</code> or <code>lines.survfit</code>.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../graphics/html/par.html">par</a></code>,  
+<code><a href="survfit.html">survfit</a></code>,  
+<code><a href="lines.survfit.html">lines.survfit</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+leukemia.surv &lt;- survfit(Surv(time, status) ~ x, data = aml) 
+plot(leukemia.surv, lty = 2:3) 
+legend(100, .9, c("Maintenance", "No Maintenance"), lty = 2:3) 
+title("Kaplan-Meier Curves\nfor AML Maintenance Study") 
+lsurv2 &lt;- survfit(Surv(time, status) ~ x, aml, type='fleming') 
+plot(lsurv2, lty=2:3, fun="cumhaz", 
+        xlab="Months", ylab="Cumulative Hazard") 
+</pre>
+
+
+
+<hr><div align="center">[Package <em>survival</em> version 2.35-4 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

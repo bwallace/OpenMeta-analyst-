@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Summarise Output of R Sampling Profiler</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for summaryRprof {utils}"><tr><td>summaryRprof {utils}</td><td align="right">R Documentation</td></tr></table>
+<h2>Summarise Output of R Sampling Profiler</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Summarise the output of the <code><a href="Rprof.html">Rprof</a></code> function to show the
+amount of time used by different <font face="Courier New,Courier" color="#666666"><b>R</b></font> functions.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+summaryRprof(filename = "Rprof.out", chunksize = 5000,
+              memory=c("none","both","tseries","stats"),
+              index=2, diff=TRUE, exclude=NULL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>filename</code></td>
+<td>
+Name of a file produced by <code>Rprof()</code></td></tr>
+<tr valign="top"><td><code>chunksize</code></td>
+<td>
+Number of lines to read at a time</td></tr>
+<tr valign="top"><td><code>memory</code></td>
+<td>
+Summaries for memory information.  See &lsquo;Details&rsquo; below</td></tr>
+<tr valign="top"><td><code>index</code></td>
+<td>
+How to summarize the stack trace for memory
+information.  See &lsquo;Details&rsquo; below.</td></tr>
+<tr valign="top"><td><code>diff</code></td>
+<td>
+If <code>TRUE</code> memory summaries use change in memory
+rather than current memory</td></tr>
+<tr valign="top"><td><code>exclude</code></td>
+<td>
+Functions to exclude when summarizing the stack trace
+for memory summaries</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This function is an alternative to <code>R CMD Rprof</code>. It provides the
+convenience of an all-<font face="Courier New,Courier" color="#666666"><b>R</b></font> implementation but will be slower for large
+files.
+</p>
+<p>
+As the profiling output file could be larger than available memory, it
+is read in blocks of <code>chunksize</code> lines. Increasing <code>chunksize</code>
+will make the function run faster if sufficient memory is available.
+</p>
+<p>
+When called with <code>memory.profiling=TRUE</code>, the profiler writes
+information on three aspects of memory use: vector memory in small
+blocks on the R heap, vector memory in large blocks (from
+<code>malloc</code>), memory in nodes on the R heap.  It also records the number of
+calls to the internal function <code>duplicate</code> in the time
+interval. <code>duplicate</code> is called by C code when arguments need to be
+copied. Note that the profiler does not track which function actually
+allocated the memory.
+</p>
+<p>
+With <code>memory="both"</code> the change in total memory (truncated at zero)
+is reported in addition to timing data. 
+</p>
+<p>
+With <code>memory="tseries"</code> or <code>memory="stats"</code> the <code>index</code>
+argument specifies how to summarize the stack trace. A positive number
+specifies that many calls from the bottom of the stack; a negative
+number specifies the number of calls from the top of the stack.  With
+<code>memory="tseries"</code> the index is used to construct labels and may be
+a vector to give multiple sets of labels. With <code>memory="stats"</code> the
+index must be a single number and specifies how to aggregate the data to
+the maximum and average of the memory statistics.  With both
+<code>memory="tseries"</code> and <code>memory="stats"</code> the argument
+<code>diff=TRUE</code> asks for summaries of the increase in memory use over
+the sampling interval and <code>diff=FALSE</code> asks for the memory use at
+the end of the interval.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+If <code>memory="none"</code>,a  list with components
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>by.self</code></td>
+<td>
+Timings sorted by &lsquo;self&rsquo; time</td></tr>
+<tr valign="top"><td><code>by.total</code></td>
+<td>
+Timings sorted by &lsquo;total&rsquo; time</td></tr>
+<tr valign="top"><td><code>sampling.time</code></td>
+<td>
+Total length of profiling run</td></tr>
+</table>
+<p>
+
+<br>
+If <code>memory="both"</code> the same list but with memory consumption in Mb
+in addition to the timings.  
+<br>
+If <code>memory="tseries"</code> a data frame giving memory statistics over
+time
+<br>
+If <code>memory="stats"</code> a <code>by</code> object giving memory statistics by function.</p>
+
+<h3>See Also</h3>
+
+<p>
+The chapter on &ldquo;Tidying and profiling R code&rdquo; in
+&ldquo;Writing <font face="Courier New,Courier" color="#666666"><b>R</b></font> Extensions&rdquo; (see the &lsquo;<span class="file">doc/manual</span>&rsquo; subdirectory
+of the <font face="Courier New,Courier" color="#666666"><b>R</b></font> source tree).
+</p>
+<p>
+<code><a href="Rprof.html">Rprof</a></code>
+</p>
+<p>
+<code><a href="../../base/html/tracemem.html">tracemem</a></code> traces copying of an object via the C function
+<code>duplicate</code>.
+</p>
+<p>
+<code><a href="Rprofmem.html">Rprofmem</a></code> is a non-sampling memory use profiler.
+</p>
+<p>
+<a href="http://developer.r-project.org/memory-profiling.html">http://developer.r-project.org/memory-profiling.html</a>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## Not run: 
+## Rprof() is not available on all platforms
+Rprof(tmp &lt;- tempfile())
+example(glm)
+Rprof()
+summaryRprof(tmp)
+unlink(tmp)
+## End(Not run)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>utils</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

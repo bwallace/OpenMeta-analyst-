@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Extract corStruct Groups</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for getGroups.corStruct {nlme}"><tr><td>getGroups.corStruct {nlme}</td><td align="right">R Documentation</td></tr></table>
+<h2>Extract corStruct Groups</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This method function extracts the grouping factor associated with
+<code>object</code>, if any is present.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'corStruct':
+getGroups(object, form, level, data, sep)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>object</code></td>
+<td>
+an object inheriting from class <code>corStruct</code>
+representing a correlation structure.</td></tr>
+<tr valign="top"><td><code>form</code></td>
+<td>
+this argument is included to make the method function
+compatible with the generic. It will be assigned the value of
+<code>formula(object)</code> and should not be modified.</td></tr>
+<tr valign="top"><td><code>level</code></td>
+<td>
+this argument is included to make the method function
+compatible with the generic and is not used.</td></tr>
+<tr valign="top"><td><code>data</code></td>
+<td>
+an optional data frame in which to evaluate the variables
+defined in <code>form</code>, in case <code>object</code> is not initialized and
+the grouping factor needs to be evaluated.</td></tr>
+<tr valign="top"><td><code>sep</code></td>
+<td>
+character, the separator to use between group levels when
+multiple levels are collapsed.  The default is <code>'/'</code>.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+if a grouping factor is present in the correlation structure
+represented by <code>object</code>, the function returns the corresponding
+factor vector; else the function returns <code>NULL</code>.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Jose Pinheiro <a href="mailto:Jose.Pinheiro@pharma.novartis.com">Jose.Pinheiro@pharma.novartis.com</a> and Douglas Bates <a href="mailto:bates@stat.wisc.edu">bates@stat.wisc.edu</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="getGroups.html">getGroups</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+cs1 &lt;- corAR1(form = ~ 1 | Subject)
+getGroups(cs1, data = Orthodont)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>nlme</em> version 3.1-93 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

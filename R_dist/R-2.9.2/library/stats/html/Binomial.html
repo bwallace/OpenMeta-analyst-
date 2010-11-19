@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: The Binomial Distribution</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for Binomial {stats}"><tr><td>Binomial {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>The Binomial Distribution</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Density, distribution function, quantile function and random
+generation for the binomial distribution with parameters <code>size</code>
+and <code>prob</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+dbinom(x, size, prob, log = FALSE)
+pbinom(q, size, prob, lower.tail = TRUE, log.p = FALSE)
+qbinom(p, size, prob, lower.tail = TRUE, log.p = FALSE)
+rbinom(n, size, prob)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x, q</code></td>
+<td>
+vector of quantiles.</td></tr>
+<tr valign="top"><td><code>p</code></td>
+<td>
+vector of probabilities.</td></tr>
+<tr valign="top"><td><code>n</code></td>
+<td>
+number of observations. If <code>length(n) &gt; 1</code>, the length
+is taken to be the number required.</td></tr>
+<tr valign="top"><td><code>size</code></td>
+<td>
+number of trials (zero or more).</td></tr>
+<tr valign="top"><td><code>prob</code></td>
+<td>
+probability of success on each trial.</td></tr>
+<tr valign="top"><td><code>log, log.p</code></td>
+<td>
+logical; if TRUE, probabilities p are given as log(p).</td></tr>
+<tr valign="top"><td><code>lower.tail</code></td>
+<td>
+logical; if TRUE (default), probabilities are
+<i>P[X &lt;= x]</i>, otherwise, <i>P[X &gt; x]</i>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The binomial distribution with <code>size</code> <i>= n</i> and
+<code>prob</code> <i>= p</i> has density
+</p><p align="center"><i>p(x) = choose(n,x) p^x (1-p)^(n-x)</i></p><p>
+for <i>x = 0, ..., n</i>.
+</p>
+<p>
+If an element of <code>x</code> is not integer, the result of <code>dbinom</code>
+is zero, with a warning.
+<i>p(x)</i> is computed using Loader's algorithm, see the reference below.
+</p>
+<p>
+The quantile is defined as the smallest value <i>x</i> such that
+<i>F(x) &gt;= p</i>, where <i>F</i> is the distribution function.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>dbinom</code> gives the density, <code>pbinom</code> gives the distribution
+function, <code>qbinom</code> gives the quantile function and <code>rbinom</code>
+generates random deviates.
+<br>
+If <code>size</code> is not an integer, <code>NaN</code> is returned.</p>
+
+<h3>Source</h3>
+
+<p>
+For <code>dbinom</code> a saddle-point expansion is used: see
+</p>
+<p>
+Catherine Loader (2000). <EM>Fast and Accurate Computation of
+Binomial Probabilities</EM>; available from
+<a href="http://www.herine.net/stat/software/dbinom.html">http://www.herine.net/stat/software/dbinom.html</a>.
+</p>
+<p>
+<code>pbinom</code> uses <code><a href="Beta.html">pbeta</a></code>.
+</p>
+<p>
+<code>qbinom</code> uses the Cornish&ndash;Fisher Expansion to include a skewness
+correction to a normal approximation, followed by a search.
+</p>
+<p>
+<code>rbinom</code> (for <code>size &lt; .Machine$integer.max</code>) is based on
+</p>
+<p>
+Kachitvichyanukul, V. and Schmeiser, B. W. (1988)
+Binomial random variate generation.
+<EM>Communications of the ACM</EM>, <B>31</B>, 216&ndash;222.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="NegBinomial.html">dnbinom</a></code> for the negative binomial, and
+<code><a href="Poisson.html">dpois</a></code> for the Poisson distribution.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+require(graphics)
+# Compute P(45 &lt; X &lt; 55) for X Binomial(100,0.5)
+sum(dbinom(46:54, 100, 0.5))
+
+## Using "log = TRUE" for an extended range :
+n &lt;- 2000
+k &lt;- seq(0, n, by = 20)
+plot (k, dbinom(k, n, pi/10, log=TRUE), type='l', ylab="log density",
+      main = "dbinom(*, log=TRUE) is better than  log(dbinom(*))")
+lines(k, log(dbinom(k, n, pi/10)), col='red', lwd=2)
+## extreme points are omitted since dbinom gives 0.
+mtext("dbinom(k, log=TRUE)", adj=0)
+mtext("extended range", adj=0, line = -1, font=4)
+mtext("log(dbinom(k))", col="red", adj=1)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

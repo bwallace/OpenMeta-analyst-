@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Standard Deviation</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for sd {stats}"><tr><td>sd {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>Standard Deviation</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This function computes the standard deviation of the values in
+<code>x</code>.
+If <code>na.rm</code> is <code>TRUE</code> then missing values are removed before
+computation proceeds.
+If <code>x</code> is a matrix or a data frame, a vector of the standard
+deviation of the columns is returned.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+sd(x, na.rm = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+a numeric vector, matrix or data frame. An object which is
+not a vector, matrix or data frame is coerced (if possible)
+by <code>as.vector</code>.</td></tr>
+<tr valign="top"><td><code>na.rm</code></td>
+<td>
+logical. Should missing values be removed?</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Like <code><a href="cor.html">var</a></code> this uses denominator <i>n - 1</i>.
+</p>
+<p>
+The standard deviation of a zero-length vector (after removal of
+<code>NA</code>s if <code>na.rm = TRUE</code>) is not defined and gives an error.
+The standard deviation of a length-one vector is <code>NA</code>.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="cor.html">var</a></code> for its square, and <code><a href="mad.html">mad</a></code>, the most
+robust alternative.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+sd(1:2) ^ 2
+</pre>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

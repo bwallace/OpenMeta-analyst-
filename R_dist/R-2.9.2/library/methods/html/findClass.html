@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Computations with Classes</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for findClass {methods}"><tr><td>findClass {methods}</td><td align="right">R Documentation</td></tr></table>
+<h2>Computations with Classes</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Functions to find and manipulate class definitions.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+removeClass(Class, where)
+
+isClass(Class, formal=TRUE, where)
+
+getClasses(where, inherits = missing(where))
+
+findClass(Class, where, unique = "")
+
+resetClass(Class, classDef, where)
+
+sealClass(Class, where)
+
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>Class</code></td>
+<td>
+character string name for the class.  The functions will
+usually take a class definition instead of the string.  To restrict
+the class to those defined in a particular package, set the
+<code><a href="getPackageName.html">packageSlot</a></code> of the character string.</td></tr>
+<tr valign="top"><td><code>where</code></td>
+<td>
+The
+environment in which to modify or remove the
+definition.  Defaults to the top-level environment of the calling function
+(the global environment for ordinary computations, but the
+environment or name space of a package in the source for a package).
+<br>
+When searching for class definitions, <code>where</code> defines where to
+do the search, and the default is to search from the top-level
+environment or name space of the caller to this function.
+</td></tr>
+<tr valign="top"><td><code>unique</code></td>
+<td>
+if <code>findClass</code> expects a unique location for the
+class, <code>unique</code> is a character string explaining the purpose
+of the search (and is used in warning and error messages).  By
+default, multiple locations are possible and the function always
+returns a list.
+</td></tr>
+<tr valign="top"><td><code>inherits</code></td>
+<td>
+in a call to <code>getClasses</code>, should the value
+returned include all parent environments of <code>where</code>, or that
+environment only?  Defaults to <code>TRUE</code> if <code>where</code> is
+omitted, and to <code>FALSE</code> otherwise.
+</td></tr>
+<tr valign="top"><td><code>formal</code></td>
+<td>
+Should a formal definition be required? </td></tr>
+<tr valign="top"><td><code>classDef</code></td>
+<td>
+For <code>removeClass</code>, the optional class
+definition (but usually it's better for <code>Class</code> to be the
+class definition, and to omit <code>classDef</code>).
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+These are the functions that test and manipulate formal class
+definitions.  Brief documentation is provided below.  See the
+references for an introduction and for more details.
+</p>
+
+<dl>
+<dt><code>removeClass</code>:</dt><dd>Remove the definition of this class, from the environment
+<code>where</code> if this argument is supplied; if not,
+<code>removeClass</code> will search for a definition, starting in the
+top-level environment of the call to <code>removeClass</code>, and
+remove the (first) definition found.
+</dd>
+<dt><code>isClass</code>:</dt><dd>Is this the name of a formally defined class? (Argument
+<code>formal</code> is for compatibility and is ignored.)
+</dd>
+<dt><code>getClasses</code>:</dt><dd>The names of all the classes formally defined on <code>where</code>.  If
+called with no argument, all the classes visible from the
+calling function (if called from the top-level, all the classes
+in any of the environments on the search list).  The
+<code>inherits</code> argument can be used to search a particular
+environment and all its parents, but usually the default setting
+is what you want.
+</dd>
+<dt><code>findClass</code>:</dt><dd>The list of environments or positions on the search list in
+which a class definition of <code>Class</code> is found.  If
+<code>where</code> is supplied, this is an environment (or name space)
+from which the search takes place; otherwise the top-level
+environment of the caller is used.  If <code>unique</code> is supplied
+as a character string, <code>findClass</code> returns a single
+environment or position.  By default, it always returns a list.
+The calling function should select, say, the first element as a
+position or environment for functions such as <code><a href="../../base/html/get.html">get</a></code>.
+</p>
+<p>
+If <code>unique</code> is supplied as a character string,
+<code>findClass</code> will warn if there is more than one definition
+visible (using the string to identify the purpose of the call),
+and will generate an error if no definition can be found.
+</dd>
+<dt><code>resetClass</code>:</dt><dd>Reset the internal definition of a class.  Causes the complete
+definition of the class to be re-computed, from the
+representation and superclasses specified in the original
+call to <code>setClass</code>.
+</p>
+<p>
+This function is called when aspects of the class definition are
+changed.  You would need to call it explicitly if you changed the
+definition of a class that this class extends (but doing that in
+the  middle of a session is living dangerously, since it may
+invalidate existing objects).
+</dd>
+<dt><code>sealClass</code>:</dt><dd>Seal the current definition of the specified
+class, to prevent further changes.  It is possible to seal a class
+in the call to <code>setClass</code>, but sometimes further changes have
+to be made (e.g., by calls to <code>setIs</code>).  If so, call
+<code>sealClass</code> after all the relevant changes have been made.
+</dd>
+</dl>
+
+<h3>References</h3>
+
+<p>
+Chambers, John M. (2008)
+<EM>Software for Data Analysis: Programming with R</EM>
+Springer.  (For the R version.)
+</p>
+<p>
+Chambers, John M. (1998)
+<EM>Programming with Data</EM>
+Springer (For the original S4 version.)
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="setClassUnion.html">setClassUnion</a></code>,
+<code><a href="Methods.html">Methods</a></code>,
+<code><a href="setSClass.html">makeClassRepresentation</a></code>
+</p>
+
+
+
+<hr><div align="center">[Package <em>methods</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

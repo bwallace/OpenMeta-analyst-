@@ -1,0 +1,326 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Robust Fitting of Generalized Linear Models</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for glmrob {robustbase}"><tr><td>glmrob {robustbase}</td><td align="right">R Documentation</td></tr></table>
+<h2>Robust Fitting of Generalized Linear Models</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>glmrob</code> is used to fit generalized linear models by robust
+methods.  The models are specified by giving a symbolic description of
+the linear predictor and a description of the error distribution.
+Currently, robust methods are implemented only for discrete response
+distributions, i.e. <code><a href="../../stats/html/family.html">family</a> = binomial</code> or <code> = poisson</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+glmrob(formula, family, data, weights, subset, na.action,
+       start = NULL, offset, method = "Mqle",
+       weights.on.x = c("none", "hat", "robCov", "covMcd"), control = NULL,
+       model = TRUE, x = FALSE, y = TRUE, contrasts = NULL, trace = FALSE, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>formula</code></td>
+<td>
+a <code><a href="../../stats/html/formula.html">formula</a></code>, i.e., a symbolic description
+of the model to be fit (cf. <code><a href="../../VGAM/html/notdocumentedyet.html">glm</a></code> or <code><a href="../../VGAM/html/notdocumentedyet.html">lm</a></code>).</td></tr>
+<tr valign="top"><td><code>family</code></td>
+<td>
+a description of the error distribution and link function to
+be used in the model. This can be a character string naming a
+family function, a family function or the result of a call to
+a family function.  (See <code><a href="../../stats/html/family.html">family</a></code> for details of
+family functions.)  As mentioned, currently this must be
+<code>binomial</code> or <code>poisson</code>.</td></tr>
+<tr valign="top"><td><code>data</code></td>
+<td>
+an optional data frame containing the variables
+in the model.  If not found in <code>data</code>, the variables are taken
+from <code>environment(formula)</code>, typically the environment from
+which <code>glmrob</code> is called.</td></tr>
+<tr valign="top"><td><code>weights</code></td>
+<td>
+an optional vector of weights to be used in the fitting
+process.</td></tr>
+<tr valign="top"><td><code>subset</code></td>
+<td>
+an optional vector specifying a subset of observations to be
+used in the fitting process.</td></tr>
+<tr valign="top"><td><code>na.action</code></td>
+<td>
+a function which indicates what should happen
+when the data contain <code>NA</code>s.  The default is set by
+the <code>na.action</code> setting in <code><a href="../../operators/html/withOption.html">options</a></code>. The
+&ldquo;factory-fresh&rdquo; default is <code><a href="../../timeSeries/html/methods-na.html">na.omit</a></code>.</td></tr>
+<tr valign="top"><td><code>start</code></td>
+<td>
+starting values for the parameters in the linear predictor.</td></tr>
+<tr valign="top"><td><code>offset</code></td>
+<td>
+this can be used to specify an <EM>a priori</EM>
+known component to be included in the linear predictor
+during fitting.</td></tr>
+<tr valign="top"><td><code>method</code></td>
+<td>
+a character string specifying the robust fitting method.
+The details of method specification are given below. </td></tr>
+<tr valign="top"><td><code>weights.on.x</code></td>
+<td>
+character string (can be abbreviated) specifying how points
+(potential outliers) in x-space are downweighted.  If <code>"hat"</code>,
+weights on the design of the form <i>sqrt{1-h_{ii}}</i> are used,
+where <i>h_{ii}</i> are the diagonal elements of the hat matrix.  If
+<code>"robCov"</code>, weights based on the robust Mahalanobis distance of the
+design matrix (intercept excluded) are used where the covariance
+matrix and the centre is estimated by <code><a href="../../MASS/html/cov.rob.html">cov.rob</a></code>
+from the package <span class="pkg">MASS</span>.<br>
+Similarly,  if <code>"covMcd"</code>, robust weights are computed using
+<code><a href="covMcd.html">covMcd</a></code>.  The default is <code>"none"</code>.</td></tr>
+<tr valign="top"><td><code>control</code></td>
+<td>
+a list of parameters for controlling the fitting process.
+See the documentation for <code><a href="glmrobMqle.control.html">glmrobMqle.control</a></code> for
+details.</td></tr>
+<tr valign="top"><td><code>model</code></td>
+<td>
+a logical value indicating whether <EM>model frame</EM>
+should be included as a component of the returned value.</td></tr>
+<tr valign="top"><td><code>x, y</code></td>
+<td>
+logical values indicating whether the response
+vector and model matrix used in the fitting process should be
+returned as components of the returned value.</td></tr>
+<tr valign="top"><td><code>contrasts</code></td>
+<td>
+an optional list. See the <code>contrasts.arg</code>
+of <code>model.matrix.default</code>.</td></tr>
+<tr valign="top"><td><code>trace</code></td>
+<td>
+logical (or integer) indicating if intermediate results
+should be printed; defaults to <code>FALSE</code>.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+arguments passed to <code><a href="glmrobMqle.control.html">glmrobMqle.control</a></code> when
+<code>control</code> is <code>NULL</code> (as per default).</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>method="Mqle"</code> fits a generalized linear
+model using Mallows or Huber type robust estimators, as described in
+Cantoni and Ronchetti (2001).  In contrast to the implementation
+described in Cantoni (2004), the pure influence algorithm is
+implemented.
+<br>
+Currently no other method is implemented.
+</p>
+<p>
+<code>weights.on.x= "robCov"</code> makes sense if all explanatory variables
+are continuous.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>glmrob</code> returns an object of class <code>"glmrob"</code> and is also
+inheriting from <code><a href="../../VGAM/html/notdocumentedyet.html">glm</a></code>.
+<br>
+The function <code><a href="../../Zelig/html/summary.zelig.html">summary</a></code> (i.e., <code><a href="summary.glmrob.html">summary.glmrob</a></code>) can
+be used to obtain or print a summary of the results.
+<br>
+The generic accessor functions <code><a href="../../VGAM/html/notdocumentedyet.html">coefficients</a></code>,
+<code>effects</code>, <code>fitted.values</code> and <code>residuals</code> can be used to
+extract various useful features of the value returned by <code>glmrob()</code>.
+<br>
+An object of class <code>"glmrob"</code> is a list with at least the
+following components:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>coefficients</code></td>
+<td>
+a named vector of coefficients</td></tr>
+<tr valign="top"><td><code>residuals</code></td>
+<td>
+the <EM>Pearson</EM> residuals</td></tr>
+<tr valign="top"><td><code>fitted.values</code></td>
+<td>
+the fitted mean values, obtained by transforming
+the linear predictors by the inverse of the link function.</td></tr>
+<tr valign="top"><td><code>w.r</code></td>
+<td>
+robustness weights for each observations; i.e.,
+<code>residuals</code> <i>*</i> <code>w.r</code> equals the psi-function of the
+Preason's residuals.</td></tr>
+<tr valign="top"><td><code>w.x</code></td>
+<td>
+weights used to down-weight observations based on the
+position of the observation in the design space.</td></tr>
+<tr valign="top"><td><code>cov</code></td>
+<td>
+the estimated asymptotic covariance matrix of the estimated
+coefficients.</td></tr>
+<tr valign="top"><td><code>tcc</code></td>
+<td>
+the tuning constant c in Huber's psi-function.</td></tr>
+<tr valign="top"><td><code>family</code></td>
+<td>
+the <code><a href="../../stats/html/family.html">family</a></code> object used.</td></tr>
+<tr valign="top"><td><code>linear.predictors</code></td>
+<td>
+the linear fit on link scale.</td></tr>
+<tr valign="top"><td><code>deviance</code></td>
+<td>
+up to a constant, minus twice the maximized
+log-likelihood.  Where sensible, the constant is chosen so that a
+saturated model has deviance zero.</td></tr>
+<tr valign="top"><td><code>null.deviance</code></td>
+<td>
+The deviance for the null model, comparable with
+<code>deviance</code>. The null model will include the offset, and an
+intercept if there is one in the model</td></tr>
+<tr valign="top"><td><code>iter</code></td>
+<td>
+the number of iterations used by the influence algorithm.</td></tr>
+<tr valign="top"><td><code>converged</code></td>
+<td>
+logical. Was the IWLS algorithm judged to have converged?</td></tr>
+<tr valign="top"><td><code>call</code></td>
+<td>
+the matched call.</td></tr>
+<tr valign="top"><td><code>formula</code></td>
+<td>
+the formula supplied.</td></tr>
+<tr valign="top"><td><code>terms</code></td>
+<td>
+the <code><a href="../../stats/html/terms.html">terms</a></code> object used.</td></tr>
+<tr valign="top"><td><code>data</code></td>
+<td>
+the <code>data argument</code>.</td></tr>
+<tr valign="top"><td><code>offset</code></td>
+<td>
+the offset vector used.</td></tr>
+<tr valign="top"><td><code>control</code></td>
+<td>
+the value of the <code>control</code> argument used.</td></tr>
+<tr valign="top"><td><code>method</code></td>
+<td>
+the name of the robust fitter function used.</td></tr>
+<tr valign="top"><td><code>contrasts</code></td>
+<td>
+(where relevant) the contrasts used.</td></tr>
+<tr valign="top"><td><code>xlevels</code></td>
+<td>
+(where relevant) a record of the levels of the factors
+used in fitting.</td></tr>
+</table>
+<p>
+
+<br>
+If a <code><a href="../../stats/html/family.html">binomial</a></code> is specified by giving a two-column
+response ???</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Andreas Ruckstuhl
+</p>
+
+
+<h3>References</h3>
+
+<p>
+E. Cantoni and E. Ronchetti (2001)
+Robust Inference for Generalized Linear Models.
+<EM>JASA</EM> <B>96</B> (455), 1022&ndash;1030.
+</p>
+<p>
+E.Cantoni (2004)
+Analysis of Robust Quasi-deviances for Generalized Linear Models.
+<EM>Journal of Statistical Software</EM>, <B>10</B>,
+<a href="http://www.jstatsoft.org">http://www.jstatsoft.org</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="glmrobMqle.control.html">glmrobMqle.control</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## Binomial response --------------
+data(carrots)
+
+Cfit1 &lt;- glm(cbind(success, total-success) ~ logdose + block,
+             data = carrots, family = binomial)
+summary(Cfit1)
+
+Rfit1 &lt;- glmrob(cbind(success, total-success) ~ logdose + block,
+                family = binomial, data = carrots, method= "Mqle",
+                control= glmrobMqle.control(tcc=1.2))
+summary(Rfit1)
+
+Rfit2 &lt;- glmrob(success/total ~ logdose + block, weights = total,
+                family = binomial, data = carrots, method= "Mqle",
+                control= glmrobMqle.control(tcc=1.2))
+coef(Rfit2)  ## The same as Rfit1
+
+## Binary response --------------
+data(vaso)
+
+Vfit1 &lt;- glm(Y ~ log(Volume) + log(Rate), family=binomial, data=vaso)
+coef(Vfit1)
+
+Vfit2 &lt;- glmrob(Y ~ log(Volume) + log(Rate), family=binomial, data=vaso,
+                method="Mqle", control = glmrobMqle.control(tcc=3.5))
+## Note the problems with  tcc &lt;= 3 
+coef(Vfit2) # c = 3.5 ==&gt; not much different from classical
+
+
+## Poisson response --------------
+data(epilepsy)
+
+Efit1 &lt;- glm(Ysum ~ Age10 + Base4*Trt, family=poisson, data=epilepsy)
+summary(Efit1)
+
+Efit2 &lt;- glmrob(Ysum ~ Age10 + Base4*Trt, family = poisson,
+                data = epilepsy, method= "Mqle",
+                control = glmrobMqle.control(tcc= 1.2))
+summary(Efit2)
+
+## 'x' weighting:
+(Efit3 &lt;- glmrob(Ysum ~ Age10 + Base4*Trt, family = poisson,
+                 data = epilepsy, method= "Mqle", weights.on.x = "hat",
+                 control = glmrobMqle.control(tcc= 1.2)))
+
+try( # gives singular cov matrix: 'Trt' is binary factor --&gt;
+     # affine equivariance and subsampling are problematic
+Efit4 &lt;- glmrob(Ysum ~ Age10 + Base4*Trt, family = poisson,
+                data = epilepsy, method= "Mqle", weights.on.x = "covMcd",
+                control = glmrobMqle.control(tcc=1.2, maxit=100))
+)
+
+</pre>
+
+
+
+<hr><div align="center">[Package <em>robustbase</em> version 0.4-5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

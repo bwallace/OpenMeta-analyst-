@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Check Package Dependencies</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for package.dependencies {tools}"><tr><td>package.dependencies {tools}</td><td align="right">R Documentation</td></tr></table>
+<h2>Check Package Dependencies</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Parses and checks the dependencies of a package against the currently
+installed version of R (and other packages).
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+package.dependencies(x, check = FALSE,
+                     depLevel = c("Depends", "Imports", "Suggests"))
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+A matrix of package descriptions as returned by
+<code><a href="../../utils/html/update.packages.html">available.packages</a></code>.</td></tr>
+<tr valign="top"><td><code>check</code></td>
+<td>
+If <code>TRUE</code>, return logical vector of check results.
+If <code>FALSE</code>, return parsed list of dependencies.</td></tr>
+<tr valign="top"><td><code>depLevel</code></td>
+<td>
+Whether to look for <code>Depends</code> or <code>Suggests</code>
+level dependencies.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Currently we only check if the package conforms with the currently
+running version of R.  In the future we might add checks for 
+inter-package dependencies.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../utils/html/update.packages.html">update.packages</a></code>
+</p>
+
+
+
+<hr><div align="center">[Package <em>tools</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

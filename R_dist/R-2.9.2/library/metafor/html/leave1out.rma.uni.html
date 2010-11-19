@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Leave-One-Out Diagnostics for rma.uni Objects</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for leave1out.rma.uni {metafor}"><tr><td>leave1out.rma.uni {metafor}</td><td align="right">R Documentation</td></tr></table>
+<h2>Leave-One-Out Diagnostics for rma.uni Objects</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The function <code>leave1out.rma.uni</code> repeatedly fits the specified model, leaving out one observation at a time.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'rma.uni':
+leave1out(x, digits=x$digits, transf=FALSE, targs=NULL, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+an object of class <code>"rma.uni"</code>.</td></tr>
+<tr valign="top"><td><code>digits</code></td>
+<td>
+an integer specifying the number of decimal places to which the printed results should be rounded (the default is to take the value from the object).</td></tr>
+<tr valign="top"><td><code>transf</code></td>
+<td>
+an optional argument specifying the name of a function that should be used to transform the model coefficients and interval bounds (e.g., <code>transf=exp</code>). Defaults to <code>FALSE</code>, which means that no transformation is used.</td></tr>
+<tr valign="top"><td><code>targs</code></td>
+<td>
+optional arguments needed by the function specified under <code>transf</code>.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+other arguments.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The model specified by <code>x</code> must be a model without moderators (i.e., either a fixed- or a random-effects model).
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+An object of class <code>"list.rma"</code>. The object is a list containing the following components:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>estimate</code></td>
+<td>
+estimated coefficients of the model.</td></tr>
+<tr valign="top"><td><code>se</code></td>
+<td>
+standard errors of the coefficients. <code>NA</code> if <code>transf</code> is used to transform the coefficients.</td></tr>
+<tr valign="top"><td><code>zval</code></td>
+<td>
+test statistics of the coefficients.</td></tr>
+<tr valign="top"><td><code>pval</code></td>
+<td>
+p-values for the test statistics.</td></tr>
+<tr valign="top"><td><code>ci.lb</code></td>
+<td>
+lower bounds of the confidence intervals for the coefficients.</td></tr>
+<tr valign="top"><td><code>ci.ub</code></td>
+<td>
+upper bounds of the confidence intervals for the coefficients.</td></tr>
+<tr valign="top"><td><code>Q</code></td>
+<td>
+test statistics for the tests of heterogeneity.</td></tr>
+<tr valign="top"><td><code>Qp</code></td>
+<td>
+p-values for the tests of heterogeneity.</td></tr>
+<tr valign="top"><td><code>tau2</code></td>
+<td>
+estimated amounts of (residual) heterogeneity (only for random-effects models).</td></tr>
+<tr valign="top"><td><code>I2</code></td>
+<td>
+values of <i>I^2</i> (only for random-effects models).</td></tr>
+<tr valign="top"><td><code>H2</code></td>
+<td>
+values of <i>H^2</i> (only for random-effects models).</td></tr>
+</table>
+<p>
+
+<br>
+The <code>"list.rma"</code> object is formated and printed with <code><a href="print.list.rma.html">print.list.rma</a></code>.</p>
+
+<h3>Note</h3>
+
+<p>
+Various case diagnostics for objects of class <code>"rma.uni"</code> can also be obtained with the <code><a href="influence.rma.uni.html">influence.rma.uni</a></code> function.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Wolfgang Viechtbauer; <a href="mailto:wvb@www.wvbauer.com">wvb@www.wvbauer.com</a>; <a href="http://www.wvbauer.com/">http://www.wvbauer.com/</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="leave1out.html">leave1out</a></code>, <code><a href="influence.rma.uni.html">influence.rma.uni</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+### load BCG vaccine data
+data(dat.bcg)
+
+### calculate log risk ratios and corresponding sampling variances
+dat &lt;- escalc(measure="RR", ai=tpos, bi=tneg, ci=cpos, di=cneg, data=dat.bcg)
+dat &lt;- cbind(dat.bcg, dat)
+
+### random-effects model
+res &lt;- rma(yi, vi, data=dat, method="REML")
+
+leave1out(res)
+leave1out(res, transf=exp)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>metafor</em> version 0.5-7 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

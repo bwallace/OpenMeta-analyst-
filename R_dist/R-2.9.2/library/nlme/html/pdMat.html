@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Positive-Definite Matrix</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for pdMat {nlme}"><tr><td>pdMat {nlme}</td><td align="right">R Documentation</td></tr></table>
+<h2>Positive-Definite Matrix</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This function gives an alternative way of constructing an object
+inheriting from the <code>pdMat</code> class named in <code>pdClass</code>, or
+from <code>data.class(object)</code> if <code>object</code> inherits from
+<code>pdMat</code>,  and is mostly used internally in other functions. See
+the documentation on the principal constructor function, generally
+with the same name as the <code>pdMat</code> class of object.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+pdMat(value, form, nam, data, pdClass)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>value</code></td>
+<td>
+an optional initialization value, which can be any of the
+following: a <code>pdMat</code> object, a positive-definite
+matrix, a one-sided linear formula (with variables separated by
+<code>+</code>), a vector of character strings, or a numeric
+vector. Defaults to <code>numeric(0)</code>, corresponding to an
+uninitialized object.</td></tr>
+<tr valign="top"><td><code>form</code></td>
+<td>
+an optional one-sided linear formula specifying the
+row/column names for the matrix represented by <code>object</code>. Because
+factors may be present in <code>form</code>, the formula needs to be
+evaluated on a data.frame to resolve the names it defines. This
+argument is ignored when <code>value</code> is a one-sided
+formula. Defaults to <code>NULL</code>.</td></tr>
+<tr valign="top"><td><code>nam</code></td>
+<td>
+an optional vector of character strings specifying the
+row/column names for the matrix represented by object. It must have 
+length equal to the dimension of the underlying positive-definite
+matrix and unreplicated elements. This argument is ignored when
+<code>value</code> is a vector of character strings. Defaults to
+<code>NULL</code>.</td></tr>
+<tr valign="top"><td><code>data</code></td>
+<td>
+an optional data frame in which to evaluate the variables
+named in <code>value</code> and <code>form</code>. It is used to
+obtain the levels for <code>factors</code>, which affect the
+dimensions and the row/column names of the underlying matrix. If
+<code>NULL</code>, no attempt is made to obtain information on 
+<code>factors</code> appearing in the formulas. Defaults to the
+parent frame from which the function was called.</td></tr>
+<tr valign="top"><td><code>pdClass</code></td>
+<td>
+an optional character string naming the
+<code>pdMat</code> class to be assigned to the returned object. This
+argument will only be used when <code>value</code> is not a <code>pdMat</code> 
+object. Defaults to <code>"pdSymm"</code>.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+a <code>pdMat</code> object representing a positive-definite matrix,
+inheriting from the class named in <code>pdClass</code>, or from
+<code>class(object)</code>, if <code>object</code> inherits from <code>pdMat</code>.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Jose Pinheiro <a href="mailto:Jose.Pinheiro@pharma.novartis.com">Jose.Pinheiro@pharma.novartis.com</a> and Douglas Bates <a href="mailto:bates@stat.wisc.edu">bates@stat.wisc.edu</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Pinheiro, J.C., and Bates, D.M. (2000) "Mixed-Effects Models
+in S and S-PLUS", Springer.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="pdClasses.html">pdClasses</a></code>, 
+<code><a href="pdCompSymm.html">pdCompSymm</a></code>, <code><a href="pdDiag.html">pdDiag</a></code>,
+<code><a href="pdIdent.html">pdIdent</a></code>, <code><a href="pdNatural.html">pdNatural</a></code>,
+<code><a href="pdSymm.html">pdSymm</a></code>,
+<code><a href="reStruct.html">reStruct</a></code>,
+<code><a href="solve.pdMat.html">solve.pdMat</a></code>, 
+<code><a href="summary.pdMat.html">summary.pdMat</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+pd1 &lt;- pdMat(diag(1:4), pdClass = "pdDiag")
+pd1
+</pre>
+
+
+
+<hr><div align="center">[Package <em>nlme</em> version 3.1-93 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

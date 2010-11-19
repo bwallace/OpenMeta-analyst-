@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Read a Windows Registy Hive</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for readRegistry {utils}"><tr><td>readRegistry {utils}</td><td align="right">R Documentation</td></tr></table>
+<h2>Read a Windows Registy Hive</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Read values of keys in the Windows Registry, and optionally whole hives.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+readRegistry(key, hive = c("HLM", "HCR", "HCU", "HU", "HCC", "HPD"),
+             maxdepth = 1)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>key</code></td>
+<td>
+character string, the path to the key in the Windows Registry.</td></tr>
+<tr valign="top"><td><code>hive</code></td>
+<td>
+The &lsquo;hive&rsquo; containing the key.  The abbreviations
+are for <code>HKEY_LOCAL_MACHINE</code>,
+<code>HKEY_CLASSES_ROOT</code>. <code>HKEY_CURRENT_USER</code>,
+<code>HKEY_USERS</code>. <code>HKEY_CURRENT_CONFIG</code> and
+<code>HKEY_PERFORMANCE_DATA</code></td></tr>
+<tr valign="top"><td><code>maxdepth</code></td>
+<td>
+How far to recurse into the subkeys of the key.  By
+default only the values of the key and the names of subkeys are
+returned.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Registry access is done using the security settings of the current <font face="Courier New,Courier" color="#666666"><b>R</b></font>
+session: this means that some Registry keys may not be accessible even
+if they exist.  This may result in <code>NULL</code> values in the object
+return, and, possibly, empty element names.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A named list of values and subkeys (which may themselves be named
+lists).  The default value (if any) precedes named values which
+precede subkeys, and both the latter sets are sorted alphabetically.</p>
+
+<h3>Examples</h3>
+
+<pre>
+readRegistry("SOFTWARE\\R-core", maxdepth = 3)
+gmt &lt;- file.path("SOFTWARE", "Microsoft", "Windows NT",
+                 "CurrentVersion", "Time Zones",
+                 "GMT Standard Time", fsep="\\")
+readRegistry(gmt, "HLM")
+</pre>
+
+
+
+<hr><div align="center">[Package <em>utils</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

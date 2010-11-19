@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Read R's NEWS file or a similar one</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for readNEWS {tools}"><tr><td>readNEWS {tools}</td><td align="right">R Documentation</td></tr></table>
+<h2>Read R's NEWS file or a similar one</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Read <font face="Courier New,Courier" color="#666666"><b>R</b></font>'s NEWS file or a similarly formatted one.
+This is an experimental feature, new in R 2.4.0
+and may change in several ways.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+readNEWS(file = file.path(R.home(), "NEWS"), trace = FALSE,
+         chop = c("first", "1", "par1", "keepAll"))
+checkNEWS(file = file.path(R.home(), "NEWS"))
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>file</code></td>
+<td>
+the name of the file which the data are to be read from.
+Alternatively, <code>file</code> can be a <code><a href="../../base/html/connections.html">connection</a></code>, which
+will be opened if necessary, and can also be a complete URL.  For
+more details, see the <code>file</code> argument of <code><a href="../../utils/html/read.table.html">read.table</a></code>.</td></tr>
+<tr valign="top"><td><code>trace</code></td>
+<td>
+logical indicating if the recursive reading should be
+traced, i.e., print what it is doing.</td></tr>
+<tr valign="top"><td><code>chop</code></td>
+<td>
+a character string specifying how the news entries should
+be <EM>chopped</EM>; <code>chop = "keepAll"</code> saves the full entries.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>readNEWS()</code> reads a NEWS file; <code>checkNEWS()</code> checks for common
+errors in formatting.  Currently it detects an incorrect number of spaces before
+the <code>"o"</code> item marker.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>readNEWS()</code> returns an (S3) object of class <code>"newsTree"</code>; effectively
+a <code><a href="../../base/html/list.html">list</a></code> of lists which is a tree of NEWS entries.
+<br>
+<code>checkNEWS()</code> returns <code>TRUE</code> if no suspected errors are found,
+or prints a message for each suspected error and returns <code>FALSE</code>.
+<br>
+Note that this is still experimental and may change in the future.</p>
+
+<h3>Examples</h3>
+
+<pre>
+NEWStr  &lt;- readNEWS(trace = TRUE)# chop = "first" ( = "first non-empty")
+## keep the full NEWS entry text i.e. "no chopping":
+NEWStrA &lt;- readNEWS(chop = "keepAll")
+object.size(NEWStr)
+object.size(NEWStrA) ## (no chopping) ==&gt; about double the size
+
+str(NEWStr, max.level = 3)
+
+str(NEWStr[[c("2.3", "2.3.1")]], max.level=2, vec.len=1)
+
+NEWStr [[c("2.3", "2.3.1", "NEW FEATURES")]]
+NEWStrA[[c("2.4", "2.4.0", "NEW FEATURES")]]
+
+# Check the current NEWS file
+
+stopifnot(checkNEWS())
+
+</pre>
+
+
+
+<hr><div align="center">[Package <em>tools</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

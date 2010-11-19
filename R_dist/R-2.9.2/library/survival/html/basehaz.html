@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Compute the baseline survival curve for a Cox model</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for basehaz {survival}"><tr><td>basehaz {survival}</td><td align="right">R Documentation</td></tr></table>
+<h2>Compute the baseline survival curve for a Cox model</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Compute the baseline survival curve for a Cox model.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+basehaz(fit, centered = TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>fit</code></td>
+<td>
+The result of a <code>coxph</code> fit.</td></tr>
+<tr valign="top"><td><code>centered</code></td>
+<td>
+If TRUE, the resultant curve is for a hypothetical
+subject whose covariate values are the corresponding means from the
+original data, otherwise for a hypothetical subject with a mean
+vector of zero.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This function exists primarily because users will look for the phrase
+'baseline hazard' (often SAS converts looking for familiar
+keywords.) The primary function for creating a survival curve is
+<code>survfit</code>, which this calls.  See that manual page for more
+options, including confidence limits and the ability to use other
+covariate vectors.  The result of <code>survfit</code> also has print, plot
+and summary methods that make it far more useful.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+a data frame with components
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>time</code></td>
+<td>
+The sorted vector of unique time points (those at which an
+event occurred</td></tr>
+<tr valign="top"><td><code>hazard</code></td>
+<td>
+The baseline hazard function</td></tr>
+<tr valign="top"><td><code>strata</code></td>
+<td>
+If <code>fit</code> was a stratified Cox model, the strata.
+There will be one survival curve per strata.</td></tr>
+</table>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="survfit.html">survfit</a></code>
+</p>
+
+
+
+<hr><div align="center">[Package <em>survival</em> version 2.35-4 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

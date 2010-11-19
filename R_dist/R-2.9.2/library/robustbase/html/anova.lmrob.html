@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Analysis of Robust Deviances ('anova') for "lmrob" Objects</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for anova.lmrob {robustbase}"><tr><td>anova.lmrob {robustbase}</td><td align="right">R Documentation</td></tr></table>
+<h2>Analysis of Robust Deviances ('anova') for "lmrob" Objects</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Compute an analysis of robust Wald-type or deviance-type test tables
+for one or more linear regression models fitted by <code><a href="lmrob.html">lmrob</a></code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'lmrob':
+anova(object, ..., test = c("Wald", "Deviance"))
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>object, ...</code></td>
+<td>
+objects of class <code>"lmrob"</code>, typically
+the result of a call to <code><a href="lmrob.html">lmrob</a></code>. <code>...</code> arguments
+may also be symbolic descriptions of the reduced models
+(cf. argument <code>formula</code> in <code><a href="../../VGAM/html/notdocumentedyet.html">lm</a></code>).
+</td></tr>
+<tr valign="top"><td><code>test</code></td>
+<td>
+a character string specifying the test statistic to be used.
+Can be one of <code>"Wald"</code> or <code>"Deviance"</code>,
+with partial matching allowed, for specifying a <code>"Wald"</code>-type
+test or <code>"Deviance"</code>-type test.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Specifying a single object gives a sequential analysis of a robust
+quasi-deviance table for that fit.  That is, the reductions in the
+robust residual deviance as each term of the formula is added in turn
+are given in as the rows of a table. (Currently not yet implemented.)
+</p>
+<p>
+If more than one object is specified, the table has a row for the
+residual quasi-degrees of freedom (however, this information is never
+used in the asymptotic tests).  For all but the first model, the
+change in degrees of freedom and robust deviance is also given.  (This
+only makes statistical sense if the models are nested.)  As opposed to
+the convention, the models are forced to be listed from largest to
+smallest due to computational reasons.
+</p>
+<p>
+In addition, the table will contain test statistics and P values
+comparing the reduction in robust deviances for the model on the row
+to that on top of it.  There are two different robust tests available:
+The "Wald"-type test (<code>test = "Wald"</code>) and the Deviance-type test
+(<code>test = "Deviance"</code>).  When using formula description of the
+nested models in the dot arguments and <code>test = "Deviance"</code>, you
+may be urged to supply a <code><a href="lmrob.html">lmrob</a></code> fit for these models by
+an error message.  This happens when the coefficients of the largest
+model reduced to the nested models result in invalid initial estimates
+for the nested models (indicated by robustness weights which are all 0).
+</p>
+<p>
+The comparison between two or more models by <code><a href="anova.lmrob.html">anova.lmrob</a></code>
+will only be valid if they are fitted to the same dataset.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+Basically, an object of class <code><a href="../../stats/html/anova.html">anova</a></code> inheriting from class
+<code><a href="../../base/html/data.frame.html">data.frame</a></code>.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Andreas Ruckstuhl
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="lmrob.html">lmrob</a></code>, <code><a href="../../stats/html/anova.html">anova</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(salinity)
+summary(m0.sali  &lt;- lmrob(Y ~ . , data = salinity))
+anova(m0.sali, Y ~ X1 + X3)
+## -&gt; X2 is not needed
+(m1.sali  &lt;- lmrob(Y ~ X1 + X3, data = salinity))
+anova(m0.sali, m1.sali) # the same as before
+anova(m0.sali, m1.sali, test = "Deviance")
+## whereas 'X3' is highly significant:
+m2 &lt;- update(m0.sali, ~ . -X3)
+anova(m0.sali, m2)
+anova(m0.sali, m2,  test = "Deviance")
+
+if(require("MPV")) { ## Montgomery, Peck &amp; Vining  datasets
+  Jet &lt;- table.b13
+  Jet.rflm1 &lt;- lmrob(y ~ ., data=Jet,
+                     control = lmrob.control(max.it = 500))
+  summary(Jet.rflm1)
+
+  anova(Jet.rflm1, y ~ x1 + x5 + x6, test="Wald")
+
+  try( anova(Jet.rflm1, y ~ x1 + x5 + x6, test="Deviance") )
+  ## -&gt; Error in anovaLm....  Please fit the nested models by lmrob
+
+  ## {{ since  all robustness weights become 0 in the nested model ! }}
+
+  ## Ok: Do as the error message told us:
+  ##    test by comparing the two *fitted* models:
+
+  Jet.rflm2 &lt;- lmrob(y ~ x1 + x5 + x6, data=Jet,
+                     control=lmrob.control(max.it=100))
+  anova(Jet.rflm1, Jet.rflm2, test="Deviance")
+
+} # end{"MPV" data}
+
+</pre>
+
+
+
+<hr><div align="center">[Package <em>robustbase</em> version 0.4-5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

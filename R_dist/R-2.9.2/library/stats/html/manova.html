@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Multivariate Analysis of Variance</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for manova {stats}"><tr><td>manova {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>Multivariate Analysis of Variance</h2>
+
+
+<h3>Description</h3>
+
+<p>
+A class for the multivariate analysis of variance.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+manova(...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>...</code></td>
+<td>
+Arguments to be passed to <code><a href="aov.html">aov</a></code>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Class <code>"manova"</code> differs from class <code>"aov"</code> in selecting a
+different <code>summary</code> method.  Function <code>manova</code> calls
+<code><a href="aov.html">aov</a></code> and then add class <code>"manova"</code> to the result
+object for each stratum.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+See <code><a href="aov.html">aov</a></code> and the comments in &lsquo;Details&rsquo; here.</p>
+
+<h3>Note</h3>
+
+<p>
+<code>manova</code> does not support multistratum analysis of variance, so
+the formula should not include an <code>Error</code> term.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Krzanowski, W. J. (1988) <EM>Principles of Multivariate Analysis. A
+User's Perspective.</EM> Oxford.
+</p>
+<p>
+Hand, D. J. and Taylor, C. C.  (1987)
+<EM>Multivariate Analysis of Variance and Repeated Measures.</EM>
+Chapman and Hall.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="aov.html">aov</a></code>, <code><a href="summary.manova.html">summary.manova</a></code>, the latter containing
+examples.
+</p>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

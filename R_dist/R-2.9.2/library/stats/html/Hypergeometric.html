@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: The Hypergeometric Distribution</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for Hypergeometric {stats}"><tr><td>Hypergeometric {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>The Hypergeometric Distribution</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Density, distribution function, quantile function and random
+generation for the hypergeometric distribution.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+dhyper(x, m, n, k, log = FALSE)
+phyper(q, m, n, k, lower.tail = TRUE, log.p = FALSE)
+qhyper(p, m, n, k, lower.tail = TRUE, log.p = FALSE)
+rhyper(nn, m, n, k)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x, q</code></td>
+<td>
+vector of quantiles representing the number of white balls
+drawn without replacement from an urn which contains both black and
+white balls.</td></tr>
+<tr valign="top"><td><code>m</code></td>
+<td>
+the number of white balls in the urn.</td></tr>
+<tr valign="top"><td><code>n</code></td>
+<td>
+the number of black balls in the urn.</td></tr>
+<tr valign="top"><td><code>k</code></td>
+<td>
+the number of balls drawn from the urn.</td></tr>
+<tr valign="top"><td><code>p</code></td>
+<td>
+probability, it must be between 0 and 1.</td></tr>
+<tr valign="top"><td><code>nn</code></td>
+<td>
+number of observations. If <code>length(nn) &gt; 1</code>, the length
+is taken to be the number required.</td></tr>
+<tr valign="top"><td><code>log, log.p</code></td>
+<td>
+logical; if TRUE, probabilities p are given as log(p).</td></tr>
+<tr valign="top"><td><code>lower.tail</code></td>
+<td>
+logical; if TRUE (default), probabilities are
+<i>P[X &lt;= x]</i>, otherwise, <i>P[X &gt; x]</i>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The hypergeometric distribution is used for sampling <EM>without</EM>
+replacement.  The density of this distribution with parameters
+<code>m</code>, <code>n</code> and <code>k</code> (named <i>Np</i>, <i>N-Np</i>, and
+<i>n</i>, respectively in the reference below) is given by
+</p><p align="center"><i>p(x) =      choose(m, x) choose(n, k-x) / choose(m+n, k)</i></p><p>
+for <i>x = 0, ..., k</i>.
+</p>
+<p>
+The quantile is defined as the smallest value <i>x</i> such that
+<i>F(x) &gt;= p</i>, where <i>F</i> is the distribution function.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>dhyper</code> gives the density,
+<code>phyper</code> gives the distribution function,
+<code>qhyper</code> gives the quantile function, and
+<code>rhyper</code> generates random deviates.
+<br>
+Invalid arguments will result in return value <code>NaN</code>, with a warning.</p>
+
+<h3>Source</h3>
+
+<p>
+<code>dhyper</code> computes via binomial probabilities, using code
+contributed by Catherine Loader (see <code><a href="Binomial.html">dbinom</a></code>).
+</p>
+<p>
+<code>phyper</code> is based on calculating <code>dhyper</code> and
+<code>phyper(...)/dhyper(...)</code> (as a summation), based on ideas of Ian
+Smith and Morten Welinder.
+</p>
+<p>
+<code>qhyper</code> is based on inversion.
+</p>
+<p>
+<code>rhyper</code> is based on a corrected version of
+</p>
+<p>
+Kachitvichyanukul, V. and Schmeiser, B. (1985).
+Computer generation of hypergeometric random variates.
+<EM>Journal of Statistical Computation and Simulation</EM>,
+<B>22</B>, 127&ndash;145.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Johnson, N. L., Kotz, S., and Kemp, A. W. (1992)
+<EM>Univariate Discrete Distributions</EM>,
+Second Edition. New York: Wiley.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+m &lt;- 10; n &lt;- 7; k &lt;- 8
+x &lt;- 0:(k+1)
+rbind(phyper(x, m, n, k), dhyper(x, m, n, k))
+all(phyper(x, m, n, k) == cumsum(dhyper(x, m, n, k)))# FALSE
+## but error is very small:
+signif(phyper(x, m, n, k) - cumsum(dhyper(x, m, n, k)), digits=3)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

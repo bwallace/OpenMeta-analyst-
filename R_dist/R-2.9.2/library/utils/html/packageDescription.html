@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Package Description</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for packageDescription {utils}"><tr><td>packageDescription {utils}</td><td align="right">R Documentation</td></tr></table>
+<h2>Package Description</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Parses and returns the &lsquo;<span class="file">DESCRIPTION</span>&rsquo; file of a package.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+packageDescription(pkg, lib.loc = NULL, fields = NULL,
+                   drop = TRUE, encoding = "")
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>pkg</code></td>
+<td>
+a character string with the package name.</td></tr>
+<tr valign="top"><td><code>lib.loc</code></td>
+<td>
+a character vector of directory names of <font face="Courier New,Courier" color="#666666"><b>R</b></font> libraries,
+or <code>NULL</code>.  The default value of <code>NULL</code> corresponds to all
+libraries currently known.  If the default is used, the loaded
+packages are searched before the libraries.</td></tr>
+<tr valign="top"><td><code>fields</code></td>
+<td>
+a character vector giving the tags of fields to return
+(if other fields occur in the file they are ignored).</td></tr>
+<tr valign="top"><td><code>drop</code></td>
+<td>
+If <code>TRUE</code> and the length of <code>fields</code> is 1, then
+a single character string with the value of the respective field is
+returned instead of an object of class <code>"packageDescription"</code>.</td></tr>
+<tr valign="top"><td><code>encoding</code></td>
+<td>
+If there is an <code>Encoding</code> field, to what encoding
+should re-encoding be attempted?  If <code>NA</code>, no re-encoding.  The
+other values are as used by <code><a href="../../base/html/iconv.html">iconv</a></code>, so the default
+<code>""</code> indicates the encoding of the current locale.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+A package will not be &lsquo;found&rsquo; unless it has a &lsquo;<span class="file">DESCRIPTION</span>&rsquo; file
+which contains a valid <code>Version</code> field.  Different warnings are
+given when no package directory is found and when there is a suitable
+directory but no valid &lsquo;<span class="file">DESCRIPTION</span>&rsquo; file.
+</p>
+<p>
+An <a href="../../base/html/attach.html">attach</a>ed environment named to look like a package
+(e.g. <code>package:utils2</code>) will be ignored.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+If a &lsquo;<span class="file">DESCRIPTION</span>&rsquo; file for the given package is found and can
+successfully be read, <code>packageDescription</code> returns an object of
+class <code>"packageDescription"</code>, which is a named list with the
+values of the (given) fields as elements and the tags as names, unless
+<code>drop = TRUE</code>.
+<br>
+If parsing the &lsquo;<span class="file">DESCRIPTION</span>&rsquo; file was not successful, it returns
+a named list of <code>NA</code>s with the field tags as names if <code>fields</code>
+is not null, and <code>NA</code> otherwise.</p>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../base/html/dcf.html">read.dcf</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+packageDescription("stats")
+packageDescription("stats", fields = c("Package", "Version"))
+
+packageDescription("stats", fields = "Version")
+packageDescription("stats", fields = "Version", drop = FALSE)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>utils</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

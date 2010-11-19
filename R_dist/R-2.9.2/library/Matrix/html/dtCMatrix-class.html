@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Triangular, (compressed) sparse column matrices</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for dtCMatrix-class {Matrix}"><tr><td>dtCMatrix-class {Matrix}</td><td align="right">R Documentation</td></tr></table>
+<h2>Triangular, (compressed) sparse column matrices</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The <code>"dtCMatrix"</code> class is a class of triangular, sparse
+matrices in the compressed, column-oriented format.  In this
+implementation the non-zero elements in the columns are sorted into
+increasing row order.  The <code>"dtTMatrix"</code> class is a class of
+triangular, sparse matrices in triplet format.
+</p>
+
+
+<h3>Objects from the Class</h3>
+
+<p>
+Objects can be created by calls of the form <code>new("dtCMatrix",
+    ...)</code> or calls of the form  <code>new("dtTMatrix", ...)</code>, but more
+typically automatically via <code><a href="Matrix.html">Matrix</a>()</code> or coercion such as
+<code>as(x, "dtCMatrix")</code>.
+</p>
+
+
+<h3>Slots</h3>
+
+<dl>
+<dt><code>uplo</code>:</dt><dd>Object of class <code>"character"</code>. Must be
+either "U", for upper triangular, and "L", for lower triangular.</dd>
+<dt><code>diag</code>:</dt><dd>Object of class <code>"character"</code>. Must be
+either <code>"U"</code>, for unit triangular (diagonal is all ones), or
+<code>"N"</code>; see <code><a href="triangularMatrix-class.html">triangularMatrix</a></code>.</dd>
+<dt><code>p</code>:</dt><dd>Object of class <code>"integer"</code> of pointers, one
+for each column, to the initial (zero-based) index of elements in
+the column. (Only present in the <code>dtCMatrix</code> class.)</dd>
+<dt><code>i</code>:</dt><dd>Object of class <code>"integer"</code> of length nnzero
+(number of non-zero elements).  These are the row numbers for
+each non-zero element in the matrix.</dd>
+<dt><code>j</code>:</dt><dd>Object of class <code>"integer"</code> of length nnzero
+(number of non-zero elements).  These are the column numbers for
+each non-zero element in the matrix. (Only present in the
+<code>dtTMatrix</code> class.)</dd>
+<dt><code>x</code>:</dt><dd>Object of class <code>"numeric"</code> - the non-zero
+elements of the matrix.</dd>
+<dt><code>Dim</code>,<code>Dimnames</code>:</dt><dd>The dimension (a length-2
+<code>"integer"</code>) and corresponding names (or <code>NULL</code>),
+inherited from the <code><a href="Matrix-class.html">Matrix</a></code>, see there.</dd>
+</dl>
+
+<h3>Extends</h3>
+
+<p>
+Class <code>"dgCMatrix"</code>, directly.
+Class <code>"triangularMatrix"</code>, directly.
+Class <code>"dMatrix"</code>, <code>"sparseMatrix"</code>, and more by class
+<code>"dgCMatrix"</code> etc, see the examples.
+</p>
+
+
+<h3>Methods</h3>
+
+<dl>
+<dt>coerce</dt><dd><code>signature(from = "dtCMatrix", to = "dgTMatrix")</code></dd>
+<dt>coerce</dt><dd><code>signature(from = "dtCMatrix", to = "dgeMatrix")</code></dd>
+<dt>coerce</dt><dd><code>signature(from = "dtTMatrix", to = "dgeMatrix")</code></dd>
+<dt>coerce</dt><dd><code>signature(from = "dtTMatrix", to = "dtrMatrix")</code></dd>
+<dt>coerce</dt><dd><code>signature(from = "dtTMatrix", to = "matrix")</code></dd>
+<dt>solve</dt><dd><code>signature(a = "dtCMatrix", b = "matrix")</code></dd>
+<dt>solve</dt><dd><code>signature(a = "dtCMatrix", b = "dgeMatrix")</code></dd>
+<dt>solve</dt><dd><code>signature(a = "dtCMatrix", b = "missing")</code></dd>
+<dt>solve</dt><dd><code>signature(a = "dtCMatrix", b = "numeric")</code></dd>
+<dt>solve</dt><dd><code>signature(a = "dtCMatrix", b = "CsparseMatrix")</code>:
+fully sparse triangular solve, in traditional S/<font face="Courier New,Courier" color="#666666"><b>R</b></font> aka
+<code><a href="../../base/html/backsolve.html">backsolve</a></code>.</dd>
+<dt>t</dt><dd><code>signature(x = "dtCMatrix")</code>: returns the transpose of
+<code>x</code></dd>
+<dt>t</dt><dd><code>signature(x = "dtTMatrix")</code>: returns the transpose of
+<code>x</code></dd>
+</dl>
+
+<h3>See Also</h3>
+
+<p>
+Classes <code><a href="dgCMatrix-class.html">dgCMatrix</a></code>, <code><a href="dgTMatrix-class.html">dgTMatrix</a></code>,
+<code><a href="dgeMatrix-class.html">dgeMatrix</a></code>, and <code><a href="dtrMatrix-class.html">dtrMatrix</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+showClass("dtCMatrix")
+
+showClass("dtTMatrix")
+t1 &lt;- new("dtTMatrix", x= c(3,7), i= 0:1, j=3:2, Dim= as.integer(c(4,4)))
+t1
+## from  0-diagonal to unit-diagonal {low-level step}:
+tu &lt;- t1 ; tu@diag &lt;- "U"
+tu
+(cu &lt;- as(tu, "dtCMatrix"))
+str(cu)# only two entries in @i and @x
+stopifnot(cu@i == 1:0,
+          all(2 * symmpart(cu) == Diagonal(4) + forceSymmetric(cu)))
+
+t1[1,2:3] &lt;- -1:-2
+diag(t1) &lt;- 10*c(1:2,3:2)
+t1 # still triangular
+(it1 &lt;- solve(t1))
+t1. &lt;- solve(it1)
+all(abs(t1 - t1.) &lt; 10 * .Machine$double.eps)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>Matrix</em> version 0.999375-30 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

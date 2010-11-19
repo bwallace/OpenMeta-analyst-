@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Ergometrics experiment with stool types</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for ergoStool {nlme}"><tr><td>ergoStool {nlme}</td><td align="right">R Documentation</td></tr></table>
+<h2>Ergometrics experiment with stool types</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The <code>ergoStool</code> data frame has 36 rows and 3 columns.
+</p>
+
+
+<h3>Format</h3>
+
+<p>
+This data frame contains the following columns:
+<dl>
+<dt>effort</dt><dd>a numeric vector giving the effort (Borg scale) required to
+arise from a stool.
+</dd>
+<dt>Type</dt><dd>a factor with levels
+<code>T1</code>, 
+<code>T2</code>, 
+<code>T3</code>, and 
+<code>T4</code> giving the stool type.
+</dd>
+<dt>Subject</dt><dd>an ordered factor giving a unique identifier for the subject
+in the experiment.
+</dd>
+</dl>
+
+<h3>Details</h3>
+
+<p>
+Devore (2000) cites data from an article in <EM>Ergometrics</EM> (1993,
+pp. 519-535) on ``The Effects of a Pneumatic Stool and a One-Legged
+Stool on Lower Limb Joint Load and Muscular Activity.''
+</p>
+
+
+<h3>Source</h3>
+
+<p>
+Pinheiro, J. C. and Bates, D. M. (2000), <EM>Mixed-Effects Models in S
+and S-PLUS</EM>, Springer, New York.  (Appendix A.9)
+</p>
+<p>
+Devore, J. L. (2000), <EM>Probability and Statistics for
+Engineering and the Sciences (5th ed)</EM>, Duxbury, Boston, MA.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+fm1 &lt;-
+   lme(effort ~ Type, data = ergoStool, random = ~ 1 | Subject)
+anova( fm1 )
+</pre>
+
+
+
+<hr><div align="center">[Package <em>nlme</em> version 3.1-93 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

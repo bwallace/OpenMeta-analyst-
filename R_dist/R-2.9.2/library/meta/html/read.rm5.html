@@ -1,0 +1,332 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Import RevMan 5 data files (.csv)</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for read.rm5 {meta}"><tr><td>read.rm5 {meta}</td><td align="right">R Documentation</td></tr></table>
+<h2>Import RevMan 5 data files (.csv)</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Reads data file from Cochrane Intervention review created with
+RevMan 5 and creates a data frame from it.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+read.rm5(file, sep=",", quote = "\"", title,
+         numbers.in.labels=TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>file</code></td>
+<td>
+The name of a file to read data values from.</td></tr>
+<tr valign="top"><td><code>sep</code></td>
+<td>
+The field separator character. Values on each line of the
+file are separated by this character. The comma is the default field
+separator character in RevMan 5.</td></tr>
+<tr valign="top"><td><code>quote</code></td>
+<td>
+The set of quoting characters. In RevMan 5 a """
+is the default quoting character.</td></tr>
+<tr valign="top"><td><code>title</code></td>
+<td>
+Title of the Cochrane review.</td></tr>
+<tr valign="top"><td><code>numbers.in.labels</code></td>
+<td>
+A logical indicating whether comparision
+number and outcome number should be printed at the beginning of the
+comparison (parameter <code>complab</code>) and outcome label (parameter
+<code>outclab</code>); this is the default in RevMan 5.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Review Manager 5 (RevMan 5) is the current software used for
+preparing and maintaining Cochrane Reviews
+(<a href="http://www.cc-ims.net/revman/">http://www.cc-ims.net/revman/</a>). RevMan 5 includes the ability
+to write Systematic reviews of interventions, Diagnostic test accuracy
+reviews, Methodology reviews and Overviews of reviews.
+</p>
+<p>
+This function provides the ability to read a data file from a
+Cochrane Intervention review created with RevMan 5; a data frame
+is created from it. Cochrane Intervention reviews are based on the
+comparison of two interventions.
+</p>
+<p>
+In order to generate a data analysis file in RevMan 5 use the
+following Menu points: <code>"File"</code> - <code>"Export"</code> - <code>"Data
+  and analyses"</code>. It is mandatory to include the following fields in the
+exported data file by selecting them with the mouse cursor in the
+Export Analysis Data Wizard: (i) Comparison Number, (ii) Outcome
+Number, (iii) Subgroup Number. When these fields are not selected a
+corresponding error message will be printed in R. It is recommended to
+include all fields in the exported data file. For example, in order to
+redo the meta-analysis in R for the RevMan 5 data type <code>"O-E and
+  Variance"</code> the fields <code>"O-E"</code> and <code>"Variance"</code> have to be
+selected in the Export Analysis Data Wizard.
+</p>
+<p>
+By default in RevMan 5, the name of the exported data file is the
+title of the Cochrane Review. Accordingly, information on the title is
+extracted from the name of the exported data file (parameter:
+<code>file</code>) if parameter <code>title</code> is missing (default).
+</p>
+<p>
+Each respective meta-analysis for parameters <code>event.e.pooled</code> &ndash;
+<code>df.pooled</code> is defined by values for <code>"comp.no"</code> and
+<code>"outcome.no"</code>, and <code>"grp.no"</code>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A data frame containing the following components:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>comp.no</code></td>
+<td>
+Comparison number.</td></tr>
+<tr valign="top"><td><code>outcome.no</code></td>
+<td>
+Outcome number.</td></tr>
+<tr valign="top"><td><code>group.no</code></td>
+<td>
+Group number.</td></tr>
+<tr valign="top"><td><code>studlab</code></td>
+<td>
+Study label.</td></tr>
+<tr valign="top"><td><code>year</code></td>
+<td>
+Year of publication.</td></tr>
+<tr valign="top"><td><code>event.e</code></td>
+<td>
+Number of events in experimental group.</td></tr>
+<tr valign="top"><td><code>n.e</code></td>
+<td>
+Number of observations in experimental group.</td></tr>
+<tr valign="top"><td><code>event.c</code></td>
+<td>
+Number of events in control group.</td></tr>
+<tr valign="top"><td><code>n.c</code></td>
+<td>
+Number of observations in control group.</td></tr>
+<tr valign="top"><td><code>mean.e</code></td>
+<td>
+Estimated mean in experimental group.</td></tr>
+<tr valign="top"><td><code>sd.e</code></td>
+<td>
+Standard deviation in experimental group.</td></tr>
+<tr valign="top"><td><code>mean.c</code></td>
+<td>
+Estimated mean in control group.</td></tr>
+<tr valign="top"><td><code>sd.c</code></td>
+<td>
+Standard deviation in control group.</td></tr>
+<tr valign="top"><td><code>O.E</code></td>
+<td>
+Observed minus expected (IPD analysis).</td></tr>
+<tr valign="top"><td><code>V</code></td>
+<td>
+Variance of <code>O.E</code> (IPD analysis).</td></tr>
+<tr valign="top"><td><code>TE, seTE</code></td>
+<td>
+Estimated treatment effect and standard error of individual studies.</td></tr>
+<tr valign="top"><td><code>lower.TE, upper.TE</code></td>
+<td>
+Lower and upper limit of 95% confidence
+interval for treatment effect in individual studies.</td></tr>
+<tr valign="top"><td><code>weight</code></td>
+<td>
+Weight of individual studies (according to
+meta-analytical method used in respective meta-analysis - see below
+for details).</td></tr>
+<tr valign="top"><td><code>order</code></td>
+<td>
+Ordering of studies.</td></tr>
+<tr valign="top"><td><code>grplab</code></td>
+<td>
+Group label.</td></tr>
+<tr valign="top"><td><code>type</code></td>
+<td>
+Type of outcome. D = dichotomous, C = continuous, P = IPD.</td></tr>
+<tr valign="top"><td><code>method</code></td>
+<td>
+A character string indicating which method has been used
+for pooling of studies. One of <code>"Inverse"</code>, <code>"MH"</code>, or
+<code>"Peto"</code>.</td></tr>
+<tr valign="top"><td><code>sm</code></td>
+<td>
+A character string indicating which summary measure
+has been used for pooling of studies.</td></tr>
+<tr valign="top"><td><code>model</code></td>
+<td>
+A character string indicating which meta-analytical model
+has been used (either <code>"Fixed"</code> or <code>"Random"</code>).</td></tr>
+<tr valign="top"><td><code>comb.fixed</code></td>
+<td>
+A logical indicating whether fixed effect
+meta-analysis has been used in respective meta-analysis (see below
+for details).</td></tr>
+<tr valign="top"><td><code>comb.random</code></td>
+<td>
+A logical indicating whether random effects
+meta-analysis has been used in respective meta-analysis (see below
+for details).</td></tr>
+<tr valign="top"><td><code>outclab</code></td>
+<td>
+Outcome label.</td></tr>
+<tr valign="top"><td><code>k</code></td>
+<td>
+Total number of studies combined in respective
+meta-analysis).</td></tr>
+<tr valign="top"><td><code>event.e.pooled</code></td>
+<td>
+Number of events in experimental group in
+respective meta-analysis (see below for details).</td></tr>
+<tr valign="top"><td><code>n.e.pooled</code></td>
+<td>
+Number of observations in experimental group in
+respective meta-analysis (see below for details).</td></tr>
+<tr valign="top"><td><code>event.c.pooled</code></td>
+<td>
+Number of events in control group in
+respective meta-analysis (see below for details).</td></tr>
+<tr valign="top"><td><code>n.c.pooled</code></td>
+<td>
+Number of observations in control group in
+respective meta-analysis (see below for details).</td></tr>
+<tr valign="top"><td><code>TE.pooled</code></td>
+<td>
+Estimated treatment effect in respective
+meta-analysis (see below for details).</td></tr>
+<tr valign="top"><td><code>lower.TE, upper.TE</code></td>
+<td>
+Lower and upper limit of 95% confidence
+interval for treatment effect in respective meta-analysis (see below
+for details).</td></tr>
+<tr valign="top"><td><code>weight.pooled</code></td>
+<td>
+Total weight in respective meta-analysis (see below
+for details).</td></tr>
+<tr valign="top"><td><code>Z.pooled</code></td>
+<td>
+Z-score for test of overall treatment effect in
+respective meta-analysis (see below for details).</td></tr>
+<tr valign="top"><td><code>pval.TE.pooled</code></td>
+<td>
+P-value for test of overall treatment effect in
+respective meta-analysis (see below for details).</td></tr>
+<tr valign="top"><td><code>Q</code></td>
+<td>
+Heterogeneity statistic Q in respective meta-analysis
+(see below for details).</td></tr>
+<tr valign="top"><td><code>pval.Q</code></td>
+<td>
+P-value of heterogeneity statistic Q in
+respective meta-analysis (see below for details).</td></tr>
+<tr valign="top"><td><code>I2</code></td>
+<td>
+Heterogeneity statistic I2 in respective
+meta-analysis (see below for details).</td></tr>
+<tr valign="top"><td><code>tau2</code></td>
+<td>
+Between-study variance (moment estimator of
+DerSimonian-Laird) in respective meta-analysis (see below for
+details).</td></tr>
+<tr valign="top"><td><code>Q.w</code></td>
+<td>
+Heterogeneity statistic Q within groups in
+respective meta-analysis (see below for details).</td></tr>
+<tr valign="top"><td><code>pval.Q.w</code></td>
+<td>
+P-value of heterogeneity statistic Q within groups in
+respective meta-analysis (see below for details).</td></tr>
+<tr valign="top"><td><code>I2.w</code></td>
+<td>
+Heterogeneity statistic I2 within groups in respective
+meta-analysis (see below for details).</td></tr>
+<tr valign="top"><td><code>label.e</code></td>
+<td>
+Label for experimental group.</td></tr>
+<tr valign="top"><td><code>label.c</code></td>
+<td>
+Label for control group.</td></tr>
+<tr valign="top"><td><code>label.left</code></td>
+<td>
+Graph label on left side of forest plot.</td></tr>
+<tr valign="top"><td><code>label.right</code></td>
+<td>
+Graph label on right side of forest plot.</td></tr>
+<tr valign="top"><td><code>RR.cochrane</code></td>
+<td>
+A logical indicating if 2*<code>incr</code> instead of
+1*<code>incr</code> is to be added to <code>n.e</code> and <code>n.c</code> in the
+calculation of the relative risk (i.e., <code>sm="RR"</code>) for studies
+with a zero cell. This is used in RevMan 5.</td></tr>
+<tr valign="top"><td><code>complab</code></td>
+<td>
+Comparison label.</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Guido Schwarzer <a href="mailto:sc@imbi.uni-freiburg.de">sc@imbi.uni-freiburg.de</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+<EM>Review Manager (RevMan)</EM> [Computer program]. Version 5.0, The Nordic
+Cochrane Centre, The Cochrane Collaboration, 2008.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="metabin.html">metabin</a></code>, <code><a href="metacont.html">metacont</a></code>, <code><a href="metagen.html">metagen</a></code>, <code><a href="metacr.html">metacr</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## Locate export data file "Fleiss93_CR.csv" or "Fleiss93_CR_Windows.csv"
+## in sub-directory of package "meta"
+##
+filename &lt;- paste(searchpaths()[seq(along=search())[search()==
+                  "package:meta"]], "/data/Fleiss93_CR",
+                  if (Sys.info()[["sysname"]]=="Windows") "_Windows" else "",
+                  ".csv", sep="")
+Fleiss93_CR &lt;- read.rm5(filename)
+
+## Same result: example(Fleiss93)
+##
+metacr(Fleiss93_CR)
+
+## Same result: example(Fleiss93cont)
+##
+metacr(Fleiss93_CR, 1, 2)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>meta</em> version 1.1-8 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

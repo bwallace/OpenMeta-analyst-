@@ -1,0 +1,30 @@
+\HeaderA{binary.fixed.peto.is.feasible}{}{binary.fixed.peto.is.feasible}
+\keyword{~kwd1}{binary.fixed.peto.is.feasible}
+\keyword{~kwd2}{binary.fixed.peto.is.feasible}
+\begin{Usage}
+\begin{verbatim}
+binary.fixed.peto.is.feasible(binaryData)
+\end{verbatim}
+\end{Usage}
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{binaryData}] 
+\end{ldescription}
+\end{Arguments}
+\begin{Examples}
+\begin{ExampleCode}
+##---- Should be DIRECTLY executable !! ----
+##-- ==>  Define data, use random,
+##--    or do  help(data=index)  for the standard data sets.
+
+## The function is currently defined as
+function (binaryData) 
+{
+    length(binaryData@g1O1) == length(binaryData@g1O2) && length(binaryData@g1O2) == 
+        length(binaryData@g2O1) && length(binaryData@g2O1) == 
+        length(binaryData@g2O2) && length(binaryData@g1O1) > 
+        0
+  }
+\end{ExampleCode}
+\end{Examples}
+

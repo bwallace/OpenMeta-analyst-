@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Quade Test</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for quade.test {stats}"><tr><td>quade.test {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>Quade Test</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Performs a Quade test with unreplicated blocked data.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+quade.test(y, ...)
+
+## Default S3 method:
+quade.test(y, groups, blocks, ...)
+
+## S3 method for class 'formula':
+quade.test(formula, data, subset, na.action, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>y</code></td>
+<td>
+either a numeric vector of data values, or a data matrix.</td></tr>
+<tr valign="top"><td><code>groups</code></td>
+<td>
+a vector giving the group for the corresponding elements
+of <code>y</code> if this is a vector;  ignored if <code>y</code> is a matrix.
+If not a factor object, it is coerced to one.</td></tr>
+<tr valign="top"><td><code>blocks</code></td>
+<td>
+a vector giving the block for the corresponding elements
+of <code>y</code> if this is a vector;  ignored if <code>y</code> is a matrix.
+If not a factor object, it is coerced to one.</td></tr>
+<tr valign="top"><td><code>formula</code></td>
+<td>
+a formula of the form <code>a ~ b | c</code>, where <code>a</code>,
+<code>b</code> and <code>c</code> give the data values and corresponding groups
+and blocks, respectively.</td></tr>
+<tr valign="top"><td><code>data</code></td>
+<td>
+an optional matrix or data frame (or similar: see
+<code><a href="model.frame.html">model.frame</a></code>) containing the variables in the
+formula <code>formula</code>.  By default the variables are taken from
+<code>environment(formula)</code>.</td></tr>
+<tr valign="top"><td><code>subset</code></td>
+<td>
+an optional vector specifying a subset of observations
+to be used.</td></tr>
+<tr valign="top"><td><code>na.action</code></td>
+<td>
+a function which indicates what should happen when
+the data contain <code>NA</code>s.  Defaults to
+<code>getOption("na.action")</code>.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+further arguments to be passed to or from methods.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>quade.test</code> can be used for analyzing unreplicated complete
+block designs (i.e., there is exactly one observation in <code>y</code>
+for each combination of levels of <code>groups</code> and <code>blocks</code>)
+where the normality assumption may be violated.
+</p>
+<p>
+The null hypothesis is that apart from an effect of <code>blocks</code>,
+the location parameter of <code>y</code> is the same in each of the
+<code>groups</code>.
+</p>
+<p>
+If <code>y</code> is a matrix, <code>groups</code> and <code>blocks</code> are obtained
+from the column and row indices, respectively.  <code>NA</code>'s are not
+allowed in <code>groups</code> or <code>blocks</code>;  if <code>y</code> contains
+<code>NA</code>'s, corresponding blocks are removed.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A list with class <code>"htest"</code> containing the following components:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>statistic</code></td>
+<td>
+the value of Quade's F statistic.</td></tr>
+<tr valign="top"><td><code>parameter</code></td>
+<td>
+a vector with the numerator and denominator degrees 
+of freedom of the approximate F distribution of the test statistic.</td></tr>
+<tr valign="top"><td><code>p.value</code></td>
+<td>
+the p-value of the test.</td></tr>
+<tr valign="top"><td><code>method</code></td>
+<td>
+the character string <code>"Quade test"</code>.</td></tr>
+<tr valign="top"><td><code>data.name</code></td>
+<td>
+a character string giving the names of the data.</td></tr>
+</table>
+
+<h3>References</h3>
+
+<p>
+D. Quade (1979),
+Using weighted rankings in the analysis of complete blocks with
+additive block effects.
+<EM>Journal of the American Statistical Association</EM>, <B>74</B>,
+680&ndash;683.
+</p>
+<p>
+William J. Conover (1999),
+<EM>Practical nonparametric statistics</EM>.
+New York: John Wiley &amp; Sons.
+Pages 373&ndash;380.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="friedman.test.html">friedman.test</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## Conover (1999, p. 375f):
+## Numbers of five brands of a new hand lotion sold in seven stores
+## during one week.
+y &lt;- matrix(c( 5,  4,  7, 10, 12,
+               1,  3,  1,  0,  2,
+              16, 12, 22, 22, 35,
+               5,  4,  3,  5,  4,
+              10,  9,  7, 13, 10,
+              19, 18, 28, 37, 58,
+              10,  7,  6,  8,  7),
+            nrow = 7, byrow = TRUE,
+            dimnames =
+            list(Store = as.character(1:7),
+                 Brand = LETTERS[1:5]))
+y
+quade.test(y)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

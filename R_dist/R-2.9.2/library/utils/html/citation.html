@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Citing R and R Packages in Publications</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for citation {utils}"><tr><td>citation {utils}</td><td align="right">R Documentation</td></tr></table>
+<h2>Citing R and R Packages in Publications</h2>
+
+
+<h3>Description</h3>
+
+<p>
+How to cite R and R packages in publications.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+citation(package = "base", lib.loc = NULL)
+## S3 method for class 'citation':
+toBibtex(object, ...)
+## S3 method for class 'citationList':
+toBibtex(object, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>package</code></td>
+<td>
+a character string with the name of a single package.
+An error occurs if more than one package name is given.</td></tr>
+<tr valign="top"><td><code>lib.loc</code></td>
+<td>
+a character vector with path names of <font face="Courier New,Courier" color="#666666"><b>R</b></font> libraries, or
+<code>NULL</code>.  The default value of <code>NULL</code> corresponds to all
+libraries currently known.  If the default is used, the loaded
+packages are searched before the libraries.</td></tr>
+<tr valign="top"><td><code>object</code></td>
+<td>
+return object of <code>citation</code>.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+currently not used.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The R core development team and the very active community of package
+authors have invested a lot of time and effort in creating R as it is
+today. Please give credit where credit is due and cite R and R
+packages when you use them for data analysis.
+</p>
+<p>
+Execute function <code>citation()</code> for information on how to cite the
+base R system in publications. If the name of a non-base package is
+given, the function
+either returns the information contained in the <code><a href="citEntry.html">CITATION</a></code>
+file of the package or auto-generates citation information. In the
+latter case the package &lsquo;<span class="file">DESCRIPTION</span>&rsquo; file is parsed, the
+resulting citation object may be arbitrarily bad, but is quite useful
+(at least as a starting point) in most cases.
+</p>
+<p>
+If only one reference is given, the print method shows both a text
+version and a BibTeX entry for it, if a package has more than one
+reference then only the text versions are shown. The BibTeX versions
+can be obtained using function <code>toBibtex</code> (see the examples below).
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+An object of class <code>"citationList"</code>.</p>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="citEntry.html">citEntry</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## the basic R reference
+citation()
+
+## references for a package -- might not have these installed
+if(nchar(system.file(package="lattice"))) citation("lattice")
+if(nchar(system.file(package="foreign"))) citation("foreign")
+
+## extract the bibtex entry from the return value
+x &lt;- citation()
+toBibtex(x)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>utils</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

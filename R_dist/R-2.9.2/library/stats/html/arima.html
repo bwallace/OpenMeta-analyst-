@@ -1,0 +1,311 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: ARIMA Modelling of Time Series</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for arima {stats}"><tr><td>arima {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>ARIMA Modelling of Time Series</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Fit an ARIMA model to a univariate time series.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+arima(x, order = c(0, 0, 0),
+      seasonal = list(order = c(0, 0, 0), period = NA),
+      xreg = NULL, include.mean = TRUE,
+      transform.pars = TRUE,
+      fixed = NULL, init = NULL,
+      method = c("CSS-ML", "ML", "CSS"),
+      n.cond, optim.method = "BFGS",
+      optim.control = list(), kappa = 1e6)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+a univariate time series</td></tr>
+<tr valign="top"><td><code>order</code></td>
+<td>
+A specification of the non-seasonal part of the ARIMA
+model: the three components <i>(p, d, q)</i> are the AR order, the
+degree of differencing, and the MA order.</td></tr>
+<tr valign="top"><td><code>seasonal</code></td>
+<td>
+A specification of the seasonal part of the ARIMA
+model, plus the period (which defaults to <code>frequency(x)</code>).
+This should be a list with components <code>order</code> and
+<code>period</code>, but a specification of just a numeric vector of
+length 3 will be turned into a suitable list with the specification
+as the <code>order</code>.</td></tr>
+<tr valign="top"><td><code>xreg</code></td>
+<td>
+Optionally, a vector or matrix of external regressors,
+which must have the same number of rows as <code>x</code>.</td></tr>
+<tr valign="top"><td><code>include.mean</code></td>
+<td>
+Should the ARMA model include a mean/intercept term?  The
+default is <code>TRUE</code> for undifferenced series, and it is ignored
+for ARIMA models with differencing.</td></tr>
+<tr valign="top"><td><code>transform.pars</code></td>
+<td>
+Logical.  If true, the AR parameters are
+transformed to ensure that they remain in the region of
+stationarity.  Not used for <code>method = "CSS"</code>.</td></tr>
+<tr valign="top"><td><code>fixed</code></td>
+<td>
+optional numeric vector of the same length as the total
+number of parameters.  If supplied, only <code>NA</code> entries in
+<code>fixed</code> will be varied.  <code>transform.pars = TRUE</code>
+will be overridden (with a warning) if any AR parameters are fixed.
+It may be wise to set <code>transform.pars = FALSE</code> when fixing
+MA parameters, especially near non-invertibility.
+</td></tr>
+<tr valign="top"><td><code>init</code></td>
+<td>
+optional numeric vector of initial parameter
+values.  Missing values will be filled in, by zeroes except for
+regression coefficients.  Values already specified in <code>fixed</code>
+will be ignored.</td></tr>
+<tr valign="top"><td><code>method</code></td>
+<td>
+Fitting method: maximum likelihood or minimize
+conditional sum-of-squares.  The default (unless there are missing
+values) is to use conditional-sum-of-squares to find starting
+values, then maximum likelihood.</td></tr>
+<tr valign="top"><td><code>n.cond</code></td>
+<td>
+Only used if fitting by conditional-sum-of-squares: the
+number of initial observations to ignore.  It will be ignored if
+less than the maximum lag of an AR term.</td></tr>
+<tr valign="top"><td><code>optim.method</code></td>
+<td>
+The value passed as the <code>method</code> argument to
+<code><a href="optim.html">optim</a></code>.</td></tr>
+<tr valign="top"><td><code>optim.control</code></td>
+<td>
+List of control parameters for <code><a href="optim.html">optim</a></code>.</td></tr>
+<tr valign="top"><td><code>kappa</code></td>
+<td>
+the prior variance (as a multiple of the innovations
+variance) for the past observations in a differenced model.  Do not
+reduce this.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Different definitions of ARMA models have different signs for the
+AR and/or MA coefficients.  The definition used here has
+</p>
+<p align="center"><i><code>X[t] = a[1]X[t-1] + ... + a[p]X[t-p] + e[t] + b[1]e[t-1] + ... + b[q]e[t-q]</code></i></p>
+<p>
+and so the MA coefficients differ in sign from those of S-PLUS.
+Further, if <code>include.mean</code> is true (the default for an ARMA
+model), this formula applies to <i>X - m</i> rather than <i>X</i>.  For
+ARIMA models with differencing, the differenced series follows a
+zero-mean ARMA model. If am <code>xreg</code> term is included, a linear
+regression (with a constant term if <code>include.mean</code> is true and
+there is no differencing) is fitted with an ARMA model for the error
+term.
+</p>
+<p>
+The variance matrix of the estimates is found from the Hessian of
+the log-likelihood, and so may only be a rough guide.
+</p>
+<p>
+Optimization is done by <code><a href="optim.html">optim</a></code>.  It will work
+best if the columns in <code>xreg</code> are roughly scaled to zero mean
+and unit variance, but does attempt to estimate suitable scalings.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A list of class <code>"Arima"</code> with components:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>coef</code></td>
+<td>
+a vector of AR, MA and regression coefficients, which can
+be extracted by the <code><a href="coef.html">coef</a></code> method.</td></tr>
+<tr valign="top"><td><code>sigma2</code></td>
+<td>
+the MLE of the innovations variance.</td></tr>
+<tr valign="top"><td><code>var.coef</code></td>
+<td>
+the estimated variance matrix of the coefficients
+<code>coef</code>, which can be extracted by the <code><a href="vcov.html">vcov</a></code> method.</td></tr>
+<tr valign="top"><td><code>loglik</code></td>
+<td>
+the maximized log-likelihood (of the differenced data),
+or the approximation to it used.</td></tr>
+<tr valign="top"><td><code>arma</code></td>
+<td>
+A compact form of the specification, as a vector giving
+the number of AR, MA, seasonal AR and seasonal MA coefficients,
+plus the period and the number of non-seasonal and seasonal
+differences.</td></tr>
+<tr valign="top"><td><code>aic</code></td>
+<td>
+the AIC value corresponding to the log-likelihood. Only
+valid for <code>method = "ML"</code> fits.</td></tr>
+<tr valign="top"><td><code>residuals</code></td>
+<td>
+the fitted innovations.</td></tr>
+<tr valign="top"><td><code>call</code></td>
+<td>
+the matched call.</td></tr>
+<tr valign="top"><td><code>series</code></td>
+<td>
+the name of the series <code>x</code>.</td></tr>
+<tr valign="top"><td><code>code</code></td>
+<td>
+the convergence value returned by <code><a href="optim.html">optim</a></code>.</td></tr>
+<tr valign="top"><td><code>n.cond</code></td>
+<td>
+the number of initial observations not used in the fitting.</td></tr>
+<tr valign="top"><td><code>model</code></td>
+<td>
+A list representing the Kalman Filter used in the
+fitting.  See <code><a href="KalmanLike.html">KalmanLike</a></code>.</td></tr>
+</table>
+
+<h3>Fitting methods</h3>
+
+<p>
+The exact likelihood is computed via a state-space representation of
+the ARIMA process, and the innovations and their variance found by a
+Kalman filter.  The initialization of the differenced ARMA process uses
+stationarity and is based on Gardner <EM>et al.</EM> (1980).  For a
+differenced process the non-stationary components are given a diffuse
+prior (controlled by <code>kappa</code>).  Observations which are still
+controlled by the diffuse prior (determined by having a Kalman gain of
+at least <code>1e4</code>) are excluded from the likelihood calculations.
+(This gives comparable results to <code><a href="arima0.html">arima0</a></code> in the absence
+of missing values, when the observations excluded are precisely those
+dropped by the differencing.)
+</p>
+<p>
+Missing values are allowed, and are handled exactly in method <code>"ML"</code>.
+</p>
+<p>
+If <code>transform.pars</code> is true, the optimization is done using an
+alternative parametrization which is a variation on that suggested by
+Jones (1980) and ensures that the model is stationary.  For an AR(p)
+model the parametrization is via the inverse tanh of the partial
+autocorrelations: the same procedure is applied (separately) to the
+AR and seasonal AR terms.  The MA terms are not constrained to be
+invertible during optimization, but they will be converted to
+invertible form after optimization if <code>transform.pars</code> is true.
+</p>
+<p>
+Conditional sum-of-squares is provided mainly for expositional
+purposes.  This computes the sum of squares of the fitted innovations
+from observation <code>n.cond</code> on, (where <code>n.cond</code> is at least
+the maximum lag of an AR term), treating all earlier innovations to
+be zero.  Argument <code>n.cond</code> can be used to allow comparability
+between different fits.  The &lsquo;part log-likelihood&rsquo; is the first
+term, half the log of the estimated mean square.  Missing values
+are allowed, but will cause many of the innovations to be missing.
+</p>
+<p>
+When regressors are specified, they are orthogonalized prior to
+fitting unless any of the coefficients is fixed.  It can be helpful to
+roughly scale the regressors to zero mean and unit variance.
+</p>
+
+
+<h3>Note</h3>
+
+<p>
+The results are likely to be different from S-PLUS's
+<code>arima.mle</code>, which computes a conditional likelihood and does
+not include a mean in the model.  Further, the convention used by
+<code>arima.mle</code> reverses the signs of the MA coefficients.
+</p>
+<p>
+<code>arima</code> is very similar to <code><a href="arima0.html">arima0</a></code> for
+ARMA models or for differenced models without missing values,
+but handles differenced models with missing values exactly.
+It is somewhat slower than <code>arima0</code>, particularly for seasonally
+differenced models.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Brockwell, P. J. and Davis, R. A. (1996) <EM>Introduction to Time
+Series and Forecasting.</EM> Springer, New York. Sections 3.3 and 8.3.
+</p>
+<p>
+Durbin, J. and Koopman, S. J. (2001) <EM>Time Series Analysis by
+State Space Methods.</EM>  Oxford University Press.
+</p>
+<p>
+Gardner, G, Harvey, A. C. and Phillips, G. D. A. (1980) Algorithm
+AS154. An algorithm for exact maximum likelihood estimation of
+autoregressive-moving average models by means of Kalman filtering.
+<EM>Applied Statistics</EM> <B>29</B>, 311&ndash;322.
+</p>
+<p>
+Harvey, A. C. (1993) <EM>Time Series Models</EM>,
+2nd Edition, Harvester Wheatsheaf, sections 3.3 and 4.4.
+</p>
+<p>
+Jones, R. H. (1980) Maximum likelihood fitting of ARMA models to time
+series with missing observations. <EM>Technometrics</EM> <B>20</B> 389&ndash;395.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="predict.arima.html">predict.Arima</a></code>, <code><a href="arima.sim.html">arima.sim</a></code> for simulating
+from an ARIMA model, <code><a href="tsdiag.html">tsdiag</a></code>, <code><a href="arima0.html">arima0</a></code>,
+<code><a href="ar.html">ar</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+arima(lh, order = c(1,0,0))
+arima(lh, order = c(3,0,0))
+arima(lh, order = c(1,0,1))
+
+arima(lh, order = c(3,0,0), method = "CSS")
+
+arima(USAccDeaths, order = c(0,1,1), seasonal = list(order=c(0,1,1)))
+arima(USAccDeaths, order = c(0,1,1), seasonal = list(order=c(0,1,1)),
+      method = "CSS") # drops first 13 observations.
+# for a model with as few years as this, we want full ML
+
+arima(LakeHuron, order = c(2,0,0), xreg = time(LakeHuron)-1920)
+
+## presidents contains NAs
+## graphs in example(acf) suggest order 1 or 3
+require(graphics)
+(fit1 &lt;- arima(presidents, c(1, 0, 0)))
+tsdiag(fit1)
+(fit3 &lt;- arima(presidents, c(3, 0, 0)))  # smaller AIC
+tsdiag(fit3)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

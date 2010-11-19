@@ -1,0 +1,1715 @@
+Entry: ACF
+Aliases: ACF
+Keywords: models
+Description: Autocorrelation Function
+URL: ../../../library/nlme/html/ACF.html
+
+Entry: ACF.gls
+Aliases: ACF.gls
+Keywords: models
+Description: Autocorrelation Function for gls Residuals
+URL: ../../../library/nlme/html/ACF.gls.html
+
+Entry: ACF.lme
+Aliases: ACF.lme
+Keywords: models
+Description: Autocorrelation Function for lme Residuals
+URL: ../../../library/nlme/html/ACF.lme.html
+
+Entry: Alfalfa
+Aliases: Alfalfa
+Keywords: datasets
+Description: Split-Plot Experiment on Varieties of Alfalfa
+URL: ../../../library/nlme/html/Alfalfa.html
+
+Entry: Assay
+Aliases: Assay
+Keywords: datasets
+Description: Bioassay on Cell Culture Plate
+URL: ../../../library/nlme/html/Assay.html
+
+Entry: BIC
+Aliases: BIC BIC.lm BIC.lmList BIC.gls BIC.lme BIC.nls BIC.nlsList BIC.nlme
+Keywords: models
+Description: Bayesian Information Criterion
+URL: ../../../library/nlme/html/BIC.html
+
+Entry: BIC.logLik
+Aliases: BIC.logLik
+Keywords: models
+Description: BIC of a logLik Object
+URL: ../../../library/nlme/html/BIC.logLik.html
+
+Entry: BodyWeight
+Aliases: BodyWeight
+Keywords: datasets
+Description: Rat weight over time for different diets
+URL: ../../../library/nlme/html/BodyWeight.html
+
+Entry: Cefamandole
+Aliases: Cefamandole
+Keywords: datasets
+Description: Pharmacokinetics of Cefamandole
+URL: ../../../library/nlme/html/Cefamandole.html
+
+Entry: Coef
+Aliases: coef<- coefficients<-
+Keywords: models
+Description: Assign Values to Coefficients
+URL: ../../../library/nlme/html/Coef.html
+
+Entry: Covariate
+Aliases: covariate<-
+Keywords: models
+Description: Assign Covariate Values
+URL: ../../../library/nlme/html/Covariate.html
+
+Entry: Covariate.varFunc
+Aliases: covariate<-.varFunc
+Keywords: models
+Description: Assign varFunc Covariate
+URL: ../../../library/nlme/html/Covariate.varFunc.html
+
+Entry: Dialyzer
+Aliases: Dialyzer
+Keywords: datasets
+Description: High-Flux Hemodialyzer
+URL: ../../../library/nlme/html/Dialyzer.html
+
+Entry: Dim
+Aliases: Dim Dim.default
+Keywords: models
+Description: Extract Dimensions from an Object
+URL: ../../../library/nlme/html/Dim.html
+
+Entry: Dim.corSpatial
+Aliases: Dim.corSpatial
+Keywords: models
+Description: Dimensions of a corSpatial Object
+URL: ../../../library/nlme/html/Dim.corSpatial.html
+
+Entry: Dim.corStruct
+Aliases: Dim.corStruct
+Keywords: models
+Description: Dimensions of a corStruct Object
+URL: ../../../library/nlme/html/Dim.corStruct.html
+
+Entry: Dim.pdMat
+Aliases: Dim.pdMat Dim.pdCompSymm Dim.pdDiag Dim.pdIdent Dim.pdNatural Dim.pdSymm
+Keywords: models
+Description: Dimensions of a pdMat Object
+URL: ../../../library/nlme/html/Dim.pdMat.html
+
+Entry: Earthquake
+Aliases: Earthquake
+Keywords: datasets
+Description: Earthquake Intensity
+URL: ../../../library/nlme/html/Earthquake.html
+
+Entry: [.pdMat
+Aliases: [.pdMat [.pdBlocked [<-.pdMat
+Keywords: models
+Description: Subscript a pdMat Object
+URL: ../../../library/nlme/html/Extract.pdMat.html
+
+Entry: Fatigue
+Aliases: Fatigue
+Keywords: datasets
+Description: Cracks caused by metal fatigue
+URL: ../../../library/nlme/html/Fatigue.html
+
+Entry: Gasoline
+Aliases: Gasoline
+Keywords: datasets
+Description: Refinery yield of gasoline
+URL: ../../../library/nlme/html/Gasoline.html
+
+Entry: Glucose
+Aliases: Glucose
+Keywords: datasets
+Description: Glucose levels over time
+URL: ../../../library/nlme/html/Glucose.html
+
+Entry: Glucose2
+Aliases: Glucose2
+Keywords: datasets
+Description: Glucose Levels Following Alcohol Ingestion
+URL: ../../../library/nlme/html/Glucose2.html
+
+Entry: Gun
+Aliases: Gun
+Keywords: datasets
+Description: Methods for firing naval guns
+URL: ../../../library/nlme/html/Gun.html
+
+Entry: IGF
+Aliases: IGF
+Keywords: datasets
+Description: Radioimmunoassay of IGF-I Protein
+URL: ../../../library/nlme/html/IGF.html
+
+Entry: Initialize
+Aliases: Initialize
+Keywords: models
+Description: Initialize Object
+URL: ../../../library/nlme/html/Initialize.html
+
+Entry: Initialize.corStruct
+Aliases: Initialize.corStruct Initialize.corAR1 Initialize.corARMA Initialize.corCAR1 Initialize.corCompSymm Initialize.corHF Initialize.corIdent Initialize.corLin Initialize.corNatural Initialize.corSpatial Initialize.corSpher Initialize.corSymm
+Keywords: models
+Description: Initialize corStruct Object
+URL: ../../../library/nlme/html/Initialize.corStruct.html
+
+Entry: Initialize.glsStruct
+Aliases: Initialize.glsStruct
+Keywords: models
+Description: Initialize a glsStruct Object
+URL: ../../../library/nlme/html/Initialize.glsStruct.html
+
+Entry: Initialize.lmeStruct
+Aliases: Initialize.lmeStruct
+Keywords: models
+Description: Initialize an lmeStruct Object
+URL: ../../../library/nlme/html/Initialize.lmeStruct.html
+
+Entry: Initialize.reStruct
+Aliases: Initialize.reStruct
+Keywords: models
+Description: Initialize reStruct Object
+URL: ../../../library/nlme/html/Initialize.reStruct.html
+
+Entry: Initialize.varFunc
+Aliases: Initialize.varFunc Initialize.varComb Initialize.varConstPower Initialize.varExp Initialize.varFixed Initialize.varIdent Initialize.varPower
+Keywords: models
+Description: Initialize varFunc Object
+URL: ../../../library/nlme/html/Initialize.varFunc.html
+
+Entry: LDEsysMat
+Aliases: LDEsysMat
+Keywords: models
+Description: Generate system matrix for LDEs
+URL: ../../../library/nlme/html/LDEsysMat.html
+
+Entry: Machines
+Aliases: Machines
+Keywords: datasets
+Description: Productivity Scores for Machines and Workers
+URL: ../../../library/nlme/html/Machines.html
+
+Entry: MathAchSchool
+Aliases: MathAchSchool
+Keywords: datasets
+Description: School demographic data for MathAchieve
+URL: ../../../library/nlme/html/MathAchSchool.html
+
+Entry: MathAchieve
+Aliases: MathAchieve
+Keywords: datasets
+Description: Mathematics achievement scores
+URL: ../../../library/nlme/html/MathAchieve.html
+
+Entry: Matrix
+Aliases: matrix<-
+Keywords: models
+Description: Assign Matrix Values
+URL: ../../../library/nlme/html/Matrix.html
+
+Entry: Matrix.pdMat
+Aliases: matrix<-.pdMat matrix<-.pdBlocked
+Keywords: models
+Description: Assign Matrix to a pdMat Object
+URL: ../../../library/nlme/html/Matrix.pdMat.html
+
+Entry: Matrix.reStruct
+Aliases: matrix<-.reStruct
+Keywords: models
+Description: Assign reStruct Matrices
+URL: ../../../library/nlme/html/Matrix.reStruct.html
+
+Entry: Meat
+Aliases: Meat
+Keywords: datasets
+Description: Tenderness of meat
+URL: ../../../library/nlme/html/Meat.html
+
+Entry: Milk
+Aliases: Milk
+Keywords: datasets
+Description: Protein content of cows' milk
+URL: ../../../library/nlme/html/Milk.html
+
+Entry: Muscle
+Aliases: Muscle
+Keywords: datasets
+Description: Contraction of heart muscle sections
+URL: ../../../library/nlme/html/Muscle.html
+
+Entry: Names
+Aliases: Names Names<-
+Keywords: models
+Description: Names Associated with an Object
+URL: ../../../library/nlme/html/Names.html
+
+Entry: Names.formula
+Aliases: Names.formula Names.listForm
+Keywords: models
+Description: Extract Names from a formula
+URL: ../../../library/nlme/html/Names.formula.html
+
+Entry: Names.pdBlocked
+Aliases: Names.pdBlocked Names<-.pdBlocked
+Keywords: models
+Description: Names of a pdBlocked Object
+URL: ../../../library/nlme/html/Names.pdBlocked.html
+
+Entry: Names.pdMat
+Aliases: Names.pdMat Names<-.pdMat
+Keywords: models
+Description: Names of a pdMat Object
+URL: ../../../library/nlme/html/Names.pdMat.html
+
+Entry: Names.reStruct
+Aliases: Names.reStruct Names<-.reStruct
+Keywords: models
+Description: Names of an reStruct Object
+URL: ../../../library/nlme/html/Names.reStruct.html
+
+Entry: Nitrendipene
+Aliases: Nitrendipene
+Keywords: datasets
+Description: Assay of nitrendipene
+URL: ../../../library/nlme/html/Nitrendipene.html
+
+Entry: Oats
+Aliases: Oats
+Keywords: datasets
+Description: Split-plot Experiment on Varieties of Oats
+URL: ../../../library/nlme/html/Oats.html
+
+Entry: Orthodont
+Aliases: Orthodont
+Keywords: datasets
+Description: Growth curve data on an orthdontic measurement
+URL: ../../../library/nlme/html/Orthodont.html
+
+Entry: Ovary
+Aliases: Ovary
+Keywords: datasets
+Description: Counts of Ovarian Follicles
+URL: ../../../library/nlme/html/Ovary.html
+
+Entry: Oxboys
+Aliases: Oxboys
+Keywords: datasets
+Description: Heights of Boys in Oxford
+URL: ../../../library/nlme/html/Oxboys.html
+
+Entry: Oxide
+Aliases: Oxide
+Keywords: datasets
+Description: Variability in Semiconductor Manufacturing
+URL: ../../../library/nlme/html/Oxide.html
+
+Entry: PBG
+Aliases: PBG
+Keywords: datasets
+Description: Effect of Phenylbiguanide on Blood Pressure
+URL: ../../../library/nlme/html/PBG.html
+
+Entry: Phenobarb
+Aliases: Phenobarb
+Keywords: datasets
+Description: Phenobarbitol Kinetics
+URL: ../../../library/nlme/html/Phenobarb.html
+
+Entry: Pixel
+Aliases: Pixel
+Keywords: datasets
+Description: X-ray pixel intensities over time
+URL: ../../../library/nlme/html/Pixel.html
+
+Entry: Quinidine
+Aliases: Quinidine
+Keywords: datasets
+Description: Quinidine Kinetics
+URL: ../../../library/nlme/html/Quinidine.html
+
+Entry: Rail
+Aliases: Rail
+Keywords: datasets
+Description: Evaluation of Stress in Railway Rails
+URL: ../../../library/nlme/html/Rail.html
+
+Entry: RatPupWeight
+Aliases: RatPupWeight
+Keywords: datasets
+Description: The weight of rat pups
+URL: ../../../library/nlme/html/RatPupWeight.html
+
+Entry: Relaxin
+Aliases: Relaxin
+Keywords: datasets
+Description: Assay for Relaxin
+URL: ../../../library/nlme/html/Relaxin.html
+
+Entry: Remifentanil
+Aliases: Remifentanil
+Keywords: datasets
+Description: Pharmacokinetics of remifentanil
+URL: ../../../library/nlme/html/Remifentanil.html
+
+Entry: Soybean
+Aliases: Soybean
+Keywords: datasets
+Description: Growth of soybean plants
+URL: ../../../library/nlme/html/Soybean.html
+
+Entry: Spruce
+Aliases: Spruce
+Keywords: datasets
+Description: Growth of Spruce Trees
+URL: ../../../library/nlme/html/Spruce.html
+
+Entry: Tetracycline1
+Aliases: Tetracycline1
+Keywords: datasets
+Description: Pharmacokinetics of tetracycline
+URL: ../../../library/nlme/html/Tetracycline1.html
+
+Entry: Tetracycline2
+Aliases: Tetracycline2
+Keywords: datasets
+Description: Pharmacokinetics of tetracycline
+URL: ../../../library/nlme/html/Tetracycline2.html
+
+Entry: VarCorr
+Aliases: VarCorr VarCorr.lme VarCorr.pdMat VarCorr.pdBlocked summary.VarCorr.lme print.VarCorr.lme
+Keywords: models
+Description: Extract variance and correlation components
+URL: ../../../library/nlme/html/VarCorr.html
+
+Entry: Variogram
+Aliases: Variogram
+Keywords: models
+Description: Calculate Semi-variogram
+URL: ../../../library/nlme/html/Variogram.html
+
+Entry: Variogram.corExp
+Aliases: Variogram.corExp
+Keywords: models
+Description: Calculate Semi-variogram for a corExp Object
+URL: ../../../library/nlme/html/Variogram.corExp.html
+
+Entry: Variogram.corGaus
+Aliases: Variogram.corGaus
+Keywords: models
+Description: Calculate Semi-variogram for a corGaus Object
+URL: ../../../library/nlme/html/Variogram.corGaus.html
+
+Entry: Variogram.corLin
+Aliases: Variogram.corLin
+Keywords: models
+Description: Calculate Semi-variogram for a corLin Object
+URL: ../../../library/nlme/html/Variogram.corLin.html
+
+Entry: Variogram.corRatio
+Aliases: Variogram.corRatio
+Keywords: models
+Description: Calculate Semi-variogram for a corRatio Object
+URL: ../../../library/nlme/html/Variogram.corRatio.html
+
+Entry: Variogram.corSpatial
+Aliases: Variogram.corSpatial
+Keywords: models
+Description: Calculate Semi-variogram for a corSpatial Object
+URL: ../../../library/nlme/html/Variogram.corSpatial.html
+
+Entry: Variogram.corSpher
+Aliases: Variogram.corSpher
+Keywords: models
+Description: Calculate Semi-variogram for a corSpher Object
+URL: ../../../library/nlme/html/Variogram.corSpher.html
+
+Entry: Variogram.default
+Aliases: Variogram.default
+Keywords: models
+Description: Calculate Semi-variogram
+URL: ../../../library/nlme/html/Variogram.default.html
+
+Entry: Variogram.gls
+Aliases: Variogram.gls
+Keywords: models
+Description: Calculate Semi-variogram for Residuals from a gls Object
+URL: ../../../library/nlme/html/Variogram.gls.html
+
+Entry: Variogram.lme
+Aliases: Variogram.lme
+Keywords: models
+Description: Calculate Semi-variogram for Residuals from an lme Object
+URL: ../../../library/nlme/html/Variogram.lme.html
+
+Entry: Wafer
+Aliases: Wafer
+Keywords: datasets
+Description: Modeling of Analog MOS Circuits
+URL: ../../../library/nlme/html/Wafer.html
+
+Entry: Wheat
+Aliases: Wheat
+Keywords: datasets
+Description: Yields by growing conditions
+URL: ../../../library/nlme/html/Wheat.html
+
+Entry: Wheat2
+Aliases: Wheat2
+Keywords: datasets
+Description: Wheat Yield Trials
+URL: ../../../library/nlme/html/Wheat2.html
+
+Entry: allCoef
+Aliases: allCoef
+Keywords: models
+Description: Extract Coefficients from a Set of Objects
+URL: ../../../library/nlme/html/allCoef.html
+
+Entry: anova.gls
+Aliases: anova.gls
+Keywords: models
+Description: Compare Likelihoods of Fitted Objects
+URL: ../../../library/nlme/html/anova.gls.html
+
+Entry: anova.lme
+Aliases: anova.lme print.anova.lme
+Keywords: models
+Description: Compare Likelihoods of Fitted Objects
+URL: ../../../library/nlme/html/anova.lme.html
+
+Entry: as.matrix.corStruct
+Aliases: as.matrix.corStruct
+Keywords: models
+Description: Matrix of a corStruct Object
+URL: ../../../library/nlme/html/as.matrix.corStruct.html
+
+Entry: as.matrix.pdMat
+Aliases: as.matrix.pdMat
+Keywords: models
+Description: Matrix of a pdMat Object
+URL: ../../../library/nlme/html/as.matrix.pdMat.html
+
+Entry: as.matrix.reStruct
+Aliases: as.matrix.reStruct
+Keywords: models
+Description: Matrices of an reStruct Object
+URL: ../../../library/nlme/html/as.matrix.reStruct.html
+
+Entry: asOneFormula
+Aliases: asOneFormula
+Keywords: models
+Description: Combine Formulas of a Set of Objects
+URL: ../../../library/nlme/html/asOneFormula.html
+
+Entry: asTable
+Aliases: asTable asTable.groupedData
+Keywords: manip
+Description: Convert groupedData to a matrix
+URL: ../../../library/nlme/html/asTable.html
+
+Entry: augPred
+Aliases: augPred augPred.gls augPred.lme augPred.lmList
+Keywords: models
+Description: Augmented Predictions
+URL: ../../../library/nlme/html/augPred.html
+
+Entry: balancedGrouped
+Aliases: balancedGrouped
+Keywords: data
+Description: Create a groupedData object from a matrix
+URL: ../../../library/nlme/html/balancedGrouped.html
+
+Entry: bdf
+Aliases: bdf
+Keywords: datasets
+Description: Language scores
+URL: ../../../library/nlme/html/bdf.html
+
+Entry: coef.corStruct
+Aliases: coef.corStruct coef.corAR1 coef.corARMAd coef.corCAR1 coef.corCompSymm coef.corHF coef.corIdent coef.corLin coef.corNatural coef.corSpatial coef.corSpher coef.corSymm coef<-.corStruct coef<-.corAR1 coef<-.corARMA coef<-.corCAR1 coef<-.corCompSymm coef<-.corNatural coef<-.corHF coef<-.corIdent coef<-.corLin coef<-.corSpatial coef<-.corSpher coef<-.corSymm coef.summary.nlsList
+Keywords: models
+Description: Coefficients of a corStruct Object
+URL: ../../../library/nlme/html/coef.corStruct.html
+
+Entry: coef.gnls
+Aliases: coef.gnls
+Keywords: models
+Description: Extract gnls Coefficients
+URL: ../../../library/nlme/html/coef.gnls.html
+
+Entry: coef.lmList
+Aliases: coef.lmList
+Keywords: models
+Description: Extract lmList Coefficients
+URL: ../../../library/nlme/html/coef.lmList.html
+
+Entry: coef.lme
+Aliases: coef.lme
+Keywords: models
+Description: Extract lme Coefficients
+URL: ../../../library/nlme/html/coef.lme.html
+
+Entry: coef.modelStruct
+Aliases: coef.modelStruct coef<-.modelStruct
+Keywords: models
+Description: Extract modelStruct Object Coefficients
+URL: ../../../library/nlme/html/coef.modelStruct.html
+
+Entry: coef.pdMat
+Aliases: coef.pdMat coef.pdBlocked coef.pdCompSymm coef.pdDiag coef.pdIdent coef.pdNatural coef.pdSymm coef<-.pdMat coef<-.pdBlocked
+Keywords: models
+Description: pdMat Object Coefficients
+URL: ../../../library/nlme/html/coef.pdMat.html
+
+Entry: coef.reStruct
+Aliases: coef.reStruct coef<-.reStruct
+Keywords: models
+Description: reStruct Object Coefficients
+URL: ../../../library/nlme/html/coef.reStruct.html
+
+Entry: coef.varFunc
+Aliases: coef.varFunc coef.varComb coef.varConstPower coef.varExp coef.varFixed coef.varIdent coef.varPower coef<-.varComb coef<-.varConstPower coef<-.varExp coef<-.varFixed coef<-.varIdent coef<-.varPower
+Keywords: models
+Description: varFunc Object Coefficients
+URL: ../../../library/nlme/html/coef.varFunc.html
+
+Entry: collapse
+Aliases: collapse
+Keywords: models
+Description: Collapse According to Groups
+URL: ../../../library/nlme/html/collapse.html
+
+Entry: collapse.groupedData
+Aliases: collapse.groupedData
+Keywords: models
+Description: Collapse a groupedData Object
+URL: ../../../library/nlme/html/collapse.groupedData.html
+
+Entry: compareFits
+Aliases: compareFits print.compareFits
+Keywords: models
+Description: Compare Fitted Objects
+URL: ../../../library/nlme/html/compareFits.html
+
+Entry: comparePred
+Aliases: comparePred comparePred.gls comparePred.lme comparePred.lmList
+Keywords: models
+Description: Compare Predictions
+URL: ../../../library/nlme/html/comparePred.html
+
+Entry: corAR1
+Aliases: corAR1
+Keywords: models
+Description: AR(1) Correlation Structure
+URL: ../../../library/nlme/html/corAR1.html
+
+Entry: corARMA
+Aliases: corARMA coef.corARMA
+Keywords: models
+Description: ARMA(p,q) Correlation Structure
+URL: ../../../library/nlme/html/corARMA.html
+
+Entry: corCAR1
+Aliases: corCAR1
+Keywords: models
+Description: Continuous AR(1) Correlation Structure
+URL: ../../../library/nlme/html/corCAR1.html
+
+Entry: corClasses
+Aliases: corClasses corIdent
+Keywords: models
+Description: Correlation Structure Classes
+URL: ../../../library/nlme/html/corClasses.html
+
+Entry: corCompSymm
+Aliases: corCompSymm
+Keywords: models
+Description: Compound Symmetry Correlation Structure
+URL: ../../../library/nlme/html/corCompSymm.html
+
+Entry: corExp
+Aliases: corExp
+Keywords: models
+Description: Exponential Correlation Structure
+URL: ../../../library/nlme/html/corExp.html
+
+Entry: corFactor
+Aliases: corFactor
+Keywords: models
+Description: Factor of a Correlation Matrix
+URL: ../../../library/nlme/html/corFactor.html
+
+Entry: corFactor.corStruct
+Aliases: corFactor.compSymm corFactor.corAR1 corFactor.corARMA corFactor.corCAR1 corFactor.corNatural corFactor.corSpatial corFactor.corStruct corFactor.corSymm
+Keywords: models
+Description: Factor of a corStruct Object Matrix
+URL: ../../../library/nlme/html/corFactor.corStruct.html
+
+Entry: corGaus
+Aliases: corGaus
+Keywords: models
+Description: Gaussian Correlation Structure
+URL: ../../../library/nlme/html/corGaus.html
+
+Entry: corLin
+Aliases: corLin
+Keywords: models
+Description: Linear Correlation Structure
+URL: ../../../library/nlme/html/corLin.html
+
+Entry: corMatrix
+Aliases: corMatrix
+Keywords: models
+Description: Extract Correlation Matrix
+URL: ../../../library/nlme/html/corMatrix.html
+
+Entry: corMatrix.corStruct
+Aliases: corMatrix.corStruct corMatrix.compSymm corMatrix.corAR1 corMatrix.corARMA corMatrix.corCAR1 corMatrix.corCompSymm corMatrix.corIdent corMatrix.corNatural corMatrix.corSpatial corMatrix.corSymm
+Keywords: models
+Description: Matrix of a corStruct Object
+URL: ../../../library/nlme/html/corMatrix.corStruct.html
+
+Entry: corMatrix.pdMat
+Aliases: corMatrix.pdBlocked corMatrix.pdCompSymm corMatrix.pdDiag corMatrix.pdIdent corMatrix.pdMat corMatrix.pdSymm
+Keywords: models
+Description: Extract Correlation Matrix from a pdMat Object
+URL: ../../../library/nlme/html/corMatrix.pdMat.html
+
+Entry: corMatrix.reStruct
+Aliases: corMatrix.reStruct
+Keywords: models
+Description: Extract Correlation Matrix from Components of an reStruct Object
+URL: ../../../library/nlme/html/corMatrix.reStruct.html
+
+Entry: corNatural
+Aliases: corNatural print.corNatural
+Keywords: models
+Description: General correlation in natural parameterization
+URL: ../../../library/nlme/html/corNatural.html
+
+Entry: corRatio
+Aliases: corRatio
+Keywords: models
+Description: Rational Quadratic Correlation Structure
+URL: ../../../library/nlme/html/corRatio.html
+
+Entry: corSpatial
+Aliases: corSpatial
+Keywords: models
+Description: Spatial Correlation Structure
+URL: ../../../library/nlme/html/corSpatial.html
+
+Entry: corSpher
+Aliases: corSpher
+Keywords: models
+Description: Spherical Correlation Structure
+URL: ../../../library/nlme/html/corSpher.html
+
+Entry: corSymm
+Aliases: corSymm
+Keywords: models
+Description: General Correlation Structure
+URL: ../../../library/nlme/html/corSymm.html
+
+Entry: ergoStool
+Aliases: ergoStool
+Keywords: datasets
+Description: Ergometrics experiment with stool types
+URL: ../../../library/nlme/html/ergoStool.html
+
+Entry: fdHess
+Aliases: fdHess
+Keywords: models
+Description: Finite difference Hessian
+URL: ../../../library/nlme/html/fdHess.html
+
+Entry: fitted.glsStruct
+Aliases: fitted.glsStruct
+Keywords: models
+Description: Calculate glsStruct Fitted Values
+URL: ../../../library/nlme/html/fitted.glsStruct.html
+
+Entry: fitted.gnlsStruct
+Aliases: fitted.gnlsStruct
+Keywords: models
+Description: Calculate gnlsStruct Fitted Values
+URL: ../../../library/nlme/html/fitted.gnlsStruct.html
+
+Entry: fitted.lmList
+Aliases: fitted.lmList
+Keywords: models
+Description: Extract lmList Fitted Values
+URL: ../../../library/nlme/html/fitted.lmList.html
+
+Entry: fitted.lme
+Aliases: fitted.lme
+Keywords: models
+Description: Extract lme Fitted Values
+URL: ../../../library/nlme/html/fitted.lme.html
+
+Entry: fitted.lmeStruct
+Aliases: fitted.lmeStruct
+Keywords: models
+Description: Calculate lmeStruct Fitted Values
+URL: ../../../library/nlme/html/fitted.lmeStruct.html
+
+Entry: fitted.nlmeStruct
+Aliases: fitted.nlmeStruct
+Keywords: models
+Description: Calculate nlmeStruct Fitted Values
+URL: ../../../library/nlme/html/fitted.nlmeStruct.html
+
+Entry: fixed.effects
+Aliases: fixed.effects fixef
+Keywords: models
+Description: Extract Fixed Effects
+URL: ../../../library/nlme/html/fixed.effects.html
+
+Entry: fixef.lmList
+Aliases: fixed.effects.lmList fixef.lmList
+Keywords: models
+Description: Extract lmList Fixed Effects
+URL: ../../../library/nlme/html/fixef.lmList.html
+
+Entry: formula.pdBlocked
+Aliases: formula.pdBlocked
+Keywords: models
+Description: Extract pdBlocked Formula
+URL: ../../../library/nlme/html/formula.pdBlocked.html
+
+Entry: formula.pdMat
+Aliases: formula.pdMat
+Keywords: models
+Description: Extract pdMat Formula
+URL: ../../../library/nlme/html/formula.pdMat.html
+
+Entry: formula.reStruct
+Aliases: formula.reStruct
+Keywords: models
+Description: Extract reStruct Object Formula
+URL: ../../../library/nlme/html/formula.reStruct.html
+
+Entry: gapply
+Aliases: gapply
+Keywords: data
+Description: Apply a Function by Groups
+URL: ../../../library/nlme/html/gapply.html
+
+Entry: getCovariate
+Aliases: getCovariate
+Keywords: models
+Description: Extract Covariate from an Object
+URL: ../../../library/nlme/html/getCovariate.html
+
+Entry: getCovariate.corStruct
+Aliases: getCovariate.corStruct getCovariate.corSpatial
+Keywords: models
+Description: Extract corStruct Object Covariate
+URL: ../../../library/nlme/html/getCovariate.corStruct.html
+
+Entry: getCovariate.data.frame
+Aliases: getCovariate.data.frame
+Keywords: models
+Description: Extract Data Frame Covariate
+URL: ../../../library/nlme/html/getCovariate.data.frame.html
+
+Entry: getCovariate.varFunc
+Aliases: getCovariate.varFunc
+Keywords: models
+Description: Extract varFunc Covariate
+URL: ../../../library/nlme/html/getCovariate.varFunc.html
+
+Entry: getCovariateFormula
+Aliases: getCovariateFormula
+Keywords: models
+Description: Extract Covariates Formula
+URL: ../../../library/nlme/html/getCovariateFormula.html
+
+Entry: getData
+Aliases: getData
+Keywords: models
+Description: Extract Data from an Object
+URL: ../../../library/nlme/html/getData.html
+
+Entry: getData.gls
+Aliases: getData.gls getData.gnls
+Keywords: models
+Description: Extract gls Object Data
+URL: ../../../library/nlme/html/getData.gls.html
+
+Entry: getData.lmList
+Aliases: getData.lmList
+Keywords: models
+Description: Extract lmList Object Data
+URL: ../../../library/nlme/html/getData.lmList.html
+
+Entry: getData.lme
+Aliases: getData.lme getData.nlme getData.nls
+Keywords: models
+Description: Extract lme Object Data
+URL: ../../../library/nlme/html/getData.lme.html
+
+Entry: getGroups
+Aliases: getGroups
+Keywords: models
+Description: Extract Grouping Factors from an Object
+URL: ../../../library/nlme/html/getGroups.html
+
+Entry: getGroups.corStruct
+Aliases: getGroups.corStruct
+Keywords: models
+Description: Extract corStruct Groups
+URL: ../../../library/nlme/html/getGroups.corStruct.html
+
+Entry: getGroups.data.frame
+Aliases: getGroups.data.frame
+Keywords: models
+Description: Extract Groups from a Data Frame
+URL: ../../../library/nlme/html/getGroups.data.frame.html
+
+Entry: getGroups.gls
+Aliases: getGroups.gls
+Keywords: models
+Description: Extract gls Object Groups
+URL: ../../../library/nlme/html/getGroups.gls.html
+
+Entry: getGroups.lmList
+Aliases: getGroups.lmList
+Keywords: models
+Description: Extract lmList Object Groups
+URL: ../../../library/nlme/html/getGroups.lmList.html
+
+Entry: getGroups.lme
+Aliases: getGroups.lme
+Keywords: models
+Description: Extract lme Object Groups
+URL: ../../../library/nlme/html/getGroups.lme.html
+
+Entry: getGroups.varFunc
+Aliases: getGroups.varFunc
+Keywords: models
+Description: Extract varFunc Groups
+URL: ../../../library/nlme/html/getGroups.varFunc.html
+
+Entry: getGroupsFormula
+Aliases: getGroupsFormula getGroupsFormula.default getGroupsFormula.gls getGroupsFormula.lmList getGroupsFormula.lme getGroupsFormula.reStruct
+Keywords: models
+Description: Extract Grouping Formula
+URL: ../../../library/nlme/html/getGroupsFormula.html
+
+Entry: getResponse
+Aliases: getResponse getResponse.data.frame
+Keywords: models
+Description: Extract Response Variable from an Object
+URL: ../../../library/nlme/html/getResponse.html
+
+Entry: getResponseFormula
+Aliases: getResponseFormula
+Keywords: models
+Description: Extract Formula Specifying Response Variable
+URL: ../../../library/nlme/html/getResponseFormula.html
+
+Entry: getVarCov
+Aliases: getVarCov getVarCov.lme getVarCov.gls print.VarCov
+Keywords: models
+Description: Extract variance-covariance matrix
+URL: ../../../library/nlme/html/getVarCov.html
+
+Entry: gls
+Aliases: gls update.gls
+Keywords: models
+Description: Fit Linear Model Using Generalized Least Squares
+URL: ../../../library/nlme/html/gls.html
+
+Entry: glsControl
+Aliases: glsControl
+Keywords: models
+Description: Control Values for gls Fit
+URL: ../../../library/nlme/html/glsControl.html
+
+Entry: glsObject
+Aliases: glsObject
+Keywords: models
+Description: Fitted gls Object
+URL: ../../../library/nlme/html/glsObject.html
+
+Entry: glsStruct
+Aliases: glsStruct
+Keywords: models
+Description: Generalized Least Squares Structure
+URL: ../../../library/nlme/html/glsStruct.html
+
+Entry: gnls
+Aliases: gnls
+Keywords: models
+Description: Fit Nonlinear Model Using Generalized Least Squares
+URL: ../../../library/nlme/html/gnls.html
+
+Entry: gnlsControl
+Aliases: gnlsControl
+Keywords: models
+Description: Control Values for gnls Fit
+URL: ../../../library/nlme/html/gnlsControl.html
+
+Entry: gnlsObject
+Aliases: gnlsObject
+Keywords: models
+Description: Fitted gnls Object
+URL: ../../../library/nlme/html/gnlsObject.html
+
+Entry: gnlsStruct
+Aliases: gnlsStruct Initialize.gnlsStruct
+Keywords: models
+Description: Generalized Nonlinear Least Squares Structure
+URL: ../../../library/nlme/html/gnlsStruct.html
+
+Entry: groupedData
+Aliases: groupedData nfGroupedData nmGroupedData [.groupedData as.data.frame.groupedData update.groupedData
+Keywords: manip attribute
+Description: Construct a groupedData Object
+URL: ../../../library/nlme/html/groupedData.html
+
+Entry: gsummary
+Aliases: gsummary
+Keywords: manip
+Description: Summarize by Groups
+URL: ../../../library/nlme/html/gsummary.html
+
+Entry: intervals
+Aliases: intervals
+Keywords: models
+Description: Confidence Intervals on Coefficients
+URL: ../../../library/nlme/html/intervals.html
+
+Entry: intervals.gls
+Aliases: intervals.gls print.intervals.gls
+Keywords: models
+Description: Confidence Intervals on gls Parameters
+URL: ../../../library/nlme/html/intervals.gls.html
+
+Entry: intervals.lmList
+Aliases: intervals.lmList print.intervals.lmList
+Keywords: models
+Description: Confidence Intervals on lmList Coefficients
+URL: ../../../library/nlme/html/intervals.lmList.html
+
+Entry: intervals.lme
+Aliases: intervals.lme print.intervals.lme
+Keywords: models
+Description: Confidence Intervals on lme Parameters
+URL: ../../../library/nlme/html/intervals.lme.html
+
+Entry: isBalanced
+Aliases: isBalanced isBalanced.groupedData
+Keywords: data
+Description: Check a Design for Balance
+URL: ../../../library/nlme/html/isBalanced.html
+
+Entry: isInitialized
+Aliases: isInitialized isInitialized.pdMat isInitialized.pdBlocked
+Keywords: models
+Description: Check if Object is Initialized
+URL: ../../../library/nlme/html/isInitialized.html
+
+Entry: lmList
+Aliases: lmList lmList.formula print.lmList update.lmList
+Keywords: models
+Description: List of lm Objects with a Common Model
+URL: ../../../library/nlme/html/lmList.html
+
+Entry: lmList.groupedData
+Aliases: lmList.groupedData
+Keywords: models
+Description: lmList Fit from a groupedData Object
+URL: ../../../library/nlme/html/lmList.groupedData.html
+
+Entry: lme
+Aliases: lme lme.formula update.lme
+Keywords: models
+Description: Linear Mixed-Effects Models
+URL: ../../../library/nlme/html/lme.html
+
+Entry: lme.groupedData
+Aliases: lme.groupedData
+Keywords: models
+Description: LME fit from groupedData Object
+URL: ../../../library/nlme/html/lme.groupedData.html
+
+Entry: lme.lmList
+Aliases: lme.lmList
+Keywords: models
+Description: LME fit from lmList Object
+URL: ../../../library/nlme/html/lme.lmList.html
+
+Entry: lmeControl
+Aliases: lmeControl
+Keywords: models
+Description: Control Values for lme Fit
+URL: ../../../library/nlme/html/lmeControl.html
+
+Entry: lmeObject
+Aliases: lmeObject
+Keywords: models
+Description: Fitted lme Object
+URL: ../../../library/nlme/html/lmeObject.html
+
+Entry: lmeScale
+Aliases: lmeScale
+Keywords: models
+Description: Scale for lme Optimization
+URL: ../../../library/nlme/html/lmeScale.html
+
+Entry: lmeStruct
+Aliases: lmeStruct
+Keywords: models
+Description: Linear Mixed-Effects Structure
+URL: ../../../library/nlme/html/lmeStruct.html
+
+Entry: logDet
+Aliases: logDet
+Keywords: models
+Description: Extract the Logarithm of the Determinant
+URL: ../../../library/nlme/html/logDet.html
+
+Entry: logDet.corStruct
+Aliases: logDet.corStruct logDet.corIdent
+Keywords: models
+Description: Extract corStruct Log-Determinant
+URL: ../../../library/nlme/html/logDet.corStruct.html
+
+Entry: logDet.pdMat
+Aliases: logDet.pdMat logDet.pdBlocked logDet.pdCompSymm logDet.pdDiag logDet.pdIdent logDet.pdNatural logDet.pdSymm
+Keywords: models
+Description: Extract Log-Determinant from a pdMat Object
+URL: ../../../library/nlme/html/logDet.pdMat.html
+
+Entry: logDet.reStruct
+Aliases: logDet.reStruct
+Keywords: models
+Description: Extract reStruct Log-Determinants
+URL: ../../../library/nlme/html/logDet.reStruct.html
+
+Entry: logLik.corStruct
+Aliases: logLik.corStruct
+Keywords: models
+Description: Extract corStruct Log-Likelihood
+URL: ../../../library/nlme/html/logLik.corStruct.html
+
+Entry: logLik.glsStruct
+Aliases: logLik.glsStruct
+Keywords: models
+Description: Log-Likelihood of a glsStruct Object
+URL: ../../../library/nlme/html/logLik.glsStruct.html
+
+Entry: logLik.gnls
+Aliases: logLik.gnls
+Keywords: models
+Description: Log-Likelihood of a gnls Object
+URL: ../../../library/nlme/html/logLik.gnls.html
+
+Entry: logLik.gnlsStruct
+Aliases: logLik.gnlsStruct
+Keywords: models
+Description: Log-Likelihood of a gnlsStruct Object
+URL: ../../../library/nlme/html/logLik.gnlsStruct.html
+
+Entry: logLik.lmList
+Aliases: logLik.lmList
+Keywords: models
+Description: Log-Likelihood of an lmList Object
+URL: ../../../library/nlme/html/logLik.lmList.html
+
+Entry: logLik.lme
+Aliases: logLik.lme logLik.gls
+Keywords: models
+Description: Log-Likelihood of an lme Object
+URL: ../../../library/nlme/html/logLik.lme.html
+
+Entry: logLik.lmeStruct
+Aliases: logLik.lmeStruct logLik.lmeStructInt
+Keywords: models
+Description: Log-Likelihood of an lmeStruct Object
+URL: ../../../library/nlme/html/logLik.lmeStruct.html
+
+Entry: logLik.reStruct
+Aliases: logLik.reStruct
+Keywords: models
+Description: Calculate reStruct Log-Likelihood
+URL: ../../../library/nlme/html/logLik.reStruct.html
+
+Entry: logLik.varFunc
+Aliases: logLik.varFunc logLik.varComb
+Keywords: models
+Description: Extract varFunc logLik
+URL: ../../../library/nlme/html/logLik.varFunc.html
+
+Entry: model.matrix.reStruct
+Aliases: model.matrix.reStruct
+Keywords: models
+Description: reStruct Model Matrix
+URL: ../../../library/nlme/html/model.matrix.reStruct.html
+
+Entry: needUpdate
+Aliases: needUpdate needUpdate.default needUpdate.varComb needUpdate.varIdent
+Keywords: models
+Description: Check if Update is Needed
+URL: ../../../library/nlme/html/needUpdate.html
+
+Entry: needUpdate.modelStruct
+Aliases: needUpdate.modelStruct needUpdate.corStruct needUpdate.reStruct
+Keywords: models
+Description: Check if a modelStruct Object Needs Updating
+URL: ../../../library/nlme/html/needUpdate.modelStruct.html
+
+Entry: nlme
+Aliases: nlme nlme.formula
+Keywords: models
+Description: Nonlinear Mixed-Effects Models
+URL: ../../../library/nlme/html/nlme.html
+
+Entry: nlme.nlsList
+Aliases: nlme.nlsList
+Keywords: models
+Description: NLME fit from nlsList Object
+URL: ../../../library/nlme/html/nlme.nlsList.html
+
+Entry: nlmeControl
+Aliases: nlmeControl
+Keywords: models
+Description: Control Values for nlme Fit
+URL: ../../../library/nlme/html/nlmeControl.html
+
+Entry: nlmeObject
+Aliases: nlmeObject
+Keywords: models
+Description: Fitted nlme Object
+URL: ../../../library/nlme/html/nlmeObject.html
+
+Entry: nlmeStruct
+Aliases: nlmeStruct
+Keywords: models
+Description: Nonlinear Mixed-Effects Structure
+URL: ../../../library/nlme/html/nlmeStruct.html
+
+Entry: nlsList
+Aliases: nlsList nlsList.formula update.nlsList
+Keywords: models
+Description: List of nls Objects with a Common Model
+URL: ../../../library/nlme/html/nlsList.html
+
+Entry: nlsList.selfStart
+Aliases: nlsList.selfStart
+Keywords: models
+Description: nlsList Fit from a selfStart Function
+URL: ../../../library/nlme/html/nlsList.selfStart.html
+
+Entry: pairs.compareFits
+Aliases: pairs.compareFits
+Keywords: models
+Description: Pairs Plot of compareFits Object
+URL: ../../../library/nlme/html/pairs.compareFits.html
+
+Entry: pairs.lmList
+Aliases: pairs.lmList
+Keywords: models
+Description: Pairs Plot of an lmList Object
+URL: ../../../library/nlme/html/pairs.lmList.html
+
+Entry: pairs.lme
+Aliases: pairs.lme
+Keywords: models
+Description: Pairs Plot of an lme Object
+URL: ../../../library/nlme/html/pairs.lme.html
+
+Entry: pdBlocked
+Aliases: pdBlocked
+Keywords: models
+Description: Positive-Definite Block Diagonal Matrix
+URL: ../../../library/nlme/html/pdBlocked.html
+
+Entry: pdClasses
+Aliases: pdClasses
+Keywords: models
+Description: Positive-Definite Matrix Classes
+URL: ../../../library/nlme/html/pdClasses.html
+
+Entry: pdCompSymm
+Aliases: pdCompSymm
+Keywords: models
+Description: Positive-Definite Matrix with Compound Symmetry Structure
+URL: ../../../library/nlme/html/pdCompSymm.html
+
+Entry: pdConstruct
+Aliases: pdConstruct pdConstruct.pdCompSymm pdConstruct.pdDiag pdConstruct.pdIdent pdConstruct.pdMat pdConstruct.pdNatural pdConstruct.pdSymm pdConstruct.pdLogChol
+Keywords: models
+Description: Construct pdMat Objects
+URL: ../../../library/nlme/html/pdConstruct.html
+
+Entry: pdConstruct.pdBlocked
+Aliases: pdConstruct.pdBlocked
+Keywords: models
+Description: Construct pdBlocked Objects
+URL: ../../../library/nlme/html/pdConstruct.pdBlocked.html
+
+Entry: pdDiag
+Aliases: pdDiag
+Keywords: models
+Description: Diagonal Positive-Definite Matrix
+URL: ../../../library/nlme/html/pdDiag.html
+
+Entry: pdFactor
+Aliases: pdFactor pdFactor.pdBlocked pdFactor.pdCompSymm pdFactor.pdDiag pdFactor.pdIdent pdFactor.pdMat pdFactor.pdNatural pdFactor.pdSymm pdFactor.pdLogChol
+Keywords: models
+Description: Square-Root Factor of a Positive-Definite Matrix
+URL: ../../../library/nlme/html/pdFactor.html
+
+Entry: pdFactor.reStruct
+Aliases: pdFactor.reStruct
+Keywords: models
+Description: Extract Square-Root Factor from Components of an reStruct Object
+URL: ../../../library/nlme/html/pdFactor.reStruct.html
+
+Entry: pdIdent
+Aliases: pdIdent
+Keywords: models
+Description: Multiple of the Identity Positive-Definite Matrix
+URL: ../../../library/nlme/html/pdIdent.html
+
+Entry: pdLogChol
+Aliases: pdLogChol
+Keywords: models
+Description: General Positive-Definite Matrix
+URL: ../../../library/nlme/html/pdLogChol.html
+
+Entry: pdMat
+Aliases: pdMat plot.pdMat
+Keywords: models
+Description: Positive-Definite Matrix
+URL: ../../../library/nlme/html/pdMat.html
+
+Entry: pdMatrix
+Aliases: pdMatrix pdMatrix.pdBlocked pdMatrix.pdCompSymm pdMatrix.pdDiag pdMatrix.pdIdent pdMatrix.pdMat pdMatrix.pdSymm pdMatrix.pdNatural
+Keywords: models
+Description: Extract Matrix or Square-Root Factor from a pdMat Object
+URL: ../../../library/nlme/html/pdMatrix.html
+
+Entry: pdMatrix.reStruct
+Aliases: pdMatrix.reStruct
+Keywords: models
+Description: Extract Matrix or Square-Root Factor from Components of an reStruct Object
+URL: ../../../library/nlme/html/pdMatrix.reStruct.html
+
+Entry: pdNatural
+Aliases: pdNatural
+Keywords: models
+Description: General Positive-Definite Matrix in Natural Parametrization
+URL: ../../../library/nlme/html/pdNatural.html
+
+Entry: pdSymm
+Aliases: pdSymm
+Keywords: models
+Description: General Positive-Definite Matrix
+URL: ../../../library/nlme/html/pdSymm.html
+
+Entry: phenoModel
+Aliases: phenoModel
+Keywords: models
+Description: Model function for the Phenobarb data
+URL: ../../../library/nlme/html/phenoModel.html
+
+Entry: plot.ACF
+Aliases: plot.ACF
+Keywords: models
+Description: Plot an ACF Object
+URL: ../../../library/nlme/html/plot.ACF.html
+
+Entry: plot.Variogram
+Aliases: plot.Variogram
+Keywords: models
+Description: Plot a Variogram Object
+URL: ../../../library/nlme/html/plot.Variogram.html
+
+Entry: plot.augPred
+Aliases: plot.augPred
+Keywords: models
+Description: Plot an augPred Object
+URL: ../../../library/nlme/html/plot.augPred.html
+
+Entry: plot.compareFits
+Aliases: plot.compareFits
+Keywords: models
+Description: Plot a compareFits Object
+URL: ../../../library/nlme/html/plot.compareFits.html
+
+Entry: plot.gls
+Aliases: plot.gls
+Keywords: models
+Description: Plot a gls Object
+URL: ../../../library/nlme/html/plot.gls.html
+
+Entry: plot.intervals.lmList
+Aliases: plot.intervals.lmList
+Keywords: models
+Description: Plot lmList Confidence Intervals
+URL: ../../../library/nlme/html/plot.intervals.lmList.html
+
+Entry: plot.lmList
+Aliases: plot.lmList
+Keywords: models
+Description: Plot an lmList Object
+URL: ../../../library/nlme/html/plot.lmList.html
+
+Entry: plot.lme
+Aliases: plot.lme plot.nls
+Keywords: models hplot
+Description: Plot an lme or nls object
+URL: ../../../library/nlme/html/plot.lme.html
+
+Entry: plot.nffGroupedData
+Aliases: plot.nffGroupedData
+Keywords: models
+Description: Plot an nffGroupedData Object
+URL: ../../../library/nlme/html/plot.nffGroupedData.html
+
+Entry: plot.nfnGroupedData
+Aliases: plot.nfnGroupedData
+Keywords: models
+Description: Plot an nfnGroupedData Object
+URL: ../../../library/nlme/html/plot.nfnGroupedData.html
+
+Entry: plot.nmGroupedData
+Aliases: plot.nmGroupedData
+Keywords: models
+Description: Plot an nmGroupedData Object
+URL: ../../../library/nlme/html/plot.nmGroupedData.html
+
+Entry: plot.ranef.lmList
+Aliases: plot.ranef.lmList
+Keywords: models
+Description: Plot a ranef.lmList Object
+URL: ../../../library/nlme/html/plot.ranef.lmList.html
+
+Entry: plot.ranef.lme
+Aliases: plot.ranef.lme
+Keywords: models
+Description: Plot a ranef.lme Object
+URL: ../../../library/nlme/html/plot.ranef.lme.html
+
+Entry: pooledSD
+Aliases: pooledSD
+Keywords: models
+Description: Extract Pooled Standard Deviation
+URL: ../../../library/nlme/html/pooledSD.html
+
+Entry: predict.gls
+Aliases: predict.gls
+Keywords: models
+Description: Predictions from a gls Object
+URL: ../../../library/nlme/html/predict.gls.html
+
+Entry: predict.gnls
+Aliases: predict.gnls
+Keywords: models
+Description: Predictions from a gnls Object
+URL: ../../../library/nlme/html/predict.gnls.html
+
+Entry: predict.lmList
+Aliases: predict.lmList
+Keywords: models
+Description: Predictions from an lmList Object
+URL: ../../../library/nlme/html/predict.lmList.html
+
+Entry: predict.lme
+Aliases: predict.lme
+Keywords: models
+Description: Predictions from an lme Object
+URL: ../../../library/nlme/html/predict.lme.html
+
+Entry: predict.nlme
+Aliases: predict.nlme
+Keywords: models
+Description: Predictions from an nlme Object
+URL: ../../../library/nlme/html/predict.nlme.html
+
+Entry: print.summary.pdMat
+Aliases: print.summary.pdMat
+Keywords: models
+Description: Print a summary.pdMat Object
+URL: ../../../library/nlme/html/print.summary.pdMat.html
+
+Entry: print.varFunc
+Aliases: print.varFunc print.varComb
+Keywords: models
+Description: Print a varFunc Object
+URL: ../../../library/nlme/html/print.varFunc.html
+
+Entry: qqnorm.gls
+Aliases: qqnorm.gls
+Keywords: models
+Description: Normal Plot of Residuals from a gls Object
+URL: ../../../library/nlme/html/qqnorm.gls.html
+
+Entry: qqnorm.lme
+Aliases: qqnorm.lm qqnorm.lme qqnorm.lmList qqnorm.nls
+Keywords: models
+Description: Normal Plot of Residuals or Random Effects from an lme Object
+URL: ../../../library/nlme/html/qqnorm.lme.html
+
+Entry: quinModel
+Aliases: quinModel
+Keywords: models
+Description: Model function for the Quinidine data
+URL: ../../../library/nlme/html/quinModel.html
+
+Entry: random.effects
+Aliases: random.effects ranef print.ranef
+Keywords: models
+Description: Extract Random Effects
+URL: ../../../library/nlme/html/random.effects.html
+
+Entry: ranef.lmList
+Aliases: random.effects.lmList ranef.lmList
+Keywords: models
+Description: Extract lmList Random Effects
+URL: ../../../library/nlme/html/ranef.lmList.html
+
+Entry: ranef.lme
+Aliases: ranef.lme random.effects.lme print.ranef.lme
+Keywords: models
+Description: Extract lme Random Effects
+URL: ../../../library/nlme/html/ranef.lme.html
+
+Entry: reStruct
+Aliases: reStruct [.reStruct print.reStruct
+Keywords: models
+Description: Random Effects Structure
+URL: ../../../library/nlme/html/reStruct.html
+
+Entry: recalc
+Aliases: recalc
+Keywords: models
+Description: Recalculate Condensed Linear Model Object
+URL: ../../../library/nlme/html/recalc.html
+
+Entry: recalc.corStruct
+Aliases: recalc.corStruct recalc.corAR1 recalc.corARMA recalc.corCAR1 recalc.corCompSymm recalc.corHF recalc.corIdent recalc.corNatural recalc.corSpatial recalc.corSymm
+Keywords: models
+Description: Recalculate for corStruct Object
+URL: ../../../library/nlme/html/recalc.corStruct.html
+
+Entry: recalc.modelStruct
+Aliases: recalc.modelStruct
+Keywords: models
+Description: Recalculate for a modelStruct Object
+URL: ../../../library/nlme/html/recalc.modelStruct.html
+
+Entry: recalc.reStruct
+Aliases: recalc.reStruct
+Keywords: models
+Description: Recalculate for an reStruct Object
+URL: ../../../library/nlme/html/recalc.reStruct.html
+
+Entry: recalc.varFunc
+Aliases: recalc.varFunc recalc.varIdent
+Keywords: models
+Description: Recalculate for varFunc Object
+URL: ../../../library/nlme/html/recalc.varFunc.html
+
+Entry: residuals.gls
+Aliases: residuals.gls residuals.gnls
+Keywords: models
+Description: Extract gls Residuals
+URL: ../../../library/nlme/html/residuals.gls.html
+
+Entry: residuals.glsStruct
+Aliases: residuals.glsStruct
+Keywords: models
+Description: Calculate glsStruct Residuals
+URL: ../../../library/nlme/html/residuals.glsStruct.html
+
+Entry: residuals.gnlsStruct
+Aliases: residuals.gnlsStruct
+Keywords: models
+Description: Calculate gnlsStruct Residuals
+URL: ../../../library/nlme/html/residuals.gnlsStruct.html
+
+Entry: residuals.lmList
+Aliases: residuals.lmList
+Keywords: models
+Description: Extract lmList Residuals
+URL: ../../../library/nlme/html/residuals.lmList.html
+
+Entry: residuals.lme
+Aliases: residuals.lme
+Keywords: models
+Description: Extract lme Residuals
+URL: ../../../library/nlme/html/residuals.lme.html
+
+Entry: residuals.lmeStruct
+Aliases: residuals.lmeStruct
+Keywords: models
+Description: Calculate lmeStruct Residuals
+URL: ../../../library/nlme/html/residuals.lmeStruct.html
+
+Entry: residuals.nlmeStruct
+Aliases: residuals.nlmeStruct
+Keywords: models
+Description: Calculate nlmeStruct Residuals
+URL: ../../../library/nlme/html/residuals.nlmeStruct.html
+
+Entry: simulate.lme
+Aliases: simulate.lme plot.simulate.lme print.simulate.lme
+Keywords: models
+Description: Simulate results from lme models
+URL: ../../../library/nlme/html/simulate.lme.html
+
+Entry: solve.pdMat
+Aliases: solve.pdMat solve.pdBlocked solve.pdDiag solve.pdIdent solve.pdLogChol solve.pdNatural solve.pdSymm
+Keywords: models
+Description: Calculate Inverse of a Positive-Definite Matrix
+URL: ../../../library/nlme/html/solve.pdMat.html
+
+Entry: solve.reStruct
+Aliases: solve.reStruct
+Keywords: models
+Description: Apply Solve to an reStruct Object
+URL: ../../../library/nlme/html/solve.reStruct.html
+
+Entry: splitFormula
+Aliases: splitFormula
+Keywords: models
+Description: Split a Formula
+URL: ../../../library/nlme/html/splitFormula.html
+
+Entry: summary.corStruct
+Aliases: summary.corStruct summary.corAR1 summary.corARMA summary.corCAR1 summary.corCompSymm summary.corExp summary.corGaus summary.corIdent summary.corLin summary.corNatural summary.corRatio summary.corSpher summary.corSymm
+Keywords: models
+Description: Summarize a corStruct Object
+URL: ../../../library/nlme/html/summary.corStruct.html
+
+Entry: summary.gls
+Aliases: summary.gls
+Keywords: models
+Description: Summarize a gls Object
+URL: ../../../library/nlme/html/summary.gls.html
+
+Entry: summary.lmList
+Aliases: summary.lmList
+Keywords: models
+Description: Summarize an lmList Object
+URL: ../../../library/nlme/html/summary.lmList.html
+
+Entry: summary.lme
+Aliases: summary.lme
+Keywords: models
+Description: Summarize an lme Object
+URL: ../../../library/nlme/html/summary.lme.html
+
+Entry: summary.modelStruct
+Aliases: summary.modelStruct summary.reStruct
+Keywords: models
+Description: Summarize a modelStruct Object
+URL: ../../../library/nlme/html/summary.modelStruct.html
+
+Entry: summary.nlsList
+Aliases: summary.nlsList
+Keywords: models
+Description: Summarize an nlsList Object
+URL: ../../../library/nlme/html/summary.nlsList.html
+
+Entry: summary.pdMat
+Aliases: summary.pdMat summary.pdBlocked summary.pdCompSymm summary.pdDiag summary.pdIdent summary.pdNatural summary.pdSymm summary.pdLogChol
+Keywords: models
+Description: Summarize a pdMat Object
+URL: ../../../library/nlme/html/summary.pdMat.html
+
+Entry: summary.varFunc
+Aliases: summary.varFunc summary.varComb summary.varConstPower summary.varExp summary.varFixed summary.varIdent summary.varPower
+Keywords: models
+Description: Summarize varFunc Object
+URL: ../../../library/nlme/html/summary.varFunc.html
+
+Entry: update.modelStruct
+Aliases: update.modelStruct update.corStruct update.reStruct
+Keywords: models
+Description: Update a modelStruct Object
+URL: ../../../library/nlme/html/update.modelStruct.html
+
+Entry: update.varFunc
+Aliases: update.varExp update.varFunc update.varComb update.varConstPower update.varExpon update.varPower
+Keywords: models
+Description: Update varFunc Object
+URL: ../../../library/nlme/html/update.varFunc.html
+
+Entry: varClasses
+Aliases: varClasses
+Keywords: models
+Description: Variance Function Classes
+URL: ../../../library/nlme/html/varClasses.html
+
+Entry: varComb
+Aliases: varComb
+Keywords: models
+Description: Combination of Variance Functions
+URL: ../../../library/nlme/html/varComb.html
+
+Entry: varConstPower
+Aliases: varConstPower
+Keywords: models
+Description: Constant Plus Power Variance Function
+URL: ../../../library/nlme/html/varConstPower.html
+
+Entry: varExp
+Aliases: varExp
+Keywords: models
+Description: Exponential Variance Function
+URL: ../../../library/nlme/html/varExp.html
+
+Entry: varFixed
+Aliases: varFixed
+Keywords: models
+Description: Fixed Variance Function
+URL: ../../../library/nlme/html/varFixed.html
+
+Entry: varFunc
+Aliases: varFunc
+Keywords: models
+Description: Variance Function Structure
+URL: ../../../library/nlme/html/varFunc.html
+
+Entry: varIdent
+Aliases: varIdent
+Keywords: models
+Description: Constant Variance Function
+URL: ../../../library/nlme/html/varIdent.html
+
+Entry: varPower
+Aliases: varPower
+Keywords: models
+Description: Power Variance Function
+URL: ../../../library/nlme/html/varPower.html
+
+Entry: varWeights
+Aliases: varWeights varWeights.varComb varWeights.varFunc
+Keywords: models
+Description: Extract Variance Function Weights
+URL: ../../../library/nlme/html/varWeights.html
+
+Entry: varWeights.glsStruct
+Aliases: varWeights.glsStruct
+Keywords: models
+Description: Variance Weights for glsStruct Object
+URL: ../../../library/nlme/html/varWeights.glsStruct.html
+
+Entry: varWeights.lmeStruct
+Aliases: varWeights.lmeStruct
+Keywords: models
+Description: Variance Weights for lmeStruct Object
+URL: ../../../library/nlme/html/varWeights.lmeStruct.html

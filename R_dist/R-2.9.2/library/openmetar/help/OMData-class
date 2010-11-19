@@ -1,0 +1,53 @@
+OMData-class            package:openmetar            R Documentation
+
+_C_l_a_s_s "_O_M_D_a_t_a" ~~~
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     ~~ A concise (1-5 lines) description of what the class is.  ~~
+
+_O_b_j_e_c_t_s _f_r_o_m _t_h_e _C_l_a_s_s:
+
+     Objects can be created by calls of the form 'new("OMData", ...)'.
+     ~~ describe objects here ~~
+
+_S_l_o_t_s:
+
+
+     '_s_t_u_d_y_N_a_m_e_s': Object of class '"character"' ~~ 
+
+     '_n_o_t_e_s': Object of class '"character"' ~~ 
+
+     '_y_e_a_r_s': Object of class '"integer"' ~~ 
+
+     '_c_o_v_a_r_i_a_t_e_s': Object of class '"list"' ~~ 
+
+_M_e_t_h_o_d_s:
+
+     No methods defined with class "OMData" in the signature.
+
+_W_a_r_n_i_n_g:
+
+     ....
+
+_N_o_t_e:
+
+     ~~further notes~~
+
+_A_u_t_h_o_r(_s):
+
+     ~~who you are~~
+
+_R_e_f_e_r_e_n_c_e_s:
+
+     ~put references to the literature/web site here ~
+
+_S_e_e _A_l_s_o:
+
+     ~~objects to See Also as '~~fun~~', ~~~ or 'CLASSNAME' for links
+     to other classes
+
+_E_x_a_m_p_l_e_s:
+
+     showClass("OMData")
+

@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Get a Windows Handle</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for getWindowsHandle {utils}"><tr><td>getWindowsHandle {utils}</td><td align="right">R Documentation</td></tr></table>
+<h2>Get a Windows Handle</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Get the Windows handle of a window or of the <font face="Courier New,Courier" color="#666666"><b>R</b></font>{} process.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+getWindowsHandle(which = "Console")
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>which</code></td>
+<td>
+A string (see below), or the number of a 
+graphics device window</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>getWindowsHandle</code> gets the Windows handle.
+Possible choices for <code>which</code> are:
+<table summary="Rd table">
+<tr>
+  <td align="left"><code>"Console"</code> </td>  <td align="left"> The console window handle. </td>
+</tr>
+<tr>
+  <td align="left"> <code>"Frame"</code>   </td>  <td align="left"> The MDI frame window handle. </td>
+</tr>
+<tr>
+  <td align="left"> <code>"Process"</code> </td>  <td align="left"> The process pseudo-handle. </td>
+</tr>
+<tr>
+  <td align="left"> A device number </td>  <td align="left"> The window handle of a graphics device  </td>
+</tr>
+</table>
+<p>
+These values are not normally useful to users, but may be used by 
+developers making add-ons to <font face="Courier New,Courier" color="#666666"><b>R</b></font>{}.
+</p>
+<p>
+<code>NULL</code> is returned for the Frame handle if not running in MDI mode, 
+for the Console handle when running Rterm, for any unrecognized 
+string for <code>which</code>, or for a graphics device with no 
+corresponding window.
+</p>
+<p>
+Other windows (help browsers, etc.) are not accessible 
+through this function.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+An external pointer holding the Windows handle, or <code>NULL</code>.</p>
+
+<h3>Note</h3>
+
+<p>
+As from R 2.6.0, this function returns an external pointer rather than
+an integer value, and <code>which = "ProcessId"</code> is no longer supported.
+Use <code><a href="../../base/html/Sys.getpid.html">Sys.getpid</a></code> for the latter.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="setWindowTitle.html">getIdentification</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+getWindowsHandle()
+</pre>
+
+
+
+<hr><div align="center">[Package <em>utils</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

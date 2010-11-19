@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Weighted Hi-Median</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for wgt.himedian {robustbase}"><tr><td>wgt.himedian {robustbase}</td><td align="right">R Documentation</td></tr></table>
+<h2>Weighted Hi-Median</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Compute the weighted Hi-Median of <code>x</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+wgt.himedian(x, weights = rep(1, n))
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+numeric vector</td></tr>
+<tr valign="top"><td><code>weights</code></td>
+<td>
+numeric vector of weights; of the same length as <code>x</code>.</td></tr>
+</table>
+
+<h3>Note</h3>
+
+<p>
+this is rather a by-product of the code used in <code><a href="Sn.html">Sn</a></code> and
+<code><a href="Qn.html">Qn</a></code>.  We currently plan to replace it with more general
+weighted quantiles.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../stats/html/median.html">median</a></code>; 
+also <code><a href="../../Hmisc/html/wtd.quantile.html">wtd.quantile</a></code> from package <span class="pkg">Hmisc</span>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+x &lt;- c(1:6, 20)
+median(x) ## 4
+stopifnot(all.equal(4, wgt.himedian(x)),
+          all.equal(6, wgt.himedian(x, c(rep(1,6), 5))))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>robustbase</em> version 0.4-5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

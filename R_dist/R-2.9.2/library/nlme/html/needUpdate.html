@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Check if Update is Needed</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for needUpdate {nlme}"><tr><td>needUpdate {nlme}</td><td align="right">R Documentation</td></tr></table>
+<h2>Check if Update is Needed</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This function is generic; method functions can be written to handle
+specific classes of objects. By default, it tries to extract a
+<code>needUpdate</code> attribute of <code>object</code>. If this is <code>NULL</code>
+or <code>FALSE</code> it returns <code>FALSE</code>; else it returns <code>TRUE</code>.
+Updating of objects usually takes place in iterative algorithms in
+which auxiliary quantities associated with the object, and not being
+optimized over, may change.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+needUpdate(object)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>object</code></td>
+<td>
+any object</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+a logical value indicating whether <code>object</code> needs to be updated.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Jose Pinheiro <a href="mailto:Jose.Pinheiro@pharma.novartis.com">Jose.Pinheiro@pharma.novartis.com</a> and Douglas Bates <a href="mailto:bates@stat.wisc.edu">bates@stat.wisc.edu</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="needUpdate.modelStruct.html">needUpdate.modelStruct</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+vf1 &lt;- varExp()
+vf1 &lt;- Initialize(vf1, data = Orthodont)
+needUpdate(vf1)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>nlme</em> version 3.1-93 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

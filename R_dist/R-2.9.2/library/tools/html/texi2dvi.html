@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Compile LaTeX Files</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for texi2dvi {tools}"><tr><td>texi2dvi {tools}</td><td align="right">R Documentation</td></tr></table>
+<h2>Compile LaTeX Files</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Run <code>latex</code> and <code>bibtex</code> until all cross-references are
+resolved and create either a dvi or PDF file.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+texi2dvi(file, pdf = FALSE, clean = FALSE, quiet = TRUE,
+         texi2dvi = getOption("texi2dvi"), texinputs = NULL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>file</code></td>
+<td>
+character.  Name of LaTeX source file.</td></tr>
+<tr valign="top"><td><code>pdf</code></td>
+<td>
+logical.  If <code>TRUE</code>, a PDF file is produced instead of
+the default dvi file (<code>texi2dvi</code> command line option <span class="option">--pdf</span>).</td></tr>
+<tr valign="top"><td><code>clean</code></td>
+<td>
+logical.  If <code>TRUE</code>, all auxiliary files are removed
+(<code>texi2dvi</code> command line option <span class="option">--clean</span>).  May not work on
+some platforms.</td></tr>
+<tr valign="top"><td><code>quiet</code></td>
+<td>
+logical.  No output unless an error occurs.  Ignored if
+emulation (see the <code>texi2dvi</code> argument) is used.</td></tr>
+<tr valign="top"><td><code>texi2dvi</code></td>
+<td>
+character (or <code>NULL</code>).  Script or program used to
+compile a TeX file to dvi or PDF, respectively.
+The default (selected by <code>""</code> or <code>NULL</code>) is to look for an
+executable on the search path and otherwise emulate the script with
+<code>system</code> calls.</td></tr>
+<tr valign="top"><td><code>texinputs</code></td>
+<td>
+<code>NULL</code> or a character vector of paths to add to
+the LaTeX and bibtex input search paths.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Despite the name, this is used in <font face="Courier New,Courier" color="#666666"><b>R</b></font> to compile LaTeX files,
+specifically those generated from vignettes.  It
+ensures that the &lsquo;<span class="file"><VAR><a href="../../base/html/Rhome.html">R_HOME</a></VAR>/share/texmf</span>&rsquo; directory is
+in the <span class="env">TEXINPUTS</span> path, so <font face="Courier New,Courier" color="#666666"><b>R</b></font> style files such as &lsquo;<span class="file">Sweave</span>&rsquo;
+and &lsquo;<span class="file">Rd</span>&rsquo; will be found.  The search path used is first the
+existing <span class="env">TEXINPUTS</span> setting (or the current directory if unset),
+then elements of <code>texinputs</code>, then
+&lsquo;<span class="file"><VAR>R_HOME</VAR>/share/texmf</span>&rsquo; and finally the default
+path. Analogous changes are made to <span class="env">BIBINPUTS</span> and
+<span class="env">BSTINPUTS</span>settings.
+</p>
+<p>
+MiKTeX has a <code>texi2dvi</code> executable but no other Windows TeX
+installation that we know of does, so emulation is used on e.g. TeXLive
+installations.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Achim Zeileis and R-core
+</p>
+
+
+
+<hr><div align="center">[Package <em>tools</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: adds colored circle to a plot</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for filledcircle {shape}"><tr><td>filledcircle {shape}</td><td align="right">R Documentation</td></tr></table>
+<h2>adds colored circle to a plot</h2>
+
+
+<h3>Description</h3>
+
+<p>
+plots (part of) outer and inner circle and colors inbetween;
+color can be a palette.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+filledcircle(r1=1, r2=0, mid=c(0,0), dr=0.01, from=-pi, to=pi, 
+  col=femmecol(100), values=NULL, zlim=NULL, lwd=2, lcol=NA, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>r1 </code></td>
+<td>
+radius of outer circle.
+</td></tr>
+<tr valign="top"><td><code>r2 </code></td>
+<td>
+radius of inner circle.
+</td></tr>
+<tr valign="top"><td><code>mid </code></td>
+<td>
+midpoint of circle.
+</td></tr>
+<tr valign="top"><td><code>dr </code></td>
+<td>
+size of segments, in radians, to draw circle
+(decrease for smoother).
+</td></tr>
+<tr valign="top"><td><code>from </code></td>
+<td>
+starting angle for circle segment, radians.
+</td></tr>
+<tr valign="top"><td><code>to </code></td>
+<td>
+final angle for circle segment, radians.
+</td></tr>
+<tr valign="top"><td><code>col </code></td>
+<td>
+color palette to be used; also allowed are two extremes or one
+value.
+</td></tr>
+<tr valign="top"><td><code>values </code></td>
+<td>
+if not <code>NULL</code>, a matrix providing (radius,z-values)
+couples, used for coloring. .
+</td></tr>
+<tr valign="top"><td><code>zlim </code></td>
+<td>
+Only if <code>values</code> is not <code>NULL</code>: the minimum and
+maximum z values for which colors should be plotted, defaulting to the
+range of the finite values of the second column of <code>values</code>.
+</td></tr>
+<tr valign="top"><td><code>lwd </code></td>
+<td>
+width of external line.
+</td></tr>
+<tr valign="top"><td><code>lcol </code></td>
+<td>
+line color.
+</td></tr>
+<tr valign="top"><td><code>... </code></td>
+<td>
+arguments passed to R-function <a href="../../graphics/html/polygon.html">polygon</a>.
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+see <code><a href="filledellipse.html">filledellipse</a></code> for details
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Karline Soetaert &lt;k.soetaert@nioo.knaw.nl&gt;
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="filledshape.html">filledshape</a></code>, <code><a href="filledcylinder.html">filledcylinder</a></code>,
+<code><a href="filledellipse.html">filledellipse</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+  color &lt;-graycol(n=50)
+  dr    &lt;- 0.05
+  emptyplot(xlim=c(-2,2),col=color[length(color)],main="filledcircle")
+  filledcircle(r1=1,mid=c(1,1),dr=dr,
+               col=shadepalette(endcol="darkblue")) 
+  filledcircle(r1=1,mid=c(-1,-1),dr=dr,
+               col=shadepalette(endcol="darkred"))
+  filledcircle(r1=1,r2=0.5,mid=c(0,0),dr=dr,col=c(rev(color),color))
+  filledcircle(r1=1,mid=c(1,-1),dr=dr,
+               col=intpalette(c("red","blue","orange"),100)) 
+  filledcircle(mid=c(-1,1))
+  
+  emptyplot(main="filledcircle")
+  for (i in seq(0,0.45,0.05)) filledcircle(r1=i+0.05,r2=i,
+                                           mid=c(0.5,0.5),col=i*20)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>shape</em> version 1.2.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

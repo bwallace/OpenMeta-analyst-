@@ -1,0 +1,11 @@
+Package: splines
+Version: 2.9.2
+Priority: base
+Imports: graphics, stats
+Title: Regression Spline Functions and Classes
+Author: Douglas M. Bates <bates@stat.wisc.edu> and William N. Venables
+        <Bill.Venables@csiro.au>
+Maintainer: R Core Team <R-core@r-project.org>
+Description: Regression spline functions and classes
+License: Part of R 2.9.2
+Built: R 2.9.2; i386-pc-mingw32; 2009-08-24 12:46:05 UTC; windows

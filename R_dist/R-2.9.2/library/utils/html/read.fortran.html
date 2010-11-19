@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Read fixed-format data</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for read.fortran {utils}"><tr><td>read.fortran {utils}</td><td align="right">R Documentation</td></tr></table>
+<h2>Read fixed-format data</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Read fixed-format data files using Fortran-style format specifications.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+read.fortran(file, format, ..., as.is = TRUE, colClasses = NA)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>file</code></td>
+<td>
+File or connection to read from</td></tr>
+<tr valign="top"><td><code>format</code></td>
+<td>
+Character vector or list of vectors.  See
+&lsquo;Details&rsquo; below.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+Other arguments for <code>read.table</code></td></tr>
+<tr valign="top"><td><code>as.is</code></td>
+<td>
+Keep characters as characters?</td></tr>
+<tr valign="top"><td><code>colClasses</code></td>
+<td>
+Variable classes to override defaults. See
+<code><a href="read.table.html">read.table</a></code> for details.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The format for a field is of one of the following forms: <code>rFl.d</code>,
+<code>rDl.d</code>, <code>rXl</code>, <code>rAl</code>, <code>rIl</code>, where <code>l</code> is
+the number of columns, <code>d</code> is the number of decimal places, and
+<code>r</code> is the number of repeats. <code>F</code> and <code>D</code> are numeric
+formats, <code>A</code> is character, <code>I</code> is integer, and <code>X</code>
+indicates columns to be skipped. The repeat code <code>r</code> and decimal
+place code <code>d</code> are always optional. The length code <code>l</code> is
+required except for <code>X</code> formats when <code>r</code> is present.
+</p>
+<p>
+For a single-line record, <code>format</code> should be a character
+vector. For a multiline record it should be a list with a character
+vector for each line.
+</p>
+<p>
+Skipped (<code>X</code>) columns are not passed to <code>read.table</code>, so
+<code>colClasses</code>, <code>col.names</code>, and similar arguments passed to
+<code>read.table</code> should not reference these columns.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A data frame</p>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="read.fwf.html">read.fwf</a></code>, <code><a href="read.table.html">read.csv</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+ff &lt;- tempfile()
+cat(file=ff, "123456", "987654", sep="\n")
+read.fortran(ff, c("F2.1","F2.0","I2"))
+read.fortran(ff, c("2F1.0","2X","2A1"))
+unlink(ff)
+cat(file=ff, "123456AB", "987654CD", sep="\n")
+read.fortran(ff, list(c("2F3.1","A2"), c("3I2","2X")))
+unlink(ff)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>utils</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

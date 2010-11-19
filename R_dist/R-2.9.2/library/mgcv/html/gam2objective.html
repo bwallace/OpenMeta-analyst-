@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Objective functions for GAM smoothing parameter estimation</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for gam2objective {mgcv}"><tr><td>gam2objective {mgcv}</td><td align="right">R Documentation</td></tr></table>
+<h2>Objective functions for GAM smoothing parameter estimation</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Estimation of GAM smoothing parameters is most stable if
+optimization of the UBRE/AIC or GCV score is outer to the penalized iteratively
+re-weighted least squares scheme used to estimate the model given smoothing 
+parameters. These functions evaluate the GCV/UBRE/AIC score of a GAM model, given
+smoothing parameters, in a manner suitable for use by <code><a href="../../stats/html/optim.html">optim</a></code> or <code><a href="../../stats/html/nlm.html">nlm</a></code>.
+Not normally called directly, but rather service routines for <code><a href="gam.outer.html">gam.outer</a></code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+gam2objective(lsp,args,...)
+gam2derivative(lsp,args,...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>lsp</code></td>
+<td>
+The log smoothing parameters.</td></tr>
+<tr valign="top"><td><code>args</code></td>
+<td>
+List of arguments required to call <code><a href="gam.fit3.html">gam.fit3</a></code>.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+Other arguments for passing to <code>gam.fit3</code>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>gam2objective</code> and <code>gam2derivative</code> are functions suitable
+for calling by <code><a href="../../stats/html/optim.html">optim</a></code>, to evaluate the GCV/UBRE/AIC score and its
+derivatives w.r.t. log smoothing parameters.
+</p>
+<p>
+<code>gam4objective</code> is an equivalent to <code>gam2objective</code>, suitable for
+optimization by <code><a href="../../stats/html/nlm.html">nlm</a></code> - derivatives of the GCV/UBRE/AIC function are
+calculated and returned as attributes.
+</p>
+<p>
+The basic idea of optimizing smoothing parameters `outer' to the P-IRLS loop
+was first proposed in O'Sullivan et al. (1986).
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Simon N. Wood <a href="mailto:simon.wood@r-project.org">simon.wood@r-project.org</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+O 'Sullivan, Yandall &amp; Raynor (1986) Automatic smoothing of regression
+functions in generalized linear models. J. Amer. Statist. Assoc. 81:96-103.
+</p>
+<p>
+Wood, S.N. (2008) Fast stable direct fitting and smoothness selection for generalized
+additive models. J.R.Statist.Soc.B 70(3):495-518
+</p>
+<p>
+<a href="http://www.maths.bath.ac.uk/~sw283/">http://www.maths.bath.ac.uk/~sw283/</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="gam.fit3.html">gam.fit3</a></code>,  <code><a href="gam.html">gam</a></code>, <code><a href="mgcv.html">mgcv</a></code>, <code><a href="magic.html">magic</a></code>
+</p>
+
+
+
+<hr><div align="center">[Package <em>mgcv</em> version 1.5-5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

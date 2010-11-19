@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Sign Method for Outlier Identification in High Dimensions - Simple Version</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for sign1 {mvoutlier}"><tr><td>sign1 {mvoutlier}</td><td align="right">R Documentation</td></tr></table>
+<h2>Sign Method for Outlier Identification in High Dimensions - Simple Version</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Fast algorithm for identifying multivariate outliers in high-dimensional
+and/or large datasets, using spatial signs, see Filzmoser, Maronna, and
+Werner (CSDA, 2007). The computation of the distances is based on
+Mahalanobis distances.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+sign1(x, makeplot = FALSE, qcrit = 0.975, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+a numeric matrix or data frame which provides the data for
+outlier detection </td></tr>
+<tr valign="top"><td><code>makeplot</code></td>
+<td>
+a logical value indicating whether a diagnostic plot
+should be generated (default to FALSE) </td></tr>
+<tr valign="top"><td><code>qcrit</code></td>
+<td>
+a numeric value between 0 and 1 indicating the quantile to
+be used as critical value for outlier detection (default to 0.975) </td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+additional plot parameters, see help(par) </td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Based on the robustly sphered and normed data, robust principal components
+are computed. These are used for computing the covariance matrix which
+is the basis for Mahalanobis distances. A critical value from the chi-square
+distribution is then used as outlier cutoff.
+</p>
+
+
+<h3>Value</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>wfinal01 </code></td>
+<td>
+0/1 vector with final weights for each observation;
+weight 0 indicates potential multivariate outliers.</td></tr>
+<tr valign="top"><td><code>x.dist </code></td>
+<td>
+numeric vector with distances used for outlier detection.</td></tr>
+<tr valign="top"><td><code>const </code></td>
+<td>
+outlier cutoff value.</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Peter Filzmoser &lt;<a href="mailto:P.Filzmoser@tuwien.ac.at">P.Filzmoser@tuwien.ac.at</a>&gt;
+<a href="http://www.statistik.tuwien.ac.at/public/filz/">http://www.statistik.tuwien.ac.at/public/filz/</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+P. Filzmoser, R. Maronna, M. Werner.
+Outlier identification in high dimensions,
+<EM>Computational Statistics and Data Analysis</EM>, 52, 1694-1711, 2008.
+</p>
+<p>
+N. Locantore, J. Marron, D. Simpson, N. Tripoli, J. Zhang, and K. Cohen (1999).
+Robust principal components for functional data,
+<EM>Test</EM> 8, 1&ndash;73.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="pcout.html">pcout</a></code>, <code><a href="sign2.html">sign2</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+# geochemical data from northern Europe
+data(bsstop)
+x=bsstop[,5:14]
+# identify multivariate outliers
+x.out=sign1(x,makeplot=FALSE)
+# visualize multivariate outliers in the map
+op &lt;- par(mfrow=c(1,2))
+data(bss.background)
+pbb(asp=1)
+points(bsstop$XCOO,bsstop$YCOO,pch=16,col=x.out$wfinal01+2)
+title("Outlier detection based on signout")
+legend("topleft",legend=c("potential outliers","regular observations"),pch=16,col=c(2,3))
+
+# compare with outlier detection based on MCD:
+require(robustbase)
+x.mcd=covMcd(x)
+pbb(asp=1)
+points(bsstop$XCOO,bsstop$YCOO,pch=16,col=x.mcd$mcd.wt+2)
+title("Outlier detection based on MCD")
+legend("topleft",legend=c("potential outliers","regular observations"),pch=16,col=c(2,3))
+par(op)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>mvoutlier</em> version 1.4 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

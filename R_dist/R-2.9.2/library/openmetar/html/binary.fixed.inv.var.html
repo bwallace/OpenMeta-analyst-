@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for binary.fixed.inv.var {openmetar}"><tr><td>binary.fixed.inv.var {openmetar}</td><td align="right">R Documentation</td></tr></table>
+<h2></h2>
+
+
+<h3>Usage</h3>
+
+<pre>
+binary.fixed.inv.var(binaryData, params)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>binaryData</code></td>
+<td>
+</td></tr>
+<tr valign="top"><td><code>params</code></td>
+<td>
+</td></tr>
+</table>
+
+<h3>Examples</h3>
+
+<pre>
+##---- Should be DIRECTLY executable !! ----
+##-- ==&gt;  Define data, use random,
+##--    or do  help(data=index)  for the standard data sets.
+
+## The function is currently defined as
+function (binaryData, params) 
+{
+    if (!("BinaryData" %in% class(binaryData))) 
+        stop("Binary data expected.")
+    results &lt;- NULL
+    if (length(binaryData@g1O1) == 1 || length(binaryData@y) == 
+        1) {
+        res &lt;- get.res.for.one.binary.study(binaryData, params)
+        results &lt;- list(summary = res)
+    }
+    else {
+        res &lt;- rma.uni(yi = binaryData@y, sei = binaryData@SE, 
+            slab = binaryData@studyNames, level = params$conf.level, 
+            digits = params$digits, method = "FE", add = params$adjust, 
+            to = params$to)
+        degf &lt;- res$k - res$p
+        summaryDisp &lt;- createSummaryDisp(res, params, degf)
+        summaryDisp$modelTitle &lt;- paste("Fixed-Effects Model - Inverse Variance (k = ", 
+            res$k, ")", sep = "")
+        summaryDisp
+        forest_path &lt;- "./r_tmp/forest.png"
+        plotData &lt;- create.plot.data.binary(binaryData, params, 
+            res)
+        forest.plot(plotData, outpath = forest_path)
+        images &lt;- c(`forest plot` = forest_path)
+        plot_names &lt;- c(`forest plot` = "forest_plot")
+        results &lt;- list(images = images, summary = summaryDisp, 
+            plot_names = plot_names)
+    }
+    results
+  }
+</pre>
+
+
+
+<hr><div align="center">[Package <em>openmetar</em> version 1.0 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

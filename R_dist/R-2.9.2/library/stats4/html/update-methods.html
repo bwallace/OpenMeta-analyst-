@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Methods for Function &lsquo;update&rsquo; in Package &lsquo;stats4&rsquo;</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for update-methods {stats4}"><tr><td>update-methods {stats4}</td><td align="right">R Documentation</td></tr></table>
+<h2>Methods for Function &lsquo;update&rsquo; in Package &lsquo;stats4&rsquo;</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Update <code>"mle"</code> objects.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S4 method for signature 'mle':
+update(object, ..., evaluate = TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>object</code></td>
+<td>
+An existing fit.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+Additional arguments to the call, or arguments with
+changed values. Use <code>name=NULL</code> to remove the argument <code>name</code>.</td></tr>
+<tr valign="top"><td><code>evaluate</code></td>
+<td>
+If true evaluate the new call else return the call.</td></tr>
+</table>
+
+<h3>Methods</h3>
+
+<dl>
+</p>
+
+<dt>object = "ANY"</dt><dd>Generic function: see <code><a href="../../stats/html/update.html">update</a></code>.</dd>
+
+
+<dt>object = "mle"</dt><dd>Update a fit.</dd>
+</dl>
+
+<h3>Examples</h3>
+
+<pre>
+x &lt;- 0:10
+y &lt;- c(26, 17, 13, 12, 20, 5, 9, 8, 5, 4, 8)
+ll &lt;- function(ymax=15, xhalf=6)
+    -sum(stats::dpois(y, lambda=ymax/(1+x/xhalf), log=TRUE))
+fit &lt;- mle(ll)
+## note the recorded call contains ..1, a problem with S4 dispatch
+update(fit, fixed=list(xhalf=3))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>stats4</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Predicted Values for a &lsquo;survreg&rsquo; Object</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for predict.survreg {survival}"><tr><td>predict.survreg {survival}</td><td align="right">R Documentation</td></tr></table>
+<h2>Predicted Values for a &lsquo;survreg&rsquo; Object</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Predicted values for a <code>survreg</code> object
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'survreg':
+predict(object, newdata,  
+type=c("response", "link", "lp", "linear", "terms", "quantile",  
+        "uquantile"),  
+ se.fit=FALSE, terms=NULL, p=c(0.1, 0.9),...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>object</code></td>
+<td>
+result of a model fit using the <code>survreg</code> function. 
+</td></tr>
+<tr valign="top"><td><code>newdata</code></td>
+<td>
+data for prediction.  If absent predictions are for the 
+subjects used in the original fit. 
+</td></tr>
+<tr valign="top"><td><code>type</code></td>
+<td>
+the type of predicted value.  
+This can be on the original scale of the data (response), 
+the linear predictor (<code>"linear"</code>, with <code>"lp"</code> as an allowed abbreviation), 
+a predicted quantile on the original scale of the data (<code>"quantile"</code>), 
+a quantile on the linear predictor scale (<code>"uquantile"</code>),
+or the matrix of terms for the linear predictor (<code>"terms"</code>).
+At this time <code>"link"</code> and linear predictor (<code>"lp"</code>) are identical. 
+</td></tr>
+<tr valign="top"><td><code>se.fit</code></td>
+<td>
+if <code>TRUE</code>, include the standard errors of the prediction in the result. 
+</td></tr>
+<tr valign="top"><td><code>terms</code></td>
+<td>
+subset of terms.  The default for residual type <code>"terms"</code> is a matrix with 
+one column for every term (excluding the intercept) in the model. 
+</td></tr>
+<tr valign="top"><td><code>p</code></td>
+<td>
+vector of percentiles.  This is used only for quantile predictions. 
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+for future methods</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+a vector or matrix of predicted values.</p>
+
+<h3>References</h3>
+
+<p>
+Escobar and Meeker (1992). Assessing influence in regression analysis with 
+censored data. <EM>Biometrics,</EM> 48, 507-528.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="survreg.html">survreg</a></code>,  <code><a href="residuals.survreg.html">residuals.survreg</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+# Draw figure 1 from Escobar and Meeker
+fit &lt;- survreg(Surv(time,status) ~ age + age^2, data=stanford2, 
+        dist='lognormal') 
+plot(stanford2$age, stanford2$time, xlab='Age', ylab='Days', 
+        xlim=c(0,65), ylim=c(.01, 10^6), log='y') 
+pred &lt;- predict(fit, newdata=list(age=1:65), type='quantile', 
+                 p=c(.1, .5, .9)) 
+matlines(1:65, pred, lty=c(2,1,2), col=1) 
+
+# Predicted Weibull survival curve for a lung cancer subject with
+#  ECOG score of 2
+lfit &lt;- survreg(Surv(time, status) ~ ph.ecog, data=lung)
+pct &lt;- 1:98/100   # The 100th percentile of predicted survival is at +infinity
+ptime &lt;- predict(lfit, newdata=data.frame(ph.ecog=2), type='quantile',
+                 p=pct, se=TRUE)
+matplot(cbind(ptime$fit, ptime$fit + 2*ptime$se.fit,
+                         ptime$fit - 2*ptime$se.fit)/30.5, 1-pct,
+        xlab="Months", ylab="Survival", type='l', lty=c(1,2,2), col=1)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>survival</em> version 2.35-4 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

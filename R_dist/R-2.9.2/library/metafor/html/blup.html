@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Best Linear Unbiased Predictions</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for blup {metafor}"><tr><td>blup {metafor}</td><td align="right">R Documentation</td></tr></table>
+<h2>Best Linear Unbiased Predictions</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The function <code>blup</code> is generic. It extracts the best linear unbiased predictions (BLUPs) for specific classes of objects. BLUPs combine the fitted values based on the fixed effects in the model and the estimated contributions of the random effects.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+blup(x, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+an object for which BLUPs are meaningful. See &lsquo;Details&rsquo;.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+other arguments.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Currently, there is only a specific method for objects of class <code>"rma.uni"</code> created by the <code><a href="rma.uni.html">rma.uni</a></code> function. Accordingly, the corresponding method is called <code><a href="blup.rma.uni.html">blup.rma.uni</a></code>. See the documentation for that function for more details.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+Best linear unbiased predictions and possibly corresponding standard errors and prediction interval bounds.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Wolfgang Viechtbauer; <a href="mailto:wvb@www.wvbauer.com">wvb@www.wvbauer.com</a>; <a href="http://www.wvbauer.com/">http://www.wvbauer.com/</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Robinson, G. K. (1991) That BLUP is a good thing: The estimation of random effects. <EM>Statistical Science</EM>, <B>6</B>, 15&ndash;32.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="blup.rma.uni.html">blup.rma.uni</a></code>
+</p>
+
+
+
+<hr><div align="center">[Package <em>metafor</em> version 0.5-7 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

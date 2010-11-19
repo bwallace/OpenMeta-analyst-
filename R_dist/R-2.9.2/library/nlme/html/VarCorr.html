@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Extract variance and correlation components</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for VarCorr {nlme}"><tr><td>VarCorr {nlme}</td><td align="right">R Documentation</td></tr></table>
+<h2>Extract variance and correlation components</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This function calculates the estimated variances, standard
+deviations, and correlations between the random-effects terms in a
+linear mixed-effects model, of class <code>lme</code>, or a nonlinear
+mixed-effects model, of class <code>nlme</code>. The within-group error
+variance and standard deviation are also calculated.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+VarCorr(x, sigma, rdig)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+a fitted model object, usually an object inheriting from
+class <code>lme</code>. 
+</td></tr>
+<tr valign="top"><td><code>sigma</code></td>
+<td>
+an optional numeric value used as a multiplier for the
+standard deviations. Default is <code>1</code>.
+</td></tr>
+<tr valign="top"><td><code>rdig</code></td>
+<td>
+an optional integer value specifying the number of digits
+used to represent correlation estimates. Default is <code>3</code>.
+</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+a matrix with the estimated variances, standard deviations, and
+correlations for the random effects. The first two columns, named
+<code>Variance</code> and <code>StdDev</code>, give, respectively, the variance
+and the standard deviations. If there are correlation components in
+the random effects model, the third column, named <code>Corr</code>,
+and the remaining unnamed columns give the estimated correlations
+among random effects within the same level of grouping. The
+within-group error variance and standard deviation are included as
+the last row in the matrix.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Jose Pinheiro <a href="mailto:Jose.Pinheiro@pharma.novartis.com">Jose.Pinheiro@pharma.novartis.com</a> and Douglas Bates <a href="mailto:bates@stat.wisc.edu">bates@stat.wisc.edu</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Pinheiro, J.C., and Bates, D.M. (2000) "Mixed-Effects Models
+in S and S-PLUS", Springer, esp. pp. 100, 461.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="lme.html">lme</a></code>, <code><a href="nlme.html">nlme</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+fm1 &lt;- lme(distance ~ age, data = Orthodont, random = ~age)
+VarCorr(fm1)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>nlme</em> version 3.1-93 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,346 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Fit a Smoothing Spline</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for smooth.spline {stats}"><tr><td>smooth.spline {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>Fit a Smoothing Spline</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Fits a cubic smoothing spline to the supplied data.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+smooth.spline(x, y = NULL, w = NULL, df, spar = NULL,
+              cv = FALSE, all.knots = FALSE, nknots = NULL,
+              keep.data = TRUE, df.offset = 0, penalty = 1,
+              control.spar = list())
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+a vector giving the values of the predictor variable, or  a
+list or a two-column matrix specifying x and y. </td></tr>
+<tr valign="top"><td><code>y</code></td>
+<td>
+responses. If <code>y</code> is missing, the responses are assumed
+to be specified by <code>x</code>.</td></tr>
+<tr valign="top"><td><code>w</code></td>
+<td>
+optional vector of weights of the same length as <code>x</code>;
+defaults to all 1.</td></tr>
+<tr valign="top"><td><code>df</code></td>
+<td>
+the desired equivalent number of degrees of freedom (trace of
+the smoother matrix).</td></tr>
+<tr valign="top"><td><code>spar</code></td>
+<td>
+smoothing parameter, typically (but not necessarily) in
+<i>(0,1]</i>.  The coefficient <i>&lambda;</i> of the integral of the
+squared second derivative in the fit (penalized log likelihood)
+criterion is a monotone function of <code>spar</code>, see the details
+below.</td></tr>
+<tr valign="top"><td><code>cv</code></td>
+<td>
+ordinary (<code>TRUE</code>) or &lsquo;generalized&rsquo; cross-validation
+(GCV) when <code>FALSE</code>.</td></tr>
+<tr valign="top"><td><code>all.knots</code></td>
+<td>
+if <code>TRUE</code>, all distinct points in <code>x</code> are used as
+knots.  If <code>FALSE</code> (default), a subset of <code>x[]</code> is used,
+specifically <code>x[j]</code> where the <code>nknots</code> indices are evenly
+spaced in <code>1:n</code>, see also the next argument <code>nknots</code>.</td></tr>
+<tr valign="top"><td><code>nknots</code></td>
+<td>
+integer giving the number of knots to use when
+<code>all.knots=FALSE</code>.  Per default, this is less than <i>n</i>, the
+number of unique <code>x</code> values for <i>n &gt; 49</i>.</td></tr>
+<tr valign="top"><td><code>keep.data</code></td>
+<td>
+logical specifying if the input data should be kept
+in the result.  If <code>TRUE</code> (as per default), fitted values and
+residuals are available from the result.</td></tr>
+<tr valign="top"><td><code>df.offset</code></td>
+<td>
+allows the degrees of freedom to be increased by
+<code>df.offset</code> in the GCV criterion.</td></tr>
+<tr valign="top"><td><code>penalty</code></td>
+<td>
+the coefficient of the penalty for degrees of freedom
+in the GCV criterion.</td></tr>
+<tr valign="top"><td><code>control.spar</code></td>
+<td>
+optional list with named components controlling the
+root finding when the smoothing parameter <code>spar</code> is computed,
+i.e., missing or <code>NULL</code>, see below.
+<br>
+<B>Note</B> that this is partly <EM>experimental</EM> and may change
+with general spar computation improvements!
+<br>
+<dl>
+<dt>low:</dt><dd>lower bound for <code>spar</code>; defaults to -1.5 (used to
+implicitly default to 0 in <font face="Courier New,Courier" color="#666666"><b>R</b></font> versions earlier than 1.4).</dd>
+<dt>high:</dt><dd>upper bound for <code>spar</code>; defaults to +1.5.</dd>
+<dt>tol:</dt><dd>the absolute precision (<B>tol</B>erance) used; defaults
+to 1e-4 (formerly 1e-3).</dd>
+<dt>eps:</dt><dd>the relative precision used; defaults to 2e-8 (formerly
+0.00244).</dd>
+<dt>trace:</dt><dd>logical indicating if iterations should be traced.</dd>
+<dt>maxit:</dt><dd>integer giving the maximal number of iterations;
+defaults to 500.</dd>
+</dl>
+Note that <code>spar</code> is only searched for in the interval
+<i>[low, high]</i>.
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The <code>x</code> vector should contain at least four distinct values.
+<EM>Distinct</EM> here means &lsquo;distinct after rounding to 6 significant
+digits&rsquo;, i.e., <code>x</code> will be transformed to
+<code>unique(sort(signif(x, 6)))</code>, and <code>y</code> and <code>w</code> are
+pooled accordingly.
+</p>
+<p>
+The computational <i>&lambda;</i> used (as a function of
+<i><code>spar</code></i>) is
+<i>lambda = r * 256^(3*spar - 1)</i>
+where
+<i>r = tr(X' W X) / tr(&Sigma;)</i>,
+<i>&Sigma;</i> is the matrix given by
+<i>Sigma[i,j] = Integral B''[i](t) B''[j](t) dt</i>,
+<i>X</i> is given by <i>X[i,j] = B[j](x[i])</i>,
+<i>W</i> is the diagonal matrix of weights (scaled such that
+its trace is <i>n</i>, the original number of observations)
+and <i>B[k](.)</i> is the <i>k</i>-th B-spline.
+</p>
+<p>
+Note that with these definitions, <i>f_i = f(x_i)</i>, and the B-spline
+basis representation <i>f = X c</i> (i.e., <i>c</i> is
+the vector of spline coefficients), the penalized log likelihood is
+<i>L = (y - f)' W (y - f) + &lambda; c' &Sigma; c</i>, and hence
+<i>c</i> is the solution of the (ridge regression)
+<i>(X' W X + &lambda; &Sigma;) c = X' W y</i>.
+</p>
+<p>
+If <code>spar</code> is missing or <code>NULL</code>, the value of <code>df</code> is used to
+determine the degree of smoothing.  If both are missing, leave-one-out
+cross-validation (ordinary or &lsquo;generalized&rsquo; as determined by
+<code>cv</code>) is used to determine <i>&lambda;</i>.
+Note that from the above relation,
+<code>spar</code> is <i>spar = s0 + 0.0601 * log(lambda)</i>,
+which is intentionally <EM>different</EM> from the S-plus implementation
+of <code>smooth.spline</code> (where <code>spar</code> is proportional to
+<i>&lambda;</i>).  In <font face="Courier New,Courier" color="#666666"><b>R</b></font>'s (<i>log &lambda;</i>) scale, it makes more
+sense to vary <code>spar</code> linearly.
+</p>
+<p>
+Note however that currently the results may become very unreliable
+for <code>spar</code> values smaller than about -1 or -2.  The same may
+happen for values larger than 2 or so. Don't think of setting
+<code>spar</code> or the controls <code>low</code> and <code>high</code> outside such a
+safe range, unless you know what you are doing!
+</p>
+<p>
+The &lsquo;generalized&rsquo; cross-validation method will work correctly when
+there are duplicated points in <code>x</code>.  However, it is ambiguous what
+leave-one-out cross-validation means with duplicated points, and the
+internal code uses an approximation that involves leaving out groups
+of duplicated points.  <code>cv=TRUE</code> is best avoided in that case.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+An object of class <code>"smooth.spline"</code> with components
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+the <EM>distinct</EM> <code>x</code> values in increasing order, see
+the &lsquo;Details&rsquo; above.</td></tr>
+<tr valign="top"><td><code>y</code></td>
+<td>
+the fitted values corresponding to <code>x</code>.</td></tr>
+<tr valign="top"><td><code>w</code></td>
+<td>
+the weights used at the unique values of <code>x</code>.</td></tr>
+<tr valign="top"><td><code>yin</code></td>
+<td>
+the y values used at the unique <code>y</code> values.</td></tr>
+<tr valign="top"><td><code>data</code></td>
+<td>
+only if <code>keep.data = TRUE</code>: itself a
+<code><a href="../../base/html/list.html">list</a></code> with components <code>x</code>, <code>y</code> and <code>w</code>
+of the same length.  These are the original <i>(x_i,y_i,w_i),
+i=1,...,n</i>, values where <code>data$x</code> may have repeated values and
+hence be longer than the above <code>x</code> component; see details.
+</td></tr>
+<tr valign="top"><td><code>lev</code></td>
+<td>
+leverages, the diagonal values of the smoother matrix.</td></tr>
+<tr valign="top"><td><code>cv.crit</code></td>
+<td>
+cross-validation score, &lsquo;generalized&rsquo; or true, depending
+on <code>cv</code>.</td></tr>
+<tr valign="top"><td><code>pen.crit</code></td>
+<td>
+penalized criterion</td></tr>
+<tr valign="top"><td><code>crit</code></td>
+<td>
+the criterion value minimized in the underlying
+<code>.Fortran</code> routine &lsquo;<span class="file">sslvrg</span>&rsquo;.</td></tr>
+<tr valign="top"><td><code>df</code></td>
+<td>
+equivalent degrees of freedom used.  Note that (currently)
+this value may become quite imprecise when the true <code>df</code> is
+between and 1 and 2.
+</td></tr>
+<tr valign="top"><td><code>spar</code></td>
+<td>
+the value of <code>spar</code> computed or given.</td></tr>
+<tr valign="top"><td><code>lambda</code></td>
+<td>
+the value of <i>&lambda;</i> corresponding to <code>spar</code>,
+see the details above.</td></tr>
+<tr valign="top"><td><code>iparms</code></td>
+<td>
+named integer(3) vector where <code>..$ipars["iter"]</code>
+gives number of spar computing iterations used.</td></tr>
+<tr valign="top"><td><code>fit</code></td>
+<td>
+list for use by <code><a href="predict.smooth.spline.html">predict.smooth.spline</a></code>, with
+components
+<dl>
+<dt>knot:</dt><dd>the knot sequence (including the repeated boundary
+knots).</dd>
+<dt>nk:</dt><dd>number of coefficients or number of &lsquo;proper&rsquo;
+knots plus 2.</dd>
+<dt>coef:</dt><dd>coefficients for the spline basis used.</dd>
+<dt>min, range:</dt><dd>numbers giving the corresponding quantities of
+<code>x</code>.</dd>
+</dl>
+</td></tr>
+<tr valign="top"><td><code>call</code></td>
+<td>
+the matched call.</td></tr>
+</table>
+
+<h3>Note</h3>
+
+<p>
+The default <code>all.knots = FALSE</code> and <code>nknots = NULL</code> entails
+using only <i>O(n^{0.2})</i>
+knots instead of <i>n</i> for <i>n &gt; 49</i>.  This cuts speed and memory
+requirements, but not drastically anymore since <font face="Courier New,Courier" color="#666666"><b>R</b></font> version 1.5.1 where
+it is only <i>O(nk) + O(n)</i> where <i>nk</i> is
+the number of knots.
+In this case where not all unique <code>x</code> values are
+used as knots, the result is not a smoothing spline in the strict
+sense, but very close unless a small smoothing parameter (or large
+<code>df</code>) is used.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+<font face="Courier New,Courier" color="#666666"><b>R</b></font> implementation by B. D. Ripley and Martin Maechler
+(<code>spar/lambda</code>, etc).
+</p>
+<p>
+This function is based on code in the <code>GAMFIT</code> Fortran program by
+T. Hastie and R. Tibshirani (<a href="http://lib.stat.cmu.edu/general/">http://lib.stat.cmu.edu/general/</a>),
+which makes use of spline code by Finbarr O'Sullivan.  Its design
+parallels the <code>smooth.spline</code> function of Chambers &amp; Hastie (1992).
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Chambers, J. M. and Hastie, T. J. (1992)
+<EM>Statistical Models in S</EM>, Wadsworth &amp; Brooks/Cole.
+</p>
+<p>
+Green, P. J. and Silverman, B. W. (1994)
+<EM>Nonparametric Regression and Generalized Linear Models:
+A Roughness Penalty Approach.</EM> Chapman and Hall.
+</p>
+<p>
+Hastie, T. J. and Tibshirani, R. J. (1990)
+<EM>Generalized Additive Models.</EM>  Chapman and Hall.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="predict.smooth.spline.html">predict.smooth.spline</a></code> for evaluating the spline
+and its derivatives.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+require(graphics)
+
+attach(cars)
+plot(speed, dist, main = "data(cars)  &amp;  smoothing splines")
+cars.spl &lt;- smooth.spline(speed, dist)
+(cars.spl)
+## This example has duplicate points, so avoid cv=TRUE
+
+lines(cars.spl, col = "blue")
+lines(smooth.spline(speed, dist, df=10), lty=2, col = "red")
+legend(5,120,c(paste("default [C.V.] =&gt; df =",round(cars.spl$df,1)),
+               "s( * , df = 10)"), col = c("blue","red"), lty = 1:2,
+       bg='bisque')
+detach()
+
+## Residual (Tukey Anscombe) plot:
+plot(residuals(cars.spl) ~ fitted(cars.spl))
+abline(h = 0, col="gray")
+
+## consistency check:
+stopifnot(all.equal(cars$dist,
+                    fitted(cars.spl) + residuals(cars.spl)))
+
+##-- artificial example
+y18 &lt;- c(1:3,5,4,7:3,2*(2:5),rep(10,4))
+xx  &lt;- seq(1,length(y18), len=201)
+(s2  &lt;- smooth.spline(y18)) # GCV
+(s02 &lt;- smooth.spline(y18, spar = 0.2))
+plot(y18, main=deparse(s2$call), col.main=2)
+lines(s2, col = "gray"); lines(predict(s2, xx), col = 2)
+lines(predict(s02, xx), col = 3); mtext(deparse(s02$call), col = 3)
+
+## The following shows the problematic behavior of 'spar' searching:
+(s2  &lt;- smooth.spline(y18, control = list(trace=TRUE,tol=1e-6, low= -1.5)))
+(s2m &lt;- smooth.spline(y18, cv = TRUE,
+                      control = list(trace=TRUE,tol=1e-6, low= -1.5)))
+## both above do quite similarly (Df = 8.5 +- 0.2)
+
+
+</pre>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

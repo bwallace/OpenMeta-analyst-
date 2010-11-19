@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Tukey's "Chi", the Bi-square Loss (Rho) Function</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for tukeyChi {robustbase}"><tr><td>tukeyChi {robustbase}</td><td align="right">R Documentation</td></tr></table>
+<h2>Tukey's "Chi", the Bi-square Loss (Rho) Function</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Computes Tukey's bi-square loss function, <code>chi(x)</code> and its
+first two derivatives.  Note that in the general context of
+<i>M</i>-estimators, these loss functions are called
+<i>rho</i>-functions.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+tukeyChi(x, cc, deriv = 0)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+numeric vector.</td></tr>
+<tr valign="top"><td><code>cc</code></td>
+<td>
+tuning constant </td></tr>
+<tr valign="top"><td><code>deriv</code></td>
+<td>
+integer in <i>{0,1,2}</i> specifying the order of the
+derivative; the default, <code>deriv = 0</code> computes the chi- (or
+rho-)function.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+a numeric vector of the same length as <code>x</code>.</p>
+
+<h3>Note</h3>
+
+<p>
+<code>tukeyChi(x, d)</code> and <code><a href="tukeyPsi1.html">tukeyPsi1</a>(x, d-1)</code> are just
+re-scaled versions of each other (for <code>d in 0:2</code>).
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Matias Salibian-Barrera and Martin Maechler
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="lmrob.html">lmrob</a></code> and <code><a href="tukeyPsi1.html">tukeyPsi1</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+op &lt;- par(mfrow = c(3,1), oma = c(0,0, 2, 0),
+          mgp = c(1.5, 0.6, 0), mar= .1+c(3,4,3,2))
+x &lt;- seq(-2.5, 2.5, length = 201)
+cc &lt;- 1.55 # as set by default in lmrob.control()
+plot. &lt;- function(...) { plot(...); abline(h=0,v=0, col="gray", lty=3)}
+plot.(x, tukeyChi(x, cc), type = "l", col = 2)
+plot.(x, tukeyChi(x, cc, deriv = 1), type = "l", col = 2)
+plot.(x, tukeyChi(x, cc, deriv = 2), type = "l", col = 2)
+mtext(sprintf("tukeyChi(x, c = %g, deriv),  deriv = 0,1,2", cc),
+      outer = TRUE, font = par("font.main"), cex = par("cex.main"))
+par(op)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>robustbase</em> version 0.4-5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

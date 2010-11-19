@@ -1,0 +1,24 @@
+Bundle: VR
+Contains: MASS class nnet spatial
+Priority: recommended
+Version: 7.2-48
+Date: 2009-07-29
+Depends: R (>= 2.5.0), grDevices, graphics, stats, utils
+Suggests: lattice, nlme, survival
+Author: S original by Venables & Ripley. R port by Brian Ripley
+        <ripley@stats.ox.ac.uk>, following earlier work by Kurt Hornik
+        and Albrecht Gebhardt.
+Maintainer: Brian Ripley <ripley@stats.ox.ac.uk>
+BundleDescription: Functions and datasets to support Venables and
+        Ripley, 'Modern Applied Statistics with S' (4th edition).
+License: GPL-2 | GPL-3
+URL: http://www.stats.ox.ac.uk/pub/MASS4/
+Packaged: 2009-07-31 13:56:57 UTC; ripley
+Repository: CRAN
+Date/Publication: 2009-08-05 11:20:53
+Package: nnet
+Description: Software for feed-forward neural networks with a single
+        hidden layer, and for multinomial log-linear models.
+Title: Feed-forward Neural Networks and Multinomial Log-Linear Models
+LazyLoad: yes
+Built: R 2.9.2; i386-pc-mingw32; 2009-08-24 13:01:08 UTC; windows

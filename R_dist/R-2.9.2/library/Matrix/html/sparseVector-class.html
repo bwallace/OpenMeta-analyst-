@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Sparse Vector Classes</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for sparseVector-class {Matrix}"><tr><td>sparseVector-class {Matrix}</td><td align="right">R Documentation</td></tr></table>
+<h2>Sparse Vector Classes</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Sparse Vector Classes: The virtual mother class
+<code>"sparseVector"</code> has the five actual daughter classes
+<code>"dsparseVector"</code>, <code>"isparseVector"</code>,
+<code>"lsparseVector"</code>, <code>"nsparseVector"</code>, and
+<code>"zsparseVector"</code>, where we've mainly implemented methods for
+the <code>d*</code>, <code>l*</code> and <code>n*</code> ones.
+</p>
+
+
+<h3>Slots</h3>
+
+<dl>
+<dt><code>length</code>:</dt><dd>class <code>"integer"</code> - the <code><a href="../../base/html/length.html">length</a></code>
+of the sparse vector.</dd>
+<dt><code>i</code>:</dt><dd>class <code>"integer"</code> - the (1-based) indices of
+the non-zero entries.</dd>
+<dt><code>x</code>:</dt><dd>(for all but <code>"nsparseVector"</code>):
+the non-zero entries.  This is of class <code>"numeric"</code> for class
+<code>"dsparseVector"</code>,  <code>"logical"</code> for class
+<code>"lsparseVector"</code>, etc.
+</p>
+<p>
+Note that <code>"nsparseVector"</code>s have no <code>x</code> slot.
+Further, mainly for ease of method definitions, we've defined the
+class union (see <code><a href="../../methods/html/setClassUnion.html">setClassUnion</a></code>) of all sparse vector
+classes which <EM>have</EM> an <code>x</code> slot, as class <code>"xsparseVector"</code>.
+</dd>
+</dl>
+
+<h3>Methods</h3>
+
+<dl>
+<dt>length</dt><dd><code>signature(x = "sparseVector")</code>: simply extracts
+the <code>length</code> slot.</dd>
+<dt>show</dt><dd><code>signature(object = "sparseVector")</code>: The
+<code><a href="../../methods/html/show.html">show</a></code> method for sparse vectors prints
+<EM>&ldquo;structural&rdquo;</EM> zeroes as <code>"."</code> using the
+non-exported <code>prSpVector</code> function which allows further
+customization such as replacing <code>"."</code> by <code>" "</code> (blank).
+</p>
+<p>
+Note that <code><a href="../../base/html/options.html">options</a>(max.print)</code> will influence how many
+entries of large sparse vectors are printed at all.</dd>
+<dt>as.vector</dt><dd><code>signature(x = "sparseVector", mode = "character")</code>
+coerces sparse vectors to &ldquo;regular&rdquo;, i.e., atomic vectors.
+This is the same as <code>as(x, "vector")</code>.</dd>
+<dt>dim&lt;-</dt><dd><code>signature(x = "sparseVector", value = "integer")</code>
+coerces a sparse vector to a sparse Matrix, i.e., an object
+inheriting from <code><a href="sparseMatrix-class.html">sparseMatrix</a></code>, of the
+appropriate dimension.</dd>
+<dt>rep</dt><dd><code>signature(x = "sparseVector")</code> repeat <code>x</code>,
+with the same argument list <code>(x, times, length.out, each,
+      ...)</code> as the default method for rep().</dd>
+</dl>
+
+<h3>Examples</h3>
+
+<pre>
+getClass("sparseVector")
+getClass("dsparseVector")
+getClass("xsparseVector")# those with an 'x' slot
+
+sx &lt;- c(0,0,3, 3.2, 0,0,0,-3:1,0,0,2,0,0,5,0,0)
+(ss &lt;- as(sx, "sparseVector"))
+
+ix &lt;- as.integer(round(sx))
+(is &lt;- as(ix, "sparseVector"))
+## an "isparseVector" (!)
+
+## rep() works too:
+rep(is, length.out= 25)
+
+## Using `dim&lt;-`  as in base R :
+r &lt;- ss
+dim(r) &lt;- c(4,5) # becomes a sparse Matrix:
+r
+
+</pre>
+
+
+
+<hr><div align="center">[Package <em>Matrix</em> version 0.999375-30 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

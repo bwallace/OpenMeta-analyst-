@@ -1,0 +1,935 @@
+Entry: Aids2
+Aliases: Aids2
+Keywords: datasets
+Description: Australian AIDS Survival Data
+URL: ../../../library/MASS/html/Aids2.html
+
+Entry: Animals
+Aliases: Animals
+Keywords: datasets
+Description: Brain and Body Weights for 28 Species
+URL: ../../../library/MASS/html/Animals.html
+
+Entry: Boston
+Aliases: Boston
+Keywords: datasets
+Description: Housing Values in Suburbs of Boston
+URL: ../../../library/MASS/html/Boston.html
+
+Entry: Cars93
+Aliases: Cars93
+Keywords: datasets
+Description: Data from 93 Cars on Sale in the USA in 1993
+URL: ../../../library/MASS/html/Cars93.html
+
+Entry: Cushings
+Aliases: Cushings
+Keywords: datasets
+Description: Diagnostic Tests on Patients with Cushing's Syndrome
+URL: ../../../library/MASS/html/Cushings.html
+
+Entry: DDT
+Aliases: DDT
+Keywords: datasets
+Description: DDT in Kale
+URL: ../../../library/MASS/html/DDT.html
+
+Entry: GAGurine
+Aliases: GAGurine
+Keywords: datasets
+Description: Level of GAG in Urine of Children
+URL: ../../../library/MASS/html/GAGurine.html
+
+Entry: Insurance
+Aliases: Insurance
+Keywords: datasets
+Description: Numbers of Car Insurance claims
+URL: ../../../library/MASS/html/Insurance.html
+
+Entry: MASS-internal
+Aliases: enlist fbeta frequency.polygon nclass.freq neg.bin negexp.SSival
+Keywords: internal
+Description: Internal MASS functions
+URL: ../../../library/MASS/html/MASS-internal.html
+
+Entry: Melanoma
+Aliases: Melanoma
+Keywords: datasets
+Description: Survival from Malignant Melanoma
+URL: ../../../library/MASS/html/Melanoma.html
+
+Entry: Null
+Aliases: Null
+Keywords: algebra
+Description: Null Spaces of Matrices
+URL: ../../../library/MASS/html/Null.html
+
+Entry: OME
+Aliases: OME
+Keywords: datasets
+Description: Tests of Auditory Perception in Children with OME
+URL: ../../../library/MASS/html/OME.html
+
+Entry: Pima.tr
+Aliases: Pima.tr Pima.tr2 Pima.te
+Keywords: datasets
+Description: Diabetes in Pima Indian Women
+URL: ../../../library/MASS/html/Pima.tr.html
+
+Entry: Rabbit
+Aliases: Rabbit
+Keywords: datasets
+Description: Blood Pressure in Rabbits
+URL: ../../../library/MASS/html/Rabbit.html
+
+Entry: Rubber
+Aliases: Rubber
+Keywords: datasets
+Description: Accelerated Testing of Tyre Rubber
+URL: ../../../library/MASS/html/Rubber.html
+
+Entry: SP500
+Aliases: SP500
+Keywords: datasets
+Description: Returns of the Standard and Poors 500
+URL: ../../../library/MASS/html/SP500.html
+
+Entry: Sitka
+Aliases: Sitka
+Keywords: datasets
+Description: Growth Curves for Sitka Spruce Trees in 1988
+URL: ../../../library/MASS/html/Sitka.html
+
+Entry: Sitka89
+Aliases: Sitka89
+Keywords: datasets
+Description: Growth Curves for Sitka Spruce Trees in 1989
+URL: ../../../library/MASS/html/Sitka89.html
+
+Entry: Skye
+Aliases: Skye
+Keywords: datasets
+Description: AFM Compositions of Aphyric Skye Lavas
+URL: ../../../library/MASS/html/Skye.html
+
+Entry: Traffic
+Aliases: Traffic
+Keywords: datasets
+Description: Effect of Swedish Speed Limits on Accidents
+URL: ../../../library/MASS/html/Traffic.html
+
+Entry: UScereal
+Aliases: UScereal
+Keywords: datasets
+Description: Nutritional and Marketing Information on US Cereals
+URL: ../../../library/MASS/html/UScereal.html
+
+Entry: UScrime
+Aliases: UScrime
+Keywords: datasets
+Description: The Effect of Punishment Regimes on Crime Rates
+URL: ../../../library/MASS/html/UScrime.html
+
+Entry: VA
+Aliases: VA
+Keywords: datasets
+Description: Veteran's Administration Lung Cancer Trial
+URL: ../../../library/MASS/html/VA.html
+
+Entry: abbey
+Aliases: abbey
+Keywords: datasets
+Description: Determinations of Nickel Content
+URL: ../../../library/MASS/html/abbey.html
+
+Entry: accdeaths
+Aliases: accdeaths
+Keywords: datasets
+Description: Accidental Deaths in the US 1973-1978
+URL: ../../../library/MASS/html/accdeaths.html
+
+Entry: addterm
+Aliases: addterm addterm.default addterm.glm addterm.lm
+Keywords: models
+Description: Try All One-Term Additions to a Model
+URL: ../../../library/MASS/html/addterm.html
+
+Entry: anorexia
+Aliases: anorexia
+Keywords: datasets
+Description: Anorexia Data on Weight Change
+URL: ../../../library/MASS/html/anorexia.html
+
+Entry: anova.negbin
+Aliases: anova.negbin
+Keywords: regression
+Description: Likelihood Ratio Tests for Negative Binomial GLMs
+URL: ../../../library/MASS/html/anova.negbin.html
+
+Entry: area
+Aliases: area
+Keywords: nonlinear
+Description: Adaptive Numerical Integration
+URL: ../../../library/MASS/html/area.html
+
+Entry: bacteria
+Aliases: bacteria
+Keywords: datasets
+Description: Presence of Bacteria after Drug Treatments
+URL: ../../../library/MASS/html/bacteria.html
+
+Entry: bandwidth.nrd
+Aliases: bandwidth.nrd
+Keywords: dplot
+Description: Bandwidth for density() via Normal Reference Distribution
+URL: ../../../library/MASS/html/bandwidth.nrd.html
+
+Entry: bcv
+Aliases: bcv
+Keywords: dplot
+Description: Biased Cross-Validation for Bandwidth Selection
+URL: ../../../library/MASS/html/bcv.html
+
+Entry: beav1
+Aliases: beav1
+Keywords: datasets
+Description: Body Temperature Series of Beaver 1
+URL: ../../../library/MASS/html/beav1.html
+
+Entry: beav2
+Aliases: beav2
+Keywords: datasets
+Description: Body Temperature Series of Beaver 2
+URL: ../../../library/MASS/html/beav2.html
+
+Entry: biopsy
+Aliases: biopsy
+Keywords: datasets
+Description: Biopsy Data on Breast Cancer Patients
+URL: ../../../library/MASS/html/biopsy.html
+
+Entry: birthwt
+Aliases: birthwt
+Keywords: datasets
+Description: Risk Factors Associated with Low Infant Birth Weight
+URL: ../../../library/MASS/html/birthwt.html
+
+Entry: boxcox
+Aliases: boxcox boxcox.default boxcox.formula boxcox.lm
+Keywords: regression models hplot
+Description: Box-Cox Transformations for Linear Models
+URL: ../../../library/MASS/html/boxcox.html
+
+Entry: cabbages
+Aliases: cabbages
+Keywords: datasets
+Description: Data from a cabbage field trial
+URL: ../../../library/MASS/html/cabbages.html
+
+Entry: caith
+Aliases: caith
+Keywords: datasets
+Description: Colours of Eyes and Hair of People in Caithness
+URL: ../../../library/MASS/html/caith.html
+
+Entry: cats
+Aliases: cats
+Keywords: datasets
+Description: Anatomical Data from Domestic Cats
+URL: ../../../library/MASS/html/cats.html
+
+Entry: cement
+Aliases: cement
+Keywords: datasets
+Description: Heat Evolved by Setting Cements
+URL: ../../../library/MASS/html/cement.html
+
+Entry: chem
+Aliases: chem
+Keywords: datasets
+Description: Copper in Wholemeal Flour
+URL: ../../../library/MASS/html/chem.html
+
+Entry: con2tr
+Aliases: con2tr
+Keywords: misc
+Description: Convert Lists to Data Frames for use by Lattice
+URL: ../../../library/MASS/html/con2tr.html
+
+Entry: confint-MASS
+Aliases: confint.glm confint.nls confint.profile.glm confint.profile.nls
+Keywords: models
+Description: Confidence Intervals for Model Parameters
+URL: ../../../library/MASS/html/confint.html
+
+Entry: contr.sdif
+Aliases: contr.sdif
+Keywords: models
+Description: Successive Differences Contrast Coding
+URL: ../../../library/MASS/html/contr.sdif.html
+
+Entry: coop
+Aliases: coop
+Keywords: datasets
+Description: Co-operative Trial in Analytical Chemistry
+URL: ../../../library/MASS/html/coop.html
+
+Entry: corresp
+Aliases: corresp corresp.xtabs corresp.data.frame corresp.default corresp.factor corresp.formula corresp.matrix
+Keywords: category multivariate
+Description: Simple Correspondence Analysis
+URL: ../../../library/MASS/html/corresp.html
+
+Entry: cov.rob
+Aliases: cov.rob cov.mve cov.mcd
+Keywords: robust multivariate
+Description: Resistant Estimation of Multivariate Location and Scatter
+URL: ../../../library/MASS/html/cov.rob.html
+
+Entry: cov.trob
+Aliases: cov.trob
+Keywords: multivariate
+Description: Covariance Estimation for Multivariate t Distribution
+URL: ../../../library/MASS/html/cov.trob.html
+
+Entry: cpus
+Aliases: cpus
+Keywords: datasets
+Description: Performance of Computer CPUs
+URL: ../../../library/MASS/html/cpus.html
+
+Entry: crabs
+Aliases: crabs
+Keywords: datasets
+Description: Morphological Measurements on Leptograpsus Crabs
+URL: ../../../library/MASS/html/crabs.html
+
+Entry: deaths
+Aliases: deaths
+Keywords: datasets
+Description: Monthly Deaths from Lung Diseases in the UK
+URL: ../../../library/MASS/html/deaths.html
+
+Entry: denumerate
+Aliases: denumerate denumerate.formula
+Keywords: models
+Description: Transform an Allowable Formula for 'loglm' into one for 'terms'
+URL: ../../../library/MASS/html/denumerate.html
+
+Entry: dose.p
+Aliases: dose.p print.glm.dose
+Keywords: regression models
+Description: Predict Doses for Binomial Assay model
+URL: ../../../library/MASS/html/dose.p.html
+
+Entry: drivers
+Aliases: drivers
+Keywords: datasets
+Description: Deaths of Car Drivers in Great Britain 1969-84
+URL: ../../../library/MASS/html/drivers.html
+
+Entry: dropterm
+Aliases: dropterm dropterm.default dropterm.glm dropterm.lm
+Keywords: models
+Description: Try All One-Term Deletions from a Model
+URL: ../../../library/MASS/html/dropterm.html
+
+Entry: eagles
+Aliases: eagles
+Keywords: datasets
+Description: Foraging Ecology of Bald Eagles
+URL: ../../../library/MASS/html/eagles.html
+
+Entry: epil
+Aliases: epil
+Keywords: datasets
+Description: Seizure Counts for Epileptics
+URL: ../../../library/MASS/html/epil.html
+
+Entry: eqscplot
+Aliases: eqscplot
+Keywords: hplot
+Description: Plots with Geometrically Equal Scales
+URL: ../../../library/MASS/html/eqscplot.html
+
+Entry: farms
+Aliases: farms
+Keywords: datasets
+Description: Ecological Factors in Farm Management
+URL: ../../../library/MASS/html/farms.html
+
+Entry: fgl
+Aliases: fgl
+Keywords: datasets
+Description: Measurements of Forensic Glass Fragments
+URL: ../../../library/MASS/html/fgl.html
+
+Entry: fitdistr
+Aliases: fitdistr print.fitdistr coef.fitdistr logLik.fitdistr
+Keywords: distribution htest
+Description: Maximum-likelihood Fitting of Univariate Distributions
+URL: ../../../library/MASS/html/fitdistr.html
+
+Entry: forbes
+Aliases: forbes
+Keywords: datasets
+Description: Forbes' Data on Boiling Points in the Alps
+URL: ../../../library/MASS/html/forbes.html
+
+Entry: fractions
+Aliases: fractions Math.fractions Ops.fractions Summary.fractions [.fractions [<-.fractions as.character.fractions as.fractions is.fractions print.fractions t.fractions
+Keywords: math
+Description: Rational Approximation
+URL: ../../../library/MASS/html/fractions.html
+
+Entry: galaxies
+Aliases: galaxies
+Keywords: datasets
+Description: Velocities for 82 Galaxies
+URL: ../../../library/MASS/html/galaxies.html
+
+Entry: gamma.dispersion
+Aliases: gamma.dispersion
+Keywords: models
+Description: Calculate the MLE of the Gamma Dispersion Parameter in a GLM Fit
+URL: ../../../library/MASS/html/gamma.dispersion.html
+
+Entry: gamma.shape
+Aliases: gamma.shape gamma.shape.glm print.gamma.shape
+Keywords: models
+Description: Estimate the Shape Parameter of the Gamma Distribution in a GLM Fit
+URL: ../../../library/MASS/html/gamma.shape.glm.html
+
+Entry: gehan
+Aliases: gehan
+Keywords: datasets
+Description: Remission Times of Leukaemia Patients
+URL: ../../../library/MASS/html/gehan.html
+
+Entry: genotype
+Aliases: genotype
+Keywords: datasets
+Description: Rat Genotype Data
+URL: ../../../library/MASS/html/genotype.html
+
+Entry: geyser
+Aliases: geyser
+Keywords: datasets
+Description: Old Faithful Geyser Data
+URL: ../../../library/MASS/html/geyser.html
+
+Entry: gilgais
+Aliases: gilgais
+Keywords: datasets
+Description: Line Transect of Soil in Gilgai Territory
+URL: ../../../library/MASS/html/gilgais.html
+
+Entry: ginv
+Aliases: ginv
+Keywords: algebra
+Description: Generalized Inverse of a Matrix
+URL: ../../../library/MASS/html/ginv.html
+
+Entry: glm.convert
+Aliases: glm.convert
+Keywords: regression models
+Description: Change a Negative Binomial fit to a GLM fit
+URL: ../../../library/MASS/html/glm.convert.html
+
+Entry: glm.nb
+Aliases: glm.nb family.negbin logLik.negbin
+Keywords: regression models
+Description: Fit a Negative Binomial Generalized Linear Model
+URL: ../../../library/MASS/html/glm.nb.html
+
+Entry: glmmPQL
+Aliases: glmmPQL
+Keywords: models
+Description: Fit Generalized Linear Mixed Models via PQL
+URL: ../../../library/MASS/html/glmmPQL.html
+
+Entry: hills
+Aliases: hills
+Keywords: datasets
+Description: Record Times in Scottish Hill Races
+URL: ../../../library/MASS/html/hills.html
+
+Entry: hist.scott
+Aliases: hist.scott hist.FD
+Keywords: hplot dplot
+Description: Plot a Histogram with Automatic Bin Width Selection
+URL: ../../../library/MASS/html/hist.scott.html
+
+Entry: housing
+Aliases: housing
+Keywords: datasets
+Description: Frequency Table from a Copenhagen Housing Conditions Survey
+URL: ../../../library/MASS/html/housing.html
+
+Entry: huber
+Aliases: huber
+Keywords: robust
+Description: Huber M-estimator of Location with MAD Scale
+URL: ../../../library/MASS/html/huber.html
+
+Entry: hubers
+Aliases: hubers
+Keywords: robust
+Description: Huber Proposal 2 Robust Estimator of Location and/or Scale
+URL: ../../../library/MASS/html/hubers.html
+
+Entry: immer
+Aliases: immer
+Keywords: datasets
+Description: Yields from a Barley Field Trial
+URL: ../../../library/MASS/html/immer.html
+
+Entry: isoMDS
+Aliases: isoMDS Shepard
+Keywords: multivariate
+Description: Kruskal's Non-metric Multidimensional Scaling
+URL: ../../../library/MASS/html/isoMDS.html
+
+Entry: kde2d
+Aliases: kde2d
+Keywords: dplot
+Description: Two-Dimensional Kernel Density Estimation
+URL: ../../../library/MASS/html/kde2d.html
+
+Entry: lda
+Aliases: lda lda.default lda.data.frame lda.formula lda.matrix model.frame.lda print.lda coef.lda
+Keywords: multivariate
+Description: Linear Discriminant Analysis
+URL: ../../../library/MASS/html/lda.html
+
+Entry: ldahist
+Aliases: ldahist
+Keywords: dplot hplot
+Description: Histograms or Density Plots of Multiple Groups
+URL: ../../../library/MASS/html/ldahist.html
+
+Entry: leuk
+Aliases: leuk
+Keywords: datasets
+Description: Survival Times and White Blood Counts for Leukaemia Patients
+URL: ../../../library/MASS/html/leuk.html
+
+Entry: lm.gls
+Aliases: lm.gls
+Keywords: models
+Description: Fit Linear Models by Generalized Least Squares
+URL: ../../../library/MASS/html/lm.gls.html
+
+Entry: lm.ridge
+Aliases: lm.ridge plot.ridgelm print.ridgelm select select.ridgelm
+Keywords: models
+Description: Ridge Regression
+URL: ../../../library/MASS/html/lm.ridge.html
+
+Entry: loglm
+Aliases: loglm
+Keywords: category models
+Description: Fit Log-Linear Models by Iterative Proportional Scaling
+URL: ../../../library/MASS/html/loglm.html
+
+Entry: loglm1
+Aliases: loglm1 loglm1.xtabs loglm1.data.frame loglm1.default
+Keywords: internal
+Description: Fit Log-Linear Models by Iterative Proportional Scaling -- Internal function
+URL: ../../../library/MASS/html/loglm1.html
+
+Entry: logtrans
+Aliases: logtrans logtrans.formula logtrans.lm logtrans.default
+Keywords: regression models hplot
+Description: Estimate log Transformation Parameter
+URL: ../../../library/MASS/html/logtrans.html
+
+Entry: lqs
+Aliases: lqs lqs.formula lqs.default lmsreg ltsreg
+Keywords: models robust
+Description: Resistant Regression
+URL: ../../../library/MASS/html/lqs.html
+
+Entry: mammals
+Aliases: mammals
+Keywords: datasets
+Description: Brain and Body Weights for 62 Species of Land Mammals
+URL: ../../../library/MASS/html/mammals.html
+
+Entry: mca
+Aliases: mca print.mca
+Keywords: category multivariate
+Description: Multiple Correspondence Analysis
+URL: ../../../library/MASS/html/mca.html
+
+Entry: mcycle
+Aliases: mcycle
+Keywords: datasets
+Description: Data from a Simulated Motorcycle Accident
+URL: ../../../library/MASS/html/mcycle.html
+
+Entry: menarche
+Aliases: menarche
+Keywords: datasets
+Description: Age of Menarche in Warsaw
+URL: ../../../library/MASS/html/menarche.html
+
+Entry: michelson
+Aliases: michelson
+Keywords: datasets
+Description: Michelson's Speed of Light Data
+URL: ../../../library/MASS/html/michelson.html
+
+Entry: minn38
+Aliases: minn38
+Keywords: datasets
+Description: Minnesota High School Graduates of 1938
+URL: ../../../library/MASS/html/minn38.html
+
+Entry: motors
+Aliases: motors
+Keywords: datasets
+Description: Accelerated Life Testing of Motorettes
+URL: ../../../library/MASS/html/motors.html
+
+Entry: muscle
+Aliases: muscle
+Keywords: datasets
+Description: Effect of Calcium Chloride on Muscle Contraction in Rat Hearts
+URL: ../../../library/MASS/html/muscle.html
+
+Entry: mvrnorm
+Aliases: mvrnorm
+Keywords: distribution multivariate
+Description: Simulate from a Multivariate Normal Distribution
+URL: ../../../library/MASS/html/mvrnorm.html
+
+Entry: negative.binomial
+Aliases: negative.binomial
+Keywords: regression models
+Description: Family function for Negative Binomial GLMs
+URL: ../../../library/MASS/html/negative.binomial.html
+
+Entry: newcomb
+Aliases: newcomb
+Keywords: datasets
+Description: Newcomb's Measurements of the Passage Time of Light
+URL: ../../../library/MASS/html/newcomb.html
+
+Entry: nlschools
+Aliases: nlschools
+Keywords: datasets
+Description: Eighth-Grade Pupils in the Netherlands
+URL: ../../../library/MASS/html/nlschools.html
+
+Entry: npk
+Aliases: npk
+Keywords: datasets
+Description: Classical N, P, K Factorial Experiment
+URL: ../../../library/MASS/html/npk.html
+
+Entry: npr1
+Aliases: npr1
+Keywords: datasets
+Description: US Naval Petroleum Reserve No. 1 data
+URL: ../../../library/MASS/html/npr1.html
+
+Entry: oats
+Aliases: oats
+Keywords: datasets
+Description: Data from an Oats Field Trial
+URL: ../../../library/MASS/html/oats.html
+
+Entry: painters
+Aliases: painters
+Keywords: datasets
+Description: The Painter's Data of de Piles
+URL: ../../../library/MASS/html/painters.html
+
+Entry: pairs.lda
+Aliases: pairs.lda
+Keywords: hplot multivariate
+Description: Produce Pairwise Scatterplots from an 'lda' Fit
+URL: ../../../library/MASS/html/pairs.lda.html
+
+Entry: parcoord
+Aliases: parcoord
+Keywords: hplot
+Description: Parallel Coordinates Plot
+URL: ../../../library/MASS/html/parcoord.html
+
+Entry: petrol
+Aliases: petrol
+Keywords: datasets
+Description: N. L. Prater's Petrol Refinery Data
+URL: ../../../library/MASS/html/petrol.html
+
+Entry: Belgian-phones
+Aliases: phones
+Keywords: datasets
+Description: Belgium Phone Calls 1950-1973
+URL: ../../../library/MASS/html/phones.html
+
+Entry: plot.lda
+Aliases: plot.lda
+Keywords: hplot multivariate
+Description: Plot Method for Class 'lda'
+URL: ../../../library/MASS/html/plot.lda.html
+
+Entry: plot.mca
+Aliases: plot.mca
+Keywords: hplot multivariate
+Description: Plot Method for Objects of Class 'mca'
+URL: ../../../library/MASS/html/plot.mca.html
+
+Entry: plot.profile
+Aliases: plot.profile pairs.profile
+Keywords: models hplot
+Description: Plottig Functions for 'profile' Objects
+URL: ../../../library/MASS/html/plot.profile.html
+
+Entry: polr
+Aliases: polr
+Keywords: models
+Description: Ordered Logistic or Probit Regression
+URL: ../../../library/MASS/html/polr.html
+
+Entry: predict.glmmPQL
+Aliases: predict.glmmPQL
+Keywords: models
+Description: Predict Method for glmmPQL Fits
+URL: ../../../library/MASS/html/predict.glmmPQL.html
+
+Entry: predict.lda
+Aliases: predict.lda
+Keywords: multivariate
+Description: Classify Multivariate Observations by Linear Discrimination
+URL: ../../../library/MASS/html/predict.lda.html
+
+Entry: predict.lqs
+Aliases: predict.lqs
+Keywords: models
+Description: Predict from an lqs Fit
+URL: ../../../library/MASS/html/predict.lqs.html
+
+Entry: predict.mca
+Aliases: predict.mca
+Keywords: category multivariate
+Description: Predict Method for Class 'mca'
+URL: ../../../library/MASS/html/predict.mca.html
+
+Entry: predict.qda
+Aliases: predict.qda
+Keywords: multivariate
+Description: Classify from Quadratic Discriminant Analysis
+URL: ../../../library/MASS/html/predict.qda.html
+
+Entry: profile.glm
+Aliases: profile.glm
+Keywords: regression models
+Description: Method for Profiling glm Objects
+URL: ../../../library/MASS/html/profile.glm.html
+
+Entry: qda
+Aliases: qda qda.data.frame qda.default qda.formula qda.matrix model.frame.qda print.qda
+Keywords: multivariate
+Description: Quadratic Discriminant Analysis
+URL: ../../../library/MASS/html/qda.html
+
+Entry: quine
+Aliases: quine
+Keywords: datasets
+Description: Absenteeism from School in Rural New South Wales
+URL: ../../../library/MASS/html/quine.html
+
+Entry: rational
+Aliases: rational .rat
+Keywords: math
+Description: Rational Approximation
+URL: ../../../library/MASS/html/rational.html
+
+Entry: renumerate
+Aliases: renumerate renumerate.formula
+Keywords: models
+Description: Convert a Formula Transformed by 'denumerate'
+URL: ../../../library/MASS/html/renumerate.html
+
+Entry: rlm
+Aliases: rlm rlm.default rlm.formula print.rlm predict.rlm psi.bisquare psi.hampel psi.huber
+Keywords: models robust
+Description: Robust Fitting of Linear Models
+URL: ../../../library/MASS/html/rlm.html
+
+Entry: rms.curv
+Aliases: rms.curv print.rms.curv
+Keywords: nonlinear
+Description: Relative Curvature Measures for Non-Linear Regression
+URL: ../../../library/MASS/html/rms.curv.html
+
+Entry: rnegbin
+Aliases: rnegbin
+Keywords: distribution
+Description: Simulate Negative Binomial Variates
+URL: ../../../library/MASS/html/rnegbin.html
+
+Entry: road
+Aliases: road
+Keywords: datasets
+Description: Road Accident Deaths in US States
+URL: ../../../library/MASS/html/road.html
+
+Entry: rotifer
+Aliases: rotifer
+Keywords: datasets
+Description: Numbers of Rotifers by Fluid Density
+URL: ../../../library/MASS/html/rotifer.html
+
+Entry: sammon
+Aliases: sammon
+Keywords: multivariate
+Description: Sammon's Non-Linear Mapping
+URL: ../../../library/MASS/html/sammon.html
+
+Entry: ships
+Aliases: ships
+Keywords: datasets
+Description: Ships Damage Data
+URL: ../../../library/MASS/html/ships.html
+
+Entry: shoes
+Aliases: shoes
+Keywords: datasets
+Description: Shoe wear data of Box, Hunter and Hunter
+URL: ../../../library/MASS/html/shoes.html
+
+Entry: shrimp
+Aliases: shrimp
+Keywords: datasets
+Description: Percentage of Shrimp in Shrimp Cocktail
+URL: ../../../library/MASS/html/shrimp.html
+
+Entry: shuttle
+Aliases: shuttle
+Keywords: datasets
+Description: Space Shuttle Autolander Problem
+URL: ../../../library/MASS/html/shuttle.html
+
+Entry: snails
+Aliases: snails
+Keywords: datasets
+Description: Snail Mortality Data
+URL: ../../../library/MASS/html/snails.html
+
+Entry: stdres
+Aliases: stdres lmwork
+Keywords: models
+Description: Extract Standardized Residuals from a Linear Model
+URL: ../../../library/MASS/html/stdres.html
+
+Entry: steam
+Aliases: steam
+Keywords: datasets
+Description: The Saturated Steam Pressure Data
+URL: ../../../library/MASS/html/steam.html
+
+Entry: stepAIC
+Aliases: stepAIC extractAIC.gls terms.gls extractAIC.lme terms.lme
+Keywords: models
+Description: Choose a model by AIC in a Stepwise Algorithm
+URL: ../../../library/MASS/html/stepAIC.html
+
+Entry: stormer
+Aliases: stormer
+Keywords: datasets
+Description: The Stormer Viscometer Data
+URL: ../../../library/MASS/html/stormer.html
+
+Entry: studres
+Aliases: studres
+Keywords: models
+Description: Extract Studentized Residuals from a Linear Model
+URL: ../../../library/MASS/html/studres.html
+
+Entry: summary.loglm
+Aliases: summary.loglm print.summary.loglm
+Keywords: models
+Description: Summary Method Function for Objects of Class 'loglm'
+URL: ../../../library/MASS/html/summary.loglm.html
+
+Entry: summary.negbin
+Aliases: summary.negbin print.summary.negbin
+Keywords: models
+Description: Summary Method Function for Objects of Class 'negbin'
+URL: ../../../library/MASS/html/summary.negbin.html
+
+Entry: summary.rlm
+Aliases: summary.rlm print.summary.rlm
+Keywords: robust
+Description: Summary Method for Robust Linear Models
+URL: ../../../library/MASS/html/summary.rlm.html
+
+Entry: survey
+Aliases: survey
+Keywords: datasets
+Description: Student Survey Data
+URL: ../../../library/MASS/html/survey.html
+
+Entry: synth.tr
+Aliases: synth.tr synth.te
+Keywords: datasets
+Description: Synthetic Classification Problem
+URL: ../../../library/MASS/html/synth.tr.html
+
+Entry: theta.md
+Aliases: theta.md theta.ml theta.mm
+Keywords: models
+Description: Estimate theta of the Negative Binomial
+URL: ../../../library/MASS/html/theta.md.html
+
+Entry: topo
+Aliases: topo
+Keywords: datasets
+Description: Spatial Topographic Data
+URL: ../../../library/MASS/html/topo.html
+
+Entry: truehist
+Aliases: truehist
+Keywords: hplot dplot
+Description: Plot a Histogram
+URL: ../../../library/MASS/html/truehist.html
+
+Entry: ucv
+Aliases: ucv
+Keywords: dplot
+Description: Unbiased Cross-Validation for Bandwidth Selection
+URL: ../../../library/MASS/html/ucv.html
+
+Entry: waders
+Aliases: waders
+Keywords: datasets
+Description: Counts of Waders at 15 Sites in South Africa
+URL: ../../../library/MASS/html/waders.html
+
+Entry: whiteside
+Aliases: whiteside
+Keywords: datasets
+Description: House Insulation: Whiteside's Data
+URL: ../../../library/MASS/html/whiteside.html
+
+Entry: width.SJ
+Aliases: width.SJ
+Keywords: dplot
+Description: Bandwidth Selection by Pilot Estimation of Derivatives
+URL: ../../../library/MASS/html/width.SJ.html
+
+Entry: write.matrix
+Aliases: write.matrix
+Keywords: file print
+Description: Write a Matrix or Data Frame
+URL: ../../../library/MASS/html/write.matrix.html
+
+Entry: wtloss
+Aliases: wtloss
+Keywords: datasets
+Description: Weight Loss Data from an Obese Patient
+URL: ../../../library/MASS/html/wtloss.html

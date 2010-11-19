@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Generates Class Indicator Matrix from a Factor</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for class.ind {nnet}"><tr><td>class.ind {nnet}</td><td align="right">R Documentation</td></tr></table>
+<h2>Generates Class Indicator Matrix from a Factor</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Generates a class indicator function from a given factor.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+class.ind(cl)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>cl</code></td>
+<td>
+factor or vector of classes for cases.
+</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+a matrix which is zero except for the column corresponding to the class.</p>
+
+<h3>References</h3>
+
+<p>
+Venables, W. N. and Ripley, B. D. (2002)
+<EM>Modern Applied Statistics with S.</EM> Fourth edition.  Springer.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+# The function is currently defined as
+class.ind &lt;- function(cl)
+{
+  n &lt;- length(cl)
+  cl &lt;- as.factor(cl)
+  x &lt;- matrix(0, n, length(levels(cl)) )
+  x[(1:n) + n*(unclass(cl)-1)] &lt;- 1
+  dimnames(x) &lt;- list(names(cl), levels(cl))
+  x
+}
+</pre>
+
+
+
+<hr><div align="center">[Package <em>nnet</em> version 7.2-48 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

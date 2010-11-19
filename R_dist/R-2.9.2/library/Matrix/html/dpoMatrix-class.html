@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Positive Semi-definite Dense Numeric Matrices</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for dpoMatrix-class {Matrix}"><tr><td>dpoMatrix-class {Matrix}</td><td align="right">R Documentation</td></tr></table>
+<h2>Positive Semi-definite Dense Numeric Matrices</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The <code>"dpoMatrix"</code> class is the class of
+positive-semidefinite symmetric matrices in nonpacked storage.
+The <code>"dppMatrix"</code> class is the same except in packed storage.
+Only the upper triangle or the lower triangle is required to be
+available.
+</p>
+<p>
+The <code>"corMatrix"</code> class extends <code>"dpoMatrix"</code> with a slot <code>sd</code>.
+</p>
+
+
+<h3>Objects from the Class</h3>
+
+<p>
+Objects can be created by calls of the
+form <code>new("dpoMatrix", ...)</code> or from <code>crossprod</code> applied to
+an <code>"dgeMatrix"</code> object.
+</p>
+
+
+<h3>Slots</h3>
+
+<dl>
+<dt><code>uplo</code>:</dt><dd>Object of class <code>"character"</code>. Must be
+either "U", for upper triangular, and "L", for lower triangular.</dd>
+<dt><code>x</code>:</dt><dd>Object of class <code>"numeric"</code>. The numeric
+values that constitute the matrix, stored in column-major order.</dd>
+<dt><code>Dim</code>:</dt><dd>Object of class <code>"integer"</code>. The dimensions
+of the matrix which must be a two-element vector of non-negative
+integers.</dd>
+<dt><code>Dimnames</code>:</dt><dd>inherited from class <code>"Matrix"</code></dd>
+<dt><code>factors</code>:</dt><dd>Object of class <code>"list"</code>.  A named
+list of factorizations that have been computed for the matrix.</dd>
+
+
+<dt><code>sd</code>:</dt><dd>(for <code>"corMatrix"</code>) a <code><a href="../../base/html/numeric.html">numeric</a></code>
+vector of length <code>n</code> containing the (original)
+<i>sqrt(var(.))</i> entries which allow
+reconstruction of a covariance matrix from the correlation matrix.</dd>
+</dl>
+
+<h3>Extends</h3>
+
+<p>
+Class <code>"dsyMatrix"</code>, directly.<br>
+Classes <code>"dgeMatrix"</code>, <code>"symmetricMatrix"</code>, and many more
+by class <code>"dsyMatrix"</code>.
+</p>
+
+
+<h3>Methods</h3>
+
+<dl>
+<dt>chol</dt><dd><code>signature(x = "dpoMatrix")</code>:
+Returns (and stores) the Cholesky decomposition of <code>x</code>, see
+<code><a href="chol.html">chol</a></code>.</dd>
+<dt>rcond</dt><dd><code>signature(x = "dpoMatrix", norm = "character")</code>:
+Returns (and stores) the reciprocal of the condition number of
+<code>x</code>.  The <code>norm</code> can be <code>"O"</code> for the
+one-norm (the default) or <code>"I"</code> for the infinity-norm.  For
+symmetric matrices the result does not depend on the norm.</dd>
+<dt>solve</dt><dd><code>signature(a = "dpoMatrix", b = "missing")</code>:
+Return the inverse of <code>a</code>.</dd>
+<dt>solve</dt><dd><code>signature(a = "dpoMatrix", b = "numeric")</code>:
+Solve the linear system defined by <code>a</code> and <code>b</code>, where
+<code>b</code> can be a numeric vector, or a matrix, or a dgeMatrix
+object.  The Cholesky decomposition of <code>a</code> is calculated (if
+needed) while solving the system.</dd>
+</dl>
+
+<h3>See Also</h3>
+
+<p>
+Classes <code><a href="dsyMatrix-class.html">dsyMatrix</a></code> and <code><a href="dgeMatrix-class.html">dgeMatrix</a></code>;
+further, <code><a href="Matrix.html">Matrix</a></code>, <code><a href="rcond.html">rcond</a></code>,
+<code><a href="../../base/html/chol.html">chol</a></code>, <code><a href="../../base/html/solve.html">solve</a></code>, <code><a href="../../base/html/crossprod.html">crossprod</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+h6 &lt;- Hilbert(6)
+rcond(h6)
+str(h6)
+solve(h6)
+str(hp6 &lt;- as(h6, "dppMatrix"))
+
+### Note that  as(*, "corMatrix")  *scales* the matrix
+(ch6 &lt;- as(h6, "corMatrix"))
+stopifnot(all.equal(ch6@sd^(-2), 2*(1:6)-1, tol= 1e-12))
+chch &lt;- chol(ch6)
+stopifnot(identical(chch, ch6@factors$Cholesky),
+          all(abs(crossprod(chch) - ch6) &lt; 1e-10))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>Matrix</em> version 0.999375-30 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

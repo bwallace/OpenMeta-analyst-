@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Print Loadings in Factor Analysis</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for loadings {stats}"><tr><td>loadings {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>Print Loadings in Factor Analysis</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Extract or print loadings in factor analysis (or principal
+components analysis).
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+loadings(x)
+
+## S3 method for class 'loadings':
+print(x, digits = 3, cutoff = 0.1, sort = FALSE, ...)
+
+## S3 method for class 'factanal':
+print(x, digits = 3, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+an object of class <code>"factanal"</code> or <code>"princomp"</code>
+or the <code>loadings</code> component of such an object.</td></tr>
+<tr valign="top"><td><code>digits</code></td>
+<td>
+number of decimal places to use in printing uniquenesses
+and loadings.</td></tr>
+<tr valign="top"><td><code>cutoff</code></td>
+<td>
+loadings smaller than this (in absolute value) are suppressed.</td></tr>
+<tr valign="top"><td><code>sort</code></td>
+<td>
+logical. If true, the variables are sorted by their
+importance on each factor.  Each variable with any loading larger
+than 0.5 (in modulus) is assigned to the factor with the largest
+loading, and the variables are printed in the order of the factor
+they are assigned to, then those unassigned.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+further arguments for other methods, such as
+<code>cutoff</code> and <code>sort</code> for <code>print.factanal</code>.</td></tr>
+</table>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="factanal.html">factanal</a></code>, <code><a href="princomp.html">princomp</a></code>
+</p>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

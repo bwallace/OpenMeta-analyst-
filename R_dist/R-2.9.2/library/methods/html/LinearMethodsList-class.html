@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Class "LinearMethodsList"</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for LinearMethodsList-class {methods}"><tr><td>LinearMethodsList-class {methods}</td><td align="right">R Documentation</td></tr></table>
+<h2>Class "LinearMethodsList"</h2>
+
+
+<h3>Description</h3>
+
+<p>
+A version of methods lists that has been &lsquo;linearized&rsquo;
+for producing summary information.  The actual objects from class
+<code>"MethodsList"</code> used for method dispatch are defined recursively
+over the arguments involved.
+</p>
+
+
+<h3>Objects from the Class</h3>
+
+<p>
+The function <code><a href="MethodsList.html">linearizeMlist</a></code> converts an ordinary methods
+list object into the linearized form.
+</p>
+
+
+<h3>Slots</h3>
+
+<dl>
+<dt><code>methods</code>:</dt><dd>Object of class <code>"list"</code>, the method
+definitions.</dd>
+<dt><code>arguments</code>:</dt><dd>Object of class <code>"list"</code>, the
+corresponding formal arguments, namely as many of the arguments
+in the signature of the generic function as are active in the
+relevant method table. </dd>
+<dt><code>classes</code>:</dt><dd>Object of class <code>"list"</code>, the
+corresponding classes in the signatures. </dd>
+<dt><code>generic</code>:</dt><dd>Object of class <code>"genericFunction"</code>;
+the generic function to which the methods correspond. </dd>
+</dl>
+
+<h3>Future Note</h3>
+
+<p>
+The current version of <code>linearizeMlist</code> does not take advantage of
+the <code>MethodDefinition</code> class, and therefore does more work for less
+effect than it could.  In particular, we may move to redefine both the
+function and the class to take advantage of the stored signatures.
+Don't write code depending precisely on the present form, although all
+the current information will be obtainable in the future.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+Function <code><a href="MethodsList.html">linearizeMlist</a></code> for the computation,
+and class <code><a href="MethodsList-class.html">MethodsList</a></code> for the original, recursive
+form.
+</p>
+
+
+
+<hr><div align="center">[Package <em>methods</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,27 @@
+binary.fixed.peto.is.feasible   package:openmetar   R Documentation
+
+
+
+_U_s_a_g_e:
+
+     binary.fixed.peto.is.feasible(binaryData)
+
+_A_r_g_u_m_e_n_t_s:
+
+binaryData: 
+
+_E_x_a_m_p_l_e_s:
+
+     ##---- Should be DIRECTLY executable !! ----
+     ##-- ==>  Define data, use random,
+     ##--    or do  help(data=index)  for the standard data sets.
+
+     ## The function is currently defined as
+     function (binaryData) 
+     {
+         length(binaryData@g1O1) == length(binaryData@g1O2) && length(binaryData@g1O2) == 
+             length(binaryData@g2O1) && length(binaryData@g2O1) == 
+             length(binaryData@g2O2) && length(binaryData@g1O1) > 
+             0
+       }
+

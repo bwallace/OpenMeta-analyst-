@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Adjust for Missing Values</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for naresid {stats}"><tr><td>naresid {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>Adjust for Missing Values</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Use missing value information to adjust residuals and predictions.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+naresid(omit, x, ...)
+napredict(omit, x, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>omit</code></td>
+<td>
+an object produced by an <code><a href="na.action.html">na.action</a></code> function,
+typically the <code>"na.action"</code> attribute of the result of
+<code><a href="na.fail.html">na.omit</a></code> or <code><a href="na.fail.html">na.exclude</a></code>.</td></tr>
+<tr valign="top"><td><code>x</code></td>
+<td>
+a vector, data frame, or matrix to be adjusted based upon the
+missing value information.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+further arguments passed to or from other methods.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+These are utility functions used to allow <code><a href="predict.html">predict</a></code>,
+<code><a href="fitted.values.html">fitted</a></code> and <code><a href="residuals.html">residuals</a></code> methods for modelling
+functions to compensate for the removal of <code>NA</code>s in the fitting
+process.  They are used by the default, <code>"lm"</code>, <code>"glm"</code> and
+<code>"nls"</code> methods, and by further methods in packages <span class="pkg">MASS</span>,
+<span class="pkg">rpart</span> and <span class="pkg">survival</span>.  Also used for the scores returned by
+<code><a href="factanal.html">factanal</a></code>, <code><a href="prcomp.html">prcomp</a></code> and <code><a href="princomp.html">princomp</a></code>.
+</p>
+<p>
+The default methods do nothing.  The default method for the <code>na.exclude</code>
+action is to pad the object with <code>NA</code>s in the correct positions to
+have the same number of rows as the original data frame.
+</p>
+<p>
+Currently <code>naresid</code> and <code>napredict</code> are identical, but
+future methods need not be.  <code>naresid</code> is used for residuals, and
+<code>napredict</code> for fitted values and predictions.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+These return a similar object to <code>x</code>.</p>
+
+<h3>Note</h3>
+
+<p>
+Packages <code>rpart</code> and <code>survival5</code> used to contain versions of
+these functions that had an <code>na.omit</code> action equivalent to that
+now used for <code>na.exclude</code>.
+</p>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

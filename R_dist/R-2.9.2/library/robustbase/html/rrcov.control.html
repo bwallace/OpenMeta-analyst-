@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Control object for the estimation parameters</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for rrcov.control {robustbase}"><tr><td>rrcov.control {robustbase}</td><td align="right">R Documentation</td></tr></table>
+<h2>Control object for the estimation parameters</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Auxilary function for passing the estimation options as parameters to the
+estimation functions.
+</p>
+<p>
+<B>NOTE: The name  WILL change !!!!</B>
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+rrcov.control(alpha = 1/2, nsamp = 500, seed = NULL, tolSolve = 1e-14,
+              trace = FALSE,
+              use.correction = TRUE, adjust = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>alpha</code></td>
+<td>
+This parameter controls the size of the subsets over
+which the determinant is minimized, i.e., <code>alpha*n</code> observations
+are used for computing the determinant.  Allowed values are between 0.5
+and 1 and the default is 0.5. </td></tr>
+<tr valign="top"><td><code>nsamp</code></td>
+<td>
+number of subsets used for initial estimates or <code>"best"</code>
+or <code>"exact"</code>. Default is <code>nsamp = 500</code>.
+If <code>nsamp="best"</code> exhaustive enumeration is done, as far as
+the number of trials do not exceed 5000. If <code>nsamp="exact"</code>
+exhaustive enumeration will be attempted however many samples
+are needed. In this case a warning message will be displayed
+saying that the computation can take a very long time. </td></tr>
+<tr valign="top"><td><code>seed</code></td>
+<td>
+initial seed for R's random number generator; see
+<code><a href="../../penalizedSVM/html/penalizedSVM-internal.html">.Random.seed</a></code> and the description of the <code>seed</code>
+argument in <code><a href="lmrob.control.html">lmrob.control</a></code>.</td></tr>
+<tr valign="top"><td><code>tolSolve</code></td>
+<td>
+numeric tolerance to be used for inversion
+(<code><a href="../../SparseM/html/SparseM.solve.html">solve</a></code>) of the covariance matrix in
+<code><a href="../../stats/html/mahalanobis.html">mahalanobis</a></code>.</td></tr>
+<tr valign="top"><td><code>trace</code></td>
+<td>
+whether to print intermediate results.  Default is
+<code>trace = FALSE</code></td></tr>
+<tr valign="top"><td><code>use.correction</code></td>
+<td>
+whether to use finite sample correction factors.
+Defaults to <code>TRUE</code>.</td></tr>
+<tr valign="top"><td><code>adjust</code></td>
+<td>
+whether to perform intercept adjustment at each
+step.  Because this can be quite time consuming, the default is
+<code>adjust = FALSE</code>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+For details about the estimation options see the corresponding estimation functions.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A list with components, as the parameters passed  by the invocation</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Valentin Todorov
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(Animals, package = "MASS")
+brain &lt;- Animals[c(1:24, 26:25, 27:28),]
+data(hbk)
+hbk.x &lt;- data.matrix(hbk[, 1:3])
+
+ctrl &lt;- rrcov.control(alpha=0.75, trace=TRUE)
+covMcd(hbk.x,      control = ctrl)
+covMcd(log(brain), control = ctrl)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>robustbase</em> version 0.4-5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

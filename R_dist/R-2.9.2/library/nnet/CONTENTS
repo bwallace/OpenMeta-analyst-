@@ -1,0 +1,35 @@
+Entry: class.ind
+Aliases: class.ind
+Keywords: neural utilities
+Description: Generates Class Indicator Matrix from a Factor
+URL: ../../../library/nnet/html/class.ind.html
+
+Entry: multinom
+Aliases: multinom add1.multinom anova.multinom coef.multinom drop1.multinom extractAIC.multinom predict.multinom print.multinom summary.multinom print.summary.multinom vcov.multinom model.frame.multinom logLik.multinom
+Keywords: neural models
+Description: Fit Multinomial Log-linear Models
+URL: ../../../library/nnet/html/multinom.html
+
+Entry: nnetHess
+Aliases: nnetHess
+Keywords: neural
+Description: Evaluates Hessian for a Neural Network
+URL: ../../../library/nnet/html/nnet.Hess.html
+
+Entry: nnet
+Aliases: nnet nnet.default nnet.formula add.net norm.net eval.nn coef.nnet print.nnet summary.nnet print.summary.nnet
+Keywords: neural
+Description: Fit Neural Networks
+URL: ../../../library/nnet/html/nnet.html
+
+Entry: predict.nnet
+Aliases: predict.nnet
+Keywords: neural
+Description: Predict New Examples by a Trained Neural Net
+URL: ../../../library/nnet/html/predict.nnet.html
+
+Entry: which.is.max
+Aliases: which.is.max
+Keywords: utilities
+Description: Find Maximum Position in Vector
+URL: ../../../library/nnet/html/which.is.max.html

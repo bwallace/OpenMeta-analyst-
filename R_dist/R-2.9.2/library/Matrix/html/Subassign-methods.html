@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Methods for "[&lt;-" - Assigning to Subsets for 'Matrix'</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for [<--methods {Matrix}"><tr><td>[<--methods {Matrix}</td><td align="right">R Documentation</td></tr></table>
+<h2>Methods for "[&lt;-" - Assigning to Subsets for 'Matrix'</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Methods for <code>"[&lt;-"</code>, i.e., extraction or subsetting mostly of
+matrices, in package <span class="pkg">Matrix</span>.
+</p>
+
+
+<h3>Methods</h3>
+
+<p>
+There are more than these:
+<dl>
+<dt>x = "Matrix", i = "missing", j = "missing", value= "ANY"</dt><dd>is currently a simple fallback method implementation which ensures
+&ldquo;readable&rdquo; error messages.</dd>
+<dt>x = "Matrix", i = "ANY", j = "ANY", value= "ANY"</dt><dd>currently
+gives an error </dd>
+
+
+<dt>x = "denseMatrix", i = "index", j = "missing", value= "numeric"</dt><dd>... </dd>
+<dt>x = "denseMatrix", i = "index", j = "index", value= "numeric"</dt><dd>... </dd>
+<dt>x = "denseMatrix", i = "missing", j = "index", value= "numeric"</dt><dd>... </dd>
+</dl>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="Xtrct-methods.html">[-methods</a></code> for subsetting <code>"Matrix"</code> objects; the
+<code><a href="index-class.html">index</a></code> class;
+<code><a href="../../base/html/Extract.html">Extract</a></code> about the standard subset assignment (and extraction).
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+set.seed(101)
+(a &lt;- m &lt;- Matrix(round(rnorm(7*4),2), nrow = 7))
+
+a[] &lt;- 2.2 # &lt;&lt;- replaces **every** entry
+a
+## as do these:
+a[,] &lt;- 3 ; a[TRUE,] &lt;- 4
+
+m[2, 3]  &lt;- 3.14 # simple number
+m[3, 3:4]&lt;- 3:4  # simple numeric of length 2
+
+## sub matrix assignment:
+m[-(4:7), 3:4] &lt;- cbind(1,2:4) #-&gt; upper right corner of 'm'
+m[3:5, 2:3] &lt;- 0
+m[6:7, 1:2] &lt;- Diagonal(2)
+m
+
+## rows or columns only:
+m[1,] &lt;- 10
+m[,2] &lt;- 1:7
+m[-(1:6), ] &lt;- 3:0 # not the first 6 rows, i.e. only the 7th
+as(m, "sparseMatrix")
+</pre>
+
+
+
+<hr><div align="center">[Package <em>Matrix</em> version 0.999375-30 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

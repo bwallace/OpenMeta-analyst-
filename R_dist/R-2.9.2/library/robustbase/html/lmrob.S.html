@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: S-regression estimators</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for lmrob.S {robustbase}"><tr><td>lmrob.S {robustbase}</td><td align="right">R Documentation</td></tr></table>
+<h2>S-regression estimators</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Computes an S-estimator for linear regression,
+using the &ldquo;fast S&rdquo; algorithm.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+lmrob.S(x, y, control, trace.lev = 0)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+design matrix </td></tr>
+<tr valign="top"><td><code>y</code></td>
+<td>
+response vector </td></tr>
+<tr valign="top"><td><code>control</code></td>
+<td>
+list as returned by <code><a href="lmrob.control.html">lmrob.control</a></code> </td></tr>
+<tr valign="top"><td><code>trace.lev</code></td>
+<td>
+integer indicating if the progress of the algorithm
+should be traced (increasingly); default <code>trace.lev = 0</code> does
+no tracing.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This function is used by <code><a href="lmrob.fit.MM.html">lmrob.fit.MM</a></code> and not
+intended to be used on its own (because an S-estimator has too low
+efficiency &lsquo;on its own&rsquo;).
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A list with components
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>coef</code></td>
+<td>
+numeric vector (length <i>p</i>) of S-regression coefficient estimates.</td></tr>
+<tr valign="top"><td><code>scale</code></td>
+<td>
+the S-scale residual estimate</td></tr>
+<tr valign="top"><td><code>cov</code></td>
+<td>
+covariance matrix (<i>p x p</i>) of the
+coefficient estimates.</td></tr>
+<tr valign="top"><td><code>k.iter</code></td>
+<td>
+(maximal) number of refinement iterations used.</td></tr>
+<tr valign="top"><td><code>converged</code></td>
+<td>
+logical indicating if <B>all</B> refinement
+iterations had converged.</td></tr>
+<tr valign="top"><td><code>control</code></td>
+<td>
+the same list as the <code>control</code> argument.</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Matias Salibian-Barrera (and Martin Maechler for minor details)
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="lmrob.html">lmrob</a></code>, also for references.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+set.seed(33)
+x1 &lt;- sort(rnorm(30)); x2 &lt;- sort(rnorm(30)); x3 &lt;- sort(rnorm(30))
+X. &lt;- cbind(x1, x2, x3)
+y &lt;-  10 + X. %*% (10*(2:4)) + rnorm(30)/10
+y[1] &lt;- 500   # a moderate outlier
+X.[2,1] &lt;- 20 # an X outlier
+X1  &lt;- cbind(1, X.)
+
+(m.lm &lt;- lm(y ~ X.))
+set.seed(12)
+m.lmS &lt;- lmrob.S(x=X1, y=y,
+                    control = lmrob.control(nRes = 20), trace.lev=1)
+m.lmS[c("coef","scale")]
+stopifnot(all.equal(m.lmS$coef,
+                    10 * (1:4),        tol = 0.005),
+          all.equal(m.lmS$scale, 1/10, tol = 0.09))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>robustbase</em> version 0.4-5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

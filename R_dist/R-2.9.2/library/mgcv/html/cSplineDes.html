@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Evaluate cyclic B spline basis</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for cSplineDes {mgcv}"><tr><td>cSplineDes {mgcv}</td><td align="right">R Documentation</td></tr></table>
+<h2>Evaluate cyclic B spline basis</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Uses <code>splineDesign</code> to set up the model matrix for a cyclic B-spline basis.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+cSplineDes(x, knots, ord = 4)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+covariate values for smooth.</td></tr>
+<tr valign="top"><td><code>knots</code></td>
+<td>
+The knot locations: the range of these must include all the data.</td></tr>
+<tr valign="top"><td><code>ord</code></td>
+<td>
+order of the basis. 4 is a cubic spline basis. Must be &gt;1.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The routine is a wrapper that sets up a B-spline basis, where the basis functions wrap at the first and 
+last knot locations.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+A matrix with <code>length(x)</code> rows and <code>length(knots)-1</code> columns.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Simon N. Wood <a href="mailto:simon.wood@r-project.org">simon.wood@r-project.org</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="smooth.construct.ps.smooth.spec.html">cyclic.p.spline</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+ x &lt;- 0:100/100;k&lt;- 0:5/5
+ X &lt;- cSplineDes(x,k)
+ plot(x,X[,1],type="l"); for (i in 2:5) lines(x,X[,i],col=i)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>mgcv</em> version 1.5-5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

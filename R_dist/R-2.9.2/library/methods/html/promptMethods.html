@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Generate a Shell for Documentation of Formal Methods</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for promptMethods {methods}"><tr><td>promptMethods {methods}</td><td align="right">R Documentation</td></tr></table>
+<h2>Generate a Shell for Documentation of Formal Methods</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Generates a shell of documentation for the methods of a generic
+function.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+promptMethods(f, filename = NULL, methods)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>f</code></td>
+<td>
+a character string naming the generic function whose methods
+are to be documented.</td></tr>
+<tr valign="top"><td><code>filename</code></td>
+<td>
+usually, a connection or a character string giving the
+name of the file to which the documentation shell should be written.
+The default corresponds to the coded topic name for these methods
+(currently, <code>f</code> followed by <code>"-methods.Rd"</code>).  Can also be
+<code>FALSE</code> or <code>NA</code> (see below).</td></tr>
+<tr valign="top"><td><code>methods</code></td>
+<td>
+Optional methods list object giving the methods to be
+documented.  By default, the first methods object for this generic
+is used (for example, if the current global environment has some
+methods for <code>f</code>, these would be documented).
+<br>
+If this argument is supplied, it is likely to be
+<code>getMethods(f, where)</code>, with <code>where</code> some package
+containing methods for <code>f</code>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+If <code>filename</code> is <code>FALSE</code>, the text created is returned,
+presumably to be inserted some other documentation file, such as the
+documentation of the generic function itself (see
+<code><a href="../../utils/html/prompt.html">prompt</a></code>). 
+</p>
+<p>
+If <code>filename</code> is <code>NA</code>, a list-style representation of the
+documentation shell is created and returned.  Writing the shell to a
+file amounts to <code>cat(unlist(x), file = filename, sep = "\n")</code>,
+where <code>x</code> is the list-style representation.
+</p>
+<p>
+Otherwise, the documentation shell is written to the file specified by
+<code>filename</code>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+If <code>filename</code> is <code>FALSE</code>, the text generated;
+if <code>filename</code> is <code>NA</code>, a list-style representation of the
+documentation shell.
+Otherwise, the name of the file written to is returned invisibly.</p>
+
+<h3>References</h3>
+
+<p>
+Chambers, John M. (2008)
+<EM>Software for Data Analysis: Programming with R</EM>
+Springer.  (For the R version.)
+</p>
+<p>
+Chambers, John M. (1998)
+<EM>Programming with Data</EM>
+Springer (For the original S4 version.)
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../utils/html/prompt.html">prompt</a></code> and
+<code><a href="promptClass.html">promptClass</a></code>
+</p>
+
+
+
+<hr><div align="center">[Package <em>methods</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: First-order Compartment Model</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for SSfol {stats}"><tr><td>SSfol {stats}</td><td align="right">R Documentation</td></tr></table>
+<h2>First-order Compartment Model</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This <code>selfStart</code> model evaluates the first-order compartment
+function and its gradient.  It has an <code>initial</code> attribute that 
+creates initial estimates of the parameters <code>lKe</code>, <code>lKa</code>,
+and <code>lCl</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+SSfol(Dose, input, lKe, lKa, lCl)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>Dose</code></td>
+<td>
+a numeric value representing the initial dose.</td></tr>
+<tr valign="top"><td><code>input</code></td>
+<td>
+a numeric vector at which to evaluate the model.</td></tr>
+<tr valign="top"><td><code>lKe</code></td>
+<td>
+a numeric parameter representing the natural logarithm of
+the elimination rate constant.</td></tr>
+<tr valign="top"><td><code>lKa</code></td>
+<td>
+a numeric parameter representing the natural logarithm of
+the absorption rate constant.</td></tr>
+<tr valign="top"><td><code>lCl</code></td>
+<td>
+a numeric parameter representing the natural logarithm of
+the clearance.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+a numeric vector of the same length as <code>input</code>, which is the
+value of the expression
+<code>Dose * exp(lKe+lKa-lCl) * (exp(-exp(lKe)*input)-exp(-exp(lKa)*input)) / (exp(lKa)-exp(lKe))</code>.
+<br>
+If all of the arguments <code>lKe</code>, <code>lKa</code>, and <code>lCl</code> are
+names of objects, the gradient matrix with respect to these names is
+attached as an attribute named <code>gradient</code>.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Jose Pinheiro and Douglas Bates
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="nls.html">nls</a></code>, <code><a href="selfStart.html">selfStart</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+Theoph.1 &lt;- Theoph[ Theoph$Subject == 1, ]
+SSfol( Theoph.1$Dose, Theoph.1$Time, -2.5, 0.5, -3 )  # response only
+lKe &lt;- -2.5; lKa &lt;- 0.5; lCl &lt;- -3
+SSfol( Theoph.1$Dose, Theoph.1$Time, lKe, lKa, lCl ) # response and gradient
+getInitial(conc ~ SSfol(Dose, Time, lKe, lKa, lCl), data = Theoph.1)
+## Initial values are in fact the converged values
+fm1 &lt;- nls(conc ~ SSfol(Dose, Time, lKe, lKa, lCl), data = Theoph.1)
+summary(fm1)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>stats</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

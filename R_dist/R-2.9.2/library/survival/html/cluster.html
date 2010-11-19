@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Identify clusters.</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for cluster {survival}"><tr><td>cluster {survival}</td><td align="right">R Documentation</td></tr></table>
+<h2>Identify clusters.</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This is a special function used in the context of survival models.  It 
+identifies correlated groups of observations, and is used on the right hand 
+side of a formula.
+Using <code>cluster()</code> in a formula implies that
+robust sandwich variance estimators are desired.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+cluster(x)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+A character, factor, or numeric variable. 
+</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The function's only action is semantic, to mark a variable as the 
+cluster indicator.
+The resulting variance is what is known as the ``working independence''
+variance  in a GEE model.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>x</code></p>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="coxph.html">coxph</a></code>,  <code><a href="survreg.html">survreg</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+marginal.model &lt;- coxph(Surv(time, status) ~ rx + cluster(litter), rats)
+frailty.model  &lt;- coxph(Surv(time, status) ~ rx + frailty(litter), rats)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>survival</em> version 2.35-4 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Remove Installed Packages</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for remove.packages {utils}"><tr><td>remove.packages {utils}</td><td align="right">R Documentation</td></tr></table>
+<h2>Remove Installed Packages</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Removes installed packages/bundles and updates index information
+as necessary.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+remove.packages(pkgs, lib)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>pkgs</code></td>
+<td>
+a character vector with the names of the package(s) or
+bundle(s) to be removed.</td></tr>
+<tr valign="top"><td><code>lib</code></td>
+<td>
+a character vector giving the library directories to remove the
+packages from.  If missing, defaults to the first element in
+<code><a href="../../base/html/libPaths.html">.libPaths</a>()</code>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+If an element of <code>pkgs</code> matches a bundle name, all the packages
+in the bundle will be removed.  This takes precedence over matching a
+package name.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="update.packages.html">install.packages</a></code> for installing packages.
+</p>
+
+
+
+<hr><div align="center">[Package <em>utils</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

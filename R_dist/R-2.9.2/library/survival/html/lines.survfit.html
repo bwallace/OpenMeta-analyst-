@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Add Lines or Points to a Survival Plot</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for lines.survfit {survival}"><tr><td>lines.survfit {survival}</td><td align="right">R Documentation</td></tr></table>
+<h2>Add Lines or Points to a Survival Plot</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Often used to add the expected survival curve(s) to a Kaplan-Meier plot 
+generated with <code>plot.survfit</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'survfit':
+lines(x, type="s", mark=3, col=1, lty=1,
+lwd=1, mark.time=TRUE, 
+        xscale=1,  firstx=0, firsty=1, xmax, fun, conf.int=FALSE,  ...)
+## S3 method for class 'survfit':
+points(x, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+a survival object, generated from the <code>survfit</code> or <code>survexp</code> functions. 
+</td></tr>
+<tr valign="top"><td><code>type</code></td>
+<td>
+the line type, as described in <code>lines</code>.  The default is a step function 
+for <code>survfit</code> objects, and a connected line for <code>survexp</code> objects. 
+</td></tr>
+<tr valign="top"><td><code>mark, col, lty, lwd</code></td>
+<td>
+vectors giving the mark symbol, color, line type and line width for the 
+added curves. 
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+other graphical parameters</td></tr>
+<tr valign="top"><td><code>mark.time</code></td>
+<td>
+controls the labeling of the curves.   
+If <code>FALSE</code>, no labeling is done.   
+If <code>TRUE</code>, then curves are marked at each censoring time.   
+If <code>mark.time</code> is a numeric vector, then curves are marked at  
+the specified time points. 
+</td></tr>
+<tr valign="top"><td><code>xscale</code></td>
+<td>
+a number used to divide the x values.  If time was originally in days, a 
+value of 365.25 would give a plotted scale in years. 
+</td></tr>
+<tr valign="top"><td><code>firstx, firsty</code></td>
+<td>
+the starting point for the survival curves.  If either of these is set to 
+<code>NA</code> or &lt; blank &gt; the plot will start at the first time point of the curve. 
+</td></tr>
+<tr valign="top"><td><code>xmax</code></td>
+<td>
+the maximum horizontal plot coordinate.     
+This shortens the curve before plotting it, so unlike using the 
+<code>xlim</code> graphical parameter, warning messages about out of bounds points are 
+not generated. 
+</td></tr>
+<tr valign="top"><td><code>fun</code></td>
+<td>
+an arbitrary function defining a transformation of the survival curve. 
+For example <code>fun=log</code> is an alternative way to draw a log-survival curve 
+(but with the axis labeled with log(S) values). 
+Four often used transformations can be specified with a character 
+argument instead: "log" is the same as using the <code>log=T</code> option, 
+"event" plots cumulative events (f(y) = 1-y), 
+"cumhaz" plots the cumulative hazard function (f(y) = -log(y)) 
+and "cloglog" creates a complimentary log-log survival plot  
+(f(y) = log(-log(y) along with log scale for the x-axis). 
+</td></tr>
+<tr valign="top"><td><code>conf.int</code></td>
+<td>
+if <code>TRUE</code>, confidence bands for the curves are also plotted. 
+If set to <code>"only"</code>, then only the CI bands are plotted, and the curve 
+itself is left off.   
+This can be useful for fine control over the colors or line types of a plot. 
+</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+a list with components <code>x</code> and <code>y</code>, containing the coordinates of the 
+last point on each of the curves (but not of the confidence limits). 
+This may be useful for labeling.</p>
+
+<h3>Side Effects</h3>
+
+<p>
+one or more curves are added to the current plot.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../graphics/html/lines.html">lines</a></code>,  <code><a href="../../graphics/html/par.html">par</a></code>,  <code><a href="plot.survfit.html">plot.survfit</a></code>,  <code><a href="survfit.html">survfit</a></code>,  <code><a href="survexp.html">survexp</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+fit &lt;- survfit(Surv(time, status) ~ sex, pbc,subset=1:312)
+plot(fit, mark.time=FALSE, xscale=365.25,
+        xlab='Years', ylab='Survival')
+lines(fit[1], lwd=2, xscale=365.24)    #darken the first curve and add marks
+
+# Add expected survival curves for the two groups,
+#   based on the US census data
+# The data set does not have entry date, use the midpoint of the study
+efit &lt;- survexp(~ ratetable(sex=sex,age=age*365.35,year=as.Date('1979/1/1')) +
+            sex, data=pbc,  times=(0:24)*182)
+temp &lt;- lines(efit, lty=2, xscale=365.24, lwd=2:1)
+text(temp, c("Male", "Female"), adj= -.1) #labels just past the ends
+title(main="Primary Biliary Cirrhosis, Observed and Expected")
+
+</pre>
+
+
+
+<hr><div align="center">[Package <em>survival</em> version 2.35-4 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

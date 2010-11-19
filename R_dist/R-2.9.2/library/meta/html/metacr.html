@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Meta-analysis of outcome data from Cochrane review</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for metacr {meta}"><tr><td>metacr {meta}</td><td align="right">R Documentation</td></tr></table>
+<h2>Meta-analysis of outcome data from Cochrane review</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Wrapper function to perform meta-analysis for a single outcome of a
+Cochrane Intervention review.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+metacr(x, comp.no=1, outcome.no=1, smother="", logscale=TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+An object of class <code>rm5</code> created by R function
+<code>read.rm5</code>.</td></tr>
+<tr valign="top"><td><code>comp.no</code></td>
+<td>
+Comparison number.</td></tr>
+<tr valign="top"><td><code>outcome.no</code></td>
+<td>
+Outcome number.</td></tr>
+<tr valign="top"><td><code>smother</code></td>
+<td>
+A character specifying the summary measure to use
+instead of the value "OTHER"</td></tr>
+<tr valign="top"><td><code>logscale</code></td>
+<td>
+A logical indicating whether treatment effects have
+been entered on the log scale in RevMan5. Only relevant for an
+outcome with summary measure equal to "OTHER".</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Cochrane Intervention reviews are based on the comparison of two
+interventions. Each Cochrane Intervention review can have a variable
+number of comparisons. For each comparison, a variable number of
+outcomes can be define. For each outcome, a seperate meta-analysis is
+conducted. Review Manager 5 (RevMan 5) is the current software used for
+preparing and maintaining Cochrane Reviews
+(<a href="http://www.cc-ims.net/revman/">http://www.cc-ims.net/revman/</a>).
+</p>
+<p>
+This wrapper function can be used to perform meta-analysis for a
+single outcome of a Cochrane Intervention review. Internally, R
+functions <code>metabin</code>, <code>metacont</code>, and <code>metagen</code> are
+called - depending on the definition of the outcome in RevMan 5.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+An object of class <code>"meta"</code> and <code>"metabin"</code>,
+<code>"metacont"</code>, or <code>"metagen"</code> depending on outcome type
+utilised in Cochrane Intervention review for selected outcome.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Guido Schwarzer <a href="mailto:sc@imbi.uni-freiburg.de">sc@imbi.uni-freiburg.de</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+<EM>Review Manager (RevMan)</EM> [Computer program]. Version 5.0, The Nordic
+Cochrane Centre, The Cochrane Collaboration, 2008.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="metabin.html">metabin</a></code>, <code><a href="metacont.html">metacont</a></code>, <code><a href="metagen.html">metagen</a></code>, <code><a href="read.rm5.html">read.rm5</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## Locate export data file "Fleiss93_CR.csv" or "Fleiss93_CR_Windows.csv"
+## in sub-directory of package "meta"
+##
+filename &lt;- paste(searchpaths()[seq(along=search())[search()==
+                  "package:meta"]], "/data/Fleiss93_CR",
+                  if (Sys.info()[["sysname"]]=="Windows") "_Windows" else "",
+                  ".csv", sep="")
+Fleiss93_CR &lt;- read.rm5(filename)
+
+## Same result: example(Fleiss93)
+##
+metacr(Fleiss93_CR)
+
+## Same result: example(Fleiss93cont)
+##
+metacr(Fleiss93_CR, 1, 2)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>meta</em> version 1.1-8 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

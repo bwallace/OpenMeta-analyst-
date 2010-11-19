@@ -1,0 +1,109 @@
+multinom                package:nnet                R Documentation
+
+_F_i_t _M_u_l_t_i_n_o_m_i_a_l _L_o_g-_l_i_n_e_a_r _M_o_d_e_l_s
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Fits multinomial log-linear models via neural networks.
+
+_U_s_a_g_e:
+
+     multinom(formula, data, weights, subset, na.action,
+              contrasts = NULL, Hess = FALSE, summ = 0, censored = FALSE,
+              model = FALSE, ...)
+
+_A_r_g_u_m_e_n_t_s:
+
+ formula: a formula expression as for regression models, of the form
+          'response ~ predictors'. The response should be a factor or a
+          matrix with K columns, which will be interpreted as counts
+          for each of K classes. A log-linear model is fitted, with
+          coefficients zero for the first class. An offset can be
+          included: it should be a numeric matrix with K columns if the
+          response is either a matrix with K columns or a factor with K
+          > 2 classes, or a numeric vector for a response factor with 2
+          levels. See the documentation of 'formula()' for other
+          details. 
+
+    data: an optional data frame in which to interpret the variables
+          occurring in 'formula'. 
+
+ weights: optional case weights in fitting. 
+
+  subset: expression saying which subset of the rows of the data should
+           be used in the fit. All observations are included by
+          default. 
+
+na.action: a function to filter missing data. 
+
+contrasts: a list of contrasts to be used for some or all of the
+          factors appearing as variables in the model formula. 
+
+    Hess: logical for whether the Hessian (the observed/expected
+          information matrix) should be returned. 
+
+    summ: integer; if non-zero summarize by deleting duplicate rows and
+          adjust weights. Methods 1 and 2 differ in speed (2 uses 'C');
+          method 3 also combines rows with the same X and different Y,
+          which changes the baseline for the deviance. 
+
+censored: If Y is a matrix with 'K > 2' columns, interpret the entries
+          as one for possible classes, zero for impossible classes,
+          rather than as counts. 
+
+   model: logical. If true, the model frame is saved as component
+          'model' of the returned object. 
+
+     ...: additional arguments for 'nnet' 
+
+_D_e_t_a_i_l_s:
+
+     'multinom' calls 'nnet'.  The variables on the rhs of the formula
+     should be roughly scaled to [0,1] or the fit will be slow or may
+     not converge at all.
+
+_V_a_l_u_e:
+
+     A 'nnet' object with additional components:
+
+deviance: the residual deviance, compared to the full saturated model
+          (that explains individual observations exactly).  Also, minus
+          twice log-likelihood. 
+
+     edf: the (effective) number of degrees of freedom used by the
+          model 
+
+     AIC: the AIC for this fit. 
+
+ Hessian: (if 'Hess' is true). 
+
+   model: (if 'model' is true). 
+
+_R_e_f_e_r_e_n_c_e_s:
+
+     Venables, W. N. and Ripley, B. D. (2002) _Modern Applied
+     Statistics with S._ Fourth edition.  Springer.
+
+_S_e_e _A_l_s_o:
+
+     'nnet'
+
+_E_x_a_m_p_l_e_s:
+
+     options(contrasts = c("contr.treatment", "contr.poly"))
+     library(MASS)
+     example(birthwt)
+     (bwt.mu <- multinom(low ~ ., bwt))
+     ## Not run: Call:
+     multinom(formula = low ~ ., data = bwt)
+
+     Coefficients:
+      (Intercept)         age         lwt raceblack raceother
+         0.823477 -0.03724311 -0.01565475  1.192371 0.7406606
+          smoke      ptd        ht        ui       ftv1     ftv2+
+       0.7555234 1.343648 1.913213 0.6802007 -0.4363238 0.1789888
+
+     Residual Deviance: 195.4755
+     AIC: 217.4755
+     ## End(Not run)
+

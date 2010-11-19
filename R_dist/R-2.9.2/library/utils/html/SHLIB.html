@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Build a DLL for Dynamic Loading</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for SHLIB {utils}"><tr><td>SHLIB {utils}</td><td align="right">R Documentation</td></tr></table>
+<h2>Build a DLL for Dynamic Loading</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The given source files are first compiled.  All specified object files
+are then linked into a shared library which can be loaded into <font face="Courier New,Courier" color="#666666"><b>R</b></font>
+using <code>dyn.load</code> or <code>library.dynam</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+R CMD SHLIB [options] [-o dllname] files
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>files</code></td>
+<td>
+a list of names of (typically) source files to be
+compiled and included in the library.  You can also include the names
+of object files which are automagically made from their sources,
+and archive (<code>*.a</code>) and library linking commands.
+</td></tr>
+<tr valign="top"><td><code>dllname</code></td>
+<td>
+the name of the shared library to be built, optionally
+including the extension &lsquo;<span class="file">.dll</span>&rsquo;.  If not given, the name of the
+DLL is taken from the first source or object file specified.</td></tr>
+<tr valign="top"><td><code>options</code></td>
+<td>
+Further options to control the processing.  Use
+<code>R CMD SHLIB --help</code> for a current list.  The most useful one
+is <code>-d</code> to build a debug DLL.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+<code>R CMD SHLIB</code> uses the mechanism as used by <code><a href="INSTALL.html">INSTALL</a></code>
+to compile source code in packages.  To use <code>SHLIB</code> you need to
+have installed (from the <font face="Courier New,Courier" color="#666666"><b>R</b></font> installer) the files for compiling source
+packages as well as the tools described in the &lsquo;R Installation and 
+Administration&rsquo; manual.
+</p>
+<p>
+Please consult section &lsquo;Creating shared objects&rsquo; in the manual
+&lsquo;Writing R Extensions&rsquo; for how to customize it (for example to
+add <code>cpp</code> flags and to add libraries to the link step) and for
+details of some of its quirks.
+</p>
+<p>
+Items in <code>files</code> with extensions &lsquo;<span class="file">.c</span>&rsquo;, &lsquo;<span class="file">.cpp</span>&rsquo;,
+&lsquo;<span class="file">.cc</span>&rsquo;, &lsquo;<span class="file">.C</span>&rsquo;, &lsquo;<span class="file">.f</span>&rsquo;, &lsquo;<span class="file">.f90</span>&rsquo;, &lsquo;<span class="file">.f95</span>&rsquo; and &lsquo;<span class="file">.m</span>&rsquo;,
+are regarded as source files, and those with extension &lsquo;<span class="file">.o</span>&rsquo; as
+object files.  All other items are passed to the linker.
+</p>
+<p>
+If there is an exports file &lsquo;<span class="file">dllname-win.def</span>&rsquo; in the current
+directory it will be used, otherwise all entry points in objects (but
+not libraries) will be exported from the DLL.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../base/html/dynload.html">dyn.load</a></code>, <code><a href="../../base/html/library.dynam.html">library.dynam</a></code>.
+</p>
+<p>
+The &lsquo;R Installation and Administration&rsquo; and &lsquo;Writing R 
+Extensions&rsquo; manuals.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>## Not run: 
+rcmd SHLIB -o my.dll a.f b.f -L/AMD/acml3.5.0/gnu32/lib -lacml
+## End(Not run)</pre>
+
+
+
+<hr><div align="center">[Package <em>utils</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

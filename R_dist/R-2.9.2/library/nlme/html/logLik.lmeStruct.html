@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Log-Likelihood of an lmeStruct Object</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for logLik.lmeStruct {nlme}"><tr><td>logLik.lmeStruct {nlme}</td><td align="right">R Documentation</td></tr></table>
+<h2>Log-Likelihood of an lmeStruct Object</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>Pars</code> is used to update the coefficients of the model components
+of <code>object</code> and the individual (restricted) log-likelihood
+contributions of each component are added together. The type of
+log-likelihood (restricted or not) is determined by the
+<code>settings</code> attribute of <code>object</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'lmeStruct':
+logLik(object, Pars, conLin, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>object</code></td>
+<td>
+an object inheriting from class <code>lmeStruct</code>,
+representing a list of linear mixed-effects model components, such as
+<code>reStruct</code>, <code>corStruct</code>, and <code>varFunc</code> objects.</td></tr>
+<tr valign="top"><td><code>Pars</code></td>
+<td>
+the parameter values at which the (restricted)
+log-likelihood is to be evaluated.</td></tr>
+<tr valign="top"><td><code>conLin</code></td>
+<td>
+an optional condensed linear model object, consisting of
+a list with components <code>"Xy"</code>, corresponding to a regression
+matrix (<code>X</code>) combined with a response vector (<code>y</code>), and 
+<code>"logLik"</code>, corresponding to the log-likelihood of the
+underlying lme model. Defaults to <code>attr(object, "conLin")</code>.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+some methods for this generic require additional
+arguments.  None are used in this method.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+the (restricted) log-likelihood for the linear mixed-effects model
+described by <code>object</code>, evaluated at <code>Pars</code>.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Jose Pinheiro <a href="mailto:Jose.Pinheiro@pharma.novartis.com">Jose.Pinheiro@pharma.novartis.com</a> and Douglas Bates <a href="mailto:bates@stat.wisc.edu">bates@stat.wisc.edu</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="lme.html">lme</a></code>,
+<code><a href="lmeStruct.html">lmeStruct</a></code>,
+<code><a href="logLik.lme.html">logLik.lme</a></code>
+</p>
+
+
+
+<hr><div align="center">[Package <em>nlme</em> version 3.1-93 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

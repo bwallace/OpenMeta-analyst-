@@ -1,0 +1,389 @@
+Entry: AnalysisSpecification-class
+Aliases: AnalysisSpecification-class
+Keywords: classes
+Description: Class "AnalysisSpecification" ~~~
+URL: ../../../library/openmetar/html/AnalysisSpecification-class.html
+
+Entry: BinaryData-class
+Aliases: BinaryData-class
+Keywords: classes
+Description: Class "BinaryData" ~~~
+URL: ../../../library/openmetar/html/BinaryData-class.html
+
+Entry: ContinuousData-class
+Aliases: ContinuousData-class
+Keywords: classes
+Description: Class "ContinuousData" ~~~
+URL: ../../../library/openmetar/html/ContinuousData-class.html
+
+Entry: OMData-class
+Aliases: OMData-class
+Keywords: classes
+Description: Class "OMData" ~~~
+URL: ../../../library/openmetar/html/OMData-class.html
+
+Entry: additional.columns
+Aliases: additional.columns
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/additional.columns.html
+
+Entry: binary.fixed.inv.var
+Aliases: binary.fixed.inv.var
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/binary.fixed.inv.var.html
+
+Entry: binary.fixed.inv.var.overall
+Aliases: binary.fixed.inv.var.overall
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/binary.fixed.inv.var.overall.html
+
+Entry: binary.fixed.inv.var.parameters
+Aliases: binary.fixed.inv.var.parameters
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/binary.fixed.inv.var.parameters.html
+
+Entry: binary.fixed.mh
+Aliases: binary.fixed.mh
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/binary.fixed.mh.html
+
+Entry: binary.fixed.mh.is.feasible
+Aliases: binary.fixed.mh.is.feasible
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/binary.fixed.mh.is.feasible.html
+
+Entry: binary.fixed.mh.overall
+Aliases: binary.fixed.mh.overall
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/binary.fixed.mh.overall.html
+
+Entry: binary.fixed.mh.parameters
+Aliases: binary.fixed.mh.parameters
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/binary.fixed.mh.parameters.html
+
+Entry: binary.fixed.peto
+Aliases: binary.fixed.peto
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/binary.fixed.peto.html
+
+Entry: binary.fixed.peto.is.feasible
+Aliases: binary.fixed.peto.is.feasible
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/binary.fixed.peto.is.feasible.html
+
+Entry: binary.fixed.peto.overall
+Aliases: binary.fixed.peto.overall
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/binary.fixed.peto.overall.html
+
+Entry: binary.fixed.peto.parameters
+Aliases: binary.fixed.peto.parameters
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/binary.fixed.peto.parameters.html
+
+Entry: binary.log.metrics
+Aliases: binary.log.metrics
+Keywords: datasets
+Description: 
+URL: ../../../library/openmetar/html/binary.log.metrics.html
+
+Entry: binary.meta.regression
+Aliases: binary.meta.regression
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/binary.meta.regression.html
+
+Entry: binary.random
+Aliases: binary.random
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/binary.random.html
+
+Entry: binary.random.overall
+Aliases: binary.random.overall
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/binary.random.overall.html
+
+Entry: binary.random.parameters
+Aliases: binary.random.parameters
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/binary.random.parameters.html
+
+Entry: binary.transform.f
+Aliases: binary.transform.f
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/binary.transform.f.html
+
+Entry: check.1spell.res
+Aliases: check.1spell.res
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/check.1spell.res.html
+
+Entry: compute.for.one.bin.study
+Aliases: compute.for.one.bin.study
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/compute.for.one.bin.study.html
+
+Entry: compute.for.one.cont.study
+Aliases: compute.for.one.cont.study
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/compute.for.one.cont.study.html
+
+Entry: cont.meta.regression
+Aliases: cont.meta.regression
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/cont.meta.regression.html
+
+Entry: continuous.random
+Aliases: continuous.random
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/continuous.random.html
+
+Entry: continuous.random.overall
+Aliases: continuous.random.overall
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/continuous.random.overall.html
+
+Entry: continuous.random.parameters
+Aliases: continuous.random.parameters
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/continuous.random.parameters.html
+
+Entry: continuous.transform.f
+Aliases: continuous.transform.f
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/continuous.transform.f.html
+
+Entry: create.plot.data
+Aliases: create.plot.data
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/create.plot.data.html
+
+Entry: create.plot.data.binary
+Aliases: create.plot.data.binary
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/create.plot.data.binary.html
+
+Entry: create.plot.data.continuous
+Aliases: create.plot.data.continuous
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/create.plot.data.continuous.html
+
+Entry: create.plot.data.generic
+Aliases: create.plot.data.generic
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/create.plot.data.generic.html
+
+Entry: createSummaryDisp
+Aliases: createSummaryDisp
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/createSummaryDisp.html
+
+Entry: cum.ma.binary
+Aliases: cum.ma.binary
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/cum.ma.binary.html
+
+Entry: cum.ma.continuous
+Aliases: cum.ma.continuous
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/cum.ma.continuous.html
+
+Entry: draw.data.col
+Aliases: draw.data.col
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/draw.data.col.html
+
+Entry: draw.label.col
+Aliases: draw.label.col
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/draw.label.col.html
+
+Entry: draw.normal.CI
+Aliases: draw.normal.CI
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/draw.normal.CI.html
+
+Entry: draw.summary.CI
+Aliases: draw.summary.CI
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/draw.summary.CI.html
+
+Entry: effectsize.column
+Aliases: effectsize.column
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/effectsize.column.html
+
+Entry: extractData
+Aliases: extractData
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/extractData.html
+
+Entry: fillin.2x2.simple
+Aliases: fillin.2x2.simple
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/fillin.2x2.simple.html
+
+Entry: fillin.cont.1spell
+Aliases: fillin.cont.1spell
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/fillin.cont.1spell.html
+
+Entry: fillin.cont.AminusB
+Aliases: fillin.cont.AminusB
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/fillin.cont.AminusB.html
+
+Entry: forest.plot
+Aliases: forest.plot
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/forest.plot.html
+
+Entry: get.res.for.one.binary.study
+Aliases: get.res.for.one.binary.study
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/get.res.for.one.binary.study.html
+
+Entry: get.res.for.one.cont.study
+Aliases: get.res.for.one.cont.study
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/get.res.for.one.cont.study.html
+
+Entry: impute.bin.data
+Aliases: impute.bin.data
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/impute.bin.data.html
+
+Entry: isnt.null
+Aliases: isnt.null
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/isnt.null.html
+
+Entry: list2Array
+Aliases: list2Array
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/list2Array.html
+
+Entry: loo.ma.binary
+Aliases: loo.ma.binary
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/loo.ma.binary.html
+
+Entry: loo.ma.continuous
+Aliases: loo.ma.continuous
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/loo.ma.continuous.html
+
+Entry: meta.regression.plot
+Aliases: meta.regression.plot
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/meta.regression.plot.html
+
+Entry: metric.is.log.scale
+Aliases: metric.is.log.scale
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/metric.is.log.scale.html
+
+Entry: openmetar-package
+Aliases: openmetar-package openmetar
+Keywords: package
+Description: What the package does (short line) ~~ package title ~~
+URL: ../../../library/openmetar/html/openmetar-package.html
+
+Entry: padEntry
+Aliases: padEntry
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/padEntry.html
+
+Entry: plot.options
+Aliases: plot.options
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/plot.options.html
+
+Entry: print.Table
+Aliases: print.Table
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/print.Table.html
+
+Entry: print.summaryDisplay
+Aliases: print.summaryDisplay
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/print.summaryDisplay.html
+
+Entry: reg.data
+Aliases: reg.data
+Keywords: datasets
+Description: 
+URL: ../../../library/openmetar/html/reg.data.html
+
+Entry: roundedDisplay
+Aliases: roundedDisplay
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/roundedDisplay.html
+
+Entry: roundedQEDisplay
+Aliases: roundedQEDisplay
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/roundedQEDisplay.html
+
+Entry: study.column
+Aliases: study.column
+Keywords: ~kwd1 ~kwd2
+Description: 
+URL: ../../../library/openmetar/html/study.column.html

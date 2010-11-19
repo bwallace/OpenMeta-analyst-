@@ -1,0 +1,203 @@
+Entry: QC
+Aliases: QC checkDocFiles checkDocStyle checkReplaceFuns checkS3methods print.checkDocFiles print.checkDocStyle print.checkReplaceFuns print.checkS3methods
+Keywords: utilities documentation
+Description: QC Checks for R Code and/or Documentation
+URL: ../../../library/tools/html/QC.html
+
+Entry: Rd2HTML
+Aliases: Rd2txt Rd2HTML Rd2ex Rd2latex checkRd findHTMLlinks
+Keywords: documentation
+Description: Work with an Rd object
+URL: ../../../library/tools/html/Rd2HTML.html
+
+Entry: Rdiff
+Aliases: Rdiff
+Keywords: utilities
+Description: Difference \R Output Files
+URL: ../../../library/tools/html/Rdiff.html
+
+Entry: Rdindex
+Aliases: Rdindex
+Keywords: documentation utilities
+Description: Generate Index from Rd Files
+URL: ../../../library/tools/html/Rdindex.html
+
+Entry: Rdutils
+Aliases: Rd_db Rd_parse
+Keywords: utilities documentation
+Description: Rd Utilities
+URL: ../../../library/tools/html/Rdutils.html
+
+Entry: buildVignettes
+Aliases: buildVignettes pkgVignettes
+Keywords: utilities documentation
+Description: List and Build Package Vignettes
+URL: ../../../library/tools/html/buildVignettes.html
+
+Entry: charsets
+Aliases: Adobe_glyphs charset_to_Unicode
+Keywords: datasets
+Description: Conversion Tables between Character Sets
+URL: ../../../library/tools/html/charsets.html
+
+Entry: checkFF
+Aliases: checkFF print.checkFF
+Keywords: programming utilities
+Description: Check Foreign Function Calls
+URL: ../../../library/tools/html/checkFF.html
+
+Entry: checkMD5sums
+Aliases: checkMD5sums
+Keywords: utilities
+Description: Check and Create MD5 Checksum Files
+URL: ../../../library/tools/html/checkMD5sums.html
+
+Entry: checkTnF
+Aliases: checkTnF print.checkTnF
+Keywords: utilities documentation
+Description: Check R Packages or Code for T/F
+URL: ../../../library/tools/html/checkTnF.html
+
+Entry: checkVignettes
+Aliases: checkVignettes print.checkVignettes
+Keywords: utilities documentation
+Description: Check Package Vignettes
+URL: ../../../library/tools/html/checkVignettes.html
+
+Entry: codoc
+Aliases: codoc codocClasses codocData print.codoc print.codocClasses print.codocData
+Keywords: documentation
+Description: Check Code/Documentation Consistency
+URL: ../../../library/tools/html/codoc.html
+
+Entry: delimMatch
+Aliases: delimMatch
+Keywords: character
+Description: Delimited Pattern Matching
+URL: ../../../library/tools/html/delimMatch.html
+
+Entry: dependsOnPkgs
+Aliases: dependsOnPkgs
+Keywords: utilities
+Description: Find Reverse Dependencies
+URL: ../../../library/tools/html/dependsOnPkgs.html
+
+Entry: encoded_text_to_latex
+Aliases: encoded_text_to_latex
+Keywords: utilities
+Description: Translate non-ASCII Text to LaTeX Escapes
+URL: ../../../library/tools/html/encoded.html
+
+Entry: fileutils
+Aliases: file_path_as_absolute file_path_sans_ext list_files_with_exts list_files_with_type
+Keywords: file
+Description: File Utilities
+URL: ../../../library/tools/html/fileutils.html
+
+Entry: getDepList
+Aliases: getDepList pkgDepends
+Keywords: utilities
+Description: Functions to Retrieve Dependency Information
+URL: ../../../library/tools/html/getDepList.html
+
+Entry: installFoundDepends
+Aliases: installFoundDepends
+Keywords: utilities
+Description: A function to install unresolved dependencies
+URL: ../../../library/tools/html/installFoundDepends.html
+
+Entry: makeLazyLoading
+Aliases: makeLazyLoading
+Keywords: utilities
+Description: Lazy Loading of Packages
+URL: ../../../library/tools/html/makeLazyLoading.html
+
+Entry: md5sum
+Aliases: md5sum
+Keywords: utilities
+Description: Compute MD5 Checksums
+URL: ../../../library/tools/html/md5sum.html
+
+Entry: package.dependencies
+Aliases: package.dependencies
+Keywords: utilities
+Description: Check Package Dependencies
+URL: ../../../library/tools/html/package.dependencies.html
+
+Entry: parse_Rd
+Aliases: parse_Rd
+Keywords: utilities documentation
+Description: Parse an Rd file
+URL: ../../../library/tools/html/parse_Rd.html
+
+Entry: read.00Index
+Aliases: read.00Index
+Keywords: file connection
+Description: Read 00Index-style Files
+URL: ../../../library/tools/html/read.00Index.html
+
+Entry: readNEWS
+Aliases: readNEWS checkNEWS
+Keywords: file documentation
+Description: Read R's NEWS file or a similar one
+URL: ../../../library/tools/html/readNEWS.html
+
+Entry: showNonASCII
+Aliases: showNonASCII
+Keywords: utilities
+Description: Highlight non-ASCII characters
+URL: ../../../library/tools/html/showNonASCII.html
+
+Entry: testInstalledPackage
+Aliases: testInstalledPackage testInstalledPackages testInstalledBasic
+Keywords: utilities
+Description: Test Installed Packages
+URL: ../../../library/tools/html/testInstalledPackage.html
+
+Entry: texi2dvi
+Aliases: texi2dvi
+Keywords: utilities
+Description: Compile LaTeX Files
+URL: ../../../library/tools/html/texi2dvi.html
+
+Entry: tools-defunct
+Aliases: tools-defunct
+Keywords: internal
+Description: Defunct Objects in Package tools
+URL: ../../../library/tools/html/tools-defunct.html
+
+Entry: tools-deprecated
+Aliases: tools-deprecated
+Keywords: misc
+Description: Deprecated Objects in Package tools
+URL: ../../../library/tools/html/tools-deprecated.html
+
+Entry: tools-package
+Aliases: tools-package tools
+Keywords: package programming documentation
+Description: Tools for Package Development
+URL: ../../../library/tools/html/tools-package.html
+
+Entry: undoc
+Aliases: undoc print.undoc
+Keywords: documentation
+Description: Find Undocumented Objects
+URL: ../../../library/tools/html/undoc.html
+
+Entry: vignetteDepends
+Aliases: vignetteDepends
+Keywords: utilities
+Description: Retrieve Dependency Information for a Vignette
+URL: ../../../library/tools/html/vignetteDepends.html
+
+Entry: write_PACKAGES
+Aliases: write_PACKAGES
+Keywords: file utilities
+Description: Generate PACKAGES files
+URL: ../../../library/tools/html/writePACKAGES.html
+
+Entry: xgettext
+Aliases: xgettext xngettext xgettext2pot
+Keywords: utilities
+Description: Extract Translatable Messages from R Files in a Package
+URL: ../../../library/tools/html/xgettext.html

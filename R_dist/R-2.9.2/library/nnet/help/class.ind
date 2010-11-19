@@ -1,0 +1,39 @@
+class.ind                package:nnet                R Documentation
+
+_G_e_n_e_r_a_t_e_s _C_l_a_s_s _I_n_d_i_c_a_t_o_r _M_a_t_r_i_x _f_r_o_m _a _F_a_c_t_o_r
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Generates a class indicator function from a given factor.
+
+_U_s_a_g_e:
+
+     class.ind(cl)
+
+_A_r_g_u_m_e_n_t_s:
+
+      cl: factor or vector of classes for cases. 
+
+_V_a_l_u_e:
+
+     a matrix which is zero except for the column corresponding to the
+     class.
+
+_R_e_f_e_r_e_n_c_e_s:
+
+     Venables, W. N. and Ripley, B. D. (2002) _Modern Applied
+     Statistics with S._ Fourth edition.  Springer.
+
+_E_x_a_m_p_l_e_s:
+
+     # The function is currently defined as
+     class.ind <- function(cl)
+     {
+       n <- length(cl)
+       cl <- as.factor(cl)
+       x <- matrix(0, n, length(levels(cl)) )
+       x[(1:n) + n*(unclass(cl)-1)] <- 1
+       dimnames(x) <- list(names(cl), levels(cl))
+       x
+     }
+

@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Plot an augPred Object</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for plot.augPred {nlme}"><tr><td>plot.augPred {nlme}</td><td align="right">R Documentation</td></tr></table>
+<h2>Plot an augPred Object</h2>
+
+
+<h3>Description</h3>
+
+<p>
+A Trellis <code>xyplot</code> of predictions versus the primary covariate is
+generated, with a different panel for each value of the grouping
+factor. Predicted values are joined by lines, with  
+different line types (colors) being used for each level of
+grouping. Original observations are represented by circles.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'augPred':
+plot(x, key, grid, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+an object of class <code>augPred</code>.</td></tr>
+<tr valign="top"><td><code>key</code></td>
+<td>
+an optional logical value, or list. If <code>TRUE</code>, a legend
+is included at the top of the plot indicating which symbols (colors)
+correspond to which prediction levels. If <code>FALSE</code>, no legend
+is included. If given as a list, <code>key</code> is passed down as an
+argument to the <code>trellis</code> function generating the plots
+(<code>xyplot</code>). Defaults to <code>TRUE</code>.</td></tr>
+<tr valign="top"><td><code>grid</code></td>
+<td>
+an optional logical value indicating whether a grid should
+be added to plot. Default is <code>FALSE</code>.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+optional arguments passed down to the <code>trellis</code>
+function generating the plots.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+A Trellis plot of predictions versus the primary covariate, with panels
+determined by the grouping factor.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Jose Pinheiro <a href="mailto:Jose.Pinheiro@pharma.novartis.com">Jose.Pinheiro@pharma.novartis.com</a> and Douglas Bates <a href="mailto:bates@stat.wisc.edu">bates@stat.wisc.edu</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="augPred.html">augPred</a></code>, <code><a href="../../lattice/html/xyplot.html">xyplot</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+fm1 &lt;- lme(Orthodont)
+plot(augPred(fm1, level = 0:1, length.out = 2))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>nlme</em> version 3.1-93 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

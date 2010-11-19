@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Variance-Covariance Matrix of Parameter Estimates for rma Objects</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for vcov.rma {metafor}"><tr><td>vcov.rma {metafor}</td><td align="right">R Documentation</td></tr></table>
+<h2>Variance-Covariance Matrix of Parameter Estimates for rma Objects</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The function extracts the (estimated) variance-covariance matrix of the fixed effects parameter estimates from objects of class <code>"rma"</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'rma':
+vcov(object, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>object</code></td>
+<td>
+an object of class <code>"rma"</code>.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+other arguments.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+A matrix corresponding to the variance-covariance matrix.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Wolfgang Viechtbauer; <a href="mailto:wvb@www.wvbauer.com">wvb@www.wvbauer.com</a>; <a href="http://www.wvbauer.com/">http://www.wvbauer.com/</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="rma.uni.html">rma.uni</a></code>, <code><a href="rma.mh.html">rma.mh</a></code>, <code><a href="rma.peto.html">rma.peto</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+### load BCG vaccine data
+data(dat.bcg)
+
+### meta-analysis of the log risk ratios using a mixed-effects model
+### with two moderators (absolute latitude and publication year)
+res &lt;- rma(ai=tpos, bi=tneg, ci=cpos, di=cneg, mods=cbind(ablat, year),
+           data=dat.bcg, measure="RR", method="REML")
+vcov(res)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>metafor</em> version 0.5-7 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

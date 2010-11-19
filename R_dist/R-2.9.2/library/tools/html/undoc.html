@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Find Undocumented Objects</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for undoc {tools}"><tr><td>undoc {tools}</td><td align="right">R Documentation</td></tr></table>
+<h2>Find Undocumented Objects</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Finds the objects in a package which are undocumented, in the sense
+that they are visible to the user (or data objects or S4 classes
+provided by the package), but no documentation entry exists.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+undoc(package, dir, lib.loc = NULL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>package</code></td>
+<td>
+a character string naming an installed package.</td></tr>
+<tr valign="top"><td><code>dir</code></td>
+<td>
+a character string specifying the path to a package's root
+source directory.  This must contain the subdirectory &lsquo;<span class="file">man</span>&rsquo;
+with <font face="Courier New,Courier" color="#666666"><b>R</b></font> documentation sources (in Rd format), and at least one of
+the &lsquo;<span class="file">R</span>&rsquo; or &lsquo;<span class="file">data</span>&rsquo; subdirectories with <font face="Courier New,Courier" color="#666666"><b>R</b></font> code or data
+objects, respectively.</td></tr>
+<tr valign="top"><td><code>lib.loc</code></td>
+<td>
+a character vector of directory names of <font face="Courier New,Courier" color="#666666"><b>R</b></font> libraries,
+or <code>NULL</code>.  The default value of <code>NULL</code> corresponds to all
+libraries currently known.  The specified library trees are used to
+search for <code>package</code>.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+This function is useful for package maintainers mostly.  In principle,
+<EM>all</EM> user-level <font face="Courier New,Courier" color="#666666"><b>R</b></font> objects should be documented.
+</p>
+<p>
+The <span class="pkg">base</span> package is special as it contains the primitives and
+these do not have definitions available at code level.  We provide
+equivalent closures in environments <code>.ArgsEnv</code> and
+<code>.GenericArgsEnv</code> in the <span class="pkg">base</span> package that are used
+for various purposes: <code>undoc("base")</code> checks that all the
+primitives that are not language constructs are prototyped in those
+environments and no others are.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+An object of class <code>"undoc"</code> which is a list of character vectors
+containing the names of the undocumented objects split according to
+documentation type.  This representation is still experimental, and
+might change in future versions.
+<br>
+There is a <code>print</code> method for nicely displaying the information
+contained in such objects.</p>
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="codoc.html">codoc</a></code>, <code><a href="QC.html">QC</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+undoc("tools")                  # Undocumented objects in 'tools'
+</pre>
+
+
+
+<hr><div align="center">[Package <em>tools</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

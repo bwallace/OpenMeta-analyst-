@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Auxiliary for Controlling Robust GLM Fitting by the Method "Mqle"</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for glmrobMqle.control {robustbase}"><tr><td>glmrobMqle.control {robustbase}</td><td align="right">R Documentation</td></tr></table>
+<h2>Auxiliary for Controlling Robust GLM Fitting by the Method "Mqle"</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Auxiliary function as user interface for <code><a href="glmrob.html">glmrob</a></code> fitting
+when method "Mqle" is applied.  Typically only used when calling
+<code><a href="glmrob.html">glmrob</a></code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+glmrobMqle.control(acc = 1e-04, test.acc = "coef", maxit = 50, tcc = 1.345)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>acc</code></td>
+<td>
+positive convergence tolerance;
+the iterations converge when ???</td></tr>
+<tr valign="top"><td><code>test.acc</code></td>
+<td>
+Only "coef" is currently implemented</td></tr>
+<tr valign="top"><td><code>maxit</code></td>
+<td>
+integer giving the maximum number of iterations. </td></tr>
+<tr valign="top"><td><code>tcc</code></td>
+<td>
+tuning constant c for Huber's psi-function</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+A list with the arguments as components.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Andreas Ruckstuhl
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="glmrob.html">glmrob</a></code>
+</p>
+
+
+
+<hr><div align="center">[Package <em>robustbase</em> version 0.4-5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

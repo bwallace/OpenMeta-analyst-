@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Apply Solve to an reStruct Object</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for solve.reStruct {nlme}"><tr><td>solve.reStruct {nlme}</td><td align="right">R Documentation</td></tr></table>
+<h2>Apply Solve to an reStruct Object</h2>
+
+
+<h3>Description</h3>
+
+<p>
+<code>Solve</code> is applied to each <code>pdMat</code> component of <code>a</code>,
+which results in inverting the positive-definite matrices they
+represent.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'reStruct':
+solve(a, b, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>a</code></td>
+<td>
+an object inheriting from class <code>reStruct</code>,
+representing a random effects structure and consisting of a list of
+<code>pdMat</code> objects.</td></tr>
+<tr valign="top"><td><code>b</code></td>
+<td>
+this argument is only included for consistency with the
+generic function and is not used in this method function.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+some methods for this generic require additional
+arguments.  None are used in this method.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+an <code>reStruct</code> object similar to <code>a</code>, but with the
+<code>pdMat</code> components representing the inverses of the
+matrices represented by the components of <code>a</code>.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Jose Pinheiro <a href="mailto:Jose.Pinheiro@pharma.novartis.com">Jose.Pinheiro@pharma.novartis.com</a> and Douglas Bates <a href="mailto:bates@stat.wisc.edu">bates@stat.wisc.edu</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="solve.pdMat.html">solve.pdMat</a></code>, <code><a href="reStruct.html">reStruct</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+rs1 &lt;- reStruct(list(A = pdSymm(diag(1:3), form = ~Score),
+  B = pdDiag(2 * diag(4), form = ~Educ)))
+solve(rs1)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>nlme</em> version 3.1-93 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

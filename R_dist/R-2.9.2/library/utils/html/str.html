@@ -1,0 +1,222 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Compactly Display the Structure of an Arbitrary R Object</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for str {utils}"><tr><td>str {utils}</td><td align="right">R Documentation</td></tr></table>
+<h2>Compactly Display the Structure of an Arbitrary R Object</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Compactly display the internal <B>str</B>ucture of an <font face="Courier New,Courier" color="#666666"><b>R</b></font> object, a
+diagnostic function and an alternative to <code><a href="../../base/html/summary.html">summary</a></code>
+(and to some extent, <code><a href="../../base/html/dput.html">dput</a></code>).  Ideally, only one line for
+each &lsquo;basic&rsquo; structure is displayed.  It is especially well suited
+to compactly display the (abbreviated) contents of (possibly nested)
+lists.  The idea is to give reasonable output for <B>any</B> <font face="Courier New,Courier" color="#666666"><b>R</b></font>
+object.  It calls <code><a href="../../base/html/args.html">args</a></code> for (non-primitive) function objects.
+</p>
+<p>
+<code>strOptions()</code> is a convenience function for setting
+<code><a href="../../base/html/options.html">options</a>(str = .)</code>, see the examples.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+str(object, ...)
+
+## S3 method for class 'data.frame':
+str(object, ...)
+
+## Default S3 method:
+str(object, max.level = NA,
+    vec.len  = strO$vec.len, digits.d = strO$digits.d,
+    nchar.max = 128, give.attr = TRUE,
+    give.head = TRUE, give.length = give.head,
+    width = getOption("width"), nest.lev = 0,
+    indent.str = paste(rep.int(" ", max(0, nest.lev + 1)),
+                       collapse = ".."),
+    comp.str="$ ", no.list = FALSE, envir = baseenv(),
+    strict.width = strO$strict.width,
+    formatNum = strO$formatNum, ...)
+
+strOptions(strict.width = "no", digits.d = 3, vec.len = 4,
+           formatNum = function(x, ...)
+                       format(x, trim=TRUE, drop0trailing=TRUE, ...))
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>object</code></td>
+<td>
+any <font face="Courier New,Courier" color="#666666"><b>R</b></font> object about which you want to have some
+information.</td></tr>
+<tr valign="top"><td><code>max.level</code></td>
+<td>
+maximal level of nesting which is applied for
+displaying nested structures, e.g., a list containing sub lists.
+Default NA: Display all nesting levels.</td></tr>
+<tr valign="top"><td><code>vec.len</code></td>
+<td>
+numeric (&gt;= 0) indicating how many &lsquo;first few&rsquo; elements
+are displayed of each vector.  The number is multiplied by different
+factors (from .5 to 3) depending on the kind of vector.  Defaults to
+the <code>vec.len</code> component of option <code>"str"</code> (see
+<code><a href="../../base/html/options.html">options</a></code>) which defaults to 4.</td></tr>
+<tr valign="top"><td><code>digits.d</code></td>
+<td>
+number of digits for numerical components (as for
+<code><a href="../../base/html/print.html">print</a></code>).  Defaults to the <code>digits.d</code> component of
+option <code>"str"</code> which defaults to 3.</td></tr>
+<tr valign="top"><td><code>nchar.max</code></td>
+<td>
+maximal number of characters to show for
+<code><a href="../../base/html/character.html">character</a></code> strings.  Longer strings are truncated, see
+<code>longch</code> example below.</td></tr>
+<tr valign="top"><td><code>give.attr</code></td>
+<td>
+logical; if <code>TRUE</code> (default), show attributes
+as sub structures.</td></tr>
+<tr valign="top"><td><code>give.length</code></td>
+<td>
+logical; if <code>TRUE</code> (default), indicate
+length (as <code>[1:...]</code>).</td></tr>
+<tr valign="top"><td><code>give.head</code></td>
+<td>
+logical; if <code>TRUE</code> (default), give (possibly
+abbreviated) mode/class and length (as <code>&lt;type&gt;[1:...]</code>).</td></tr>
+<tr valign="top"><td><code>width</code></td>
+<td>
+the page width to be used.  The default is the currently
+active <code><a href="../../base/html/options.html">options</a>("width")</code>; note that this has only a
+weak effect, unless <code>strict.width</code> is not <code>"no"</code>.</td></tr>
+<tr valign="top"><td><code>nest.lev</code></td>
+<td>
+current nesting level in the recursive calls to
+<code>str</code>.</td></tr>
+<tr valign="top"><td><code>indent.str</code></td>
+<td>
+the indentation string to use.</td></tr>
+<tr valign="top"><td><code>comp.str</code></td>
+<td>
+string to be used for separating list components.</td></tr>
+<tr valign="top"><td><code>no.list</code></td>
+<td>
+logical; if true, no &lsquo;list of ...&rsquo; nor the
+class are printed.</td></tr>
+<tr valign="top"><td><code>envir</code></td>
+<td>
+the environment to be used for <EM>promise</EM> (see
+<code><a href="../../base/html/delayedAssign.html">delayedAssign</a></code>) objects only.</td></tr>
+<tr valign="top"><td><code>strict.width</code></td>
+<td>
+string indicating if the <code>width</code> argument's
+specification should be followed strictly, one of the values
+<code>c("no", "cut", "wrap")</code>.
+Defaults to the <code>strict.width</code> component of option <code>"str"</code>
+(see <code><a href="../../base/html/options.html">options</a></code>) which defaults to <code>"no"</code> for back
+compatibility reasons; <code>"wrap"</code> uses
+<code><a href="../../base/html/strwrap.html">strwrap</a>(*, width=width)</code> whereas <code>"cut"</code> cuts
+directly to <code>width</code>.  Note that a small <code>vec.length</code>
+may be better than setting <code>strict.width = "wrap"</code>.</td></tr>
+<tr valign="top"><td><code>formatNum</code></td>
+<td>
+a function such as <code><a href="../../base/html/format.html">format</a></code> for
+formatting numeric vectors.  It defaults to the <code>formatNum</code>
+component of option <code>"str"</code>, see &ldquo;Usage&rdquo; of
+<code>strOptions()</code> above, which is almost back compatible to <font face="Courier New,Courier" color="#666666"><b>R</b></font>
+version <i>&lt;=</i> 2.7.x, however, using <code><a href="../../base/html/formatc.html">formatC</a></code>
+may be slightly better.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+potential further arguments (required for Method/Generic
+reasons).</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+<code>str</code> does not return anything, for efficiency reasons.
+The obvious side effect is output to the terminal.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Martin Maechler <a href="mailto:maechler@stat.math.ethz.ch">maechler@stat.math.ethz.ch</a> since 1990.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="ls_str.html">ls.str</a></code> for <EM>listing</EM> objects with their structure;
+<code><a href="../../base/html/summary.html">summary</a></code>, <code><a href="../../base/html/args.html">args</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+require(stats); require(grDevices); require(graphics)
+## The following examples show some of 'str' capabilities
+str(1:12)
+str(ls)
+str(args) #- more useful than  args(args) !
+str(freeny)
+str(str)
+str(.Machine, digits.d = 20)
+str( lsfit(1:9,1:9))
+str( lsfit(1:9,1:9), max.level = 1)
+str( lsfit(1:9,1:9), width = 60, strict.width = "cut")
+str( lsfit(1:9,1:9), width = 60, strict.width = "wrap")
+op &lt;- options(); str(op) # save first;
+                         # otherwise internal options() is used.
+need.dev &lt;-
+  !exists(".Device") || is.null(.Device) || .Device == "null device"
+{ if(need.dev) postscript()
+  str(par())
+  if(need.dev) graphics.off()
+}
+ch &lt;- letters[1:12]; is.na(ch) &lt;- 3:5
+str(ch) # character NA's
+
+nchar(longch &lt;- paste(rep(letters,100), collapse=""))
+str(longch)
+str(longch, nchar.max = 52)
+
+str(longch, strict.width = "wrap")
+
+## Settings for narrow transcript :
+op &lt;- options(width = 60,
+              str = strOptions(strict.width = "wrap"))
+str(lsfit(1:9,1:9))
+str(options())
+## reset to previous:
+options(op)
+
+
+str(quote( { A+B; list(C,D) } ))
+
+
+## S4 classes :
+require(stats4)
+x &lt;- 0:10; y &lt;- c(26, 17, 13, 12, 20, 5, 9, 8, 5, 4, 8)
+ll &lt;- function(ymax=15, xh=6)
+      -sum(dpois(y, lambda=ymax/(1+x/xh), log=TRUE))
+fit &lt;- mle(ll)
+str(fit)
+
+</pre>
+
+
+
+<hr><div align="center">[Package <em>utils</em> version 2.9.2 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Correlation Plot: robust versus classical bivariate correlation</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for cor.plot {mvoutlier}"><tr><td>cor.plot {mvoutlier}</td><td align="right">R Documentation</td></tr></table>
+<h2>Correlation Plot: robust versus classical bivariate correlation</h2>
+
+
+<h3>Description</h3>
+
+<p>
+The function cor.plot plots the (two-dimensional) data and adds two correlation ellipsoids, 
+based on classical and robust estimation of location and scatter. Robust estimation 
+can be thought of as estimating the mean and covariance of the 'good' part of the data.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>cor.plot(x, y, quan=1/2, alpha=0.025, ...)</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+vector to be plotted against y and of which the correlation with y is calculated.</td></tr>
+<tr valign="top"><td><code>y</code></td>
+<td>
+vector to be plotted against x and of which the correlation with x is calculated.</td></tr>
+<tr valign="top"><td><code>quan</code></td>
+<td>
+amount of observations which are used for mcd estimations. 
+has to be between 0.5 and 1, default ist 0.5</td></tr>
+<tr valign="top"><td><code>alpha</code></td>
+<td>
+Determines the size of the ellipsoids. An observation will be outside of the 
+ellipsoid if its mahalanobis distance exceeds the 1-alpha quantile of the chi-squared 
+distribution.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+additional graphical parameters</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>cor.cla</code></td>
+<td>
+correlation between x and y based on classical estimation of location and 
+scatter</td></tr>
+<tr valign="top"><td><code>cor.rob</code></td>
+<td>
+correlation between x and y based on robust estimation of location and 
+scatter</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Moritz Gschwandtner &lt;<a href="mailto:e0125439@student.tuwien.ac.at">e0125439@student.tuwien.ac.at</a>&gt;
+<br> Peter Filzmoser &lt;<a href="mailto:P.Filzmoser@tuwien.ac.at">P.Filzmoser@tuwien.ac.at</a>&gt;
+<a href="http://www.statistik.tuwien.ac.at/public/filz/">http://www.statistik.tuwien.ac.at/public/filz/</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="../../robustbase/html/covMcd.html">covMcd</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+# create data:
+x &lt;- cbind(rnorm(100), rnorm(100))
+y &lt;- cbind(rnorm(10, 3, 1), rnorm(10, 3, 1))
+z &lt;- rbind(x,y)
+# execute:
+cor.plot(z[,1], z[,2])
+</pre>
+
+
+
+<hr><div align="center">[Package <em>mvoutlier</em> version 1.4 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

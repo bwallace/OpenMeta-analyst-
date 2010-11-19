@@ -1,0 +1,205 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Orthogonalized Gnanadesikan-Kettenring (OGK) Covariance Matrix Estimation</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for covOGK {robustbase}"><tr><td>covOGK {robustbase}</td><td align="right">R Documentation</td></tr></table>
+<h2>Orthogonalized Gnanadesikan-Kettenring (OGK) Covariance Matrix Estimation</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Computes the orthogonalized pairwise covariance matrix estimate described in
+in Maronna and Zamar (2002).  The pairwise proposal goes back to
+Gnanadesikan and Kettenring (1972).
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+covOGK(X, n.iter = 2, sigmamu, rcov = covGK, weight.fn = hard.rejection,
+       keep.data = FALSE, ...)
+
+covGK (x, y, scalefn = scaleTau2, ...)
+s_mad(x, mu.too = FALSE, na.rm = FALSE)
+s_IQR(x, mu.too = FALSE, na.rm = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>X</code></td>
+<td>
+data in something that can be coerced into a numeric matrix.</td></tr>
+<tr valign="top"><td><code>n.iter</code></td>
+<td>
+number of orthogonalization iterations.  Usually 1 or 2;
+values greater than 2 are unlikely to have any significant effect on
+the estimate (other than increasing the computing time).</td></tr>
+<tr valign="top"><td><code>sigmamu, scalefn</code></td>
+<td>
+a function that computes univariate robust
+location and scale estimates.  By default it should return a single
+numeric value containing the robust scale (standard deviation)
+estimate.  When <code>mu.too</code> is true, <code>sigmamu()</code> should
+return a numeric vector of length 2 containing robust location and
+scale estimates.  See <code><a href="scaleTau2.html">scaleTau2</a></code>, <code><a href="Qn.html">s_Qn</a></code>,
+<code><a href="Sn.html">s_Sn</a></code>, <code>s_mad</code> or <code>s_IQR</code> for examples to be
+used as <code>sigmamu</code> argument.</td></tr>
+<tr valign="top"><td><code>rcov</code></td>
+<td>
+function that computes a robust covariance estimate
+between two vectors.  The default, Gnanadesikan-Kettenring's
+<code>covGK</code>, is simply <i>(s^2(X+Y) - s^2(X-Y))/4</i> where
+<i>s()</i> is the scale estimate <code>sigmamu()</code>.</td></tr>
+<tr valign="top"><td><code>weight.fn</code></td>
+<td>
+a function of the robust distances and the number of
+variables <i>p</i> to compute the weights used in the reweighting step.</td></tr>
+<tr valign="top"><td><code>keep.data</code></td>
+<td>
+logical indicating if the (untransformed) data matrix
+<code>X</code> should be kept as part of the result.</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+additional arguments; for <code>covOGK</code> to be passed to
+<code>sigmamu()</code> and <code>weight.fn()</code>; for <code>covGK</code> passed to <code>scalefn</code>.</td></tr>
+<tr valign="top"><td><code>x,y</code></td>
+<td>
+numeric vectors of the same length, the covariance of which
+is sought in <code>covGK</code> (or the scale, in <code>s_mad</code> or
+<code>s_IQR</code>).</td></tr>
+<tr valign="top"><td><code>mu.too</code></td>
+<td>
+logical indicating if both location and scale should be
+returned or just the scale (when <code>mu.too=FALSE</code> as by default).</td></tr>
+<tr valign="top"><td><code>na.rm</code></td>
+<td>
+if <code>TRUE</code> then <code><a href="../../base/html/NA.html">NA</a></code> values are stripped
+from <code>x</code> before computation takes place.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Typical default values for the <EM>function</EM> arguments
+<code>sigmamu</code>, <code>rcov</code>, and <code>weight.fn</code>, are
+available as well, see the <EM>Examples</EM> below,
+<B>but</B> their names and calling sequences are
+still subject to discussion and may be changed in the future.
+</p>
+<p>
+The current default, <code>weight.fn = hard.rejection</code> corresponds to
+the proposition in the litterature, but Martin Maechler strongly
+believes that the hard threshold currently in use is too arbitrary,
+and further that <EM>soft</EM> thresholding should be used instead, anyway.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+<code>covOGK()</code> currently returns a list with components
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>center</code></td>
+<td>
+robust location: numeric vector of length <i>p</i>.</td></tr>
+<tr valign="top"><td><code>cov</code></td>
+<td>
+robust covariance matrix estimate: <i>p x p</i>
+matrix.</td></tr>
+<tr valign="top"><td><code>wcenter, wcov</code></td>
+<td>
+re-<B>w</B>eighted versions of <code>center</code> and
+<code>cov</code>.</td></tr>
+<tr valign="top"><td><code>weights</code></td>
+<td>
+the robustness weights used.</td></tr>
+<tr valign="top"><td><code>distances</code></td>
+<td>
+the mahalanobis distances computed using
+<code>center</code> and <code>cov</code>.</td></tr>
+</table>
+<p>
+
+......
+<br>
+<B>but note that this might be radically changed to returning an
+S4 classed object!</B>
+<br>
+<code>covGK()</code> is a trivial 1-line function returning the covariance
+estimate
+</p><p align="center"><i>c^(x,y) = [s^(x+y)^2 - s^(x-y)^2]/4,</i></p><p>
+where <i>s^(u)</i> is the scale estimate of <i>u</i>
+specified by <code>scalefn</code>.
+<br>
+<code>s_mad()</code>, and <code>s_IQR()</code> return the
+scale estimates <code><a href="../../stats/html/mad.html">mad</a></code> or <code><a href="../../stats/html/IQR.html">IQR</a></code>
+respectively, where the <code>s_*</code> functions return a length-2 vector
+(mu, sig) when <code>mu.too = TRUE</code>, see also <code><a href="scaleTau2.html">scaleTau2</a></code>.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Kjell Konis <a href="mailto:konis@stats.ox.ac.uk">konis@stats.ox.ac.uk</a>, with modifications by
+Martin Maechler.
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Maronna, R.A. and Zamar, R.H. (2002)
+Robust estimates of location and dispersion of high-dimensional datasets;
+<EM>Technometrics</EM> <B>44</B>(4), 307&ndash;317.
+</p>
+<p>
+Gnanadesikan, R. and John R. Kettenring (1972)
+Robust estimates, residuals, and outlier detection with multiresponse data.
+<EM>Biometrics</EM> <B>28</B>, 81&ndash;124.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="scaleTau2.html">scaleTau2</a></code>,
+<code><a href="covMcd.html">covMcd</a></code>, <code><a href="../../MASS/html/cov.rob.html">cov.rob</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(hbk)
+hbk.x &lt;- data.matrix(hbk[, 1:3])
+
+cO1 &lt;- covOGK(hbk.x, sigmamu = scaleTau2)
+cO2 &lt;- covOGK(hbk.x, sigmamu = s_Qn)
+cO3 &lt;- covOGK(hbk.x, sigmamu = s_Sn)
+cO4 &lt;- covOGK(hbk.x, sigmamu = s_mad)
+cO5 &lt;- covOGK(hbk.x, sigmamu = s_IQR)
+
+data(toxicity)
+cO1tox &lt;- covOGK(toxicity, sigmamu = scaleTau2)
+cO2tox &lt;- covOGK(toxicity, sigmamu = s_Qn)
+
+## nice formatting of correlation matrices:
+as.dist(round(cov2cor(cO1tox$cov), 2))
+as.dist(round(cov2cor(cO2tox$cov), 2))
+
+## "graphical"
+symnum(cov2cor(cO1tox$cov))
+symnum(cov2cor(cO2tox$cov), legend=FALSE)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>robustbase</em> version 0.4-5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

@@ -1,0 +1,33 @@
+This package is released under the GPL version 2.  It can also be used
+under the following license, which is in some respects more liberal.
+
+
+License: Copyright 2000 Mayo Foundation for Medical Education and
+	Research. This software is accepted by users "as is" and
+	without warranties or guarantees of any kind. It may be used
+	for research purposes or in relation to projects with
+	commercial applications or included in commercial packages,
+	but only so long as it is not relicensed as a stand-alone
+	program, and only so long as the first two sentences of this 
+	paragraph (copyright notice and no warranty) are reproduced 
+	with the software.
+
+	Modifications for use with R (c) 1998-2007 B.D. Ripley under the
+	same conditions.
+
+
+For use under the GPL version 2 the following applies:
+
+    This is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+The file COPYING in the R top-level directory or the doc/ directory of
+the R sources or installation is a copy of the 'GNU General Public License'.
+It can also be obtained at http://www.r-project.org/Licenses/ .
