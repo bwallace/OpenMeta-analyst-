@@ -110,6 +110,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.model = DatasetModel(dataset=data_model)
             # no dataset; disable saving, editing, etc.
             self.disable_menu_options_that_require_dataset()
+        # set the out_path to None; this (new) dataset is unsaved.
+        self.out_path = None
             
     def toggle_menu_options_that_require_dataset(self, enable):
         self.action_go.setEnabled(enable)
