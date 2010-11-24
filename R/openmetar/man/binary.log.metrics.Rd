@@ -1,9 +1,7 @@
 \name{binary.log.metrics}
 \alias{binary.log.metrics}
 \docType{data}
-\title{
-%%   ~~ data name/kind ... ~~
-}
+\title{List metrics with log display scale}
 \description{
 %%  ~~ A concise (1-5 lines) description of the dataset. ~~
 }

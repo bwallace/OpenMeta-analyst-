@@ -1,9 +1,7 @@
 \name{loo.ma.continuous}
 \alias{loo.ma.continuous}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
+\title{Leave-One-Out Method for Continuous Data}
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }

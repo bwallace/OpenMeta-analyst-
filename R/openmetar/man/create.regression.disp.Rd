@@ -1,9 +1,7 @@
 \name{create.regression.disp}
 \alias{create.regression.disp}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
+\title{Create summary for regression analyses}
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }

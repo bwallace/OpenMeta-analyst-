@@ -1,9 +1,7 @@
 \name{binary.fixed.inv.var}
 \alias{binary.fixed.inv.var}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
+\title{Binary Fixed-Effect Inverse Variance Method}
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }

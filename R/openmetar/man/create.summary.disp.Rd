@@ -1,9 +1,7 @@
 \name{create.summary.disp}
 \alias{create.summary.disp}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
+\title{Create summary of meta-analysis results}
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }

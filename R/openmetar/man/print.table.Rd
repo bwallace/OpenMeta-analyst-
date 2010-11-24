@@ -1,9 +1,7 @@
 \name{print.table}
 \alias{print.table}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
+\title{Pretty-Print Data Table}
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }

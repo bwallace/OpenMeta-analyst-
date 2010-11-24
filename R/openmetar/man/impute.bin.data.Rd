@@ -1,9 +1,7 @@
 \name{impute.bin.data}
 \alias{impute.bin.data}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
+\title{Impute Binary Data}
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }

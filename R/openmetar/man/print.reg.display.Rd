@@ -1,9 +1,7 @@
 \name{print.reg.display}
 \alias{print.reg.display}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
+\title{Print Summary for Regression Analysis}
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }

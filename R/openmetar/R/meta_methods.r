@@ -62,7 +62,6 @@ cum.ma.binary <- function(fname, binary.data, params){
         study.names <- c(study.names, paste("+ ",binary.data@study.names[count], sep=""))
     }
     cum.disp <- create.overall.display(cum.results, study.names, params)
-    cum.disp
     forest.path <- "./r_tmp/cum_forest.png"
     addRow1Space <- TRUE
     plotData <- create.plot.data.overall(params, cum.results, study.names, addRow1Space)
@@ -142,7 +141,6 @@ loo.ma.binary <- function(fname, binary.data, params){
         study.names <- c(study.names, paste("- ",binary.data@study.names[count], sep=""))
     }
     loo.disp <- create.overall.display(loo.results, study.names, params)
-    loo.disp
     forest.path <- "./r_tmp/loo_forest.png"
     addRow1Space <- FALSE
     plotData <- create.plot.data.overall(params, loo.results, study.names, addRow1Space)
@@ -159,39 +157,9 @@ loo.ma.binary <- function(fname, binary.data, params){
 
     images <- c("Leave-one-out Forest plot"=forest.path)
     plot.names <- c("loo forest plot"="loo_forest_plot")
-    #loo.results <- print.Table(LOO.display.frame(extractDataLOO(loo.results, params)))
     results <- list("images"=images, "Leave-one-out Summary"=loo.disp, "plot_names"=plot.names)
 
     results
-}
-
-extractDataLOO <- function(results , params, title = "Leave-one-out sensitivity analysis") { 
-    #loo.results, loo.labels
-    # Extracts data from loo.results
-    # Compute bounds on confidence intervals.
-    alpha <- 1.0-(params$conf.level/100.0)
-    mult <- abs(qnorm(alpha/2.0))
-    LL <- round(exp(results$loo_results$y - mult*results$loo_results$SE), digits = params$digits)
-    UL <- round(exp(results$loo_results$y + mult*results$loo_results$SE), digits = params$digits)
-    running.summary.es <- round(exp(results$loo_results$y), digits = params$digits)
-    # Extract labels
-    removed.labels <- results$loo_labels
-    data.to.present <- list(excluded.study = removed.labels, summary.estimates = running.summary.es, 
-                       lower.bound = LL, upper.bound = UL)
-    data.to.present
-}
-
-LOO.display.frame <- function(data.to.present) {
-    LOO.estimates <- NULL
-    for (i in 1:length(data.to.present$summary.estimates) ) {
-        LOO.estimates[i] <- paste(data.to.present$summary.estimates[i] ,"(", 
-                                  data.to.present$lower.bound[i]," to " , 
-                                  data.to.present$upper.bound[i] , ")") 
-            }
-    estimate.title <- eval(paste("Summary estimate " , "(" , params$conf.level , "% CI)" , sep = "" )  )
-    table.data <- array(data = c("Excluded study" , data.to.present$excluded.study , 
-                      estimate.title, c(LOO.estimates)), dim = c(length(LOO.estimates)+1,2))
-    table.data  
 }
 
 ##################################
@@ -246,7 +214,6 @@ cum.ma.continuous <- function(fname, cont.data, params){
         study.names <- c(study.names, paste("+ ",cont.data@study.names[count], sep=""))
     }
     cum.disp <- create.overall.display(cum.results, study.names, params)
-    cum.disp
     forest.path <- "./r_tmp/cum_forest.png"
     addRow1Space <- TRUE
     plotData <- create.plot.data.overall(params, cum.results, study.names, addRow1Space)
@@ -332,7 +299,6 @@ loo.ma.continuous <- function(fname, cont.data, params){
         study.names <- c(study.names, paste("- ",cont.data@study.names[count], sep=""))
     }
     loo.disp <- create.overall.display(loo.results, study.names, params)
-    loo.disp
 
     forest.path <- "./r_tmp/loo_forest.png"
     addRow1Space <- FALSE

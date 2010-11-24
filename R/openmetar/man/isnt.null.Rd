@@ -1,9 +1,7 @@
 \name{isnt.null}
 \alias{isnt.null}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
+\title{Utility Function for Data_Transforms}
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }

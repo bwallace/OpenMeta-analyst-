@@ -1,9 +1,7 @@
 \name{cum.ma.continuous}
 \alias{cum.ma.continuous}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
+\title{Cumulative analysis using continuous methods}
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }

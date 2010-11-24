@@ -1,9 +1,7 @@
 \name{create.plot.data.binary}
 \alias{create.plot.data.binary}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
+\title{Create plot data for binary methods forest plot}
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }

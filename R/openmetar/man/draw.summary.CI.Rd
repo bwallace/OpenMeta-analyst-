@@ -1,9 +1,7 @@
 \name{draw.summary.CI}
 \alias{draw.summary.CI}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
+\title{Draw summary row of forest plot}
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }

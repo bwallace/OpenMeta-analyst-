@@ -1,9 +1,7 @@
 \name{get.res.for.one.binary.study}
 \alias{get.res.for.one.binary.study}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
+\title{Get Residuals for One Binary Study}
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }

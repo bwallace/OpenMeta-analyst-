@@ -1,9 +1,7 @@
 \name{pad.entry}
 \alias{pad.entry}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
+\title{Utility Function for Creating Table Display}
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }

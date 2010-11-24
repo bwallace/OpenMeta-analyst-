@@ -1,9 +1,7 @@
 \name{round.with.zeros}
 \alias{round.with.zeros}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
+\title{Utility Function for Displaying Rounded Statistics}
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }

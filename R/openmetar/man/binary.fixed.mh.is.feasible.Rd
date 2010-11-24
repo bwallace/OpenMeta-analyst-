@@ -1,9 +1,7 @@
 \name{binary.fixed.mh.is.feasible}
 \alias{binary.fixed.mh.is.feasible}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
+\title{Determine whether binary.fixed.mh can be used}
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }

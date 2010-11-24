@@ -1,9 +1,7 @@
 \name{binary.fixed.peto.is.feasible}
 \alias{binary.fixed.peto.is.feasible}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
+\title{Determine whether binary.fixed.peto method can be used}
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }

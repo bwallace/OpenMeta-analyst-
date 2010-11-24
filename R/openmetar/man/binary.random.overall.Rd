@@ -1,9 +1,7 @@
 \name{binary.random.overall}
 \alias{binary.random.overall}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
+\title{Apply binary.random method for cumulative and leave-one-out analyses}
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }

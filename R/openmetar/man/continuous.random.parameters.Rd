@@ -1,9 +1,7 @@
 \name{continuous.random.parameters}
 \alias{continuous.random.parameters}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
+\title{Specify Parameters for Continuous Methods}
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }

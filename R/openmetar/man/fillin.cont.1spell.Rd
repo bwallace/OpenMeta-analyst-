@@ -1,9 +1,7 @@
 \name{fillin.cont.1spell}
 \alias{fillin.cont.1spell}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
+\title{Utility function for data_transform}
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }

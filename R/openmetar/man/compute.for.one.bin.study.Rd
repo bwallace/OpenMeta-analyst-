@@ -1,9 +1,7 @@
 \name{compute.for.one.bin.study}
 \alias{compute.for.one.bin.study}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
+\title{Compute effect size and confidence bounds for one binary study}
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }

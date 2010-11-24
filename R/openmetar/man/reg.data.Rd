@@ -1,9 +1,7 @@
 \name{reg.data}
 \alias{reg.data}
 \docType{data}
-\title{
-%%   ~~ data name/kind ... ~~
-}
+\title{Example Data for Regression Plot}
 \description{
 %%  ~~ A concise (1-5 lines) description of the dataset. ~~
 }

@@ -1,9 +1,7 @@
 \name{draw.label.col}
 \alias{draw.label.col}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
+\title{Utility for creating forest plots}
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }

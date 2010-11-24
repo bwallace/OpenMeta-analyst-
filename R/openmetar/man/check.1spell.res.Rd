@@ -1,9 +1,7 @@
 \name{check.1spell.res}
 \alias{check.1spell.res}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
+\title{Utility Function for data_transforms}
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }

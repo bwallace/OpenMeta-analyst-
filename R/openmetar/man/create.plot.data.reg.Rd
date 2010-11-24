@@ -1,9 +1,7 @@
 \name{create.plot.data.reg}
 \alias{create.plot.data.reg}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
+\title{Create plot data for regression plots}
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }

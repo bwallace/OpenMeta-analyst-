@@ -1,9 +1,7 @@
 \name{binary.fixed.mh}
 \alias{binary.fixed.mh}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
+\title{Binary fixed Mantel-Haenszel method}
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
