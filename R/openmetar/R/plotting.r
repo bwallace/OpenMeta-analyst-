@@ -119,9 +119,6 @@ create.plot.data.continuous <- function(cont.data, params, res, selected.cov = N
 
 create.plot.data.overall <- function(params, res, study.names, addRow1Space, selected.cov=NULL){
     scale.str <- "cont"
-    if (metric.is.log.scale(params$measure)){
-        scale.str <- "log" 
-    }
     # Add space to row 1 for cumulative ma to align study names.
     if (addRow1Space == TRUE) {
         study.names[1] <- paste("   ", study.names[1], sep="")
@@ -158,9 +155,6 @@ create.plot.data.overall <- function(params, res, study.names, addRow1Space, sel
 # create regression plot data
 create.plot.data.reg <- function(reg.data, params, fitted.line, selected.cov=cov.name) {
      scale.str <- "cont"
-     if (metric.is.log.scale(params$measure)){
-        scale.str <- "log" 
-     }
      plot.data <- list("fitted.line" = fitted.line,
                     types = c(rep(0, length(reg.data@study.names))),
                     scale = scale.str)

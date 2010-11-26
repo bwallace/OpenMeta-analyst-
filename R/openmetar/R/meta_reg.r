@@ -9,7 +9,7 @@
 
 library(metafor)
 
-meta.regression <- function(reg.data, params, cov.name){
+binary.meta.regression <- function(reg.data, params, cov.name){
     cov.val.str <- paste("reg.data@covariates$", cov.name, sep="")
     cov.vals <- eval(parse(text=cov.val.str))
     res<-rma.uni(yi=reg.data@y, sei=reg.data@SE, slab=reg.data@study.names,
@@ -19,10 +19,10 @@ meta.regression <- function(reg.data, params, cov.name){
     reg.disp
     betas <- res$b
     fitted.line <- list(intercept=betas[1], slope=betas[2])
-   
+    #reg.path <- paste(params$fp_outpath, sep="")
+    reg.path <- "./r_tmp/reg.png"
     plot.data <- create.plot.data.reg(reg.data, params, fitted.line, selected.cov=cov.name)
-    plot.path <- "./r_tmp/reg.png"
-    meta.regression.plot(plot.data, plot.path, symSize=1,
+    meta.regression.plot(plot.data, outpath=reg.path, symSize=1,
                                   lcol = "darkred",
                                   metric = "Effect size",
                                   xlabel= plot.data$covariate$varname,
