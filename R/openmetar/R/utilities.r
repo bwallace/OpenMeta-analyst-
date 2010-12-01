@@ -102,9 +102,10 @@ pad.entry <- function(entry, col.width) {
 
 round.display <- function(x, digits) {
     # Prints "< 10^(-digits)" if x is < 10^(-digits) or "x" otherwise
-    x.disp <- round(x, digits)
+    x.rounded <- round(x, digits)
+    x.disp <- x.rounded
     for (count in 1:length(x)) {
-        if (abs(x.disp[count]) < 10^(-digits)) {
+        if (abs(x.rounded[count]) < 10^(-digits)) {
           x.disp[count] <- paste("< ", 10^(-digits), sep = "", collapse = "")
         }
     }
