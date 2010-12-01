@@ -48,7 +48,7 @@ print.overall.display <- function(overall.disp, ...) {
     print(overall.disp$overall.data$overall.table)
 }
 
-print.table <- function(table.data) {
+print.summary.data <- function(table.data) {
     # Prints an array table.data with lines separating rows and columns.
     # rowLength <- 1
     num.rows <- length(table.data[,1])
@@ -150,7 +150,7 @@ create.summary.disp <- function(res, params, degf, model.title) {
     QE <- round(res$QE, digits=params$digits)
     QEp <- round.display(res$QEp, digits=params$digits)
     het.array <-  array(c(QLabel, QE, "p-Value", QEp, "I^2", I2), dim=c(2,3))
-    class(het.array) <- "table"
+    class(het.array) <- "summary.data"
     het.data <- list("Title" = "  Test for Heterogeneity", "het.table" = het.array)
     est.disp <- round(binary.transform.f(params$measure)$display.scale(res$b), digits=params$digits)
     lb.disp <- round(binary.transform.f(params$measure)$display.scale(res$ci.lb), digits=params$digits)
@@ -169,7 +169,7 @@ create.summary.disp <- function(res, params, degf, model.title) {
          lbCalc <- round(res$ci.lb, digits=params$digits)
          ubCalc <- round(res$ci.ub, digits=params$digits)
          alt.array <- array(c("Estimate", estCalc, "SE", se, "Lower bound", lbCalc, "Upper bound", ubCalc), dim=c(2,4))
-         class(alt.array) <- "table"
+         class(alt.array) <- "summary.data"
          alt.data <- list("Title" = "  Model Results (calculation scale)", "alt.table" = alt.array)
     }
 
@@ -179,7 +179,7 @@ create.summary.disp <- function(res, params, degf, model.title) {
 
         alt.data <- list("Title" = NA)
     }
-    class(res.array) <- "table"
+    class(res.array) <- "summary.data"
     result.data <- list("Title" = "  Model Results (reporting scale)", "result.table" = res.array)
     summary.disp <- list("modelTitle" = model.title, "het.data" = het.data, "result.data" = result.data,
                         "alt.data" = alt.data, "rawResults" = res)
@@ -194,7 +194,7 @@ create.regression.disp <- function(res, params) {
     ubs <- round(res$ci.ub, digits=params$digits)
     reg.array <- array(c("", "Intercept", "Slope", "Estimates", coeffs[1], coeffs[2], "p-Values", pvals[1], pvals[2],
                       "Lower bounds", lbs[1], lbs[2], "Upper bounds", ubs[1], ubs[2]), dim=c(3, 5))
-    class(reg.array) <- "table"
+    class(reg.array) <- "summary.data"
     reg.data <- list("Title" = "", "reg.table" = reg.array)
     reg.disp <- list("reg.data" = reg.data)
     class(reg.disp) <-  "reg.display"
@@ -207,7 +207,7 @@ create.overall.display <- function(res, study.names, params) {
     res <- round(res, digits = params$digits)
     overall.array <- array(c("", study.names, "Estimates", res[,1], "Lower bounds", res[,2],"Upper bounds", res[,3]),
                     dim=c(length(study.names) + 1, 4))
-    class(overall.array) <- "table"
+    class(overall.array) <- "summary.data"
     overall.data <- list("Title" = "", "overall.table" = overall.array)
     overall.disp <- list("overall.data" = overall.data)
     class(overall.disp) <- "overall.display"
@@ -230,6 +230,6 @@ extract.data <- function(binary.data, params){
     raw.data <- array(c("Study", binary.data@study.names, "Events (T)", eventT, "Subjects (T)", subjectT, "Events (C)", eventC, 
                     "Subjects (C)", subjectC, "Effect size", y, "Lower bound", LL, "Upper bound", UL), 
                     dim=c(length(binary.data@study.names) + 1, 8))
-    class(raw.data) <- "table" 
+    class(raw.data) <- "summary.data" 
     return(raw.data)
 }

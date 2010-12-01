@@ -19,7 +19,6 @@ binary.meta.regression <- function(reg.data, params, cov.name){
     reg.disp
     betas <- res$b
     fitted.line <- list(intercept=betas[1], slope=betas[2])
-    #reg.path <- paste(params$fp_outpath, sep="")
     plot.path <- "./r_tmp/reg.png"
     plot.data <- create.plot.data.reg(reg.data, params, fitted.line, selected.cov=cov.name)
     meta.regression.plot(plot.data, outpath=plot.path, symSize=1,
