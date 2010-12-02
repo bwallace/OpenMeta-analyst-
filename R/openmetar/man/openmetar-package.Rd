@@ -2,37 +2,21 @@
 \alias{openmetar-package}
 \alias{openmetar}
 \docType{package}
-\title{Open Source Software for Meta-Analysis in R}
-\description{
-More about what it does (maybe more than one line)
-~~ A concise (1-5 lines) description of the package ~~
-}
+\title{R component for Open Meta-Analyst}
+\description{openmetar is the R component for Open Meta-Analyst, a graphical user interface (GUI) for meta-analysis. 
+The download package for the GUI is available at http://tuftscaes.org/open_meta/}
 \details{
 \tabular{ll}{
 Package: \tab openmetar\cr
 Type: \tab Package\cr
 Version: \tab 1.0\cr
-Date: \tab 2010-11-22\cr
-License: \tab What license is it under?\cr
+Date: \tab 2010-12-02\cr
+License: \tab GPL (>= 2)\cr
 LazyLoad: \tab yes\cr
-Depends: \tab methods\cr
+Depends: \tab R (>= 2.9.2), grid, igraph, metafor\cr
 }
-\author{
-Who wrote it
+\author{Author: Byron Wallace <bwallace@tuftsmedicalcenter.org>
 
 Maintainer: Paul Trow <ptrow@tuftsmedicalcenter.org>
 }
-\references{
-~~ Literature or other references for background information ~~
-}
-\keyword{ package 
-~~ Optionally other standard keywords, one per line, from file KEYWORDS in ~~
-~~ the R documentation directory ~~
-}
-\seealso{
-~~ Optional links to other man pages, e.g. ~~
-~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
-}
-\examples{
-~~ simple examples of the most important functions ~~
-}
+\references{}

@@ -452,6 +452,9 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
   }
 }
  
+#######################################
+#            forest plot              #
+####################################### 
 forest.plot <- function(forest.data, outpath){
     # these are calls to data functions
     study.col <- study.column(forest.data, "bold")
@@ -538,7 +541,6 @@ forest.plot <- function(forest.data, outpath){
                              metric = effect.size.str,
                              diam.size = 1.2,
                              user.ticks = xticks)
-    #popViewport()
     graphics.off()
 }
  
@@ -690,4 +692,4 @@ meta.regression.plot(reg.data,
                         mcolor = "darkgreen",
                         regline = TRUE)
 
-#forest.plot(reg.data, "lalalalala.png")
+#forest.plot(reg.data, "forest.plot.png")

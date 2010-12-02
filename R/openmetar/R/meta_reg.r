@@ -19,7 +19,13 @@ binary.meta.regression <- function(reg.data, params, cov.name){
     reg.disp
     betas <- res$b
     fitted.line <- list(intercept=betas[1], slope=betas[2])
-    plot.path <- "./r_tmp/reg.png"
+    # temporary fix until params$rp_outpath is added to the GUI
+    if (is.null(params$rp_outpath)) {
+        plot.path <- "./r_tmp/reg.png"
+    }
+    else {
+        plot.path <- params$rp_outpath
+    }
     plot.data <- create.plot.data.reg(reg.data, params, fitted.line, selected.cov=cov.name)
     meta.regression.plot(plot.data, outpath=plot.path, symSize=1,
                                   lcol = "darkred",
