@@ -143,7 +143,6 @@ binary.fixed.inv.var <- function(binary.data, params){
                                 
 binary.fixed.inv.var.parameters <- function(){
     # parameters
-    binary_metrics <- c("OR", "RR", "RD")
     apply_adjustment_to = c("only0", "all")
     
     params <- list("conf.level"="float", "digits"="float", 
@@ -217,7 +216,6 @@ binary.fixed.mh <- function(binary.data, params){
                                 
 binary.fixed.mh.parameters <- function(){
     # parameters
-    binary_metrics <- c("OR", "RR", "RD")
     apply_adjustment_to = c("only0", "all")
     
     params <- list("conf.level"="float", "digits"="float",
@@ -389,9 +387,7 @@ binary.random <- function(binary.data, params){
 
 binary.random.parameters <- function(){
     # parameters
-    binary_metrics <- c("OR", "RR", "RD")
     rm_method_ls <- c("HE", "DL", "SJ", "ML", "REML", "EB")
-    #params <- list("rm.method"=rm_method_ls, "measure"=binary_metrics, "conf.level"="float", "digits"="float")
     params <- list("rm.method"=rm_method_ls, "conf.level"="float", "digits"="float")
     
     # default values

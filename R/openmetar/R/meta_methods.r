@@ -312,7 +312,7 @@ loo.ma.continuous <- function(fname, cont.data, params){
     # (mapping titles to pretty-printed text). In this case we have only one 
     # of each. 
     #     
-    images <- c("Leave-one-out Forest plot"=forest.path)
+    images <- c("Leave-one-out Forest Plot"=forest.path)
     plot.names <- c("loo forest plot"="loo_forest_plot")
     
     results <- list("images"=images, "Leave-one-out Summary"=loo.disp, "plot_names"=plot.names)

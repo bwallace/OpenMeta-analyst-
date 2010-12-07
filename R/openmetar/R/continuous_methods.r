@@ -109,13 +109,12 @@ continuous.fixed <- function(cont.data, params){
 
 continuous.fixed.parameters <- function(){
     # parameters
-    cont_metrics <- c("MD", "SMD")
-    params <- list("measure"=cont_metrics, "conf.level"="float", "digits"="float")
+    params <- list("conf.level"="float", "digits"="float")
     
     # default values
-    defaults <- list("measure"="MD", "conf.level"=95, "digits"=3)
+    defaults <- list("conf.level"=95, "digits"=3)
     
-    var_order <- c("measure", "conf.level", "digits")
+    var_order <- c("conf.level", "digits")
     parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
 }
 
@@ -179,14 +178,13 @@ continuous.random <- function(cont.data, params){
 
 continuous.random.parameters <- function(){
     # parameters
-    cont_metrics <- c("MD", "SMD")
     rm_method_ls <- c("HE", "DL", "SJ", "ML", "REML", "EB")
-    params <- list("rm.method"=rm_method_ls, "measure"=cont_metrics, "conf.level"="float", "digits"="float")
+    params <- list("rm.method"=rm_method_ls, "conf.level"="float", "digits"="float")
     
     # default values
-    defaults <- list("rm.method"="DL", "measure"="MD", "conf.level"=95, "digits"=3)
+    defaults <- list("rm.method"="DL", "conf.level"=95, "digits"=3)
     
-    var_order <- c("rm.method", "measure", "conf.level", "digits")
+    var_order <- c("rm.method", "conf.level", "digits")
     parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
 }
 
