@@ -182,7 +182,7 @@ create.summary.disp <- function(res, params, degf, model.title) {
     class(res.array) <- "summary.data"
     result.data <- list("Title" = "  Model Results (reporting scale)", "result.table" = res.array)
     summary.disp <- list("modelTitle" = model.title, "het.data" = het.data, "result.data" = result.data,
-                        "alt.data" = alt.data, "rawResults" = res)
+                        "alt.data" = alt.data, "MAResults" = res)
     class(summary.disp) <- "summary.display"
     return(summary.disp)
 }

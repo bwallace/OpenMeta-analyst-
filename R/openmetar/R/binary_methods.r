@@ -7,16 +7,9 @@
 # data in a coherent interface.    # 
 ####################################
 
-
-#bd <- new('BinaryData', g1O1=c(30, 20, 10), g1O2=c(270, 180, 90), g2O1=c(35, 25, 15), g2O2=c(265, 175, 85), y=c(0.62962962963, 0.777777777778, 0.84126984127), SE=c(0.432831413165, 0.343592092809, 0.290047070662), study.names=c('lau', 'wallace', 'trik'), covariates=list(hi=c(1,2,3)))
-
-
-# bd <- new("BinaryData", g1O1=c(10, 20, 30), g1O2=c(90, 180, 270), g2O1=c(15, 25, 35), g2O2=c(85, 175, 265),                       study.names=c("1", "2", "3")
-# params <- list(measure="OR", conf.level=95, digits=3)
-
 library(metafor)
 
-binary.log.metrics <- c("OR", "RR", "PETO")
+binary.log.metrics <- c("OR", "RR")
 
 compute.for.one.bin.study <- function(binary.data, params){
     res <- escalc(params$measure, ai=binary.data@g1O1, bi=binary.data@g1O2, 
@@ -111,8 +104,8 @@ binary.fixed.inv.var <- function(binary.data, params){
     if (length(binary.data@g1O1) == 1 || length(binary.data@y) == 1){
         res <- get.res.for.one.binary.study(binary.data, params)
         # Package res for use by overall method.
-        Res <- list("rawResults" = res) 
-        results <- list("Summary"=Res)
+        summary.disp <- list("MAResults" = res) 
+        results <- list("Summary"=summary.disp)
     }
     else{
         # call out to the metafor package
@@ -123,7 +116,6 @@ binary.fixed.inv.var <- function(binary.data, params){
         degf <- res$k - res$p
         model.title <- paste("Fixed-Effects Model - Inverse Variance (k = ", res$k, ")", sep="")
         summary.disp <- create.summary.disp(res, params, degf, model.title)
-        summary.disp
 
         results <- list("Summary"=summary.disp, "images"=c())
         if ((is.null(params$create.plot)) || params$create.plot == TRUE) {
@@ -167,7 +159,7 @@ binary.fixed.inv.var.parameters <- function(){
 
 binary.fixed.inv.var.overall <- function(results) {
     # this parses out the overall from the computed result
-    res <- results$Summary$rawResults
+    res <- results$Summary$MAResults
     overall <- c(res$b[1], res$ci.lb, res$ci.ub)
     overall
 }
@@ -183,8 +175,8 @@ binary.fixed.mh <- function(binary.data, params){
     if (length(binary.data@g1O1) == 1 || length(binary.data@y) == 1){
         res <- get.res.for.one.binary.study(binary.data, params)
          # Package res for use by overall method.
-        Res <- list("rawResults" = res) 
-        results <- list("Summary"=Res)
+        summary.disp <- list("MAResults" = res) 
+        results <- list("Summary"=summary.disp)
     }
     else{
         res<-rma.mh(ai=binary.data@g1O1, bi=binary.data@g1O2, 
@@ -196,8 +188,6 @@ binary.fixed.mh <- function(binary.data, params){
         degf <- res$k.yi - 1
         model.title <- paste("Fixed-Effects Model - Mantel Haenszel (k = ", res$k, ")", sep="")
         summary.disp <- create.summary.disp(res, params, degf, model.title)
-        summary.disp                                                                               
-        #
         # generate forest plot 
         #
         if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
@@ -252,7 +242,7 @@ binary.fixed.mh.is.feasible <- function(binary.data){
 
 binary.fixed.mh.overall <- function(results) {
     # this parses out the overall from the computed result
-    res <- results$Summary$rawResults
+    res <- results$Summary$MAResults
     overall <- c(res$b[1], res$ci.lb, res$ci.ub)
     overall
 }
@@ -267,8 +257,8 @@ binary.fixed.peto <- function(binary.data, params){
     if (length(binary.data@g1O1) == 1){
         res <- get.res.for.one.binary.study(binary.data, params)
          # Package res for use by overall method.
-        Res <- list("rawResults" = res) 
-        results <- list("Summary"=Res)
+        summary.disp <- list("MAResults" = res) 
+        results <- list("Summary"=summary.disp)
     }
     else{  
         res <- rma.peto(ai=binary.data@g1O1, bi=binary.data@g1O2, 
@@ -280,7 +270,7 @@ binary.fixed.peto <- function(binary.data, params){
         degf <- res$k.yi - 1
         model.title <- paste("Fixed-Effects Model - Peto (k = ", res$k, ")", sep="")
         summary.disp <- create.summary.disp(res, params, degf, model.title)
-        summary.disp                                                 
+                                            
         #
         # generate forest plot 
         #
@@ -335,7 +325,7 @@ binary.fixed.peto.is.feasible <- function(binary.data){
 
 binary.fixed.peto.overall <- function(results) {
     # this parses out the overall from the computed result
-    res <- results$Summary$rawResults
+    res <- results$Summary$MAResults
     overall <- c(res$b[1], res$ci.lb, res$ci.ub)
     overall
 }
@@ -352,39 +342,32 @@ binary.random <- function(binary.data, params){
     if (length(binary.data@g1O1) == 1 || length(binary.data@y) == 1){
         res <- get.res.for.one.binary.study(binary.data, params)
          # Package res for use by overall method.
-        Res <- list("rawResults" = res) 
-        results <- list("Summary"=Res)
+        summary.disp <- list("MAResults" = res) 
+        results <- list("Summary"=summary.disp)
     }
     else{     
         # call out to the metafor package
-        if (length(binary.data@g1O1) > 0) {
-            res<-rma.uni(ai=binary.data@g1O1, bi=binary.data@g1O2, 
-                                        ci=binary.data@g2O1, di=binary.data@g2O2, slab=binary.data@study.names,
-                                        method=params$rm.method, measure=params$measure,
-                                        level=params$conf.level, digits=params$digits)
-        }
-        else{
-           res<-rma.uni(yi=binary.data@y, sei=binary.data@SE, 
-                                        slab=binary.data@study.names,
-                                        method=params$rm.method, level=params$conf.level,
-                                        digits=params$digits)
-        }
-        #                        
-        # Create list to display summary of results
-        #
-        degf <- res$k.yi - 1
-        model.title <- paste("Binary Random-Effects Model (k = ", res$k, ")", sep="")
-        summary.disp <- create.summary.disp(res, params, degf, model.title)
-        summary.disp       
-        #
-        # generate forest plot 
-        #
-        if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
-            binary.data <- compute.point.estimates(binary.data, params)
-            # compute point estimates for plot.data in case they are missing
-            forest.path <- paste(params$fp_outpath, sep="")
-            plot.data <- create.plot.data.binary(binary.data, params, res)
-            forest.plot(plot.data, outpath=forest.path)
+        res<-rma.uni(yi=binary.data@y, sei=binary.data@SE, 
+                     slab=binary.data@study.names,
+                     method=params$rm.method, level=params$conf.level,
+                     digits=params$digits)
+    }
+    #                        
+    # Create list to display summary of results
+    #
+    degf <- res$k.yi - 1
+    model.title <- paste("Binary Random-Effects Model (k = ", res$k, ")", sep="")
+    summary.disp <- create.summary.disp(res, params, degf, model.title)
+ 
+    #
+    # generate forest plot 
+    #
+    if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
+        binary.data <- compute.point.estimates(binary.data, params)
+        # compute point estimates for plot.data in case they are missing
+        forest.path <- paste(params$fp_outpath, sep="")
+        plot.data <- create.plot.data.binary(binary.data, params, res)
+        forest.plot(plot.data, outpath=forest.path)
         
         #
         # Now we package the results in a dictionary (technically, a named 
@@ -393,14 +376,13 @@ binary.random <- function(binary.data, params){
         # (mapping titles to pretty-printed text). In this case we have only one 
         # of each. 
         #     
-            images <- c("Forest Plot"=forest.path)
-            plot.names <- c("forest plot"="forest_plot")
-            results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
-        }
-        else {
-            results <- list("Summary"=summary.disp)
-        }    
+        images <- c("Forest Plot"=forest.path)
+        plot.names <- c("forest plot"="forest_plot")
+        results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
     }
+    else {
+        results <- list("Summary"=summary.disp)
+    }    
     results
 }
 
@@ -421,7 +403,7 @@ binary.random.parameters <- function(){
 
 binary.random.overall <- function(results) {
     # this parses out the overall from the computed result
-    res <- results$Summary$rawResults
+    res <- results$Summary$MAResults
     overall <- c(res$b[1], res$ci.lb, res$ci.ub)
     overall
 }
