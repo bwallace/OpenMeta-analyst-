@@ -10,9 +10,6 @@
 
 library(metafor)
 
-# cd <- new('ContinuousData', N1=c(20, 90), mean1=c(1.2, .9), sd1=c(.2, .2), N2=c(30, 50), mean2=c(2, 2), sd2=c(.1, .1), study.names=c("1", "2"))
-# params <- list(measure="MD", conf.level=95, digits=3)
-
 compute.for.one.cont.study <- function(cont.data, params){
     res <- escalc(params$measure, 
                   n1i=cont.data@N1, m1i=cont.data@mean1, sd1i=cont.data@sd1,
