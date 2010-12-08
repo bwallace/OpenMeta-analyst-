@@ -1,0 +1,19 @@
+Package: Formula
+Version: 1.0-0
+Date: 2010-04-04
+Title: Extended Model Formulas
+Description: Infrastructure for extended formulas with multiple parts
+        on the right-hand side and/or multiple responses on the
+        left-hand side.
+Author@R: c(person(given = "Achim", family = "Zeileis", role = c("aut",
+        "cre"), email = "Achim.Zeileis@R-project.org"), person(given =
+        "Yves", family = "Croissant", role = "aut", email =
+        "Yves.Croissant@univ-reunion.fr"))
+Author: Achim Zeileis [aut, cre], Yves Croissant [aut]
+Maintainer: Achim Zeileis <Achim.Zeileis@R-project.org>
+Depends: R (>= 2.0.0), stats
+License: GPL-2
+Packaged: 2010-04-04 09:34:35 UTC; zeileis
+Repository: CRAN
+Date/Publication: 2010-04-04 10:11:00
+Built: R 2.10.1; ; 2010-04-04 17:20:33 UTC; windows

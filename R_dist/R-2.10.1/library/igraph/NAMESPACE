@@ -1,0 +1,237 @@
+
+importFrom(stats, as.dendrogram)
+
+# The igraph interface
+
+export(add.vertices, delete.edges,
+       delete.vertices, ecount, neighbors, get.edges)
+
+# Attributes
+
+export(get.graph.attribute, set.graph.attribute,
+       get.vertex.attribute, set.vertex.attribute,
+       get.edge.attribute, set.edge.attribute,
+       list.graph.attributes, list.vertex.attributes,
+       list.edge.attributes, remove.graph.attribute,
+       remove.vertex.attribute, remove.edge.attribute)
+
+# iterators
+
+export(V, E, "$.igraph.vs", "$.igraph.es",
+       "[.igraph.vs", "[.igraph.es", "[<-.igraph.vs", "[<-.igraph.es",
+       "$<-.igraph.vs", "$<-.igraph.es", "V<-", "E<-",
+       print.igraph.vs, print.igraph.es, "%--%", "%->%", "%<-%")
+
+S3method("$", igraph)
+S3method("$<-", igraph)
+S3method("$", igraph.vs)
+S3method("[", igraph.vs)
+S3method("[<-", igraph.vs)
+S3method("$<-", igraph.vs)
+S3method("$", igraph.es)
+S3method("[", igraph.es)
+S3method("[<-", igraph.es)
+S3method("$<-", igraph.es)
+S3method(print, igraph.vs)
+S3method(print, igraph.es)
+  
+# basic functions, printing
+
+export(is.igraph, are.connected, print.igraph, summary.igraph, is.directed,
+       get.edge)
+
+# structure generators
+
+export(graph, graph.adjacency, graph.star, graph.tree, graph.lattice,
+       graph.ring, graph.full, graph.atlas, graph.data.frame, graph.edgelist,
+       graph.extended.chordal.ring, line.graph, graph.de.bruijn, graph.kautz,
+       graph.formula, graph.famous)
+
+# games
+
+export(erdos.renyi.game, random.graph.game, degree.sequence.game,
+       aging.prefatt.game, aging.barabasi.game, aging.ba.game,
+       growing.random.game, barabasi.game, ba.game,
+       callaway.traits.game, establishment.game, grg.game,
+       preference.game, asymmetric.preference.game, connect.neighborhood,
+       rewire.edges, watts.strogatz.game)
+
+# community structure
+
+export(edge.betweenness.community,
+       spinglass.community, walktrap.community,
+       edge.betweenness.community.merges, fastgreedy.community,
+       community.to.membership)
+
+S3method("as.dendrogram", igraph.walktrap)
+S3method("as.dendrogram", igraph.ebc)
+S3method("as.dendrogram", igraph.eigenc)
+
+# conversion
+
+export(get.adjacency, get.edgelist, as.directed, as.undirected,
+       get.adjlist, get.adjedgelist, igraph.from.graphNEL, 
+       igraph.to.graphNEL)
+
+# fitting, other
+
+export(power.law.fit, running.mean, igraph.sample)
+
+# foreign formats
+
+export(read.graph, write.graph, graph.graphdb)
+
+# layouts
+
+export(layout.random, layout.circle,
+       layout.spring, layout.kamada.kawai, layout.lgl,
+       layout.fruchterman.reingold.grid, layout.sphere, layout.merge,
+       layout.reingold.tilford, layout.norm, piecewise.layout)
+export(igraph.drl.default, igraph.drl.coarsen, igraph.drl.coarsest,
+       igraph.drl.refine, igraph.drl.final)
+
+# structural properties
+
+export(subgraph, simplify, degree, degree.distribution, diameter,
+       closeness, subcomponent, betweenness, bibcoupling, cocitation,
+       shortest.paths, minimum.spanning.tree, edge.betweenness,
+       get.shortest.paths, average.path.length, transitivity,
+       get.all.shortest.paths, get.diameter, farthest.nodes,
+       graph.laplacian, constraint, page.rank, reciprocity, rewire,
+       graph.density, neighborhood.size, neighborhood, graph.neighborhood,
+       graph.coreness, topological.sort, girth, is.loop, is.multiple,
+       count.multiple)
+
+# plotting
+
+export(plot.igraph, tkplot, tkplot.close, tkplot.off, tkplot.fit.to.screen,
+       tkplot.reshape, tkplot.export.postscript, tkplot.getcoords,
+       tkplot.center, tkplot.rotate, rglplot.igraph, rglplot)
+
+S3method(rglplot, igraph)
+
+# components
+
+export(cluster.distribution, is.connected, decompose.graph,
+       no.clusters)
+
+# centrality
+
+export(evcent, bonpow, alpha.centrality)
+export(igraph.arpack.default)
+
+# isomorphism, motifs
+
+export(graph.isoclass, graph.isomorphic, graph.motifs,
+       graph.motifs.est, graph.isocreate, graph.motifs.no,
+       graph.isomorphic.vf2, graph.subisomorphic.vf2,
+       graph.count.isomorphisms.vf2, graph.count.subisomorphisms.vf2,
+       graph.get.isomorphisms.vf2, graph.get.subisomorphisms.vf2)
+
+# operators
+
+export(graph.disjoint.union, "%du%", graph.intersection, "%s%",
+       graph.union, "%u%", graph.difference, "%m%",
+       graph.complementer, graph.compose, "%c%")
+
+# parameters, config
+
+export(igraph.par)
+
+# flows, cuts, etc.
+
+export(graph.maxflow, graph.mincut, vertex.connectivity, edge.connectivity,
+       edge.disjoint.paths, vertex.disjoint.paths, graph.adhesion,
+       graph.cohesion)
+
+# cliques
+
+export(cliques, largest.cliques, maximal.cliques, clique.number,
+       independent.vertex.sets, largest.independent.vertex.sets,
+       maximal.independent.vertex.sets, independence.number)
+
+# cohesive blocking
+
+export(cohesive.blocks, structurally.cohesive.blocks)
+export(is.bgraph, print.bgraph, plot.bgraph,
+       write.pajek.bgraph)
+S3method(print, bgraph)
+S3method(plot, bgraph)
+S3method(layout.svd, igraph)
+S3method(layout.mds, igraph)
+S3method(layout.svd, bgraph)
+S3method(layout.mds, bgraph)
+export(layout.mds, layout.svd)
+
+# arpack
+
+export(arpack)
+
+# tkigraph
+
+export(tkigraph)
+
+######################## REST IS GENERATED BY stimulus
+export(graph.empty)
+export(add.edges)
+export(vcount)
+export(graph.full.citation)
+export(graph.lcf)
+export(graph.adjlist)
+export(graph.full.bipartite)
+export(forest.fire.game)
+export(closeness.estimate)
+export(betweenness.estimate)
+export(edge.betweenness.estimate)
+export(page.rank.old)
+export(page.rank)
+export(path.length.hist)
+export(is.simple)
+export(evcent)
+export(hub.score)
+export(authority.score)
+export(arpack.unpack.complex)
+export(unfold.tree)
+export(is.mutual)
+export(graph.knn)
+export(graph.strength)
+export(bipartite.projection.size)
+export(bipartite.projection)
+export(graph.bipartite)
+export(graph.incidence)
+export(get.incidence)
+export(is.bipartite)
+export(clusters)
+export(articulation.points)
+export(biconnected.components)
+export(layout.star)
+export(layout.fruchterman.reingold)
+export(layout.graphopt)
+export(layout.drl)
+export(layout.drl)
+export(similarity.jaccard)
+export(similarity.dice)
+export(similarity.invlogweighted)
+export(community.le.to.membership)
+export(modularity)
+export(leading.eigenvector.community)
+export(leading.eigenvector.community.naive)
+export(leading.eigenvector.community.step)
+export(label.propagation.community)
+export(dyad.census)
+export(triad.census)
+export(graph.isoclass)
+export(graph.isomorphic)
+export(graph.isoclass.subgraph)
+export(graph.isocreate)
+export(graph.isomorphic.vf2)
+export(graph.count.isomorphisms.vf2)
+export(graph.get.isomorphisms.vf2)
+export(graph.subisomorphic.vf2)
+export(graph.count.subisomorphisms.vf2)
+export(graph.get.subisomorphisms.vf2)
+export(graph.isomorphic.34)
+export(canonical.permutation)
+export(permute.vertices)
+export(graph.isomorphic.bliss)
+export(graph.automorphisms)

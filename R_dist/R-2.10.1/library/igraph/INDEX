@@ -1,0 +1,143 @@
+add.edges               Method for structural manipulation of graphs
+aging.prefatt.game      Generate an evolving random graph with
+                        preferential attachment and aging
+alpha.centrality        Find Bonacich alpha centrality scores of
+                        network positions
+arpack                  ARPACK eigenvector calculation
+articulation.points     Articulation points of a graph
+as.directed             Convert between directed and undirected graphs
+attributes              Graph, vertex and edge attributes
+authority.score         Kleinberg's centrality scores.
+barabasi.game           Generate scale-free graphs according to the
+                        Barabasi-Albert model
+betweenness             Vertex and edge betweenness centrality
+biconnected.components
+                        Biconnected components
+bipartite.projection    Project a bipartite graph
+bonpow                  Find Bonacich Power Centrality Scores of
+                        Network Positions
+callaway.traits.game    Graph generation based on different vertex
+                        types
+canonical.permutation   Canonical permutation of a graph
+cliques                 The functions find cliques, ie. complete
+                        subgraphs in a graph
+closeness               Closeness centrality of vertices
+clusters                Connected components of a graph
+cocitation              Cocitation coupling
+cohesive.blocks         Calculate Cohesive Blocks
+communities             Common functions supporting community detection
+                        algorithms
+constraint              Burt's constraint
+decompose.graph         Decompose a graph into components
+degree                  Degree and degree distribution of the vertices
+degree.sequence.game    Generate random graphs with a given degree
+                        sequence
+diameter                Diameter of a graph
+dyad.census             Dyad census of a graph
+edge.betweenness.community
+                        Community structure detection based on edge
+                        betweenness
+edge.connectivity       Edge connectivity.
+erdos.renyi.game        Generate random graphs according to the
+                        Erdos-Renyi model
+evcent                  Find Eigenvector Centrality Scores of Network
+                        Positions
+fastgreedy.community    Community structure via greedy optimization of
+                        modularity
+forest.fire.game        Forest Fire Network Model
+get.adjacency           Convert a graph to an adjacency matrix or an
+                        edge list
+get.adjlist             Adjacency lists
+get.incidence           Incidence matrix of a bipartite graph
+girth                   Girth of a graph
+graph.adjacency         Create graphs from adjacency matrices
+graph.adjlist           Create graphs from adjacency lists
+graph.automorphisms     Number of automorphisms
+graph.bipartite         Create a bipartite graph
+graph.constructors      Various methods for creating graphs
+graph.coreness          K-core decomposition of graphs
+graph.data.frame        Creating igraph graphs from data frames
+graph.de.bruijn         De Bruijn graphs.
+graph.density           Graph density
+graph.famous            Creating named graphs
+graph.formula           Creating (small) graphs via a simple interface
+graph.full.bipartite    Create a full bipartite graph
+graph.graphdb           Load a graph from the graph database for
+                        testing graph isomorphism.
+graph.incidence         Create graphs from an incidence matrix
+graph.isoclass          Graph Isomorphism
+graph.kautz             Kautz graphs
+graph.knn               Average nearest neighbor degree
+graph.laplacian         Graph Laplacian
+graph.lcf               Creating a graph from LCF notation
+graph.maxflow           Maximum flow in a network
+graph.motifs            Graph motifs
+graph.strength          Strength or weighted vertex degree
+graph.union             Graph operators
+grg.game                Geometric random graphs
+growing.random.game     Growing random graph generation
+igraph-package          The igraph package
+igraph.from.graphNEL    Convert igraph graphs to graphNEL objects or
+                        back
+igraph.par              Parameters for the igraph package
+igraph.plotting         Drawing graphs
+igraph.sample           Sampling a random integer sequence
+igraph.vertex.shapes    Various vertex shapes when plotting igraph
+                        graphs
+independent.vertex.sets
+                        Independent vertex sets
+is.bipartite            Decide whether a graph is bipartite
+is.igraph               Is this object a graph?
+is.multiple             Find the multiple or loop edges in a graph
+is.mutual               Find mutual edges in a directed graph
+iterators               Vertex and edge sequences and iterators
+label.propagation.community
+                        Finding communities based on propagating labels
+layout                  Generate coordinates for plotting graphs
+layout.drl              The DrL graph layout generator
+layout.merge            Merging graph layouts
+layout.star             Generate coordinates to place the vertices of a
+                        graph in a star-shape
+leading.eigenvector.community
+                        Community structure detecting based on the
+                        leading eigenvector of the community matrix
+line.graph              Line graph of a graph
+minimum.spanning.tree   Minimum spanning tree
+modularity              Modularity of a community structure of a graph
+neighborhood            Neighborhood of graph vertices
+page.rank               The Page Rank algorithm
+permute.vertices        Permute the vertices of a graph
+plot.bgraph             Plot graphs and their cohesive block hierarchy
+plot.igraph             Plotting of graphs
+power.law.fit           Fitting a power-law distribution function to
+                        discrete data
+preference.game         Trait-based random generation
+print.igraph            Print graphs to the terminal
+read.graph              Reading foreign file formats
+reciprocity             Reciprocity of graphs
+rewire                  Graph rewiring
+rewire.edges            Rewires the endpoints of the edges of a graph
+                        randomly
+rglplot                 3D plotting of graphs with OpenGL
+running.mean            Running mean of a time series
+shortest.paths          Shortest (directed or undirected) paths between
+                        vertices
+similarity.jaccard      Similarity measures of two vertices
+simplify                Simple graphs
+spinglass.community     Finding communities in graphs based on
+                        statistical meachanics
+subcomponent            In- or out- component of a vertex
+subgraph                Subgraph of a graph
+tkigraph                Experimental basic igraph GUI
+tkplot                  Interactive plotting of graphs
+topological.sort        Topological sorting of vertices in a graph
+transitivity            Transitivity of a graph
+triad.census            Triad census, subgraphs with three vertices
+unfold.tree             Convert a general graph into a forest
+vcount                  Gaining information about graph structure
+vertex.connectivity     Vertex connectivity.
+walktrap.community      Community strucure via short random walks
+watts.strogatz.game     The Watts-Strogatz small-world model
+write.graph             Writing the graph to a file in some format
+write.pajek.bgraph      Write graphs and their cohesive block hierarchy
+                        as Pajek files

@@ -1,0 +1,91 @@
+AnalysisSpecification-class
+                        Class "AnalysisSpecification"
+BinaryData-class        Class "BinaryData"
+ContinuousData-class    Class "ContinuousData"
+OMData-class            Class "OMData"
+binary.fixed.inv.var    Binary Fixed Inverse Variance
+binary.fixed.inv.var.overall
+                        Apply binary.fixed.inv.var Method for
+                        Cumulative and Leave-One-Out Analyses
+binary.fixed.inv.var.parameters
+                        List parameters for binary.fixed.inv.var method
+binary.fixed.mh         Binary Fixed Mantel-Haenszel
+binary.fixed.mh.is.feasible
+                        Determine whether binary.fixed.mh can be used
+binary.fixed.mh.overall
+                        Apply binary.fixed.mh method for cumulative and
+                        leave-one-out analyses
+binary.fixed.mh.parameters
+                        List parameters for binary.fixed.mh method
+binary.fixed.peto       Binary Fixed Peto
+binary.fixed.peto.is.feasible
+                        Determine whether binary.fixed.peto method can
+                        be used
+binary.fixed.peto.overall
+                        Apply binary.fixed.peto method for cumulative
+                        and leave-one-out analyses
+binary.fixed.peto.parameters
+                        List parameters for binary.fixed.peto method
+binary.log.metrics      List metrics with log display scale
+binary.random           Binary Random Effect
+binary.random.overall   Apply binary.random method for cumulative and
+                        leave-one-out analyses
+binary.random.parameters
+                        List parameters for binary.random method
+binary.transform.f      Set display and calculation scales for binary
+                        methods
+compute.for.one.bin.study
+                        Compute effect size and confidence bounds for
+                        one binary study
+compute.for.one.cont.study
+                        Compute effect size and confidence bounds for
+                        one continuous study
+continuous.random       Continuous Random Effect
+continuous.random.overall
+                        Apply continuous random effect method for
+                        cumulative and leave-one-out analyses
+continuous.random.parameters
+                        Specify Parameters for Continuous Methods
+continuous.transform.f
+                        Set display and calculation scales for
+                        continuous methods
+create.overall.display
+                        Create summary for cumulative and leave-one-out
+                        analyses
+create.plot.data.binary
+                        Create plot data for binary methods forest plot
+create.plot.data.continuous
+                        Create plot data for continuous methods forest
+                        plot
+create.plot.data.generic
+                        Create plot data for forest plot
+create.plot.data.overall
+                        Create plot data for cumulative and
+                        leave-one-out forest plots
+create.plot.data.reg    Create plot data for regression plots
+create.regression.disp
+                        Create summary for regression analyses
+create.summary.disp     Create summary of meta-analysis results
+cum.ma.binary           Cumulative analysis using binary methods
+cum.ma.continuous       Cumulative analysis using continuous methods
+fillin.2x2.simple       Example function for data.transforms
+fillin.cont.1spell      Utility function for data_transform
+fillin.cont.AminusB     Utility function for data_transform
+forest.plot             Create forest plot
+get.res.for.one.binary.study
+                        Get Residuals for One Binary Study
+get.res.for.one.cont.study
+                        Get Residuals for One Continuous Study
+impute.bin.data         Impute Binary Data
+loo.ma.binary           Leave-One-Out Method for Binary Data
+loo.ma.continuous       Leave-One-Out Method for Continuous Data
+meta.regression         Meta-Regression Analysis
+meta.regression.plot    Create Meta-Regression Plot
+openmetar-package       R component for Open Meta-Analyst
+plot.options            Specify Plot Options
+print.overall.display   Print Summary for Cumulative and Leave-One-Out
+                        Analyses
+print.reg.display       Print Summary for Regression Analysis
+print.summary.display   Print Summary for Standary Meta-Anayses
+print.table             Pretty-Print Data Table
+reg.data                Example Data for Regression Plot
