@@ -403,6 +403,8 @@
     </property>
     <addaction name="action_undo"/>
     <addaction name="action_redo"/>
+    <addaction name="action_copy"/>
+    <addaction name="action_paste"/>
    </widget>
    <addaction name="menu_file"/>
    <addaction name="menuEdit"/>
@@ -498,6 +500,16 @@
   <action name="action_redo">
    <property name="text">
     <string>redo (ctrl + y)</string>
+   </property>
+  </action>
+  <action name="action_copy">
+   <property name="text">
+    <string>copy (ctrl + c)</string>
+   </property>
+  </action>
+  <action name="action_paste">
+   <property name="text">
+    <string>paste (ctrl + v)</string>
    </property>
   </action>
  </widget>
