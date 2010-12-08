@@ -2,7 +2,7 @@ Package: openmetar
 Version: 1.0
 Date: 2010-12-02
 Type: Package
-Title: Open Meta-Analysis Package for R
+Title: R component for Open Meta-Analyst
 Author: Byron Wallace <bwallace@tuftsmedicalcenter.org>
 Maintainer: Paul Trow <ptrow@tuftsmedicalcenter.org>
 Depends: R (>= 2.9.2), grid, igraph, metafor
