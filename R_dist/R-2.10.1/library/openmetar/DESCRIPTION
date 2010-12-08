@@ -10,5 +10,5 @@ Description: R Component for Open Meta-Analyst, a graphical user
         interface for performing meta-analysis
 License: GPL (>= 2)
 LazyLoad: yes
-Packaged: 2010-12-08 18:52:33 UTC; ptrow
-Built: R 2.10.1; ; 2010-12-08 18:52:34 UTC; windows
+Packaged: 2010-12-08 19:38:40 UTC; ptrow
+Built: R 2.10.1; ; 2010-12-08 19:38:41 UTC; windows
