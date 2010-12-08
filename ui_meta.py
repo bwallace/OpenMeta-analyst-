@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'meta.ui'
 #
-# Created: Mon Nov 08 12:48:36 2010
+# Created: Wed Dec 08 10:34:39 2010
 #      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -209,6 +209,10 @@ class Ui_MainWindow(object):
         self.action_undo.setObjectName("action_undo")
         self.action_redo = QtGui.QAction(MainWindow)
         self.action_redo.setObjectName("action_redo")
+        self.action_copy = QtGui.QAction(MainWindow)
+        self.action_copy.setObjectName("action_copy")
+        self.action_paste = QtGui.QAction(MainWindow)
+        self.action_paste.setObjectName("action_paste")
         self.menu_file.addAction(self.action_save)
         self.menu_file.addAction(self.action_open)
         self.menu_file.addAction(self.action_quit)
@@ -227,6 +231,8 @@ class Ui_MainWindow(object):
         self.menuDataset.addAction(self.action_add_covariate)
         self.menuEdit.addAction(self.action_undo)
         self.menuEdit.addAction(self.action_redo)
+        self.menuEdit.addAction(self.action_copy)
+        self.menuEdit.addAction(self.action_paste)
         self.menu_bar.addAction(self.menu_file.menuAction())
         self.menu_bar.addAction(self.menuEdit.menuAction())
         self.menu_bar.addAction(self.menuAnalysis.menuAction())
@@ -262,5 +268,7 @@ class Ui_MainWindow(object):
         self.action_meta_regression.setText(QtGui.QApplication.translate("MainWindow", "meta-regression", None, QtGui.QApplication.UnicodeUTF8))
         self.action_undo.setText(QtGui.QApplication.translate("MainWindow", "undo (ctrl + z)", None, QtGui.QApplication.UnicodeUTF8))
         self.action_redo.setText(QtGui.QApplication.translate("MainWindow", "redo (ctrl + y)", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_copy.setText(QtGui.QApplication.translate("MainWindow", "copy (ctrl + c)", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_paste.setText(QtGui.QApplication.translate("MainWindow", "paste (ctrl + v)", None, QtGui.QApplication.UnicodeUTF8))
 
 import icons_rc

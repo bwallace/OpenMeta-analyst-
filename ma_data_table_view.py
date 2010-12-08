@@ -44,10 +44,6 @@ class MADataTable(QtGui.QTableView):
         
         
     def keyPressEvent(self, event):                                       
-        # copy/paste: these only happen if at least one cell is selected
-        selected_indexes = self.selectionModel().selectedIndexes()
-        upper_left_index, lower_right_index = (self._upper_left(selected_indexes),
-                                               self._lower_right(selected_indexes))
         if (event.modifiers() & QtCore.Qt.ControlModifier):
             ## undo/redo
             if event.key() == QtCore.Qt.Key_Z:
@@ -57,17 +53,31 @@ class MADataTable(QtGui.QTableView):
             ### copy/paste
             elif event.key() == QtCore.Qt.Key_C:
                 # ctrl + c = copy
-                self.copy_contents_in_range(upper_left_index, lower_right_index,
-                                                                to_clipboard=True)
+                self.copy()
             elif event.key() == QtCore.Qt.Key_V:
                 # ctrl + v = paste
-                self.paste_from_clipboard(upper_left_index)
+                self.paste()
             else:
                 ###
                 # if the command hasn't anything to do with the table view
                 # in particular, we pass the event up to the main UI
                 self.main_gui.keyPressEvent(event)
-           
+                
+    def copy(self):
+        # copy/paste: these only happen if at least one cell is selected
+        selected_indexes = self.selectionModel().selectedIndexes()
+        upper_left_index, lower_right_index = (self._upper_left(selected_indexes),
+                                               self._lower_right(selected_indexes))    
+        self.copy_contents_in_range(upper_left_index, lower_right_index,
+                                                to_clipboard=True)   
+                                                                                    
+    def paste(self):
+        # copy/paste: these only happen if at least one cell is selected
+        selected_indexes = self.selectionModel().selectedIndexes()
+        upper_left_index, lower_right_index = (self._upper_left(selected_indexes),
+                                               self._lower_right(selected_indexes))
+        self.paste_from_clipboard(upper_left_index)                                      
+                                               
     def row_header_clicked(self, row):
         # dispatch on the data type
         form = None

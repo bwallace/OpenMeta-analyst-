@@ -246,7 +246,10 @@ class DatasetModel(QAbstractTableModel):
             if column in (self.NAME, self.YEAR):
                 if column == self.NAME:
                     study.name = unicode(value.toString().toUtf8(), encoding="utf8")
-                    if study.name != "" and index.row() == self.rowCount()-1:
+                    if study.name == "":
+                        # just ignore -- we don't allow empty study names
+                        return False
+                    elif index.row() == self.rowCount()-1:
                         # if the last study was just edited, append a
                         # new, blank study
                         # TODO bug: if a new tx group is added, and then a new study

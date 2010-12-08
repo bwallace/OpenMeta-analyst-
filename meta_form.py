@@ -177,6 +177,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             
             QObject.connect(self.action_undo, SIGNAL("triggered()"), self.undo)
             QObject.connect(self.action_redo, SIGNAL("triggered()"), self.redo)
+            QObject.connect(self.action_copy, SIGNAL("triggered()"), self.tableView.copy)
+            QObject.connect(self.action_paste, SIGNAL("triggered()"), self.tableView.paste)
             
             QObject.connect(self.action_edit, SIGNAL("triggered()"), self.edit_dataset)
             QObject.connect(self.action_view_network, SIGNAL("triggered()"), self.view_network)
