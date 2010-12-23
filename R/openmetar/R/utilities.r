@@ -10,14 +10,22 @@
 
 
 print.summary.display <- function(summary.disp,...) {
-    # Prints results summary
+    #
+    # Prints a summary results
+    # summary.disp is a list containing the following named items
+    # - model.title - a string that appears at the top of the summary.
+    # - table.titles - a vector of titles for the results tables
+    #   Setting a table title to NA prevents the table from being printed.
+    # - arrays - a list of arrays, of the same length as table.titles,
+    #   which are pretty-printed by print.summary.data 
+    #
     cat(summary.disp$model.title)
     cat("\n\n")
     arrays <- summary.disp$arrays
     count = 1
     for (name in arrays) {
-        if (!is.na(summary.disp$titles[count])) {
-            cat(summary.disp$titles[count])
+        if (!is.na(summary.disp$table.titles[count])) {
+            cat(summary.disp$table.titles[count])
             cat("\n")
             print.summary.data(name)
             cat("\n")
@@ -157,7 +165,49 @@ create.summary.disp <- function(res, params, degf, model.title) {
     }
     res.title <- "  Model Results (reporting scale)"
     arrays = list(arr1=het.array, arr2=res.array, arr3=alt.array)
-    summary.disp <- list("model.title" = model.title, "titles" = c(het.title, res.title, alt.title), "arrays" = arrays,
+    summary.disp <- list("model.title" = model.title, "table.titles" = c(het.title, res.title, alt.title), "arrays" = arrays,
+                         "MAResults" = res)
+    class(summary.disp) <- "summary.display"
+    return(summary.disp)
+}
+
+create.diagnostic.disp <- function(res, params, degf, model.title) {
+    QLabel =  paste("Q(df = ", degf, ")", sep="")
+    I2 <- max(0, (res$QE - degf)/res$QE)
+    I2 <- paste(100 * round(I2, digits = 2), "%")
+    QE <- round(res$QE, digits=params$digits)
+    QEp <- round.display(res$QEp, digits=params$digits)
+    het.array <-  array(c(QLabel, QE, "p-Value", QEp, "I^2", I2), dim=c(2,3))
+    class(het.array) <- "summary.data"
+    het.title <- "  Test for Heterogeneity"
+    est.disp <- round(diagnostic.transform.f(params$measure)$display.scale(res$b), digits=params$digits)
+    lb.disp <- round(diagnostic.transform.f(params$measure)$display.scale(res$ci.lb), digits=params$digits)
+    ub.disp <- round(diagnostic.transform.f(params$measure)$display.scale(res$ci.ub), digits=params$digits)
+
+    pVal <- round.display(res$pval, digits=params$digits)
+    zVal <- round(res$zval, digits=params$digits)
+    se <- round(res$se, digits=params$digits)
+
+    if (diagnostic.transform.f(params$measure)$display.scale(1)!= diagnostic.transform.f(params$measure)$calc.scale(1)) {
+         res.array <- array(c("Estimate", est.disp, "p-Value", pVal, "Z-Value", zVal, "Lower bound", lb.disp,
+                                        "Upper bound", ub.disp), dim=c(2,5))
+         
+         estCalc <- round(res$b, digits=params$digits)
+         lbCalc <- round(res$ci.lb, digits=params$digits)
+         ubCalc <- round(res$ci.ub, digits=params$digits)
+         alt.array <- array(c("Estimate", estCalc, "SE", se, "Lower bound", lbCalc, "Upper bound", ubCalc), dim=c(2,4))
+         alt.title <- "  Model Results (calculation scale)"
+    }
+
+    else {
+        res.array <- array(c("Estimate", est.disp, "SE", se, "p-Value", pVal, "Z-Value", zVal, "Lower bound", lb.disp,
+                                        "Upper bound", ub.disp), dim=c(2,6))
+
+        alt.data <- list("Title" = NA)
+    }
+    res.title <- "  Model Results (reporting scale)"
+    arrays = list(arr1=het.array, arr2=res.array, arr3=alt.array)
+    summary.disp <- list("model.title" = model.title, "table.titles" = c(het.title, res.title, alt.title), "arrays" = arrays,
                          "MAResults" = res)
     class(summary.disp) <- "summary.display"
     return(summary.disp)
@@ -171,22 +221,24 @@ create.regression.disp <- function(res, params) {
     reg.array <- array(c("", "Intercept", "Slope", "Estimates", coeffs[1], coeffs[2], "p-Values", pvals[1], pvals[2],
                       "Lower bounds", lbs[1], lbs[2], "Upper bounds", ubs[1], ubs[2]), dim=c(3, 5))
     arrays <- list(arr1=reg.array)
-    reg.disp <- list("model.title" = "", "titles" = c(""), "arrays" = arrays)
+    reg.disp <- list("model.title" = "", "table.titles" = c(""), "arrays" = arrays)
     class(reg.disp) <-  "summary.display"
     return(reg.disp)
 }
 
 create.overall.display <- function(res, study.names, params) {
-    res
-    params$digits
+    #res
+    #params$digits
     res <- round(res, digits = params$digits)
     overall.array <- array(c("", study.names, "Estimates", res[,1], "Lower bounds", res[,2],"Upper bounds", res[,3]),
                     dim=c(length(study.names) + 1, 4))
     arrays <- list(arr1=overall.array)
-    overall.disp <- list("model.title" = "", "titles" = c(""), "arrays" = arrays)
+    overall.disp <- list("model.title" = "", "table.titles" = c(""), "arrays" = arrays)
     class(overall.disp) <- "summary.display"
     return(overall.disp)
 }
+
+
 
 extract.data <- function(binary.data, params){
     # Extracts data from binary.data into an array and computes bounds on confidence intervals.

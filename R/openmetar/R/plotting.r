@@ -25,6 +25,9 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     if (metric.is.log.scale(params$measure)){
         scale.str <- "log" 
     }
+    if (metric.is.diagnostic(params$measure)){
+        scale.str <- "diagnostic"
+    }
     
     # Creates a data structure that can be passed to forest.plot
     # res is the output of a call to the Metafor function rma
@@ -36,33 +39,47 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
                     scale = scale.str)
     alpha <- 1.0-(params$conf.level/100.0)
     mult <- abs(qnorm(alpha/2.0))
+    y.overall <- res$b[1]
+    lb.overall <- res$ci.lb[1]
+    ub.overall <- res$ci.ub[1]
     ###
     # TODO we're making tacit assumptions here
     # about the subclass of OmData; namely
     # that it includes a y and SE field.
-    y <- om.data@y
-    lb <- y - mult*om.data@SE
-    ub <- y + mult*om.data@SE
-   
-    y.overall <- res$b[1]
-    lb.overall <- res$ci.lb[1]
-    ub.overall <- res$ci.ub[1]
-    
+    #
     # put results in display scale and round.
-    y.rounded <- binary.transform.f(params$measure)$display.scale(y)
+    if ("DiagnosticData" %in% class(diagnostic.data)) {
+        # if data is DiagnosticData
+        y <- om.data@y[,params$measure]
+        lb <- y - mult*om.data@SE[,paste(params$measure,".SE",sep="")]
+        ub <- y + mult*om.data@SE[,paste(params$measure,".SE",sep="")]
+       
+        y.rounded <- diagnostic.transform.f(params$measure)$display.scale(y)
+        lb.rounded <- diagnostic.transform.f(params$measure)$display.scale(lb)
+        ub.rounded <- diagnostic.transform.f(params$measure)$display.scale(ub)
+        y.overall.rounded <- diagnostic.transform.f(params$measure)$display.scale(y.overall)
+        lb.overall.rounded <- diagnostic.transform.f(params$measure)$display.scale(lb.overall)
+        ub.overall.rounded <- binary.transform.f(params$measure)$display.scale(ub.overall)
+    }
+    else {
+        # if data is BinaryData or ContData
+        y <- om.data@y
+        lb <- y - mult*om.data@SE
+        ub <- y + mult*om.data@SE
+        y.rounded <- binary.transform.f(params$measure)$display.scale(y)
+        lb.rounded <- binary.transform.f(params$measure)$display.scale(lb)
+        ub.rounded <- binary.transform.f(params$measure)$display.scale(ub)
+        y.overall.rounded <- binary.transform.f(params$measure)$display.scale(y.overall)
+        ub.overall.rounded <- binary.transform.f(params$measure)$display.scale(ub.overall)
+        lb.overall.rounded <- binary.transform.f(params$measure)$display.scale(lb.overall)
+    }
     y.rounded <- round.with.zeros(y.rounded, params$digits)
-    lb.rounded <- binary.transform.f(params$measure)$display.scale(lb)
     lb.rounded <- round.with.zeros(lb.rounded, params$digits)
-    ub.rounded <- binary.transform.f(params$measure)$display.scale(ub)
     ub.rounded <- round.with.zeros(ub.rounded, params$digits)
-    
-    y.overall.rounded <- binary.transform.f(params$measure)$display.scale(y.overall)
     y.overall.rounded <- round.with.zeros(y.overall.rounded, params$digits)
-    lb.overall.rounded <- binary.transform.f(params$measure)$display.scale(lb.overall)
     lb.overall.rounded <- round.with.zeros(lb.overall.rounded, params$digits)
-    ub.overall.rounded <- binary.transform.f(params$measure)$display.scale(ub.overall)
     ub.overall.rounded <- round.with.zeros(ub.overall.rounded, params$digits)
-  
+    
     if (params$fp_show_col2=='TRUE') {
         additional.cols <- list(es = c(paste(params$fp_col2_str, sep = ""),
                                  paste(y.rounded, " (", lb.rounded, " , ", ub.rounded, ")", sep = ""),
@@ -89,6 +106,10 @@ metric.is.log.scale <- function(metric){
     metric %in% c("RR", "OR", "PETO")    
 }
 
+metric.is.diagnostic <- function(metric) {
+    metric %in% c(diagnostic.log.metrics, diagnostic.logit.metrics)
+}    
+
 create.plot.data.binary <- function(binary.data, params, res, selected.cov = NULL, include.overall=TRUE){
 
     plot.data <- create.plot.data.generic  (binary.data, params, res, selected.cov=selected.cov)
@@ -102,8 +123,28 @@ create.plot.data.binary <- function(binary.data, params, res, selected.cov = NUL
     
     if ((length(binary.data@g2O1) > 0) && (params$fp_show_col4=="TRUE")){
         plot.data$additional.col.data$controls = c(paste(params$fp_col4_str, sep = ""),
-                                        paste(binary.data@g2O1, " / ", binary.data@g1O1 + binary.data@g2O2, sep = ""),
+                                        paste(binary.data@g2O1, " / ", binary.data@g2O1 + binary.data@g2O2, sep = ""),
                                         paste(sum(binary.data@g2O1), " / ", sum(binary.data@g1O1 + binary.data@g2O2), sep = ""))
+    }
+    
+    plot.data
+}
+
+create.plot.data.diagnostic <- function(diangostic.data, params, res, selected.cov = NULL, include.overall=TRUE){
+
+    plot.data <- create.plot.data.generic  (diagnostic.data, params, res, selected.cov=selected.cov)
+        
+    # if we have raw data, add it to the additional columns field
+    if ((length(diagnostic.data@TP) > 0) && (params$fp_show_col3=="TRUE")) {
+        plot.data$additional.col.data$cases = c(paste(params$fp_col3_str, sep = ""), 
+                                    paste(diagnostic.data@TP, " / ", diagnostic.data@TP + diagnostic.data@FN, sep = ""), 
+                                    paste(sum(diagnostic.data@TP), " / ", sum(diagnostic.data@TP + diagnostic.data@FN), sep = ""))
+    }
+    
+    if ((length(diagnostic.data@TN) > 0) && (params$fp_show_col4=="TRUE")){
+        plot.data$additional.col.data$controls = c(paste(params$fp_col4_str, sep = ""),
+                                        paste(diagnostic.data@TN, " / ", diagnostic.data@TN + diagnostic.data@FP, sep = ""),
+                                        paste(sum(diagnostic.data@TN), " / ", sum(diagnostic.data@TN + diagnostic.data@FP), sep = ""))
     }
     
     plot.data
@@ -279,43 +320,46 @@ plot.options <- function(forest.data, box.sca = 1, gapSize=3, plotWidth = 4) {
     effect.col<-forest.data$effects
     # i have kept the "ifs" bellow: when we decide to include more metrics
     # these will be expanded
-    if (forest.data$scale == "log")
-    {
+    
+    if (forest.data$scale == "log"){
            precision <- sqrt(1 / ((effect.col$UL - effect.col$LL)/(2*1.96)))
-    }
-    else if (forest.data$scale == "cont")
-    {
+    } else if (forest.data$scale == "cont") {
           precision <- sqrt(1 / ((effect.col$UL - effect.col$LL)/(2*1.96)))
-    } 
-   # some heuristics to determine xscale 
-    if (min(effect.col$LL)>0 && max(effect.col$UL)>0) {
-            effect.col.range <- c(max(0.5*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
-                                      }   
-    else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)<=0) { 
-            effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(-1.5*max(effect.col$ES) , max(effect.col$UL)))
-                                      }   
-    else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)>0) { 
-            effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
-                                      }   
-    else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)>0 && max(effect.col$ES)>0) { 
-            effect.col.range <- c(max(-2*min(effect.col$ES) , min(effect.col$LL)), min(1.5*max(effect.col$ES) , max(effect.col$UL)))
-                                      }   
-    else if (min(effect.col$LL)<=0 && max(effect.col$UL)<0) { 
-            effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(0.10*max(effect.col$ES) , max(effect.col$UL)))
-                                      }
+    } else {
+          precision <- sqrt(1 / ((effect.col$UL - effect.col$LL)/(2*1.96)))
+    }
+      
+   if (forest.data$scale != "diagnostic") { 
+   # some heuristics to determine xscale (unnecessary for diagnostic data) 
+        if (min(effect.col$LL)>0 && max(effect.col$UL)>0) {
+                effect.col.range <- c(max(0.5*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
+        } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)<=0) { 
+                effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(-1.5*max(effect.col$ES) , max(effect.col$UL)))
+        } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)>0) { 
+                effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
+        } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)>0 && max(effect.col$ES)>0) { 
+                effect.col.range <- c(max(-2*min(effect.col$ES) , min(effect.col$LL)), min(1.5*max(effect.col$ES) , max(effect.col$UL)))
+        } else if (min(effect.col$LL)<=0 && max(effect.col$UL)<0) { 
+                effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(0.10*max(effect.col$ES) , max(effect.col$UL)))
+        }                                       
+   
+        # this is an ugly solution to an uncommon problem                                 
+        merge.data <- data.frame(x = forest.data$types[-1], y = effect.col$LL, z = effect.col$UL)
+        merge.data <- subset(merge.data, x>0)                                  
     
-   # this is an ugly solution to an uncommon problem                                 
-    merge.data <- data.frame(x = forest.data$types[-1], y = effect.col$LL, z = effect.col$UL)
-    merge.data <- subset(merge.data, x>0)                                  
-    
-    if (min(effect.col.range) >= min(merge.data$y)) 
-        effect.col.range[1] <- min(merge.data$y)
-    if (max(effect.col.range) <= max(merge.data$z)) 
-        effect.col.range[2] <- max(merge.data$z)
-        
+        if (min(effect.col.range) >= min(merge.data$y)) 
+           effect.col.range[1] <- min(merge.data$y)
+        if (max(effect.col.range) <= max(merge.data$z)) 
+           effect.col.range[2] <- max(merge.data$z)
+   }
+     
+   else {
+   # if data is diagnostic, effect.col.range is [0, 1]
+      effect.col.range <- c(0, 1)
+   }    
             
-    effect.col.sizes <- box.sca * precision/max(precision)
-    effect.col.width <- unit(plotWidth, "inches")
+   effect.col.sizes <- box.sca * precision/max(precision)
+   effect.col.width <- unit(plotWidth, "inches")
 
     forest.params = list(
         col.gap = unit(gapSize, "mm"),
@@ -400,11 +444,16 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
 # This is the "null" line
 # "ifs" left in as we will possibly expand this when new metrics become available
 # note that the line is to be supressed when out of xscale bounds
-  if (forest.data$scale == "log" && min(col$range)<0 && max(col$range)>0 ) 
+  if (forest.data$scale == "log" && min(col$range)<0 && max(col$range)>0 ) {
       grid.lines(x=unit(0, "native"), y=0:1)
-  else if (forest.data$scale == "cont" && min(col$range)<0 && max(col$range)>0 ) 
-      grid.lines(x=unit(0, "native"), y=0:1)
-      
+  }
+  else { if (forest.data$scale == "cont" && min(col$range)<0 && max(col$range)>0 ) { 
+             grid.lines(x=unit(0, "native"), y=0:1)
+         }
+         else {
+             grid.lines(x=unit(0, "native"), y=0:1)
+         }   
+  }
   # Assume that last value in col is "All" 
   grid.lines(x=unit(col$ES[length(col$ES)], "native"),
              y=0:1, gp=gpar(lty = summary.line.pat, col= summary.line.col))
@@ -415,7 +464,7 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
         } else {
               grid.xaxis(at = user.ticks , label = user.ticks, gp=gpar(cex=0.6))
         }
-               }
+  }
   if (forest.data$scale == "log")  {
         if (length(user.ticks) == 0) { # some cheap tricks to make the axis ticks look nice (in most cases)...
             to.make.ticks <- range(exp(col$range))
@@ -432,8 +481,11 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
         }
         
         grid.xaxis(at = log.ticks , label = round(ticks, 3), gp=gpar(cex=0.6))          
-                    
-                    } 
+  } 
+  if (forest.data$scale == "diagnostic") {
+      grid.xaxis(at = c(0, 0.2, 0.4, 0.6, 0.8, 1))
+  }
+       
   grid.text(metric, y=unit(-2, "lines"))
   popViewport()
   for (i in 1:length(col$rows)) {
