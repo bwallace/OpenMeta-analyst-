@@ -129,7 +129,14 @@ round.with.zeros <- function(x, digits) {
     return(y)
 }
 
-create.summary.disp <- function(res, params, degf, model.title) {
+create.summary.disp <- function(res, params, degf, model.title, data.type) {
+
+    if (data.type == "diagnostic") {
+        transform.name <- "diagnostic.transform.f"
+    }  else {  
+       # data is binary or cont
+        transform.name <- "binary.transform.f"
+    }
     QLabel =  paste("Q(df = ", degf, ")", sep="")
     I2 <- max(0, (res$QE - degf)/res$QE)
     I2 <- paste(100 * round(I2, digits = 2), "%")
@@ -138,15 +145,17 @@ create.summary.disp <- function(res, params, degf, model.title) {
     het.array <-  array(c(QLabel, QE, "p-Value", QEp, "I^2", I2), dim=c(2,3))
     class(het.array) <- "summary.data"
     het.title <- "  Test for Heterogeneity"
-    est.disp <- round(binary.transform.f(params$measure)$display.scale(res$b), digits=params$digits)
-    lb.disp <- round(binary.transform.f(params$measure)$display.scale(res$ci.lb), digits=params$digits)
-    ub.disp <- round(binary.transform.f(params$measure)$display.scale(res$ci.ub), digits=params$digits)
+    
+    est.disp <- round(eval(call(transform.name, params$measure))$display.scale(res$b), digits=params$digits)
+    lb.disp <- round(eval(call(transform.name, params$measure))$display.scale(res$ci.lb), digits=params$digits)
+    ub.disp <- round(eval(call(transform.name, params$measure))$display.scale(res$ci.ub), digits=params$digits)
 
     pVal <- round.display(res$pval, digits=params$digits)
     zVal <- round(res$zval, digits=params$digits)
     se <- round(res$se, digits=params$digits)
 
-    if (binary.transform.f(params$measure)$display.scale(1)!= binary.transform.f(params$measure)$calc.scale(1)) {
+   if ((metric.is.log.scale(params$measure)) | (metric.is.logit.scale(params$measure))) {
+         # display and calculation scales are different - create two tables for results
          res.array <- array(c("Estimate", est.disp, "p-Value", pVal, "Z-Value", zVal, "Lower bound", lb.disp,
                                         "Upper bound", ub.disp), dim=c(2,5))
          
@@ -158,48 +167,7 @@ create.summary.disp <- function(res, params, degf, model.title) {
     }
 
     else {
-        res.array <- array(c("Estimate", est.disp, "SE", se, "p-Value", pVal, "Z-Value", zVal, "Lower bound", lb.disp,
-                                        "Upper bound", ub.disp), dim=c(2,6))
-
-        alt.data <- list("Title" = NA)
-    }
-    res.title <- "  Model Results (reporting scale)"
-    arrays = list(arr1=het.array, arr2=res.array, arr3=alt.array)
-    summary.disp <- list("model.title" = model.title, "table.titles" = c(het.title, res.title, alt.title), "arrays" = arrays,
-                         "MAResults" = res)
-    class(summary.disp) <- "summary.display"
-    return(summary.disp)
-}
-
-create.diagnostic.disp <- function(res, params, degf, model.title) {
-    QLabel =  paste("Q(df = ", degf, ")", sep="")
-    I2 <- max(0, (res$QE - degf)/res$QE)
-    I2 <- paste(100 * round(I2, digits = 2), "%")
-    QE <- round(res$QE, digits=params$digits)
-    QEp <- round.display(res$QEp, digits=params$digits)
-    het.array <-  array(c(QLabel, QE, "p-Value", QEp, "I^2", I2), dim=c(2,3))
-    class(het.array) <- "summary.data"
-    het.title <- "  Test for Heterogeneity"
-    est.disp <- round(diagnostic.transform.f(params$measure)$display.scale(res$b), digits=params$digits)
-    lb.disp <- round(diagnostic.transform.f(params$measure)$display.scale(res$ci.lb), digits=params$digits)
-    ub.disp <- round(diagnostic.transform.f(params$measure)$display.scale(res$ci.ub), digits=params$digits)
-
-    pVal <- round.display(res$pval, digits=params$digits)
-    zVal <- round(res$zval, digits=params$digits)
-    se <- round(res$se, digits=params$digits)
-
-    if (diagnostic.transform.f(params$measure)$display.scale(1)!= diagnostic.transform.f(params$measure)$calc.scale(1)) {
-         res.array <- array(c("Estimate", est.disp, "p-Value", pVal, "Z-Value", zVal, "Lower bound", lb.disp,
-                                        "Upper bound", ub.disp), dim=c(2,5))
-         
-         estCalc <- round(res$b, digits=params$digits)
-         lbCalc <- round(res$ci.lb, digits=params$digits)
-         ubCalc <- round(res$ci.ub, digits=params$digits)
-         alt.array <- array(c("Estimate", estCalc, "SE", se, "Lower bound", lbCalc, "Upper bound", ubCalc), dim=c(2,4))
-         alt.title <- "  Model Results (calculation scale)"
-    }
-
-    else {
+        # display and calculation scales are the same - create one table
         res.array <- array(c("Estimate", est.disp, "SE", se, "p-Value", pVal, "Z-Value", zVal, "Lower bound", lb.disp,
                                         "Upper bound", ub.disp), dim=c(2,6))
 

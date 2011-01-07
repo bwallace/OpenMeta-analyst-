@@ -25,9 +25,16 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     if (metric.is.log.scale(params$measure)){
         scale.str <- "log" 
     }
-    if (metric.is.diagnostic(params$measure)){
-        scale.str <- "diagnostic"
+    if (metric.is.logit.scale(params$measure)){
+        scale.str <- "logit"
     }
+    if ("DiagnosticData" %in% class(om.data)) {
+        transform.name <- "diagnostic.transform.f"
+    }  else {
+        # data is binary or cont
+        transform.name <- "binary.transform.f"
+    }
+    
     
     # Creates a data structure that can be passed to forest.plot
     # res is the output of a call to the Metafor function rma
@@ -48,31 +55,17 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     # that it includes a y and SE field.
     #
     # put results in display scale and round.
-    if ("DiagnosticData" %in% class(diagnostic.data)) {
-        # if data is DiagnosticData
-        y <- om.data@y[,params$measure]
-        lb <- y - mult*om.data@SE[,paste(params$measure,".SE",sep="")]
-        ub <- y + mult*om.data@SE[,paste(params$measure,".SE",sep="")]
-       
-        y.rounded <- diagnostic.transform.f(params$measure)$display.scale(y)
-        lb.rounded <- diagnostic.transform.f(params$measure)$display.scale(lb)
-        ub.rounded <- diagnostic.transform.f(params$measure)$display.scale(ub)
-        y.overall.rounded <- diagnostic.transform.f(params$measure)$display.scale(y.overall)
-        lb.overall.rounded <- diagnostic.transform.f(params$measure)$display.scale(lb.overall)
-        ub.overall.rounded <- binary.transform.f(params$measure)$display.scale(ub.overall)
-    }
-    else {
-        # if data is BinaryData or ContData
-        y <- om.data@y
-        lb <- y - mult*om.data@SE
-        ub <- y + mult*om.data@SE
-        y.rounded <- binary.transform.f(params$measure)$display.scale(y)
-        lb.rounded <- binary.transform.f(params$measure)$display.scale(lb)
-        ub.rounded <- binary.transform.f(params$measure)$display.scale(ub)
-        y.overall.rounded <- binary.transform.f(params$measure)$display.scale(y.overall)
-        ub.overall.rounded <- binary.transform.f(params$measure)$display.scale(ub.overall)
-        lb.overall.rounded <- binary.transform.f(params$measure)$display.scale(lb.overall)
-    }
+    y <- om.data@y[,params$measure]
+    lb <- y - mult*om.data@SE[,paste(params$measure,".SE",sep="")]
+    ub <- y + mult*om.data@SE[,paste(params$measure,".SE",sep="")]
+  
+    y.rounded <- eval(call(transform.name, params$measure))$display.scale(y)
+    lb.rounded <- eval(call(transform.name, params$measure))$display.scale(lb)
+    ub.rounded <- eval(call(transform.name, params$measure))$display.scale(ub)
+    y.overall.rounded <- eval(call(transform.name, params$measure))$display.scale(y.overall)
+    lb.overall.rounded <- eval(call(transform.name, params$measure))$display.scale(lb.overall)
+    ub.overall.rounded <- eval(call(transform.name, params$measure))$display.scale(ub.overall)
+    
     y.rounded <- round.with.zeros(y.rounded, params$digits)
     lb.rounded <- round.with.zeros(lb.rounded, params$digits)
     ub.rounded <- round.with.zeros(ub.rounded, params$digits)
@@ -103,11 +96,11 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
 }
 
 metric.is.log.scale <- function(metric){
-    metric %in% c("RR", "OR", "PETO")    
+    metric %in% c(binary.log.metrics, diagnostic.log.metrics)    
 }
 
-metric.is.diagnostic <- function(metric) {
-    metric %in% c(diagnostic.log.metrics, diagnostic.logit.metrics)
+metric.is.logit.scale <- function(metric) {
+    metric %in% c(diagnostic.logit.metrics)
 }    
 
 create.plot.data.binary <- function(binary.data, params, res, selected.cov = NULL, include.overall=TRUE){
@@ -130,20 +123,20 @@ create.plot.data.binary <- function(binary.data, params, res, selected.cov = NUL
     plot.data
 }
 
-create.plot.data.diagnostic <- function(diangostic.data, params, res, selected.cov = NULL, include.overall=TRUE){
+create.plot.data.diagnostic <- function(diagnostic.data, params, res, selected.cov = NULL, include.overall=TRUE){
 
     plot.data <- create.plot.data.generic  (diagnostic.data, params, res, selected.cov=selected.cov)
         
     # if we have raw data, add it to the additional columns field
     if ((length(diagnostic.data@TP) > 0) && (params$fp_show_col3=="TRUE")) {
         plot.data$additional.col.data$cases = c(paste(params$fp_col3_str, sep = ""), 
-                                    paste(diagnostic.data@TP, " / ", diagnostic.data@TP + diagnostic.data@FN, sep = ""), 
+                                    paste(diagnostic.data@TP, " / ", diagnostic.data@TP, " + ", diagnostic.data@FN, sep = ""), 
                                     paste(sum(diagnostic.data@TP), " / ", sum(diagnostic.data@TP + diagnostic.data@FN), sep = ""))
     }
     
     if ((length(diagnostic.data@TN) > 0) && (params$fp_show_col4=="TRUE")){
         plot.data$additional.col.data$controls = c(paste(params$fp_col4_str, sep = ""),
-                                        paste(diagnostic.data@TN, " / ", diagnostic.data@TN + diagnostic.data@FP, sep = ""),
+                                        paste(diagnostic.data@TN, " / ", diagnostic.data@TN, " + ", diagnostic.data@FP, sep = ""),
                                         paste(sum(diagnostic.data@TN), " / ", sum(diagnostic.data@TN + diagnostic.data@FP), sep = ""))
     }
     
@@ -447,12 +440,11 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
   if (forest.data$scale == "log" && min(col$range)<0 && max(col$range)>0 ) {
       grid.lines(x=unit(0, "native"), y=0:1)
   }
-  else { if (forest.data$scale == "cont" && min(col$range)<0 && max(col$range)>0 ) { 
-             grid.lines(x=unit(0, "native"), y=0:1)
-         }
-         else {
-             grid.lines(x=unit(0, "native"), y=0:1)
-         }   
+  if (forest.data$scale == "cont" && min(col$range)<0 && max(col$range)>0 ) { 
+      grid.lines(x=unit(0, "native"), y=0:1)
+  }
+  if (forest.data$scale == "logit" && min(col$range)<0 && max(col$range)>0 ) { 
+      grid.lines(x=unit(0, "native"), y=0:1)
   }
   # Assume that last value in col is "All" 
   grid.lines(x=unit(col$ES[length(col$ES)], "native"),
@@ -460,8 +452,8 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
   
   if  (forest.data$scale == "cont") {
         if (length(user.ticks) == 0) {
-              grid.xaxis( gp=gpar(cex=0.6))
-        } else {
+              grid.xaxis(gp=gpar(cex=0.6))
+        } else {+6
               grid.xaxis(at = user.ticks , label = user.ticks, gp=gpar(cex=0.6))
         }
   }
@@ -482,8 +474,18 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
         
         grid.xaxis(at = log.ticks , label = round(ticks, 3), gp=gpar(cex=0.6))          
   } 
-  if (forest.data$scale == "diagnostic") {
-      grid.xaxis(at = c(0, 0.2, 0.4, 0.6, 0.8, 1))
+  if (forest.data$scale == "logit") {
+        if (length(user.ticks) == 0) { # some cheap tricks to make the axis ticks look nice (in most cases)...
+            logit.ticks <- floor(col$range[1]):ceiling(col$range[2])
+            ticks <- invlogit(logit.ticks)
+        } else {
+		        logit.ticks <- logit(user.ticks)
+		        #log.ticks <- log.ticks[log.ticks > min(col$range) - 0.5]    # remember it is additive on this scale
+            #log.ticks <- log.ticks[log.ticks < max(col$range) + 0.5]
+            ticks <- invlogit(logit.ticks)
+        }
+        
+        grid.xaxis(at = logit.ticks , label = round(ticks, 3), gp=gpar(cex=0.6)) 
   }
        
   grid.text(metric, y=unit(-2, "lines"))

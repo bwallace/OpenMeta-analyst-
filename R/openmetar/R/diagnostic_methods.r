@@ -117,9 +117,9 @@ diagnostic.fixed <- function(diagnostic.data, params){
     # Create list to display summary of results
     degf <- res$k - res$p
     model.title <- "Fixed-Effect Model - Inverse Variance"
-    diagnostic.disp <- create.diagnostic.disp(res, params, degf, model.title)
+    data.type <- "diagnostic"
+    summary.disp <- create.summary.disp(res, params, degf, model.title, data.type)
     # function to pretty-print summary of results.
-    results <- list("Summary"=diagnostic.disp)
     if ((is.null(params$create.plot)) || params$create.plot == TRUE) {
       # A forest plot will be created unless
       # params.create.plot is set to FALSE.
@@ -135,8 +135,11 @@ diagnostic.fixed <- function(diagnostic.data, params){
       #
       images <- c("Forest Plot"=forest.path)
       plot.names <- c("forest plot"="forest_plot")
-      results <- list("images"=images, "Summary"=diagnostic.disp, "plot_names"=plot.names)
+      results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
     }
+    else {
+        results <- list("Summary"=summary.disp)
+    }   
     results
 }
 
@@ -173,7 +176,8 @@ diagnostic.random <- function(diagnostic.data, params){
     #
     degf <- res$k.yi - 1
     model.title <- paste("Diagnostic Random-Effects Model (k = ", res$k, ")", sep="")
-    summary.disp <- create.diagnostic.disp(res, params, degf, model.title)
+    data.type <- "diagnostic"
+    summary.disp <- create.summary.disp(res, params, degf, model.title, data.type)
  
     #
     # generate forest plot 

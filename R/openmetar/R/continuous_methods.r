@@ -77,7 +77,8 @@ continuous.fixed <- function(cont.data, params){
 
         degf <- res$k - res$p
         model.title <- paste("Continuous Fixed-Effects Model (k = ", res$k, ")", sep="")
-        summary.disp <- create.summary.disp(res, params, degf, model.title)
+        data.type <- "cont"
+        summary.disp <- create.summary.disp(res, params, degf, model.title, data.type)
     }    
     #
     # generate forest plot 
@@ -145,7 +146,8 @@ continuous.random <- function(cont.data, params){
 
         degf <- res$k - res$p
         model.title <- paste("Continuous Random-Effects Model (k = ", res$k, ")", sep="")
-        summary.disp <- create.summary.disp(res, params, degf, model.title)
+        data.type <- "cont"
+        summary.disp <- create.summary.disp(res, params, degf, model.title, data.type)
     }        
     #
     # generate forest plot 
