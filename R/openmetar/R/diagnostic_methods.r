@@ -45,52 +45,44 @@ diagnostic.transform.f <- function(metric.str){
     list(display.scale = display.scale, calc.scale = calc.scale)
 }
 
-compute.diag.point.estimates <- function(diagnostic.data) {
+compute.diag.point.estimates <- function(diagnostic.data, params) {
 # Computes point estimates based on raw data and adds them to diagnostic.data
+    metric <- params$measure
     TP <- diagnostic.data@TP
     FN <- diagnostic.data@FN  
     TN <- diagnostic.data@TN 
     FP <- diagnostic.data@FP
     
-    # sensitivity
-    sens <- TP / (TP + FN)
-    # specificity
-    spec <- TN / (TN + FP)
-    # pos. predictive value
-    PPV <-  TP / (TP + FP)
-    #neg. predictive value
-    NPV <-  TN / (TN + FN)
-    # accuracy
-    Acc <- (TP + TN) / (TP + TN + FP + FN)
-    # positive likelihood ratio
-    PLR <- sens / (1 - spec) 
-    # negative likelihood ratio
-    NLR <- (1 - sens) / spec
-    # diagnostic odds ratio
-    DOR <- PLR / NLR
-    y <- array(c(diagnostic.transform.f("sens")$calc.scale(sens),
-                 diagnostic.transform.f("spec")$calc.scale(spec),
-                 diagnostic.transform.f("PPV")$calc.scale(PPV),
-                 diagnostic.transform.f("NPV")$calc.scale(NPV),
-                 diagnostic.transform.f("Acc")$calc.scale(Acc),
-                 diagnostic.transform.f("PLR")$calc.scale(PLR),
-                 diagnostic.transform.f("NLR")$calc.scale(NLR),
-                 diagnostic.transform.f("DOR")$calc.scale(DOR)),
-                 dim=c(length(diagnostic.data@study.names), 8))
-    colnames(y) <- c("sens", "spec", "PPV", "NPV", "Acc", "PLR", "NLR", "DOR")             
-    diagnostic.data@y <- y
-    sens.SE <- sqrt((1 / TP) + (1 / FN)) 
-    spec.SE <- sqrt((1 / TN) + (1 / FP))
-    PPV.SE <- sqrt((1 / TP) + (1 / FP))
-    NPV.SE <- sqrt((1 / TN) + (1 / FN))
-    Acc.SE <- sqrt((1 / (TP + TN)) + (1 / (FP + FN)))
-    PLR.SE <- sqrt((1 / TP) - (1 / (TP + FN)) + (1 / FP) - (1 / (TN + FP)))
-    NLR.SE <- sqrt((1 / TP) - (1 / (TP + FN)) + (1 / FP) - (1 / (TN + FP)))
-    DOR.SE <- sqrt((1 / TP) + (1 / FN) + (1 / FP) + (1 / TN))
-    SE <- array(c(sens.SE, spec.SE, PPV.SE, NPV.SE, Acc.SE, PLR.SE, NLR.SE, DOR.SE),
-                dim=c(length(diagnostic.data@study.names), 8))
-    colnames(SE) <- c("sens.SE", "spec.SE", "PPV.SE", "NPV.SE", "Acc.SE", "PLR.SE", "NLR.SE", "DOR.SE")
-    diagnostic.data@SE <- SE                  
+    y <- switch(metric,
+      # sensitivity
+      sens = TP / (TP + FN), 
+      # specificity
+      spec = TN / (TN + FP),
+      # pos. predictive value
+      PPV =  TP / (TP + FP),
+      #neg. predictive value
+      NPV =  TN / (TN + FN),
+      # accuracy
+      Acc = (TP + TN) / (TP + TN + FP + FN),
+      # positive likelihood ratio
+      PLR = TP * (TN + FP) / (FP * (TP + FN)), 
+      # negative likelihood ratio
+      NLR = FN * (TN + FP) / (TN * (TP + FN)),
+      # diagnostic odds ratio
+      DOR = TP * TN / (FP * FN))
+      
+    diagnostic.data@y <- eval(call("diagnostic.transform.f", params$measure))$calc.scale(y)
+ 
+    diagnostic.data@SE <- switch(metric,
+    sens <- sqrt((1 / TP) + (1 / FN)), 
+    spec <- sqrt((1 / TN) + (1 / FP)),
+    PPV <- sqrt((1 / TP) + (1 / FP)),
+    NPV <- sqrt((1 / TN) + (1 / FN)),
+    Acc <- sqrt((1 / (TP + TN)) + (1 / (FP + FN))),
+    PLR <- sqrt((1 / TP) - (1 / (TP + FN)) + (1 / FP) - (1 / (TN + FP))),
+    NLR <- sqrt((1 / TP) - (1 / (TP + FN)) + (1 / FP) - (1 / (TN + FP))),
+    DOR <- sqrt((1 / TP) + (1 / FN) + (1 / FP) + (1 / TN)))
+    
     diagnostic.data
 }
 
@@ -105,12 +97,12 @@ invlogit <- function(x) {
 ###################################################
 #            diagnostic fixed effects             #
 ###################################################
-diagnostic.fixed <- function(diagnostic.data, params){
+diagnostic.fixed.inv.var <- function(diagnostic.data, params){
     # assert that the argument is the correct type
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
 
     results <- NULL
-    res<-rma.uni(yi=diagnostic.data@y[,params$measure], sei=diagnostic.data@SE[,paste(params$measure,".SE",sep="")], 
+    res<-rma.uni(yi=diagnostic.data@y, sei=diagnostic.data@SE, 
                      slab=diagnostic.data@study.names,
                      method="FE", level=params$conf.level,
                      digits=params$digits)
@@ -167,7 +159,7 @@ diagnostic.random <- function(diagnostic.data, params){
     
     results <- NULL
     # call out to the metafor package
-    res<-rma.uni(yi=diagnostic.data@y[,params$measure], sei=diagnostic.data@SE[,paste(params$measure,".SE",sep="")], 
+    res<-rma.uni(yi=diagnostic.data@y, sei=diagnostic.data@SE, 
                  slab=diagnostic.data@study.names,
                  method=params$rm.method, level=params$conf.level,
                  digits=params$digits)

@@ -55,9 +55,9 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     # that it includes a y and SE field.
     #
     # put results in display scale and round.
-    y <- om.data@y[,params$measure]
-    lb <- y - mult*om.data@SE[,paste(params$measure,".SE",sep="")]
-    ub <- y + mult*om.data@SE[,paste(params$measure,".SE",sep="")]
+    y <- om.data@y
+    lb <- y - mult*om.data@SE
+    ub <- y + mult*om.data@SE
   
     y.rounded <- eval(call(transform.name, params$measure))$display.scale(y)
     lb.rounded <- eval(call(transform.name, params$measure))$display.scale(lb)
@@ -125,7 +125,7 @@ create.plot.data.binary <- function(binary.data, params, res, selected.cov = NUL
 
 create.plot.data.diagnostic <- function(diagnostic.data, params, res, selected.cov = NULL, include.overall=TRUE){
 
-    plot.data <- create.plot.data.generic  (diagnostic.data, params, res, selected.cov=selected.cov)
+    plot.data <- create.plot.data.generic(diagnostic.data, params, res, selected.cov=selected.cov)
         
     # if we have raw data, add it to the additional columns field
     if ((length(diagnostic.data@TP) > 0) && (params$fp_show_col3=="TRUE")) {
@@ -307,7 +307,7 @@ plot.options <- function(forest.data, box.sca = 1, gapSize=3, plotWidth = 4) {
     # weights for the boxes
     # note that 1.96 is a convention [not necessary for the scalling]
     # the analysis functions determine the CI width (e.g. 95% or 99%)
-    # this is just scalling the boxes according to the SE
+    # this is just scaling the boxes according to the SE
     precision <- NULL
     effect.col.range <- NULL
     effect.col<-forest.data$effects
