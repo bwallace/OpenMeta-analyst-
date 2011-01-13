@@ -66,12 +66,12 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     lb.overall.rounded <- eval(call(transform.name, params$measure))$display.scale(lb.overall)
     ub.overall.rounded <- eval(call(transform.name, params$measure))$display.scale(ub.overall)
     
-    y.rounded <- round.with.zeros(y.rounded, params$digits)
-    lb.rounded <- round.with.zeros(lb.rounded, params$digits)
-    ub.rounded <- round.with.zeros(ub.rounded, params$digits)
-    y.overall.rounded <- round.with.zeros(y.overall.rounded, params$digits)
-    lb.overall.rounded <- round.with.zeros(lb.overall.rounded, params$digits)
-    ub.overall.rounded <- round.with.zeros(ub.overall.rounded, params$digits)
+    y.rounded <- mapply(round.with.zeros, y.rounded, params$digits)
+    lb.rounded <- mapply(round.with.zeros, lb.rounded, params$digits)
+    ub.rounded <- mapply(round.with.zeros, ub.rounded, params$digits)
+    y.overall.rounded <- mapply(round.with.zeros, y.overall.rounded, params$digits)
+    lb.overall.rounded <- mapply(round.with.zeros, lb.overall.rounded, params$digits)
+    ub.overall.rounded <- mapply(round.with.zeros, ub.overall.rounded, params$digits)
     
     if (params$fp_show_col2=='TRUE') {
         additional.cols <- list(es = c(paste(params$fp_col2_str, sep = ""),
@@ -105,7 +105,7 @@ metric.is.logit.scale <- function(metric) {
 
 create.plot.data.binary <- function(binary.data, params, res, selected.cov = NULL, include.overall=TRUE){
 
-    plot.data <- create.plot.data.generic  (binary.data, params, res, selected.cov=selected.cov)
+    plot.data <- create.plot.data.generic(binary.data, params, res, selected.cov=selected.cov)
         
     # if we have raw data, add it to the additional columns field
     if ((length(binary.data@g1O1) > 0) && (params$fp_show_col3=="TRUE")) {
@@ -169,9 +169,9 @@ create.plot.data.overall <- function(params, res, study.names, addRow1Space, sel
     lb.rounded <- binary.transform.f(params$measure)$display.scale(lb)
     ub.rounded <- binary.transform.f(params$measure)$display.scale(ub)
     
-    y.rounded <- round.with.zeros(y.rounded, params$digits)
-    lb.rounded <- round.with.zeros(lb.rounded, params$digits)
-    ub.rounded <- round.with.zeros(ub.rounded, params$digits)
+    y.rounded <- mapply(round.with.zeros, y.rounded, params$digits)
+    lb.rounded <- mapply(round.with.zeros, lb.rounded, params$digits)
+    ub.rounded <- mapply(round.with.zeros, ub.rounded, params$digits)
     
     if (params$fp_show_col2=='TRUE') {
         additional.cols <- list(es = c(paste(params$fp_col2_str, sep = ""),
@@ -656,3 +656,60 @@ meta.regression.plot <- function(plot.data, outpath,
     graphics.off()
 }
 
+#######################################
+#       Diagnostic SROC               #
+#######################################
+
+diagnostic.SROC.plot <- function(plot.data, outpath,
+                                  symSize=1,
+                                  lcol = "darkred",
+                                  metric = "Effect size",
+                                  xlabel= plot.data$covariate$varname,
+                                  lweight = 3,
+                                  lpatern = "dotted",
+                                  plotregion = "n",
+                                  mcolor = "darkgreen",
+                                  regline = TRUE) {
+
+
+    # make the data data.frame
+    data.reg <- data.frame(plot.data$effects, types = plot.data$types)
+    # data for plot (only keep the studies - not the summaries)
+    data.reg <- subset(data.reg, types==0)
+    
+    # area of circles
+    precision = NULL
+    mult = 1.96 # again, 1.96 is a convention for scaling, no need to parameterize
+    if (plot.data$scale == "log"){
+         precision <- 1 / ((data.reg$UL - data.reg$LL)/(2*mult))
+    }
+    else if (plot.data$scale == "cont"){
+        precision <- 1 / ((data.reg$UL - data.reg$LL)/(2*mult))
+    }
+    
+    radii <-  precision/sum(precision)
+    # TODO need to do something about the scaling.
+    png(file=outpath, width=5 , height=5, units="in", res=144)
+    cov.name <- plot.data$covariate$varname
+    cov.values <- plot.data$covariate$values
+    #depends on whether these are natural or log
+    if (plot.data$scale == "cont"){
+        symbols(y = data.reg$ES, x = cov.values, circles = symSize*radii , inches=FALSE,
+              xlab = xlabel, ylab = metric, bty = plotregion, fg = mcolor)
+    }
+    else{ 
+        symbols(y = data.reg$ES, x = cov.values, circles = symSize*radii , inches = FALSE,
+              xlab = xlabel, ylab = metric, bty = plotregion, fg = mcolor)
+    }
+    # note that i am assuming you have
+    #the untransformed coefficient from the meta-reg
+    # so i am doing no transformation
+    if (regline == TRUE)  {
+       x<-c(min(cov.values), max(cov.values))
+       y<-c (plot.data$fitted.line$intercept + 
+                min(cov.values)*plot.data$fitted.line$slope, plot.data$fitted.line$intercept + 
+                max(cov.values)*plot.data$fitted.line$slope)
+       lines(x, y, col = lcol, lwd = lweight, lty = lpatern)
+    }
+    graphics.off()
+}

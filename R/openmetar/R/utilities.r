@@ -101,32 +101,28 @@ round.display <- function(x, digits) {
 round.with.zeros <- function(x, digits) {
     # Rounds a number according to digits and pads  with zeros at the end, if necessary,
     # so that there are digits symbols after the decimal point.
+    x.rounded <- round(x, digits = digits)
     y <- NULL
-    for (i in 1:length(x)) {
-      x.rounded <- round(x[i], digits = digits)
-      numZeros <- NULL
-      if (floor(x[i]) == x[i]) {
-        # x is an integer
+    numZeros <- NULL
+    if (floor(x.rounded) == x.rounded) {
+        # x.rounded is an integer
         if (digits > 0) {
-          x.rounded <- paste(x.rounded, ".", sep="")
-          for (count in 1:digits) {
-            x.rounded <- paste(x.rounded, "0", sep="")
-          }
+            x.rounded <- paste(x.rounded, ".", sep="")
+            for (count in 1:digits) {
+              x.rounded <- paste(x.rounded, "0", sep="")
+            }
         }
-      }
-      else {
+    } else {
         pow <- 10**digits * x.rounded
         # Calculate how many zeros should be added on the right.
         while (floor(pow) == pow) {
           pow <- pow/10;
           if (floor(pow) == pow) {
-            x.rounded <- paste(x.rounded, "0", sep="")
+              x.rounded <- paste(x.rounded, "0", sep="")
           }
         }
-      }
-      y <- c(y, toString(x.rounded))
     }
-    return(y)
+    return(x.rounded)
 }
 
 create.summary.disp <- function(res, params, degf, model.title, data.type) {
@@ -145,7 +141,7 @@ create.summary.disp <- function(res, params, degf, model.title, data.type) {
     het.array <-  array(c(QLabel, QE, "p-Value", QEp, "I^2", I2), dim=c(2,3))
     class(het.array) <- "summary.data"
     het.title <- "  Test for Heterogeneity"
-    
+    res.title <- "  Model Results (reporting scale)"
     est.disp <- round(eval(call(transform.name, params$measure))$display.scale(res$b), digits=params$digits)
     lb.disp <- round(eval(call(transform.name, params$measure))$display.scale(res$ci.lb), digits=params$digits)
     ub.disp <- round(eval(call(transform.name, params$measure))$display.scale(res$ci.ub), digits=params$digits)
@@ -164,17 +160,16 @@ create.summary.disp <- function(res, params, degf, model.title, data.type) {
          ubCalc <- round(res$ci.ub, digits=params$digits)
          alt.array <- array(c("Estimate", estCalc, "SE", se, "Lower bound", lbCalc, "Upper bound", ubCalc), dim=c(2,4))
          alt.title <- "  Model Results (calculation scale)"
+         arrays = list(arr1=het.array, arr2=res.array, arr3=alt.array)
     }
 
     else {
         # display and calculation scales are the same - create one table
         res.array <- array(c("Estimate", est.disp, "SE", se, "p-Value", pVal, "Z-Value", zVal, "Lower bound", lb.disp,
                                         "Upper bound", ub.disp), dim=c(2,6))
-
-        alt.data <- list("Title" = NA)
+        arrays = list(arr1=het.array, arr2=res.array)
+        alt.title <- NA
     }
-    res.title <- "  Model Results (reporting scale)"
-    arrays = list(arr1=het.array, arr2=res.array, arr3=alt.array)
     summary.disp <- list("model.title" = model.title, "table.titles" = c(het.title, res.title, alt.title), "arrays" = arrays,
                          "MAResults" = res)
     class(summary.disp) <- "summary.display"
