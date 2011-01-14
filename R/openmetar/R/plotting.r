@@ -59,24 +59,36 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     lb <- y - mult*om.data@SE
     ub <- y + mult*om.data@SE
   
-    y.rounded <- eval(call(transform.name, params$measure))$display.scale(y)
-    lb.rounded <- eval(call(transform.name, params$measure))$display.scale(lb)
-    ub.rounded <- eval(call(transform.name, params$measure))$display.scale(ub)
-    y.overall.rounded <- eval(call(transform.name, params$measure))$display.scale(y.overall)
-    lb.overall.rounded <- eval(call(transform.name, params$measure))$display.scale(lb.overall)
-    ub.overall.rounded <- eval(call(transform.name, params$measure))$display.scale(ub.overall)
+    y.display <- eval(call(transform.name, params$measure))$display.scale(y)
+    lb.display <- eval(call(transform.name, params$measure))$display.scale(lb)
+    ub.display <- eval(call(transform.name, params$measure))$display.scale(ub)
+    y.overall.display <- eval(call(transform.name, params$measure))$display.scale(y.overall)
+    lb.overall.display <- eval(call(transform.name, params$measure))$display.scale(lb.overall)
+    ub.overall.display <- eval(call(transform.name, params$measure))$display.scale(ub.overall)
     
-    y.rounded <- mapply(round.with.zeros, y.rounded, params$digits)
-    lb.rounded <- mapply(round.with.zeros, lb.rounded, params$digits)
-    ub.rounded <- mapply(round.with.zeros, ub.rounded, params$digits)
-    y.overall.rounded <- mapply(round.with.zeros, y.overall.rounded, params$digits)
-    lb.overall.rounded <- mapply(round.with.zeros, lb.overall.rounded, params$digits)
-    ub.overall.rounded <- mapply(round.with.zeros, ub.overall.rounded, params$digits)
+    # some formatting to align columns - pad with zeros and add extra space to positive numbers
+    y.rounded <- round.with.zeros(y.display, digits = params$digits)
+    lb.rounded <- round.with.zeros(lb.display, digits = params$digits)
+    lb.rounded[lb.rounded >= 0] <- pad.with.spaces(lb.rounded[lb.rounded >= 0], begin.num=0, end.num=1)
+    ub.rounded <- round.with.zeros(ub.display, digits = params$digits)
+    ub.rounded[ub.rounded >= 0] <- pad.with.spaces(ub.rounded[ub.rounded >= 0], begin.num=1, end.num=0)
+    y.overall.rounded <- round.with.zeros(y.overall.display, params$digits)
+    lb.overall.rounded <- round.with.zeros(lb.overall.display, params$digits)
+    lb.overall.rounded[lb.overall.rounded >= 0] <- pad.with.spaces(lb.overall.rounded[lb.overall.rounded >= 0], begin.num=0, end.num=1)
+    ub.overall.rounded <- round.with.zeros(ub.overall.display, params$digits)
+    ub.overall.rounded[ub.overall.rounded >= 0] <- pad.with.spaces(ub.overall.rounded[ub.overall.rounded >= 0], begin.num=1, end.num=0)
+    
+        
     
     if (params$fp_show_col2=='TRUE') {
-        additional.cols <- list(es = c(paste(params$fp_col2_str, sep = ""),
+        col2.overall.row <- paste(y.overall.rounded, " (", lb.overall.rounded, " , ", ub.overall.rounded, ")", sep = "")
+        col2.width <- nchar(col2.overall.row)
+        col2.label <- params$fp_col2_str
+        label2.width <- nchar(col2.label)
+        col2.label.padded <- pad.with.spaces(col2.label, begin.num=0, end.num = floor((col2.width - label2.width) / 2))
+        additional.cols <- list(es = c(col2.label.padded,
                                  paste(y.rounded, " (", lb.rounded, " , ", ub.rounded, ")", sep = ""),
-                                 paste(y.overall.rounded, " (", lb.overall.rounded, " , ", ub.overall.rounded, ")", sep = "")))
+                                 col2.overall.row))
         plot.data$additional.col.data <- additional.cols 
     }              
     effects <- list(ES = c(y, y.overall),
@@ -95,6 +107,7 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     plot.data
 }
 
+
 metric.is.log.scale <- function(metric){
     metric %in% c(binary.log.metrics, diagnostic.log.metrics)    
 }
@@ -109,15 +122,37 @@ create.plot.data.binary <- function(binary.data, params, res, selected.cov = NUL
         
     # if we have raw data, add it to the additional columns field
     if ((length(binary.data@g1O1) > 0) && (params$fp_show_col3=="TRUE")) {
-        plot.data$additional.col.data$cases = c(paste(params$fp_col3_str, sep = ""), 
-                                    paste(binary.data@g1O1, " / ", binary.data@g1O1 + binary.data@g1O2, sep = ""), 
-                                    paste(sum(binary.data@g1O1), " / ", sum(binary.data@g1O1 + binary.data@g1O2), sep = ""))
+        # pad the right side of data with spaces to allign /
+        col3.denoms <- binary.data@g1O1 + binary.data@g1O2
+        col3.denom.digits <- nchar(col3.denoms)
+        col3.total <- sum(binary.data@g1O1 + binary.data@g1O2)
+        col3.max.digits <- nchar(col3.total)
+        col3.denoms.padded <- mapply(pad.with.spaces, col3.denoms, begin.num=0, end.num = 2 * (col3.max.digits - col3.denom.digits))
+        col3.overall.row <- paste(sum(binary.data@g1O1), " / ", col3.total, sep = "")
+        col3.width <- nchar(col3.overall.row)
+        col3.label <- params$fp_col3_str
+        label3.width <- nchar(col3.label)
+        # pad the column label to center it over data
+        col3.label.padded <- pad.with.spaces(col3.label, begin.num=0, end.num = floor((col3.width - label3.width) / 2))
+        plot.data$additional.col.data$cases = c(col3.label.padded, 
+                                    paste(binary.data@g1O1, " / ", col3.denoms.padded, sep = ""), 
+                                    col3.overall.row)
     }
     
     if ((length(binary.data@g2O1) > 0) && (params$fp_show_col4=="TRUE")){
-        plot.data$additional.col.data$controls = c(paste(params$fp_col4_str, sep = ""),
-                                        paste(binary.data@g2O1, " / ", binary.data@g2O1 + binary.data@g2O2, sep = ""),
-                                        paste(sum(binary.data@g2O1), " / ", sum(binary.data@g1O1 + binary.data@g2O2), sep = ""))
+        col4.denoms <- binary.data@g2O1 + binary.data@g2O2
+        col4.denom.digits <- nchar(col4.denoms)
+        col4.total <- sum(binary.data@g2O1 + binary.data@g2O2)
+        col4.max.digits <- nchar(col4.total)
+        col4.denoms.padded <- mapply(pad.with.spaces, col4.denoms, begin.num=0, end.num = 2 * (col4.max.digits - col4.denom.digits))
+        col4.overall.row <- paste(sum(binary.data@g2O1), " / ", col4.total, sep = "")
+        col4.width <- nchar(col4.overall.row)
+        col4.label <- params$fp_col4_str
+        label4.width <- nchar(col4.label)
+        col4.label.padded <- pad.with.spaces(col4.label, begin.num=0, end.num = floor((col4.width - label4.width) / 2))
+        plot.data$additional.col.data$controls = c(col4.label.padded,
+                                        paste(binary.data@g2O1, " / ", col4.denoms.padded, sep = ""),
+                                        col3.overall.row)
     }
     
     plot.data
@@ -165,13 +200,15 @@ create.plot.data.overall <- function(params, res, study.names, addRow1Space, sel
     ub <- res[,3]
    
     # put results in display scale and round.
-    y.rounded <- binary.transform.f(params$measure)$display.scale(y)
-    lb.rounded <- binary.transform.f(params$measure)$display.scale(lb)
-    ub.rounded <- binary.transform.f(params$measure)$display.scale(ub)
+    y.display <- binary.transform.f(params$measure)$display.scale(y)
+    lb.display <- binary.transform.f(params$measure)$display.scale(lb)
+    ub.display <- binary.transform.f(params$measure)$display.scale(ub)
     
-    y.rounded <- mapply(round.with.zeros, y.rounded, params$digits)
-    lb.rounded <- mapply(round.with.zeros, lb.rounded, params$digits)
-    ub.rounded <- mapply(round.with.zeros, ub.rounded, params$digits)
+    y.rounded <- round.with.zeros(y.display, digits = params$digits)
+    lb.rounded <- round.with.zeros(lb.display, digits = params$digits)
+    lb.rounded[lb.rounded >= 0] <- pad.with.spaces(lb.rounded[lb.rounded >= 0], begin.num=0, end.num=1)
+    ub.rounded <- round.with.zeros(ub.display, digits = params$digits)
+    ub.rounded[ub.rounded >= 0] <- pad.with.spaces(ub.rounded[ub.rounded >= 0], begin.num=1, end.num=0)
     
     if (params$fp_show_col2=='TRUE') {
         additional.cols <- list(es = c(paste(params$fp_col2_str, sep = ""),

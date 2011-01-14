@@ -36,7 +36,6 @@ print.summary.display <- function(summary.disp,...) {
 
 print.summary.data <- function(table.data) {
     # Prints an array table.data with lines separating rows and columns.
-    # rowLength <- 1
     num.rows <- length(table.data[,1])
     num.cols <- length(table.data[1,])
     # Compute column widths
@@ -47,11 +46,9 @@ print.summary.data <- function(table.data) {
     table.width <- sum(col.widths) + num.cols + 1
     # Create line of dashes of length table.width - 2
     dash.line <- NULL
-    for (count in 1:(table.width - 2)) {
-        dash.line <- paste(dash.line, "-", sep="")
-    }
+    dash.line <- create.repeat.string("-", table.width -2)
     top.line <- paste("+", dash.line, "+", sep="")
-    middleLine <- paste("|", dash.line, "|", sep="")
+    middle.line <- paste("|", dash.line, "|", sep="")
 
     # Build table
     cat(top.line)
@@ -60,13 +57,17 @@ print.summary.data <- function(table.data) {
         table.row <- "|"
         for (col.index in 1:num.cols) {
             col.width <- col.widths[col.index]
-            entry <- pad.entry(table.data[row.index,col.index], col.width)
-            table.row <- paste(table.row, entry, "|", sep="")
+            entry <- table.data[row.index,col.index]
+            # pad entries with spaces to align columns.
+            begin.num <- floor((col.width - nchar(entry))/2)
+            end.num <- ceiling((col.width - nchar(entry))/2) 
+            padded.entry <- pad.with.spaces(entry, begin.num, end.num)
+            table.row <- paste(table.row, padded.entry, "|", sep="")
         }
         cat(table.row)
         cat("\n")
         if (row.index < num.rows) {
-            cat(middleLine)
+            cat(middle.line)
             cat("\n")
         }
     }
@@ -74,35 +75,51 @@ print.summary.data <- function(table.data) {
     cat("\n")
 }
 
-pad.entry <- function(entry, col.width) {
-    # Adds spaces to entry so that it will be centered in a column of width col.width.
-    # Pad a table entry with zeros
-    for (i in 1:floor((col.width - nchar(entry))/2)) {
-        entry <- paste(" ", entry, sep="")
+pad.with.spaces <- function(entry, begin.num, end.num) {
+    # Adds spaces to beginning and end of entry
+    repeat.string.begin <- ""
+    if (begin.num > 0) {
+        repeat.string.begin <- create.repeat.string(" ", begin.num)
     }
-    for (i in 1:ceiling(col.width - nchar(entry))/2) {
-        entry <- paste(entry, " ", sep="")
+    repeat.string.end <- ""
+    if (end.num > 0) {
+        repeat.string.end <- create.repeat.string(" ", end.num)
     }
-    return(entry)
+    padded.entry <- paste(repeat.string.begin, entry, repeat.string.end, sep="")
+    return(padded.entry)
 }
 
-round.display <- function(x, digits) {
-    # Prints "< 10^(-digits)" if x is < 10^(-digits) or "x" otherwise
-    x.rounded <- round(x, digits)
-    x.disp <- x.rounded
-    for (count in 1:length(x)) {
-        if (abs(x.rounded[count]) < 10^(-digits)) {
-          x.disp[count] <- paste("< ", 10^(-digits), sep = "", collapse = "")
-        }
+create.repeat.string <- function(symbol, num.repeats) {
+    # creates a string in which symbol is repeated num.repeats times
+    repeat.string <- NULL
+    for (count in 1:num.repeats) {
+        repeat.string <- paste(repeat.string, symbol, sep="")
     }
-    return(x.disp)
+    return(repeat.string)
+}
+ 
+round.display <- function(x, digits) {
+    # Prints "< 5*10^(-digits-1)" if x.rounded == 0 or "x" otherwise
+    x.rounded <- round(x, digits)
+    zero.display <- function(x.rounded, digits) {
+        cutoff <- 5 * 10^(-digits-1)
+        if (x.rounded == 0) {
+          x.rounded <- paste("< ", cutoff, sep = "", collapse = "")
+        }
+        return(x.rounded)
+    }
+    x.rounded <- mapply(zero.display, x.rounded, digits)
+    return(x.rounded)
 }
 
 round.with.zeros <- function(x, digits) {
-    # Rounds a number according to digits and pads  with zeros at the end, if necessary,
-    # so that there are digits symbols after the decimal point.
+    # Rounds a number according to digits and pads  with zeros at the end
+    # so that the number of symbols after the decimal point equals digits.
+    # add.space adds an extra space to the beginning or end of output for alignment of positive numbers.
+    # Values are 'begin', 'end', 'none'
     x.rounded <- round(x, digits = digits)
-    y <- NULL
+    pad.zeros <- function(x.rounded, digits) {
+    # Pad with zeros  
     numZeros <- NULL
     if (floor(x.rounded) == x.rounded) {
         # x.rounded is an integer
@@ -122,6 +139,18 @@ round.with.zeros <- function(x, digits) {
           }
         }
     }
+    # add extra spaces to positive numbers if requested
+    #if (x.rounded >= 0) {
+    #    if (add.space == "begin") {
+    #        x.rounded <- paste(" ", x.rounded, sep="")
+    #    }
+    #    if (add.space == "end") {
+    #        x.rounded <- paste(x.rounded, " ", sep="")
+     #   }
+    #}
+    return(x.rounded)
+    }
+    x.rounded <- mapply(pad.zeros, x.rounded, digits)
     return(x.rounded)
 }
 
@@ -199,26 +228,4 @@ create.overall.display <- function(res, study.names, params) {
     overall.disp <- list("model.title" = "", "table.titles" = c(""), "arrays" = arrays)
     class(overall.disp) <- "summary.display"
     return(overall.disp)
-}
-
-
-
-extract.data <- function(binary.data, params){
-    # Extracts data from binary.data into an array and computes bounds on confidence intervals.
-    # Compute bounds on confidence intervals.
-    alpha <- 1.0-(params$conf.level/100.0)
-    mult <- abs(qnorm(alpha/2.0))
-    LL <- round(exp(binary.data@y - mult*binary.data@SE), digits = params$digits)
-    UL <- round(exp(binary.data@y + mult*binary.data@SE), digits = params$digits)
-    # Extract the data from binary.data and round
-    eventT <- round(binary.data@g1O1, digits = params$digits)
-    subjectT <- round(binary.data@g1O1 + binary.data@g1O2, digits = params$digits)
-    eventC <- round(binary.data@g2O1, digits = params$digits)
-    subjectC <- round(binary.data@g2O1 + binary.data@g2O2, digits = params$digits)
-    y <- round(binary.data@y, digits = params$digits) 
-    raw.data <- array(c("Study", binary.data@study.names, "Events (T)", eventT, "Subjects (T)", subjectT, "Events (C)", eventC, 
-                    "Subjects (C)", subjectC, "Effect size", y, "Lower bound", LL, "Upper bound", UL), 
-                    dim=c(length(binary.data@study.names) + 1, 8))
-    class(raw.data) <- "summary.data" 
-    return(raw.data)
 }
