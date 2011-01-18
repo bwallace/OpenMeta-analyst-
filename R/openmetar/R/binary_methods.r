@@ -251,10 +251,13 @@ binary.fixed.mh.overall <- function(results) {
 ##################################################
 binary.fixed.peto <- function(binary.data, params){
     # assert that the argument is the correct type
-    if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")  
+    if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.") 
+    
+    params.peto <- list("measure" = "PETO")
+    # use metric PETO to compute point estimates for studies 
 
     if (length(binary.data@g1O1) == 1){
-        res <- get.res.for.one.binary.study(binary.data, params)
+        res <- get.res.for.one.binary.study(binary.data, params.peto)
          # Package res for use by overall method.
         summary.disp <- list("MAResults" = res) 
         results <- list("Summary"=summary.disp)
@@ -275,7 +278,7 @@ binary.fixed.peto <- function(binary.data, params){
         # generate forest plot 
         #
         if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
-            binary.data <- compute.bin.point.estimates(binary.data, params)
+            binary.data <- compute.bin.point.estimates(binary.data, params.peto)
             # compute point estimates for plot.data in case they are missing
             forest.path <- paste(params$fp_outpath, sep="")
             plot.data <- create.plot.data.binary(binary.data, params, res)
