@@ -567,10 +567,13 @@ class DatasetModel(QAbstractTableModel):
         
     def next_groups(self):
         ''' Returns a tuple with the next two group names (we just iterate round-robin) '''
+        if len(self.dataset.get_group_names()) == 0:
+            return []
+        
         ## notice that we only retrieve the group names that belong
         # to the current outcome/follow-up tuple
         group_names = self.dataset.get_group_names_for_outcome_fu(self.current_outcome, self.get_current_follow_up_name())
-
+    
         self._next_group_indices(group_names)
         while self.tx_index_a == self.tx_index_b:
             self._next_group_indices(group_names)
