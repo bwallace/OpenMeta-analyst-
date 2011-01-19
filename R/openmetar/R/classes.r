@@ -20,12 +20,20 @@ setClass("OMData", representation(study.names="character", notes="character",
 # BinaryData type
 #
 setClass("BinaryData", 
-               representation(g1O1="numeric", g1O2="numeric", g2O1="numeric",g2O2="numeric",
+               representation(g1O1="numeric", g1O2="numeric", g2O1="numeric", g2O2="numeric",
                y="numeric", SE="numeric",
                g1.name="character", g2.name="character"), 
                contains="OMData")
         
 
+####
+# DiagnosticData type
+#       
+setClass("DiagnosticData", 
+               representation(TP="numeric", FN="numeric", TN="numeric", FP="numeric", y="numeric", SE="numeric",
+               g1.name="character", g2.name="character"), 
+               contains="OMData")
+               
 ####
 # ContinuousData type
 #       

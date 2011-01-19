@@ -25,6 +25,16 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     if (metric.is.log.scale(params$measure)){
         scale.str <- "log" 
     }
+    if (metric.is.logit.scale(params$measure)){
+        scale.str <- "logit"
+    }
+    if ("DiagnosticData" %in% class(om.data)) {
+        transform.name <- "diagnostic.transform.f"
+    }  else {
+        # data is binary or cont
+        transform.name <- "binary.transform.f"
+    }
+    
     
     # Creates a data structure that can be passed to forest.plot
     # res is the output of a call to the Metafor function rma
@@ -36,37 +46,49 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
                     scale = scale.str)
     alpha <- 1.0-(params$conf.level/100.0)
     mult <- abs(qnorm(alpha/2.0))
+    y.overall <- res$b[1]
+    lb.overall <- res$ci.lb[1]
+    ub.overall <- res$ci.ub[1]
     ###
     # TODO we're making tacit assumptions here
     # about the subclass of OmData; namely
     # that it includes a y and SE field.
+    #
+    # put results in display scale and round.
     y <- om.data@y
     lb <- y - mult*om.data@SE
     ub <- y + mult*om.data@SE
-   
-    y.overall <- res$b[1]
-    lb.overall <- res$ci.lb[1]
-    ub.overall <- res$ci.ub[1]
-    
-    # put results in display scale and round.
-    y.rounded <- binary.transform.f(params$measure)$display.scale(y)
-    y.rounded <- round.with.zeros(y.rounded, params$digits)
-    lb.rounded <- binary.transform.f(params$measure)$display.scale(lb)
-    lb.rounded <- round.with.zeros(lb.rounded, params$digits)
-    ub.rounded <- binary.transform.f(params$measure)$display.scale(ub)
-    ub.rounded <- round.with.zeros(ub.rounded, params$digits)
-    
-    y.overall.rounded <- binary.transform.f(params$measure)$display.scale(y.overall)
-    y.overall.rounded <- round.with.zeros(y.overall.rounded, params$digits)
-    lb.overall.rounded <- binary.transform.f(params$measure)$display.scale(lb.overall)
-    lb.overall.rounded <- round.with.zeros(lb.overall.rounded, params$digits)
-    ub.overall.rounded <- binary.transform.f(params$measure)$display.scale(ub.overall)
-    ub.overall.rounded <- round.with.zeros(ub.overall.rounded, params$digits)
   
+    y.display <- eval(call(transform.name, params$measure))$display.scale(y)
+    lb.display <- eval(call(transform.name, params$measure))$display.scale(lb)
+    ub.display <- eval(call(transform.name, params$measure))$display.scale(ub)
+    y.overall.display <- eval(call(transform.name, params$measure))$display.scale(y.overall)
+    lb.overall.display <- eval(call(transform.name, params$measure))$display.scale(lb.overall)
+    ub.overall.display <- eval(call(transform.name, params$measure))$display.scale(ub.overall)
+    
+    # some formatting to align columns - pad with zeros and add extra space to positive numbers
+    y.rounded <- round.with.zeros(y.display, digits = params$digits)
+    lb.rounded <- round.with.zeros(lb.display, digits = params$digits)
+    lb.rounded[lb.rounded >= 0] <- pad.with.spaces(lb.rounded[lb.rounded >= 0], begin.num=0, end.num=1)
+    ub.rounded <- round.with.zeros(ub.display, digits = params$digits)
+    ub.rounded[ub.rounded >= 0] <- pad.with.spaces(ub.rounded[ub.rounded >= 0], begin.num=1, end.num=0)
+    y.overall.rounded <- round.with.zeros(y.overall.display, params$digits)
+    lb.overall.rounded <- round.with.zeros(lb.overall.display, params$digits)
+    lb.overall.rounded[lb.overall.rounded >= 0] <- pad.with.spaces(lb.overall.rounded[lb.overall.rounded >= 0], begin.num=0, end.num=1)
+    ub.overall.rounded <- round.with.zeros(ub.overall.display, params$digits)
+    ub.overall.rounded[ub.overall.rounded >= 0] <- pad.with.spaces(ub.overall.rounded[ub.overall.rounded >= 0], begin.num=1, end.num=0)
+    
+        
+    
     if (params$fp_show_col2=='TRUE') {
-        additional.cols <- list(es = c(paste(params$fp_col2_str, sep = ""),
+        col2.overall.row <- paste(y.overall.rounded, " (", lb.overall.rounded, " , ", ub.overall.rounded, ")", sep = "")
+        col2.width <- nchar(col2.overall.row)
+        col2.label <- params$fp_col2_str
+        label2.width <- nchar(col2.label)
+        col2.label.padded <- pad.with.spaces(col2.label, begin.num=0, end.num = floor((col2.width - label2.width) / 2))
+        additional.cols <- list(es = c(col2.label.padded,
                                  paste(y.rounded, " (", lb.rounded, " , ", ub.rounded, ")", sep = ""),
-                                 paste(y.overall.rounded, " (", lb.overall.rounded, " , ", ub.overall.rounded, ")", sep = "")))
+                                 col2.overall.row))
         plot.data$additional.col.data <- additional.cols 
     }              
     effects <- list(ES = c(y, y.overall),
@@ -85,25 +107,72 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     plot.data
 }
 
+
 metric.is.log.scale <- function(metric){
-    metric %in% c("RR", "OR", "PETO")    
+    metric %in% c(binary.log.metrics, diagnostic.log.metrics)    
 }
+
+metric.is.logit.scale <- function(metric) {
+    metric %in% c(diagnostic.logit.metrics)
+}    
 
 create.plot.data.binary <- function(binary.data, params, res, selected.cov = NULL, include.overall=TRUE){
 
-    plot.data <- create.plot.data.generic  (binary.data, params, res, selected.cov=selected.cov)
+    plot.data <- create.plot.data.generic(binary.data, params, res, selected.cov=selected.cov)
         
     # if we have raw data, add it to the additional columns field
     if ((length(binary.data@g1O1) > 0) && (params$fp_show_col3=="TRUE")) {
-        plot.data$additional.col.data$cases = c(paste(params$fp_col3_str, sep = ""), 
-                                    paste(binary.data@g1O1, " / ", binary.data@g1O1 + binary.data@g1O2, sep = ""), 
-                                    paste(sum(binary.data@g1O1), " / ", sum(binary.data@g1O1 + binary.data@g1O2), sep = ""))
+        # pad the right side of data with spaces to allign /
+        col3.denoms <- binary.data@g1O1 + binary.data@g1O2
+        col3.denom.digits <- nchar(col3.denoms)
+        col3.total <- sum(binary.data@g1O1 + binary.data@g1O2)
+        col3.max.digits <- nchar(col3.total)
+        col3.denoms.padded <- mapply(pad.with.spaces, col3.denoms, begin.num=0, end.num = 2 * (col3.max.digits - col3.denom.digits))
+        col3.overall.row <- paste(sum(binary.data@g1O1), " / ", col3.total, sep = "")
+        col3.width <- nchar(col3.overall.row)
+        col3.label <- params$fp_col3_str
+        label3.width <- nchar(col3.label)
+        # pad the column label to center it over data
+        col3.label.padded <- pad.with.spaces(col3.label, begin.num=0, end.num = floor((col3.width - label3.width) / 2))
+        plot.data$additional.col.data$cases = c(col3.label.padded, 
+                                    paste(binary.data@g1O1, " / ", col3.denoms.padded, sep = ""), 
+                                    col3.overall.row)
     }
     
     if ((length(binary.data@g2O1) > 0) && (params$fp_show_col4=="TRUE")){
+        col4.denoms <- binary.data@g2O1 + binary.data@g2O2
+        col4.denom.digits <- nchar(col4.denoms)
+        col4.total <- sum(binary.data@g2O1 + binary.data@g2O2)
+        col4.max.digits <- nchar(col4.total)
+        col4.denoms.padded <- mapply(pad.with.spaces, col4.denoms, begin.num=0, end.num = 2 * (col4.max.digits - col4.denom.digits))
+        col4.overall.row <- paste(sum(binary.data@g2O1), " / ", col4.total, sep = "")
+        col4.width <- nchar(col4.overall.row)
+        col4.label <- params$fp_col4_str
+        label4.width <- nchar(col4.label)
+        col4.label.padded <- pad.with.spaces(col4.label, begin.num=0, end.num = floor((col4.width - label4.width) / 2))
+        plot.data$additional.col.data$controls = c(col4.label.padded,
+                                        paste(binary.data@g2O1, " / ", col4.denoms.padded, sep = ""),
+                                        col3.overall.row)
+    }
+    
+    plot.data
+}
+
+create.plot.data.diagnostic <- function(diagnostic.data, params, res, selected.cov = NULL, include.overall=TRUE){
+
+    plot.data <- create.plot.data.generic(diagnostic.data, params, res, selected.cov=selected.cov)
+        
+    # if we have raw data, add it to the additional columns field
+    if ((length(diagnostic.data@TP) > 0) && (params$fp_show_col3=="TRUE")) {
+        plot.data$additional.col.data$cases = c(paste(params$fp_col3_str, sep = ""), 
+                                    paste(diagnostic.data@TP, " / ", diagnostic.data@TP, " + ", diagnostic.data@FN, sep = ""), 
+                                    paste(sum(diagnostic.data@TP), " / ", sum(diagnostic.data@TP + diagnostic.data@FN), sep = ""))
+    }
+    
+    if ((length(diagnostic.data@TN) > 0) && (params$fp_show_col4=="TRUE")){
         plot.data$additional.col.data$controls = c(paste(params$fp_col4_str, sep = ""),
-                                        paste(binary.data@g2O1, " / ", binary.data@g1O1 + binary.data@g2O2, sep = ""),
-                                        paste(sum(binary.data@g2O1), " / ", sum(binary.data@g1O1 + binary.data@g2O2), sep = ""))
+                                        paste(diagnostic.data@TN, " / ", diagnostic.data@TN, " + ", diagnostic.data@FP, sep = ""),
+                                        paste(sum(diagnostic.data@TN), " / ", sum(diagnostic.data@TN + diagnostic.data@FP), sep = ""))
     }
     
     plot.data
@@ -131,13 +200,15 @@ create.plot.data.overall <- function(params, res, study.names, addRow1Space, sel
     ub <- res[,3]
    
     # put results in display scale and round.
-    y.rounded <- binary.transform.f(params$measure)$display.scale(y)
-    lb.rounded <- binary.transform.f(params$measure)$display.scale(lb)
-    ub.rounded <- binary.transform.f(params$measure)$display.scale(ub)
+    y.display <- binary.transform.f(params$measure)$display.scale(y)
+    lb.display <- binary.transform.f(params$measure)$display.scale(lb)
+    ub.display <- binary.transform.f(params$measure)$display.scale(ub)
     
-    y.rounded <- round.with.zeros(y.rounded, params$digits)
-    lb.rounded <- round.with.zeros(lb.rounded, params$digits)
-    ub.rounded <- round.with.zeros(ub.rounded, params$digits)
+    y.rounded <- round.with.zeros(y.display, digits = params$digits)
+    lb.rounded <- round.with.zeros(lb.display, digits = params$digits)
+    lb.rounded[lb.rounded >= 0] <- pad.with.spaces(lb.rounded[lb.rounded >= 0], begin.num=0, end.num=1)
+    ub.rounded <- round.with.zeros(ub.display, digits = params$digits)
+    ub.rounded[ub.rounded >= 0] <- pad.with.spaces(ub.rounded[ub.rounded >= 0], begin.num=1, end.num=0)
     
     if (params$fp_show_col2=='TRUE') {
         additional.cols <- list(es = c(paste(params$fp_col2_str, sep = ""),
@@ -273,49 +344,52 @@ plot.options <- function(forest.data, box.sca = 1, gapSize=3, plotWidth = 4) {
     # weights for the boxes
     # note that 1.96 is a convention [not necessary for the scalling]
     # the analysis functions determine the CI width (e.g. 95% or 99%)
-    # this is just scalling the boxes according to the SE
+    # this is just scaling the boxes according to the SE
     precision <- NULL
     effect.col.range <- NULL
     effect.col<-forest.data$effects
     # i have kept the "ifs" bellow: when we decide to include more metrics
     # these will be expanded
-    if (forest.data$scale == "log")
-    {
+    
+    if (forest.data$scale == "log"){
            precision <- sqrt(1 / ((effect.col$UL - effect.col$LL)/(2*1.96)))
-    }
-    else if (forest.data$scale == "cont")
-    {
+    } else if (forest.data$scale == "cont") {
           precision <- sqrt(1 / ((effect.col$UL - effect.col$LL)/(2*1.96)))
-    } 
-   # some heuristics to determine xscale 
-    if (min(effect.col$LL)>0 && max(effect.col$UL)>0) {
-            effect.col.range <- c(max(0.5*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
-                                      }   
-    else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)<=0) { 
-            effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(-1.5*max(effect.col$ES) , max(effect.col$UL)))
-                                      }   
-    else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)>0) { 
-            effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
-                                      }   
-    else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)>0 && max(effect.col$ES)>0) { 
-            effect.col.range <- c(max(-2*min(effect.col$ES) , min(effect.col$LL)), min(1.5*max(effect.col$ES) , max(effect.col$UL)))
-                                      }   
-    else if (min(effect.col$LL)<=0 && max(effect.col$UL)<0) { 
-            effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(0.10*max(effect.col$ES) , max(effect.col$UL)))
-                                      }
+    } else {
+          precision <- sqrt(1 / ((effect.col$UL - effect.col$LL)/(2*1.96)))
+    }
+      
+   if (forest.data$scale != "diagnostic") { 
+   # some heuristics to determine xscale (unnecessary for diagnostic data) 
+        if (min(effect.col$LL)>0 && max(effect.col$UL)>0) {
+                effect.col.range <- c(max(0.5*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
+        } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)<=0) { 
+                effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(-1.5*max(effect.col$ES) , max(effect.col$UL)))
+        } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)>0) { 
+                effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
+        } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)>0 && max(effect.col$ES)>0) { 
+                effect.col.range <- c(max(-2*min(effect.col$ES) , min(effect.col$LL)), min(1.5*max(effect.col$ES) , max(effect.col$UL)))
+        } else if (min(effect.col$LL)<=0 && max(effect.col$UL)<0) { 
+                effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(0.10*max(effect.col$ES) , max(effect.col$UL)))
+        }                                       
+   
+        # this is an ugly solution to an uncommon problem                                 
+        merge.data <- data.frame(x = forest.data$types[-1], y = effect.col$LL, z = effect.col$UL)
+        merge.data <- subset(merge.data, x>0)                                  
     
-   # this is an ugly solution to an uncommon problem                                 
-    merge.data <- data.frame(x = forest.data$types[-1], y = effect.col$LL, z = effect.col$UL)
-    merge.data <- subset(merge.data, x>0)                                  
-    
-    if (min(effect.col.range) >= min(merge.data$y)) 
-        effect.col.range[1] <- min(merge.data$y)
-    if (max(effect.col.range) <= max(merge.data$z)) 
-        effect.col.range[2] <- max(merge.data$z)
-        
+        if (min(effect.col.range) >= min(merge.data$y)) 
+           effect.col.range[1] <- min(merge.data$y)
+        if (max(effect.col.range) <= max(merge.data$z)) 
+           effect.col.range[2] <- max(merge.data$z)
+   }
+     
+   else {
+   # if data is diagnostic, effect.col.range is [0, 1]
+      effect.col.range <- c(0, 1)
+   }    
             
-    effect.col.sizes <- box.sca * precision/max(precision)
-    effect.col.width <- unit(plotWidth, "inches")
+   effect.col.sizes <- box.sca * precision/max(precision)
+   effect.col.width <- unit(plotWidth, "inches")
 
     forest.params = list(
         col.gap = unit(gapSize, "mm"),
@@ -400,22 +474,26 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
 # This is the "null" line
 # "ifs" left in as we will possibly expand this when new metrics become available
 # note that the line is to be supressed when out of xscale bounds
-  if (forest.data$scale == "log" && min(col$range)<0 && max(col$range)>0 ) 
+  if (forest.data$scale == "log" && min(col$range)<0 && max(col$range)>0 ) {
       grid.lines(x=unit(0, "native"), y=0:1)
-  else if (forest.data$scale == "cont" && min(col$range)<0 && max(col$range)>0 ) 
+  }
+  if (forest.data$scale == "cont" && min(col$range)<0 && max(col$range)>0 ) { 
       grid.lines(x=unit(0, "native"), y=0:1)
-      
+  }
+  if (forest.data$scale == "logit" && min(col$range)<0 && max(col$range)>0 ) { 
+      grid.lines(x=unit(0, "native"), y=0:1)
+  }
   # Assume that last value in col is "All" 
   grid.lines(x=unit(col$ES[length(col$ES)], "native"),
              y=0:1, gp=gpar(lty = summary.line.pat, col= summary.line.col))
   
   if  (forest.data$scale == "cont") {
         if (length(user.ticks) == 0) {
-              grid.xaxis( gp=gpar(cex=0.6))
-        } else {
+              grid.xaxis(gp=gpar(cex=0.6))
+        } else {+6
               grid.xaxis(at = user.ticks , label = user.ticks, gp=gpar(cex=0.6))
         }
-               }
+  }
   if (forest.data$scale == "log")  {
         if (length(user.ticks) == 0) { # some cheap tricks to make the axis ticks look nice (in most cases)...
             to.make.ticks <- range(exp(col$range))
@@ -432,8 +510,21 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
         }
         
         grid.xaxis(at = log.ticks , label = round(ticks, 3), gp=gpar(cex=0.6))          
-                    
-                    } 
+  } 
+  if (forest.data$scale == "logit") {
+        if (length(user.ticks) == 0) { # some cheap tricks to make the axis ticks look nice (in most cases)...
+            logit.ticks <- floor(col$range[1]):ceiling(col$range[2])
+            ticks <- invlogit(logit.ticks)
+        } else {
+		        logit.ticks <- logit(user.ticks)
+		        #log.ticks <- log.ticks[log.ticks > min(col$range) - 0.5]    # remember it is additive on this scale
+            #log.ticks <- log.ticks[log.ticks < max(col$range) + 0.5]
+            ticks <- invlogit(logit.ticks)
+        }
+        
+        grid.xaxis(at = logit.ticks , label = round(ticks, 3), gp=gpar(cex=0.6)) 
+  }
+       
   grid.text(metric, y=unit(-2, "lines"))
   popViewport()
   for (i in 1:length(col$rows)) {
@@ -602,3 +693,60 @@ meta.regression.plot <- function(plot.data, outpath,
     graphics.off()
 }
 
+#######################################
+#       Diagnostic SROC               #
+#######################################
+
+diagnostic.SROC.plot <- function(plot.data, outpath,
+                                  symSize=1,
+                                  lcol = "darkred",
+                                  metric = "Effect size",
+                                  xlabel= plot.data$covariate$varname,
+                                  lweight = 3,
+                                  lpatern = "dotted",
+                                  plotregion = "n",
+                                  mcolor = "darkgreen",
+                                  regline = TRUE) {
+
+
+    # make the data data.frame
+    data.reg <- data.frame(plot.data$effects, types = plot.data$types)
+    # data for plot (only keep the studies - not the summaries)
+    data.reg <- subset(data.reg, types==0)
+    
+    # area of circles
+    precision = NULL
+    mult = 1.96 # again, 1.96 is a convention for scaling, no need to parameterize
+    if (plot.data$scale == "log"){
+         precision <- 1 / ((data.reg$UL - data.reg$LL)/(2*mult))
+    }
+    else if (plot.data$scale == "cont"){
+        precision <- 1 / ((data.reg$UL - data.reg$LL)/(2*mult))
+    }
+    
+    radii <-  precision/sum(precision)
+    # TODO need to do something about the scaling.
+    png(file=outpath, width=5 , height=5, units="in", res=144)
+    cov.name <- plot.data$covariate$varname
+    cov.values <- plot.data$covariate$values
+    #depends on whether these are natural or log
+    if (plot.data$scale == "cont"){
+        symbols(y = data.reg$ES, x = cov.values, circles = symSize*radii , inches=FALSE,
+              xlab = xlabel, ylab = metric, bty = plotregion, fg = mcolor)
+    }
+    else{ 
+        symbols(y = data.reg$ES, x = cov.values, circles = symSize*radii , inches = FALSE,
+              xlab = xlabel, ylab = metric, bty = plotregion, fg = mcolor)
+    }
+    # note that i am assuming you have
+    #the untransformed coefficient from the meta-reg
+    # so i am doing no transformation
+    if (regline == TRUE)  {
+       x<-c(min(cov.values), max(cov.values))
+       y<-c (plot.data$fitted.line$intercept + 
+                min(cov.values)*plot.data$fitted.line$slope, plot.data$fitted.line$intercept + 
+                max(cov.values)*plot.data$fitted.line$slope)
+       lines(x, y, col = lcol, lwd = lweight, lty = lpatern)
+    }
+    graphics.off()
+}

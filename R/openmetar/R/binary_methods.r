@@ -17,9 +17,8 @@ compute.for.one.bin.study <- function(binary.data, params){
     res                             
 }
 
-compute.point.estimates <- function(binary.data, params) {
+compute.bin.point.estimates <- function(binary.data, params) {
 # Computes point estimates based on raw data and adds them to binary.data.
-# Note: This overwrites existing values in binary.data@y and binary.data@SE. 
     res <- compute.for.one.bin.study(binary.data, params)
     binary.data@y <- res$yi
     binary.data@SE <- sqrt(res$vi)
@@ -115,7 +114,8 @@ binary.fixed.inv.var <- function(binary.data, params){
         # Create list to display summary of results
         degf <- res$k - res$p
         model.title <- paste("Fixed-Effects Model - Inverse Variance (k = ", res$k, ")", sep="")
-        summary.disp <- create.summary.disp(res, params, degf, model.title)
+        data.type <- "binary"
+        summary.disp <- create.summary.disp(res, params, degf, model.title, data.type)
 
         results <- list("Summary"=summary.disp, "images"=c())
         if ((is.null(params$create.plot)) || params$create.plot == TRUE) {
@@ -186,11 +186,12 @@ binary.fixed.mh <- function(binary.data, params){
         #
         degf <- res$k.yi - 1
         model.title <- paste("Fixed-Effects Model - Mantel Haenszel (k = ", res$k, ")", sep="")
-        summary.disp <- create.summary.disp(res, params, degf, model.title)
+        data.type <- "binary"
+        summary.disp <- create.summary.disp(res, params, degf, model.title, data.type)
         # generate forest plot 
         #
         if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
-            binary.data <- compute.point.estimates(binary.data, params)
+            binary.data <- compute.bin.point.estimates(binary.data, params)
             # compute point estimates for plot.data in case they are missing
             forest.path <- paste(params$fp_outpath, sep="")
             plot.data <- create.plot.data.binary(binary.data, params, res)
@@ -250,10 +251,13 @@ binary.fixed.mh.overall <- function(results) {
 ##################################################
 binary.fixed.peto <- function(binary.data, params){
     # assert that the argument is the correct type
-    if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")  
+    if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.") 
+    
+    params.peto <- list("measure" = "PETO")
+    # use metric PETO to compute point estimates for studies 
 
     if (length(binary.data@g1O1) == 1){
-        res <- get.res.for.one.binary.study(binary.data, params)
+        res <- get.res.for.one.binary.study(binary.data, params.peto)
          # Package res for use by overall method.
         summary.disp <- list("MAResults" = res) 
         results <- list("Summary"=summary.disp)
@@ -267,13 +271,14 @@ binary.fixed.peto <- function(binary.data, params){
         #
         degf <- res$k.yi - 1
         model.title <- paste("Fixed-Effects Model - Peto (k = ", res$k, ")", sep="")
-        summary.disp <- create.summary.disp(res, params, degf, model.title)
+        data.type <- "binary"
+        summary.disp <- create.summary.disp(res, params, degf, model.title, data.type)
                                             
         #
         # generate forest plot 
         #
         if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
-            binary.data <- compute.point.estimates(binary.data, params)
+            binary.data <- compute.bin.point.estimates(binary.data, params.peto)
             # compute point estimates for plot.data in case they are missing
             forest.path <- paste(params$fp_outpath, sep="")
             plot.data <- create.plot.data.binary(binary.data, params, res)
@@ -355,14 +360,13 @@ binary.random <- function(binary.data, params){
     #
     degf <- res$k.yi - 1
     model.title <- paste("Binary Random-Effects Model (k = ", res$k, ")", sep="")
-    summary.disp <- create.summary.disp(res, params, degf, model.title)
+    data.type <- "binary"
+    summary.disp <- create.summary.disp(res, params, degf, model.title, data.type)
  
     #
     # generate forest plot 
     #
     if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
-        binary.data <- compute.point.estimates(binary.data, params)
-        # compute point estimates for plot.data in case they are missing
         forest.path <- paste(params$fp_outpath, sep="")
         plot.data <- create.plot.data.binary(binary.data, params, res)
         forest.plot(plot.data, outpath=forest.path)
