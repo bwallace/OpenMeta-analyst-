@@ -665,7 +665,6 @@ meta.regression.plot <- function(plot.data, outpath,
     else if (plot.data$scale == "cont"){
         precision <- 1 / ((data.reg$UL - data.reg$LL)/(2*mult))
     }
-    
     radii <-  precision/sum(precision)
     # TODO need to do something about the scaling.
     png(file=outpath, width=5 , height=5, units="in", res=144)
@@ -697,56 +696,32 @@ meta.regression.plot <- function(plot.data, outpath,
 #       Diagnostic SROC               #
 #######################################
 
-diagnostic.SROC.plot <- function(plot.data, outpath,
+diagnostic.sroc.plot <- function(plot.data, outpath,
                                   symSize=1,
                                   lcol = "darkred",
-                                  metric = "Effect size",
-                                  xlabel= plot.data$covariate$varname,
                                   lweight = 3,
                                   lpatern = "dotted",
                                   plotregion = "n",
-                                  mcolor = "darkgreen",
-                                  regline = TRUE) {
+                                  mcolor = "darkgreen") {
 
 
     # make the data data.frame
-    data.reg <- data.frame(plot.data$effects, types = plot.data$types)
+    #data.reg <- data.frame(plot.data$effects, types = plot.data$types)
     # data for plot (only keep the studies - not the summaries)
-    data.reg <- subset(data.reg, types==0)
+    #data.reg <- subset(data.reg, types==0)
     
-    # area of circles
-    precision = NULL
-    mult = 1.96 # again, 1.96 is a convention for scaling, no need to parameterize
-    if (plot.data$scale == "log"){
-         precision <- 1 / ((data.reg$UL - data.reg$LL)/(2*mult))
-    }
-    else if (plot.data$scale == "cont"){
-        precision <- 1 / ((data.reg$UL - data.reg$LL)/(2*mult))
-    }
-    
-    radii <-  precision/sum(precision)
-    # TODO need to do something about the scaling.
+    # radii of circles in symbols
+    radii = plot.data$radii
     png(file=outpath, width=5 , height=5, units="in", res=144)
-    cov.name <- plot.data$covariate$varname
-    cov.values <- plot.data$covariate$values
-    #depends on whether these are natural or log
-    if (plot.data$scale == "cont"){
-        symbols(y = data.reg$ES, x = cov.values, circles = symSize*radii , inches=FALSE,
-              xlab = xlabel, ylab = metric, bty = plotregion, fg = mcolor)
-    }
-    else{ 
-        symbols(y = data.reg$ES, x = cov.values, circles = symSize*radii , inches = FALSE,
-              xlab = xlabel, ylab = metric, bty = plotregion, fg = mcolor)
-    }
-    # note that i am assuming you have
-    #the untransformed coefficient from the meta-reg
-    # so i am doing no transformation
-    if (regline == TRUE)  {
-       x<-c(min(cov.values), max(cov.values))
-       y<-c (plot.data$fitted.line$intercept + 
-                min(cov.values)*plot.data$fitted.line$slope, plot.data$fitted.line$intercept + 
-                max(cov.values)*plot.data$fitted.line$slope)
-       lines(x, y, col = lcol, lwd = lweight, lty = lpatern)
-    }
+    symbols(y = plot.data$TPR, x = plot.data$FPR, circles = symSize*radii, inches=FALSE,
+              xlab = "FPR", ylab = "TPR", xlim = c(0,1), ylim = c(0,1), bty = plotregion, fg = mcolor)
+    # create regression line values
+    s.vals <- seq(from = -10, to = 10, by=.001)
+    d.vals <- fitted.line$intercept + 
+                fitted.line$slope * s.vals
+    # transform regression line to standard coords. for sroc.
+    tpr.vals <- invlogit((s.vals + d.vals) / 2)
+    fpr.vals <- invlogit((s.vals - d.vals) / 2)
+    lines(fpr.vals, tpr.vals, col = lcol, lwd = lweight, lty = lpatern)
     graphics.off()
 }

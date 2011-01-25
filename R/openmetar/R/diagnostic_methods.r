@@ -45,10 +45,19 @@ diagnostic.transform.f <- function(metric.str){
     list(display.scale = display.scale, calc.scale = calc.scale)
 }
 
-compute.diag.point.estimates <- function(diagnostic.data, params) {
+compute.sens <- function(diagnostic.data) {
+  diagnostic.data@sens <- diagnostic.data@TP / (diagnostic.data@TP + diagnostic.data@FN)
+  diagnostic.data
+}
+
+compute.spec <- function(diagnostic.data) {
+  diagnostic.data@spec <- diagnostic.data@TN / (diagnostic.data@TN + diagnostic.data@FP)
+  diagnostic.data
+}
+
+compute.diag.point.estimates <- function(diagnostic.data, metric) {
 # Computes point estimates based on raw data and adds them to diagnostic.data
     
-    metric <- params$measure
     TP <- diagnostic.data@TP
     FN <- diagnostic.data@FN  
     TN <- diagnostic.data@TN 
@@ -219,27 +228,28 @@ diagnostic.random.overall <- function(results) {
 ###################################################
 #            diagnostic SROC                      #
 ###################################################
-diagnostic.fixed.inv.var <- function(diagnostic.data, params){
+diagnostic.fixed.sroc <- function(diagnostic.data, params){
     # assert that the argument is the correct type
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
-
-    results <- NULL
-    res<-rma.uni(yi=diagnostic.data@y, sei=diagnostic.data@SE, 
-                     slab=diagnostic.data@study.names,
-                     method="FE", level=params$conf.level,
-                     digits=params$digits)
+    # compute true positive ratio = sensitivity
+    TPR <- diagnostic.data@TP / (diagnostic.data@TP + diagnostic.data@FN)
+    # compute false positive ratio = 1 - specificity
+    FPR <- diagnostic.data@FP / (diagnostic.data@TN + diagnostic.data@FP)
+    S <- logit(TPR) + logit(FPR)
+    D <- logit(TPR) - logit(FPR) 
+    # compute total number in each study
+    N <- diagnostic.data@TP + diagnostic.data@FN + diagnostic.data@FP + diagnostic.data@TN
+    max <- max(N)
+    # radii of circles in plot. Set maximum radius = .05
+    radii <- .05 * N / max
+    res <- lm(D ~ S)
+    fitted.line <- list(intercept=res$coefficients[1], slope=res$coefficients[2])
     # Create list to display summary of results
-    degf <- res$k - res$p
-    model.title <- "Fixed-Effect Model - Inverse Variance"
-    data.type <- "diagnostic"
-    summary.disp <- create.summary.disp(res, params, degf, model.title, data.type)
-    # function to pretty-print summary of results.
-    if ((is.null(params$create.plot)) || params$create.plot == TRUE) {
-      # A forest plot will be created unless
-      # params.create.plot is set to FALSE.
-      forest.path <- paste(params$fp_outpath, sep="")
-      plot.data <- create.plot.data.diagnostic(diagnostic.data, params, res)
-      forest.plot(plot.data, outpath=forest.path)
+    #degf <- res$k - res$p
+    model.title <- "SROC"
+    #summary.disp <- create.summary.disp(res, params, degf, model.title, data.type)
+    plot.data <- list("fitted.line" = fitted.line, "TPR"=TPR, "FPR"=FPR, "radii"=radii) 
+    diagnostic.sroc.plot(plot.data, outpath=params$sroc_outpath)
       #
       # Now we package the results in a dictionary (technically, a named
       # vector). In particular, there are two fields that must be returned;
@@ -247,13 +257,10 @@ diagnostic.fixed.inv.var <- function(diagnostic.data, params){
       # (mapping titles to pretty-printed text). In this case we have only one
       # of each.
       #
-      images <- c("Forest Plot"=forest.path)
-      plot.names <- c("forest plot"="forest_plot")
-      results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
-    }
-    else {
-        results <- list("Summary"=summary.disp)
-    }   
+    images <- c("Forest Plot"=forest.path)
+    plot.names <- c("forest plot"="forest_plot")
+    results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
+    
     results
 }
 
