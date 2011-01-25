@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'start_up.ui'
 #
-# Created: Tue Jan 25 15:50:31 2011
+# Created: Tue Jan 25 16:37:55 2011
 #      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -39,17 +39,17 @@ class Ui_WelcomeDialog(object):
         self.label_2 = QtGui.QLabel(self.groupBox)
         self.label_2.setObjectName("label_2")
         self.gridLayout.addWidget(self.label_2, 0, 0, 1, 2)
-        self.radioButton = QtGui.QRadioButton(self.groupBox)
-        self.radioButton.setChecked(True)
-        self.radioButton.setObjectName("radioButton")
+        self.bin_radio = QtGui.QRadioButton(self.groupBox)
+        self.bin_radio.setChecked(True)
+        self.bin_radio.setObjectName("bin_radio")
         self.buttonGroup = QtGui.QButtonGroup(WelcomeDialog)
         self.buttonGroup.setObjectName("buttonGroup")
-        self.buttonGroup.addButton(self.radioButton)
-        self.gridLayout.addWidget(self.radioButton, 1, 0, 1, 1)
-        self.radioButton_2 = QtGui.QRadioButton(self.groupBox)
-        self.radioButton_2.setObjectName("radioButton_2")
-        self.buttonGroup.addButton(self.radioButton_2)
-        self.gridLayout.addWidget(self.radioButton_2, 1, 1, 1, 1)
+        self.buttonGroup.addButton(self.bin_radio)
+        self.gridLayout.addWidget(self.bin_radio, 1, 0, 1, 1)
+        self.diag_radio = QtGui.QRadioButton(self.groupBox)
+        self.diag_radio.setObjectName("diag_radio")
+        self.buttonGroup.addButton(self.diag_radio)
+        self.gridLayout.addWidget(self.diag_radio, 1, 1, 1, 1)
         self.gridLayout_2.addLayout(self.gridLayout, 2, 0, 1, 1)
         spacerItem = QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
         self.gridLayout_2.addItem(spacerItem, 1, 0, 1, 1)
@@ -65,12 +65,12 @@ class Ui_WelcomeDialog(object):
         self.horizontalLayout_2.addWidget(self.chk_show)
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.pushButton_3 = QtGui.QPushButton(WelcomeDialog)
+        self.open_btn = QtGui.QPushButton(WelcomeDialog)
         icon1 = QtGui.QIcon()
         icon1.addPixmap(QtGui.QPixmap(":/images/function_icon_set/folder_48.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.pushButton_3.setIcon(icon1)
-        self.pushButton_3.setObjectName("pushButton_3")
-        self.horizontalLayout.addWidget(self.pushButton_3)
+        self.open_btn.setIcon(icon1)
+        self.open_btn.setObjectName("open_btn")
+        self.horizontalLayout.addWidget(self.open_btn)
         self.open_recent_btn = QtGui.QPushButton(WelcomeDialog)
         font = QtGui.QFont()
         font.setFamily("Verdana")
@@ -78,12 +78,12 @@ class Ui_WelcomeDialog(object):
         self.open_recent_btn.setIcon(icon1)
         self.open_recent_btn.setObjectName("open_recent_btn")
         self.horizontalLayout.addWidget(self.open_recent_btn)
-        self.pushButton_2 = QtGui.QPushButton(WelcomeDialog)
+        self.create_new_btn = QtGui.QPushButton(WelcomeDialog)
         icon2 = QtGui.QIcon()
         icon2.addPixmap(QtGui.QPixmap(":/images/function_icon_set/add_48.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.pushButton_2.setIcon(icon2)
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.horizontalLayout.addWidget(self.pushButton_2)
+        self.create_new_btn.setIcon(icon2)
+        self.create_new_btn.setObjectName("create_new_btn")
+        self.horizontalLayout.addWidget(self.create_new_btn)
         self.horizontalLayout_2.addLayout(self.horizontalLayout)
         self.verticalLayout.addLayout(self.horizontalLayout_2)
 
@@ -95,12 +95,12 @@ class Ui_WelcomeDialog(object):
         self.groupBox.setTitle(QtGui.QApplication.translate("WelcomeDialog", "new dataset", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("WelcomeDialog", "name:", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("WelcomeDialog", "what sort of data will you be working with?", None, QtGui.QApplication.UnicodeUTF8))
-        self.radioButton.setText(QtGui.QApplication.translate("WelcomeDialog", "continuous and/or binary", None, QtGui.QApplication.UnicodeUTF8))
-        self.radioButton_2.setText(QtGui.QApplication.translate("WelcomeDialog", "diagnostic", None, QtGui.QApplication.UnicodeUTF8))
+        self.bin_radio.setText(QtGui.QApplication.translate("WelcomeDialog", "continuous and/or binary", None, QtGui.QApplication.UnicodeUTF8))
+        self.diag_radio.setText(QtGui.QApplication.translate("WelcomeDialog", "diagnostic", None, QtGui.QApplication.UnicodeUTF8))
         self.chk_show.setText(QtGui.QApplication.translate("WelcomeDialog", "show this window on start-up", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushButton_3.setText(QtGui.QApplication.translate("WelcomeDialog", "open ...", None, QtGui.QApplication.UnicodeUTF8))
+        self.open_btn.setText(QtGui.QApplication.translate("WelcomeDialog", "open ...", None, QtGui.QApplication.UnicodeUTF8))
         self.open_recent_btn.setText(QtGui.QApplication.translate("WelcomeDialog", "open recent", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushButton_2.setText(QtGui.QApplication.translate("WelcomeDialog", "create new", None, QtGui.QApplication.UnicodeUTF8))
+        self.create_new_btn.setText(QtGui.QApplication.translate("WelcomeDialog", "create new", None, QtGui.QApplication.UnicodeUTF8))
 
 import icons_rc
 import icons_rc
