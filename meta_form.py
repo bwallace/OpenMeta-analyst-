@@ -38,7 +38,7 @@ import meta_reg_form
 import edit_dialog
 import network_view
 import meta_globals 
-
+import start_up_dialog
 
 NUM_DIGITS = 4
 
@@ -96,7 +96,12 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.tableView.resizeColumnsToContents()
         self.out_path = None
         
-    
+        ###
+        # show the welcome dialog 
+        # @TODO need to check if the user has opted out of this
+        start_up_window =  start_up_dialog.StartUp(parent=self)
+        start_up_window.show()
+        
     def new_dataset(self):
         data_model = Dataset()
         if self.model is not None:
