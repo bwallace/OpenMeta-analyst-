@@ -34,8 +34,7 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
         # data is binary or cont
         transform.name <- "binary.transform.f"
     }
-    
-    
+
     # Creates a data structure that can be passed to forest.plot
     # res is the output of a call to the Metafor function rma
     ## TODO note that we're forcing the 'cont' scale -- thus
@@ -58,36 +57,64 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     y <- om.data@y
     lb <- y - mult*om.data@SE
     ub <- y + mult*om.data@SE
-  
-    y.display <- eval(call(transform.name, params$measure))$display.scale(y)
-    lb.display <- eval(call(transform.name, params$measure))$display.scale(lb)
-    ub.display <- eval(call(transform.name, params$measure))$display.scale(ub)
-    y.overall.display <- eval(call(transform.name, params$measure))$display.scale(y.overall)
-    lb.overall.display <- eval(call(transform.name, params$measure))$display.scale(lb.overall)
-    ub.overall.display <- eval(call(transform.name, params$measure))$display.scale(ub.overall)
-    
-    # some formatting to align columns - pad with zeros and add extra space to positive numbers
-    y.rounded <- round.with.zeros(y.display, digits = params$digits)
-    lb.rounded <- round.with.zeros(lb.display, digits = params$digits)
-    lb.rounded[lb.rounded >= 0] <- pad.with.spaces(lb.rounded[lb.rounded >= 0], begin.num=0, end.num=1)
-    ub.rounded <- round.with.zeros(ub.display, digits = params$digits)
-    ub.rounded[ub.rounded >= 0] <- pad.with.spaces(ub.rounded[ub.rounded >= 0], begin.num=1, end.num=0)
-    y.overall.rounded <- round.with.zeros(y.overall.display, params$digits)
-    lb.overall.rounded <- round.with.zeros(lb.overall.display, params$digits)
-    lb.overall.rounded[lb.overall.rounded >= 0] <- pad.with.spaces(lb.overall.rounded[lb.overall.rounded >= 0], begin.num=0, end.num=1)
-    ub.overall.rounded <- round.with.zeros(ub.overall.display, params$digits)
-    ub.overall.rounded[ub.overall.rounded >= 0] <- pad.with.spaces(ub.overall.rounded[ub.overall.rounded >= 0], begin.num=1, end.num=0)
-    
-        
     
     if (params$fp_show_col2=='TRUE') {
-        col2.overall.row <- paste(y.overall.rounded, " (", lb.overall.rounded, " , ", ub.overall.rounded, ")", sep = "")
+        # convert results to display scale and round
+        # transform entries to display scale
+        y.trans <- eval(call(transform.name, params$measure))$display.scale(y)
+        lb.trans <- eval(call(transform.name, params$measure))$display.scale(lb)
+        ub.trans <- eval(call(transform.name, params$measure))$display.scale(ub)
+        y.overall.trans <- eval(call(transform.name, params$measure))$display.scale(y.overall)
+        lb.overall.trans <- eval(call(transform.name, params$measure))$display.scale(lb.overall)
+        ub.overall.trans <- eval(call(transform.name, params$measure))$display.scale(ub.overall)
+        
+        y.display <- round.point.estimates(y.trans, params, begin.num=0, end.num=0)
+        lb.display <- round.point.estimates(lb.trans, params, begin.num=0, end.num=0)
+        ub.display <- round.point.estimates(ub.trans, params, begin.num=1, end.num=0)
+        if (min(ub.trans) <0) {
+            # if any negative entries, add an extra space to separate entry from preceding ","
+            ub.display <- paste(" ", ub.display, sep="")
+        }
+        y.overall.display <- round.point.estimates(y.trans, params, begin.num=0, end.num=0)
+        lb.overall.display <- round.point.estimates(lb.trans, params, begin.num=0, end.num=0)
+        ub.overall.display <- round.point.estimates(ub.trans, params, begin.num=1, end.num=0)
+        if (min(ub.trans) <0) {
+            # if any negative entries, add an extra space to separate entry from preceding ","
+            ub.overall.display <- paste(" ", ub.overall.display, sep="")
+        }
+        
+        # format results by padding with spaces to align columns 
+        ub.max.chars <- max(nchar(ub.display), nchar(ub.overall.display))
+        ub.extra.space <- ub.max.chars - nchar(ub.display)
+        ub.overall.extra.space <- ub.max.chars - nchar(ub.overall.display)
+        ub.display <- mapply(pad.with.spaces, ub.display, begin.num = ub.extra.space, end.num=0)
+        ub.overall.display <- pad.with.spaces(ub.overall.display, begin.num = ub.overall.extra.space, end.num=0)
+    
+        lb.display <- paste(" (", lb.display, sep="")
+        lb.overall.display <- paste(" (", lb.overall.display, sep="")
+        lb.max.chars <- max(nchar(lb.display), nchar(lb.overall.display))
+        lb.extra.space <- lb.max.chars - nchar(lb.display)
+        lb.overall.extra.space <- lb.max.chars - nchar(lb.overall.display)
+        lb.display <- mapply(pad.with.spaces, lb.display, begin.num = lb.extra.space, end.num=0)
+        lb.overall.display <- pad.with.spaces(lb.overall.display, begin.num = lb.overall.extra.space, end.num=0)
+
+        col2.overall.row <- paste(y.overall.display, lb.overall.display, ",", ub.overall.display, ")", sep = "")
         col2.width <- nchar(col2.overall.row)
         col2.label <- params$fp_col2_str
-        label2.width <- nchar(col2.label)
-        col2.label.padded <- pad.with.spaces(col2.label, begin.num=0, end.num = floor((col2.width - label2.width) / 2))
+        # if label contains ",", pad label to align columns
+        label.info <- check.label(label = col2.label, split.str = ",")
+        max.chars <- max(nchar(ub.display), nchar(ub.overall.display)) + 1
+        # add 1 because a space is added before each ub entry.
+        if (label.info$contains.symbol == TRUE) {
+            # label contains "," so pad label to align ","
+            # we're assuming that there is a single space after ","
+            col2.label.padded <- pad.with.spaces(col2.label, begin.num=0, end.num = max.chars - label.info$end.string.length) 
+        } else {
+            # label doesn't contain "," so pad label to center over column 
+            col2.label.padded <- pad.with.spaces(col2.label, begin.num=0, end.num = floor((col2.width - nchar(col2.label)) / 2))           
+        }
         additional.cols <- list(es = c(col2.label.padded,
-                                 paste(y.rounded, " (", lb.rounded, " , ", ub.rounded, ")", sep = ""),
+                                 paste(y.display, lb.display, ",", ub.display, ")", sep = ""),
                                  col2.overall.row))
         plot.data$additional.col.data <- additional.cols 
     }              
@@ -107,7 +134,6 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     plot.data
 }
 
-
 metric.is.log.scale <- function(metric){
     metric %in% c(binary.log.metrics, diagnostic.log.metrics)    
 }
@@ -122,37 +148,13 @@ create.plot.data.binary <- function(binary.data, params, res, selected.cov = NUL
         
     # if we have raw data, add it to the additional columns field
     if ((length(binary.data@g1O1) > 0) && (params$fp_show_col3=="TRUE")) {
-        # pad the right side of data with spaces to allign /
-        col3.denoms <- binary.data@g1O1 + binary.data@g1O2
-        col3.denom.digits <- nchar(col3.denoms)
-        col3.total <- sum(binary.data@g1O1 + binary.data@g1O2)
-        col3.max.digits <- nchar(col3.total)
-        col3.denoms.padded <- mapply(pad.with.spaces, col3.denoms, begin.num=0, end.num = 2 * (col3.max.digits - col3.denom.digits))
-        col3.overall.row <- paste(sum(binary.data@g1O1), " / ", col3.total, sep = "")
-        col3.width <- nchar(col3.overall.row)
-        col3.label <- params$fp_col3_str
-        label3.width <- nchar(col3.label)
-        # pad the column label to center it over data
-        col3.label.padded <- pad.with.spaces(col3.label, begin.num=0, end.num = floor((col3.width - label3.width) / 2))
-        plot.data$additional.col.data$cases = c(col3.label.padded, 
-                                    paste(binary.data@g1O1, " / ", col3.denoms.padded, sep = ""), 
-                                    col3.overall.row)
+        data.column <- format.raw.data.col(nums = binary.data@g1O1, denoms = binary.data@g1O1 + binary.data@g1O2, label = params$fp_col3_str)
+        plot.data$additional.col.data$cases <- data.column
     }
     
     if ((length(binary.data@g2O1) > 0) && (params$fp_show_col4=="TRUE")){
-        col4.denoms <- binary.data@g2O1 + binary.data@g2O2
-        col4.denom.digits <- nchar(col4.denoms)
-        col4.total <- sum(binary.data@g2O1 + binary.data@g2O2)
-        col4.max.digits <- nchar(col4.total)
-        col4.denoms.padded <- mapply(pad.with.spaces, col4.denoms, begin.num=0, end.num = 2 * (col4.max.digits - col4.denom.digits))
-        col4.overall.row <- paste(sum(binary.data@g2O1), " / ", col4.total, sep = "")
-        col4.width <- nchar(col4.overall.row)
-        col4.label <- params$fp_col4_str
-        label4.width <- nchar(col4.label)
-        col4.label.padded <- pad.with.spaces(col4.label, begin.num=0, end.num = floor((col4.width - label4.width) / 2))
-        plot.data$additional.col.data$controls = c(col4.label.padded,
-                                        paste(binary.data@g2O1, " / ", col4.denoms.padded, sep = ""),
-                                        col3.overall.row)
+        data.column <- format.raw.data.col(nums = binary.data@g2O1, denoms = binary.data@g2O1 + binary.data@g2O2, label = params$fp_col4_str)
+        plot.data$additional.col.data$controls = data.column
     }
     
     plot.data
@@ -164,17 +166,28 @@ create.plot.data.diagnostic <- function(diagnostic.data, params, res, selected.c
         
     # if we have raw data, add it to the additional columns field
     if ((length(diagnostic.data@TP) > 0) && (params$fp_show_col3=="TRUE")) {
-        plot.data$additional.col.data$cases = c(paste(params$fp_col3_str, sep = ""), 
-                                    paste(diagnostic.data@TP, " / ", diagnostic.data@TP, " + ", diagnostic.data@FN, sep = ""), 
-                                    paste(sum(diagnostic.data@TP), " / ", sum(diagnostic.data@TP + diagnostic.data@FN), sep = ""))
+       metric <- params$measure
+        label <- switch(metric,
+        # sensitivity
+        Sens = "TP/Di+", 
+        # specificity
+        Spec = "TN/D-",
+        # pos. predictive value
+        PPV =  "TP/T+",
+        #neg. predictive value
+        NPV =  "TN/T-",
+        # accuracy
+        Acc = "(TP + TN)/Tot",
+        # positive likelihood ratio
+        PLR = "Sens/(1-Spec)", 
+        # negative likelihood ratio
+        NLR = "(1-Sens)/Spec",
+        # diagnostic odds ratio
+        DOR = "(TP * TN)/(FP * FN)")
+        
+        data.col <- format.raw.data.col(nums = diagnostic.data@numerator, denoms = diagnostic.data@denominator, label = label) 
+        plot.data$additional.col.data$cases = data.col
     }
-    
-    if ((length(diagnostic.data@TN) > 0) && (params$fp_show_col4=="TRUE")){
-        plot.data$additional.col.data$controls = c(paste(params$fp_col4_str, sep = ""),
-                                        paste(diagnostic.data@TN, " / ", diagnostic.data@TN, " + ", diagnostic.data@FP, sep = ""),
-                                        paste(sum(diagnostic.data@TN), " / ", sum(diagnostic.data@TN + diagnostic.data@FP), sep = ""))
-    }
-    
     plot.data
 }
 
@@ -199,20 +212,18 @@ create.plot.data.overall <- function(params, res, study.names, addRow1Space, sel
     lb <- res[,2]
     ub <- res[,3]
    
-    # put results in display scale and round.
-    y.display <- binary.transform.f(params$measure)$display.scale(y)
-    lb.display <- binary.transform.f(params$measure)$display.scale(lb)
-    ub.display <- binary.transform.f(params$measure)$display.scale(ub)
-    
-    y.rounded <- round.with.zeros(y.display, digits = params$digits)
-    lb.rounded <- round.with.zeros(lb.display, digits = params$digits)
-    lb.rounded[lb.rounded >= 0] <- pad.with.spaces(lb.rounded[lb.rounded >= 0], begin.num=0, end.num=1)
-    ub.rounded <- round.with.zeros(ub.display, digits = params$digits)
-    ub.rounded[ub.rounded >= 0] <- pad.with.spaces(ub.rounded[ub.rounded >= 0], begin.num=1, end.num=0)
-    
     if (params$fp_show_col2=='TRUE') {
+        # put results in display scale and round.
+        y.display <- binary.transform.f(params$measure)$display.scale(y)
+        lb.display <- binary.transform.f(params$measure)$display.scale(lb)
+        ub.display <- binary.transform.f(params$measure)$display.scale(ub)
+        y.display <- round.with.zeros(y.display, digits = params$digits)
+        lb.display <- round.with.zeros(lb.display, digits = params$digits)
+        lb.display[lb.display >= 0] <- pad.with.spaces(lb.display[lb.display >= 0], begin.num=0, end.num=1)
+        ub.display <- round.with.zeros(ub.display, digits = params$digits)
+        ub.display[ub.display >= 0] <- pad.with.spaces(ub.display[ub.display >= 0], begin.num=1, end.num=0)
         additional.cols <- list(es = c(paste(params$fp_col2_str, sep = ""),
-                                 paste(y.rounded, " (", lb.rounded, " , ", ub.rounded, ")", sep = "")))
+                                 paste(y.display, " (", lb.display, " , ", ub.display, ")", sep = "")))
         plot.data$additional.col.data <- additional.cols 
     }      
       
@@ -233,8 +244,7 @@ create.plot.data.reg <- function(reg.data, params, fitted.line, selected.cov=cov
      mult <- abs(qnorm(alpha/2.0))
     
      y <- reg.data@y
-     lb <- y - mult*reg.data@SE
-     ub <- y + mult*reg.data@SE               
+     se <- reg.data@SE
      if (!is.null(selected.cov)){
         cov.val.str <- paste("reg.data@covariates$", selected.cov, sep="")
         cov.values <- eval(parse(text=cov.val.str))
@@ -242,8 +252,7 @@ create.plot.data.reg <- function(reg.data, params, fitted.line, selected.cov=cov
                                    values = cov.values)
      } 
      effects <- list(ES = y,
-                    LL = lb,
-                    UL = ub)
+                    se = se)
      plot.data$effects <- effects
      plot.data
 }
@@ -291,10 +300,10 @@ additional.columns <- function(forest.data, font = "bold") {
         for (i in 1:length(forest.data$label)){
           if (forest.data$types[i] != 0)
             content[i] <- list(textGrob(forest.data$additional.col.data[[j]][[i]], 
-                      x=1, just = "right", gp = gpar(fontface = font)))
+                      x=1, just = "right", gp = gpar(fontface = font, fontfamily="mono")))
           else
             content[i] <- list(textGrob(forest.data$additional.col.data[[j]][[i]], 
-                      x=1, just = "right", gp = gpar(fontface = "plain")))
+                      x=1, just = "right", gp = gpar(fontface = "plain", fontfamily="mono")))
         }
         
         rows<-c(1, rep(NA, (length(forest.data$label)-1)))
@@ -348,7 +357,7 @@ plot.options <- function(forest.data, box.sca = 1, gapSize=3, plotWidth = 4) {
     precision <- NULL
     effect.col.range <- NULL
     effect.col<-forest.data$effects
-    # i have kept the "ifs" bellow: when we decide to include more metrics
+    # i have kept the "ifs" below: when we decide to include more metrics
     # these will be expanded
     
     if (forest.data$scale == "log"){
@@ -655,21 +664,22 @@ meta.regression.plot <- function(plot.data, outpath,
     data.reg <- data.frame(plot.data$effects, types = plot.data$types)
     # data for plot (only keep the studies - not the summaries)
     data.reg <- subset(data.reg, types==0)
-    
-    # area of circles
-    precision = NULL
-    mult = 1.96 # again, 1.96 is a convention for scaling, no need to parameterize
-    if (plot.data$scale == "log"){
-         precision <- 1 / ((data.reg$UL - data.reg$LL)/(2*mult))
-    }
-    else if (plot.data$scale == "cont"){
-        precision <- 1 / ((data.reg$UL - data.reg$LL)/(2*mult))
-    }
-    radii <-  precision/sum(precision)
-    # TODO need to do something about the scaling.
-    png(file=outpath, width=5 , height=5, units="in", res=144)
     cov.name <- plot.data$covariate$varname
     cov.values <- plot.data$covariate$values
+    # calculate radii of circles
+    se <- plot.data$effects$se
+    inv.var <- 1 / se^2
+    max.symbol.size <- (max(cov.values) - min(cov.values)) / 10
+    # radius of the largest circle
+    max.ratio <- 10
+    # ratio of radii of largest circle to smallest circle
+    radii <- calculate.radii(inv.var, max.symbol.size, max.ratio)
+    # radii are scaled by a function of the form C x^exp, where 
+    # exp = 1 if the ratio of the maximum of inv.var to the minimum of inv.var is
+    # less than max.ratio. Otherwise, exp < 1 and C are calculated from 
+    # max.ratio and the max and min of inv.var. 
+    png(file=outpath, width=5 , height=5, units="in", res=144)
+    
     #depends on whether these are natural or log
     if (plot.data$scale == "cont"){
         symbols(y = data.reg$ES, x = cov.values, circles = symSize*radii , inches=FALSE,
@@ -709,19 +719,106 @@ diagnostic.sroc.plot <- function(plot.data, outpath,
     #data.reg <- data.frame(plot.data$effects, types = plot.data$types)
     # data for plot (only keep the studies - not the summaries)
     #data.reg <- subset(data.reg, types==0)
+    fitted.line <- plot.data$fitted.line
+    weighted <- plot.data$weighted
+    TPR <- plot.data$TPR
+    FPR <- plot.data$FPR
+    s.range <- plot.data$s.range
     
-    # radii of circles in symbols
-    radii = plot.data$radii
     png(file=outpath, width=5 , height=5, units="in", res=144)
-    symbols(y = plot.data$TPR, x = plot.data$FPR, circles = symSize*radii, inches=FALSE,
+    if (weighted == TRUE) {
+        inv.var <- plot.data$inv.var    
+        max.symbol.size <- .05
+        # radius of the largest circle
+        max.ratio <- 10
+        # ratio of radii of largest circle to smallest circle
+        radii <- calculate.radii(inv.var, max.symbol.size, max.ratio)
+        symbols(y = plot.data$TPR, x = plot.data$FPR, circles = symSize*radii, inches=FALSE,
               xlab = "FPR", ylab = "TPR", xlim = c(0,1), ylim = c(0,1), bty = plotregion, fg = mcolor)
+    } else {
+        radii <- .01*rep(1, length(TPR))
+        symbols(y = plot.data$TPR, x = plot.data$FPR, squares = radii, inches=FALSE,
+              xlab = "FPR", ylab = "TPR", xlim = c(0,1), ylim = c(0,1), bty = plotregion, fg = mcolor)     
+    }
     # create regression line values
-    s.vals <- seq(from = -10, to = 10, by=.001)
-    d.vals <- fitted.line$intercept + 
-                fitted.line$slope * s.vals
-    # transform regression line to standard coords. for sroc.
+    s.vals <- seq(from = s.range$min, to = s.range$max, by=.001)
+    d.vals <- fitted.line$intercept + fitted.line$slope * s.vals
+    # transform regression line coords to TPR by 1 - FPR coords
     tpr.vals <- invlogit((s.vals + d.vals) / 2)
     fpr.vals <- invlogit((s.vals - d.vals) / 2)
     lines(fpr.vals, tpr.vals, col = lcol, lwd = lweight, lty = lpatern)
     graphics.off()
 }
+
+#######################################################
+#   Functions for formatting data for display in plots #
+#######################################################
+
+round.point.estimates <- function(est, params, begin.num, end.num) {
+    # round point estimates and align columns - begin.num and end.num are number of spaces to pad at beginning and end of est
+    est <- round.with.zeros(est, digits = params$digits)
+    # for ub and lb, add an extra space to positive numbers for alignment (negative numbers display minus sign)
+    if (length(est[est >= 0])) {
+        est[est >= 0] <- mapply(pad.with.spaces, est[est >= 0], begin.num=begin.num, end.num=end.num)
+    }
+    est
+}
+    
+check.label <- function(label, split.str) {
+    # check column labels for split.symbol and return length of string that follows split.str
+    split.label <- strsplit(label, split.str)
+    split.label.length <- length(split.label[[1]])
+    label.info <- list("contains.symbol"=FALSE, "end.string.length"=0)
+    if (split.label.length > 1) {
+       label.info$contains.symbol <- TRUE
+       label.info$end.string.length <- nchar(split.label[[1]][split.label.length])
+    }
+    label.info
+}
+
+format.raw.data.col <- function(nums, denoms, label) {
+    # format raw data columns to align forward slashes
+    nums.total <- sum(nums)
+    denoms.total <- sum(denoms)
+    max.chars <- nchar(denoms.total) + 1
+    # add 1 because a space is added before each denom.
+    overall.row <- paste(nums.total, " / ", denoms.total, sep = "")
+    label.info <- check.label(label, split.str = "/")
+    if (label.info$contains.symbol == TRUE) {
+        # pad label or denoms.total to align "/"
+        # we're assuming that there is a single space after "/".
+        end.string.length <- label.info$end.string.length
+        label.padded <- pad.with.spaces(label, begin.num=0, end.num = max.chars - end.string.length)
+        overall.row <- pad.with.spaces(overall.row, begin.num=0, end.num = end.string.length - max.chars)
+        max.chars <- max(max.chars, end.string.length)    
+    }  else {
+      # pad label to center above column
+      label.padded <- pad.with.spaces(label, begin.num=0, end.num = floor((nchar(overall.row) - nchar(label)) / 2))
+    }
+    # pad data row to align forward slashes
+    denoms <- mapply(pad.with.spaces, denoms, begin.num=0, end.num = max.chars - (nchar(denoms) + 1))
+    # add 1 to nchar(denoms) because a space is added before each denom
+    data.column = c(label.padded, paste(nums, " / ", denoms, sep = ""), overall.row)
+    data.column
+}
+
+calculate.radii <- function(inv.var, max.symbol.size, max.ratio) {
+    # calculates radii of symbols for a meta-regression plot
+    # using a scaling function f(x) = C * x^e.
+    # inv.var is a vector of inverse variances,
+    # max.symbol.size is the maximum size for a plot, and max.ratio is the maximum ratio of symbol sizes.
+
+    inv.var.max <- max(inv.var)
+    inv.var.min <- min(inv.var)
+    if ((inv.var.max / inv.var.min) <= max.ratio) {
+        C <- max.symbol.size / inv.var.max
+        e <- 1
+    } else {
+        min.symbol.size <- max.symbol.size / max.ratio
+        exponent <- log(max.ratio)/log(inv.var.max / inv.var.min)
+        C <- max.symbol.size / (inv.var.max)^e
+    }
+    radii <- C * inv.var^exponent
+}     
+    
+     
