@@ -59,7 +59,6 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     ub <- y + mult*om.data@SE
     
     if (params$fp_show_col2=='TRUE') {
-        # convert results to display scale and round
         # transform entries to display scale
         y.trans <- eval(call(transform.name, params$measure))$display.scale(y)
         lb.trans <- eval(call(transform.name, params$measure))$display.scale(lb)
@@ -68,17 +67,25 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
         lb.overall.trans <- eval(call(transform.name, params$measure))$display.scale(lb.overall)
         ub.overall.trans <- eval(call(transform.name, params$measure))$display.scale(ub.overall)
         
-        y.display <- round.point.estimates(y.trans, params, begin.num=0, end.num=0)
-        lb.display <- round.point.estimates(lb.trans, params, begin.num=0, end.num=0)
-        ub.display <- round.point.estimates(ub.trans, params, begin.num=1, end.num=0)
-        if (min(ub.trans) <0) {
-            # if any negative entries, add an extra space to separate entry from preceding ","
+        y.display <- round.with.zeros(y.trans, digits = params$digits)
+        lb.display <- round.with.zeros(lb.trans, digits = params$digits)
+        ub.display <- round.with.zeros(ub.trans, digits = params$digits)
+        y.overall.display <- round.with.zeros(y.trans, digits = params$digits)
+        lb.overall.display <- round.with.zeros(lb.trans, digits = params$digits)
+        ub.overall.display <- round.with.zeros(ub.trans, digits = params$digits)
+        
+        # for ub, ub.overall, add an extra space to positive numbers for alignment (negative numbers display minus sign)
+        if (length(ub.display[ub.display >= 0])) {
+            ub.display[ub.display >= 0] <- mapply(pad.with.spaces, ub.display[ub.display >= 0], begin.num=1, end.num=0)
+        }
+        if (length(ub.overall.display[ub.overall.display >= 0])) {
+            ub.overall.display[ub.overall.display >= 0] <- mapply(pad.with.spaces, ub.overall.display[ub.overall.display >= 0], begin.num=1, end.num=0)
+        }
+        # if ub, ub.overall have any negative entries, add an extra space to separate entry from preceding ","
+        if (min(ub.trans) < 0) {
             ub.display <- paste(" ", ub.display, sep="")
         }
-        y.overall.display <- round.point.estimates(y.trans, params, begin.num=0, end.num=0)
-        lb.overall.display <- round.point.estimates(lb.trans, params, begin.num=0, end.num=0)
-        ub.overall.display <- round.point.estimates(ub.trans, params, begin.num=1, end.num=0)
-        if (min(ub.trans) <0) {
+        if (min(ub.overall.trans) < 0) {
             # if any negative entries, add an extra space to separate entry from preceding ","
             ub.overall.display <- paste(" ", ub.overall.display, sep="")
         }
@@ -100,7 +107,8 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
 
         col2.overall.row <- paste(y.overall.display, lb.overall.display, ",", ub.overall.display, ")", sep = "")
         col2.width <- nchar(col2.overall.row)
-        col2.label <- params$fp_col2_str
+        print(attributes(params))
+        col2.label <- as.character(params$fp_col2_str)
         # if label contains ",", pad label to align columns
         label.info <- check.label(label = col2.label, split.str = ",")
         max.chars <- max(nchar(ub.display), nchar(ub.overall.display)) + 1
@@ -148,12 +156,12 @@ create.plot.data.binary <- function(binary.data, params, res, selected.cov = NUL
         
     # if we have raw data, add it to the additional columns field
     if ((length(binary.data@g1O1) > 0) && (params$fp_show_col3=="TRUE")) {
-        data.column <- format.raw.data.col(nums = binary.data@g1O1, denoms = binary.data@g1O1 + binary.data@g1O2, label = params$fp_col3_str)
+        data.column <- format.raw.data.col(nums = binary.data@g1O1, denoms = binary.data@g1O1 + binary.data@g1O2, label = as.character(params$fp_col3_str))
         plot.data$additional.col.data$cases <- data.column
     }
     
     if ((length(binary.data@g2O1) > 0) && (params$fp_show_col4=="TRUE")){
-        data.column <- format.raw.data.col(nums = binary.data@g2O1, denoms = binary.data@g2O1 + binary.data@g2O2, label = params$fp_col4_str)
+        data.column <- format.raw.data.col(nums = binary.data@g2O1, denoms = binary.data@g2O1 + binary.data@g2O2, label = as.character(params$fp_col4_str))
         plot.data$additional.col.data$controls = data.column
     }
     
@@ -166,7 +174,7 @@ create.plot.data.diagnostic <- function(diagnostic.data, params, res, selected.c
         
     # if we have raw data, add it to the additional columns field
     if ((length(diagnostic.data@TP) > 0) && (params$fp_show_col3=="TRUE")) {
-       metric <- params$measure
+        metric <- params$measure
         label <- switch(metric,
         # sensitivity
         Sens = "TP/Di+", 
@@ -753,17 +761,7 @@ diagnostic.sroc.plot <- function(plot.data, outpath,
 #######################################################
 #   Functions for formatting data for display in plots #
 #######################################################
-
-round.point.estimates <- function(est, params, begin.num, end.num) {
-    # round point estimates and align columns - begin.num and end.num are number of spaces to pad at beginning and end of est
-    est <- round.with.zeros(est, digits = params$digits)
-    # for ub and lb, add an extra space to positive numbers for alignment (negative numbers display minus sign)
-    if (length(est[est >= 0])) {
-        est[est >= 0] <- mapply(pad.with.spaces, est[est >= 0], begin.num=begin.num, end.num=end.num)
-    }
-    est
-}
-    
+  
 check.label <- function(label, split.str) {
     # check column labels for split.symbol and return length of string that follows split.str
     split.label <- strsplit(label, split.str)
