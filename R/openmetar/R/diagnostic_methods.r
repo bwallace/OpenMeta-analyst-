@@ -127,7 +127,7 @@ invlogit <- function(x) {
 ###################################################
 #            diagnostic fixed effects             #
 ###################################################
-diagnostic.fixed.inv.var <- function(diagnostic.data, params){
+diagnostic.fixed <- function(diagnostic.data, params){
     # assert that the argument is the correct type
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
 
