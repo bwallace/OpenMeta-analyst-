@@ -30,9 +30,7 @@ class AddNewOutcomeForm(QDialog, ui_new_outcome.Ui_Dialog):
 
         
     def _populate_combo_box(self):
-        # removing types 'diagnostic' and 'other' until we implement methods for these.
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
+        # diagnostic datasets can have only diagnostic outcomes
         if self.parent().model.is_diag:
             self.datatype_cbo_box.addItem(QString("Diagnostic"), QVariant(DIAGNOSTIC))
         else:

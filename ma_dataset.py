@@ -494,7 +494,7 @@ class MetaAnalyticUnit:
         # TreatmentGroup ids to effect scalars.
         self.tx_groups = {}
         
-        self.raw_data_length = 2 if outcome.data_type is BINARY else 3
+        self.raw_data_length = 2 if outcome.data_type in [BINARY, DIAGNOSTIC] else 3
         raw_data = raw_data or [["" for n in range(self.raw_data_length)] for group in group_names]
         
         # this is a (temporary?) fix for cases where the SE for a given study is
@@ -524,9 +524,18 @@ class MetaAnalyticUnit:
             for effect in meta_globals.CONTINUOUS_TWO_ARM_METRICS + meta_globals.CONTINUOUS_ONE_ARM_METRICS:
                 self.effects_dict[effect] = {"est":None, "lower":None, "upper":None, "SE":None,
                                              "display_est":None, "display_lower":None, "display_upper":None}
+        elif self.outcome.data_type == DIAGNOSTIC:
+            # diagnostic data
+            self.effects_dict[effect] = {}
+            for metric in ["sens", "spec", "ppv", "ppn", "dor"]:
+                self.effects_dict[effect][metric] = None
+                self.effects_dict[effect]["%s_lower" % metric] = None
+                self.effects_dict[effect]["%s_upper" % metric] = None
                  
     def set_effect(self, effect, value):
-        self.effects_dict[effect]["est"] = value
+        if not self.is_diag:
+            self.effects_dict[effect]["est"] = value
+        # for diagnostic data, we'll need extra info here...
        
     def set_SE(self, se):
         # we're assuming this is a continuous outcome!
