@@ -156,7 +156,7 @@ class DatasetModel(QAbstractTableModel):
             # @TODO what to do about 'other'?
             self.RAW_DATA = [col+offset for col in range(4)]
             # sensitivity & specificity? 
-            self.OUTCOMES = [7, 8]
+            self.OUTCOMES = [7, 8, 9, 10, 11, 12]
             
     def data(self, index, role=Qt.DisplayRole):
         '''
@@ -208,22 +208,15 @@ class DatasetModel(QAbstractTableModel):
                     outcome_val = est_and_ci[outcome_index]
                     return QVariant(round(outcome_val, self.NUM_DIGITS))
                 else:
-                    outcome_val = None
                     study_index = index.row()
                     effects_dict = self.dataset.studies[study_index].outcomes_to_follow_ups[self.current_outcome][\
                                                     self.get_current_follow_up_name()].effects_dict
-                    d = None
-                    if outcome_index == 0:
-                        # sensitivity
-                        d = effects_dict['Sens']
-                    else:
-                        # specificity
-                        d = effects_dict['Spec']
-                        
-                    outcome_val = str(none_to_str(d['display_est'])) +\
-                                   " (%s, %s)" % (str(none_to_str(d['display_upper'])), str(none_to_str(d['display_lower'])))
+                    vals = []
+                    for s in ("Sens", "Spec"):
+                        for field in ["display_est", "display_lower", "display_upper"]:
+                            vals.append(none_to_str(effects_dict[s][field]))
                       
-                    return QVariant(outcome_val) 
+                    return QVariant(vals[outcome_index]) 
                 
             elif column != self.INCLUDE_STUDY:
                 # here the column is to the right of the outcomes (and not the 0th, or
@@ -457,10 +450,13 @@ class DatasetModel(QAbstractTableModel):
                     else:
                         return QVariant("upper")
                 elif outcome_type == DIAGNOSTIC:
-                    if section == self.OUTCOMES[0]:
-                        return QVariant("sens. (lower, upper)")
-                    else:
-                        return QVariant("spec. (lower, upper)")         
+                    #### 
+                    # we're going to do three columns per outcome
+                    #   est, lower, upper
+                    outcome_index = section - self.OUTCOMES[0]
+                    outcome_headers = ["sens.", "lower", "upper", "spec.", "lower", "upper"]
+                    return QVariant(outcome_headers[outcome_index])
+
             else:
                 # then the column is to the right of the outcomes, and must
                 # be a covariate.
@@ -506,9 +502,9 @@ class DatasetModel(QAbstractTableModel):
             num_effect_size_fields = 3 # point estimate, low, high
             outcome_type = self.dataset.get_outcome_type(self.current_outcome)
             if outcome_type == DIAGNOSTIC:
-                # we have two for diagnostic; sensitivity and specifity. we 
-                # will display the estimate and CI in the same cell for these
-                num_effect_size_fields = 2 
+                # we have two for diagnostic; sensitivity and specifity.
+                # we will display the est, lower, and upper for both of these.
+                num_effect_size_fields = 6
             
             num_cols += num_effect_size_fields + self.num_data_cols_for_current_unit()
         # now add the covariates (if any)
