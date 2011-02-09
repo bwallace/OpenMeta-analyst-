@@ -56,7 +56,7 @@ compute.spec <- function(diagnostic.data) {
 }
 
 compute.diag.point.estimates <- function(diagnostic.data, params) {
-# Computes point estimates based on raw data and adds them to diagnostic.data
+    # Computes point estimates based on raw data and adds them to diagnostic.data
     metric <- params$measure    
     TP <- diagnostic.data@TP
     FN <- diagnostic.data@FN  
