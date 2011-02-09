@@ -526,11 +526,9 @@ class MetaAnalyticUnit:
                                              "display_est":None, "display_lower":None, "display_upper":None}
         elif self.outcome.data_type == DIAGNOSTIC:
             # diagnostic data
-            self.effects_dict[effect] = {}
-            for metric in ["sens", "spec", "ppv", "ppn", "dor"]:
-                self.effects_dict[effect][metric] = None
-                self.effects_dict[effect]["%s_lower" % metric] = None
-                self.effects_dict[effect]["%s_upper" % metric] = None
+            for metric in meta_globals.DIAGNOSTIC_METRICS:
+                self.effects_dict[metric] = {"est":None, "lower":None, "upper":None, "variance":None,
+                                             "display_est":None, "display_lower":None, "display_upper":None}
                  
     def set_effect(self, effect, value):
         if not self.is_diag:

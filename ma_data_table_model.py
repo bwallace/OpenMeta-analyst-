@@ -39,7 +39,10 @@ class DatasetModel(QAbstractTableModel):
     def __init__(self, filename=QString(), dataset=None):
         super(DatasetModel, self).__init__()
 
-        self.dataset = dataset or Dataset()
+        self.dataset = dataset
+        if dataset is None:
+            self.dataset = Dataset()
+
         # include an extra blank study to begin with
         self.dataset.studies.append(Study(self.max_study_id() +1))
 
@@ -63,9 +66,10 @@ class DatasetModel(QAbstractTableModel):
         self.INCLUDE_STUDY = 0
         self.NAME, self.YEAR = [col+1 for col in range(2)]
         self.update_column_indices()
-           
+         
+         
         # @TODO parameterize; make variable
-        self.current_effect = "OR"
+        self.current_effect = "OR" 
 
         # @TODO presumably the COVARIATES will contain the column
         # indices and the currently_displayed... will contain the names
@@ -81,6 +85,7 @@ class DatasetModel(QAbstractTableModel):
         self.study_auto_added = None
 
 
+        
     def set_current_metric(self, metric):
         self.current_effect = metric
         print "OK! metric updated."
@@ -397,6 +402,19 @@ class DatasetModel(QAbstractTableModel):
                         return QVariant(current_tx + " mean")
                     else:
                         return QVariant(current_tx + " SD")
+                elif outcome_type == DIAGNOSTIC:
+                    # ordering per sir Tom Trikalinos
+                    # "it makes sense -- it goes like this in the matrix!"
+                    #       - (said while making bizarre gesticulation) Tom.
+                    if section == self.RAW_DATA[0]:
+                        return QVariant("TP")
+                    elif section == self.RAW_DATA[1]:
+                        return QVariant("FN")
+                    elif section == self.RAW_DATA[2]:
+                        return QVariant("FP")
+                    else:
+                        return QVariant("TN")
+                        
             elif section in self.OUTCOMES:
                 if outcome_type == BINARY:
                     # effect size, lower CI, upper CI
@@ -413,6 +431,11 @@ class DatasetModel(QAbstractTableModel):
                         return QVariant("lower")
                     else:
                         return QVariant("upper")
+                elif outcome_type == DIAGNOSTIC:
+                    if section == self.OUTCOMES[0]:
+                        return QVariant("sens. (lower, upper)")
+                    else:
+                        return QVariant("spec. (lower, upper)")         
             else:
                 # then the column is to the right of the outcomes, and must
                 # be a covariate.
@@ -819,7 +842,7 @@ class DatasetModel(QAbstractTableModel):
         
         ## TODO make application global!
         mult = 1.96 
-        se = (upper-est) /mult
+        se = (upper-est)/mult
         return (est, se)
         
     def get_cur_ests_and_SEs(self, only_if_included=True):
