@@ -308,34 +308,38 @@ class DatasetModel(QAbstractTableModel):
                 # update the corresponding outcome (if data permits)
                 self.update_outcome_if_possible(index.row())
             elif column in self.OUTCOMES:
-                # the user can also explicitly set the effect size / CIs
-                # @TODO what to do if the entered estimate contradicts the raw data?
-                display_scale_val, converted_ok = value.toDouble()
-                if converted_ok:
-                    # note that we convert from the display/continuous
-                    # scale on which the metric is assumed to have been
-                    # entered into the 'calculation' scale (e.g., log)
-                    calc_scale_val = None
-                    if current_data_type == BINARY:
-                        calc_scale_val = meta_py_r.binary_convert_scale(display_scale_val, \
-                                                    self.current_effect, convert_to="calc.scale")
-                    else:
-                        ## assuming continuous here
-                        calc_scale_val = meta_py_r.continuous_convert_scale(display_scale_val, \
-                                                    self.current_effect, convert_to="calc.scale")
-                                                    
-                    ma_unit = self.get_current_ma_unit_for_study(index.row())
-                    if column == self.OUTCOMES[0]:
-                        ma_unit.set_effect(self.current_effect, calc_scale_val)
-                        ma_unit.set_display_effect(self.current_effect, display_scale_val)
-                    elif column == self.OUTCOMES[1]:
-                        # lower
-                        ma_unit.set_lower(self.current_effect, calc_scale_val)
-                        ma_unit.set_display_lower(self.current_effect, display_scale_val)
-                    else:
-                        # upper
-                        ma_unit.set_upper(self.current_effect, calc_scale_val)
-                        ma_unit.set_display_upper(self.current_effect, display_scale_val)
+                if not self.is_diag():
+                    # the user can also explicitly set the effect size / CIs
+                    # @TODO what to do if the entered estimate contradicts the raw data?
+                    display_scale_val, converted_ok = value.toDouble()
+                    if converted_ok:
+                        # note that we convert from the display/continuous
+                        # scale on which the metric is assumed to have been
+                        # entered into the 'calculation' scale (e.g., log)
+                        calc_scale_val = None
+                        if current_data_type == BINARY:
+                            calc_scale_val = meta_py_r.binary_convert_scale(display_scale_val, \
+                                                        self.current_effect, convert_to="calc.scale")
+                        else:
+                            ## assuming continuous here
+                            calc_scale_val = meta_py_r.continuous_convert_scale(display_scale_val, \
+                                                        self.current_effect, convert_to="calc.scale")
+                                                        
+                        ma_unit = self.get_current_ma_unit_for_study(index.row())
+                        if column == self.OUTCOMES[0]:
+                            ma_unit.set_effect(self.current_effect, calc_scale_val)
+                            ma_unit.set_display_effect(self.current_effect, display_scale_val)
+                        elif column == self.OUTCOMES[1]:
+                            # lower
+                            ma_unit.set_lower(self.current_effect, calc_scale_val)
+                            ma_unit.set_display_lower(self.current_effect, display_scale_val)
+                        else:
+                            # upper
+                            ma_unit.set_upper(self.current_effect, calc_scale_val)
+                            ma_unit.set_display_upper(self.current_effect, display_scale_val)
+                else:
+                    print "diagnostic!"
+                            
             elif column == self.INCLUDE_STUDY:
                 study.include = value.toBool()
                 # we keep note if a study was manually 
@@ -366,16 +370,17 @@ class DatasetModel(QAbstractTableModel):
             new_val = self.data(index)
             self.emit(SIGNAL("cellContentChanged(QModelIndex, QVariant, QVariant)"), index, old_val, new_val)
          
-            if self.current_outcome is not None:
-                effect_d = self.get_current_ma_unit_for_study(index.row()).effects_dict[self.current_effect]
-                # if any of the effect values are empty, we cannot include this study in the analysis, so it
-                # is automatically excluded.
-                if any([val is None for val in [effect_d[effect_key] for effect_key in ("upper", "lower", "est")]]):
-                    study.include = False
-                # if the study has not been explicitly excluded by the user, then we automatically
-                # include it once it has sufficient data.
-                elif not study.manually_excluded:
-                    study.include = True
+            if not self.is_diag():
+                if self.current_outcome is not None:
+                    effect_d = self.get_current_ma_unit_for_study(index.row()).effects_dict[self.current_effect]
+                    # if any of the effect values are empty, we cannot include this study in the analysis, so it
+                    # is automatically excluded.
+                    if any([val is None for val in [effect_d[effect_key] for effect_key in ("upper", "lower", "est")]]):
+                        study.include = False
+                    # if the study has not been explicitly excluded by the user, then we automatically
+                    # include it once it has sufficient data.
+                    elif not study.manually_excluded:
+                        study.include = True
                 
             return True
         return False
