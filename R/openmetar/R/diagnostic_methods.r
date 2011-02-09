@@ -188,7 +188,7 @@ diagnostic.fixed.parameters <- function(){
 ##################################
 diagnostic.random <- function(diagnostic.data, params){
     # assert that the argument is the correct type
-    if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Binary data expected.")
+    if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
     
     results <- NULL
     if (diagnostic.data@TP > 0) {
@@ -276,24 +276,24 @@ diagnostic.fixed.sroc <- function(diagnostic.data, params){
     if (params$sroc_weighted) {
         inv.var <- diagnostic.data@TP + diagnostic.data@FN + diagnostic.data@FP + diagnostic.data@TN
         # compute total number in each study
-        res <- lm(D ~ S, weights=inv.var)
         # weighted linear regression
+        res <- lm(D ~ S, weights=inv.var)
     } else {
-        res <- lm(D~S)
-        # unweighted regression 
+        # unweighted regression
+        res <- lm(D~S) 
     }
     # Create list to display summary of results
     fitted.line <- list(intercept=res$coefficients[1], slope=res$coefficients[2])
     plot.data <- list("fitted.line" = fitted.line, "TPR"=TPR, "FPR"=FPR, "inv.var" = inv.var, "s.range" = s.range, "weighted"=params$sroc_weighted)
 
     diagnostic.sroc.plot(plot.data, outpath=params$sroc_outpath)
-      #
-      # Now we package the results in a dictionary (technically, a named
-      # vector). In particular, there are two fields that must be returned;
-      # a dictionary of images (mapping titles to image paths) and a list of texts
-      # (mapping titles to pretty-printed text). In this case we have only one
-      # of each.
-      #
+    #
+    # Now we package the results in a dictionary (technically, a named
+    # vector). In particular, there are two fields that must be returned;
+    # a dictionary of images (mapping titles to image paths) and a list of texts
+    # (mapping titles to pretty-printed text). In this case we have only one
+    # of each.
+    #
     images <- c("SROC"=params$sroc_outpath)
     plot.names <- c("sroc"="sroc")
     results <- list("images"=images, "plot_names"=plot.names)
