@@ -54,3 +54,6 @@ TYPE_TO_STR_DICT = {BINARY:u"binary", CONTINUOUS:u"continuous",
 VANILLA, NETWORK = range(2)
 
 EMPTY_VALS = ("", None) # these indicate an empty row/cell 
+
+# this is useful sometimes.
+none_to_str = lambda x: "" if x is None else x

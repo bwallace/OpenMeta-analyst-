@@ -198,13 +198,33 @@ class DatasetModel(QAbstractTableModel):
                 # either the point estimate, or the lower/upper
                 # confidence interval
                 outcome_index = column - self.OUTCOMES[0]
-                est_and_ci = self.get_current_ma_unit_for_study(index.row()).\
-                                                get_display_effect_and_ci(self.current_effect)
-                outcome_val = est_and_ci[outcome_index]
-                if outcome_val is None:
-                    return QVariant("")
-                outcome_val = est_and_ci[outcome_index]
-                return QVariant(round(outcome_val, self.NUM_DIGITS))
+                outcome_val = None
+                if not self.is_diag():
+                    est_and_ci = self.get_current_ma_unit_for_study(index.row()).\
+                                                    get_display_effect_and_ci(self.current_effect)
+                    outcome_val = est_and_ci[outcome_index]
+                    if outcome_val is None:
+                        return QVariant("")
+                    outcome_val = est_and_ci[outcome_index]
+                    return QVariant(round(outcome_val, self.NUM_DIGITS))
+                else:
+                    outcome_val = None
+                    study_index = index.row()
+                    effects_dict = self.dataset.studies[study_index].outcomes_to_follow_ups[self.current_outcome][\
+                                                    self.get_current_follow_up_name()].effects_dict
+                    d = None
+                    if outcome_index == 0:
+                        # sensitivity
+                        d = effects_dict['Sens']
+                    else:
+                        # specificity
+                        d = effects_dict['Spec']
+                        
+                    outcome_val = str(none_to_str(d['display_est'])) +\
+                                   " (%s, %s)" % (str(none_to_str(d['display_upper'])), str(none_to_str(d['display_lower'])))
+                      
+                    return QVariant(outcome_val) 
+                
             elif column != self.INCLUDE_STUDY:
                 # here the column is to the right of the outcomes (and not the 0th, or
                 # 'include study' column, and thus must corrrespond to a covariate.
@@ -887,13 +907,13 @@ class DatasetModel(QAbstractTableModel):
         to initially populate this study with empty MetaAnalytic units reflecting the known
         outcomes, time points & tx groups, as they will be added 'on-demand' here.
         '''
+        
         # first check to see that the current outcome is contained in this study
         if not self.current_outcome in self.dataset.studies[study_index].outcomes_to_follow_ups:
             ###
             # Issue 7 (RESOLVED) http://github.com/bwallace/OpenMeta-analyst-/issues/#issue/7
-            # previously, 
             self.dataset.studies[study_index].add_outcome(self.dataset.get_outcome_obj(self.current_outcome), \
-                                                                                                group_names=self.dataset.get_group_names())
+                                                            group_names=self.dataset.get_group_names())
         
         # we must also make sure the time point exists. note that we use the *name* rather than the 
         # index of the current time/follow up
