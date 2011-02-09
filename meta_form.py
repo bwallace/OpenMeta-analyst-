@@ -102,8 +102,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         start_up_window =  start_up_dialog.StartUp(parent=self)
         start_up_window.show()
         
-    def new_dataset(self, name=None):
-        data_model = Dataset(title=name)
+    def new_dataset(self, name=None, is_diag=False):
+        data_model = Dataset(title=name, is_diag=is_diag)
         if self.model is not None:
             original_dataset = copy.deepcopy(self.model.dataset)
             old_state_dict = self.tableView.model().get_stateful_dict()
@@ -383,7 +383,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     def add_new(self):
         redo_f, undo_f = None, None
         if self.cur_dimension == "outcome":
-            form =  add_new_dialogs.AddNewOutcomeForm(self)
+            form = add_new_dialogs.AddNewOutcomeForm(self)
             form.outcome_name_le.setFocus()
             if form.exec_():
                 # then the user clicked ok and has added a new outcome.

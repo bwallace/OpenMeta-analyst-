@@ -1,9 +1,11 @@
 from PyQt4.Qt import *
+from meta_globals import *
 import ui_new_group
 import ui_new_follow_up
 import ui_new_outcome
 import ui_new_covariate
 import ui_new_study
+import pdb
 
 class AddNewGroupForm(QDialog, ui_new_group.Ui_new_group_dialog):
     
@@ -29,9 +31,14 @@ class AddNewOutcomeForm(QDialog, ui_new_outcome.Ui_Dialog):
         
     def _populate_combo_box(self):
         # removing types 'diagnostic' and 'other' until we implement methods for these.
-        for name, type_id in zip([QString(s) for s in ["Binary", "Continuous"]],
-                                     [QVariant(i) for i in range(2)]):
-            self.datatype_cbo_box.addItem(name, type_id)
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
+        if self.parent().model.is_diag:
+            self.datatype_cbo_box.addItem(QString("Diagnostic"), QVariant(DIAGNOSTIC))
+        else:
+            for name, type_id in zip([QString(s) for s in ["Binary", "Continuous"]],
+                                         [QVariant(i) for i in range(2)]):
+                self.datatype_cbo_box.addItem(name, type_id)
         
 
 

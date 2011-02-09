@@ -456,6 +456,12 @@ class DatasetModel(QAbstractTableModel):
         num_cols = 3 # we always show study name and year (and include studies)
         if len(self.dataset.get_outcome_names()) > 0:
             num_effect_size_fields = 3 # point estimate, low, high
+            outcome_type = self.dataset.get_outcome_type(self.current_outcome)
+            if outcome_type == DIAGNOSTIC:
+                # we have two for diagnostic; sensitivity and specifity. we 
+                # will display the estimate and CI in the same cell for these
+                num_effect_size_fields = 2 
+            
             num_cols += num_effect_size_fields + self.num_data_cols_for_current_unit()
         # now add the covariates (if any)
         num_cols += len(self.dataset.covariates)
@@ -696,6 +702,10 @@ class DatasetModel(QAbstractTableModel):
         
         return d
 
+    def is_diag(self):
+        ''' Convenience method -- just returns if the ma_dataset is a diagnostic dataset or not '''
+        return self.dataset.is_diag
+        
     def set_state(self, state_dict):
         for key, val in state_dict.items():
             exec("self.%s = val" % key)

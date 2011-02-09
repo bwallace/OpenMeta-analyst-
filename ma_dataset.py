@@ -29,11 +29,11 @@ class Dataset:
     def __len__(self):
         return len(self.studies)
         
-    def __init__(self, title=None, summary=None):
+    def __init__(self, title=None, is_diag=False, summary=None):
         self.title = title
         self.summary = summary
         self.studies = []
-
+        self.is_diag = is_diag
         self.num_outcomes = 0
         self.num_follow_ups = 0
         self.outcome_names_to_follow_ups = {}

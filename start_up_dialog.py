@@ -1,4 +1,5 @@
 from PyQt4.Qt import *
+import pdb
 import ui_start_up
 
 class StartUp(QDialog, ui_start_up.Ui_WelcomeDialog):
@@ -16,5 +17,6 @@ class StartUp(QDialog, ui_start_up.Ui_WelcomeDialog):
       
     def new_dataset(self):
         name = unicode(self.dataset_name_le.text().toUtf8(), "utf-8")
-        self.parent.new_dataset(name=name)
+        is_diag = self.diag_radio.isChecked()
+        self.parent.new_dataset(name=name, is_diag=is_diag)
         self.close()
