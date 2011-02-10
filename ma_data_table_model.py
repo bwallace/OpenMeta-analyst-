@@ -153,7 +153,6 @@ class DatasetModel(QAbstractTableModel):
             self.OUTCOMES = [9, 10, 11] 
         else:
             # diagnostic
-            # @TODO what to do about 'other'?
             self.RAW_DATA = [col+offset for col in range(4)]
             # sensitivity & specificity? 
             self.OUTCOMES = [7, 8, 9, 10, 11, 12]
@@ -195,13 +194,14 @@ class DatasetModel(QAbstractTableModel):
                 else:
                     return QVariant("")
             elif column in self.OUTCOMES:
+                group_str = self.get_cur_group_str()
                 # either the point estimate, or the lower/upper
                 # confidence interval
                 outcome_index = column - self.OUTCOMES[0]
                 outcome_val = None
                 if not self.is_diag():
                     est_and_ci = self.get_current_ma_unit_for_study(index.row()).\
-                                                    get_display_effect_and_ci(self.current_effect)
+                                                    get_display_effect_and_ci(self.current_effect, group_str)
                     outcome_val = est_and_ci[outcome_index]
                     if outcome_val is None:
                         return QVariant("")
@@ -248,6 +248,21 @@ class DatasetModel(QAbstractTableModel):
         return QVariant()
 
 
+    def get_cur_group_str(self):
+        # we have to build a key (string) here to index into the
+        # correct outcome in the meta-analytic unit. the protocol is
+        # as follows. if we are dealing with a two group outcome,
+        # then the string is:
+        #    tx A-tx B
+        # if we have a one group outcome, the string is just:
+        #    tx A
+        if self.current_effect in ONE_ARM_METRICS:
+            group_str = self.current_txs[0] 
+        else:
+            group_str = "-".join(self.current_txs)
+        return group_str
+        
+        
     def setData(self, index, value, role=Qt.EditRole):
         '''
         Implementation of the AbstractDataTable method. The view uses this method
@@ -293,6 +308,11 @@ class DatasetModel(QAbstractTableModel):
                     if column in self.RAW_DATA[3:]:
                         adjust_by += 3
                         group_name = self.current_txs[1]
+                else:
+                    # diagnostic
+                    if column in self.RAW_DATA[2:]:
+                        adjust_by += 2 
+                        group_name = self.current_txs[1]
                         
                 adjusted_index = column-adjust_by
                 val = value.toDouble()[0] if value.toDouble()[1] else ""
@@ -301,11 +321,12 @@ class DatasetModel(QAbstractTableModel):
                 # update the corresponding outcome (if data permits)
                 self.update_outcome_if_possible(index.row())
             elif column in self.OUTCOMES:
-                if not self.is_diag():
-                    # the user can also explicitly set the effect size / CIs
-                    # @TODO what to do if the entered estimate contradicts the raw data?
-                    display_scale_val, converted_ok = value.toDouble()
-                    if converted_ok:
+                group_str = self.get_cur_group_str()
+                # the user can also explicitly set the effect size / CIs
+                # @TODO what to do if the entered estimate contradicts the raw data?
+                display_scale_val, converted_ok = value.toDouble()
+                if converted_ok:
+                    if not self.is_diag():
                         # note that we convert from the display/continuous
                         # scale on which the metric is assumed to have been
                         # entered into the 'calculation' scale (e.g., log)
@@ -320,18 +341,20 @@ class DatasetModel(QAbstractTableModel):
                                                         
                         ma_unit = self.get_current_ma_unit_for_study(index.row())
                         if column == self.OUTCOMES[0]:
-                            ma_unit.set_effect(self.current_effect, calc_scale_val)
-                            ma_unit.set_display_effect(self.current_effect, display_scale_val)
+                            ma_unit.set_effect(self.current_effect, group_str, calc_scale_val)
+                            ma_unit.set_display_effect(self.current_effect, group_str, display_scale_val)
                         elif column == self.OUTCOMES[1]:
                             # lower
-                            ma_unit.set_lower(self.current_effect, calc_scale_val)
-                            ma_unit.set_display_lower(self.current_effect, display_scale_val)
+                            ma_unit.set_lower(self.current_effect, group_str, calc_scale_val)
+                            ma_unit.set_display_lower(self.current_effect, group_str, display_scale_val)
                         else:
                             # upper
-                            ma_unit.set_upper(self.current_effect, calc_scale_val)
-                            ma_unit.set_display_upper(self.current_effect, display_scale_val)
-                else:
-                    print "diagnostic!"
+                            ma_unit.set_upper(self.current_effect, group_str, calc_scale_val)
+                            ma_unit.set_display_upper(self.current_effect, group_str, display_scale_val)
+                    else:
+                        calc_scale_val = meta_py_r.diagnostic_convert_scale(display_scale_val, \
+                                                            self.current_effect, convert_to="calc.scale")
+                        ma_unit = self.get_current_ma_unit_for_study(index.row())
                             
             elif column == self.INCLUDE_STUDY:
                 study.include = value.toBool()
@@ -365,7 +388,8 @@ class DatasetModel(QAbstractTableModel):
          
             if not self.is_diag():
                 if self.current_outcome is not None:
-                    effect_d = self.get_current_ma_unit_for_study(index.row()).effects_dict[self.current_effect]
+                    effect_d = self.get_current_ma_unit_for_study(index.row()).effects_dict[\
+                                          self.current_effect][group_str]
                     # if any of the effect values are empty, we cannot include this study in the analysis, so it
                     # is automatically excluded.
                     if any([val is None for val in [effect_d[effect_key] for effect_key in ("upper", "lower", "est")]]):

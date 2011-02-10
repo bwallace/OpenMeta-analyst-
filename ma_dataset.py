@@ -471,7 +471,7 @@ class MetaAnalyticUnit:
     it (may) contain multiple groups!
     '''
  
-    def __init__(self, outcome, raw_data = None, group_names = None):
+    def __init__(self, outcome, raw_data=None, group_names=None):
         '''
         Instantiate a new MetaAnalyticUnit, which is specific to a 
         given study/outcome pair. 
@@ -485,97 +485,127 @@ class MetaAnalyticUnit:
                             for the treated group and the second corresponds to the
                             control group (if applicable)
         '''
+        # diagnostic outcome?
+        self.is_diag = outcome.data_type == DIAGNOSTIC
         
-        if group_names is None:
+        if group_names is None and not self.is_diag:
             group_names = ["tx A", "tx B"]
-            
+        elif group_names is None:
+            group_names = ["test 1"]
+
         self.outcome = outcome
 
-        # TreatmentGroup ids to effect scalars.
+        # TreatmentGroup ids to effect scalars. Note 
         self.tx_groups = {}
         
-        self.raw_data_length = 2 if outcome.data_type in [BINARY, DIAGNOSTIC] else 3
+        self.raw_data_length = 0
+        if outcome.data_type == BINARY:
+            self.raw_data_length = 2
+        elif outcome.data_type == CONTINUOUS:
+            self.raw_data_length = 3
+        else:
+            self.raw_data_length = 4
+        
         raw_data = raw_data or [["" for n in range(self.raw_data_length)] for group in group_names]
+
         
         # this is a (temporary?) fix for cases where the SE for a given study is
         # provided but not the sample size (in particular, this is for continuous data).
         self.SEs_dict = {}
         
-        # add the two default groups: treatment and control; note that the raw data
-        # is held at the *group* level
-        for i, group in enumerate(group_names):
-            self.add_group(group)
-            self.tx_groups[group].raw_data = raw_data[i]
-            self.SEs_dict[group] = None
+        if not self.is_diag:
+            # add the two default groups: treatment and control; note that the raw data
+            # is held at the *group* level
+            for i, group in enumerate(group_names):
+                self.add_group(group)
+                self.tx_groups[group].raw_data = raw_data[i]
+                self.SEs_dict[group] = None
         
         self.effects_dict = {}
-        # TODO this needs another level; effect sizes that are entered directly
-        # must correspond to a particular pair of tx groups, moreover the 
-        # order matters i.e., the effect for tx a v. tx b is different than the reverse.
-        # Also -- where do one-arm metrics live?
+        # these are the dictionaries that actually hold the effects (estimate, 
+        # CI, etc.).
+        effect_d = {"est":None, "lower":None, "upper":None, "SE":None,
+                    "display_est":None, "display_lower":None, "display_upper":None}
         if self.outcome.data_type == BINARY:
-            for effect in meta_globals.BINARY_TWO_ARM_METRICS + meta_globals.BINARY_ONE_ARM_METRICS:
-                self.effects_dict[effect] = {"est":None, "lower":None, "upper":None, "variance":None,
-                                             "display_est":None, "display_lower":None, "display_upper":None}
+            # note that effect sizes that are entered directly
+            # must correspond to a particular *pair* of tx groups, moreover the 
+            # order matters i.e., the effect for tx a v. tx b is different than the reverse.
+            # we take care of this by mapping strings `txA-txB` to effect dictionaries
+            for effect in meta_globals.BINARY_TWO_ARM_METRICS:
+                self.effects_dict[effect]={}
+                for group1 in group_names:
+                    for group2 in group_names:
+                        if group1 != group2:
+                            groups_str = "-".join((group1, group2))
+                            self.effects_dict[effect][groups_str] = effect_d.copy()
+            for effect in meta_globals.BINARY_ONE_ARM_METRICS:
+                self.effects_dict[effect]={}
+                for group in group_names:
+                    self.effects_dict[effect][group] = effect_d.copy()
         elif self.outcome.data_type == CONTINUOUS:
-            # right now we only have mean difference and standardized mean difference
-            # @TODO hedge's G, cohen's D, glass delta; WV doesn't
-            # implement these
-            for effect in meta_globals.CONTINUOUS_TWO_ARM_METRICS + meta_globals.CONTINUOUS_ONE_ARM_METRICS:
-                self.effects_dict[effect] = {"est":None, "lower":None, "upper":None, "SE":None,
-                                             "display_est":None, "display_lower":None, "display_upper":None}
+            # note right now we only have mean difference and standardized mean difference
+            # @TODO hedge's G, cohen's D, glass delta; WV doesn't implement these
+            for effect in meta_globals.CONTINUOUS_TWO_ARM_METRICS:
+                self.effects_dict[effect]={}
+                for group1 in group_names:
+                    for group2 in group_names:
+                        if group1 != group2:
+                            groups_str = "-".join((group1, group2))
+                            self.effects_dict[effect][groups_str] = effect_d.copy()                                             
+            for effect in meta_globals.CONTINOUS_ONE_ARM_METRICS:
+                self.effects_dict[effect]={}
+                for group in group_names:
+                    self.effects_dict[effect][group] = effect_d.copy()
         elif self.outcome.data_type == DIAGNOSTIC:
+            self.effects_dict[effect]={}
             # diagnostic data
             for metric in meta_globals.DIAGNOSTIC_METRICS:
-                self.effects_dict[metric] = {"est":None, "lower":None, "upper":None, "variance":None,
-                                             "display_est":None, "display_lower":None, "display_upper":None}
-                 
-    def set_effect(self, effect, value):
-        if not self.is_diag:
-            self.effects_dict[effect]["est"] = value
-        # for diagnostic data, we'll need extra info here...
+                for group in group_names:
+                    self.effects_dict[effect][group] = effect_d.copy()
+        print self.effects_dict
+           
+    def set_effect(self, effect, group_str, value):
+        self.effects_dict[effect][group_str]["est"] = value
        
-    def set_SE(self, se):
-        # we're assuming this is a continuous outcome!
-        self.effects_dict["SE"] = se
+    def set_SE(self, effect, group_str, se):
+        self.effects_dict[effect][group_str]["SE"] = se
         
-    def set_display_effect(self, effect, value):
-        self.effects_dict[effect]["display_est"] = value
+    def set_display_effect(self, effect, group_str, value):
+        self.effects_dict[effect][group_str]["display_est"] = value
          
-    def set_effect_and_ci(self, effect, est, lower, upper):
-        self.set_effect(effect, est)
-        self.effects_dict[effect]["lower"] = lower
-        self.effects_dict[effect]["upper"] = upper
+    def set_effect_and_ci(self, effect, group_str, est, lower, upper):
+        self.set_effect(effect, group_str, est)
+        self.effects_dict[effect][group_str]["lower"] = lower
+        self.effects_dict[effect][group_str]["upper"] = upper
        
-    def set_display_effect_and_ci(self, effect, est, lower, upper):
-        self.effects_dict[effect]["display_est"] = est
-        self.effects_dict[effect]["display_lower"] = lower
-        self.effects_dict[effect]["display_upper"] = upper
+    def set_display_effect_and_ci(self, effect, group_str, est, lower, upper):
+        self.effects_dict[effect][group_str]["display_est"] = est
+        self.effects_dict[effect][group_str]["display_lower"] = lower
+        self.effects_dict[effect][group_str]["display_upper"] = upper
         
-    def get_effect_and_ci(self, effect):
-        return (self.effects_dict[effect]["est"], self.effects_dict[effect]["lower"], \
-                    self.effects_dict[effect]["upper"])
+    def get_effect_and_ci(self, effect, group_str):
+        return (self.effects_dict[effect][group_str]["est"], self.effects_dict[effect][group_str]["lower"], \
+                    self.effects_dict[effect][group_str]["upper"])
                 
-    def get_display_effect_and_ci(self, effect):
-        return (self.effects_dict[effect]["display_est"], self.effects_dict[effect]["display_lower"], \
-                    self.effects_dict[effect]["display_upper"])
+    def get_display_effect_and_ci(self, effect, group_str):
+        return (self.effects_dict[effect][group_str]["display_est"], self.effects_dict[effect][group_str]["display_lower"], \
+                    self.effects_dict[effect][group_str]["display_upper"])
         
-    def set_lower(self, effect, lower):
-        self.effects_dict[effect]["lower"] = lower
+    def set_lower(self, effect, group_str, lower):
+        self.effects_dict[effect][group_str]["lower"] = lower
         
-    def set_display_lower(self, effect, lower):
-        self.effects_dict[effect]["display_lower"] = lower
+    def set_display_lower(self, effect, group_str, lower):
+        self.effects_dict[effect][group_str]["display_lower"] = lower
         
-    def set_upper(self, effect, upper):
-        self.effects_dict[effect]["upper"] = upper
+    def set_upper(self, effect, group_str, upper):
+        self.effects_dict[effect][group_str]["upper"] = upper
        
-    def set_display_upper(self, effect, upper):
-        self.effects_dict[effect]["display_upper"] = upper
+    def set_display_upper(self, effect, group_str, upper):
+        self.effects_dict[effect][group_str]["display_upper"] = upper
          
-    def get_effect(self, effect):
-        return self.effects_dict[effect]["est"]
+    def get_effect(self, effect, group_str):
+        return self.effects_dict[effect][group_str]["est"]
     
-
     def type(self):
         return self.outcome.data_type
         
