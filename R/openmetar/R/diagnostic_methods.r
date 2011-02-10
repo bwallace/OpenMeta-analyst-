@@ -65,7 +65,7 @@ adjust.raw.data <- function(diagnostic.data, params) {
 }
 
 compute.diag.point.estimates <- function(diagnostic.data, params) {
-# Computes point estimates based on raw data and adds them to diagnostic.data
+    # Computes point estimates based on raw data and adds them to diagnostic.data
     metric <- params$measure    
     TP <- diagnostic.data@TP
     FN <- diagnostic.data@FN  
@@ -197,7 +197,7 @@ diagnostic.fixed.parameters <- function(){
 ##################################
 diagnostic.random <- function(diagnostic.data, params){
     # assert that the argument is the correct type
-    if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Binary data expected.")
+    if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
     
     results <- NULL
     if (diagnostic.data@TP > 0) {
@@ -275,7 +275,7 @@ diagnostic.fixed.sroc <- function(diagnostic.data, params){
         S <- logit(TPR) + logit(FPR)
         D <- logit(TPR) - logit(FPR)
         s.range <- list("max"=max(S), "min"=min(S))
-        if (params$sroc_weighted == TRUE) {
+        if (params$sroc_weighted) {
             inv.var <- diagnostic.data@TP + diagnostic.data@FN + diagnostic.data@FP + diagnostic.data@TN
             # compute total number in each study
             res <- lm(D ~ S, weights=inv.var)
@@ -284,19 +284,19 @@ diagnostic.fixed.sroc <- function(diagnostic.data, params){
            res <- lm(D~S)
            # unweighted regression 
         }
+
     # Create list to display summary of results
     fitted.line <- list(intercept=res$coefficients[1], slope=res$coefficients[2])
     plot.data <- list("fitted.line" = fitted.line, "TPR"=TPR, "FPR"=FPR, "inv.var" = inv.var, "s.range" = s.range, "weighted"=params$sroc_weighted)
-    #model.title <- "SROC"
-    #summary.disp <- create.summary.disp(res, params, degf, model.title, data.type)
+
     diagnostic.sroc.plot(plot.data, outpath=params$sroc_outpath)
-      #
-      # Now we package the results in a dictionary (technically, a named
-      # vector). In particular, there are two fields that must be returned;
-      # a dictionary of images (mapping titles to image paths) and a list of texts
-      # (mapping titles to pretty-printed text). In this case we have only one
-      # of each.
-      #
+    #
+    # Now we package the results in a dictionary (technically, a named
+    # vector). In particular, there are two fields that must be returned;
+    # a dictionary of images (mapping titles to image paths) and a list of texts
+    # (mapping titles to pretty-printed text). In this case we have only one
+    # of each.
+    #
     images <- c("SROC"=params$sroc_outpath)
     plot.names <- c("sroc"="sroc")
     results <- list("images"=images, "plot_names"=plot.names)

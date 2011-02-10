@@ -39,7 +39,10 @@ class DatasetModel(QAbstractTableModel):
     def __init__(self, filename=QString(), dataset=None):
         super(DatasetModel, self).__init__()
 
-        self.dataset = dataset or Dataset()
+        self.dataset = dataset
+        if dataset is None:
+            self.dataset = Dataset()
+
         # include an extra blank study to begin with
         self.dataset.studies.append(Study(self.max_study_id() +1))
 
@@ -63,9 +66,10 @@ class DatasetModel(QAbstractTableModel):
         self.INCLUDE_STUDY = 0
         self.NAME, self.YEAR = [col+1 for col in range(2)]
         self.update_column_indices()
-           
+         
+         
         # @TODO parameterize; make variable
-        self.current_effect = "OR"
+        self.current_effect = "OR" 
 
         # @TODO presumably the COVARIATES will contain the column
         # indices and the currently_displayed... will contain the names
@@ -81,6 +85,7 @@ class DatasetModel(QAbstractTableModel):
         self.study_auto_added = None
 
 
+        
     def set_current_metric(self, metric):
         self.current_effect = metric
         print "OK! metric updated."
@@ -148,10 +153,9 @@ class DatasetModel(QAbstractTableModel):
             self.OUTCOMES = [9, 10, 11] 
         else:
             # diagnostic
-            # @TODO what to do about 'other'?
             self.RAW_DATA = [col+offset for col in range(4)]
             # sensitivity & specificity? 
-            self.OUTCOMES = [7, 8]
+            self.OUTCOMES = [7, 8, 9, 10, 11, 12]
             
     def data(self, index, role=Qt.DisplayRole):
         '''
@@ -190,16 +194,30 @@ class DatasetModel(QAbstractTableModel):
                 else:
                     return QVariant("")
             elif column in self.OUTCOMES:
+                group_str = self.get_cur_group_str()
                 # either the point estimate, or the lower/upper
                 # confidence interval
                 outcome_index = column - self.OUTCOMES[0]
-                est_and_ci = self.get_current_ma_unit_for_study(index.row()).\
-                                                get_display_effect_and_ci(self.current_effect)
-                outcome_val = est_and_ci[outcome_index]
-                if outcome_val is None:
-                    return QVariant("")
-                outcome_val = est_and_ci[outcome_index]
-                return QVariant(round(outcome_val, self.NUM_DIGITS))
+                outcome_val = None
+                if not self.is_diag():
+                    est_and_ci = self.get_current_ma_unit_for_study(index.row()).\
+                                                    get_display_effect_and_ci(self.current_effect, group_str)
+                    outcome_val = est_and_ci[outcome_index]
+                    if outcome_val is None:
+                        return QVariant("")
+                    outcome_val = est_and_ci[outcome_index]
+                    return QVariant(round(outcome_val, self.NUM_DIGITS))
+                else:
+                    study_index = index.row()
+                    effects_dict = self.dataset.studies[study_index].outcomes_to_follow_ups[self.current_outcome][\
+                                                    self.get_current_follow_up_name()].effects_dict
+                    vals = []
+                    for s in ("Sens", "Spec"):
+                        for field in ["display_est", "display_lower", "display_upper"]:
+                            vals.append(none_to_str(effects_dict[s][field]))
+                      
+                    return QVariant(vals[outcome_index]) 
+                
             elif column != self.INCLUDE_STUDY:
                 # here the column is to the right of the outcomes (and not the 0th, or
                 # 'include study' column, and thus must corrrespond to a covariate.
@@ -230,6 +248,21 @@ class DatasetModel(QAbstractTableModel):
         return QVariant()
 
 
+    def get_cur_group_str(self):
+        # we have to build a key (string) here to index into the
+        # correct outcome in the meta-analytic unit. the protocol is
+        # as follows. if we are dealing with a two group outcome,
+        # then the string is:
+        #    tx A-tx B
+        # if we have a one group outcome, the string is just:
+        #    tx A
+        if self.current_effect in ONE_ARM_METRICS:
+            group_str = self.current_txs[0] 
+        else:
+            group_str = "-".join(self.current_txs)
+        return group_str
+        
+        
     def setData(self, index, value, role=Qt.EditRole):
         '''
         Implementation of the AbstractDataTable method. The view uses this method
@@ -275,6 +308,11 @@ class DatasetModel(QAbstractTableModel):
                     if column in self.RAW_DATA[3:]:
                         adjust_by += 3
                         group_name = self.current_txs[1]
+                else:
+                    # diagnostic
+                    if column in self.RAW_DATA[2:]:
+                        adjust_by += 2 
+                        group_name = self.current_txs[1]
                         
                 adjusted_index = column-adjust_by
                 val = value.toDouble()[0] if value.toDouble()[1] else ""
@@ -283,34 +321,41 @@ class DatasetModel(QAbstractTableModel):
                 # update the corresponding outcome (if data permits)
                 self.update_outcome_if_possible(index.row())
             elif column in self.OUTCOMES:
+                group_str = self.get_cur_group_str()
                 # the user can also explicitly set the effect size / CIs
                 # @TODO what to do if the entered estimate contradicts the raw data?
                 display_scale_val, converted_ok = value.toDouble()
                 if converted_ok:
-                    # note that we convert from the display/continuous
-                    # scale on which the metric is assumed to have been
-                    # entered into the 'calculation' scale (e.g., log)
-                    calc_scale_val = None
-                    if current_data_type == BINARY:
-                        calc_scale_val = meta_py_r.binary_convert_scale(display_scale_val, \
-                                                    self.current_effect, convert_to="calc.scale")
+                    if not self.is_diag():
+                        # note that we convert from the display/continuous
+                        # scale on which the metric is assumed to have been
+                        # entered into the 'calculation' scale (e.g., log)
+                        calc_scale_val = None
+                        if current_data_type == BINARY:
+                            calc_scale_val = meta_py_r.binary_convert_scale(display_scale_val, \
+                                                        self.current_effect, convert_to="calc.scale")
+                        else:
+                            ## assuming continuous here
+                            calc_scale_val = meta_py_r.continuous_convert_scale(display_scale_val, \
+                                                        self.current_effect, convert_to="calc.scale")
+                                                        
+                        ma_unit = self.get_current_ma_unit_for_study(index.row())
+                        if column == self.OUTCOMES[0]:
+                            ma_unit.set_effect(self.current_effect, group_str, calc_scale_val)
+                            ma_unit.set_display_effect(self.current_effect, group_str, display_scale_val)
+                        elif column == self.OUTCOMES[1]:
+                            # lower
+                            ma_unit.set_lower(self.current_effect, group_str, calc_scale_val)
+                            ma_unit.set_display_lower(self.current_effect, group_str, display_scale_val)
+                        else:
+                            # upper
+                            ma_unit.set_upper(self.current_effect, group_str, calc_scale_val)
+                            ma_unit.set_display_upper(self.current_effect, group_str, display_scale_val)
                     else:
-                        ## assuming continuous here
-                        calc_scale_val = meta_py_r.continuous_convert_scale(display_scale_val, \
-                                                    self.current_effect, convert_to="calc.scale")
-                                                    
-                    ma_unit = self.get_current_ma_unit_for_study(index.row())
-                    if column == self.OUTCOMES[0]:
-                        ma_unit.set_effect(self.current_effect, calc_scale_val)
-                        ma_unit.set_display_effect(self.current_effect, display_scale_val)
-                    elif column == self.OUTCOMES[1]:
-                        # lower
-                        ma_unit.set_lower(self.current_effect, calc_scale_val)
-                        ma_unit.set_display_lower(self.current_effect, display_scale_val)
-                    else:
-                        # upper
-                        ma_unit.set_upper(self.current_effect, calc_scale_val)
-                        ma_unit.set_display_upper(self.current_effect, display_scale_val)
+                        calc_scale_val = meta_py_r.diagnostic_convert_scale(display_scale_val, \
+                                                            self.current_effect, convert_to="calc.scale")
+                        ma_unit = self.get_current_ma_unit_for_study(index.row())
+                            
             elif column == self.INCLUDE_STUDY:
                 study.include = value.toBool()
                 # we keep note if a study was manually 
@@ -341,16 +386,18 @@ class DatasetModel(QAbstractTableModel):
             new_val = self.data(index)
             self.emit(SIGNAL("cellContentChanged(QModelIndex, QVariant, QVariant)"), index, old_val, new_val)
          
-            if self.current_outcome is not None:
-                effect_d = self.get_current_ma_unit_for_study(index.row()).effects_dict[self.current_effect]
-                # if any of the effect values are empty, we cannot include this study in the analysis, so it
-                # is automatically excluded.
-                if any([val is None for val in [effect_d[effect_key] for effect_key in ("upper", "lower", "est")]]):
-                    study.include = False
-                # if the study has not been explicitly excluded by the user, then we automatically
-                # include it once it has sufficient data.
-                elif not study.manually_excluded:
-                    study.include = True
+            if not self.is_diag():
+                if self.current_outcome is not None:
+                    effect_d = self.get_current_ma_unit_for_study(index.row()).effects_dict[\
+                                          self.current_effect][group_str]
+                    # if any of the effect values are empty, we cannot include this study in the analysis, so it
+                    # is automatically excluded.
+                    if any([val is None for val in [effect_d[effect_key] for effect_key in ("upper", "lower", "est")]]):
+                        study.include = False
+                    # if the study has not been explicitly excluded by the user, then we automatically
+                    # include it once it has sufficient data.
+                    elif not study.manually_excluded:
+                        study.include = True
                 
             return True
         return False
@@ -397,6 +444,19 @@ class DatasetModel(QAbstractTableModel):
                         return QVariant(current_tx + " mean")
                     else:
                         return QVariant(current_tx + " SD")
+                elif outcome_type == DIAGNOSTIC:
+                    # ordering per sir Tom Trikalinos
+                    # "it makes sense -- it goes like this in the matrix!"
+                    #       - (said while making bizarre gesticulation) Tom.
+                    if section == self.RAW_DATA[0]:
+                        return QVariant("TP")
+                    elif section == self.RAW_DATA[1]:
+                        return QVariant("FN")
+                    elif section == self.RAW_DATA[2]:
+                        return QVariant("FP")
+                    else:
+                        return QVariant("TN")
+                        
             elif section in self.OUTCOMES:
                 if outcome_type == BINARY:
                     # effect size, lower CI, upper CI
@@ -413,6 +473,14 @@ class DatasetModel(QAbstractTableModel):
                         return QVariant("lower")
                     else:
                         return QVariant("upper")
+                elif outcome_type == DIAGNOSTIC:
+                    #### 
+                    # we're going to do three columns per outcome
+                    #   est, lower, upper
+                    outcome_index = section - self.OUTCOMES[0]
+                    outcome_headers = ["sens.", "lower", "upper", "spec.", "lower", "upper"]
+                    return QVariant(outcome_headers[outcome_index])
+
             else:
                 # then the column is to the right of the outcomes, and must
                 # be a covariate.
@@ -458,9 +526,9 @@ class DatasetModel(QAbstractTableModel):
             num_effect_size_fields = 3 # point estimate, low, high
             outcome_type = self.dataset.get_outcome_type(self.current_outcome)
             if outcome_type == DIAGNOSTIC:
-                # we have two for diagnostic; sensitivity and specifity. we 
-                # will display the estimate and CI in the same cell for these
-                num_effect_size_fields = 2 
+                # we have two for diagnostic; sensitivity and specifity.
+                # we will display the est, lower, and upper for both of these.
+                num_effect_size_fields = 6
             
             num_cols += num_effect_size_fields + self.num_data_cols_for_current_unit()
         # now add the covariates (if any)
@@ -819,7 +887,7 @@ class DatasetModel(QAbstractTableModel):
         
         ## TODO make application global!
         mult = 1.96 
-        se = (upper-est) /mult
+        se = (upper-est)/mult
         return (est, se)
         
     def get_cur_ests_and_SEs(self, only_if_included=True):
@@ -864,13 +932,13 @@ class DatasetModel(QAbstractTableModel):
         to initially populate this study with empty MetaAnalytic units reflecting the known
         outcomes, time points & tx groups, as they will be added 'on-demand' here.
         '''
+        
         # first check to see that the current outcome is contained in this study
         if not self.current_outcome in self.dataset.studies[study_index].outcomes_to_follow_ups:
             ###
             # Issue 7 (RESOLVED) http://github.com/bwallace/OpenMeta-analyst-/issues/#issue/7
-            # previously, 
             self.dataset.studies[study_index].add_outcome(self.dataset.get_outcome_obj(self.current_outcome), \
-                                                                                                group_names=self.dataset.get_group_names())
+                                                            group_names=self.dataset.get_group_names())
         
         # we must also make sure the time point exists. note that we use the *name* rather than the 
         # index of the current time/follow up

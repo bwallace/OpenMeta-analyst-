@@ -31,8 +31,11 @@ CONTINUOUS_ONE_ARM_METRICS = ["TX Mean"]
 
 # Sometimes it's useful to know if we're dealing with a one-arm outcome,
 # in general
-ONE_ARM_METRICS = BINARY_ONE_ARM_METRICS + CONTINUOUS_ONE_ARM_METRICS
+ONE_ARM_METRICS = BINARY_ONE_ARM_METRICS + CONTINUOUS_ONE_ARM_METRICS 
 
+# Diagnostic metrics
+DIAGNOSTIC_METRICS = ["Sens", "Spec", "PPV", "NPV", "Acc", "PLR", "NLR", "DOR"]
+DIAGNOSTIC_LOG_METRICS = ["PLR", "NLR", "DOR"]
 
 # enumeration of data types and dictionaries mapping both ways
 BINARY, CONTINUOUS, DIAGNOSTIC, OTHER = range(4)
@@ -51,3 +54,6 @@ TYPE_TO_STR_DICT = {BINARY:u"binary", CONTINUOUS:u"continuous",
 VANILLA, NETWORK = range(2)
 
 EMPTY_VALS = ("", None) # these indicate an empty row/cell 
+
+# this is useful sometimes.
+none_to_str = lambda x: "" if x is None else x
