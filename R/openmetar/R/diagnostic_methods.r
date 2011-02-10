@@ -45,14 +45,23 @@ diagnostic.transform.f <- function(metric.str){
     list(display.scale = display.scale, calc.scale = calc.scale)
 }
 
-compute.sens <- function(diagnostic.data) {
-  diagnostic.data@Sens <- diagnostic.data@TP / (diagnostic.data@TP + diagnostic.data@FN)
-  diagnostic.data
-}
-
-compute.spec <- function(diagnostic.data) {
-  diagnostic.data@Spec <- diagnostic.data@TN / (diagnostic.data@TN + diagnostic.data@FP)
-  diagnostic.data
+adjust.raw.data <- function(diagnostic.data, params) {
+    # adjust raw data by adding a constant to each entry
+    if (params$adjust == "all") {
+        diagnostic.data@TP <- diagnostic.data@TP + params$adjust
+        diagnostic.data@FN <- diagnostic.data@FN + params$adjust
+        diagnostic.data@TN <- diagnostic.data@TN + params$adjust
+        diagnostic.data@FP <- diagnostic.data@FP + params$adjust
+    }
+    if (params$adjust == "only0") {
+        product <- diagnostic.data@TP * diagnostic.data@FN * diagnostic.data@TN * diagnostic.data@TP
+        # product equals 0 if at least one entry in a row is 0
+        diagnostic.data@TP[product == 0] <- diagnostic.data@TP[product == 0] + params$adjust
+        diagnostic.data@FN[product == 0] <- diagnostic.data@FN[product == 0] + params$adjust
+        diagnostic.data@TN[product == 0] <- diagnostic.data@TN[product == 0] + params$adjust
+        diagnostic.data@FP[product == 0] <- diagnostic.data@FP[product == 0] + params$adjust
+    }
+    diagnostic.data
 }
 
 compute.diag.point.estimates <- function(diagnostic.data, params) {
@@ -62,7 +71,7 @@ compute.diag.point.estimates <- function(diagnostic.data, params) {
     FN <- diagnostic.data@FN  
     TN <- diagnostic.data@TN 
     FP <- diagnostic.data@FP
-    
+        
     diagnostic.data@numerator <- switch(metric,
         # sensitivity
         Sens = TP, 
@@ -257,31 +266,24 @@ diagnostic.random.overall <- function(results) {
 diagnostic.fixed.sroc <- function(diagnostic.data, params){
     # assert that the argument is the correct type
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
-    # adjust zero entries
-    TP.adj <- diagnostic.data@TP
-    TP.adj[TP.adj == 0] <- 0.5
-    FN.adj <- diagnostic.data@FN
-    FN.adj[FN.adj == 0] <- 0.5
-    TN.adj <- diagnostic.data@TN
-    TN.adj[TN.adj == 0] <- 0.5
-    FP.adj <- diagnostic.data@FP
-    FP.adj[FP.adj == 0] <- 0.5
-    # compute true positive ratio = sensitivity 
-    TPR <- TP.adj / (TP.adj + FN.adj)
-    # compute false positive ratio = 1 - specificity
-    FPR <- FP.adj / (TN.adj + FP.adj)
-    S <- logit(TPR) + logit(FPR)
-    D <- logit(TPR) - logit(FPR)
-    s.range <- list("max"=max(S), "min"=min(S))
-    if (params$sroc_weighted == TRUE) {
-        inv.var <- diagnostic.data@TP + diagnostic.data@FN + diagnostic.data@FP + diagnostic.data@TN
-        # compute total number in each study
-        res <- lm(D ~ S, weights=inv.var)
-        # weighted linear regression
-    } else {
-        res <- lm(D~S)
-        # unweighted regression 
-    }
+        # add constant to zero cells
+        diagnostic.data <- adjust.raw.data(diagnostic.data,params)
+        # compute true positive ratio = sensitivity 
+        TPR <- diagnostic.data@TP / (diagnostic.data@TP + diagnostic.data@FN)
+        # compute false positive ratio = 1 - specificity
+        FPR <- diagnostic.data@FP / (diagnostic.data@TP + diagnostic.data@FN)
+        S <- logit(TPR) + logit(FPR)
+        D <- logit(TPR) - logit(FPR)
+        s.range <- list("max"=max(S), "min"=min(S))
+        if (params$sroc_weighted == TRUE) {
+            inv.var <- diagnostic.data@TP + diagnostic.data@FN + diagnostic.data@FP + diagnostic.data@TN
+            # compute total number in each study
+            res <- lm(D ~ S, weights=inv.var)
+           # weighted linear regression
+        } else {
+           res <- lm(D~S)
+           # unweighted regression 
+        }
     # Create list to display summary of results
     fitted.line <- list(intercept=res$coefficients[1], slope=res$coefficients[2])
     plot.data <- list("fitted.line" = fitted.line, "TPR"=TPR, "FPR"=FPR, "inv.var" = inv.var, "s.range" = s.range, "weighted"=params$sroc_weighted)
@@ -298,7 +300,6 @@ diagnostic.fixed.sroc <- function(diagnostic.data, params){
     images <- c("SROC"=params$sroc_outpath)
     plot.names <- c("sroc"="sroc")
     results <- list("images"=images, "plot_names"=plot.names)
-    
     results
 }
 
@@ -310,7 +311,7 @@ diagnostic.fixed.parameters <- function(){
                             "adjust"="float", "to"=apply_adjustment_to)
 
     # default values
-    defaults <- list("conf.level"=95, "digits"=3, "adjust"=.5, "to"="only0")
+    defaults <- list("conf.level"=95, "digits"=3, "adjust"=.5, "to"="all")
 
     var_order = c("conf.level", "digits", "adjust", "to")
 

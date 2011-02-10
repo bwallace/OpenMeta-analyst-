@@ -70,9 +70,9 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
         y.display <- round.with.zeros(y.trans, digits = params$digits)
         lb.display <- round.with.zeros(lb.trans, digits = params$digits)
         ub.display <- round.with.zeros(ub.trans, digits = params$digits)
-        y.overall.display <- round.with.zeros(y.trans, digits = params$digits)
-        lb.overall.display <- round.with.zeros(lb.trans, digits = params$digits)
-        ub.overall.display <- round.with.zeros(ub.trans, digits = params$digits)
+        y.overall.display <- round.with.zeros(y.overall.trans, digits = params$digits)
+        lb.overall.display <- round.with.zeros(lb.overall.trans, digits = params$digits)
+        ub.overall.display <- round.with.zeros(ub.overall.trans, digits = params$digits)
         
         # for ub, ub.overall, add an extra space to positive numbers for alignment (negative numbers display minus sign)
         if (length(ub.display[ub.display >= 0])) {
@@ -107,7 +107,6 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
 
         col2.overall.row <- paste(y.overall.display, lb.overall.display, ",", ub.overall.display, ")", sep = "")
         col2.width <- nchar(col2.overall.row)
-        print(attributes(params))
         col2.label <- as.character(params$fp_col2_str)
         # if label contains ",", pad label to align columns
         label.info <- check.label(label = col2.label, split.str = ",")
@@ -124,7 +123,9 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
         additional.cols <- list(es = c(col2.label.padded,
                                  paste(y.display, lb.display, ",", ub.display, ")", sep = ""),
                                  col2.overall.row))
-        plot.data$additional.col.data <- additional.cols 
+        plot.data$additional.col.data$es <- c(col2.label.padded,
+                                 paste(y.display, lb.display, ",", ub.display, ")", sep = ""),
+                                 col2.overall.row)
     }              
     effects <- list(ES = c(y, y.overall),
                     LL = c(lb, lb.overall),
@@ -601,7 +602,7 @@ forest.plot <- function(forest.data, outpath){
                      unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
                          forest.plot.params$col.gap,  width.list[[length(additional.cols)]]  ,  forest.plot.params$effect.col.width),
                  height = unit(rep(1, height)  , "lines"))))
-                 }   else  { # if no additional colums thins are simple
+                 }   else  { # if no additional colums things are simple
                  how.wide <- convertX(max(unit(rep(1, length(forest.data$label)), 
                                  "grobwidth", study.col$content)), "inches" , valueOnly=TRUE  ) +
                                  convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )  +
@@ -614,7 +615,8 @@ forest.plot <- function(forest.data, outpath){
                      forest.plot.params$col.gap,   forest.plot.params$effect.col.width),
                  height = unit(rep(1, height)  , "lines"))))
                 }
-    #number.cols <- 2 + length(additional.cols)
+
+    # Draw the text in study col and additional cols
     draw.label.col(study.col, 1)
     if (length(additional.cols)>0 )  {
            for (i in 1:length(additional.cols)){

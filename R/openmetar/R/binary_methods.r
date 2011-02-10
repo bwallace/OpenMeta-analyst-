@@ -13,7 +13,8 @@ binary.log.metrics <- c("OR", "RR")
 
 compute.for.one.bin.study <- function(binary.data, params){
     res <- escalc(params$measure, ai=binary.data@g1O1, bi=binary.data@g1O2, 
-                                    ci=binary.data@g2O1, di=binary.data@g2O2)
+                                    ci=binary.data@g2O1, di=binary.data@g2O2,
+                                    add=params$adjust, to=params$to)
     res                             
 }
 
@@ -101,7 +102,8 @@ binary.fixed.inv.var <- function(binary.data, params){
     
     results <- NULL
     if (length(binary.data@g1O1) == 1 || length(binary.data@y) == 1){
-        res <- get.res.for.one.binary.study(binary.data, params)
+        
+        
         # Package res for use by overall method.
         summary.disp <- list("MAResults" = res) 
         results <- list("Summary"=summary.disp)
