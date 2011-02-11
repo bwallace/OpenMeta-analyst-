@@ -71,6 +71,12 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.tableView.resizeColumnsToContents()
         else:
             self.new_dataset()
+            ###
+            # show the welcome dialog 
+            # @TODO need to check if the user has opted out of this
+            start_up_window =  start_up_dialog.StartUp(parent=self)
+            start_up_window.show()
+            
 
         self.tableView.setModel(self.model)
         # attach a delegate for editing
@@ -96,14 +102,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.tableView.resizeColumnsToContents()
         self.out_path = None
         
-        ###
-        # show the welcome dialog 
-        # @TODO need to check if the user has opted out of this
-        start_up_window =  start_up_dialog.StartUp(parent=self)
-        start_up_window.show()
         
     def new_dataset(self, name=None, is_diag=False):
-        name = "pants"
         data_model = Dataset(title=name, is_diag=is_diag)
         if self.model is not None:
             original_dataset = copy.deepcopy(self.model.dataset)
@@ -118,8 +118,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.disable_menu_options_that_require_dataset()
         # set the out_path to None; this (new) dataset is unsaved.
         self.out_path = None
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
         
     def toggle_menu_options_that_require_dataset(self, enable):
         self.action_go.setEnabled(enable)
