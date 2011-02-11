@@ -37,12 +37,12 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
 
     # Creates a data structure that can be passed to forest.plot
     # res is the output of a call to the Metafor function rma
-    ## TODO note that we're forcing the 'cont' scale -- thus
-    # it's assumed everything is on the raw scale. may want to change
-    # this.
+    plot.options <- list(show.summary.line = params$fp_show_summary_line)
+    # plot options passed in via params
     plot.data <- list(label = c(paste(params$fp_col1_str, sep = ""), om.data@study.names, "Overall"),
                     types = c(3, rep(0, length(om.data@study.names)), 2),
-                    scale = scale.str)
+                    scale = scale.str, 
+                    options = plot.options)
     alpha <- 1.0-(params$conf.level/100.0)
     mult <- abs(qnorm(alpha/2.0))
     y.overall <- res$b[1]
@@ -210,7 +210,13 @@ create.plot.data.continuous <- function(cont.data, params, res, selected.cov = N
 
 create.plot.data.overall <- function(params, res, study.names, addRow1Space, selected.cov=NULL){
     scale.str <- "cont"
-    # Add space to row 1 for cumulative ma to align study names.
+    if (metric.is.log.scale(params$measure)){
+        scale.str <- "log" 
+    }
+    if (metric.is.logit.scale(params$measure)){
+        scale.str <- "logit"
+    }
+                                                                   # Add space to row 1 for cumulative ma to align study names.
     if (addRow1Space == TRUE) {
         study.names[1] <- paste("   ", study.names[1], sep="")
     }
@@ -233,7 +239,7 @@ create.plot.data.overall <- function(params, res, study.names, addRow1Space, sel
         ub.display[ub.display >= 0] <- pad.with.spaces(ub.display[ub.display >= 0], begin.num=1, end.num=0)
         additional.cols <- list(es = c(paste(params$fp_col2_str, sep = ""),
                                  paste(y.display, " (", lb.display, " , ", ub.display, ")", sep = "")))
-        plot.data$additional.col.data <- additional.cols 
+        plot.data$additional.col.data$es <- additional.cols 
     }      
       
     effects <- list(ES = y,
@@ -391,14 +397,17 @@ plot.options <- function(forest.data, box.sca = 1, gapSize=3, plotWidth = 4) {
                 effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(0.10*max(effect.col$ES) , max(effect.col$UL)))
         }                                       
    
-        # this is an ugly solution to an uncommon problem                                 
-        merge.data <- data.frame(x = forest.data$types[-1], y = effect.col$LL, z = effect.col$UL)
-        merge.data <- subset(merge.data, x>0)                                  
-    
-        if (min(effect.col.range) >= min(merge.data$y)) 
-           effect.col.range[1] <- min(merge.data$y)
-        if (max(effect.col.range) <= max(merge.data$z)) 
-           effect.col.range[2] <- max(merge.data$z)
+        # this is an ugly solution to an uncommon problem 
+        x <- forest.data$types[-1]
+        if (any(x > 0)) {
+            # at least one type is not 0
+            merge.data <- data.frame(x = x, y = effect.col$LL, z = effect.col$UL)
+            merge.data <- subset(merge.data, x>0)                                  
+            if (min(effect.col.range) >= min(merge.data$y)) 
+              effect.col.range[1] <- min(merge.data$y)
+            if (max(effect.col.range) <= max(merge.data$z)) 
+              effect.col.range[2] <- max(merge.data$z)
+        }
    }
      
    else {
@@ -421,6 +430,7 @@ plot.options <- function(forest.data, box.sca = 1, gapSize=3, plotWidth = 4) {
 
 # Function to draw a cell in a text column
 draw.label.col <- function(col, j) {
+  # Insert data columns from forest.data$additional.col.data into the plot
   for (i in 1:length(col$rows)) {
     pushViewport(viewport(layout.pos.row=col$rows[i], layout.pos.col=j))
     # Labels are grobs containing their location so just
@@ -501,10 +511,12 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
   if (forest.data$scale == "logit" && min(col$range)<0 && max(col$range)>0 ) { 
       grid.lines(x=unit(0, "native"), y=0:1)
   }
-  # Assume that last value in col is "All" 
-  grid.lines(x=unit(col$ES[length(col$ES)], "native"),
-             y=0:1, gp=gpar(lty = summary.line.pat, col= summary.line.col))
   
+  if (forest.data$options$show.summary.line) {
+      # draw vertical line for summary
+      grid.lines(x=unit(col$ES[length(col$ES)], "native"),
+             y=0:1, gp=gpar(lty = summary.line.pat, col= summary.line.col))
+  }  
   if  (forest.data$scale == "cont") {
         if (length(user.ticks) == 0) {
               grid.xaxis(gp=gpar(cex=0.6))
@@ -812,11 +824,11 @@ calculate.radii <- function(inv.var, max.symbol.size, max.ratio) {
     inv.var.min <- min(inv.var)
     if ((inv.var.max / inv.var.min) <= max.ratio) {
         C <- max.symbol.size / inv.var.max
-        e <- 1
+        exponent <- 1
     } else {
         min.symbol.size <- max.symbol.size / max.ratio
         exponent <- log(max.ratio)/log(inv.var.max / inv.var.min)
-        C <- max.symbol.size / (inv.var.max)^e
+        C <- max.symbol.size / (inv.var.max)^exponent
     }
     radii <- C * inv.var^exponent
 }     

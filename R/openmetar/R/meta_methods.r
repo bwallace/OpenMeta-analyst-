@@ -44,8 +44,7 @@ cum.ma.binary <- function(fname, binary.data, params){
             bin.data.tmp <- new('BinaryData', g1O1=g1O1.tmp, 
                                g1O2=g1O2.tmp , g2O1=g2O1.tmp, 
                                g2O2=g2O2.tmp, y=y.tmp, SE=SE.tmp, study.names=names.tmp)
-        }
-        else{
+        } else {
             bin.data.tmp <- new('BinaryData', y=y.tmp, SE=SE.tmp, study.names=names.tmp)
         }
         # call the parametric function by name, passing along the 
@@ -123,8 +122,7 @@ loo.ma.binary <- function(fname, binary.data, params){
             bin.data.tmp <- new('BinaryData', g1O1=g1O1.tmp, 
                                g1O2=g1O2.tmp , g2O1=g2O1.tmp, 
                                g2O2=g2O2.tmp, y=y.tmp, SE=SE.tmp, study.names=names.tmp)
-        }
-        else{
+        } else{
             bin.data.tmp <- new('BinaryData', y=y.tmp, SE=SE.tmp, study.names=names.tmp)
         }
         # call the parametric function by name, passing along the 
@@ -143,8 +141,8 @@ loo.ma.binary <- function(fname, binary.data, params){
     loo.disp <- create.overall.display(loo.results, study.names, params)
     forest.path <- "./r_tmp/loo_forest.png"
     addRow1Space <- FALSE
-    plotData <- create.plot.data.overall(params, loo.results, study.names, addRow1Space)
-    forest.plot(plotData, outpath=forest.path)
+    plot.data <- create.plot.data.overall(params, loo.results, study.names, addRow1Space)
+    forest.plot(plot.data, outpath=forest.path)
     
 
     #
