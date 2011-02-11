@@ -271,6 +271,7 @@ class DatasetModel(QAbstractTableModel):
 
         For more, see: http://doc.trolltech.com/4.5/qabstracttablemodel.html
         '''
+        group_str = self.get_cur_group_str()
         if index.isValid() and 0 <= index.row() < len(self.dataset):
             current_data_type = self.dataset.get_outcome_type(self.current_outcome)
             column = index.column()
@@ -321,7 +322,6 @@ class DatasetModel(QAbstractTableModel):
                 # update the corresponding outcome (if data permits)
                 self.update_outcome_if_possible(index.row())
             elif column in self.OUTCOMES:
-                group_str = self.get_cur_group_str()
                 # the user can also explicitly set the effect size / CIs
                 # @TODO what to do if the entered estimate contradicts the raw data?
                 display_scale_val, converted_ok = value.toDouble()
@@ -807,7 +807,8 @@ class DatasetModel(QAbstractTableModel):
         displayed.
         '''
         est_and_ci_d = None
-        
+        # to index into the effect belonging to the currently displayed groups
+        group_str = self.get_cur_group_str() 
         data_type = self.get_current_outcome_type(get_str=False) 
         one_arm_effect = self.current_effect in BINARY_ONE_ARM_METRICS + CONTINUOUS_ONE_ARM_METRICS  
         # we try to compute outcomes if either all raw data is there, or, if we have a one-arm
@@ -843,8 +844,8 @@ class DatasetModel(QAbstractTableModel):
             # note that we keep two versions around; a version on the 'calculation' scale
             # (e.g., log) and a version on the continuous/display scale to present to the
             # user via the UI.
-            ma_unit.set_effect_and_ci(self.current_effect, est, lower, upper)
-            ma_unit.set_display_effect_and_ci(self.current_effect, disp_est, disp_lower, disp_upper)
+            ma_unit.set_effect_and_ci(self.current_effect, group_str, est, lower, upper)
+            ma_unit.set_display_effect_and_ci(self.current_effect, group_str, disp_est, disp_lower, disp_upper)
         
     def get_cur_raw_data(self, only_if_included=True):
         raw_data = []
@@ -871,19 +872,21 @@ class DatasetModel(QAbstractTableModel):
 
 
     def study_has_point_est(self, study_index):
+        group_str = self.get_cur_group_str()
         cur_ma_unit = self.get_current_ma_unit_for_study(study_index)
         for x in ("est", "lower", "upper"):
-            if cur_ma_unit.effects_dict[self.current_effect][x] is None:
+            if cur_ma_unit.effects_dict[self.current_effect][group_str][x] is None:
                 print "study %s does not have a point estimate" % study_index
                 return False
         return "ok -- has all point estimates"
         return True
         
     def cur_point_est_and_SE_for_study(self, study_index):
+        group_str = self.get_cur_group_str()
         cur_ma_unit = self.get_current_ma_unit_for_study(study_index)
-        est = cur_ma_unit.effects_dict[self.current_effect]["est"] 
-        lower, upper = cur_ma_unit.effects_dict[self.current_effect]["lower"], \
-                                cur_ma_unit.effects_dict[self.current_effect]["upper"]
+        est = cur_ma_unit.effects_dict[self.current_effect][group_str]["est"] 
+        lower, upper = cur_ma_unit.effects_dict[self.current_effect][group_str]["lower"], \
+                                cur_ma_unit.effects_dict[self.current_effect][group_str]["upper"]
         
         ## TODO make application global!
         mult = 1.96 

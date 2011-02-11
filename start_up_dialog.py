@@ -14,9 +14,17 @@ class StartUp(QDialog, ui_start_up.Ui_WelcomeDialog):
     def _setup_connections(self):
         QObject.connect(self.create_new_btn, SIGNAL("pressed()"),
                                     self.new_dataset)
+        QObject.connect(self.open_btn, SIGNAL("pressed()"),
+                                    self.open_dataset)
+        #QObject.connect(self.create_new_btn, SIGNAL("pressed()"),
+        #                            self.new_dataset)
       
     def new_dataset(self):
         name = unicode(self.dataset_name_le.text().toUtf8(), "utf-8")
         is_diag = self.diag_radio.isChecked()
         self.parent.new_dataset(name=name, is_diag=is_diag)
+        self.close()
+    
+    def open_dataset(self):
+        self.parent.open()
         self.close()
