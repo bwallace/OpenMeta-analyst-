@@ -509,9 +509,6 @@ class MetaAnalyticUnit:
         raw_data = raw_data or [["" for n in range(self.raw_data_length)] for group in group_names]
 
         self.effects_dict = {}
-        # this is a (temporary?) fix for cases where the SE for a given study is
-        # provided but not the sample size (in particular, this is for continuous data).
-        self.SEs_dict = {}
         
         # now we intitialize the outcome dictionaries.
         if self.outcome.data_type == BINARY:
@@ -520,7 +517,7 @@ class MetaAnalyticUnit:
         elif self.outcome.data_type == CONTINUOUS:
             # note right now we only have mean difference and standardized mean difference
             # @TODO hedge's G, cohen's D, glass delta; WV doesn't implement these
-            for effect in meta_globals.CONTINUOUS_TWO_ARM_METRICS + meta_globals.CONTINOUS_ONE_ARM_METRICS:
+            for effect in meta_globals.CONTINUOUS_TWO_ARM_METRICS + meta_globals.CONTINUOUS_ONE_ARM_METRICS:
                 self.effects_dict[effect]={}                                          
         elif self.outcome.data_type == DIAGNOSTIC:
             for effect in meta_globals.DIAGNOSTIC_METRICS:
@@ -531,8 +528,6 @@ class MetaAnalyticUnit:
             for i, group in enumerate(group_names):
                 self.add_group(group)
                 self.tx_groups[group].raw_data = raw_data[i]
-                self.SEs_dict[group] = None
-
 
         
     def get_effect_d(self):
@@ -573,14 +568,13 @@ class MetaAnalyticUnit:
                     # and the reverse
                     groups_str = "-".join((group, new_group))
                     self.effects_dict[effect][groups_str] = self.get_effect_d()                                           
-            for effect in meta_globals.CONTINOUS_ONE_ARM_METRICS:
+            for effect in meta_globals.CONTINUOUS_ONE_ARM_METRICS:
                 self.effects_dict[effect][new_group] = self.get_effect_d()
         elif self.outcome.data_type == DIAGNOSTIC:
             # diagnostic data
             for effect in meta_globals.DIAGNOSTIC_METRICS:
                 self.effects_dict[effect][new_group] = self.get_effect_d()
                     
-        
     def set_effect(self, effect, group_str, value):
         self.effects_dict[effect][group_str]["est"] = value
        
