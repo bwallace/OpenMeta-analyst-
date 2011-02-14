@@ -102,8 +102,7 @@ binary.fixed.inv.var <- function(binary.data, params){
     
     results <- NULL
     if (length(binary.data@g1O1) == 1 || length(binary.data@y) == 1){
-        
-        
+        res <- get.res.for.one.binary.study(binary.data, params)
         # Package res for use by overall method.
         summary.disp <- list("MAResults" = res) 
         results <- list("Summary"=summary.disp)
