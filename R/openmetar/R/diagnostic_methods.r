@@ -12,6 +12,92 @@ library(metafor)
 diagnostic.logit.metrics <- c("Sens", "Spec", "PPV", "NPV", "Acc")
 diagnostic.log.metrics <- c("PLR", "NLR", "DOR")
 
+adjust.raw.data <- function(diagnostic.data, params) {
+    # adjust raw data by adding a constant to each entry
+    TP <- diagnostic.data@TP
+    FN <- diagnostic.data@FN  
+    TN <- diagnostic.data@TN 
+    FP <- diagnostic.data@FP
+    
+    if (params$adjust == "all") {
+        TP <- TP + params$adjust
+        FN <- FN + params$adjust
+        TN <- TN + params$adjust
+        FP <- FP + params$adjust
+    }
+    if (params$adjust == "only0") {
+        product <- TP * FN * TN * TP
+        # product equals 0 if at least one entry in a row is 0
+        TP[product == 0] <- TP[product == 0] + params$adjust
+        FN[product == 0] <- FN[product == 0] + params$adjust
+        TN[product == 0] <- TN[product == 0] + params$adjust
+        FP[product == 0] <- FP[product == 0] + params$adjust
+    }
+    data.adj <- list("TP"=TP, "FN"=FN, "TN"=TN, "FP"="FP")
+}
+
+compute.diag.point.estimates <- function(diagnostic.data, params) {
+    # Computes point estimates based on raw data and adds them to diagnostic.data
+    data.adj <- adjust.raw.data(diagnostic.data, params)
+    metric <- params$measure    
+    TP <- data.adj$TP
+    FN <- data.adj$FN  
+    TN <- data.adj$TN 
+    FP <- data.adj$FP
+        
+    numerator <- switch(metric,
+        # sensitivity
+        Sens = TP, 
+        # specificity
+        Spec = TN,
+        # pos. predictive value
+        PPV =  TP,
+        #neg. predictive value
+        NPV =  TN,
+        # accuracy
+        Acc = TP + TN,
+        # positive likelihood ratio
+        PLR = TP / (TP + FN), 
+        # negative likelihood ratio
+        NLR = FN / (TP + FN),
+        # diagnostic odds ratio
+        DOR = TP * TN)
+        
+    denominator <- switch(metric,
+        # sensitivity
+        Sens = TP + FN, 
+        # specificity
+        Spec = TN + FP,
+        # pos. predictive value
+        PPV =  TP + FP,
+        #neg. predictive value
+        NPV =  TN + FN,
+        # accuracy
+        Acc = TP + TN + FP + FN,
+        # positive likelihood ratio
+        PLR = FP / (TN + FP), 
+        # negative likelihood ratio
+        NLR = TN / (TN + FP),
+        # diagnostic odds ratio
+        DOR = FP * FN)    
+    
+    y <- numerator / denominator
+      
+    diagnostic.data@y <- eval(call("diagnostic.transform.f", params$measure))$calc.scale(y)
+ 
+    diagnostic.data@SE <- switch(metric,
+        Sens <- sqrt((1 / TP) + (1 / FN)), 
+        Spec <- sqrt((1 / TN) + (1 / FP)),
+        PPV <- sqrt((1 / TP) + (1 / FP)),
+        NPV <- sqrt((1 / TN) + (1 / FN)),
+        Acc <- sqrt((1 / (TP + TN)) + (1 / (FP + FN))),
+        PLR <- sqrt((1 / TP) - (1 / (TP + FN)) + (1 / FP) - (1 / (TN + FP))),
+        NLR <- sqrt((1 / TP) - (1 / (TP + FN)) + (1 / FP) - (1 / (TN + FP))),
+        DOR <- sqrt((1 / TP) + (1 / FN) + (1 / FP) + (1 / TN)))
+
+    diagnostic.data
+}
+
 diagnostic.transform.f <- function(metric.str){
     display.scale <- function(x){
         if (metric.str %in% diagnostic.log.metrics){
@@ -45,84 +131,23 @@ diagnostic.transform.f <- function(metric.str){
     list(display.scale = display.scale, calc.scale = calc.scale)
 }
 
-adjust.raw.data <- function(diagnostic.data, params) {
-    # adjust raw data by adding a constant to each entry
-    if (params$adjust == "all") {
-        diagnostic.data@TP <- diagnostic.data@TP + params$adjust
-        diagnostic.data@FN <- diagnostic.data@FN + params$adjust
-        diagnostic.data@TN <- diagnostic.data@TN + params$adjust
-        diagnostic.data@FP <- diagnostic.data@FP + params$adjust
+get.res.for.one.diag.study <- function(diagnostic.data, params){
+    # this method can be called when there is only one study to 
+    # get the point estimate and lower/upper bounds.
+    if (is.na(diagnostic.data@y)){
+        diagnostic.data <- compute.diagnostic.point.estimates(diagnostic.data, params)
     }
-    if (params$adjust == "only0") {
-        product <- diagnostic.data@TP * diagnostic.data@FN * diagnostic.data@TN * diagnostic.data@TP
-        # product equals 0 if at least one entry in a row is 0
-        diagnostic.data@TP[product == 0] <- diagnostic.data@TP[product == 0] + params$adjust
-        diagnostic.data@FN[product == 0] <- diagnostic.data@FN[product == 0] + params$adjust
-        diagnostic.data@TN[product == 0] <- diagnostic.data@TN[product == 0] + params$adjust
-        diagnostic.data@FP[product == 0] <- diagnostic.data@FP[product == 0] + params$adjust
-    }
-    diagnostic.data
-}
+    y <- diagnostic.data@y
+    se <- diagnostic.data@SE
 
-compute.diag.point.estimates <- function(diagnostic.data, params) {
-    # Computes point estimates based on raw data and adds them to diagnostic.data
-    metric <- params$measure    
-    TP <- diagnostic.data@TP
-    FN <- diagnostic.data@FN  
-    TN <- diagnostic.data@TN 
-    FP <- diagnostic.data@FP
-        
-    diagnostic.data@numerator <- switch(metric,
-        # sensitivity
-        Sens = TP, 
-        # specificity
-        Spec = TN,
-        # pos. predictive value
-        PPV =  TP,
-        #neg. predictive value
-        NPV =  TN,
-        # accuracy
-        Acc = TP + TN,
-        # positive likelihood ratio
-        PLR = TP / (TP + FN), 
-        # negative likelihood ratio
-        NLR = FN / (TP + FN),
-        # diagnostic odds ratio
-        DOR = TP * TN)
-        
-    diagnostic.data@denominator <- switch(metric,
-        # sensitivity
-        Sens = TP + FN, 
-        # specificity
-        Spec = TN + FP,
-        # pos. predictive value
-        PPV =  TP + FP,
-        #neg. predictive value
-        NPV =  TN + FN,
-        # accuracy
-        Acc = TP + TN + FP + FN,
-        # positive likelihood ratio
-        PLR = FP / (TN + FP), 
-        # negative likelihood ratio
-        NLR = TN / (TN + FP),
-        # diagnostic odds ratio
-        DOR = FP * FN)    
-    
-    y <- diagnostic.data@numerator / diagnostic.data@denominator
-      
-    diagnostic.data@y <- eval(call("diagnostic.transform.f", params$measure))$calc.scale(y)
- 
-    diagnostic.data@SE <- switch(metric,
-        Sens <- sqrt((1 / TP) + (1 / FN)), 
-        Spec <- sqrt((1 / TN) + (1 / FP)),
-        PPV <- sqrt((1 / TP) + (1 / FP)),
-        NPV <- sqrt((1 / TN) + (1 / FN)),
-        Acc <- sqrt((1 / (TP + TN)) + (1 / (FP + FN))),
-        PLR <- sqrt((1 / TP) - (1 / (TP + FN)) + (1 / FP) - (1 / (TN + FP))),
-        NLR <- sqrt((1 / TP) - (1 / (TP + FN)) + (1 / FP) - (1 / (TN + FP))),
-        DOR <- sqrt((1 / TP) + (1 / FN) + (1 / FP) + (1 / TN)))
-
-    diagnostic.data
+    # note: conf.level is given as, e.g., 95, rather than .95.
+    alpha <- 1.0-(params$conf.level/100.0)
+    mult <- abs(qnorm(alpha/2.0))
+    ub <- y + mult*se
+    lb <- y - mult*se
+    # we make lists to comply with the get.overall method
+    res <- list("b"=c(y), "ci.lb"=lb, "ci.ub"=ub) 
+    res
 }
 
 logit <- function(x) {
@@ -139,7 +164,8 @@ invlogit <- function(x) {
 diagnostic.fixed <- function(diagnostic.data, params){
     # assert that the argument is the correct type
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
-
+    diagnostic.data <- adjust.raw.data(diagnostic.data, params)
+    # add constants to zero cells
     results <- NULL
     if (diagnostic.data@TP > 0) {
       diagnostic.data <- compute.diag.point.estimates(diagnostic.data, params)
@@ -158,6 +184,8 @@ diagnostic.fixed <- function(diagnostic.data, params){
       # A forest plot will be created unless
       # params.create.plot is set to FALSE.
       forest.path <- paste(params$fp_outpath, sep="")
+      params$fp_show_summary_line <- TRUE
+      # temporarily hard-coding this param
       plot.data <- create.plot.data.diagnostic(diagnostic.data, params, res)
       forest.plot(plot.data, outpath=forest.path)
       #
@@ -221,6 +249,8 @@ diagnostic.random <- function(diagnostic.data, params){
     #
     if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
         forest.path <- paste(params$fp_outpath, sep="")
+        params$fp_show_summary_line <- TRUE
+        # temporarily hard-coding this param
         plot.data <- create.plot.data.diagnostic(diagnostic.data, params, res)
         forest.plot(plot.data, outpath=forest.path)
         

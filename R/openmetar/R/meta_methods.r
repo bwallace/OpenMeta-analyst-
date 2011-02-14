@@ -63,8 +63,10 @@ cum.ma.binary <- function(fname, binary.data, params){
     cum.disp <- create.overall.display(cum.results, study.names, params)
     forest.path <- "./r_tmp/cum_forest.png"
     addRow1Space <- TRUE
-    plotData <- create.plot.data.overall(params, cum.results, study.names, addRow1Space)
-    forest.plot(plotData, outpath=forest.path)
+    params$fp_show_summary_line <- TRUE
+    # temporarily hard-coding this param
+    plot.data <- create.plot.data.overall(params, cum.results, study.names, addRow1Space)
+    forest.plot(plot.data, outpath=forest.path)
 
     # Now we package the results in a dictionary (technically, a named 
     # vector). In particular, there are two fields that must be returned; 
@@ -141,6 +143,9 @@ loo.ma.binary <- function(fname, binary.data, params){
     loo.disp <- create.overall.display(loo.results, study.names, params)
     forest.path <- "./r_tmp/loo_forest.png"
     addRow1Space <- FALSE
+    params$fp_show_summary_line <- FALSE
+    # temporarily hard-coding this param as FALSE because we haven't computed an overall estimate,
+    # so there's no value for a summary line. This could be changed.
     plot.data <- create.plot.data.overall(params, loo.results, study.names, addRow1Space)
     forest.plot(plot.data, outpath=forest.path)
     
@@ -214,6 +219,8 @@ cum.ma.continuous <- function(fname, cont.data, params){
     cum.disp <- create.overall.display(cum.results, study.names, params)
     forest.path <- "./r_tmp/cum_forest.png"
     addRow1Space <- TRUE
+    params$fp_show_summary_line <- TRUE
+    # temporarily hard-coding this param
     plotData <- create.plot.data.overall(params, cum.results, study.names, addRow1Space)
     forest.plot(plotData, outpath=forest.path)
     
@@ -300,6 +307,9 @@ loo.ma.continuous <- function(fname, cont.data, params){
 
     forest.path <- "./r_tmp/loo_forest.png"
     addRow1Space <- FALSE
+    params$fp_show_summary_line <- FALSE
+    # temporarily hard-coding this param as FALSE because we haven't computed an overall estimate,
+    # so there's no value for a summary line. This could be changed.
     plotData <- create.plot.data.overall(params, loo.results, study.names, addRow1Space)
     forest.plot(plotData, outpath=forest.path)
     

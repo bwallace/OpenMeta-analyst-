@@ -121,6 +121,8 @@ binary.fixed.inv.var <- function(binary.data, params){
         results <- list("Summary"=summary.disp, "images"=c())
         if ((is.null(params$create.plot)) || params$create.plot == TRUE) {
             forest.path <- paste(params$fp_outpath, sep="")
+            params$fp_show_summary_line <- TRUE
+            # temporarily hard-coding this param
             plot.data <- create.plot.data.binary(binary.data, params, res)
             forest.plot(plot.data, outpath=forest.path)
             #
@@ -194,6 +196,8 @@ binary.fixed.mh <- function(binary.data, params){
         if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
             binary.data <- compute.bin.point.estimates(binary.data, params)
             # compute point estimates for plot.data in case they are missing
+            params$fp_show_summary_line <- TRUE
+            # temporarily hard-coding this param
             forest.path <- paste(params$fp_outpath, sep="")
             plot.data <- create.plot.data.binary(binary.data, params, res)
             forest.plot(plot.data, outpath=forest.path)
@@ -281,6 +285,8 @@ binary.fixed.peto <- function(binary.data, params){
         if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
             binary.data <- compute.bin.point.estimates(binary.data, params.peto)
             # compute point estimates for plot.data in case they are missing
+            params$fp_show_summary_line <- TRUE
+            # temporarily hard-coding this param
             forest.path <- paste(params$fp_outpath, sep="")
             plot.data <- create.plot.data.binary(binary.data, params, res)
             forest.plot(plot.data, outpath=forest.path)
@@ -369,6 +375,8 @@ binary.random <- function(binary.data, params){
     #
     if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
         forest.path <- paste(params$fp_outpath, sep="")
+        params$fp_show_summary_line <- TRUE
+        # temporarily hard-coding this param
         plot.data <- create.plot.data.binary(binary.data, params, res)
         forest.plot(plot.data, outpath=forest.path)
         

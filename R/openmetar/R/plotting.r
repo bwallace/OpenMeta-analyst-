@@ -120,9 +120,9 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
             # label doesn't contain "," so pad label to center over column 
             col2.label.padded <- pad.with.spaces(col2.label, begin.num=0, end.num = floor((col2.width - nchar(col2.label)) / 2))           
         }
-        additional.cols <- list(es = c(col2.label.padded,
-                                 paste(y.display, lb.display, ",", ub.display, ")", sep = ""),
-                                 col2.overall.row))
+        #additional.cols <- list(es = c(col2.label.padded,
+        #                         paste(y.display, lb.display, ",", ub.display, ")", sep = ""),
+       #                          col2.overall.row))
         plot.data$additional.col.data$es <- c(col2.label.padded,
                                  paste(y.display, lb.display, ",", ub.display, ")", sep = ""),
                                  col2.overall.row)
@@ -220,9 +220,11 @@ create.plot.data.overall <- function(params, res, study.names, addRow1Space, sel
     if (addRow1Space == TRUE) {
         study.names[1] <- paste("   ", study.names[1], sep="")
     }
+    plot.options <- list(show.summary.line = params$fp_show_summary_line)
     plot.data <- list( label = c("Studies", study.names),
                 types = c(3, rep(0, length(study.names))),
-                scale = scale.str)
+                scale = scale.str,
+                options = plot.options)
     y <- res[,1]
     lb <- res[,2]
     ub <- res[,3]
@@ -237,8 +239,8 @@ create.plot.data.overall <- function(params, res, study.names, addRow1Space, sel
         lb.display[lb.display >= 0] <- pad.with.spaces(lb.display[lb.display >= 0], begin.num=0, end.num=1)
         ub.display <- round.with.zeros(ub.display, digits = params$digits)
         ub.display[ub.display >= 0] <- pad.with.spaces(ub.display[ub.display >= 0], begin.num=1, end.num=0)
-        additional.cols <- list(es = c(paste(params$fp_col2_str, sep = ""),
-                                 paste(y.display, " (", lb.display, " , ", ub.display, ")", sep = "")))
+        additional.cols <- c(paste(params$fp_col2_str, sep = ""),
+                                 paste(y.display, " (", lb.display, " , ", ub.display, ")", sep = ""))
         plot.data$additional.col.data$es <- additional.cols 
     }      
       
