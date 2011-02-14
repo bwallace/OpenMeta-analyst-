@@ -315,9 +315,7 @@ class DatasetModel(QAbstractTableModel):
                         group_name = self.current_txs[1]
                 else:
                     # diagnostic
-                    if column in self.RAW_DATA[2:]:
-                        adjust_by += 2 
-                        group_name = self.current_txs[1]
+                    pass
                         
                 adjusted_index = column-adjust_by
                 val = value.toDouble()[0] if value.toDouble()[1] else ""
@@ -446,9 +444,6 @@ class DatasetModel(QAbstractTableModel):
             # always shows only two tx groups at once.
             elif self.current_outcome is not None and section in self.RAW_DATA:
                 # switch on the outcome type 
-                #pyqtRemoveInputHook()
-                #pdb.set_trace()
-                print self.current_txs
                 current_tx = self.current_txs[0] # i.e., the first group
                 if outcome_type== BINARY:
                     if section in self.RAW_DATA[2:]:
@@ -877,7 +872,11 @@ class DatasetModel(QAbstractTableModel):
                     est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1, \
                                           two_arm=False, metric=self.current_effect)
                 
-            
+            elif data_type == DIAGNOSTIC: 
+                # diagnostic data
+                tp, fn, fp, tn = self.get_cur_raw_data_for_study(study_index)
+
+                
             est, lower, upper = None, None, None
             if est_and_ci_d is not None:
                 est, lower, upper = est_and_ci_d["calc_scale"] # calculation scale

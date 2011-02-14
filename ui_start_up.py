@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'start_up.ui'
 #
-# Created: Thu Feb 10 13:00:43 2011
+# Created: Mon Feb 14 11:36:42 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -96,6 +96,12 @@ class Ui_WelcomeDialog(object):
 
         self.retranslateUi(WelcomeDialog)
         QtCore.QMetaObject.connectSlotsByName(WelcomeDialog)
+        WelcomeDialog.setTabOrder(self.dataset_name_le, self.create_new_btn)
+        WelcomeDialog.setTabOrder(self.create_new_btn, self.chk_show)
+        WelcomeDialog.setTabOrder(self.chk_show, self.open_recent_btn)
+        WelcomeDialog.setTabOrder(self.open_recent_btn, self.bin_radio)
+        WelcomeDialog.setTabOrder(self.bin_radio, self.diag_radio)
+        WelcomeDialog.setTabOrder(self.diag_radio, self.open_btn)
 
     def retranslateUi(self, WelcomeDialog):
         WelcomeDialog.setWindowTitle(QtGui.QApplication.translate("WelcomeDialog", "Welcome to OpenMeta", None, QtGui.QApplication.UnicodeUTF8))

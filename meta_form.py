@@ -59,25 +59,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # TODO should also allow a (path to a) dataset
         # to be given on the console.
         self.model = None
-        if len(sys.argv)>1 and sys.argv[-1]=="--toy-data":
-            # toy data for now
-            data_model = _gen_some_data()
-            self.model = DatasetModel(dataset=data_model)
-            self.display_outcome("death")
-            self.model.set_current_time_point(0)
-            self.model.current_effect = "OR"
-            self.model.try_to_update_outcomes()
-            self.model.reset()
-            self.tableView.resizeColumnsToContents()
-        else:
-            self.new_dataset()
-            ###
-            # show the welcome dialog 
-            # @TODO need to check if the user has opted out of this
-            start_up_window =  start_up_dialog.StartUp(parent=self)
-            start_up_window.show()
-            
-
+        self.new_dataset()
+        
         self.tableView.setModel(self.model)
         # attach a delegate for editing
         self.tableView.setItemDelegate(StudyDelegate(self))
@@ -101,6 +84,28 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.tableView.main_gui = self
         self.tableView.resizeColumnsToContents()
         self.out_path = None
+        
+        if len(sys.argv)>1 and sys.argv[-1]=="--toy-data":
+            # toy data for now
+            data_model = _gen_some_data()
+            self.model = DatasetModel(dataset=data_model)
+            self.display_outcome("death")
+            self.model.set_current_time_point(0)
+            self.model.current_effect = "OR"
+            self.model.try_to_update_outcomes()
+            self.model.reset()
+            self.tableView.resizeColumnsToContents()
+        else:
+            ###
+            # show the welcome dialog 
+            # @TODO need to check if the user has opted out of this
+            start_up_window =  start_up_dialog.StartUp(parent=self)
+            start_up_window.show()
+            ## arg -- this won't work!
+            start_up_window.setFocus()
+            start_up_window.dataset_name_le.setFocus()
+
+
         
         
     def new_dataset(self, name=None, is_diag=False):

@@ -641,16 +641,14 @@ class MetaAnalyticUnit:
         self.tx_groups.pop(old_name)
         
     def get_raw_data_for_group(self, group_name):
-        try:
-            return self.tx_groups[group_name].raw_data
-        except:
-            pyqtRemoveInputHook()
-            pdb.set_trace()
+        return self.tx_groups[group_name].raw_data
         
     def set_raw_data_for_group(self, group_name, raw_data):
         self.tx_groups[group_name].raw_data = raw_data
         
     def get_raw_data_for_groups(self, groups):
+        if len(groups) == 1:
+            return self.get_raw_data_for_group(groups[0])
         raw_data = []
         for group in groups:
             raw_data.extend(self.get_raw_data_for_group(group))
