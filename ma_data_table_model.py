@@ -92,14 +92,12 @@ class DatasetModel(QAbstractTableModel):
         
     def update_current_outcome(self):
         outcome_names = self.dataset.get_outcome_names()
-
         ###
         # @TODO we need to maintain a current outcome
         # index here, as we do for groups (below), so that
         # when the user edits the currently displayed outcome,
         # the edited outcome is shown in its place
         self.current_outcome = outcome_names[0] if len(outcome_names)>0 else None
-        print self.current_outcome
         self.reset()
         
     def update_current_time_points(self):
@@ -118,7 +116,6 @@ class DatasetModel(QAbstractTableModel):
         '''
         group_names = self.dataset.get_group_names()        
         n_groups = len(group_names)
-
         if n_groups > 1:
             # make sure the indices are within range -- the
             # model may have changed without our knowing.
@@ -132,7 +129,10 @@ class DatasetModel(QAbstractTableModel):
                 self._next_group_indices(group_names)
             self.current_txs = [group_names[self.tx_index_a], group_names[self.tx_index_b]]
         else:
-            self.current_txs = ["tx A", "tx B"]
+            if not self.is_diag():
+                self.current_txs = ["tx A", "tx B"]
+            else:
+                self.current_txs = ["test 1"]
         self.previous_txs = self.current_txs
         self.reset()
         
@@ -209,14 +209,18 @@ class DatasetModel(QAbstractTableModel):
                     return QVariant(round(outcome_val, self.NUM_DIGITS))
                 else:
                     study_index = index.row()
-                    effects_dict = self.dataset.studies[study_index].outcomes_to_follow_ups[self.current_outcome][\
-                                                    self.get_current_follow_up_name()].effects_dict
-                    vals = []
-                    for s in ("Sens", "Spec"):
-                        for field in ["display_est", "display_lower", "display_upper"]:
-                            vals.append(none_to_str(effects_dict[s][field]))
-                      
-                    return QVariant(vals[outcome_index]) 
+                    # note that we do things quite differently in the diagnostic case,
+                    # because there is no notion of a 'current effect'. instead,
+                    # we always show sensitivity and specificity. thus we parse
+                    # out the estimates and CIs for these manually here.
+                    m_str = "Sens"
+                    if column in self.OUTCOMES[3:]:
+                        m_str = "Spec"
+                        
+                    est_and_ci = self.get_current_ma_unit_for_study(index.row()).\
+                                                    get_display_effect_and_ci(m_str, group_str)
+                                                    
+                    return QVariant(est_and_ci[outcome_index % 3]) 
                 
             elif column != self.INCLUDE_STUDY:
                 # here the column is to the right of the outcomes (and not the 0th, or
@@ -355,7 +359,22 @@ class DatasetModel(QAbstractTableModel):
                         calc_scale_val = meta_py_r.diagnostic_convert_scale(display_scale_val, \
                                                             self.current_effect, convert_to="calc.scale")
                         ma_unit = self.get_current_ma_unit_for_study(index.row())
-                            
+                        # figure out if this column is sensitivity or specificity
+                        m_str = "Sens"
+                        if column in self.OUTCOMES[3:]:
+                            # by convention, the last three columns are specificity
+                            m_str = "Spec"
+                        # now we switch on what outcome column we're on ... kind of ugly, but eh.
+                        if column in (self.OUTCOMES[0], self.OUTCOMES[3]):
+                            ma_unit.set_effect(m_str, group_str, calc_scale_val)
+                            ma_unit.set_display_effect(m_str, group_str, display_scale_val)
+                        elif column in (self.OUTCOMES[1], self.OUTCOMES[4]):
+                            ma_unit.set_lower(m_str, group_str, calc_scale_val)
+                            ma_unit.set_display_lower(m_str, group_str, display_scale_val)    
+                        else:
+                            ma_unit.set_upper(m_str, group_str, calc_scale_val)
+                            ma_unit.set_display_upper(m_str, group_str, display_scale_val) 
+                        
             elif column == self.INCLUDE_STUDY:
                 study.include = value.toBool()
                 # we keep note if a study was manually 
@@ -398,7 +417,9 @@ class DatasetModel(QAbstractTableModel):
                     # include it once it has sufficient data.
                     elif not study.manually_excluded:
                         study.include = True
+            #else:
                 
+                        
             return True
         return False
 
@@ -425,6 +446,9 @@ class DatasetModel(QAbstractTableModel):
             # always shows only two tx groups at once.
             elif self.current_outcome is not None and section in self.RAW_DATA:
                 # switch on the outcome type 
+                #pyqtRemoveInputHook()
+                #pdb.set_trace()
+                print self.current_txs
                 current_tx = self.current_txs[0] # i.e., the first group
                 if outcome_type== BINARY:
                     if section in self.RAW_DATA[2:]:
@@ -649,13 +673,19 @@ class DatasetModel(QAbstractTableModel):
         group_names = self.dataset.get_group_names_for_outcome_fu(self.current_outcome, self.get_current_follow_up_name())
     
         self._next_group_indices(group_names)
-        while self.tx_index_a == self.tx_index_b:
-            self._next_group_indices(group_names)
+        
+        if not self.is_diag():
+            # shuffle over groups
+            while self.tx_index_a == self.tx_index_b:
+                self._next_group_indices(group_names)
+        else:
+            self._next_group_index(group_names)
             
         next_txs = [group_names[self.tx_index_a], group_names[self.tx_index_b]]
         print "new tx group indices a, b: %s, %s" % (self.tx_index_a, self.tx_index_b)
         return next_txs
         
+
     def _next_group_indices(self, group_names):
         print "\ngroup names: %s" % group_names
         if self.tx_index_b < len(group_names)-1:
@@ -667,7 +697,15 @@ class DatasetModel(QAbstractTableModel):
             else:
                 self.tx_index_a = 0
             self.tx_index_b = 0
-        
+
+
+    def _next_group_index(self, group_names):
+        # increments tx A; ignores B
+        if self.tx_index_a < len(group_names)-1:
+            self.tx_index_a += 1
+        else:
+            self.tx_index_a = 0
+            
     def outcome_has_follow_up(self, outcome, follow_up):
         ## we just pull the outcome from the first study; we tacitly
         # assume that all studies have the same outcomes/follow-ups
@@ -723,6 +761,11 @@ class DatasetModel(QAbstractTableModel):
             self.current_effect = "OR"
         elif outcome_type == CONTINUOUS:
             self.current_effect = "MD"
+        else:
+            # diagnostic -- what should we do here? we show
+            # sensitivity/specificity; I don't think there's a
+            # notion of a `current effect'...
+            self.current_effect = None
         
     def max_study_id(self):
         return self.dataset.max_study_id()

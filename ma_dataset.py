@@ -24,7 +24,6 @@ import two_way_dict
 import meta_globals
 from meta_globals import *
 
-
 class Dataset:
     def __len__(self):
         return len(self.studies)
@@ -522,13 +521,14 @@ class MetaAnalyticUnit:
         elif self.outcome.data_type == DIAGNOSTIC:
             for effect in meta_globals.DIAGNOSTIC_METRICS:
                 self.effects_dict[effect]={}
-        if not self.is_diag:
-            # add the two default groups: treatment and control; note that the raw data
-            # is held at the *group* level
-            for i, group in enumerate(group_names):
-                self.add_group(group)
-                self.tx_groups[group].raw_data = raw_data[i]
-
+                
+        # add the two default groups: treatment and control; note that the raw data
+        # is held at the *group* level
+        for i, group in enumerate(group_names):
+            self.add_group(group)
+            self.tx_groups[group].raw_data = raw_data[i]
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
         
     def get_effect_d(self):
         # these are the dictionaries that actually hold the effects (estimate, 

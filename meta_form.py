@@ -552,6 +552,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         
     def display_outcome(self, outcome_name, group_names=None, follow_up_name=None):
         print "displaying outcome: %s" % outcome_name
+
         ###
         # We need to update which groups & follow-ups are current
         # in order to avoid attempting to display a group/fu that
