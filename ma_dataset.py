@@ -527,9 +527,7 @@ class MetaAnalyticUnit:
         for i, group in enumerate(group_names):
             self.add_group(group)
             self.tx_groups[group].raw_data = raw_data[i]
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
-        
+ 
     def get_effect_d(self):
         # these are the dictionaries that actually hold the effects (estimate, 
         # CI, etc.). note: *always* copy this dictionary, never use it directly.

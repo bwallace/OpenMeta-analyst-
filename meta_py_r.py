@@ -535,8 +535,11 @@ def diagnostic_effects_for_study(tp, fn, fp, tn, metrics=["Sens", "Spec"]):
         #pdb.set_trace()
 
         r_res = ro.r("get.res.for.one.diag.study(diag.tmp, %s)" % params_df.r_repr())
+        # calc scale
         est, lower, upper = r_res[0][0], r_res[1][0], r_res[2][0]
-        effects_dict[metric] = (est, lower, upper)
+        calc_estimates = (est, lower, upper)
+        disp_estimates = [diagnostic_convert_scale(x, metric) for x in calc_estimates]
+        effects_dict[metric] = {"calc_scale":calc_estimates, "display_scale":disp_estimates}
         
     return effects_dict
     

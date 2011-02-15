@@ -126,7 +126,7 @@ diagnostic.transform.f <- function(metric.str){
     list(display.scale = display.scale, calc.scale = calc.scale)
 }
 
-get.res.for.one.diag.study <- function(diagnostic.data, params, disp.scale=TRUE){
+get.res.for.one.diag.study <- function(diagnostic.data, params){
     # this method can be called when there is only one study to 
     # get the point estimate and lower/upper bounds.
     diagnostic.data <- compute.diag.point.estimates(diagnostic.data, params)
@@ -139,12 +139,6 @@ get.res.for.one.diag.study <- function(diagnostic.data, params, disp.scale=TRUE)
     mult <- abs(qnorm(alpha/2.0))
     ub <- y + mult*se
     lb <- y - mult*se
-    # we make lists to comply with the get.overall method
-    if (disp.scale){
-        y <- eval(call("diagnostic.transform.f", params$measure))$display.scale(y)
-        lb <- eval(call("diagnostic.transform.f", params$measure))$display.scale(lb)
-        ub <- eval(call("diagnostic.transform.f", params$measure))$display.scale(ub)
-    }
     res <- list("b"=c(y), "ci.lb"=lb, "ci.ub"=ub) 
     res
 }

@@ -220,7 +220,10 @@ class DatasetModel(QAbstractTableModel):
                     est_and_ci = self.get_current_ma_unit_for_study(index.row()).\
                                                     get_display_effect_and_ci(m_str, group_str)
                                                     
-                    return QVariant(est_and_ci[outcome_index % 3]) 
+                    outcome_val = est_and_ci[outcome_index % 3]
+                    if outcome_val is None:
+                        return QVariant("")
+                    return QVariant(round(outcome_val, self.NUM_DIGITS)) 
                 
             elif column != self.INCLUDE_STUDY:
                 # here the column is to the right of the outcomes (and not the 0th, or
@@ -878,20 +881,38 @@ class DatasetModel(QAbstractTableModel):
                 
                 # sensitivity and specificity
                 ests_and_cis = meta_py_r.diagnostic_effects_for_study(tp, fn, fp, tn)
+                   
+                ###
+                # now we're going to set the effect estimate/CI on the MA object.
+                # if we have diagnostic data, this requires doing  
+                ma_unit = self.get_current_ma_unit_for_study(study_index)
+                for metric in ("Sens", "Spec"):
+                    est, lower, upper = ests_and_cis[metric]["calc_scale"]
+                    ma_unit.set_effect_and_ci(metric, group_str, est, lower, upper)
+                    
+                    disp_est, disp_lower, disp_upper = ests_and_cis[metric]["display_scale"]
+                    ma_unit.set_display_effect_and_ci(metric, group_str, disp_est, disp_lower, disp_upper)
                 
+            ####
+            # if we're dealing with continuous or binary data, here
+            # is where we update the point estimates -- we do this 
+            # above in the case of diagnostic data, which needs to be
+            # handled differently, because we're updating two
+            # outcomes, in that csae
+            if data_type != DIAGNOSTIC:
+                est, lower, upper = None, None, None
+                if est_and_ci_d is not None:
+                    est, lower, upper = est_and_ci_d["calc_scale"] # calculation scale
+                    disp_est, disp_lower, disp_upper = est_and_ci_d["display_scale"] # transformed/dispaly scale
+                ma_unit = self.get_current_ma_unit_for_study(study_index)
+                # now set the effect size & CIs
+                # note that we keep two versions around; a version on the 'calculation' scale
+                # (e.g., log) and a version on the continuous/display scale to present to the
+                # user via the UI.
+                ma_unit.set_effect_and_ci(self.current_effect, group_str, est, lower, upper)
+                ma_unit.set_display_effect_and_ci(self.current_effect, group_str, disp_est, disp_lower, disp_upper)
+    
                 
-            est, lower, upper = None, None, None
-            if est_and_ci_d is not None:
-                est, lower, upper = est_and_ci_d["calc_scale"] # calculation scale
-                disp_est, disp_lower, disp_upper = est_and_ci_d["display_scale"] # transformed/dispaly scale
-            ma_unit = self.get_current_ma_unit_for_study(study_index)
-            # now set the effect size & CIs
-            # note that we keep two versions around; a version on the 'calculation' scale
-            # (e.g., log) and a version on the continuous/display scale to present to the
-            # user via the UI.
-            ma_unit.set_effect_and_ci(self.current_effect, group_str, est, lower, upper)
-            ma_unit.set_display_effect_and_ci(self.current_effect, group_str, disp_est, disp_lower, disp_upper)
-        
     def get_cur_raw_data(self, only_if_included=True):
         raw_data = []
         for study_index in range(len(self.dataset.studies)):
