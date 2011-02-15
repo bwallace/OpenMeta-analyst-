@@ -134,9 +134,8 @@ diagnostic.transform.f <- function(metric.str){
 get.res.for.one.diag.study <- function(diagnostic.data, params){
     # this method can be called when there is only one study to 
     # get the point estimate and lower/upper bounds.
-    if (is.na(diagnostic.data@y)){
-        diagnostic.data <- compute.diagnostic.point.estimates(diagnostic.data, params)
-    }
+    diagnostic.data <- compute.diag.point.estimates(diagnostic.data, params)
+    
     y <- diagnostic.data@y
     se <- diagnostic.data@SE
 
