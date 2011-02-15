@@ -378,7 +378,7 @@ def cov_to_str(cov, study_names, dataset):
     return cov_str
         
 
-def run_continuous_ma(function_name, params, res_name = "result", cont_data_name = "tmp_obj"):
+def run_continuous_ma(function_name, params, res_name = "result", cont_data_name="tmp_obj"):
     params_df = ro.r['data.frame'](**params)
     r_str = "%s<-%s(%s, %s)" % (res_name, function_name, cont_data_name, params_df.r_repr())
     print "\n\n(run_continuous_ma): executing:\n %s\n" % r_str
@@ -388,8 +388,6 @@ def run_continuous_ma(function_name, params, res_name = "result", cont_data_name
     
 def run_binary_ma(function_name, params, res_name="result", bin_data_name="tmp_obj"):
     params_df = ro.r['data.frame'](**params)
-    #pyqtRemoveInputHook()
-    #pdb.set_trace()
     r_str = "%s<-%s(%s, %s)" % (res_name, function_name, bin_data_name, params_df.r_repr())
     print "\n\n(run_binary_ma): executing:\n %s\n" % r_str
     ro.r(r_str)
@@ -492,7 +490,6 @@ def _rls_to_pyd(r_ls):
     return d
 
 
-# TODO clean up
 def _rlist_to_pydict(r_ls):
     # need to fix this; recursively build dictionary!!!!
     d = {}
@@ -519,6 +516,23 @@ def _get_col(m, i):
         col_vals.append(x[i])
     return col_vals
 
+def diagnostic_effects_for_study(tp, fn, fp, tn, metrics=["Sens", "Spec"]):
+    # first create a diagnostic data object
+    r_str = "diag.tmp <- new('DiagnosticData', TP=c(%s), FN=c(%s), TN=c(%s), FP=c(%s))" % \
+                            (tp, fn, tn, fp)
+    
+    print "\n\n(diagnostic_effects_for_study): executing:\n %s\n" % r_str
+    ro.r(r_str)
+    
+    for metric in metrics:
+        params = {"to":"all", "adjust".5}
+        params_df = ro.r['data.frame'](**params)
+        
+        # now compute effects
+        pyqtRemoveInputHook()
+        pdb.set_trace()
+
+    
 def continuous_effect_for_study(n1, m1, sd1, se1=None, n2=None, \
                                         m2=None, sd2=None, se2=None, \
                                         metric="MD", two_arm=True, conf_level=.975):
@@ -596,7 +610,6 @@ def effect_for_study(e1, n1, e2=None, n2=None, two_arm=True,
     est_and_ci = (point_est, lower, upper)
     transformed_est_and_ci = binary_convert_scale(est_and_ci, metric)
     return {"calc_scale":est_and_ci, "display_scale":transformed_est_and_ci}
-
 
 def binary_convert_scale(x, metric_name, convert_to="display.scale"):
     # convert_to is either 'display.scale' or 'calc.scale'
