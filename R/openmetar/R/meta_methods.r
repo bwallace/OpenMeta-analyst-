@@ -55,17 +55,18 @@ cum.ma.binary <- function(fname, binary.data, params){
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
         cum.results[i,] <- cur.overall
     }
-    
+    cum.results.display <- binary.transform.f(params$measure)$display.scale(cum.results)
     study.names <- binary.data@study.names[1] 
     for (count in 2:length(binary.data@study.names)) {
         study.names <- c(study.names, paste("+ ",binary.data@study.names[count], sep=""))
     }
-    cum.disp <- create.overall.display(cum.results, study.names, params)
+    
+    cum.disp <- create.overall.display(cum.results.display, study.names, params)
     forest.path <- "./r_tmp/cum_forest.png"
     addRow1Space <- TRUE
     params$fp_show_summary_line <- TRUE
     # temporarily hard-coding this param
-    plot.data <- create.plot.data.overall(params, cum.results, study.names, addRow1Space)
+    plot.data <- create.plot.data.overall(params, cum.results.display, study.names, addRow1Space)
     forest.plot(plot.data, outpath=forest.path)
 
     # Now we package the results in a dictionary (technically, a named 
@@ -135,18 +136,18 @@ loo.ma.binary <- function(fname, binary.data, params){
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
         loo.results[i,] <- cur.overall
     }
-    
+    loo.results.display <- binary.transform.f(params$measure)$display.scale(loo.results)
     study.names <- NULL 
     for (count in 1:length(binary.data@study.names)) {
         study.names <- c(study.names, paste("- ",binary.data@study.names[count], sep=""))
     }
-    loo.disp <- create.overall.display(loo.results, study.names, params)
+    loo.disp <- create.overall.display(loo.results.display, study.names, params)
     forest.path <- "./r_tmp/loo_forest.png"
     addRow1Space <- FALSE
     params$fp_show_summary_line <- FALSE
     # temporarily hard-coding this param as FALSE because we haven't computed an overall estimate,
     # so there's no value for a summary line. This could be changed.
-    plot.data <- create.plot.data.overall(params, loo.results, study.names, addRow1Space)
+    plot.data <- create.plot.data.overall(params, loo.results.display, study.names, addRow1Space)
     forest.plot(plot.data, outpath=forest.path)
     
 
@@ -211,17 +212,17 @@ cum.ma.continuous <- function(fname, cont.data, params){
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
         cum.results[i,] <- cur.overall
     }
-    
+    cum.results.display <- binary.transform.f(params$measure)$display.scale(cum.results)
     study.names <- cont.data@study.names[1] 
     for (count in 2:length(cont.data@study.names)) {
         study.names <- c(study.names, paste("+ ",cont.data@study.names[count], sep=""))
     }
-    cum.disp <- create.overall.display(cum.results, study.names, params)
+    cum.disp <- create.overall.display(cum.results.display, study.names, params)
     forest.path <- "./r_tmp/cum_forest.png"
     addRow1Space <- TRUE
     params$fp_show_summary_line <- TRUE
     # temporarily hard-coding this param
-    plotData <- create.plot.data.overall(params, cum.results, study.names, addRow1Space)
+    plotData <- create.plot.data.overall(params, cum.results.display, study.names, addRow1Space)
     forest.plot(plotData, outpath=forest.path)
     
     #
@@ -298,19 +299,19 @@ loo.ma.continuous <- function(fname, cont.data, params){
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
         loo.results[i,] <- cur.overall
     }
-    
+    loo.results.display <- binary.transform.f(params$measure)$display.scale(loo.results)
     study.names <- NULL
     for (count in 1:length(cont.data@study.names)) {
         study.names <- c(study.names, paste("- ",cont.data@study.names[count], sep=""))
     }
-    loo.disp <- create.overall.display(loo.results, study.names, params)
+    loo.disp <- create.overall.display(loo.results.display, study.names, params)
 
     forest.path <- "./r_tmp/loo_forest.png"
     addRow1Space <- FALSE
     params$fp_show_summary_line <- FALSE
     # temporarily hard-coding this param as FALSE because we haven't computed an overall estimate,
     # so there's no value for a summary line. This could be changed.
-    plotData <- create.plot.data.overall(params, loo.results, study.names, addRow1Space)
+    plotData <- create.plot.data.overall(params, loo.results.display, study.names, addRow1Space)
     forest.plot(plotData, outpath=forest.path)
     
     #
