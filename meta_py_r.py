@@ -524,14 +524,22 @@ def diagnostic_effects_for_study(tp, fn, fp, tn, metrics=["Sens", "Spec"]):
     print "\n\n(diagnostic_effects_for_study): executing:\n %s\n" % r_str
     ro.r(r_str)
     
+    # this will map metrics to est., lower, upper
+    effects_dict = {}
     for metric in metrics:
-        params = {"to":"all", "adjust".5}
+        params = {"to":"all", "adjust":.5, "measure":metric, "conf.level":95}
         params_df = ro.r['data.frame'](**params)
         
         # now compute effects
-        pyqtRemoveInputHook()
-        pdb.set_trace()
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
 
+        r_res = ro.r("get.res.for.one.diag.study(diag.tmp, %s)" % params_df.r_repr())
+        est, lower, upper = r_res[0][0], r_res[1][0], r_res[2][0]
+        effects_dict[metric] = (est, lower, upper)
+        
+    return effects_dict
+    
     
 def continuous_effect_for_study(n1, m1, sd1, se1=None, n2=None, \
                                         m2=None, sd2=None, se2=None, \

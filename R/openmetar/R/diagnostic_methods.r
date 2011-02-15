@@ -82,9 +82,9 @@ compute.diag.point.estimates <- function(diagnostic.data, params) {
         DOR = FP * FN)    
     
     y <- numerator / denominator
-      
     diagnostic.data@y <- eval(call("diagnostic.transform.f", params$measure))$calc.scale(y)
- 
+
+    
     diagnostic.data@SE <- switch(metric,
         Sens <- sqrt((1 / TP) + (1 / FN)), 
         Spec <- sqrt((1 / TN) + (1 / FP)),
@@ -103,14 +103,11 @@ diagnostic.transform.f <- function(metric.str){
         if (metric.str %in% diagnostic.log.metrics){
             exp(x)
         }
+        else if (metric.str %in% diagnostic.logit.metrics){
+            invlogit(x)
+        }
         else {
-            if (metric.str %in% diagnostic.logit.metrics){
-                invlogit(x)
-            }
-            else {
-                # identity function
-                x
-            }
+            x
         }
     }
     
@@ -118,20 +115,18 @@ diagnostic.transform.f <- function(metric.str){
         if (metric.str %in% diagnostic.log.metrics){
             log(x)
         }
+        else if (metric.str %in% diagnostic.logit.metrics){
+            logit(x)
+        }
         else {
-        	if (metric.str %in% diagnostic.logit.metrics){
-                logit(x)
-            }
-            else {
-                # identity function
-                x
-            }
-         }
+            # identity function
+            x
+        }
     }
     list(display.scale = display.scale, calc.scale = calc.scale)
 }
 
-get.res.for.one.diag.study <- function(diagnostic.data, params){
+get.res.for.one.diag.study <- function(diagnostic.data, params, disp.scale=TRUE){
     # this method can be called when there is only one study to 
     # get the point estimate and lower/upper bounds.
     diagnostic.data <- compute.diag.point.estimates(diagnostic.data, params)
@@ -145,6 +140,11 @@ get.res.for.one.diag.study <- function(diagnostic.data, params){
     ub <- y + mult*se
     lb <- y - mult*se
     # we make lists to comply with the get.overall method
+    if (disp.scale){
+        y <- eval(call("diagnostic.transform.f", params$measure))$display.scale(y)
+        lb <- eval(call("diagnostic.transform.f", params$measure))$display.scale(lb)
+        ub <- eval(call("diagnostic.transform.f", params$measure))$display.scale(ub)
+    }
     res <- list("b"=c(y), "ci.lb"=lb, "ci.ub"=ub) 
     res
 }

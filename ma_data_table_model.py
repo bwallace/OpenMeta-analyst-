@@ -879,6 +879,7 @@ class DatasetModel(QAbstractTableModel):
                 # sensitivity and specificity
                 ests_and_cis = meta_py_r.diagnostic_effects_for_study(tp, fn, fp, tn)
                 
+                
             est, lower, upper = None, None, None
             if est_and_ci_d is not None:
                 est, lower, upper = est_and_ci_d["calc_scale"] # calculation scale
