@@ -86,7 +86,7 @@ pad.with.spaces <- function(entry, begin.num, end.num) {
         repeat.string.end <- create.repeat.string(" ", end.num)
     }
     padded.entry <- paste(repeat.string.begin, entry, repeat.string.end, sep="")
-    return(padded.entry)
+    padded.entry
 }
 
 create.repeat.string <- function(symbol, num.repeats) {
@@ -95,7 +95,7 @@ create.repeat.string <- function(symbol, num.repeats) {
     for (count in 1:num.repeats) {
         repeat.string <- paste(repeat.string, symbol, sep="")
     }
-    return(repeat.string)
+    repeat.string
 }
  
 round.display <- function(x, digits) {
@@ -109,49 +109,39 @@ round.display <- function(x, digits) {
         return(x.rounded)
     }
     x.rounded <- mapply(zero.display, x.rounded, digits)
-    return(x.rounded)
+    x.rounded
 }
 
 round.with.zeros <- function(x, digits) {
     # Rounds a number according to digits and pads  with zeros at the end
     # so that the number of symbols after the decimal point equals digits.
-    # add.space adds an extra space to the beginning or end of output for alignment of positive numbers.
-    # Values are 'begin', 'end', 'none'
     x.rounded <- round(x, digits = digits)
-    pad.zeros <- function(x.rounded, digits) {
+    x.rounded <- sprintf(paste("%.", digits,"f", sep=""), x.rounded)
+    #pad.zeros <- function(x.rounded, digits) {
     # Pad with zeros  
-    numZeros <- NULL
-    if (floor(x.rounded) == x.rounded) {
+    #numZeros <- NULL
+    #if (floor(x.rounded) == x.rounded) {
         # x.rounded is an integer
-        if (digits > 0) {
-            x.rounded <- paste(x.rounded, ".", sep="")
-            for (count in 1:digits) {
-              x.rounded <- paste(x.rounded, "0", sep="")
-            }
-        }
-    } else {
-        pow <- 10**digits * x.rounded
-        # Calculate how many zeros should be added on the right.
-        while (floor(pow) == pow) {
-          pow <- pow/10;
-          if (floor(pow) == pow) {
-              x.rounded <- paste(x.rounded, "0", sep="")
-          }
-        }
-    }
-    # add extra spaces to positive numbers if requested
-    #if (x.rounded >= 0) {
-    #    if (add.space == "begin") {
-    #        x.rounded <- paste(" ", x.rounded, sep="")
+    #    if (digits > 0) {
+    #        x.rounded <- paste(x.rounded, ".", sep="")
+    #        for (count in 1:digits) {
+    #          x.rounded <- paste(x.rounded, "0", sep="")
+    #        }
     #    }
-    #    if (add.space == "end") {
-    #        x.rounded <- paste(x.rounded, " ", sep="")
-     #   }
+    #} else {
+    #    pow <- 10**digits * x.rounded
+        # Calculate how many zeros should be added on the right.
+    #    while (floor(pow) == pow) {
+    #      pow <- pow/10;
+    #      if (floor(pow) == pow) {
+    #          x.rounded <- paste(x.rounded, "0", sep="")
+    #     }
+    #    }
     #}
-    return(x.rounded)
-    }
-    x.rounded <- mapply(pad.zeros, x.rounded, digits)
-    return(x.rounded)
+    #return(x.rounded)
+    #}
+    #x.rounded <- mapply(pad.zeros, x.rounded, digits)
+   x.rounded
 }
 
 create.summary.disp <- function(res, params, degf, model.title, data.type) {

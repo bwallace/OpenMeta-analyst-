@@ -66,7 +66,7 @@ cum.ma.binary <- function(fname, binary.data, params){
     addRow1Space <- TRUE
     params$fp_show_summary_line <- TRUE
     # temporarily hard-coding this param
-    plot.data <- create.plot.data.overall(params, cum.results.display, study.names, addRow1Space)
+    plot.data <- create.plot.data.overall(params, cum.results, study.names, addRow1Space)
     forest.plot(plot.data, outpath=forest.path)
 
     # Now we package the results in a dictionary (technically, a named 
@@ -147,7 +147,7 @@ loo.ma.binary <- function(fname, binary.data, params){
     params$fp_show_summary_line <- FALSE
     # temporarily hard-coding this param as FALSE because we haven't computed an overall estimate,
     # so there's no value for a summary line. This could be changed.
-    plot.data <- create.plot.data.overall(params, loo.results.display, study.names, addRow1Space)
+    plot.data <- create.plot.data.overall(params, loo.results, study.names, addRow1Space)
     forest.plot(plot.data, outpath=forest.path)
     
 
@@ -222,7 +222,7 @@ cum.ma.continuous <- function(fname, cont.data, params){
     addRow1Space <- TRUE
     params$fp_show_summary_line <- TRUE
     # temporarily hard-coding this param
-    plotData <- create.plot.data.overall(params, cum.results.display, study.names, addRow1Space)
+    plotData <- create.plot.data.overall(params, cum.results, study.names, addRow1Space)
     forest.plot(plotData, outpath=forest.path)
     
     #
@@ -311,7 +311,7 @@ loo.ma.continuous <- function(fname, cont.data, params){
     params$fp_show_summary_line <- FALSE
     # temporarily hard-coding this param as FALSE because we haven't computed an overall estimate,
     # so there's no value for a summary line. This could be changed.
-    plotData <- create.plot.data.overall(params, loo.results.display, study.names, addRow1Space)
+    plotData <- create.plot.data.overall(params, loo.results, study.names, addRow1Space)
     forest.plot(plotData, outpath=forest.path)
     
     #

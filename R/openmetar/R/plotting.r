@@ -58,75 +58,21 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     lb <- y - mult*om.data@SE
     ub <- y + mult*om.data@SE
     
+    y <- c(y, y.overall)
+    lb <- c(lb, lb.overall)
+    ub <- c(ub, ub.overall)
+    
     if (params$fp_show_col2=='TRUE') {
-        # transform entries to display scale
+        # transform entries to display scale and format
         y.trans <- eval(call(transform.name, params$measure))$display.scale(y)
         lb.trans <- eval(call(transform.name, params$measure))$display.scale(lb)
         ub.trans <- eval(call(transform.name, params$measure))$display.scale(ub)
-        y.overall.trans <- eval(call(transform.name, params$measure))$display.scale(y.overall)
-        lb.overall.trans <- eval(call(transform.name, params$measure))$display.scale(lb.overall)
-        ub.overall.trans <- eval(call(transform.name, params$measure))$display.scale(ub.overall)
-        
-        y.display <- round.with.zeros(y.trans, digits = params$digits)
-        lb.display <- round.with.zeros(lb.trans, digits = params$digits)
-        ub.display <- round.with.zeros(ub.trans, digits = params$digits)
-        y.overall.display <- round.with.zeros(y.overall.trans, digits = params$digits)
-        lb.overall.display <- round.with.zeros(lb.overall.trans, digits = params$digits)
-        ub.overall.display <- round.with.zeros(ub.overall.trans, digits = params$digits)
-        
-        # for ub, ub.overall, add an extra space to positive numbers for alignment (negative numbers display minus sign)
-        if (length(ub.display[ub.display >= 0])) {
-            ub.display[ub.display >= 0] <- mapply(pad.with.spaces, ub.display[ub.display >= 0], begin.num=1, end.num=0)
-        }
-        if (length(ub.overall.display[ub.overall.display >= 0])) {
-            ub.overall.display[ub.overall.display >= 0] <- mapply(pad.with.spaces, ub.overall.display[ub.overall.display >= 0], begin.num=1, end.num=0)
-        }
-        # if ub, ub.overall have any negative entries, add an extra space to separate entry from preceding ","
-        if (min(ub.trans) < 0) {
-            ub.display <- paste(" ", ub.display, sep="")
-        }
-        if (min(ub.overall.trans) < 0) {
-            # if any negative entries, add an extra space to separate entry from preceding ","
-            ub.overall.display <- paste(" ", ub.overall.display, sep="")
-        }
-        
-        # format results by padding with spaces to align columns 
-        ub.max.chars <- max(nchar(ub.display), nchar(ub.overall.display))
-        ub.extra.space <- ub.max.chars - nchar(ub.display)
-        ub.overall.extra.space <- ub.max.chars - nchar(ub.overall.display)
-        ub.display <- mapply(pad.with.spaces, ub.display, begin.num = ub.extra.space, end.num=0)
-        ub.overall.display <- pad.with.spaces(ub.overall.display, begin.num = ub.overall.extra.space, end.num=0)
-    
-        lb.display <- paste(" (", lb.display, sep="")
-        lb.overall.display <- paste(" (", lb.overall.display, sep="")
-        lb.max.chars <- max(nchar(lb.display), nchar(lb.overall.display))
-        lb.extra.space <- lb.max.chars - nchar(lb.display)
-        lb.overall.extra.space <- lb.max.chars - nchar(lb.overall.display)
-        lb.display <- mapply(pad.with.spaces, lb.display, begin.num = lb.extra.space, end.num=0)
-        lb.overall.display <- pad.with.spaces(lb.overall.display, begin.num = lb.overall.extra.space, end.num=0)
-
-        col2.overall.row <- paste(y.overall.display, lb.overall.display, ",", ub.overall.display, ")", sep = "")
-        col2.width <- nchar(col2.overall.row)
-        col2.label <- as.character(params$fp_col2_str)
-        # if label contains ",", pad label to align columns
-        label.info <- check.label(label = col2.label, split.str = ",")
-        max.chars <- max(nchar(ub.display), nchar(ub.overall.display)) + 1
-        # add 1 because a space is added before each ub entry.
-        if (label.info$contains.symbol == TRUE) {
-            # label contains "," so pad label to align ","
-            # we're assuming that there is a single space after ","
-            col2.label.padded <- pad.with.spaces(col2.label, begin.num=0, end.num = max.chars - label.info$end.string.length) 
-        } else {
-            # label doesn't contain "," so pad label to center over column 
-            col2.label.padded <- pad.with.spaces(col2.label, begin.num=0, end.num = floor((col2.width - nchar(col2.label)) / 2))           
-        }
-        plot.data$additional.col.data$es <- c(col2.label.padded,
-                                 paste(y.display, lb.display, ",", ub.display, ")", sep = ""),
-                                 col2.overall.row)
-    }              
-    effects <- list(ES = c(y, y.overall),
-                    LL = c(lb, lb.overall),
-                    UL = c(ub, ub.overall))
+        effect.size.col <- format.effect.size.col(y.trans, lb.trans, ub.trans, params)
+        plot.data$additional.col.data$es <- effect.size.col
+    } 
+    effects <- list(ES = y,
+                    LL = lb,
+                    UL = ub)             
     plot.data$effects <- effects
     # covariates
     if (!is.null(selected.cov)){
@@ -228,63 +174,12 @@ create.plot.data.overall <- function(params, res, study.names, addRow1Space, sel
     ub <- res[,3]
    
     if (params$fp_show_col2=='TRUE') {
-        # put results in display scale and round.
-        # TO DO - this is almost the same as the formatting in create.plot.data.generic.
-        # create a single function to format both.
-        y.display <- round.with.zeros(y, digits = params$digits)
-        lb.display <- round.with.zeros(lb, digits = params$digits)
-        ub.display <- round.with.zeros(ub, digits = params$digits)
-                
-        # for ub, add an extra space to positive numbers for alignment (negative numbers display minus sign)
-        if (length(ub.display[ub.display >= 0])) {
-            ub.display[ub.display >= 0] <- mapply(pad.with.spaces, ub.display[ub.display >= 0], begin.num=1, end.num=0)
-        }
-       # if ub havs any negative entries, add an extra space to separate entry from preceding ","
-        if (min(ub) < 0) {
-            ub.display <- paste(" ", ub.display, sep="")
-        }
-                
-        # format results by padding with spaces to align columns 
-        ub.max.chars <- max(nchar(ub.display))
-        ub.extra.space <- ub.max.chars - nchar(ub.display)
-        #ub.overall.extra.space <- ub.max.chars - nchar(ub.overall.display)
-        ub.display <- mapply(pad.with.spaces, ub.display, begin.num = ub.extra.space, end.num=0)
-        #ub.overall.display <- pad.with.spaces(ub.overall.display, begin.num = ub.overall.extra.space, end.num=0)
-        # for ub, add an extra space to positive numbers for alignment (negative numbers display minus sign)
-        if (length(ub.display[ub.display >= 0])) {
-            ub.display[ub.display >= 0] <- mapply(pad.with.spaces, ub.display[ub.display >= 0], begin.num=1, end.num=0)
-        }
-        # if ub, ub.overall have any negative entries, add an extra space to separate entry from preceding ","
-        if (min(ub) < 0) {
-            ub.display <- paste(" ", ub.display, sep="")
-        }
-       
-       
-        lb.display <- paste(" (", lb.display, sep="")
-        #lb.overall.display <- paste(" (", lb.overall.display, sep="")
-        lb.max.chars <- max(nchar(lb.display))
-        lb.extra.space <- lb.max.chars - nchar(lb.display)
-        #lb.overall.extra.space <- lb.max.chars - nchar(lb.overall.display)
-        lb.display <- mapply(pad.with.spaces, lb.display, begin.num = lb.extra.space, end.num=0)
-        #lb.overall.display <- pad.with.spaces(lb.overall.display, begin.num = lb.overall.extra.space, end.num=0)
-        col2.label <- as.character(params$fp_col2_str)
-        # if label contains ",", pad label to align columns
-        label.info <- check.label(label = col2.label, split.str = ",")
-        max.chars <- max(nchar(ub.display)) + 1
-        # add 1 because a space is added before each ub entry.
-        if (label.info$contains.symbol == TRUE) {
-            # label contains "," so pad label to align ","
-            # we're assuming that there is a single space after ","
-            col2.label.padded <- pad.with.spaces(col2.label, begin.num=0, end.num = max.chars - label.info$end.string.length) 
-        } else {
-            # label doesn't contain "," so pad label to center over column 
-            col2.label.padded <- pad.with.spaces(col2.label, begin.num=0, end.num = floor((col2.width - nchar(col2.label)) / 2))           
-        }
-        #additional.cols <- c(paste(col2.label sep = ""),
-        #                         paste(y.display, " (", lb.display, ", ", ub.display, ")", sep = ""))
-        #plot.data$additional.col.data$es <- additional.cols 
-        plot.data$additional.col.data$es <- c(col2.label.padded,
-                                 paste(y.display, lb.display, ",", ub.display, ")", sep = ""))
+        # put results in display scale and format.
+        y.trans <- binary.transform.f(params$measure)$display.scale(y)
+        lb.trans <- binary.transform.f(params$measure)$display.scale(lb)
+        ub.trans <- binary.transform.f(params$measure)$display.scale(ub)
+        effect.size.col <- format.effect.size.col(y.trans, lb.trans, ub.trans, params)
+        plot.data$additional.col.data$es <- effect.size.col
     }      
       
     effects <- list(ES = y,
@@ -818,21 +713,59 @@ diagnostic.sroc.plot <- function(plot.data, outpath,
 }
 
 #######################################################
-#   Functions for formatting data for display in plots #
+#  Functions for formatting data for display in plots #
 #######################################################
-  
-check.label <- function(label, split.str) {
-    # check column labels for split.symbol and return length of string that follows split.str
-    split.label <- strsplit(label, split.str)
-    split.label.length <- length(split.label[[1]])
-    label.info <- list("contains.symbol"=FALSE, "end.string.length"=0)
-    if (split.label.length > 1) {
-       label.info$contains.symbol <- TRUE
-       label.info$end.string.length <- nchar(split.label[[1]][split.label.length])
-    }
-    label.info
-}
 
+format.effect.size.col <- function(y, lb, ub, params) {
+        # format column by padding entries with spaces for alignment
+        y.display <- round.with.zeros(y, digits = params$digits)
+        lb.display <- round.with.zeros(lb, digits = params$digits)
+        ub.display <- round.with.zeros(ub, digits = params$digits)
+                
+        # for ub, add an extra space to positive numbers for alignment (negative numbers display minus sign)
+        if (length(ub.display[ub.display >= 0])) {
+            ub.display[ub.display >= 0] <- mapply(pad.with.spaces, ub.display[ub.display >= 0], begin.num=1, end.num=0)
+        }
+       # if ub havs any negative entries, add an extra space to separate entry from preceding ","
+        if (min(ub) < 0) {
+            ub.display <- paste(" ", ub.display, sep="")
+        }
+                
+        # format results by padding with spaces to align columns 
+        ub.max.chars <- max(nchar(ub.display))
+        ub.extra.space <- ub.max.chars - nchar(ub.display)
+        ub.display <- mapply(pad.with.spaces, ub.display, begin.num = ub.extra.space, end.num=0)
+        # for ub, add an extra space to positive numbers for alignment (negative numbers display minus sign)
+        if (length(ub.display[ub.display >= 0])) {
+            ub.display[ub.display >= 0] <- mapply(pad.with.spaces, ub.display[ub.display >= 0], begin.num=1, end.num=0)
+        }
+        # if ub has any negative entries, add an extra space to separate entry from preceding ","
+        if (min(ub) < 0) {
+            ub.display <- paste(" ", ub.display, sep="")
+        }
+       
+       
+        lb.display <- paste(" (", lb.display, sep="")
+        lb.max.chars <- max(nchar(lb.display))
+        lb.extra.space <- lb.max.chars - nchar(lb.display)
+        lb.display <- mapply(pad.with.spaces, lb.display, begin.num = lb.extra.space, end.num=0)
+        col2.label <- as.character(params$fp_col2_str)
+        # if label contains ",", pad label to align columns
+        label.info <- check.label(label = col2.label, split.str = ",")
+        max.chars <- max(nchar(ub.display)) + 1
+        # add 1 because a space is added before each ub entry.
+        if (label.info$contains.symbol == TRUE) {
+            # label contains "," so pad label to align ","
+            # we're assuming that there is a single space after ","
+            col2.label.padded <- pad.with.spaces(col2.label, begin.num=0, end.num = max.chars - label.info$end.string.length) 
+        } else {
+            # label doesn't contain "," so pad label to center over column 
+            col2.label.padded <- pad.with.spaces(col2.label, begin.num=0, end.num = floor((col2.width - nchar(col2.label)) / 2))           
+        }
+        effect.size.col <- c(col2.label.padded,
+                                 paste(y.display, lb.display, ",", ub.display, ")", sep = ""))
+}
+  
 format.raw.data.col <- function(nums, denoms, label) {
     # format raw data columns to align forward slashes
     nums.total <- sum(nums)
@@ -857,6 +790,19 @@ format.raw.data.col <- function(nums, denoms, label) {
     # add 1 to nchar(denoms) because a space is added before each denom
     data.column = c(label.padded, paste(nums, " / ", denoms, sep = ""), overall.row)
     data.column
+}
+
+check.label <- function(label, split.str) {
+    # utility for format.effect.size.col and format.raw.data.col
+    # check column labels for split.symbol and return length of string that follows split.str
+    split.label <- strsplit(label, split.str)
+    split.label.length <- length(split.label[[1]])
+    label.info <- list("contains.symbol"=FALSE, "end.string.length"=0)
+    if (split.label.length > 1) {
+       label.info$contains.symbol <- TRUE
+       label.info$end.string.length <- nchar(split.label[[1]][split.label.length])
+    }
+    label.info
 }
 
 calculate.radii <- function(inv.var, max.symbol.size, max.ratio) {

@@ -30,7 +30,8 @@ setClass("BinaryData",
 # DiagnosticData type
 #       
 setClass("DiagnosticData", 
-               representation(TP="numeric", FN="numeric", TN="numeric", FP="numeric", y="numeric", SE="numeric",
+               representation(TP="numeric", FN="numeric", TN="numeric", FP="numeric", 
+               numerator="numeric", denominator="numeric", y="numeric", SE="numeric",
                g1.name="character"), 
                contains="OMData")
                

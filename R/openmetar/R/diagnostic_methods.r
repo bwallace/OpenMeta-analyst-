@@ -26,14 +26,14 @@ adjust.raw.data <- function(diagnostic.data, params) {
         FP <- FP + params$adjust
     }
     if (params$to == "only0") {
-        product <- TP * FN * TN * TP
+        product <- TP * FN * TN * FP
         # product equals 0 if at least one entry in a row is 0
         TP[product == 0] <- TP[product == 0] + params$adjust
         FN[product == 0] <- FN[product == 0] + params$adjust
         TN[product == 0] <- TN[product == 0] + params$adjust
         FP[product == 0] <- FP[product == 0] + params$adjust
     }
-    data.adj <- list("TP"=TP, "FN"=FN, "TN"=TN, "FP"="FP")
+    data.adj <- list("TP"=TP, "FN"=FN, "TN"=TN, "FP"=FP)
 }
 
 compute.diag.point.estimates <- function(diagnostic.data, params) {
@@ -45,7 +45,7 @@ compute.diag.point.estimates <- function(diagnostic.data, params) {
     TN <- data.adj$TN 
     FP <- data.adj$FP
         
-    numerator <- switch(metric,
+    diagnostic.data@numerator <- switch(metric,
         # sensitivity
         Sens = TP, 
         # specificity
@@ -63,7 +63,7 @@ compute.diag.point.estimates <- function(diagnostic.data, params) {
         # diagnostic odds ratio
         DOR = TP * TN)
         
-    denominator <- switch(metric,
+    diagnostic.data@denominator <- switch(metric,
         # sensitivity
         Sens = TP + FN, 
         # specificity
@@ -81,10 +81,10 @@ compute.diag.point.estimates <- function(diagnostic.data, params) {
         # diagnostic odds ratio
         DOR = FP * FN)    
     
-    y <- numerator / denominator
+    y <- diagnostic.data@numerator / diagnostic.data@denominator
+      
     diagnostic.data@y <- eval(call("diagnostic.transform.f", params$measure))$calc.scale(y)
-
-    
+ 
     diagnostic.data@SE <- switch(metric,
         Sens <- sqrt((1 / TP) + (1 / FN)), 
         Spec <- sqrt((1 / TN) + (1 / FP)),
@@ -103,11 +103,14 @@ diagnostic.transform.f <- function(metric.str){
         if (metric.str %in% diagnostic.log.metrics){
             exp(x)
         }
-        else if (metric.str %in% diagnostic.logit.metrics){
-            invlogit(x)
-        }
         else {
-            x
+            if (metric.str %in% diagnostic.logit.metrics){
+                invlogit(x)
+            }
+            else {
+                # identity function
+                x
+            }
         }
     }
     
@@ -115,13 +118,15 @@ diagnostic.transform.f <- function(metric.str){
         if (metric.str %in% diagnostic.log.metrics){
             log(x)
         }
-        else if (metric.str %in% diagnostic.logit.metrics){
-            logit(x)
-        }
         else {
-            # identity function
-            x
-        }
+        	if (metric.str %in% diagnostic.logit.metrics){
+                logit(x)
+            }
+            else {
+                # identity function
+                x
+            }
+         }
     }
     list(display.scale = display.scale, calc.scale = calc.scale)
 }
@@ -129,8 +134,9 @@ diagnostic.transform.f <- function(metric.str){
 get.res.for.one.diag.study <- function(diagnostic.data, params){
     # this method can be called when there is only one study to 
     # get the point estimate and lower/upper bounds.
-    diagnostic.data <- compute.diag.point.estimates(diagnostic.data, params)
-    
+    if (is.na(diagnostic.data@y)){
+        diagnostic.data <- compute.diagnostic.point.estimates(diagnostic.data, params)
+    }
     y <- diagnostic.data@y
     se <- diagnostic.data@SE
 
@@ -139,6 +145,7 @@ get.res.for.one.diag.study <- function(diagnostic.data, params){
     mult <- abs(qnorm(alpha/2.0))
     ub <- y + mult*se
     lb <- y - mult*se
+    # we make lists to comply with the get.overall method
     res <- list("b"=c(y), "ci.lb"=lb, "ci.ub"=ub) 
     res
 }
@@ -290,16 +297,16 @@ diagnostic.fixed.sroc <- function(diagnostic.data, params){
     # assert that the argument is the correct type
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
         # add constant to zero cells
-        diagnostic.data <- adjust.raw.data(diagnostic.data,params)
+        data.adj <- adjust.raw.data(diagnostic.data,params)
         # compute true positive ratio = sensitivity 
-        TPR <- diagnostic.data@TP / (diagnostic.data@TP + diagnostic.data@FN)
+        TPR <- data.adj$TP / (data.adj$TP + data.adj$FN)
         # compute false positive ratio = 1 - specificity
-        FPR <- diagnostic.data@FP / (diagnostic.data@TP + diagnostic.data@FN)
+        FPR <- data.adj$FP / (data.adj$TN + data.adj$FP)
         S <- logit(TPR) + logit(FPR)
         D <- logit(TPR) - logit(FPR)
         s.range <- list("max"=max(S), "min"=min(S))
         if (params$sroc_weighted) {
-            inv.var <- diagnostic.data@TP + diagnostic.data@FN + diagnostic.data@FP + diagnostic.data@TN
+            inv.var <- data.adj$TP + data.adj$FN + data.adj$FP + data.adj$TN
             # compute total number in each study
             res <- lm(D ~ S, weights=inv.var)
            # weighted linear regression
