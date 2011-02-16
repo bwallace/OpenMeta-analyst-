@@ -112,40 +112,8 @@ round.display <- function(x, digits) {
     x.rounded
 }
 
-round.with.zeros <- function(x, digits) {
-    # Rounds a number according to digits and pads  with zeros at the end
-    # so that the number of symbols after the decimal point equals digits.
-    x.rounded <- round(x, digits = digits)
-    x.rounded <- sprintf(paste("%.", digits,"f", sep=""), x.rounded)
-    #pad.zeros <- function(x.rounded, digits) {
-    # Pad with zeros  
-    #numZeros <- NULL
-    #if (floor(x.rounded) == x.rounded) {
-        # x.rounded is an integer
-    #    if (digits > 0) {
-    #        x.rounded <- paste(x.rounded, ".", sep="")
-    #        for (count in 1:digits) {
-    #          x.rounded <- paste(x.rounded, "0", sep="")
-    #        }
-    #    }
-    #} else {
-    #    pow <- 10**digits * x.rounded
-        # Calculate how many zeros should be added on the right.
-    #    while (floor(pow) == pow) {
-    #      pow <- pow/10;
-    #      if (floor(pow) == pow) {
-    #          x.rounded <- paste(x.rounded, "0", sep="")
-    #     }
-    #    }
-    #}
-    #return(x.rounded)
-    #}
-    #x.rounded <- mapply(pad.zeros, x.rounded, digits)
-   x.rounded
-}
-
 create.summary.disp <- function(res, params, degf, model.title, data.type) {
-
+    # create table for diplaying summary of ma results
     if (data.type == "diagnostic") {
         transform.name <- "diagnostic.transform.f"
     }  else {  
@@ -196,6 +164,7 @@ create.summary.disp <- function(res, params, degf, model.title, data.type) {
 }
 
 create.regression.disp <- function(res, params) {
+    # create table for diplaying summary of regression ma results
     coeffs <- round(res$b, digits=params$digits)
     pvals <- round.display(res$pval, digits=params$digits)
     lbs <- round(res$ci.lb, digits=params$digits)
@@ -209,8 +178,7 @@ create.regression.disp <- function(res, params) {
 }
 
 create.overall.display <- function(res, study.names, params) {
-    #res
-    #params$digits
+    # create table for diplaying summary of overall ma results
     res <- round(res, digits = params$digits)
     overall.array <- array(c("", study.names, "Estimates", res[,1], "Lower bounds", res[,2],"Upper bounds", res[,3]),
                     dim=c(length(study.names) + 1, 4))

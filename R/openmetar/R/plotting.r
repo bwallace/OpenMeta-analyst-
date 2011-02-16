@@ -718,10 +718,14 @@ diagnostic.sroc.plot <- function(plot.data, outpath,
 
 format.effect.size.col <- function(y, lb, ub, params) {
         # format column by padding entries with spaces for alignment
-        y.display <- round.with.zeros(y, digits = params$digits)
-        lb.display <- round.with.zeros(lb, digits = params$digits)
-        ub.display <- round.with.zeros(ub, digits = params$digits)
-                
+        digits <- params$digits
+        y.display <- round(y, digits)
+        y.display <- sprintf(paste("%.", digits,"f", sep=""), y.display)
+        lb.display <- round(lb, digits)
+        lb.display <- sprintf(paste("%.", digits,"f", sep=""), lb.display)
+        ub.display <- round(ub, digits)
+        ub.display <- sprintf(paste("%.", digits,"f", sep=""), ub.display)
+                       
         # for ub, add an extra space to positive numbers for alignment (negative numbers display minus sign)
         if (length(ub.display[ub.display >= 0])) {
             ub.display[ub.display >= 0] <- mapply(pad.with.spaces, ub.display[ub.display >= 0], begin.num=1, end.num=0)

@@ -258,11 +258,11 @@ binary.fixed.peto <- function(binary.data, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.") 
     
-    params.peto <- list("measure" = "PETO")
+    params$measure <- "PETO"
     # use metric PETO to compute point estimates for studies 
 
     if (length(binary.data@g1O1) == 1){
-        res <- get.res.for.one.binary.study(binary.data, params.peto)
+        res <- get.res.for.one.binary.study(binary.data, params)
          # Package res for use by overall method.
         summary.disp <- list("MAResults" = res) 
         results <- list("Summary"=summary.disp)
@@ -283,7 +283,7 @@ binary.fixed.peto <- function(binary.data, params){
         # generate forest plot 
         #
         if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
-            binary.data <- compute.bin.point.estimates(binary.data, params.peto)
+            binary.data <- compute.bin.point.estimates(binary.data, params)
             # compute point estimates for plot.data in case they are missing
             params$fp_show_summary_line <- TRUE
             # temporarily hard-coding this param
@@ -318,11 +318,11 @@ binary.fixed.peto.parameters <- function(){
                             "adjust"="float", "to"=apply_adjustment_to)
     
     # default values
-    defaults <- list("conf.level"=95, "digits"=3, "adjust"=.5)
+    defaults <- list("conf.level"=95, "digits"=3, "adjust"=.5, "to"="only0")
     
     var_order = c("conf.level", "digits", "adjust", "to")
     
-    parameters <- list("parameters"=params, "defaults"=defaults,  "var_order"=var_order)
+    parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
 }
 
 binary.fixed.peto.is.feasible <- function(binary.data){

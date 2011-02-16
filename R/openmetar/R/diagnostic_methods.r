@@ -164,8 +164,6 @@ invlogit <- function(x) {
 diagnostic.fixed <- function(diagnostic.data, params){
     # assert that the argument is the correct type
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
-    diagnostic.data <- adjust.raw.data(diagnostic.data, params)
-    # add constants to zero cells
     results <- NULL
     if (diagnostic.data@TP > 0) {
       diagnostic.data <- compute.diag.point.estimates(diagnostic.data, params)
