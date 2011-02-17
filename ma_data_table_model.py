@@ -947,23 +947,24 @@ class DatasetModel(QAbstractTableModel):
         return "ok -- has all point estimates"
         return True
         
-    def cur_point_est_and_SE_for_study(self, study_index):
+    def cur_point_est_and_SE_for_study(self, study_index, effect=None):
         group_str = self.get_cur_group_str()
         cur_ma_unit = self.get_current_ma_unit_for_study(study_index)
-        est = cur_ma_unit.effects_dict[self.current_effect][group_str]["est"] 
-        lower, upper = cur_ma_unit.effects_dict[self.current_effect][group_str]["lower"], \
-                                cur_ma_unit.effects_dict[self.current_effect][group_str]["upper"]
+        effect = effect or self.current_effect
         
-        ## TODO make application global!
-        mult = 1.96 
-        se = (upper-est)/mult
+        est = cur_ma_unit.effects_dict[effect][group_str]["est"] 
+        lower, upper = cur_ma_unit.effects_dict[effect][group_str]["lower"], \
+                                cur_ma_unit.effects_dict[effect][group_str]["upper"]
+                                
+        se = (upper-est)/MULT
         return (est, se)
         
-    def get_cur_ests_and_SEs(self, only_if_included=True):
+    def get_cur_ests_and_SEs(self, only_if_included=True, effect=None):
         ests, SEs = [], []
+        effect = effect or self.current_effect
         for study_index in range(len(self.dataset.studies)-1):
             if not only_if_included or self.dataset.studies[study_index].include:
-                est, SE = self.cur_point_est_and_SE_for_study(study_index)
+                est, SE = self.cur_point_est_and_SE_for_study(study_index, effect=effect)
                 ests.append(est)
                 SEs.append(SE)
         return (ests, SEs)
