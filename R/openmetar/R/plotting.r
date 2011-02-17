@@ -399,13 +399,16 @@ draw.normal.CI <- function(LL, ES, UL, size) {
 # this can happen when the summary is calculated in a subgroup where there is only one study
 # this should be handled by another "if" that forces the xscale to be determined "primarily" by the CI of the summaries
 # this has to be done in the function above 
-  if (convertX(unit(UL, "native"), "npc", valueOnly=TRUE) > 1  &&  convertX(unit(LL, "native"), "npc", valueOnly=TRUE) > 0){
+  if (convertX(unit(UL, "native"), "npc", valueOnly=TRUE) > 1  &&  convertX(unit(LL, "native"), "npc", valueOnly=TRUE) >= 0){
+    # this line is too long on the right - draw a right arrow from LL to 1 (in approriate coords.) 
     grid.arrows(x=unit(c(LL, 1), c("native", "npc")), length=unit(0.05, "inches"))                 
   }
-  else if (convertX(unit(UL, "native"), "npc", valueOnly=TRUE) < 1  &&  convertX(unit(LL, "native"), "npc", valueOnly=TRUE) < 0){
+  else if (convertX(unit(UL, "native"), "npc", valueOnly=TRUE) <= 1  &&  convertX(unit(LL, "native"), "npc", valueOnly=TRUE) < 0){
+    # this line is too long on the left - draw a left arrow from UL to 0 (in approriate coords.)
     grid.arrows(x=unit(c(UL, 0), c("native", "npc")), length=unit(0.05, "inches"))
   }
   else if (convertX(unit(UL, "native"), "npc", valueOnly=TRUE) > 1   &&  convertX(unit(LL, "native"), "npc", valueOnly=TRUE) < 0 ){
+    # this line is too long on both sides - draw a left arrow from ES to 0 and a right arrow from ES to 1 (in approriate coords.)
     grid.arrows(x=unit(c(ES, 0), c("native", "npc")), length=unit(0.05, "inches")) 
     grid.arrows(x=unit(c(ES, 1), c("native", "npc")), length=unit(0.05, "inches"))              
   }
@@ -417,6 +420,7 @@ draw.normal.CI <- function(LL, ES, UL, size) {
                              "native", valueOnly=TRUE) < LL))
       "white"
     else
+       # this line is just right said Goldilocks
       "black"
     grid.lines(x=unit(c(LL, UL), "native"), y=0.5,
                gp=gpar(col=line.col))
@@ -430,7 +434,7 @@ draw.summary.CI <- function(LL, ES, UL, size, color, diam.height) {
                y=unit(0.5 + c(0, 0.25*diam.height*size, 0, -0.25*diam.height*size), "npc"), gp=gpar(fill=color))
 }
 
-# Function to draw a "forest" column
+# Function to draw the forest plot graphs
 draw.data.col <- function(forest.data, col, j, color.overall = "black",
                           color.subgroup = "black", summary.line.col = "darkred",
                           summary.line.pat = "dashed",
@@ -441,7 +445,8 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
   
 # This is the "null" line
 # "ifs" left in as we will possibly expand this when new metrics become available
-# note that the line is to be supressed when out of xscale bounds
+# note that if the line extends outside the xscale bounds, it will be 
+# truncated and replaced with a left or right arrow (or both).
   if (forest.data$scale == "log" && min(col$range)<0 && max(col$range)>0 ) {
       grid.lines(x=unit(0, "native"), y=0:1)
   }
@@ -499,7 +504,7 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
   popViewport()
   for (i in 1:length(col$rows)) {
     pushViewport(viewport(layout.pos.row=col$rows[i], layout.pos.col=j,
-                          xscale=col$range))
+                          xscale=col$range))   
     if (col$types[i] == 0){
        draw.normal.CI(col$LL[i], col$ES[i], col$UL[i], col$sizes[i])
     }
@@ -675,12 +680,7 @@ diagnostic.sroc.plot <- function(plot.data, outpath,
                                   lpatern = "dotted",
                                   plotregion = "n",
                                   mcolor = "darkgreen") {
-
-
-    # make the data data.frame
-    #data.reg <- data.frame(plot.data$effects, types = plot.data$types)
-    # data for plot (only keep the studies - not the summaries)
-    #data.reg <- subset(data.reg, types==0)
+ 
     fitted.line <- plot.data$fitted.line
     weighted <- plot.data$weighted
     TPR <- plot.data$TPR
