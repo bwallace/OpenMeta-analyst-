@@ -281,7 +281,6 @@ additional.columns <- function(forest.data, font = "bold") {
     additional.columns
 }
 
-
 effectsize.column <- function(forest.data) {
     
     rows<-c(1, rep(NA, (length(forest.data$label)-1) ) )
@@ -420,7 +419,7 @@ draw.normal.CI <- function(LL, ES, UL, size) {
                              "native", valueOnly=TRUE) < LL))
       "white"
     else
-       # this line is just right said Goldilocks
+       # this line is just right - Goldilocks
       "black"
     grid.lines(x=unit(c(LL, UL), "native"), y=0.5,
                gp=gpar(col=line.col))
@@ -530,6 +529,7 @@ forest.plot <- function(forest.data, outpath){
     } 
     
     effects.col <- effectsize.column(forest.data)
+    # return the LL, ES, and UL in calc scale
     forest.plot.params <- plot.options(forest.data, box.sca=0.8, gapSize = 3.2, plotWidth=5)
 
     # these are calls to plotting functions
@@ -586,7 +586,14 @@ forest.plot <- function(forest.data, outpath){
     # not really 'plot parameters'. they should be computed
     # elsewhere.
     effects.col$range <- forest.plot.params$effect.col.range
+    # this is a heuristic computed from the true ranges of the confidence intervals - 
+    # used by draw.data.col to draw the x-axis and tick marks 
     effects.col$sizes <- forest.plot.params$effect.col.sizes
+    # normalized widths of the confidence intervals - used by draw.data.col and draw.normal.ci to 
+    # determine whether to draw an entire confidence interval, or, for very wide intervals, to truncate
+    # the interval on the left or right, and display left or right arrows instead of the entire interval.
+    # TO DO: Create a set of test data to see if the heuristics are producing reasonable graphs -
+    # i.e. not truncating too much or too little.
     effects.col$width <- forest.plot.params$effect.col.width
 
     xticks <- forest.data$fp_xticks
