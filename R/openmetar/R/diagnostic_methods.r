@@ -134,9 +134,15 @@ diagnostic.transform.f <- function(metric.str){
 get.res.for.one.diag.study <- function(diagnostic.data, params){
     # this method can be called when there is only one study to 
     # get the point estimate and lower/upper bounds.
-    if (is.na(diagnostic.data@y)){
-        diagnostic.data <- compute.diagnostic.point.estimates(diagnostic.data, params)
-    }
+    
+    ######
+    ## bcw -- 2/17/11 -- Paul, please don't change this back to checking
+    ## if it's NA; we want to recompute the data here regardless, and
+    ## the program will throwup on this check if the y estimate doesn't
+    ## exist on the object.
+    #####
+    diagnostic.data <- compute.diag.point.estimates(diagnostic.data, params)
+    
     y <- diagnostic.data@y
     se <- diagnostic.data@SE
 

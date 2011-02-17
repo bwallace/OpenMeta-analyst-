@@ -12,6 +12,9 @@
 # number of digits to display
 NUM_DIGITS = 3
 
+# for calculating CIs (normal 95% CI)
+MULT = 1.96
+
 # completely made up. need an actual versioning system.
 VERSION = .005 
 
@@ -55,5 +58,5 @@ VANILLA, NETWORK = range(2)
 
 EMPTY_VALS = ("", None) # these indicate an empty row/cell 
 
-# this is useful sometimes.
+# this is a useful function sometimes.
 none_to_str = lambda x: "" if x is None else x

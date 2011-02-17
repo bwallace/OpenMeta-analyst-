@@ -337,6 +337,79 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
     return r_str
 
 
+def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj"):
+    '''
+    This converts a DatasetModel to an OpenMetaData (OMData) R object. We use type DatasetModel
+    rather than a DataSet model directly to access the current variables. Furthermore, this allows
+    us to check which studies (if any) were excluded by the user.
+    '''
+    r_str = None
+    
+    # grab the study names. note: the list is pulled out in reverse order from the 
+    # model, so we, er, reverse it.
+    studies = table_model.get_studies(only_if_included=True)
+    study_names = ", ".join(["'" + study.name + "'" for study in studies])
+    # I'm still uncomfortable that we do this.
+    studies.reverse()
+
+    sens_ests, sens_SEs = table_model.get_cur_ests_and_SEs(only_if_included=True, effect="Sens")
+    sens_ests_str = ", ".join(_to_strs(sens_ests))
+    sens_SEs_str = ", ".join(_to_strs(sens_SEs))
+                
+    # generate the covariate string
+    cov_str = gen_cov_str(table_model.dataset, studies)
+    
+    # first try and construct an object with raw data
+    if table_model.included_studies_have_raw_data():
+        print "ok; raw data has been entered for all included studies"
+        
+        # now figure out the raw data
+        raw_data = table_model.get_cur_raw_data()
+        
+        pyqtRemoveInputHook()
+        pdb.set_trace() 
+        
+        
+        g1_events = _get_col(raw_data, 0)
+        
+        g1O1_str = ", ".join(_to_strs(g1_events))
+        g1_totals = _get_col(raw_data, 1)
+        
+        g1O2 = [(total_i-event_i) for total_i, event_i in zip(g1_totals, g1_events)]
+        g1O2_str = ", ".join(_to_strs(g1O2))
+    
+        # now, for group 2
+        g2_events = _get_col(raw_data, 2)
+        
+        g2O1_str = ", ".join(_to_strs(g2_events))
+        g2_totals = _get_col(raw_data, 3)
+        
+        g2O2 = [(total_i-event_i) for total_i, event_i in zip(g2_totals, g2_events)]
+        g2O2_str = ", ".join(_to_strs(g2O2))
+                
+        # actually creating a new object on the R side seems the path of least resistance here.
+        # the alternative would be to try and create a representation of the R object on the 
+        # python side, but this would require more work and I'm not sure what the benefits
+        # would be
+        r_str = "%s <- new('BinaryData', g1O1=c(%s), g1O2=c(%s), g2O1=c(%s), g2O2=c(%s), \
+                            y=c(%s), SE=c(%s), study.names=c(%s), covariates=%s)" % \
+                            (var_name, g1O1_str, g1O2_str, g2O1_str, g2O2_str, \
+                             ests_str, SEs_str, study_names, cov_str)
+        
+    elif table_model.included_studies_have_point_estimates():
+        print "not sufficient raw data, but studies have point estimates..."
+
+        r_str = "%s <- new('BinaryData', y=c(%s), SE=c(%s), study.names=c(%s),  covariates=%s)" \
+                            % (var_name, ests_str, SEs_str, study_names, cov_str)
+                            
+    else:
+        print "there is neither sufficient raw data nor entered effects/CIs. I cannot run an analysis."
+        # @TODO complain to the user here
+    print "executing: %s" % r_str
+    ro.r(r_str)
+    print "ok."
+    return r_str
+    
 def gen_cov_str(dataset, studies):
     # add covariates, if any
     cov_str = "list("
@@ -393,7 +466,15 @@ def run_binary_ma(function_name, params, res_name="result", bin_data_name="tmp_o
     ro.r(r_str)
     result = ro.r("%s" % res_name)
     return parse_out_results(result)
-           
+       
+def run_diagnostic_ma(function_name, params, res_name="result", diag_data_name="tmp_obj"):
+    params_df = ro.r['data.frame'](**params)
+    r_str = "%s<-%s(%s, %s)" % (res_name, function_name, diag_data_name, params_df.r_repr())
+    print "\n\n(run_diagnostic_ma): executing:\n %s\n" % r_str
+    ro.r(r_str)
+    result = ro.r("%s" % res_name)
+    return parse_out_results(result)
+        
 def parse_out_results(result):
     # parse out text field(s). note that "plot names" is 'reserved', i.e., it's
     # a special field which is assumed to contain the plot variable names
