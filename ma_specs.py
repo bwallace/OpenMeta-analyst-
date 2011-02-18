@@ -77,7 +77,16 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         # also add the metric to the parameters
         # -- this is for scaling
         
-        self.current_param_vals["measure"] = self.model.current_effect
+        if not self.data_type == "diagnostic":
+            self.current_param_vals["measure"] = self.model.current_effect
+        else:
+            ####
+            # TODO temporarily setting the measure to sensitivity
+            # for diagnostic data. We need a better way of handling
+            # this. Should we just run analyses for sens/spec by default
+            # for diagnostic data?
+            #####
+            self.current_param_vals["measure"] = "Sens"  
         
         # dispatch on type; build an R object, then run the analysis
         if self.data_type == "binary":
@@ -97,7 +106,12 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             else:
                 # get meta!
                 result = meta_py_r.run_meta_method(self.meta_f_str, self.current_method, self.current_param_vals)
-            
+        elif self.data_type == "diagnostic":
+            meta_py_r.ma_dataset_to_simple_diagnostic_robj(self.model)
+            if self.meta_f_str is None:
+                result = meta_py_r.run_diagnostic_ma(self.current_method, self.current_param_vals)
+            else:
+                pass
         self.parent().analysis(result)
         self.accept()
     

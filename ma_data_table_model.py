@@ -937,11 +937,12 @@ class DatasetModel(QAbstractTableModel):
         return True
 
 
-    def study_has_point_est(self, study_index):
+    def study_has_point_est(self, study_index, effect=None):
         group_str = self.get_cur_group_str()
+        effect = effect or self.current_effect
         cur_ma_unit = self.get_current_ma_unit_for_study(study_index)
         for x in ("est", "lower", "upper"):
-            if cur_ma_unit.effects_dict[self.current_effect][group_str][x] is None:
+            if cur_ma_unit.effects_dict[effect][group_str][x] is None:
                 print "study %s does not have a point estimate" % study_index
                 return False
         return "ok -- has all point estimates"
@@ -969,14 +970,15 @@ class DatasetModel(QAbstractTableModel):
                 SEs.append(SE)
         return (ests, SEs)
         
-    def included_studies_have_point_estimates(self):
+    def included_studies_have_point_estimates(self, effect=None):
         ''' 
         True iff all included studies have all point estiamtes (and CIs) for the
-        selected outcome and tx groups.
+        the 'effect' outcome and currently displayed tx groups. (If effect is None,
+        this sets the 'effect' to the currently selected effect).
         '''
         for study_index in range(len(self.dataset.studies)-1):
             if self.dataset.studies[study_index].include:
-                if not self.study_has_point_est(study_index):
+                if not self.study_has_point_est(study_index, effect=effect):
                     return False
         return True    
         
