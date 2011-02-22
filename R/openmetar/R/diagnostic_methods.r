@@ -13,7 +13,7 @@ diagnostic.logit.metrics <- c("Sens", "Spec", "PPV", "NPV", "Acc")
 diagnostic.log.metrics <- c("PLR", "NLR", "DOR")
 
 adjust.raw.data <- function(diagnostic.data, params) {
-    # adjust raw data by adding a constant to each entry
+    # adjust raw data by adding a constant to each entry   
     TP <- diagnostic.data@TP
     FN <- diagnostic.data@FN  
     TN <- diagnostic.data@TN 
@@ -39,13 +39,38 @@ adjust.raw.data <- function(diagnostic.data, params) {
 compute.diag.point.estimates <- function(diagnostic.data, params) {
     # Computes point estimates based on raw data and adds them to diagnostic.data
     data.adj <- adjust.raw.data(diagnostic.data, params)
+    terms <- compute.diagnostic.terms(data=data.adj, params)
     metric <- params$measure    
     TP <- data.adj$TP
     FN <- data.adj$FN  
     TN <- data.adj$TN 
     FP <- data.adj$FP
-        
-    diagnostic.data@numerator <- switch(metric,
+    
+    y <- terms$numerator / terms$denominator
+      
+    diagnostic.data@y <- eval(call("diagnostic.transform.f", params$measure))$calc.scale(y)
+ 
+    diagnostic.data@SE <- switch(metric,
+        Sens <- sqrt((1 / TP) + (1 / FN)), 
+        Spec <- sqrt((1 / TN) + (1 / FP)),
+        PPV <- sqrt((1 / TP) + (1 / FP)),
+        NPV <- sqrt((1 / TN) + (1 / FN)),
+        Acc <- sqrt((1 / (TP + TN)) + (1 / (FP + FN))),
+        PLR <- sqrt((1 / TP) - (1 / (TP + FN)) + (1 / FP) - (1 / (TN + FP))),
+        NLR <- sqrt((1 / TP) - (1 / (TP + FN)) + (1 / FP) - (1 / (TN + FP))),
+        DOR <- sqrt((1 / TP) + (1 / FN) + (1 / FP) + (1 / TN)))
+
+    diagnostic.data
+}
+
+compute.diagnostic.terms <- function(data, params) { 
+    # compute numerator and denominator of diagnostic point estimate.
+    metric <- params$measure
+    TP <- data$TP
+    FN <- data$FN  
+    TN <- data$TN 
+    FP <- data$FP
+    numerator <- switch(metric,
         # sensitivity
         Sens = TP, 
         # specificity
@@ -63,7 +88,7 @@ compute.diag.point.estimates <- function(diagnostic.data, params) {
         # diagnostic odds ratio
         DOR = TP * TN)
         
-    diagnostic.data@denominator <- switch(metric,
+    denominator <- switch(metric,
         # sensitivity
         Sens = TP + FN, 
         # specificity
@@ -79,23 +104,9 @@ compute.diag.point.estimates <- function(diagnostic.data, params) {
         # negative likelihood ratio
         NLR = TN / (TN + FP),
         # diagnostic odds ratio
-        DOR = FP * FN)    
-    
-    y <- diagnostic.data@numerator / diagnostic.data@denominator
-      
-    diagnostic.data@y <- eval(call("diagnostic.transform.f", params$measure))$calc.scale(y)
- 
-    diagnostic.data@SE <- switch(metric,
-        Sens <- sqrt((1 / TP) + (1 / FN)), 
-        Spec <- sqrt((1 / TN) + (1 / FP)),
-        PPV <- sqrt((1 / TP) + (1 / FP)),
-        NPV <- sqrt((1 / TN) + (1 / FN)),
-        Acc <- sqrt((1 / (TP + TN)) + (1 / (FP + FN))),
-        PLR <- sqrt((1 / TP) - (1 / (TP + FN)) + (1 / FP) - (1 / (TN + FP))),
-        NLR <- sqrt((1 / TP) - (1 / (TP + FN)) + (1 / FP) - (1 / (TN + FP))),
-        DOR <- sqrt((1 / TP) + (1 / FN) + (1 / FP) + (1 / TN)))
+        DOR = FP * FN)  
 
-    diagnostic.data
+    list("numerator"=numerator, "denominator"=denominator)      
 }
 
 diagnostic.transform.f <- function(metric.str){

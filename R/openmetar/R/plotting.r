@@ -21,6 +21,8 @@ library("grid")
 #####################################################
 
 create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
+    # Creates a data structure that can be passed to forest.plot
+    # res is the output of a call to the Metafor function rma
     scale.str <- "cont"
     if (metric.is.log.scale(params$measure)){
         scale.str <- "log" 
@@ -35,9 +37,18 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
         transform.name <- "binary.transform.f"
     }
 
-    # Creates a data structure that can be passed to forest.plot
-    # res is the output of a call to the Metafor function rma
-    plot.options <- list(show.summary.line = params$fp_show_summary_line)
+    display.lb <- NULL
+    if (!is.null(params$fp_display.lb)) {
+        display.lb <- eval(call(transform.name, params$measure))$calc.scale(params$fp_display.lb)
+    }
+    display.ub <- NULL
+    if (!is.null(params$fp_display.ub)) {
+        display.ub <- eval(call(transform.name, params$measure))$calc.scale(params$fp_display.ub)
+    }
+    
+    plot.options <- list(show.summary.line = params$fp_show_summary_line,
+                         display.lb = display.lb,
+                         display.ub = display.ub)
     # plot options passed in via params
     plot.data <- list(label = c(paste(params$fp_col1_str, sep = ""), om.data@study.names, "Overall"),
                     types = c(3, rep(0, length(om.data@study.names)), 2),
@@ -118,6 +129,8 @@ create.plot.data.diagnostic <- function(diagnostic.data, params, res, selected.c
         
     # if we have raw data, add it to the additional columns field
     if ((length(diagnostic.data@TP) > 0) && (params$fp_show_col3=="TRUE")) {
+        data <- list("TP"=diagnostic.data@TP, "FN"=diagnostic.data@FN, "TN"=diagnostic.data@TN, "FP"=diagnostic.data@FP)
+        terms <- compute.diagnostic.terms(data, params)
         metric <- params$measure
         label <- switch(metric,
         # sensitivity
@@ -136,8 +149,7 @@ create.plot.data.diagnostic <- function(diagnostic.data, params, res, selected.c
         NLR = "(1-Sens)/Spec",
         # diagnostic odds ratio
         DOR = "(TP * TN)/(FP * FN)")
-        
-        data.col <- format.raw.data.col(nums = diagnostic.data@numerator, denoms = diagnostic.data@denominator, label = label) 
+        data.col <- format.raw.data.col(nums = terms$numerator, denoms = terms$denominator, label = label) 
         plot.data$additional.col.data$cases = data.col
     }
     plot.data
@@ -255,10 +267,10 @@ additional.columns <- function(forest.data, font = "bold") {
         for (i in 1:length(forest.data$label)){
           if (forest.data$types[i] != 0)
             content[i] <- list(textGrob(forest.data$additional.col.data[[j]][[i]], 
-                      x=1, just = "right", gp = gpar(fontface = font, fontfamily="mono")))
+                      x=1, just = "right", gp = gpar(fontface = font, fontfamily="mono", fontsize="10")))
           else
             content[i] <- list(textGrob(forest.data$additional.col.data[[j]][[i]], 
-                      x=1, just = "right", gp = gpar(fontface = "plain", fontfamily="mono")))
+                      x=1, just = "right", gp = gpar(fontface = "plain", fontfamily="mono", fontsize="10")))
         }
         
         rows<-c(1, rep(NA, (length(forest.data$label)-1)))
@@ -322,38 +334,31 @@ plot.options <- function(forest.data, box.sca = 1, gapSize=3, plotWidth = 4) {
           precision <- sqrt(1 / ((effect.col$UL - effect.col$LL)/(2*1.96)))
     }
       
-   if (forest.data$scale != "diagnostic") { 
-   # some heuristics to determine xscale (unnecessary for diagnostic data) 
-        if (min(effect.col$LL)>0 && max(effect.col$UL)>0) {
-                effect.col.range <- c(max(0.5*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
-        } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)<=0) { 
-                effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(-1.5*max(effect.col$ES) , max(effect.col$UL)))
-        } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)>0) { 
-                effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
-        } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)>0 && max(effect.col$ES)>0) { 
-                effect.col.range <- c(max(-2*min(effect.col$ES) , min(effect.col$LL)), min(1.5*max(effect.col$ES) , max(effect.col$UL)))
-        } else if (min(effect.col$LL)<=0 && max(effect.col$UL)<0) { 
-                effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(0.10*max(effect.col$ES) , max(effect.col$UL)))
-        }                                       
+   # some heuristics to determine xscale
+   if (min(effect.col$LL)>0 && max(effect.col$UL)>0) {
+      effect.col.range <- c(max(0.5*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
+   } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)<=0) { 
+      effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(-1.5*max(effect.col$ES) , max(effect.col$UL)))
+   } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)>0) { 
+      effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
+   } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)>0 && max(effect.col$ES)>0) { 
+      effect.col.range <- c(max(-2*min(effect.col$ES) , min(effect.col$LL)), min(1.5*max(effect.col$ES) , max(effect.col$UL)))
+   } else if (min(effect.col$LL)<=0 && max(effect.col$UL)<0) { 
+      effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(0.10*max(effect.col$ES) , max(effect.col$UL)))
+   }                                       
    
-        # this is an ugly solution to an uncommon problem 
-        x <- forest.data$types[-1]
-        if (any(x > 0)) {
-            # at least one type is not 0
-            merge.data <- data.frame(x = x, y = effect.col$LL, z = effect.col$UL)
-            merge.data <- subset(merge.data, x>0)                                  
-            if (min(effect.col.range) >= min(merge.data$y)) 
-              effect.col.range[1] <- min(merge.data$y)
-            if (max(effect.col.range) <= max(merge.data$z)) 
-              effect.col.range[2] <- max(merge.data$z)
-        }
+   # this is an ugly solution to an uncommon problem 
+   x <- forest.data$types[-1]
+   if (any(x > 0)) {
+      # at least one type is not 0
+      merge.data <- data.frame(x = x, y = effect.col$LL, z = effect.col$UL)
+      merge.data <- subset(merge.data, x>0)                                  
+      if (min(effect.col.range) >= min(merge.data$y)) 
+          effect.col.range[1] <- min(merge.data$y)
+      if (max(effect.col.range) <= max(merge.data$z)) 
+          effect.col.range[2] <- max(merge.data$z)
    }
-     
-   else {
-   # if data is diagnostic, effect.col.range is [0, 1]
-      effect.col.range <- c(0, 1)
-   }    
-            
+  
    effect.col.sizes <- box.sca * precision/max(precision)
    effect.col.width <- unit(plotWidth, "inches")
 
@@ -438,7 +443,7 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
                           color.subgroup = "black", summary.line.col = "darkred",
                           summary.line.pat = "dashed",
                           metric = "Effect size", diam.size=1,
-                          user.ticks = NULL) {
+                          user.ticks) {
                           
   pushViewport(viewport(layout.pos.col=j, xscale=col$range))
   
@@ -478,8 +483,8 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
             ticks <- exp(log.ticks)
         } else {
 		        log.ticks <- log(user.ticks)
-		        #log.ticks <- log.ticks[log.ticks > min(col$range) - 0.5]    # remember it is additive on this scale
-            #log.ticks <- log.ticks[log.ticks < max(col$range) + 0.5]
+		        log.ticks <- log.ticks[log.ticks > min(col$range) - 0.5]    # remember it is additive on this scale
+            log.ticks <- log.ticks[log.ticks < max(col$range) + 0.5]
             ticks <- exp(log.ticks)
         }
         
@@ -491,8 +496,8 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
             ticks <- invlogit(logit.ticks)
         } else {
 		        logit.ticks <- logit(user.ticks)
-		        #log.ticks <- log.ticks[log.ticks > min(col$range) - 0.5]    # remember it is additive on this scale
-            #log.ticks <- log.ticks[log.ticks < max(col$range) + 0.5]
+		        log.ticks <- log.ticks[log.ticks > min(col$range) - 0.5]    # remember it is additive on this scale
+            log.ticks <- log.ticks[log.ticks < max(col$range) + 0.5]
             ticks <- invlogit(logit.ticks)
         }
         
@@ -586,24 +591,27 @@ forest.plot <- function(forest.data, outpath){
     # not really 'plot parameters'. they should be computed
     # elsewhere.
     effects.col$range <- forest.plot.params$effect.col.range
-    # this is a heuristic computed from the true ranges of the confidence intervals - 
-    # used by draw.data.col to draw the x-axis and tick marks 
+    # effects.col$range is a heuristic computed from the true of the confidence intervals - 
+    # used to set the default range of the displayed portions of the CI. If a CI
+    # exceeds the range on the left or right, it is truncated and a left or right arrow is displayed.
     effects.col$sizes <- forest.plot.params$effect.col.sizes
-    # normalized widths of the confidence intervals - used by draw.data.col and draw.normal.ci to 
-    # determine whether to draw an entire confidence interval, or, for very wide intervals, to truncate
-    # the interval on the left or right, and display left or right arrows instead of the entire interval.
-    # TO DO: Create a set of test data to see if the heuristics are producing reasonable graphs -
-    # i.e. not truncating too much or too little.
+    
+    
     effects.col$width <- forest.plot.params$effect.col.width
-
-    xticks <- forest.data$fp_xticks
+    # normalized widths of the confidence intervals 
+    
+    if (!is.null(forest.data$options$display.lb)) {
+        # if the user specifies a lower bound for the display range, use it instead of the default
+        effects.col$range[1] <-forest.data$options$display.lb
+    } 
+    
+    if (!is.null(forest.data$options$display.ub)) {
+        # if the user specifies an upper bound for the display range, use it instead of the default
+        effects.col$range[2] <-forest.data$options$display.ub
+    } 
+    xticks <- forest.data$options$fp_xticks
     if (!is.null(xticks)) {
-        if (xticks == "NULL"){
-            xticks <- NULL
-        }
-        else{
-            xticks <- eval(parse(text=paste("c(", xticks, ")", sep="")))
-        }
+       xticks <- eval(parse(text=paste("c(", xticks, ")", sep="")))
     }
     effect.size.str <- c(paste(forest.data$fp_xlabel, sep=""))
   
@@ -737,11 +745,7 @@ format.effect.size.col <- function(y, lb, ub, params) {
         if (length(ub.display[ub.display >= 0])) {
             ub.display[ub.display >= 0] <- mapply(pad.with.spaces, ub.display[ub.display >= 0], begin.num=1, end.num=0)
         }
-       # if ub havs any negative entries, add an extra space to separate entry from preceding ","
-        if (min(ub) < 0) {
-            ub.display <- paste(" ", ub.display, sep="")
-        }
-                
+
         # format results by padding with spaces to align columns 
         ub.max.chars <- max(nchar(ub.display))
         ub.extra.space <- ub.max.chars - nchar(ub.display)
