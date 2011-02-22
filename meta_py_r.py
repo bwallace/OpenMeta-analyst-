@@ -363,44 +363,35 @@ def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj"):
     if table_model.included_studies_have_raw_data():
         print "ok; raw data has been entered for all included studies"
         
-        # now figure out the raw data
+        # grab the raw data; the order is 
+        # tp, fn, fp, tn
         raw_data = table_model.get_cur_raw_data()
-        
-        pyqtRemoveInputHook()
-        pdb.set_trace() 
-        
-        
-        g1_events = _get_col(raw_data, 0)
-        
-        g1O1_str = ", ".join(_to_strs(g1_events))
-        g1_totals = _get_col(raw_data, 1)
-        
-        g1O2 = [(total_i-event_i) for total_i, event_i in zip(g1_totals, g1_events)]
-        g1O2_str = ", ".join(_to_strs(g1O2))
     
-        # now, for group 2
-        g2_events = _get_col(raw_data, 2)
+        ### assembling TP, FP, TN and FN strings ...
+        tps_str = ", ".join(_to_strs(_get_col(raw_data, 0)))
+        fps_str = ", ".join(_to_strs(_get_col(raw_data, 1)))
+        tns_str = ", ".join(_to_strs(_get_col(raw_data, 2)))
+        fns_str = ", ".join(_to_strs(_get_col(raw_data, 3)))
         
-        g2O1_str = ", ".join(_to_strs(g2_events))
-        g2_totals = _get_col(raw_data, 3)
-        
-        g2O2 = [(total_i-event_i) for total_i, event_i in zip(g2_totals, g2_events)]
-        g2O2_str = ", ".join(_to_strs(g2O2))
-                
+        ####  paramst to diagnostic data constructor
+        #representation(TP="numeric", FN="numeric", TN="numeric", FP="numeric", 
+        #       numerator="numeric", denominator="numeric", y="numeric", SE="numeric",
+        #       g1.name="character"
+               
         # actually creating a new object on the R side seems the path of least resistance here.
         # the alternative would be to try and create a representation of the R object on the 
         # python side, but this would require more work and I'm not sure what the benefits
         # would be
-        r_str = "%s <- new('BinaryData', g1O1=c(%s), g1O2=c(%s), g2O1=c(%s), g2O2=c(%s), \
+        r_str = "%s <- new('DiagnosticData', TP=c(%s), FN=c(%s), TN=c(%s), FP=c(%s), \
                             y=c(%s), SE=c(%s), study.names=c(%s), covariates=%s)" % \
-                            (var_name, g1O1_str, g1O2_str, g2O1_str, g2O2_str, \
-                             ests_str, SEs_str, study_names, cov_str)
+                            (var_name, tps_str, fns_str, tns_str, fps_str, \
+                             sens_ests_str, sens_SEs_str, study_names, cov_str)
         
-    elif table_model.included_studies_have_point_estimates():
+    elif table_model.included_studies_have_point_estimates(effect="Sens"):
         print "not sufficient raw data, but studies have point estimates..."
 
-        r_str = "%s <- new('BinaryData', y=c(%s), SE=c(%s), study.names=c(%s),  covariates=%s)" \
-                            % (var_name, ests_str, SEs_str, study_names, cov_str)
+        r_str = "%s <- new('DiagnosticData', y=c(%s), SE=c(%s), study.names=c(%s),  covariates=%s)" \
+                            % (var_name, sens_ests_str, sens_SEs_str, study_names, cov_str)
                             
     else:
         print "there is neither sufficient raw data nor entered effects/CIs. I cannot run an analysis."
@@ -610,10 +601,6 @@ def diagnostic_effects_for_study(tp, fn, fp, tn, metrics=["Sens", "Spec"]):
     for metric in metrics:
         params = {"to":"all", "adjust":.5, "measure":metric, "conf.level":95}
         params_df = ro.r['data.frame'](**params)
-        
-        # now compute effects
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
 
         r_res = ro.r("get.res.for.one.diag.study(diag.tmp, %s)" % params_df.r_repr())
         # calc scale
