@@ -24,17 +24,19 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     # Creates a data structure that can be passed to forest.plot
     # res is the output of a call to the Metafor function rma
     scale.str <- "cont"
+    transform.name <- "cont.transform.f"
+    data.type <- "continuous"
     if (metric.is.log.scale(params$measure)){
         scale.str <- "log" 
-    }
-    if (metric.is.logit.scale(params$measure)){
-        scale.str <- "logit"
+    } else if (metric.is.logit.scale(params$measure)){
+        scale.str <- "logit" 
     }
     if ("DiagnosticData" %in% class(om.data)) {
         transform.name <- "diagnostic.transform.f"
-    }  else {
-        # data is binary or cont
+        data.type <- "diagnostic"
+    }  else if ("BinaryData" %in% class(om.data)) {
         transform.name <- "binary.transform.f"
+        data.type <- "binary"
     }
 
     display.lb <- NULL
@@ -52,7 +54,8 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     # plot options passed in via params
     plot.data <- list(label = c(paste(params$fp_col1_str, sep = ""), om.data@study.names, "Overall"),
                     types = c(3, rep(0, length(om.data@study.names)), 2),
-                    scale = scale.str, 
+                    scale = scale.str,
+                    data.type = data.type, 
                     options = plot.options)
     alpha <- 1.0-(params$conf.level/100.0)
     mult <- abs(qnorm(alpha/2.0))
@@ -64,7 +67,7 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     # about the subclass of OmData; namely
     # that it includes a y and SE field.
     #
-    # put results in display scale and round.
+    ###
     y <- om.data@y
     lb <- y - mult*om.data@SE
     ub <- y + mult*om.data@SE
@@ -73,17 +76,27 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     lb <- c(lb, lb.overall)
     ub <- c(ub, ub.overall)
     
+    # transform entries to display scale
+    y.disp <- eval(call(transform.name, params$measure))$display.scale(y)
+    lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb)
+    ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub)
+    
     if (params$fp_show_col2=='TRUE') {
-        # transform entries to display scale and format
-        y.trans <- eval(call(transform.name, params$measure))$display.scale(y)
-        lb.trans <- eval(call(transform.name, params$measure))$display.scale(lb)
-        ub.trans <- eval(call(transform.name, params$measure))$display.scale(ub)
-        effect.size.col <- format.effect.size.col(y.trans, lb.trans, ub.trans, params)
+        # format entries for display in forest plot        
+        effect.size.col <- format.effect.size.col(y.disp, lb.disp, ub.disp, params)
         plot.data$additional.col.data$es <- effect.size.col
-    } 
-    effects <- list(ES = y,
+    }
+    if ((scale.str == "log") && ("BinaryData" %in% class(om.data)))  {
+        # if metric is log scale and data is binary, pass data in calc scale
+        effects <- list(ES = y,
                     LL = lb,
-                    UL = ub)             
+                    UL = ub) 
+    } else {  
+        # otherwise pass data in display scale   
+        effects <- list(ES = y.disp,
+                    LL = lb.disp,
+                    UL = ub.disp)  
+    }           
     plot.data$effects <- effects
     # covariates
     if (!is.null(selected.cov)){
@@ -473,7 +486,16 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
               grid.xaxis(at = user.ticks , label = user.ticks, gp=gpar(cex=0.6))
         }
   }
-  if (forest.data$scale == "log")  {
+  if (forest.data$data.type == "diagnostic") {
+        if (length(user.ticks) == 0) {
+              from = (floor(10*col$range[1]))/10
+              to = (ceiling(10*col$range[2]))/10
+              grid.xaxis(at = seq(from=from, to=to, by=.1), gp=gpar(cex=0.6))
+        } else {+6
+              grid.xaxis(at = user.ticks , label = user.ticks, gp=gpar(cex=0.6))
+        }
+  }
+  if ((forest.data$scale == "log") && (forest.data$data.type == "binary"))  {
         if (length(user.ticks) == 0) { # some cheap tricks to make the axis ticks look nice (in most cases)...
             to.make.ticks <- range(exp(col$range))
             ticks <- axTicks(1, axp=c(to.make.ticks, 3), usr=c(-100, 100), log=TRUE)
@@ -490,20 +512,7 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
         
         grid.xaxis(at = log.ticks , label = round(ticks, 3), gp=gpar(cex=0.6))          
   } 
-  if (forest.data$scale == "logit") {
-        if (length(user.ticks) == 0) { # some cheap tricks to make the axis ticks look nice (in most cases)...
-            logit.ticks <- floor(col$range[1]):ceiling(col$range[2])
-            ticks <- invlogit(logit.ticks)
-        } else {
-		        logit.ticks <- logit(user.ticks)
-		        log.ticks <- log.ticks[log.ticks > min(col$range) - 0.5]    # remember it is additive on this scale
-            log.ticks <- log.ticks[log.ticks < max(col$range) + 0.5]
-            ticks <- invlogit(logit.ticks)
-        }
-        
-        grid.xaxis(at = logit.ticks , label = round(ticks, 3), gp=gpar(cex=0.6)) 
-  }
-       
+      
   grid.text(metric, y=unit(-2, "lines"))
   popViewport()
   for (i in 1:length(col$rows)) {
@@ -534,7 +543,7 @@ forest.plot <- function(forest.data, outpath){
     } 
     
     effects.col <- effectsize.column(forest.data)
-    # return the LL, ES, and UL in calc scale
+    # return the LL, ES, and UL
     forest.plot.params <- plot.options(forest.data, box.sca=0.8, gapSize = 3.2, plotWidth=5)
 
     # these are calls to plotting functions
@@ -590,15 +599,15 @@ forest.plot <- function(forest.data, outpath){
     # are computed in the plot.params method -- but they're
     # not really 'plot parameters'. they should be computed
     # elsewhere.
+
     effects.col$range <- forest.plot.params$effect.col.range
     # effects.col$range is a heuristic computed from the true of the confidence intervals - 
     # used to set the default range of the displayed portions of the CI. If a CI
     # exceeds the range on the left or right, it is truncated and a left or right arrow is displayed.
     effects.col$sizes <- forest.plot.params$effect.col.sizes
-    
-    
-    effects.col$width <- forest.plot.params$effect.col.width
     # normalized widths of the confidence intervals 
+    effects.col$width <- forest.plot.params$effect.col.width
+    # effects column width in inches
     
     if (!is.null(forest.data$options$display.lb)) {
         # if the user specifies a lower bound for the display range, use it instead of the default
