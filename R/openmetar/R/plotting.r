@@ -146,21 +146,21 @@ create.plot.data.diagnostic <- function(diagnostic.data, params, res, selected.c
         metric <- params$measure
         label <- switch(metric,
         # sensitivity
-        Sens = "TP/Di+", 
+        Sens = "TP / Di+", 
         # specificity
-        Spec = "TN/D-",
+        Spec = "TN / D-",
         # pos. predictive value
-        PPV =  "TP/T+",
+        PPV =  "TP / T+",
         #neg. predictive value
-        NPV =  "TN/T-",
+        NPV =  "TN / T-",
         # accuracy
-        Acc = "(TP + TN)/Tot",
+        Acc = "TP + TN / Tot",
         # positive likelihood ratio
-        PLR = "Sens/(1-Spec)", 
+        PLR = "TP * Di- / FP * Di+", 
         # negative likelihood ratio
-        NLR = "(1-Sens)/Spec",
+        NLR = "FN * Di- / TN * Di+",
         # diagnostic odds ratio
-        DOR = "(TP * TN)/(FP * FN)")
+        DOR = "TP * TN / FP * FN")
         data.col <- format.raw.data.col(nums = terms$numerator, denoms = terms$denominator, label = label) 
         plot.data$additional.col.data$cases = data.col
     }

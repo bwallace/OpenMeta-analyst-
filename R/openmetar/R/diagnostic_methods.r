@@ -82,9 +82,9 @@ compute.diagnostic.terms <- function(raw.data, params) {
         # accuracy
         Acc = TP + TN,
         # positive likelihood ratio
-        PLR = TP / (TP + FN), 
+        PLR = TP * (TN + FP), 
         # negative likelihood ratio
-        NLR = FN / (TP + FN),
+        NLR = FN * (TN + FP),
         # diagnostic odds ratio
         DOR = TP * TN)
         
@@ -100,9 +100,9 @@ compute.diagnostic.terms <- function(raw.data, params) {
         # accuracy
         Acc = TP + TN + FP + FN,
         # positive likelihood ratio
-        PLR = FP / (TN + FP), 
+        PLR = FP * (TP + FN), 
         # negative likelihood ratio
-        NLR = TN / (TN + FP),
+        NLR = TN * (TP + FN),
         # diagnostic odds ratio
         DOR = FP * FN)  
 
