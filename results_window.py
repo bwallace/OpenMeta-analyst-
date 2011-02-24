@@ -1,3 +1,14 @@
+#############################################
+#                                           #
+#  Byron C. Wallace                         #
+#  Tufts Medical Center                     #
+#  OpenMeta[analyst]                        #
+#                                           #
+#  This is the component responsible        #
+#  for rendering MA results.                #
+#                                           #
+#############################################
+
 import random
 from PyQt4.Qt import *
 import pdb
@@ -46,7 +57,8 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         self.graphics_view.setScene(self.scene)
 
         self.images = results["images"]
-        print self.images
+        print "images returned from analytic routine: %s" % self.images
+        
         self.image_var_names = results["image_var_names"]
         self.set_psuedo_console_text()
         self.items_to_coords = {}

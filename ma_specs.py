@@ -8,6 +8,10 @@
 #  that handles the method selection        #
 #  and algorithm specifications             #
 #                                           #
+#  This is also where the calls to run      #
+#  meta-analyses originate, via a callback  #
+#  to the go() routine on meta_form.        #
+#                                           #
 #############################################
 
 
@@ -78,15 +82,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         # -- this is for scaling
         
         if not self.data_type == "diagnostic":
-            self.current_param_vals["measure"] = self.model.current_effect
-        else:
-            ####
-            # TODO temporarily setting the measure to sensitivity
-            # for diagnostic data. We need a better way of handling
-            # this. Should we just run analyses for sens/spec by default
-            # for diagnostic data?
-            #####
-            self.current_param_vals["measure"] = "Sens"  
+            self.current_param_vals["measure"] = self.model.current_effect 
         
         # dispatch on type; build an R object, then run the analysis
         if self.data_type == "binary":
@@ -109,7 +105,28 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         elif self.data_type == "diagnostic":
             meta_py_r.ma_dataset_to_simple_diagnostic_robj(self.model)
             if self.meta_f_str is None:
-                result = meta_py_r.run_diagnostic_ma(self.current_method, self.current_param_vals)
+                #####
+                # This is somewhat hacky. We are building up a single
+                # dictionary containing resutls for both sens. and spec.
+                # This is constructed by parsing out the results from 
+                # individual runs.
+                #####
+                result = {'images':{}, 'texts':{}, 'image_var_names':{}}
+                for diag_metric in ("Sens", "Spec"):
+                    self.current_param_vals["measure"] = diag_metric
+                    split_fp_path = self.current_param_vals["fp_outpath"].split(".")
+                    new_str = split_fp_path if len(split_fp_path) == 0 else \
+                              ".".join(self.current_param_vals["fp_outpath"].split(".")[:-1])
+                    new_str = new_str + "_%s" % diag_metric + ".png"
+                    self.current_param_vals["fp_outpath"] = new_str
+                    cur_result = meta_py_r.run_diagnostic_ma(self.current_method, self.current_param_vals)
+                    for field in result.keys():
+                        for val in cur_result[field].keys():
+                            result[field]["%s %s" % (diag_metric, val)] = cur_result[field][val]
+                
+                        
+                pyqtRemoveInputHook()
+                pdb.set_trace()
             else:
                 pass
         self.parent().analysis(result)

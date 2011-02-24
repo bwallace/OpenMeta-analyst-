@@ -372,11 +372,6 @@ def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj"):
         fps_str = ", ".join(_to_strs(_get_col(raw_data, 1)))
         tns_str = ", ".join(_to_strs(_get_col(raw_data, 2)))
         fns_str = ", ".join(_to_strs(_get_col(raw_data, 3)))
-        
-        ####  paramst to diagnostic data constructor
-        #representation(TP="numeric", FN="numeric", TN="numeric", FP="numeric", 
-        #       numerator="numeric", denominator="numeric", y="numeric", SE="numeric",
-        #       g1.name="character"
                
         # actually creating a new object on the R side seems the path of least resistance here.
         # the alternative would be to try and create a representation of the R object on the 
