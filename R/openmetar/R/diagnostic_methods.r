@@ -39,7 +39,7 @@ adjust.raw.data <- function(diagnostic.data, params) {
 compute.diag.point.estimates <- function(diagnostic.data, params) {
     # Computes point estimates based on raw data and adds them to diagnostic.data
     data.adj <- adjust.raw.data(diagnostic.data, params)
-    terms <- compute.diagnostic.terms(data=data.adj, params)
+    terms <- compute.diagnostic.terms(raw.data=data.adj, params)
     metric <- params$measure    
     TP <- data.adj$TP
     FN <- data.adj$FN  
@@ -63,13 +63,13 @@ compute.diag.point.estimates <- function(diagnostic.data, params) {
     diagnostic.data
 }
 
-compute.diagnostic.terms <- function(data, params) { 
+compute.diagnostic.terms <- function(raw.data, params) { 
     # compute numerator and denominator of diagnostic point estimate.
     metric <- params$measure
-    TP <- data$TP
-    FN <- data$FN  
-    TN <- data$TN 
-    FP <- data$FP
+    TP <- raw.data$TP
+    FN <- raw.data$FN  
+    TN <- raw.data$TN 
+    FP <- raw.data$FP
     numerator <- switch(metric,
         # sensitivity
         Sens = TP, 
@@ -182,41 +182,46 @@ diagnostic.fixed <- function(diagnostic.data, params){
     # assert that the argument is the correct type
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
     results <- NULL
-    if (diagnostic.data@TP > 0) {
-      diagnostic.data <- compute.diag.point.estimates(diagnostic.data, params)
-    }
-    res<-rma.uni(yi=diagnostic.data@y, sei=diagnostic.data@SE, 
+    if (length(diagnostic.data@TP) == 1 || length(diagnostic.data@y) == 1){
+        res <- get.res.for.one.diag.study(diagnostic.data, params)
+        # Package res for use by overall method.
+        summary.disp <- list("MAResults" = res) 
+        results <- list("Summary"=summary.disp)
+    } else {
+         # call out to the metafor package
+        res<-rma.uni(yi=diagnostic.data@y, sei=diagnostic.data@SE, 
                      slab=diagnostic.data@study.names,
                      method="FE", level=params$conf.level,
                      digits=params$digits)
-    # Create list to display summary of results
-    degf <- res$k - res$p
-    model.title <- "Fixed-Effect Model - Inverse Variance"
-    data.type <- "diagnostic"
-    summary.disp <- create.summary.disp(res, params, degf, model.title, data.type)
-    # function to pretty-print summary of results.
-    if ((is.null(params$create.plot)) || params$create.plot == TRUE) {
-      # A forest plot will be created unless
-      # params.create.plot is set to FALSE.
-      forest.path <- paste(params$fp_outpath, sep="")
-      params$fp_show_summary_line <- TRUE
-      # temporarily hard-coding this param
-      plot.data <- create.plot.data.diagnostic(diagnostic.data, params, res)
-      forest.plot(plot.data, outpath=forest.path)
-      #
-      # Now we package the results in a dictionary (technically, a named
-      # vector). In particular, there are two fields that must be returned;
-      # a dictionary of images (mapping titles to image paths) and a list of texts
-      # (mapping titles to pretty-printed text). In this case we have only one
-      # of each.
-      #
-      images <- c("Forest Plot"=forest.path)
-      plot.names <- c("forest plot"="forest_plot")
-      results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
+         # Create list to display summary of results
+        degf <- res$k - res$p
+        model.title <- "Fixed-Effect Model - Inverse Variance"
+        data.type <- "diagnostic"
+        summary.disp <- create.summary.disp(res, params, degf, model.title, data.type)
+        # function to pretty-print summary of results.
+        if ((is.null(params$create.plot)) || params$create.plot == TRUE) {
+          # A forest plot will be created unless
+          # params.create.plot is set to FALSE.
+          forest.path <- paste(params$fp_outpath, sep="")
+          params$fp_show_summary_line <- TRUE
+          # temporarily hard-coding this param
+          plot.data <- create.plot.data.diagnostic(diagnostic.data, params, res)
+          forest.plot(plot.data, outpath=forest.path)
+          #
+          # Now we package the results in a dictionary (technically, a named
+          # vector). In particular, there are two fields that must be returned;
+          # a dictionary of images (mapping titles to image paths) and a list of texts
+          # (mapping titles to pretty-printed text). In this case we have only one
+          # of each.
+          #
+          images <- c("Forest Plot"=forest.path)
+          plot.names <- c("forest plot"="forest_plot")
+          results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
+        }
+        else {
+            results <- list("Summary"=summary.disp)
+        } 
     }
-    else {
-        results <- list("Summary"=summary.disp)
-    }   
     results
 }
 
@@ -235,6 +240,13 @@ diagnostic.fixed.parameters <- function(){
     parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
 }
 
+diagnostic.fixed.overall <- function(results) {
+    # this parses out the overall from the computed result
+    res <- results$Summary$MAResults
+    overall <- c(res$b[1], res$ci.lb, res$ci.ub)
+    overall
+}
+
 ##################################
 #  diagnostic random effects     #
 ##################################
@@ -243,46 +255,50 @@ diagnostic.random <- function(diagnostic.data, params){
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
     
     results <- NULL
-    if (diagnostic.data@TP > 0) {
-      diagnostic.data <- compute.diag.point.estimates(diagnostic.data, params)
-    }
-    # call out to the metafor package
-    res<-rma.uni(yi=diagnostic.data@y, sei=diagnostic.data@SE, 
+    if (length(diagnostic.data@TP) == 1 || length(diagnostic.data@y) == 1){
+        res <- get.res.for.one.diag.study(diagnostic.data, params)
+        # Package res for use by overall method.
+        summary.disp <- list("MAResults" = res) 
+        results <- list("Summary"=summary.disp)
+    } else {
+        # call out to the metafor package
+        res<-rma.uni(yi=diagnostic.data@y, sei=diagnostic.data@SE, 
                  slab=diagnostic.data@study.names,
                  method=params$rm.method, level=params$conf.level,
                  digits=params$digits)
-    #                        
-    # Create list to display summary of results
-    #
-    degf <- res$k.yi - 1
-    model.title <- paste("Diagnostic Random-Effects Model (k = ", res$k, ")", sep="")
-    data.type <- "diagnostic"
-    summary.disp <- create.summary.disp(res, params, degf, model.title, data.type)
- 
-    #
-    # generate forest plot 
-    #
-    if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
-        forest.path <- paste(params$fp_outpath, sep="")
-        params$fp_show_summary_line <- TRUE
-        # temporarily hard-coding this param
-        plot.data <- create.plot.data.diagnostic(diagnostic.data, params, res)
-        forest.plot(plot.data, outpath=forest.path)
-        
+        #                        
+        # Create list to display summary of results
         #
-        # Now we package the results in a dictionary (technically, a named 
-        # vector). In particular, there are two fields that must be returned; 
-        # a dictionary of images (mapping titles to image paths) and a list of texts
-        # (mapping titles to pretty-printed text). In this case we have only one 
-        # of each. 
-        #     
-        images <- c("Forest Plot"=forest.path)
-        plot.names <- c("forest plot"="forest_plot")
-        results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
-    }
-    else {
-        results <- list("Summary"=summary.disp)
-    }    
+        degf <- res$k.yi - 1
+        model.title <- paste("Diagnostic Random-Effects Model (k = ", res$k, ")", sep="")
+        data.type <- "diagnostic"
+        summary.disp <- create.summary.disp(res, params, degf, model.title, data.type)
+ 
+        #
+        # generate forest plot 
+        #
+        if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
+            forest.path <- paste(params$fp_outpath, sep="")
+            params$fp_show_summary_line <- TRUE
+            # temporarily hard-coding this param
+            plot.data <- create.plot.data.diagnostic(diagnostic.data, params, res)
+            forest.plot(plot.data, outpath=forest.path)
+        
+            #
+            # Now we package the results in a dictionary (technically, a named 
+            # vector). In particular, there are two fields that must be returned; 
+            # a dictionary of images (mapping titles to image paths) and a list of texts
+            # (mapping titles to pretty-printed text). In this case we have only one 
+            # of each. 
+            #     
+            images <- c("Forest Plot"=forest.path)
+            plot.names <- c("forest plot"="forest_plot")
+            results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
+        }
+        else {
+            results <- list("Summary"=summary.disp)
+        } 
+    } 
     results
 }
 

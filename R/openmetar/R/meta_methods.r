@@ -63,10 +63,9 @@ cum.ma.binary <- function(fname, binary.data, params){
     
     cum.disp <- create.overall.display(cum.results.display, study.names, params)
     forest.path <- "./r_tmp/cum_forest.png"
-    addRow1Space <- TRUE
     params$fp_show_summary_line <- TRUE
     # temporarily hard-coding this param
-    plot.data <- create.plot.data.overall(params, cum.results, study.names, addRow1Space)
+    plot.data <- create.plot.data.overall(params, res=cum.results, data.type="binary", study.names, addRow1Space=TRUE)
     forest.plot(plot.data, outpath=forest.path)
 
     # Now we package the results in a dictionary (technically, a named 
@@ -143,11 +142,158 @@ loo.ma.binary <- function(fname, binary.data, params){
     }
     loo.disp <- create.overall.display(loo.results.display, study.names, params)
     forest.path <- "./r_tmp/loo_forest.png"
-    addRow1Space <- FALSE
     params$fp_show_summary_line <- FALSE
     # temporarily hard-coding this param as FALSE because we haven't computed an overall estimate,
     # so there's no value for a summary line. This could be changed.
-    plot.data <- create.plot.data.overall(params, loo.results, study.names, addRow1Space)
+    plot.data <- create.plot.data.overall(params, res=loo.results, data.type="binary", study.names, addRow1Space=FALSE)
+    forest.plot(plot.data, outpath=forest.path)
+    
+
+    #
+    # Now we package the results in a dictionary (technically, a named 
+    # vector). In particular, there are two fields that must be returned; 
+    # a dictionary of images (mapping titles to image paths) and a list of texts
+    # (mapping titles to pretty-printed text). In this case we have only one 
+    # of each. 
+    #     
+
+    images <- c("Leave-one-out Forest plot"=forest.path)
+    plot.names <- c("loo forest plot"="loo_forest_plot")
+    results <- list("images"=images, "Leave-one-out Summary"=loo.disp, "plot_names"=plot.names)
+
+    results
+}
+
+##################################
+#  diagnostic cumulative MA      #
+##################################
+cum.ma.diagnostic <- function(fname, diagnostic.data, params){
+    # assert that the argument is the correct type
+    if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
+    
+    # iterate over the diagnosticData elements, adding one study at a time
+    cum.results <- array(dim=c(length(diagnostic.data@study.names),3))
+    params$create.plot <- FALSE
+    for (i in 1:length(diagnostic.data@study.names)){
+        # build a DiagnosticData object including studies
+        # 1 through i
+        y.tmp <- diagnostic.data@y[1:i]
+        SE.tmp <- diagnostic.data@SE[1:i]
+        names.tmp <- diagnostic.data@study.names[1:i]
+        diag.data.tmp <- NULL
+        if (length(diagnostic.data@TP) > 0){
+            # if we have group level data for 
+            # group 1, outcome 1, then we assume
+            # we have it for all groups
+            TP.tmp <- diagnostic.data@TP[1:i]
+            FN.tmp <- diagnostic.data@FN[1:i]
+            TN.tmp <- diagnostic.data@TN[1:i]
+            FP.tmp <- diagnostic.data@FP[1:i]
+            diag.data.tmp <- new('DiagnosticData', TP=TP.tmp, 
+                               FN=FN.tmp , TN=TN.tmp, 
+                               FP=FP.tmp, y=y.tmp, SE=SE.tmp, study.names=names.tmp)
+        } else {
+            diag.data.tmp <- new('DiagnosticData', y=y.tmp, SE=SE.tmp, study.names=names.tmp)
+        }
+        # call the parametric function by name, passing along the 
+        # data and parameters. Notice that this method knows
+        # neither what method its calling nor what parameters
+        # it's passing!
+        cur.res <- eval(call(fname, diag.data.tmp, params))
+        cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
+        cum.results[i,] <- cur.overall
+    }
+    cum.results.display <- diagnostic.transform.f(params$measure)$display.scale(cum.results)
+    study.names <- diagnostic.data@study.names[1] 
+    for (count in 2:length(diagnostic.data@study.names)) {
+        study.names <- c(study.names, paste("+ ",diagnostic.data@study.names[count], sep=""))
+    }
+    
+    cum.disp <- create.overall.display(cum.results.display, study.names, params)
+    forest.path <- "./r_tmp/cum_forest.png"
+    params$fp_show_summary_line <- TRUE
+    # temporarily hard-coding this param
+    plot.data <- create.plot.data.overall(params, res=cum.results, data.type="diagnostic", study.names, addRow1Space=TRUE)
+    forest.plot(plot.data, outpath=forest.path)
+
+    # Now we package the results in a dictionary (technically, a named 
+    # vector). In particular, there are two fields that must be returned; 
+    # a dictionary of images (mapping titles to image paths) and a list of texts
+    # (mapping titles to pretty-printed text). In this case we have only one 
+    # of each. 
+    #     
+    images <- c("Cumulative Forest Plot"=forest.path)
+    plot.names <- c("cumulative forest plot"="cumulative_forest_plot")
+    
+    results <- list("images"=images, "Cumulative Summary"=cum.disp, "plot_names"=plot.names)
+    results
+}
+
+
+##################################
+#  diagnostic leave-one-out MA   #
+##################################
+loo.ma.diagnostic <- function(fname, diagnostic.data, params){
+    # assert that the argument is the correct type
+    if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
+    
+    loo.results <- array(dim=c(length(diagnostic.data@study.names),3))
+    params$create.plot <- FALSE
+    N <- length(diagnostic.data@study.names)
+    for (i in 1:N){
+        # get a list of indices, i.e., the subset
+        # that is 1:N with i left out
+        index.ls <- 1:N
+        if (i == 1){
+            index.ls <- index.ls[2:N]
+        }
+        else if (i==N){
+            index.ls <- index.ls[1:N-1]
+        }
+        else{
+            index.ls <- c(index.ls[1:i-1], index.ls[(i+1):N])  
+        }
+        
+        # build a DiagnosticData object with the 
+        # ith study removed.  
+        y.tmp <- diagnostic.data@y[index.ls]
+        SE.tmp <- diagnostic.data@SE[index.ls]
+        names.tmp <- diagnostic.data@study.names[index.ls]
+        diag.data.tmp <- NULL
+        
+        if (length(diagnostic.data@TP) > 0){
+            # if we have group level data for 
+            # group 1, outcome 1, then we assume
+            # we have it for all groups
+            TP.tmp <- diagnostic.data@TP[index.ls]
+            FN.tmp <- diagnostic.data@FN[index.ls]
+            TN.tmp <- diagnostic.data@TN[index.ls]
+            FP.tmp <- diagnostic.data@FP[index.ls]
+            diag.data.tmp <- new('DiagnosticData', TP=TP.tmp, 
+                               FN=FN.tmp , TN=TN.tmp, 
+                               FP=FP.tmp, y=y.tmp, SE=SE.tmp, study.names=names.tmp)
+        } else{
+            diag.data.tmp <- new('DiagnosticData', y=y.tmp, SE=SE.tmp, study.names=names.tmp)
+        }
+        # call the parametric function by name, passing along the 
+        # data and parameters. Notice that this method knows
+        # neither what method its calling nor what parameters
+        # it's passing!
+        cur.res <- eval(call(fname, diag.data.tmp, params))
+        cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
+        loo.results[i,] <- cur.overall
+    }
+    loo.results.display <- diagnostic.transform.f(params$measure)$display.scale(loo.results)
+    study.names <- NULL 
+    for (count in 1:length(diagnostic.data@study.names)) {
+        study.names <- c(study.names, paste("- ",diagnostic.data@study.names[count], sep=""))
+    }
+    loo.disp <- create.overall.display(loo.results.display, study.names, params)
+    forest.path <- "./r_tmp/loo_forest.png"
+    params$fp_show_summary_line <- FALSE
+    # temporarily hard-coding this param as FALSE because we haven't computed an overall estimate,
+    # so there's no value for a summary line. This could be changed.
+    plot.data <- create.plot.data.overall(params, res=loo.results, data.type="diagnostic", study.names, addRow1Space=FALSE)
     forest.plot(plot.data, outpath=forest.path)
     
 
@@ -212,18 +358,17 @@ cum.ma.continuous <- function(fname, cont.data, params){
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
         cum.results[i,] <- cur.overall
     }
-    cum.results.display <- binary.transform.f(params$measure)$display.scale(cum.results)
+    cum.results.display <- diagnostic.transform.f(params$measure)$display.scale(cum.results)
     study.names <- cont.data@study.names[1] 
     for (count in 2:length(cont.data@study.names)) {
         study.names <- c(study.names, paste("+ ",cont.data@study.names[count], sep=""))
     }
     cum.disp <- create.overall.display(cum.results.display, study.names, params)
     forest.path <- "./r_tmp/cum_forest.png"
-    addRow1Space <- TRUE
-    params$fp_show_summary_line <- TRUE
+    params$fp_show_summary_line <- FALSE
     # temporarily hard-coding this param
-    plotData <- create.plot.data.overall(params, cum.results, study.names, addRow1Space)
-    forest.plot(plotData, outpath=forest.path)
+    plot.data <- create.plot.data.overall(params, res=cum.results, data.type="continuous", study.names, addRow1Space=TRUE)
+    forest.plot(plot.data, outpath=forest.path)
     
     #
     # Now we package the results in a dictionary (technically, a named 
@@ -299,7 +444,7 @@ loo.ma.continuous <- function(fname, cont.data, params){
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
         loo.results[i,] <- cur.overall
     }
-    loo.results.display <- binary.transform.f(params$measure)$display.scale(loo.results)
+    loo.results.display <- diagnostic.transform.f(params$measure)$display.scale(loo.results)
     study.names <- NULL
     for (count in 1:length(cont.data@study.names)) {
         study.names <- c(study.names, paste("- ",cont.data@study.names[count], sep=""))
@@ -307,11 +452,10 @@ loo.ma.continuous <- function(fname, cont.data, params){
     loo.disp <- create.overall.display(loo.results.display, study.names, params)
 
     forest.path <- "./r_tmp/loo_forest.png"
-    addRow1Space <- FALSE
     params$fp_show_summary_line <- FALSE
     # temporarily hard-coding this param as FALSE because we haven't computed an overall estimate,
     # so there's no value for a summary line. This could be changed.
-    plotData <- create.plot.data.overall(params, loo.results, study.names, addRow1Space)
+    plotData <- create.plot.data.overall(params, res=loo.results, study.names, addRow1Space=FALSE)
     forest.plot(plotData, outpath=forest.path)
     
     #
