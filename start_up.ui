@@ -19,7 +19,7 @@
    <string>Welcome to OpenMeta</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../OpenMeta/OpenMeta-analyst-/images/icons.qrc">
+   <iconset resource="images/icons.qrc">
     <normaloff>:/images/meta.png</normaloff>:/images/meta.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -127,7 +127,7 @@
           <string>open ...</string>
          </property>
          <property name="icon">
-          <iconset resource="../OpenMeta/OpenMeta-analyst-/images/icons.qrc">
+          <iconset resource="images/icons.qrc">
            <normaloff>:/images/function_icon_set/folder_48.png</normaloff>:/images/function_icon_set/folder_48.png</iconset>
          </property>
         </widget>
@@ -149,7 +149,7 @@
           <string>open recent</string>
          </property>
          <property name="icon">
-          <iconset resource="../OpenMeta/OpenMeta-analyst-/images/icons.qrc">
+          <iconset resource="images/icons.qrc">
            <normaloff>:/images/function_icon_set/folder_48.png</normaloff>:/images/function_icon_set/folder_48.png</iconset>
          </property>
         </widget>
@@ -160,7 +160,7 @@
           <string>create new</string>
          </property>
          <property name="icon">
-          <iconset resource="../OpenMeta/OpenMeta-analyst-/images/icons.qrc">
+          <iconset resource="images/icons.qrc">
            <normaloff>:/images/function_icon_set/add_48.png</normaloff>:/images/function_icon_set/add_48.png</iconset>
          </property>
         </widget>
@@ -171,6 +171,15 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>dataset_name_le</tabstop>
+  <tabstop>create_new_btn</tabstop>
+  <tabstop>chk_show</tabstop>
+  <tabstop>open_recent_btn</tabstop>
+  <tabstop>bin_radio</tabstop>
+  <tabstop>diag_radio</tabstop>
+  <tabstop>open_btn</tabstop>
+ </tabstops>
  <resources>
   <include location="images/icons.qrc"/>
   <include location="../OpenMeta/OpenMeta-analyst-/images/icons.qrc"/>
