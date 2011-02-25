@@ -24,14 +24,20 @@ adjust.raw.data <- function(diagnostic.data, params) {
         FN <- FN + params$adjust
         TN <- TN + params$adjust
         FP <- FP + params$adjust
-    }
-    if (params$to == "only0") {
+    } else if (params$to == "only0") {
         product <- TP * FN * TN * FP
         # product equals 0 if at least one entry in a row is 0
         TP[product == 0] <- TP[product == 0] + params$adjust
         FN[product == 0] <- FN[product == 0] + params$adjust
         TN[product == 0] <- TN[product == 0] + params$adjust
         FP[product == 0] <- FP[product == 0] + params$adjust
+    } else if (params$to == "if0all" {
+        if (any(c(TP,FN,TN,FP) == 0)) {
+            TP <- TP + params$adjust
+            FN <- FN + params$adjust
+            TN <- TN + params$adjust
+            FP <- FP + params$adjust    
+        }
     }
     data.adj <- list("TP"=TP, "FN"=FN, "TN"=TN, "FP"=FP)
 }
