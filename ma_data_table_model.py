@@ -881,7 +881,7 @@ class DatasetModel(QAbstractTableModel):
                 
                 # sensitivity and specificity
                 ests_and_cis = meta_py_r.diagnostic_effects_for_study(tp, fn, fp, tn)
-                   
+                
                 ###
                 # now we're going to set the effect estimate/CI on the MA object.
                 # if we have diagnostic data, this requires doing  

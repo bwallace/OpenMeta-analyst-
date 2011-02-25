@@ -337,7 +337,7 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
     return r_str
 
 
-def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj"):
+def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", metric="Sens"):
     '''
     This converts a DatasetModel to an OpenMetaData (OMData) R object. We use type DatasetModel
     rather than a DataSet model directly to access the current variables. Furthermore, this allows
@@ -352,10 +352,11 @@ def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj"):
     # I'm still uncomfortable that we do this.
     studies.reverse()
 
-    sens_ests, sens_SEs = table_model.get_cur_ests_and_SEs(only_if_included=True, effect="Sens")
-    sens_ests_str = ", ".join(_to_strs(sens_ests))
-    sens_SEs_str = ", ".join(_to_strs(sens_SEs))
-                
+    y_ests, y_SEs = table_model.get_cur_ests_and_SEs(only_if_included=True, effect=metric)
+    y_ests_str = ", ".join(_to_strs(y_ests))
+    y_SEs_str = ", ".join(_to_strs(y_SEs))
+    
+                        
     # generate the covariate string
     cov_str = gen_cov_str(table_model.dataset, studies)
     
@@ -380,13 +381,13 @@ def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj"):
         r_str = "%s <- new('DiagnosticData', TP=c(%s), FN=c(%s), TN=c(%s), FP=c(%s), \
                             y=c(%s), SE=c(%s), study.names=c(%s), covariates=%s)" % \
                             (var_name, tps_str, fns_str, tns_str, fps_str, \
-                             sens_ests_str, sens_SEs_str, study_names, cov_str)
+                             y_ests_str, y_SEs_str, study_names, cov_str)
         
-    elif table_model.included_studies_have_point_estimates(effect="Sens"):
+    elif table_model.included_studies_have_point_estimates(effect=metric):
         print "not sufficient raw data, but studies have point estimates..."
 
         r_str = "%s <- new('DiagnosticData', y=c(%s), SE=c(%s), study.names=c(%s),  covariates=%s)" \
-                            % (var_name, sens_ests_str, sens_SEs_str, study_names, cov_str)
+                            % (var_name, y_ests_str, y_SEs_str, study_names, cov_str)
                             
     else:
         print "there is neither sufficient raw data nor entered effects/CIs. I cannot run an analysis."
@@ -583,7 +584,7 @@ def _get_col(m, i):
         col_vals.append(x[i])
     return col_vals
 
-def diagnostic_effects_for_study(tp, fn, fp, tn, metrics=["Sens", "Spec"]):
+def diagnostic_effects_for_study(tp, fn, fp, tn, metrics=["Spec", "Sens"]):
     # first create a diagnostic data object
     r_str = "diag.tmp <- new('DiagnosticData', TP=c(%s), FN=c(%s), TN=c(%s), FP=c(%s))" % \
                             (tp, fn, tn, fp)
@@ -594,16 +595,23 @@ def diagnostic_effects_for_study(tp, fn, fp, tn, metrics=["Sens", "Spec"]):
     # this will map metrics to est., lower, upper
     effects_dict = {}
     for metric in metrics:
-        params = {"to":"all", "adjust":.5, "measure":metric, "conf.level":95}
-        params_df = ro.r['data.frame'](**params)
+        ###
+        # Curiously (annoyingly), updating the params dictionary, then recasting it using the
+        # ro.r['data.frame'](** params) call will not overwrite the existing
+        # structure on the R side -- i.e., you will keep getting the same metric
+        # here. Hence the somewhat ugly strategy of constructing the whole
+        # named list on the R side anew on each iteration
+        #####
 
-        r_res = ro.r("get.res.for.one.diag.study(diag.tmp, %s)" % params_df.r_repr())
-        # calc scale
+        r_res = ro.r("get.res.for.one.diag.study(diag.tmp,\
+                        list('to'='only0', 'measure'='%s', 'conf.level'=95, 'adjust'=.5))" % metric)   
+        
         est, lower, upper = r_res[0][0], r_res[1][0], r_res[2][0]
         calc_estimates = (est, lower, upper)
         disp_estimates = [diagnostic_convert_scale(x, metric) for x in calc_estimates]
         effects_dict[metric] = {"calc_scale":calc_estimates, "display_scale":disp_estimates}
         
+
     return effects_dict
     
     

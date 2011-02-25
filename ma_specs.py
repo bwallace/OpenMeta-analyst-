@@ -103,7 +103,6 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                 # get meta!
                 result = meta_py_r.run_meta_method(self.meta_f_str, self.current_method, self.current_param_vals)
         elif self.data_type == "diagnostic":
-            meta_py_r.ma_dataset_to_simple_diagnostic_robj(self.model)
             if self.meta_f_str is None:
                 #####
                 # This is somewhat hacky. We are building up a single
@@ -112,21 +111,23 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                 # individual runs.
                 #####
                 result = {'images':{}, 'texts':{}, 'image_var_names':{}}
+                # This provides us a 'base' path; from this we construc
+                # output paths for each individual forest plot (one 
+                # per diagnostic metric).
+                split_fp_path = self.current_param_vals["fp_outpath"].split(".")
                 for diag_metric in ("Sens", "Spec"):
                     self.current_param_vals["measure"] = diag_metric
-                    split_fp_path = self.current_param_vals["fp_outpath"].split(".")
                     new_str = split_fp_path if len(split_fp_path) == 0 else \
                               ".".join(self.current_param_vals["fp_outpath"].split(".")[:-1])
                     new_str = new_str + "_%s" % diag_metric + ".png"
                     self.current_param_vals["fp_outpath"] = new_str
+                    ### build a new MetaAnalysis object with the current metric.
+                    meta_py_r.ma_dataset_to_simple_diagnostic_robj(self.model, metric=diag_metric)
                     cur_result = meta_py_r.run_diagnostic_ma(self.current_method, self.current_param_vals)
                     for field in result.keys():
                         for val in cur_result[field].keys():
                             result[field]["%s %s" % (diag_metric, val)] = cur_result[field][val]
                 
-                        
-                pyqtRemoveInputHook()
-                pdb.set_trace()
             else:
                 pass
         self.parent().analysis(result)
