@@ -355,8 +355,7 @@ def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", metric
     y_ests, y_SEs = table_model.get_cur_ests_and_SEs(only_if_included=True, effect=metric)
     y_ests_str = ", ".join(_to_strs(y_ests))
     y_SEs_str = ", ".join(_to_strs(y_SEs))
-    
-                        
+               
     # generate the covariate string
     cov_str = gen_cov_str(table_model.dataset, studies)
     
@@ -367,13 +366,13 @@ def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", metric
         # grab the raw data; the order is 
         # tp, fn, fp, tn
         raw_data = table_model.get_cur_raw_data()
-    
+
         ### assembling TP, FP, TN and FN strings ...
         tps_str = ", ".join(_to_strs(_get_col(raw_data, 0)))
         fps_str = ", ".join(_to_strs(_get_col(raw_data, 1)))
-        tns_str = ", ".join(_to_strs(_get_col(raw_data, 2)))
-        fns_str = ", ".join(_to_strs(_get_col(raw_data, 3)))
-               
+        fns_str = ", ".join(_to_strs(_get_col(raw_data, 2)))
+        tns_str = ", ".join(_to_strs(_get_col(raw_data, 3)))
+        
         # actually creating a new object on the R side seems the path of least resistance here.
         # the alternative would be to try and create a representation of the R object on the 
         # python side, but this would require more work and I'm not sure what the benefits
@@ -454,9 +453,36 @@ def run_binary_ma(function_name, params, res_name="result", bin_data_name="tmp_o
     result = ro.r("%s" % res_name)
     return parse_out_results(result)
        
+def _to_R_param_str(param):
+    ''' 
+    Encodes Python parameters for consumption by R. Strings are single quoted,
+    booleans cast to all-caps.
+    '''
+    if isinstance(param, str) or isinstance(param, unicode):
+        return "'%s'"% param
+    elif isinstance(param, bool):
+        if param:
+            return "TRUE"
+        return "FALSE"
+    return param
+    
+def _to_R_params(params):
+    '''
+    Given a Python dictionary of method arguments, this returns a string
+    that represents a named list in R. 
+    '''
+    params_str = []
+    for param in params.keys():
+        params_str.append("'%s'=%s" % (param, _to_R_param_str(params[param])))
+    
+    params_str = "list("+ ",".join(params_str) + ")"
+    return params_str
+
 def run_diagnostic_ma(function_name, params, res_name="result", diag_data_name="tmp_obj"):
-    params_df = ro.r['data.frame'](**params)
-    r_str = "%s<-%s(%s, %s)" % (res_name, function_name, diag_data_name, params_df.r_repr())
+    params_str = _to_R_params(params)
+    r_str = "%s<-%s(%s, %s)" % \
+                        (res_name, function_name, diag_data_name, params_str) 
+    
     print "\n\n(run_diagnostic_ma): executing:\n %s\n" % r_str
     ro.r(r_str)
     result = ro.r("%s" % res_name)

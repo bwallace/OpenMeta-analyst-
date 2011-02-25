@@ -117,12 +117,15 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                 split_fp_path = self.current_param_vals["fp_outpath"].split(".")
                 for diag_metric in ("Sens", "Spec"):
                     self.current_param_vals["measure"] = diag_metric
-                    new_str = split_fp_path if len(split_fp_path) == 0 else \
-                              ".".join(self.current_param_vals["fp_outpath"].split(".")[:-1])
+                    new_str = split_fp_path[0] if len(split_fp_path) == 1 else \
+                              ".".join(split_fp_path[:-1])
                     new_str = new_str + "_%s" % diag_metric + ".png"
                     self.current_param_vals["fp_outpath"] = new_str
                     ### build a new MetaAnalysis object with the current metric.
                     meta_py_r.ma_dataset_to_simple_diagnostic_robj(self.model, metric=diag_metric)
+                    pyqtRemoveInputHook()
+                    pdb.set_trace()
+                    ### despite looking ok here, this returns the value of the first iteration!!!
                     cur_result = meta_py_r.run_diagnostic_ma(self.current_method, self.current_param_vals)
                     for field in result.keys():
                         for val in cur_result[field].keys():
