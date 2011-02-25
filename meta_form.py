@@ -10,6 +10,7 @@
 ######################################
 
 import sys
+import os
 import pdb
 import pickle
 from PyQt4 import QtCore, QtGui, Qt
@@ -24,6 +25,8 @@ import ui_meta
 from ma_data_table_view import StudyDelegate
 import ma_data_table_view
 from ma_data_table_model import *
+import meta_globals
+from meta_globals import *
 import ma_dataset
 from ma_dataset import *
 import meta_py_r
@@ -39,8 +42,6 @@ import edit_dialog
 import network_view
 import meta_globals 
 import start_up_dialog
-
-NUM_DIGITS = 4
 
 class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
@@ -99,15 +100,14 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             ###
             # show the welcome dialog 
             # @TODO need to check if the user has opted out of this
-            start_up_window =  start_up_dialog.StartUp(parent=self)
-            start_up_window.show()
-            ## arg -- this won't work!
-            start_up_window.setFocus()
-            start_up_window.dataset_name_le.setFocus()
-
-
-        
-        
+            self.load_user_prefs()
+            if self.user_prefs["splash"]:
+                start_up_window =  start_up_dialog.StartUp(parent=self)
+                start_up_window.show()
+                ## arg -- this won't work!
+                start_up_window.setFocus()
+                start_up_window.dataset_name_le.setFocus()
+            
     def new_dataset(self, name=None, is_diag=False):
         data_model = Dataset(title=name, is_diag=is_diag)
         if self.model is not None:
@@ -734,7 +734,42 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             print e
             raise Exception, "whoops. exception thrown attempting to save."
 
+    def load_user_prefs(self):
+        '''
+        Attempts to read a local dictionary of preferences
+        ('user_prefs.dict'). If not such file exists, this file
+        is created with defaults.
+        '''
+        
+        self.user_prefs = {}
+        if os.path.exists(PREFS_PATH):
+            try:
+                self.user_prefs = pickle.load(open(PREFS_PATH))
+            except:
+                print "preferences dictionary is corrupt! using defaults"
+                self.user_prefs = self._default_user_prefs()
+        else:
+            self.user_prefs = self._default_user_prefs()
 
+        self._save_user_prefs()
+        print "loaded user preferences: %s" % self.user_prefs
+
+
+    def update_user_prefs(self, field, value):
+        self.user_prefs[field] = value
+        self._save_user_prefs()
+            
+    def _save_user_prefs(self):
+        try:
+            fout = open(PREFS_PATH, 'wb')
+            pickle.dump(self.user_prefs, fout)
+            fout.close()
+        except:
+            print "failed to write preferences data!"
+        
+    def _default_user_prefs(self):       
+        return {"splash":True, "digits":3, "recent datasets":[]}
+        
 class CommandGenericDo(QUndoCommand):
     '''
    This is a generic undo/redo command that takes two unevaluated lambdas --

@@ -58,5 +58,9 @@ VANILLA, NETWORK = range(2)
 
 EMPTY_VALS = ("", None) # these indicate an empty row/cell 
 
+# this is the (local) path to a (pickled) dictionary containing
+# user preferences
+PREFS_PATH = "user_prefs.dict"
+
 # this is a useful function sometimes.
 none_to_str = lambda x: "" if x is None else x

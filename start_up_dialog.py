@@ -20,8 +20,8 @@ class StartUp(QDialog, ui_start_up.Ui_WelcomeDialog):
                                     self.open_dataset)
                                     
         # TODO implement open recent dataset...
-        #QObject.connect(self.create_new_btn, SIGNAL("pressed()"),
-        #                            self.new_dataset)
+        QObject.connect(self.chk_show,  SIGNAL('stateChanged(int)'),
+                            lambda: self.parent.update_user_prefs("splash", self.chk_show.isChecked()))
       
     def new_dataset(self):
         name = unicode(self.dataset_name_le.text().toUtf8(), "utf-8")
