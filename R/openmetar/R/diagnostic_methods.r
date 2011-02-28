@@ -31,7 +31,7 @@ adjust.raw.data <- function(diagnostic.data, params) {
         FN[product == 0] <- FN[product == 0] + params$adjust
         TN[product == 0] <- TN[product == 0] + params$adjust
         FP[product == 0] <- FP[product == 0] + params$adjust
-    } else if (params$to == "if0all" {
+    } else if (params$to == "if0all") {
         if (any(c(TP,FN,TN,FP) == 0)) {
             TP <- TP + params$adjust
             FN <- FN + params$adjust
