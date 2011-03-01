@@ -32,7 +32,7 @@ THRESHOLD = 1e-5
 class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
     
     
-    def __init__(self, ma_unit, cur_txs, cur_effect, parent=None):
+    def __init__(self, ma_unit, cur_txs, cur_group_str, cur_effect, parent=None):
         super(BinaryDataForm2, self).__init__(parent)
         self.setupUi(self)
         self._setup_signals_and_slots()
@@ -44,6 +44,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             self.raw_data_d[group]  = raw_data
         
         self.cur_groups = cur_txs
+        self.group_str = cur_group_str
         self.cur_effect = cur_effect
         self._update_raw_data()
         self._populate_effect_data()
@@ -71,7 +72,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.set_current_effect()
 
     def set_current_effect(self):
-        effect_dict = self.ma_unit.effects_dict[self.cur_effect]
+        effect_dict = self.ma_unit.effects_dict[self.cur_effect][self.group_str]
         for s, txt_box in zip(['display_est', 'display_lower', 'display_upper'], \
                               [self.effect_txt_box, self.low_txt_box, self.high_txt_box]):
             if effect_dict[s] is not None:
@@ -99,14 +100,14 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                                         self.cur_effect, convert_to="calc.scale")
                       
         if val_str == "est":
-            self.ma_unit.set_effect(self.cur_effect, calc_scale_val)
-            self.ma_unit.set_display_effect(self.cur_effect, display_scale_val)
+            self.ma_unit.set_effect(self.cur_effect, self.group_str, calc_scale_val)
+            self.ma_unit.set_display_effect(self.cur_effect, self.group_str, display_scale_val)
         elif val_str == "lower":
-            self.ma_unit.set_lower(self.cur_effect, calc_scale_val)
-            self.ma_unit.set_display_lower(self.cur_effect, display_scale_val)
+            self.ma_unit.set_lower(self.cur_effect, self.group_str, calc_scale_val)
+            self.ma_unit.set_display_lower(self.cur_effect, self.group_str, display_scale_val)
         else:
-            self.ma_unit.set_upper(self.cur_effect, calc_scale_val)
-            self.ma_unit.set_display_upper(self.cur_effect, display_scale_val)
+            self.ma_unit.set_upper(self.cur_effect, self.group_str, calc_scale_val)
+            self.ma_unit.set_display_upper(self.cur_effect, self.group_str, display_scale_val)
         
     def _update_raw_data(self):
         ''' Generates the 2x2 table with whatever parametric data was provided '''
@@ -210,7 +211,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
     def _build_dict(self):
         d =  dict(zip(["control.n.outcome", "control.N", "tx.n.outcome", "tx.N"], self.raw_data))
         print "\n!%s" % self.ma_unit.effects_dict[self.cur_effect]
-        d["estimate"] = self.ma_unit.effects_dict[self.cur_effect]['est']
+        d["estimate"] = self.ma_unit.effects_dict[self.cur_effect][self.group_str]['est']
         print d["estimate"] == ""
         print d["estimate"] is None
         return d
@@ -452,9 +453,9 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                                             two_arm=False, metric=self.cur_effect)
         
             display_est, display_low, display_high = est_and_ci_d["display_scale"]
-            self.ma_unit.set_display_effect_and_ci(self.cur_effect, display_est, display_low, display_high)                            
+            self.ma_unit.set_display_effect_and_ci(self.cur_effect, self.group_str, display_est, display_low, display_high)                            
             est, low, high = est_and_ci_d["calc_scale"] # calculation (e.g., log) scale
-            self.ma_unit.set_effect_and_ci(self.cur_effect, est, low, high)
+            self.ma_unit.set_effect_and_ci(self.cur_effect, self.group_str, est, low, high)
             self.set_current_effect()
            
         

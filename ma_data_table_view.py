@@ -86,6 +86,7 @@ class MADataTable(QtGui.QTableView):
         old_ma_unit = copy.deepcopy(ma_unit)
         cur_txs = self.model().current_txs
         cur_effect = self.model().current_effect
+        cur_group_str = self.model().get_cur_group_str()
         data_type = self.model().get_current_outcome_type()
         
         ####
@@ -98,7 +99,7 @@ class MADataTable(QtGui.QTableView):
             for group in cur_txs:
                 cur_raw_data_dict[group] = list(ma_unit.get_raw_data_for_group(group))
                 
-            form =  binary_data_form.BinaryDataForm2(ma_unit, cur_txs, cur_effect, parent=self)
+            form =  binary_data_form.BinaryDataForm2(ma_unit, cur_txs, cur_group_str, cur_effect, parent=self)
             if form.exec_():
                 ### TODO do the same for continuous data!
                 # push the edit event
@@ -113,8 +114,7 @@ class MADataTable(QtGui.QTableView):
                 cur_raw_data_dict[group_name] = list(ma_unit.tx_groups[group_name].raw_data)
                 
             old_raw_data_dict = copy.deepcopy(cur_raw_data_dict)
-            #form = continuous_data_form.ContinuousDataForm(copy.deepcopy(cur_raw_data_dict), cur_txs, cur_effect, parent=self)
-            form = continuous_data_form.ContinuousDataForm(ma_unit, cur_txs, cur_effect, parent=self)
+            form = continuous_data_form.ContinuousDataForm(ma_unit, cur_txs, cur_group_str, cur_effect, parent=self)
             if form.exec_():
                 # update the model; push this event onto the stack
                 ### TODO need to update to using CommandEditMAUnit!

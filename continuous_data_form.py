@@ -37,7 +37,7 @@ NUM_DIGITS = 4
 default_col_width = 65
 
 class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm):
-    def __init__(self, ma_unit, cur_txs, cur_effect, parent=None):
+    def __init__(self, ma_unit, cur_txs, cur_group_str, cur_effect, parent=None):
         super(ContinuousDataForm, self).__init__(parent)
         self.setupUi(self)
         self.setup_signals_and_slots()
@@ -48,6 +48,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             self.raw_data_dict[group] = raw_data
         self.cur_groups = cur_txs
         self.cur_effect = cur_effect
+        self.group_str = cur_group_str
         self.alpha = .05
         self.correlation = 0
         
@@ -145,17 +146,17 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                                                     self.cur_effect, convert_to="calc.scale")
                       
         if val_str == "est":
-            self.ma_unit.set_effect(self.cur_effect, calc_scale_val)
-            self.ma_unit.set_display_effect(self.cur_effect, display_scale_val)
+            self.ma_unit.set_effect(self.cur_effect, self.group_str, calc_scale_val)
+            self.ma_unit.set_display_effect(self.cur_effect, self.group_str, display_scale_val)
         elif val_str == "lower":
-            self.ma_unit.set_lower(self.cur_effect, calc_scale_val)
-            self.ma_unit.set_display_lower(self.cur_effect, display_scale_val)
+            self.ma_unit.set_lower(self.cur_effect, self.group_str, calc_scale_val)
+            self.ma_unit.set_display_lower(self.cur_effect, self.group_str, display_scale_val)
         else:
-            self.ma_unit.set_upper(self.cur_effect, calc_scale_val)
-            self.ma_unit.set_display_upper(self.cur_effect, display_scale_val)
+            self.ma_unit.set_upper(self.cur_effect, self.group_str, calc_scale_val)
+            self.ma_unit.set_display_upper(self.cur_effect, self.group_str, display_scale_val)
             
     def set_current_effect(self):
-        effect_dict = self.ma_unit.effects_dict[self.cur_effect]
+        effect_dict = self.ma_unit.effects_dict[self.cur_effect][self.group_str]
         for s, txt_box in zip(['display_est', 'display_lower', 'display_upper'], \
                               [self.effect_txt_box, self.low_txt_box, self.high_txt_box]):
             if effect_dict[s] is not None:
@@ -173,7 +174,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                     self.simple_table.setItem(row_index, col, val)
             # also insert the SEs, if we have them
             se_col = 3
-            se = self.ma_unit.SEs_dict[group_name]
+            se = self.ma_unit.effects_dict[self.cur_effect][self.group_str]["SE"]
             if se is not None:
                 se_item = QTableWidgetItem(str(se))
                 self.simple_table.setItem(row_index, se_col, se_item)
@@ -194,7 +195,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
 
             # also check if SEs have been entered directly
             se_index = 3
-            self.ma_unit.SEs_dict[group_name] = self._get_float(row_index, se_index)
+            self.ma_unit.effects_dict[self.cur_effect][self.group_str]["SE"] = self._get_float(row_index, se_index)
         
     def impute_data(self):
         ''' compute what we can for each study from what has been given '''
@@ -337,10 +338,10 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             
             
             display_est, display_low, display_high = est_and_ci_d["display_scale"]
-            self.ma_unit.set_display_effect_and_ci(self.cur_effect, display_est, display_low, display_high)                            
+            self.ma_unit.set_display_effect_and_ci(self.cur_effect, self.group_str, display_est, display_low, display_high)                            
             
             est, low, high = est_and_ci_d["calc_scale"] # calculation (e.g., log) scale
-            self.ma_unit.set_effect_and_ci(self.cur_effect, est, low, high)    
+            self.ma_unit.set_effect_and_ci(self.cur_effect, self.group_str, est, low, high)    
             self.set_current_effect()
             
 def isNaN(x):
