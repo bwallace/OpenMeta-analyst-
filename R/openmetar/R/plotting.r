@@ -54,7 +54,8 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     plot.data <- list(label = c(paste(params$fp_col1_str, sep = ""), om.data@study.names, "Overall"),
                     types = c(3, rep(0, length(om.data@study.names)), 2),
                     scale = scale.str,
-                    data.type = data.type, 
+                    data.type = data.type,
+                    overall =FALSE, 
                     options = plot.options)
     alpha <- 1.0-(params$conf.level/100.0)
     mult <- abs(qnorm(alpha/2.0))
@@ -209,6 +210,7 @@ create.plot.data.overall <- function(params, res, data.type, study.names, addRow
                 types = c(3, rep(0, length(study.names))),
                 scale = scale.str,
                 data.type = data.type,
+                overall = TRUE,
                 options = plot.options)
     y <- res[,1]
     lb <- res[,2]
@@ -458,7 +460,8 @@ draw.normal.CI <- function(LL, ES, UL, size) {
   }
   else if (convertX(unit(UL, "native"), "npc", valueOnly=TRUE) <= 1  &&  convertX(unit(LL, "native"), "npc", valueOnly=TRUE) < 0){
     # this line is too long on the left - draw a left arrow from UL to 0 (in approriate coords.)
-    grid.arrows(x=unit(c(UL, 0), c("native", "npc")), length=unit(0.05, "inches"))
+    grid.arrows(x=unit(c(UL, 0), c("native", "npc")),
+                length=unit(0.05, "inches"))
   }
   else if (convertX(unit(UL, "native"), "npc", valueOnly=TRUE) > 1   &&  convertX(unit(LL, "native"), "npc", valueOnly=TRUE) < 0 ){
     # this line is too long on both sides - draw a left arrow from ES to 0 and a right arrow from ES to 1 (in approriate coords.)
@@ -466,7 +469,7 @@ draw.normal.CI <- function(LL, ES, UL, size) {
     grid.arrows(x=unit(c(ES, 1), c("native", "npc")), length=unit(0.05, "inches"))              
   }
   else {
-    # Draw line white if totally inside rect
+    # this line is too short - draw white if totally inside rect
     line.col <- if ((convertX(unit(ES, "native") + unit(0.5*size, "lines"),
                              "native", valueOnly=TRUE) > UL) &&
                    (convertX(unit(ES, "native") - unit(0.5*size, "lines"),
@@ -580,7 +583,12 @@ forest.plot <- function(forest.data, outpath){
     forest.plot.params <- plot.options(forest.data, gapSize = 3.2, plotWidth=5)
 
     # these are calls to plotting functions
-    extra.space <- sum(forest.data$types != 0) 
+    if (forest.data$overall == FALSE) {
+        extra.space <- sum(forest.data$types != 0) 
+    } else {
+      # add a little more space because there is no summary row
+        extra.space <- sum(forest.data$types != 0) +1 
+    }   
     height <- length(forest.data$types)+ extra.space
   
     if (length(forest.data$additional.col.data)>0 )      {         # first if additional colums are present
