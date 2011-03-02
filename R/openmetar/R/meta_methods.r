@@ -63,10 +63,8 @@ cum.ma.binary <- function(fname, binary.data, params){
     
     cum.disp <- create.overall.display(cum.results.display, study.names, params)
     forest.path <- "./r_tmp/cum_forest.png"
-    params$fp_show_summary_line <- TRUE
-    # temporarily hard-coding this param
     plot.data <- create.plot.data.overall(params, res=cum.results, data.type="binary", study.names, addRow1Space=TRUE)
-    forest.plot(plot.data, outpath=forest.path)
+    forest.plot(forest.data=plot.data, outpath=forest.path)
 
     # Now we package the results in a dictionary (technically, a named 
     # vector). In particular, there are two fields that must be returned; 
@@ -142,11 +140,8 @@ loo.ma.binary <- function(fname, binary.data, params){
     }
     loo.disp <- create.overall.display(loo.results.display, study.names, params)
     forest.path <- "./r_tmp/loo_forest.png"
-    params$fp_show_summary_line <- FALSE
-    # temporarily hard-coding this param as FALSE because we haven't computed an overall estimate,
-    # so there's no value for a summary line. This could be changed.
     plot.data <- create.plot.data.overall(params, res=loo.results, data.type="binary", study.names, addRow1Space=FALSE)
-    forest.plot(plot.data, outpath=forest.path)
+    forest.plot(forest.data=plot.data, outpath=forest.path)
     
 
     #
@@ -211,10 +206,8 @@ cum.ma.diagnostic <- function(fname, diagnostic.data, params){
     
     cum.disp <- create.overall.display(cum.results.display, study.names, params)
     forest.path <- "./r_tmp/cum_forest.png"
-    params$fp_show_summary_line <- TRUE
-    # temporarily hard-coding this param
     plot.data <- create.plot.data.overall(params, res=cum.results, data.type="diagnostic", study.names, addRow1Space=TRUE)
-    forest.plot(plot.data, outpath=forest.path)
+    forest.plot(forest.data=plot.data, outpath=forest.path)
 
     # Now we package the results in a dictionary (technically, a named 
     # vector). In particular, there are two fields that must be returned; 
@@ -290,11 +283,8 @@ loo.ma.diagnostic <- function(fname, diagnostic.data, params){
     }
     loo.disp <- create.overall.display(loo.results.display, study.names, params)
     forest.path <- "./r_tmp/loo_forest.png"
-    params$fp_show_summary_line <- FALSE
-    # temporarily hard-coding this param as FALSE because we haven't computed an overall estimate,
-    # so there's no value for a summary line. This could be changed.
     plot.data <- create.plot.data.overall(params, res=loo.results, data.type="diagnostic", study.names, addRow1Space=FALSE)
-    forest.plot(plot.data, outpath=forest.path)
+    forest.plot(forest.data=plot.data, outpath=forest.path)
     
 
     #
@@ -365,10 +355,8 @@ cum.ma.continuous <- function(fname, cont.data, params){
     }
     cum.disp <- create.overall.display(cum.results.display, study.names, params)
     forest.path <- "./r_tmp/cum_forest.png"
-    params$fp_show_summary_line <- FALSE
-    # temporarily hard-coding this param
     plot.data <- create.plot.data.overall(params, res=cum.results, data.type="continuous", study.names, addRow1Space=TRUE)
-    forest.plot(plot.data, outpath=forest.path)
+    forest.plot(forest.data=plot.data, outpath=forest.path)
     
     #
     # Now we package the results in a dictionary (technically, a named 
@@ -452,11 +440,8 @@ loo.ma.continuous <- function(fname, cont.data, params){
     loo.disp <- create.overall.display(loo.results.display, study.names, params)
 
     forest.path <- "./r_tmp/loo_forest.png"
-    params$fp_show_summary_line <- FALSE
-    # temporarily hard-coding this param as FALSE because we haven't computed an overall estimate,
-    # so there's no value for a summary line. This could be changed.
-    plotData <- create.plot.data.overall(params, res=loo.results, study.names, addRow1Space=FALSE)
-    forest.plot(plotData, outpath=forest.path)
+    plot.data <- create.plot.data.overall(params, res=loo.results, study.names, addRow1Space=FALSE)
+    forest.plot(forest.data=plot.data, outpath=forest.path)
     
     #
     # Now we package the results in a dictionary (technically, a named 

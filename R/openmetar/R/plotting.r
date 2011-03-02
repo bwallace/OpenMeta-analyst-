@@ -16,9 +16,9 @@
 
 library("grid")
 
-#####################################################
-#   functions for data manipulation and forest plot #
-#####################################################
+#################################################################
+#   functions for creating plot data to pass to plot functions  #
+#################################################################
 
 create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     # Creates a data structure that can be passed to forest.plot
@@ -37,20 +37,19 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
         transform.name <- "binary.transform.f"
         data.type <- "binary"
     }
-    
-    display.lb <- NULL
+    plot.options <- extract.plot.options(params)
     if (!is.null(params$fp_display.lb)) {
-        display.lb <- eval(call(transform.name, params$measure))$calc.scale(params$fp_display.lb)
+        plot.options$display.lb <- eval(call(transform.name, params$measure))$calc.scale(params$fp_display.lb)
     }
-    display.ub <- NULL
     if (!is.null(params$fp_display.ub)) {
-        display.ub <- eval(call(transform.name, params$measure))$calc.scale(params$fp_display.ub)
+        plot.options$display.ub <- eval(call(transform.name, params$measure))$calc.scale(params$fp_display.ub)
     }
+    if (!is.null(params$fp_show.summary.line)) { 
+        plot.options$show.summary.line <- params$fp_show_summary_line
+    } else {
+        plot.options$show.summary.line <- TRUE
+    } 
     
-    plot.options <- list(show.summary.line = params$fp_show_summary_line,
-                         display.lb = display.lb,
-                         display.ub = display.ub)
-    # plot options passed in via params
     plot.data <- list(label = c(paste(params$fp_col1_str, sep = ""), om.data@study.names, "Overall"),
                     types = c(3, rep(0, length(om.data@study.names)), 2),
                     scale = scale.str,
@@ -172,7 +171,6 @@ create.plot.data.continuous <- function(cont.data, params, res, selected.cov = N
     # Creates a data structure that can be passed to forest.plot
     # res is the output of a call to the Metafor function rma
     plot.data <- create.plot.data.generic  (cont.data, params, res, selected.cov=selected.cov)
-    
     plot.data
 }
 
@@ -189,23 +187,26 @@ create.plot.data.overall <- function(params, res, data.type, study.names, addRow
     }  else if (data.type == "binary") {
         transform.name <- "binary.transform.f"
     }
-    
-    display.lb <- NULL
+    plot.options <- extract.plot.options(params)
     if (!is.null(params$fp_display.lb)) {
-        display.lb <- eval(call(transform.name, params$measure))$calc.scale(params$fp_display.lb)
+        plot.options$display.lb <- eval(call(transform.name, params$measure))$calc.scale(params$fp_display.lb)
     }
     display.ub <- NULL
     if (!is.null(params$fp_display.ub)) {
-        display.ub <- eval(call(transform.name, params$measure))$calc.scale(params$fp_display.ub)
+        plot.options$display.ub <- eval(call(transform.name, params$measure))$calc.scale(params$fp_display.ub)
     }
+    if (!is.null(params$fp_show.summary.line)) { 
+        plot.options$show.summary.line <- params$fp_show_summary_line
+    } else {
+        # Don't show summary line for overall plots - should we?
+        plot.options$show.summary.line <- FALSE
+    } 
                                                                    
     if (addRow1Space == TRUE) {
         # Add space to row 1 for cumulative ma to align study names.
         study.names[1] <- paste("   ", study.names[1], sep="")
     }
-    plot.options <- list(show.summary.line = params$fp_show_summary_line,
-                          display.lb = display.lb,
-                          display.ub = display.ub)
+
     plot.data <- list( label = c("Studies", study.names),
                 types = c(3, rep(0, length(study.names))),
                 scale = scale.str,
@@ -258,6 +259,20 @@ create.plot.data.reg <- function(reg.data, params, fitted.line, selected.cov=cov
      plot.data$effects <- effects
      plot.data
 }
+
+extract.plot.options <- function(params) {
+    # extracts plot options from params
+    plot.options <- list("xticks", "xlabel")
+    if (!is.null(params$fp_xticks)) {
+        plot.options$xticks <- eval(parse(text=paste("c(", params$fp_xticks, ")", sep="")))
+    }
+    plot.options$xlabel <- params$fp_xlabel
+    plot.options
+}    
+
+###################################
+#   functions for creating plots  #
+###################################
 
 # get data for the study column
 study.column <- function(forest.data, title.font="bold") {
@@ -361,47 +376,50 @@ effectsize.column <- function(forest.data, box.sca = 1) {
           precision <- sqrt(1 / ((effect.col$UL - effect.col$LL)/(2*1.96)))
     }
    
-   # compute effect.col.range, which determines the range of the forest plot to display.
-   if ((forest.data$data.type == "diagnostic") && (forest.data$scale == "standard")) {
-       # calculate the range of the data and round the lower limit down to neareast tenth
-       # and the upper limit up to the nearest tenth
-       a <- floor(10*min(effect.col$LL)) / 10
-       b <- ceiling(10*max(effect.col$UL)) / 10
-       effect.col.range <- c(a, b)
-   } else  {   
-      # For non-diagnostic data, this is a heuristic to determine a reasonable range for the displayed values - 
-      # confidence intervals that exceed this range are truncated and left or right arrows are displayed instead of the full CI. 
-      if (min(effect.col$LL)>0 && max(effect.col$UL)>0) {
-          effect.col.range <- c(max(0.5*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
-      } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)<=0) { 
+   if (is.null(forest.data$options$display.lb) || is.null(forest.data$options$display.ub)) {
+   # if user has not supplied both lower and upper bounds for forest plot display, compute them
+   # heuristically as effect.col.range.
+   
+       if ((forest.data$data.type == "diagnostic") && (forest.data$scale == "standard")) {
+          # calculate the range of the data and round the lower limit down to neareast tenth
+           # and the upper limit up to the nearest tenth
+          a <- floor(10*min(effect.col$LL)) / 10
+          b <- ceiling(10*max(effect.col$UL)) / 10
+          effect.col.range <- c(a, b)
+      } else  {   
+          # For non-diagnostic data, this is a heuristic to determine a reasonable range for the displayed values - 
+          # confidence intervals that exceed this range are truncated and left or right arrows are displayed instead of the full CI. 
+         if (min(effect.col$LL)>0 && max(effect.col$UL)>0) {
+             effect.col.range <- c(max(0.5*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
+         } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)<=0) { 
          effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(-1.5*max(effect.col$ES) , max(effect.col$UL)))
-      } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)>0) { 
-        effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
-      } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)>0 && max(effect.col$ES)>0) { 
-          effect.col.range <- c(max(-2*min(effect.col$ES) , min(effect.col$LL)), min(1.5*max(effect.col$ES) , max(effect.col$UL)))
-      } else if (min(effect.col$LL)<=0 && max(effect.col$UL)<0) { 
-         effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(0.10*max(effect.col$ES) , max(effect.col$UL)))
-      } 
-   }
-   # this is an ugly solution to an uncommon problem 
-   x <- forest.data$types[-1]
-   if (any(x > 0)) {
-      # at least one type is not 0
-      merge.data <- data.frame(x = x, y = effect.col$LL, z = effect.col$UL)
-      merge.data <- subset(merge.data, x>0)                                  
-      if (min(effect.col.range) >= min(merge.data$y)) 
-          effect.col.range[1] <- min(merge.data$y)
-      if (max(effect.col.range) <= max(merge.data$z)) 
-          effect.col.range[2] <- max(merge.data$z)
-   }
-
+          } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)>0) { 
+           effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
+         } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)>0 && max(effect.col$ES)>0) { 
+              effect.col.range <- c(max(-2*min(effect.col$ES) , min(effect.col$LL)), min(1.5*max(effect.col$ES) , max(effect.col$UL)))
+          } else if (min(effect.col$LL)<=0 && max(effect.col$UL)<0) { 
+            effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(0.10*max(effect.col$ES) , max(effect.col$UL)))
+          } 
+      }
+      # this is an ugly solution to an uncommon problem 
+      x <- forest.data$types[-1]
+      if (any(x > 0)) {
+          # at least one type is not 0
+          merge.data <- data.frame(x = x, y = effect.col$LL, z = effect.col$UL)
+          merge.data <- subset(merge.data, x>0)                                  
+          if (min(effect.col.range) >= min(merge.data$y)) 
+              effect.col.range[1] <- min(merge.data$y)
+          if (max(effect.col.range) <= max(merge.data$z)) 
+              effect.col.range[2] <- max(merge.data$z)
+      }
+    }     
     if (!is.null(forest.data$options$display.lb)) {
-        # if the user specifies a lower bound for the display range, use it instead of the default
-        effects.col$range[1] <-forest.data$options$display.lb
+        # user specifies just the lower bound for the display range, so use it instead of the default
+        effect.col.range[1] <- forest.data$options$display.lb
     } 
     if (!is.null(forest.data$options$display.ub)) {
-        # if the user specifies an upper bound for the display range, use it instead of the default
-        effects.col$range[2] <-forest.data$options$display.ub
+        # user specifies just the upper bound for the display range, so use it instead of the default
+       effect.col.range[2] <- forest.data$options$display.ub
     } 
   
    effect.col.sizes <- box.sca * precision/max(precision)
@@ -510,10 +528,12 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
       grid.lines(x=unit(0, "native"), y=0:1)
   }
    
-  if (forest.data$options$show.summary.line) {
-      # draw vertical line for summary
-      grid.lines(x=unit(col$ES[length(col$ES)], "native"),
+  if (!is.null(forest.data$options$show.summary.line)) {
+      if (forest.data$options$show.summary.line == TRUE) {
+          # draw vertical line for summary
+          grid.lines(x=unit(col$ES[length(col$ES)], "native"),
              y=0:1, gp=gpar(lty = summary.line.pat, col= summary.line.col))
+      }
   }  
   if  (forest.data$scale == "standard") {
       if (forest.data$data.type == "diagnostic") {
@@ -578,7 +598,7 @@ forest.plot <- function(forest.data, outpath){
     if (length(forest.data$additional.col.data)>0 ){
         additional.cols <- additional.columns(forest.data, "bold")    
     } 
-    effects.col <- effectsize.column(forest.data, box.sca=0.8)
+    effect.col <- effectsize.column(forest.data, box.sca=0.8)
     # return the LL, ES, and UL and range of data to display
     forest.plot.params <- plot.options(forest.data, gapSize = 3.2, plotWidth=5)
 
@@ -642,7 +662,7 @@ forest.plot <- function(forest.data, outpath){
     }
     effect.size.str <- c(paste(forest.data$fp_xlabel, sep=""))
   
-    draw.data.col(forest.data, effects.col, 2*length(additional.cols)+3,
+    draw.data.col(forest.data, effect.col, 2*length(additional.cols)+3,
                              color.overall = "lightblue",
                              color.subgroup = "yellow",
                              summary.line.col= "red",

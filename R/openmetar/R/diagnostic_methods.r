@@ -209,8 +209,6 @@ diagnostic.fixed <- function(diagnostic.data, params){
           # A forest plot will be created unless
           # params.create.plot is set to FALSE.
           forest.path <- paste(params$fp_outpath, sep="")
-          params$fp_show_summary_line <- TRUE
-          # temporarily hard-coding this param
           plot.data <- create.plot.data.diagnostic(diagnostic.data, params, res)
           forest.plot(plot.data, outpath=forest.path)
           #
@@ -285,8 +283,6 @@ diagnostic.random <- function(diagnostic.data, params){
         #
         if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
             forest.path <- paste(params$fp_outpath, sep="")
-            params$fp_show_summary_line <- TRUE
-            # temporarily hard-coding this param
             plot.data <- create.plot.data.diagnostic(diagnostic.data, params, res)
             forest.plot(plot.data, outpath=forest.path)
         
