@@ -247,8 +247,7 @@ diagnostic.fixed.parameters <- function(){
 diagnostic.fixed.overall <- function(results) {
     # this parses out the overall from the computed result
     res <- results$Summary$MAResults
-    overall <- c(res$b[1], res$ci.lb, res$ci.ub)
-    overall
+    res.short <- results.short.list(res)
 }
 
 ##################################
@@ -319,8 +318,7 @@ diagnostic.random.parameters <- function(){
 diagnostic.random.overall <- function(results) {
     # this parses out the overall from the computed result
     res <- results$Summary$MAResults
-    overall <- c(res$b[1], res$ci.lb, res$ci.ub)
-    overall
+    res.short <- results.short.list(res)
 }
 
 ###################################################

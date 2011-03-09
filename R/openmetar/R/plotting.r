@@ -45,7 +45,7 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
         plot.options$display.ub <- eval(call(transform.name, params$measure))$calc.scale(params$fp_display.ub)
     }
     if (!is.null(params$fp_show.summary.line)) { 
-        plot.options$show.summary.line <- params$fp_show_summary_line
+        plot.options$show.summary.line <- params$fp_show.summary.line
     } else {
         plot.options$show.summary.line <- TRUE
     } 
@@ -196,7 +196,7 @@ create.plot.data.overall <- function(params, res, data.type, study.names, addRow
         plot.options$display.ub <- eval(call(transform.name, params$measure))$calc.scale(params$fp_display.ub)
     }
     if (!is.null(params$fp_show.summary.line)) { 
-        plot.options$show.summary.line <- params$fp_show_summary_line
+        plot.options$show.summary.line <- params$fp_show.summary.line
     } else {
         # Don't show summary line for overall plots - should we?
         plot.options$show.summary.line <- FALSE
@@ -235,6 +235,116 @@ create.plot.data.overall <- function(params, res, data.type, study.names, addRow
    
     plot.data$effects <- effects
     plot.data
+}
+
+# create subgroup analysis plot data
+create.plot.data.subgroup <- function(grouped.data, params, res, data.type, subgroup.list) {
+    # create plot data for subgroup analysis
+    scale.str <- "standard"
+    if (metric.is.log.scale(params$measure)){
+        scale.str <- "log" 
+    } 
+    transform.name <- "cont.transform.f"
+    # flag to distinguish between diagnostic and nondiagnostic data
+    if (data.type == "diagnostic") {
+        transform.name <- "diagnostic.transform.f"
+        data.type <- "diagnostic"
+    }  else if (data.type == "binary") {
+        transform.name <- "binary.transform.f"
+    }
+    plot.options <- NULL
+    plot.options <- extract.plot.options(params)
+    if (!is.null(params$fp_display.lb)) {
+        plot.options$display.lb <- eval(call(transform.name, params$measure))$calc.scale(params$fp_display.lb)
+    }
+    display.ub <- NULL
+    if (!is.null(params$fp_display.ub)) {
+        plot.options$display.ub <- eval(call(transform.name, params$measure))$calc.scale(params$fp_display.ub)
+    }
+    if (!is.null(params$fp_show.summary.line)) { 
+        plot.options$show.summary.line <- params$fp_show.summary.line
+    } else {
+        # Don't show summary line for subgroup plots - should we?
+        plot.options$show.summary.line <- FALSE
+    } 
+    plot.data <- list( label = c("Studies"),
+                types = c(3),
+                scale = scale.str,
+                data.type = data.type,
+                overall = TRUE,
+                options = plot.options)
+    cur.res <- NULL
+    cur.plot.data <- NULL
+    for (i in 1:(length(subgroup.list)+1)){
+        # call create.plot.data.binary for each subgroup and concatenate results
+        cur.res <- res[[i]]
+        cur.plot.data <- create.plot.data.binary(grouped.data[[i]], params, cur.res)
+        labels <- cur.plot.data$label
+        types <- cur.plot.data$types
+        if (i != (length(subgroup.list)+1)) {
+            cur.plot.data$label[length(labels)] <- paste("Subgroup ", subgroup.list[[i]])
+            # change last label from "Overall" to "Subgroup i Summary" (except for last iteration)
+            cur.plot.data$label <- cur.plot.data$label[2:length(labels)]
+            # remove initial label "Studies"
+            cur.plot.data$types[length(types)] <- 1
+            cur.plot.data$types <- cur.plot.data$types[2:length(types)]
+            # remove initial type for column headers
+            # change last type from 2 to 1 (except for last iteration)
+        } else {
+            cur.plot.data$label <- "Overall"
+            # for the last iteration, only append the final label, "Overall"
+            cur.plot.data$types <- 2
+            # for the last iteration, only append the final type, 2
+            cur.plot.data$effects$ES <- cur.plot.data$effects$ES[length(cur.plot.data$effects$ES)]
+            cur.plot.data$effects$LL <- cur.plot.data$effects$LL[length(cur.plot.data$effects$LL)]
+            cur.plot.data$effects$UL <- cur.plot.data$effects$UL[length(cur.plot.data$effects$UL)]
+            # for the last iteration, only append the overall effect sizes.
+        }
+        # append current plot data
+        plot.data$label <- c(plot.data$label, cur.plot.data$label)
+        plot.data$types <- c(plot.data$types, cur.plot.data$types)
+        plot.data$effects$ES <- c(plot.data$effects$ES, cur.plot.data$effects$ES)
+        plot.data$effects$LL <- c(plot.data$effects$LL, cur.plot.data$effects$LL)
+        plot.data$effects$UL <- c(plot.data$effects$UL, cur.plot.data$effects$UL)
+        if (params$fp_show_col2=='TRUE') {
+             cur.es.col <- cur.plot.data$additional.col.data$es
+             if (i == 1) {
+                plot.data$additional.col.data$es <- c(plot.data$additional.col.data$es, cur.es.col)
+             } else if (i != (length(subgroup.list)+1)) { 
+               # if not the first element or last iteration, remove the column headings before appending data
+                plot.data$additional.col.data$es <- c(plot.data$additional.col.data$es, cur.es.col[2:length(cur.es.col)])
+             } else {
+               # for the final iteration, only append the overall row
+                plot.data$additional.col.data$es <- c(plot.data$additional.col.data$es, cur.es.col[length(cur.es.col)])
+             }
+             
+        }
+        if (params$fp_show_col3=="TRUE") {
+            cur.cases.col <- cur.plot.data$additional.col.data$cases
+             if (i == 1) {
+                plot.data$additional.col.data$cases <- c(plot.data$additional.col.data$cases, cur.cases.col)
+             } else if (i != (length(subgroup.list)+1)) { 
+               # if not the first element or last iteration, remove the column headings before appending data
+                plot.data$additional.col.data$cases <- c(plot.data$additional.col.data$cases, cur.cases.col[2:length(cur.cases.col)])
+             } else {
+               # for the final iteration, only append the overall row
+                plot.data$additional.col.data$cases <- c(plot.data$additional.col.data$cases, cur.cases.col[length(cur.cases.col)])
+             }
+        }
+        if (params$fp_show_col4=="TRUE"){
+            cur.controls.col <- cur.plot.data$additional.col.data$controls
+             if (i == 1) {
+                plot.data$additional.col.data$controls <- c(plot.data$additional.col.data$controls, cur.controls.col)
+             } else if (i != (length(subgroup.list)+1)) { 
+               # if not the first element or last iteration, remove the column headings before appending data
+                plot.data$additional.col.data$controls <- c(plot.data$additional.col.data$controls, cur.cases.col[2:length(cur.cases.col)])
+             } else {
+               # for the final iteration, only append the overall row
+                plot.data$additional.col.data$controls <- c(plot.data$additional.col.data$controls, cur.controls.col[length(cur.controls.col)])
+             }
+        }
+    } 
+    plot.data  
 }
 
 # create regression plot data
@@ -279,9 +389,9 @@ study.column <- function(forest.data, title.font="bold") {
     content<-rep(NA, length(forest.data$label))
     for (i in 1:length(forest.data$label)){
       if (forest.data$types[i] !=  0)
-        content[i] <- list(textGrob(forest.data$label[i], x=0, just = "left", gp = gpar(fontface = title.font)))
+        content[i] <- list(textGrob(forest.data$label[i], x=0, just = "left", gp = gpar(fontface = title.font, fontsize="10")))
       else
-        content[i] <- list(textGrob(forest.data$label[i], x=0, just = "left", gp = gpar(fontface = "plain")))
+        content[i] <- list(textGrob(forest.data$label[i], x=0, just = "left", gp = gpar(fontface = "plain", fontsize="10")))
     }
     
     rows<-c(1, rep(NA, (length(forest.data$label)-1) ) )
@@ -430,7 +540,7 @@ effectsize.column <- function(forest.data, box.sca = 1) {
                   sizes = effect.col.sizes)
 }
 
-plot.options <- function(forest.data, gapSize=3, plotWidth = 4) {
+create.plot.options <- function(forest.data, gapSize=3, plotWidth = 4) {
     
     effect.col.width <- unit(plotWidth, "inches")
     # width of the forest plot
@@ -600,7 +710,7 @@ forest.plot <- function(forest.data, outpath){
     } 
     effect.col <- effectsize.column(forest.data, box.sca=0.8)
     # return the LL, ES, and UL and range of data to display
-    forest.plot.params <- plot.options(forest.data, gapSize = 3.2, plotWidth=5)
+    forest.plot.params <- create.plot.options(forest.data, gapSize = 3.2, plotWidth=5)
 
     # these are calls to plotting functions
     if (forest.data$overall == FALSE) {

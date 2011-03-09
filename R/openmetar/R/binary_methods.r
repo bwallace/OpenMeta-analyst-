@@ -99,7 +99,6 @@ extract.data <- function(binary.data, params){
 binary.fixed.inv.var <- function(binary.data, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")  
-    
     results <- NULL
     if (length(binary.data@g1O1) == 1 || length(binary.data@y) == 1){
         res <- get.res.for.one.binary.study(binary.data, params)
@@ -160,8 +159,6 @@ binary.fixed.inv.var.parameters <- function(){
 binary.fixed.inv.var.overall <- function(results) {
     # this parses out the overall from the computed result
     res <- results$Summary$MAResults
-    overall <- c(res$b[1], res$ci.lb, res$ci.ub)
-    overall
 }
 
 ############################################
@@ -243,8 +240,7 @@ binary.fixed.mh.is.feasible <- function(binary.data){
 binary.fixed.mh.overall <- function(results) {
     # this parses out the overall from the computed result
     res <- results$Summary$MAResults
-    overall <- c(res$b[1], res$ci.lb, res$ci.ub)
-    overall
+    res.short <- results.short.list(res)
 }
                                                                                                                          
 ##################################################
@@ -330,8 +326,7 @@ binary.fixed.peto.is.feasible <- function(binary.data){
 binary.fixed.peto.overall <- function(results) {
     # this parses out the overall from the computed result
     res <- results$Summary$MAResults
-    overall <- c(res$b[1], res$ci.lb, res$ci.ub)
-    overall
+    res.short <- results.short.list(res)
 }
 
 
@@ -405,6 +400,5 @@ binary.random.parameters <- function(){
 binary.random.overall <- function(results) {
     # this parses out the overall from the computed result
     res <- results$Summary$MAResults
-    overall <- c(res$b[1], res$ci.lb, res$ci.ub)
-    overall
+    res.short <- results.short.list(res)
 }

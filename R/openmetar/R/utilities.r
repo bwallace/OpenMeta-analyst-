@@ -187,3 +187,8 @@ create.overall.display <- function(res, study.names, params) {
     class(overall.disp) <- "summary.display"
     return(overall.disp)
 }
+
+results.short.list <- function(res) {
+    # extracts res$b, res$ci.lb, and res$ci.ub from res
+    res.short <- list("b"=res$b[1], "ci.lb"=res$ci.lb, "ci.ub"=res$ci.ub)
+}    
