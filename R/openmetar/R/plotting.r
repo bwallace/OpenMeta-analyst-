@@ -37,36 +37,30 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
         transform.name <- "binary.transform.f"
         data.type <- "binary"
     }
-    plot.options <- extract.plot.options(params)
+    
+    plot.options <- set.plot.options(params)
     if (!is.null(params$fp_display.lb)) {
         plot.options$display.lb <- eval(call(transform.name, params$measure))$calc.scale(params$fp_display.lb)
     }
     if (!is.null(params$fp_display.ub)) {
         plot.options$display.ub <- eval(call(transform.name, params$measure))$calc.scale(params$fp_display.ub)
     }
-    if (!is.null(params$fp_show.summary.line)) { 
-        plot.options$show.summary.line <- params$fp_show.summary.line
-    } else {
-        plot.options$show.summary.line <- TRUE
+    if (is.null(params$fp_types)) {
+        params$fp_types <- c(3, rep(0, length(om.data@study.names)), 2)
     } 
-    
-    plot.data <- list(label = c(paste(params$fp_col1_str, sep = ""), om.data@study.names, "Overall"),
-                    types = c(3, rep(0, length(om.data@study.names)), 2),
-                    scale = scale.str,
-                    data.type = data.type,
-                    overall =FALSE, 
-                    options = plot.options)
+    if (is.null(params$fp_label)) {
+        params$fp_label <- c(paste(params$fp_col1_str, sep = ""), om.data@study.names, "Overall")
+    } 
+    plot.data <- list(label=params$fp_label,
+                      types=params$fp_types,  
+                      scale = scale.str,
+                      data.type = data.type,
+                      options = plot.options)         
     alpha <- 1.0-(params$conf.level/100.0)
     mult <- abs(qnorm(alpha/2.0))
     y.overall <- res$b[1]
     lb.overall <- res$ci.lb[1]
     ub.overall <- res$ci.ub[1]
-    ###
-    # TODO we're making tacit assumptions here
-    # about the subclass of OmData; namely
-    # that it includes a y and SE field.
-    #
-    ###
     y <- om.data@y
     lb <- y - mult*om.data@SE
     ub <- y + mult*om.data@SE
@@ -82,7 +76,7 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     
     if (params$fp_show_col2=='TRUE') {
         # format entries for text column in forest plot        
-        effect.size.col <- format.effect.size.col(y.disp, lb.disp, ub.disp, params)
+        effect.size.col <- format.effect.size.col(y=y.disp, lb=lb.disp, ub=ub.disp, params)
         plot.data$additional.col.data$es <- effect.size.col
     }
     if (scale.str == "log") {
@@ -104,8 +98,8 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
         plot.data$covariate <- list(varname = selected.cov,
                                    values = cov.values)
     }
-    plot.data$fp_xlabel <- paste(params$fp_xlabel, sep = "")
-    plot.data$fp_xticks <- params$fp_xticks
+    #plot.data$fp_xlabel <- paste(params$fp_xlabel, sep = "")
+    #plot.data$fp_xticks <- params$fp_xticks
     plot.data
 }
 
@@ -117,8 +111,8 @@ metric.is.logit.scale <- function(metric) {
     metric %in% c(diagnostic.logit.metrics)
 }    
 
-create.plot.data.binary <- function(binary.data, params, res, selected.cov = NULL, include.overall=TRUE){
-
+create.plot.data.binary <- function(binary.data, params, res, selected.cov = NULL){
+    
     plot.data <- create.plot.data.generic(binary.data, params, res, selected.cov=selected.cov)
         
     # if we have raw data, add it to the additional columns field
@@ -135,7 +129,7 @@ create.plot.data.binary <- function(binary.data, params, res, selected.cov = NUL
     plot.data
 }
 
-create.plot.data.diagnostic <- function(diagnostic.data, params, res, selected.cov = NULL, include.overall=TRUE){
+create.plot.data.diagnostic <- function(diagnostic.data, params, res, selected.cov = NULL){
 
     plot.data <- create.plot.data.generic(diagnostic.data, params, res, selected.cov=selected.cov)
         
@@ -167,7 +161,7 @@ create.plot.data.diagnostic <- function(diagnostic.data, params, res, selected.c
     plot.data
 }
 
-create.plot.data.continuous <- function(cont.data, params, res, selected.cov = NULL, include.overall=TRUE){
+create.plot.data.continuous <- function(cont.data, params, res, selected.cov = NULL){
     # Creates a data structure that can be passed to forest.plot
     # res is the output of a call to the Metafor function rma
     plot.data <- create.plot.data.generic  (cont.data, params, res, selected.cov=selected.cov)
@@ -187,7 +181,7 @@ create.plot.data.overall <- function(params, res, data.type, study.names, addRow
     }  else if (data.type == "binary") {
         transform.name <- "binary.transform.f"
     }
-    plot.options <- extract.plot.options(params)
+    plot.options <- set.plot.options(params)
     if (!is.null(params$fp_display.lb)) {
         plot.options$display.lb <- eval(call(transform.name, params$measure))$calc.scale(params$fp_display.lb)
     }
@@ -211,7 +205,6 @@ create.plot.data.overall <- function(params, res, data.type, study.names, addRow
                 types = c(3, rep(0, length(study.names))),
                 scale = scale.str,
                 data.type = data.type,
-                overall = TRUE,
                 options = plot.options)
     y <- res[,1]
     lb <- res[,2]
@@ -238,7 +231,7 @@ create.plot.data.overall <- function(params, res, data.type, study.names, addRow
 }
 
 # create subgroup analysis plot data
-create.plot.data.subgroup <- function(grouped.data, params, res, data.type, subgroup.list) {
+create.plot.data.subgroup.generic <- function(grouped.data, params, res, data.type, subgroup.list) {
     # create plot data for subgroup analysis
     scale.str <- "standard"
     if (metric.is.log.scale(params$measure)){
@@ -253,7 +246,7 @@ create.plot.data.subgroup <- function(grouped.data, params, res, data.type, subg
         transform.name <- "binary.transform.f"
     }
     plot.options <- NULL
-    plot.options <- extract.plot.options(params)
+    plot.options <- set.plot.options(params)
     if (!is.null(params$fp_display.lb)) {
         plot.options$display.lb <- eval(call(transform.name, params$measure))$calc.scale(params$fp_display.lb)
     }
@@ -264,42 +257,39 @@ create.plot.data.subgroup <- function(grouped.data, params, res, data.type, subg
     if (!is.null(params$fp_show.summary.line)) { 
         plot.options$show.summary.line <- params$fp_show.summary.line
     } else {
-        # Don't show summary line for subgroup plots - should we?
+        # Don't show summary line for subgroup plots
         plot.options$show.summary.line <- FALSE
     } 
-    plot.data <- list( label = c("Studies"),
-                types = c(3),
-                scale = scale.str,
-                data.type = data.type,
-                overall = TRUE,
-                options = plot.options)
+    #plot.data <- list( label = c(params$fp_col1_str),
+    #            types = c(3),
+    #            scale = scale.str,
+    #            data.type = data.type,
+    #            options = plot.options)
+    #plot.data$additional.col.data$es <- 
     cur.res <- NULL
     cur.plot.data <- NULL
-    for (i in 1:(length(subgroup.list)+1)){
-        # call create.plot.data.binary for each subgroup and concatenate results
+    # create plot data for first study - handled separately because of header row
+    cur.res <- res[[1]]
+    params.tmp <- params
+    params.tmp$fp_types <-c(3, rep(0, length(grouped.data[[1]]@study.names)), 1)
+    # include the type 3 header row
+    params.tmp$fp_label <- c(as.character(params$fp_col1_str), grouped.data[[1]]@study.names, paste("Subgroup ", subgroup.list[[1]], sep=""))
+    # include the header for column 1
+    plot.data <- create.plot.data.generic(grouped.data[[1]], params=params.tmp, cur.res)
+    if (params$fp_show_col2=='TRUE') {
+        cur.es.col <- cur.plot.data$additional.col.data$es
+        plot.data$additional.col.data$es <- c(plot.data$additional.col.data$es, cur.es.col)
+    } 
+    if (params$fp_show_col3=='TRUE') {
+        # concatenate nums and denoms of raw data
+    }          
+    for (i in 2:length(subgroup.list)){
+        # call create.plot.data.generic for the remaining subgroups and concatenate results
         cur.res <- res[[i]]
-        cur.plot.data <- create.plot.data.binary(grouped.data[[i]], params, cur.res)
-        labels <- cur.plot.data$label
-        types <- cur.plot.data$types
-        if (i != (length(subgroup.list)+1)) {
-            cur.plot.data$label[length(labels)] <- paste("Subgroup ", subgroup.list[[i]])
-            # change last label from "Overall" to "Subgroup i Summary" (except for last iteration)
-            cur.plot.data$label <- cur.plot.data$label[2:length(labels)]
-            # remove initial label "Studies"
-            cur.plot.data$types[length(types)] <- 1
-            cur.plot.data$types <- cur.plot.data$types[2:length(types)]
-            # remove initial type for column headers
-            # change last type from 2 to 1 (except for last iteration)
-        } else {
-            cur.plot.data$label <- "Overall"
-            # for the last iteration, only append the final label, "Overall"
-            cur.plot.data$types <- 2
-            # for the last iteration, only append the final type, 2
-            cur.plot.data$effects$ES <- cur.plot.data$effects$ES[length(cur.plot.data$effects$ES)]
-            cur.plot.data$effects$LL <- cur.plot.data$effects$LL[length(cur.plot.data$effects$LL)]
-            cur.plot.data$effects$UL <- cur.plot.data$effects$UL[length(cur.plot.data$effects$UL)]
-            # for the last iteration, only append the overall effect sizes.
-        }
+        params.tmp <- params
+        params.tmp$fp_types <-c(rep(0, length(grouped.data[[i]]@study.names)), 1)
+        params.tmp$fp_label <- c(grouped.data[[i]]@study.names, paste("Subgroup ", subgroup.list[[i]], sep=""))
+        cur.plot.data <- create.plot.data.generic(grouped.data[[i]], params=params.tmp, cur.res)
         # append current plot data
         plot.data$label <- c(plot.data$label, cur.plot.data$label)
         plot.data$types <- c(plot.data$types, cur.plot.data$types)
@@ -308,18 +298,31 @@ create.plot.data.subgroup <- function(grouped.data, params, res, data.type, subg
         plot.data$effects$UL <- c(plot.data$effects$UL, cur.plot.data$effects$UL)
         if (params$fp_show_col2=='TRUE') {
              cur.es.col <- cur.plot.data$additional.col.data$es
-             if (i == 1) {
-                plot.data$additional.col.data$es <- c(plot.data$additional.col.data$es, cur.es.col)
-             } else if (i != (length(subgroup.list)+1)) { 
-               # if not the first element or last iteration, remove the column headings before appending data
-                plot.data$additional.col.data$es <- c(plot.data$additional.col.data$es, cur.es.col[2:length(cur.es.col)])
-             } else {
-               # for the final iteration, only append the overall row
-                plot.data$additional.col.data$es <- c(plot.data$additional.col.data$es, cur.es.col[length(cur.es.col)])
-             }
-             
-        }
-        if (params$fp_show_col3=="TRUE") {
+             plot.data$additional.col.data$es <- c(plot.data$additional.col.data$es, cur.es.col)
+        }           
+    } 
+    # add the overall summary row
+    plot.data$label <- c(plot.data$label, "Overall")
+    plot.data$types <- c(plot.data$types, 2)
+    cur.res <- res[[length(subgroup.list) + 1]]
+    cur.plot.data <- create.plot.data.generic(grouped.data[[length(subgroup.list) + 1]], params, cur.res)
+    es <- cur.plot.data$effects$ES
+    ll <- cur.plot.data$effects$LL
+    ul <- cur.plot.data$effects$UL
+    plot.data$effects$ES <- c(plot.data$effects$ES, es[length(es)])
+    plot.data$effects$LL <- c(plot.data$effects$LL, ll[length(ll)])
+    plot.data$effects$UL <- c(plot.data$effects$UL, ul[length(ul)])
+    if (params$fp_show_col2=='TRUE') {
+             cur.es.col <- cur.plot.data$additional.col.data$es
+             plot.data$additional.col.data$es <- c(plot.data$additional.col.data$es, cur.es.col[length(cur.es.col)])
+    }
+    plot.data
+}
+
+create.plot.data.subgroup.binary <- function(grouped.data, params, res, data.type, subgroup.list) {
+
+
+    if (params$fp_show_col3=="TRUE") {
             cur.cases.col <- cur.plot.data$additional.col.data$cases
              if (i == 1) {
                 plot.data$additional.col.data$cases <- c(plot.data$additional.col.data$cases, cur.cases.col)
@@ -330,7 +333,6 @@ create.plot.data.subgroup <- function(grouped.data, params, res, data.type, subg
                # for the final iteration, only append the overall row
                 plot.data$additional.col.data$cases <- c(plot.data$additional.col.data$cases, cur.cases.col[length(cur.cases.col)])
              }
-        }
         if (params$fp_show_col4=="TRUE"){
             cur.controls.col <- cur.plot.data$additional.col.data$controls
              if (i == 1) {
@@ -343,8 +345,7 @@ create.plot.data.subgroup <- function(grouped.data, params, res, data.type, subg
                 plot.data$additional.col.data$controls <- c(plot.data$additional.col.data$controls, cur.controls.col[length(cur.controls.col)])
              }
         }
-    } 
-    plot.data  
+    }
 }
 
 # create regression plot data
@@ -370,13 +371,24 @@ create.plot.data.reg <- function(reg.data, params, fitted.line, selected.cov=cov
      plot.data
 }
 
-extract.plot.options <- function(params) {
-    # extracts plot options from params
-    plot.options <- list("xticks", "xlabel")
+set.plot.options <- function(params) {
+    # set default plot options
+    plot.options <- list(NULL)
     if (!is.null(params$fp_xticks)) {
         plot.options$xticks <- eval(parse(text=paste("c(", params$fp_xticks, ")", sep="")))
+    } else {
+        plot.options$xticks <- NULL
     }
-    plot.options$xlabel <- params$fp_xlabel
+    if (!is.null(params$fp_xlabel)) {
+        plot.options$xlabel <- params$fp_xlabel
+    } else {
+        plot.options$xlabel <- "Effect Sizes"
+    }
+    if (!is.null(params$fp_show.summary.line)) { 
+        plot.options$show.summary.line <- params$fp_show.summary.line
+    } else {
+        plot.options$show.summary.line <- TRUE
+    } 
     plot.options
 }    
 
@@ -511,8 +523,13 @@ effectsize.column <- function(forest.data, box.sca = 1) {
             effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(0.10*max(effect.col$ES) , max(effect.col$UL)))
           } 
       }
-      # this is an ugly solution to an uncommon problem 
-      x <- forest.data$types[-1]
+      # this is an ugly solution to an uncommon problem
+      if (forest.data$types[1] == 3) {
+          # first row contains headings 
+          x <- forest.data$types[-1]
+      } else {
+          x <- forest.data$types
+      }
       if (any(x > 0)) {
           # at least one type is not 0
           merge.data <- data.frame(x = x, y = effect.col$LL, z = effect.col$UL)
@@ -622,7 +639,7 @@ draw.summary.CI <- function(LL, ES, UL, size, color, diam.height) {
 draw.data.col <- function(forest.data, col, j, color.overall = "black",
                           color.subgroup = "black", summary.line.col = "darkred",
                           summary.line.pat = "dashed",
-                          metric = "Effect size", diam.size=1,
+                          x.axis.label, diam.size=1,
                           user.ticks) {
                           
   pushViewport(viewport(layout.pos.col=j, xscale=col$range))
@@ -680,7 +697,7 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
         grid.xaxis(at = log.ticks , label = round(ticks, 3), gp=gpar(cex=0.6))          
   } 
       
-  grid.text(metric, y=unit(-2, "lines"))
+  grid.text(x.axis.label, y=unit(-2, "lines"), gp=gpar(cex=0.8))
   popViewport()
   for (i in 1:length(col$rows)) {
     pushViewport(viewport(layout.pos.row=col$rows[i], layout.pos.col=j,
@@ -713,11 +730,12 @@ forest.plot <- function(forest.data, outpath){
     forest.plot.params <- create.plot.options(forest.data, gapSize = 3.2, plotWidth=5)
 
     # these are calls to plotting functions
-    if (forest.data$overall == FALSE) {
+    if (forest.data$types[length(forest.data$types)] != 0) {
+      # last row is a summary
         extra.space <- sum(forest.data$types != 0) 
     } else {
-      # add a little more space because there is no summary row
-        extra.space <- sum(forest.data$types != 0) +1 
+      # add a little more space because last row is not a summary
+        extra.space <- sum(forest.data$types != 0) + 1 
     }   
     height <- length(forest.data$types)+ extra.space
   
@@ -725,7 +743,7 @@ forest.plot <- function(forest.data, outpath){
         width.list <-vector("list")
         width.list[[1]] <- unit.c(max(unit(rep(1, length(forest.data$label)), 
                                "grobwidth", additional.cols[[1]]$content)), forest.plot.params$col.gap)
-    if  (length(forest.data$additional.col.data)>1 )  {   
+        if  (length(forest.data$additional.col.data)>1 )  {   
             for (i in 2:length(additional.cols))  {
             width.list[[i]] <- unit.c(width.list[[i-1]], max(unit(rep(1, length(forest.data$label)), 
                                    "grobwidth", additional.cols[[i]]$content)), forest.plot.params$col.gap) 
@@ -740,23 +758,21 @@ forest.plot <- function(forest.data, outpath){
         how.tall <- convertY(unit(rep(1, height)  , "lines"), "inches" , valueOnly=TRUE )
         png(file=outpath, width = how.wide + 1, height = height*how.tall+2 , units = "in", res = 144)
         pushViewport(viewport(layout=grid.layout(height ,2*length(additional.cols)+3,
-                 width=
-                     unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
-                         forest.plot.params$col.gap,  width.list[[length(additional.cols)]]  ,  forest.plot.params$effect.col.width),
-                 height = unit(rep(1, height)  , "lines"))))
-                 }   else  { # if no additional colums things are simple
-                 how.wide <- convertX(max(unit(rep(1, length(forest.data$label)), 
+        width=unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
+        forest.plot.params$col.gap,  width.list[[length(additional.cols)]]  ,  forest.plot.params$effect.col.width),
+        height = unit(rep(1, height)  , "lines"))))
+    }   else  { # if no additional colums things are simple
+        how.wide <- convertX(max(unit(rep(1, length(forest.data$label)), 
                                  "grobwidth", study.col$content)), "inches" , valueOnly=TRUE  ) +
                                  convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )  +
                                  convertX(forest.plot.params$effect.col.width, "inches" , valueOnly=TRUE ) 
-                 how.tall <- convertY(unit(rep(1, height)  , "lines") , "inches" , valueOnly=TRUE ) 
-                 png(file=outpath, width = how.wide + 1, height = height*how.tall+2 , units = "in", res = 144)                      
-                 pushViewport(viewport(layout=grid.layout(height ,2*length(additional.cols)+3,
-                 width=
-                     unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
+        how.tall <- convertY(unit(rep(1, height)  , "lines") , "inches" , valueOnly=TRUE ) 
+        png(file=outpath, width = how.wide + 1, height = height*how.tall+2 , units = "in", res = 144)                      
+        pushViewport(viewport(layout=grid.layout(height ,2*length(additional.cols)+3,
+        width=unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
                      forest.plot.params$col.gap,   forest.plot.params$effect.col.width),
-                 height = unit(rep(1, height)  , "lines"))))
-                }
+                     height = unit(rep(1, height)  , "lines"))))
+    }
 
     # Draw the text in study col and additional cols
     draw.label.col(study.col, 1)
@@ -766,18 +782,17 @@ forest.plot <- function(forest.data, outpath){
         }
     }  
    
-    xticks <- forest.data$options$fp_xticks
-    if (!is.null(xticks)) {
-       xticks <- eval(parse(text=paste("c(", xticks, ")", sep="")))
-    }
-    effect.size.str <- c(paste(forest.data$fp_xlabel, sep=""))
+    xticks <- forest.data$options$xticks
+    #if (!is.null(xticks)) {
+    #   xticks <- eval(parse(text=paste("c(", xticks, ")", sep="")))
+    #}
   
     draw.data.col(forest.data, effect.col, 2*length(additional.cols)+3,
                              color.overall = "lightblue",
                              color.subgroup = "yellow",
                              summary.line.col= "red",
                              summary.line.pat = "dashed",
-                             metric = effect.size.str,
+                             x.axis.label = forest.data$options$xlabel,
                              diam.size = 1.2,
                              user.ticks = xticks)
     graphics.off()
@@ -790,7 +805,7 @@ forest.plot <- function(forest.data, outpath){
 meta.regression.plot <- function(plot.data, outpath,
                                   symSize=1,
                                   lcol = "darkred",
-                                  metric = "Effect size",
+                                  y.axis.label = "Effect size",
                                   xlabel= plot.data$covariate$varname,
                                   lweight = 3,
                                   lpatern = "dotted",
@@ -822,11 +837,11 @@ meta.regression.plot <- function(plot.data, outpath,
     #depends on whether these are natural or log
     if (plot.data$scale == "standard"){
         symbols(y = data.reg$ES, x = cov.values, circles = symSize*radii , inches=FALSE,
-              xlab = xlabel, ylab = metric, bty = plotregion, fg = mcolor)
+              xlab = xlabel, ylab = y.axis.label, bty = plotregion, fg = mcolor)
     }
     else{ 
         symbols(y = data.reg$ES, x = cov.values, circles = symSize*radii , inches = FALSE,
-              xlab = xlabel, ylab = metric, bty = plotregion, fg = mcolor)
+              xlab = xlabel, ylab = y.axis.label, bty = plotregion, fg = mcolor)
     }
     # note that i am assuming you have
     #the untransformed coefficient from the meta-reg
@@ -921,21 +936,27 @@ format.effect.size.col <- function(y, lb, ub, params) {
         lb.max.chars <- max(nchar(lb.display))
         lb.extra.space <- lb.max.chars - nchar(lb.display)
         lb.display <- mapply(pad.with.spaces, lb.display, begin.num = lb.extra.space, end.num=0)
-        col2.label <- as.character(params$fp_col2_str)
-        # if label contains ",", pad label to align columns
-        label.info <- check.label(label = col2.label, split.str = ",")
-        max.chars <- max(nchar(ub.display)) + 1
-        # add 1 because a space is added before each ub entry.
-        if (label.info$contains.symbol == TRUE) {
-            # label contains "," so pad label to align ","
-            # we're assuming that there is a single space after ","
-            col2.label.padded <- pad.with.spaces(col2.label, begin.num=0, end.num = max.chars - label.info$end.string.length) 
-        } else {
-            # label doesn't contain "," so pad label to center over column 
-            col2.label.padded <- pad.with.spaces(col2.label, begin.num=0, end.num = floor((col2.width - nchar(col2.label)) / 2))           
-        }
-        effect.size.col <- c(col2.label.padded,
+        if (params$fp_types[1] == 3) {
+            # first row contains headings
+            col2.label <- as.character(params$fp_col2_str)
+            # if label contains ",", pad label to align columns
+            label.info <- check.label(label = col2.label, split.str = ",")
+            max.chars <- max(nchar(ub.display)) + 1
+            # add 1 because a space is added before each ub entry.
+            if (label.info$contains.symbol == TRUE) {
+                # label contains "," so pad label to align ","
+                # we're assuming that there is a single space after ","
+                col2.label.padded <- pad.with.spaces(col2.label, begin.num=0, end.num = max.chars - label.info$end.string.length) 
+            } else {
+                # label doesn't contain "," so pad label to center over column 
+                col2.label.padded <- pad.with.spaces(col2.label, begin.num=0, end.num = floor((col2.width - nchar(col2.label)) / 2))           
+            }
+            effect.size.col <- c(col2.label.padded,
                                  paste(y.display, lb.display, ",", ub.display, ")", sep = ""))
+        } else {
+            # first row does not contain headings
+            effect.size.col <- c(paste(y.display, lb.display, ",", ub.display, ")", sep = ""))
+        }
 }
   
 format.raw.data.col <- function(nums, denoms, label) {

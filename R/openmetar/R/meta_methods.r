@@ -468,24 +468,25 @@ subgroup.binary <- function(fname, binary.data, params, cov.name){
     subgroups <- eval(parse(text=cov.val.str))
     params$create.plot <- FALSE
     subgroup.data <- NULL
-    subgroup.data <- compute.subgroup.data(fname, binary.data, params, subgroups)
+    subgroup.data <- compute.subgroup.data.binary(fname, binary.data, params, subgroups)
     # get the overall results and add them to subgroup.data
     res <- eval(call(fname, binary.data, params))
     res.overall <- eval(call(paste(fname, ".overall", sep=""), res))
     subgroup.data$grouped.data[[length(subgroup.data$subgroup.list)+1]] <- binary.data
     subgroup.data$results[[length(subgroup.data$subgroup.list)+1]] <- res.overall
-    
-    plot.data <- create.plot.data.subgroup(grouped.data=subgroup.data$grouped.data, params, res=subgroup.data$results, data.type="binary", subgroup.list=subgroup.data$subgroup.list)
-    
-    res.overall <- eval(call(fname, binary.data, params))
-    plot.data.overall <- create.plot.data.binary(binary.data, params, res.overall)
+    plot.data <- create.plot.data.subgroup.generic(grouped.data=subgroup.data$grouped.data, 
+                                                    params, res=subgroup.data$results, 
+                                                    data.type="binary", subgroup.list=subgroup.data$subgroup.list)          
     forest.plot(forest.data=plot.data, outpath=params$fp_outpath)
 }    
 
-compute.subgroup.data <- function(fname, binary.data, params, subgroups){
+compute.subgroup.data.binary <- function(fname, binary.data, params, subgroups){
+    if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
+    
     subgroup.list <- union(subgroups,subgroups)
     grouped.data <- array(list(NULL),c(length(subgroup.list)))
     subgroup.results <- array(list(NULL), c(length(subgroup.list)))
+    raw.data <- array(list(NULL), c(length(subgroup.list)))
     count <- 1
     for (i in subgroup.list){
         # build a BinaryData object 
@@ -494,15 +495,12 @@ compute.subgroup.data <- function(fname, binary.data, params, subgroups){
         names.tmp <- binary.data@study.names[subgroups == i]
         bin.data.tmp <- NULL
         if (length(binary.data@g1O1) > 0){
-            # if we have group level data for 
-            # group 1, outcome 1, then we assume
-            # we have it for all groups
             g1O1.tmp <- binary.data@g1O1[subgroups == i]
             g1O2.tmp <- binary.data@g1O2[subgroups == i]
             g2O1.tmp <- binary.data@g2O1[subgroups == i]
             g2O2.tmp <- binary.data@g2O2[subgroups == i]
             bin.data.tmp <- new('BinaryData', g1O1=g1O1.tmp, 
-                               g1O2=g1O2.tmp , g2O1=g2O1.tmp, 
+                               g1O2=g1O2.tmp, g2O1=g2O1.tmp, 
                                g2O2=g2O2.tmp, y=y.tmp, SE=SE.tmp, study.names=names.tmp)
         } else {
             bin.data.tmp <- new('BinaryData', y=y.tmp, SE=SE.tmp, study.names=names.tmp)
@@ -512,7 +510,98 @@ compute.subgroup.data <- function(fname, binary.data, params, subgroups){
         # neither what method its calling nor what parameters
         # it's passing!
         grouped.data[[count]] <- bin.data.tmp
+        raw.data[[count]]$col3.nums <- c(bin.data.tmp@g1O1, sum(bin.data.tmp@g1O1)) 
+        raw.data[[count]]$col3.denoms <- c(bin.data.tmp@g1O1 + bin.data.tmp@g1O2, sum(bin.data.tmp@g1O1 + bin.data.tmp@g1O2)) 
+        raw.data[[count]]$col4.nums <- c(bin.data.tmp@g2O1, sum(bin.data.tmp@g2O1)) 
+        raw.data[[count]]$col4.denoms <- c(bin.data.tmp@g2O1 + bin.data.tmp@g2O2, sum(bin.data.tmp@g2O1 + bin.data.tmp@g2O2)) 
         cur.res <- eval(call(fname, bin.data.tmp, params))
+        cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
+        subgroup.results[[count]] <- cur.overall
+        count <- count + 1
+    }
+    subgroup.data <- list("subgroup.list"=subgroup.list, "grouped.data"=grouped.data, "results"=subgroup.results, "raw.data"=raw.data)
+}
+
+compute.subgroup.data.diagnostic <- function(fname, diagnostic.data, params, subgroups){
+    if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Binary data expected.")
+    
+    subgroup.list <- union(subgroups,subgroups)
+    grouped.data <- array(list(NULL),c(length(subgroup.list)))
+    subgroup.results <- array(list(NULL), c(length(subgroup.list)))
+    count <- 1
+    for (i in subgroup.list){
+        # build a BinaryData object 
+        y.tmp <- diagnostic.data@y[subgroups == i]
+        SE.tmp <- diagnostic.data@SE[subgroups == i]
+        names.tmp <- diagnostic.data@study.names[subgroups == i]
+        diag.data.tmp <- NULL
+        if (length(diagnostic.data@TP) > 0){
+            # if we have group level data for 
+            # group 1, outcome 1, then we assume
+            # we have it for all groups
+            TP.tmp <- diagnostic.data@TP[1:i]
+            FN.tmp <- diagnostic.data@FN[1:i]
+            TN.tmp <- diagnostic.data@TN[1:i]
+            FP.tmp <- diagnostic.data@FP[1:i]
+            diag.data.tmp <- new('DiagnosticData', TP=TP.tmp, 
+                               FN=FN.tmp , TN=TN.tmp, 
+                               FP=FP.tmp, y=y.tmp, SE=SE.tmp, study.names=names.tmp)
+        } else {
+            diag.data.tmp <- new('DiagnosticData', y=y.tmp, SE=SE.tmp, study.names=names.tmp)
+        }
+        # call the parametric function by name, passing along the 
+        # data and parameters. Notice that this method knows
+        # neither what method its calling nor what parameters
+        # it's passing!
+        grouped.data[[count]] <- diag.data.tmp
+        cur.res <- eval(call(fname, diag.data.tmp, params))
+        cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
+        subgroup.results[[count]] <- cur.overall
+        count <- count + 1
+    }
+    subgroup.data <- list("subgroup.list"=subgroup.list, "grouped.data"=grouped.data, "results"=subgroup.results)
+}
+
+
+compute.subgroup.data.cont <- function(fname, cont.data, params, subgroups){
+    if (!("ContinuousData" %in% class(cont.data))) stop("Continuous data expected.")
+    
+    subgroup.list <- union(subgroups,subgroups)
+    grouped.data <- array(list(NULL),c(length(subgroup.list)))
+    subgroup.results <- array(list(NULL), c(length(subgroup.list)))
+    count <- 1
+    for (i in subgroup.list){
+        # build a BinaryData object 
+        y.tmp <- cont.data@y[subgroups == i]
+        SE.tmp <- cont.data@SE[subgroups == i]
+        names.tmp <- cont.data@study.names[subgroups == i]
+        bin.data.tmp <- NULL
+        if (length(cont.data@g1O1) > 0){
+            # if we have group level data for 
+            # group 1, outcome 1, then we assume
+            # we have it for all groups
+            N1.tmp <- cont.data@N1[subgroups == i]
+            mean1.tmp <- cont.data@mean1[subgroups == i]
+            sd1.tmp <- cont.data@sd1[subgroups == i]
+            N2.tmp <- cont.data@N2[subgroups == i]
+            mean2.tmp <- cont.data@mean2[subgroups == i]
+            sd2.tmp <- cont.data@sd2[subgroups == i]
+            cont.data.tmp <- new('ContinuousData', 
+                               N1=N1.tmp, mean1=mean1.tmp , sd1=sd1.tmp, 
+                               N2=N2.tmp, mean2=mean2.tmp, sd2=sd2.tmp,
+                               y=y.tmp, SE=SE.tmp, 
+                               study.names=names.tmp)
+        } else {
+            cont.data.tmp <- new('ContinuousData', 
+                                y=y.tmp, SE=SE.tmp, 
+                                study.names=names.tmp)
+        }
+        # call the parametric function by name, passing along the 
+        # data and parameters. Notice that this method knows
+        # neither what method its calling nor what parameters
+        # it's passing!
+        grouped.data[[count]] <- cont.data.tmp
+        cur.res <- eval(call(fname, cont.data.tmp, params))
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
         subgroup.results[[count]] <- cur.overall
         count <- count + 1
@@ -531,7 +620,7 @@ if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
     params$fp_show.summary.line <- FALSE
     params$create.plot <- FALSE
     bin.data.tmp <- binary.data
-    bin.data.tmp <- compute.bin.point.estimates(binary.data=bin.data.tmp, params=params.vec[[count]])
+    bin.data.tmp <- compute.bin.point.estimates(binary.data=bin.data.tmp, params=params.vec[[1]])
     # point estimates will vary depending on params, so we need to compute them for each analysis
     cur.res <- eval(call(fname, bin.data.tmp, params))
     # run the first analysis
@@ -545,7 +634,7 @@ if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
         bin.data.tmp <- compute.bin.point.estimates(bin.data.tmp, params.vec[[count]])
         params.vec[[count]]$create.plot <- FALSE
         fname <- methods[count]
-        cur.res <- eval(call(fname, bin.data.tmp, params.vec[[count]]))
+        cur.res <- eval(call(fname, binary.data=bin.data.tmp, params=params.vec[[count]]))
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
         plot.data$label <- c(plot.data$label, fname)
         plot.data$types <- c(plot.data$types, 2)
@@ -557,7 +646,7 @@ if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
     forest.plot(plot.data, outpath=params$fp_outpath)
 }
 
-update.plot.data.multiple <- function(binary.data, params.vec, results) {
+update.plot.data.multiple <- function(binary.data, params, results) {
 
     scale.str <- "standard"
     if (metric.is.log.scale(params$measure)){
