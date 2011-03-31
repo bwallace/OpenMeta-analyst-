@@ -39,14 +39,15 @@ print.summary.data <- function(table.data) {
     num.rows <- length(table.data[,1])
     num.cols <- length(table.data[1,])
     # Compute column widths
+    extra.col.spaces <- 2
     col.widths <- NULL
     for (col.index in 1:num.cols) {
-      col.widths <- c(col.widths, max(nchar(table.data[,col.index])) + 4)
+      col.widths <- c(col.widths, max(nchar(table.data[,col.index])) + extra.col.spaces)
     }
     table.width <- sum(col.widths) + num.cols + 1
     # Create line of dashes of length table.width - 2
     dash.line <- NULL
-    dash.line <- create.repeat.string("-", table.width -2)
+    dash.line <- create.repeat.string("-", table.width - 2)
     top.line <- paste("+", dash.line, "+", sep="")
     middle.line <- paste("|", dash.line, "|", sep="")
 
@@ -124,7 +125,7 @@ create.summary.disp <- function(res, params, degf, model.title, data.type) {
     I2 <- max(0, (res$QE - degf)/res$QE)
     I2 <- paste(100 * round(I2, digits = 2), "%")
     QE <- round(res$QE, digits=params$digits)
-    QEp <- round.display(res$QEp, digits=params$digits)
+    QEp <- round.display(x=res$QEp, digits=params$digits)
     het.array <-  array(c(QLabel, QE, "p-Value", QEp, "I^2", I2), dim=c(2,3))
     class(het.array) <- "summary.data"
     het.title <- "  Test for Heterogeneity"
@@ -140,24 +141,26 @@ create.summary.disp <- function(res, params, degf, model.title, data.type) {
    if ((metric.is.log.scale(params$measure)) | (metric.is.logit.scale(params$measure))) {
          # display and calculation scales are different - create two tables for results
          res.array <- array(c("Estimate", est.disp, "p-Value", pVal, "Z-Value", zVal, "Lower bound", lb.disp,
-                                        "Upper bound", ub.disp), dim=c(2,5))
+                                        "Upper bound", ub.disp, QLabel, QE, "Het. p-Value", QEp, "I^2", I2), dim=c(2,8))
          
          estCalc <- round(res$b, digits=params$digits)
          lbCalc <- round(res$ci.lb, digits=params$digits)
          ubCalc <- round(res$ci.ub, digits=params$digits)
          alt.array <- array(c("Estimate", estCalc, "SE", se, "Lower bound", lbCalc, "Upper bound", ubCalc), dim=c(2,4))
          alt.title <- "  Model Results (calculation scale)"
-         arrays = list(arr1=het.array, arr2=res.array, arr3=alt.array)
+         #arrays = list(arr1=het.array, arr2=res.array, arr3=alt.array)
+         arrays <- list(arr1=res.array, arr2=alt.array)
     }
 
     else {
         # display and calculation scales are the same - create one table
         res.array <- array(c("Estimate", est.disp, "SE", se, "p-Value", pVal, "Z-Value", zVal, "Lower bound", lb.disp,
                                         "Upper bound", ub.disp), dim=c(2,6))
-        arrays = list(arr1=het.array, arr2=res.array)
+        #arrays = list(arr1=het.array, arr2=res.array)
+        arrays = list(arr1="res.array")
         alt.title <- NA
     }
-    summary.disp <- list("model.title" = model.title, "table.titles" = c(het.title, res.title, alt.title), "arrays" = arrays,
+    summary.disp <- list("model.title" = model.title, "table.titles" = c(res.title, alt.title), "arrays" = arrays,
                          "MAResults" = res)
     class(summary.disp) <- "summary.display"
     return(summary.disp)

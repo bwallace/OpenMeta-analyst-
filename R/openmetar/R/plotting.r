@@ -231,44 +231,14 @@ create.plot.data.overall <- function(params, res, data.type, study.names, addRow
 }
 
 # create subgroup analysis plot data
-create.plot.data.subgroup.generic <- function(grouped.data, params, res, data.type, subgroup.list) {
-    # create plot data for subgroup analysis
-    scale.str <- "standard"
-    if (metric.is.log.scale(params$measure)){
-        scale.str <- "log" 
-    } 
-    transform.name <- "cont.transform.f"
-    # flag to distinguish between diagnostic and nondiagnostic data
-    if (data.type == "diagnostic") {
-        transform.name <- "diagnostic.transform.f"
-        data.type <- "diagnostic"
-    }  else if (data.type == "binary") {
-        transform.name <- "binary.transform.f"
-    }
-    plot.options <- NULL
-    plot.options <- set.plot.options(params)
-    if (!is.null(params$fp_display.lb)) {
-        plot.options$display.lb <- eval(call(transform.name, params$measure))$calc.scale(params$fp_display.lb)
-    }
-    display.ub <- NULL
-    if (!is.null(params$fp_display.ub)) {
-        plot.options$display.ub <- eval(call(transform.name, params$measure))$calc.scale(params$fp_display.ub)
-    }
-    if (!is.null(params$fp_show.summary.line)) { 
-        plot.options$show.summary.line <- params$fp_show.summary.line
-    } else {
-        # Don't show summary line for subgroup plots
-        plot.options$show.summary.line <- FALSE
-    } 
-    #plot.data <- list( label = c(params$fp_col1_str),
-    #            types = c(3),
-    #            scale = scale.str,
-    #            data.type = data.type,
-    #            options = plot.options)
-    #plot.data$additional.col.data$es <- 
+create.subgroup.plot.data.generic <- function(subgroup.data, params) {
+    grouped.data <- subgroup.data$grouped.data
+    res <- subgroup.data$results
+    subgroup.list <- subgroup.data$subgroup.list
     cur.res <- NULL
     cur.plot.data <- NULL
-    # create plot data for first study - handled separately because of header row
+    # create plot data for first study - handled separately because there is
+    # a header row and the header for the effect size column needs to be formatted to align with the data.
     cur.res <- res[[1]]
     params.tmp <- params
     params.tmp$fp_types <-c(3, rep(0, length(grouped.data[[1]]@study.names)), 1)
@@ -280,9 +250,6 @@ create.plot.data.subgroup.generic <- function(grouped.data, params, res, data.ty
         cur.es.col <- cur.plot.data$additional.col.data$es
         plot.data$additional.col.data$es <- c(plot.data$additional.col.data$es, cur.es.col)
     } 
-    if (params$fp_show_col3=='TRUE') {
-        # concatenate nums and denoms of raw data
-    }          
     for (i in 2:length(subgroup.list)){
         # call create.plot.data.generic for the remaining subgroups and concatenate results
         cur.res <- res[[i]]
@@ -319,33 +286,66 @@ create.plot.data.subgroup.generic <- function(grouped.data, params, res, data.ty
     plot.data
 }
 
-create.plot.data.subgroup.binary <- function(grouped.data, params, res, data.type, subgroup.list) {
+create.subgroup.plot.data.binary <- function(subgroup.data, params) {
+    grouped.data <- subgroup.data$grouped.data
+    plot.data <- create.subgroup.plot.data.generic(subgroup.data, params) 
 
-
-    if (params$fp_show_col3=="TRUE") {
-            cur.cases.col <- cur.plot.data$additional.col.data$cases
-             if (i == 1) {
-                plot.data$additional.col.data$cases <- c(plot.data$additional.col.data$cases, cur.cases.col)
-             } else if (i != (length(subgroup.list)+1)) { 
-               # if not the first element or last iteration, remove the column headings before appending data
-                plot.data$additional.col.data$cases <- c(plot.data$additional.col.data$cases, cur.cases.col[2:length(cur.cases.col)])
-             } else {
-               # for the final iteration, only append the overall row
-                plot.data$additional.col.data$cases <- c(plot.data$additional.col.data$cases, cur.cases.col[length(cur.cases.col)])
-             }
-        if (params$fp_show_col4=="TRUE"){
-            cur.controls.col <- cur.plot.data$additional.col.data$controls
-             if (i == 1) {
-                plot.data$additional.col.data$controls <- c(plot.data$additional.col.data$controls, cur.controls.col)
-             } else if (i != (length(subgroup.list)+1)) { 
-               # if not the first element or last iteration, remove the column headings before appending data
-                plot.data$additional.col.data$controls <- c(plot.data$additional.col.data$controls, cur.cases.col[2:length(cur.cases.col)])
-             } else {
-               # for the final iteration, only append the overall row
-                plot.data$additional.col.data$controls <- c(plot.data$additional.col.data$controls, cur.controls.col[length(cur.controls.col)])
-             }
-        }
+    if ((length(grouped.data[[1]]@g1O1) > 0) && (params$fp_show_col3=="TRUE")) {
+        data.column <- format.raw.data.col(nums = subgroup.data$col3.nums, denoms = subgroup.data$col3.denoms, 
+        label = as.character(params$fp_col3_str))
+        plot.data$additional.col.data$cases <- data.column
     }
+    
+    if ((length(grouped.data[[1]]@g2O1) > 0) && (params$fp_show_col4=="TRUE")){
+        data.column <- format.raw.data.col(nums = subgroup.data$col4.nums, denoms = subgroup.data$col4.denoms, 
+        label = as.character(params$fp_col4_str))
+        plot.data$additional.col.data$controls = data.column
+    }
+    
+    plot.data
+}
+
+create.subgroup.plot.data.diagnostic <- function(subgroup.data, params) {
+    grouped.data <- subgroup.data$grouped.data
+    plot.data <- create.subgroup.plot.data.generic(subgroup.data, params) 
+
+    if ((length(grouped.data[[1]]@TP) > 0) && (params$fp_show_col3=="TRUE")) {
+       raw.data <- list("TP"=diagnostic.data@TP, "FN"=diagnostic.data@FN, "TN"=diagnostic.data@TN, "FP"=diagnostic.data@FP)
+        terms <- compute.diagnostic.terms(raw.data, params)
+        metric <- params$measure
+        label <- switch(metric,
+        # sensitivity
+        Sens = "TP / Di+", 
+        # specificity
+        Spec = "TN / D-",
+        # pos. predictive value
+        PPV =  "TP / T+",
+        #neg. predictive value
+        NPV =  "TN / T-",
+        # accuracy
+        Acc = "TP + TN / Tot",
+        # positive likelihood ratio
+        PLR = "TP * Di- / FP * Di+", 
+        # negative likelihood ratio
+        NLR = "FN * Di- / TN * Di+",
+        # diagnostic odds ratio
+        DOR = "TP * TN / FP * FN")
+        data.col <- format.raw.data.col(nums = terms$numerator, denoms = terms$denominator, label = label) 
+        plot.data$additional.col.data$cases = data.col
+    }
+    
+    if ((length(grouped.data[[1]]@g2O1) > 0) && (params$fp_show_col4=="TRUE")){
+        data.column <- format.raw.data.col(nums = subgroup.data$col4.nums, denoms = subgroup.data$col4.denoms, 
+        label = as.character(params$fp_col4_str))
+        plot.data$additional.col.data$controls = data.column
+    }
+    
+    plot.data
+}
+
+create.subgroup.plot.data.cont <- function(subgroup.data, params) {
+    grouped.data <- subgroup.data$grouped.data
+    plot.data <- create.subgroup.plot.data.generic(subgroup.data, params) 
 }
 
 # create regression plot data
