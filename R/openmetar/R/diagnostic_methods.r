@@ -169,7 +169,7 @@ get.res.for.one.diag.study <- function(diagnostic.data, params){
     ub <- y + mult*se
     lb <- y - mult*se
     # we make lists to comply with the get.overall method
-    res <- list("b"=c(y), "ci.lb"=lb, "ci.ub"=ub) 
+    res <- list("b"=c(y), "ci.lb"=lb, "ci.ub"=ub, "se"=se) 
     res
 }
 
@@ -247,7 +247,6 @@ diagnostic.fixed.parameters <- function(){
 diagnostic.fixed.overall <- function(results) {
     # this parses out the overall from the computed result
     res <- results$Summary$MAResults
-    res.short <- results.short.list(res)
 }
 
 ##################################
@@ -318,7 +317,6 @@ diagnostic.random.parameters <- function(){
 diagnostic.random.overall <- function(results) {
     # this parses out the overall from the computed result
     res <- results$Summary$MAResults
-    res.short <- results.short.list(res)
 }
 
 ###################################################
@@ -364,7 +362,7 @@ diagnostic.fixed.sroc <- function(diagnostic.data, params){
     results
 }
 
-diagnostic.fixed.parameters <- function(){
+diagnostic.fixed.sroc.parameters <- function(){
     # parameters
     apply_adjustment_to = c("only0", "all")
 

@@ -24,7 +24,7 @@ cum.ma.binary <- function(fname, binary.data, params){
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
     
     # iterate over the binaryData elements, adding one study at a time
-    cum.results <- array(dim=c(length(binary.data@study.names),3))
+    cum.results <- array(list(NULL), dim=c(length(binary.data@study.names)))
     params$create.plot <- FALSE
     for (i in 1:length(binary.data@study.names)){
         # build a BinaryData object including studies
@@ -53,17 +53,15 @@ cum.ma.binary <- function(fname, binary.data, params){
         # it's passing!
         cur.res <- eval(call(fname, bin.data.tmp, params))
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
-        cum.results[i,] <- c(cur.overall$b, cur.overall$ci.lb, cur.overall$ci.ub) 
+        cum.results[[i]] <- cur.overall 
     }
-    cum.results.display <- binary.transform.f(params$measure)$display.scale(cum.results)
     study.names <- binary.data@study.names[1] 
     for (count in 2:length(binary.data@study.names)) {
         study.names <- c(study.names, paste("+ ",binary.data@study.names[count], sep=""))
     }
-    
-    cum.disp <- create.overall.display(cum.results.display, study.names, params)
+    cum.disp <- create.overall.display(res=cum.results, study.names, params, data.type="binary")
     forest.path <- paste(params$fp_outpath, sep="")
-    plot.data <- create.plot.data.overall(params, res=cum.results, data.type="binary", study.names, addRow1Space=TRUE)
+    plot.data <- create.plot.data.overall(res=cum.results, study.names, params, data.type="binary", addRow1Space=TRUE)
     forest.plot(forest.data=plot.data, outpath=forest.path)
 
     # Now we package the results in a dictionary (technically, a named 
@@ -87,7 +85,7 @@ loo.ma.binary <- function(fname, binary.data, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
     
-    loo.results <- array(dim=c(length(binary.data@study.names),3))
+    loo.results <- array(list(NULL), dim=c(length(binary.data@study.names)))
     params$create.plot <- FALSE
     N <- length(binary.data@study.names)
     for (i in 1:N){
@@ -131,16 +129,15 @@ loo.ma.binary <- function(fname, binary.data, params){
         # it's passing!
         cur.res <- eval(call(fname, bin.data.tmp, params))
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
-        loo.results[i,] <- c(cur.overall$b, cur.overall$ci.lb, cur.overall$ci.ub)
+        loo.results[[i]] <- cur.overall
     }
-    loo.results.display <- binary.transform.f(params$measure)$display.scale(loo.results)
     study.names <- NULL 
     for (count in 1:length(binary.data@study.names)) {
         study.names <- c(study.names, paste("- ",binary.data@study.names[count], sep=""))
     }
-    loo.disp <- create.overall.display(loo.results.display, study.names, params)
+    loo.disp <- create.overall.display(res=loo.results, study.names, params, data.type="binary")
     forest.path <- paste(params$fp_outpath, sep="")
-    plot.data <- create.plot.data.overall(params, res=loo.results, data.type="binary", study.names, addRow1Space=FALSE)
+    plot.data <- create.plot.data.overall(res=loo.results, study.names, params, data.type="binary", addRow1Space=FALSE)
     forest.plot(forest.data=plot.data, outpath=forest.path)
     
 
@@ -167,7 +164,7 @@ cum.ma.diagnostic <- function(fname, diagnostic.data, params){
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
     
     # iterate over the diagnosticData elements, adding one study at a time
-    cum.results <- array(dim=c(length(diagnostic.data@study.names),3))
+    cum.results <- array(list(NULL), dim=c(length(diagnostic.data@study.names)))
     params$create.plot <- FALSE
     for (i in 1:length(diagnostic.data@study.names)){
         # build a DiagnosticData object including studies
@@ -196,17 +193,16 @@ cum.ma.diagnostic <- function(fname, diagnostic.data, params){
         # it's passing!
         cur.res <- eval(call(fname, diag.data.tmp, params))
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
-        cum.results[i,] <- c(cur.overall$b, cur.overall$ci.lb, cur.overall$ci.ub)
+        cum.results[[i]] <- cur.overall
     }
-    cum.results.display <- diagnostic.transform.f(params$measure)$display.scale(cum.results)
     study.names <- diagnostic.data@study.names[1] 
     for (count in 2:length(diagnostic.data@study.names)) {
         study.names <- c(study.names, paste("+ ",diagnostic.data@study.names[count], sep=""))
     }
     
-    cum.disp <- create.overall.display(cum.results.display, study.names, params)
+    cum.disp <- create.overall.display(res=cum.results, study.names, params, data.type="diagnostic")
     forest.path <- paste(params$fp_outpath, sep="")
-    plot.data <- create.plot.data.overall(params, res=cum.results, data.type="diagnostic", study.names, addRow1Space=TRUE)
+    plot.data <- create.plot.data.overall(res=cum.results, study.names, params, data.type="diagnostic", addRow1Space=TRUE)
     forest.plot(forest.data=plot.data, outpath=forest.path)
 
     # Now we package the results in a dictionary (technically, a named 
@@ -230,7 +226,7 @@ loo.ma.diagnostic <- function(fname, diagnostic.data, params){
     # assert that the argument is the correct type
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
     
-    loo.results <- array(dim=c(length(diagnostic.data@study.names),3))
+    loo.results <- array(list(NULL), dim=c(length(diagnostic.data@study.names)))
     params$create.plot <- FALSE
     N <- length(diagnostic.data@study.names)
     for (i in 1:N){
@@ -274,16 +270,15 @@ loo.ma.diagnostic <- function(fname, diagnostic.data, params){
         # it's passing!
         cur.res <- eval(call(fname, diag.data.tmp, params))
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
-        loo.results[i,] <- c(cur.overall$b, cur.overall$ci.lb, cur.overall$ci.ub)
+        loo.results[[i]] <- cur.overall
     }
-    loo.results.display <- diagnostic.transform.f(params$measure)$display.scale(loo.results)
     study.names <- NULL 
     for (count in 1:length(diagnostic.data@study.names)) {
         study.names <- c(study.names, paste("- ",diagnostic.data@study.names[count], sep=""))
     }
-    loo.disp <- create.overall.display(loo.results.display, study.names, params)
+    loo.disp <- create.overall.display(res=loo.results, study.names, params, data.type="diagnostic")
     forest.path <- paste(params$fp_outpath, sep="")
-    plot.data <- create.plot.data.overall(params, res=loo.results, data.type="diagnostic", study.names, addRow1Space=FALSE)
+    plot.data <- create.plot.data.overall(res=loo.results, study.names, params, data.type="diagnostic", addRow1Space=FALSE)
     forest.plot(forest.data=plot.data, outpath=forest.path)
     
 
@@ -310,7 +305,7 @@ cum.ma.continuous <- function(fname, cont.data, params){
     if (!("ContinuousData" %in% class(cont.data))) stop("Continuous data expected.")
     
     # iterate over the continuousData elements, adding one study at a time
-    cum.results <- array(dim=c(length(cont.data@study.names),3))
+    cum.results <- array(list(NULL), dim=c(length(cont.data@study.names)))
     params$create.plot <- FALSE
     for (i in 1:length(cont.data@study.names)){
         # build a ContinuousData object including studies
@@ -346,16 +341,15 @@ cum.ma.continuous <- function(fname, cont.data, params){
         # it's passing!
         cur.res <- eval(call(fname, cont.data.tmp, params))
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
-        cum.results[i,] <- c(cur.overall$b, cur.overall$ci.lb, cur.overall$ci.ub)
+        cum.results[[i]] <- cur.overall
     }
-    cum.results.display <- diagnostic.transform.f(params$measure)$display.scale(cum.results)
     study.names <- cont.data@study.names[1] 
     for (count in 2:length(cont.data@study.names)) {
         study.names <- c(study.names, paste("+ ",cont.data@study.names[count], sep=""))
     }
-    cum.disp <- create.overall.display(cum.results.display, study.names, params)
+    cum.disp <- create.overall.display(res=cum.results, study.names, params, data.type="continuous")
     forest.path <- paste(params$fp_outpath, sep="")
-    plot.data <- create.plot.data.overall(params, res=cum.results, data.type="continuous", study.names, addRow1Space=TRUE)
+    plot.data <- create.plot.data.overall(res=cum.results, study.names, params, data.type="continuous", addRow1Space=TRUE)
     forest.plot(forest.data=plot.data, outpath=forest.path)
     
     #
@@ -379,7 +373,7 @@ loo.ma.continuous <- function(fname, cont.data, params){
     # assert that the argument is the correct type
     if (!("ContinuousData" %in% class(cont.data))) stop("Continuous data expected.")
     
-    loo.results <- array(dim=c(length(cont.data@study.names),3))
+    loo.results <- array(list(NULL), dim=c(length(cont.data@study.names)))
     params$create.plot <- FALSE
     N <- length(cont.data@study.names)
     for (i in 1:N){
@@ -430,17 +424,16 @@ loo.ma.continuous <- function(fname, cont.data, params){
         # it's passing!
         cur.res <- eval(call(fname, cont.data.tmp, params))
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
-        loo.results[i,] <- c(cur.overall$b, cur.overall$ci.lb, cur.overall$ci.ub)
+        loo.results[[i]] <- cur.overall
     }
-    loo.results.display <- diagnostic.transform.f(params$measure)$display.scale(loo.results)
     study.names <- NULL
     for (count in 1:length(cont.data@study.names)) {
         study.names <- c(study.names, paste("- ",cont.data@study.names[count], sep=""))
     }
-    loo.disp <- create.overall.display(loo.results.display, study.names, params)
+    loo.disp <- create.overall.display(res=loo.results, study.names, params, data.type="continuous")
 
     forest.path <- paste(params$fp_outpath, sep="")
-    plot.data <- create.plot.data.overall(params, res=loo.results, study.names, addRow1Space=FALSE)
+    plot.data <- create.plot.data.overall(res=loo.results, study.names, params, data.type="continuous", addRow1Space=FALSE)
     forest.plot(forest.data=plot.data, outpath=forest.path)
     
     #
@@ -461,23 +454,6 @@ loo.ma.continuous <- function(fname, cont.data, params){
 #  binary subgroup MA  #
 ########################
 
-subgroup.binary <- function(fname, binary.data, params, cov.name){
-    # assert that the argument is the correct type
-    if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
-    cov.val.str <- paste("binary.data@covariates$", cov.name, sep="")
-    subgroups <- eval(parse(text=cov.val.str))
-    params$create.plot <- FALSE
-    subgroup.data <- NULL
-    subgroup.data <- compute.subgroup.data.binary(fname, binary.data, params, subgroups)
-    # get the overall results and add them to subgroup.data
-    res <- eval(call(fname, binary.data, params))
-    res.overall <- eval(call(paste(fname, ".overall", sep=""), res))
-    subgroup.data$grouped.data[[length(subgroup.data$subgroup.list)+1]] <- binary.data
-    subgroup.data$results[[length(subgroup.data$subgroup.list)+1]] <- res.overall
-    plot.data <- create.subgroup.plot.data.generic(subgroup.data, params)
-    forest.plot(forest.data=plot.data, outpath=params$fp_outpath)
-}    
-
 subgroup.ma.binary <- function(fname, binary.data, params, cov.name){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
@@ -487,14 +463,13 @@ subgroup.ma.binary <- function(fname, binary.data, params, cov.name){
     subgroup.list <- union(subgroups,subgroups)
     grouped.data <- array(list(NULL),c(length(subgroup.list)+1))
     subgroup.results <- array(list(NULL), c(length(subgroup.list)+1))
-    subgroup.summaries <- array(dim=c(length(subgroup.list)+1, 3))
     col3.nums <- NULL
     col3.denoms <- NULL
     col4.nums <- NULL
     col4.denoms <- NULL
     count <- 1
     for (i in subgroup.list){
-        # build a BinaryData object 
+        # build a BinaryData object for each subgourp 
         y.tmp <- binary.data@y[subgroups == i]
         SE.tmp <- binary.data@SE[subgroups == i]
         names.tmp <- binary.data@study.names[subgroups == i]
@@ -522,21 +497,16 @@ subgroup.ma.binary <- function(fname, binary.data, params, cov.name){
         col4.denoms <- c(col4.denoms, bin.data.tmp@g2O1 + bin.data.tmp@g2O2, sum(bin.data.tmp@g2O1 + bin.data.tmp@g2O2)) 
         cur.res <- eval(call(fname, bin.data.tmp, params))
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
-        subgroup.summaries[count,] <- c(cur.overall$b, cur.overall$ci.lb, cur.overall$ci.ub) 
         subgroup.results[[count]] <- cur.overall
         count <- count + 1
     }
     res <- eval(call(fname, binary.data, params))
     res.overall <- eval(call(paste(fname, ".overall", sep=""), res))
     grouped.data[[count]] <- binary.data
-    # create summaries to display
     subgroup.results[[count]] <- res.overall
-    subgroup.summaries[length(subgroup.list)+1,] <- c(res.overall$b, res.overall$ci.lb, res.overall$ci.ub)
-    subgroup.summaries.display <- binary.transform.f(params$measure)$display.scale(subgroup.summaries) 
     subgroup.names <- paste("Subgroup ", subgroup.list, sep="")
     subgroup.names <- c(subgroup.names, "Overall")
-    subgroup.disp <- create.overall.display(subgroup.summaries.display, subgroup.names, params)
-    
+    subgroup.disp <- create.overall.display(subgroup.results, subgroup.names, params, data.type="binary")
     forest.path <- paste(params$fp_outpath, sep="")
     # pack up the data for forest plot.
     subgroup.data <- list("subgroup.list"=subgroup.list, "grouped.data"=grouped.data, "results"=subgroup.results, 
@@ -567,7 +537,7 @@ subgroup.ma.diagnostic <- function(fname, diagnostic.data, params, subgroups){
     subgroup.list <- union(subgroups,subgroups)
     grouped.data <- array(list(NULL),c(length(subgroup.list) + 1))
     subgroup.results <- array(list(NULL), c(length(subgroup.list) + 1))
-    subgroup.summaries <- array(dim=c(length(subgroup.list) + 1))
+    #subgroup.summaries <- array(dim=c(length(subgroup.list) + 1))
     count <- 1
     for (i in subgroup.list){
         # build a BinaryData object 
@@ -597,33 +567,61 @@ subgroup.ma.diagnostic <- function(fname, diagnostic.data, params, subgroups){
         cur.res <- eval(call(fname, diag.data.tmp, params))
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
         subgroup.results[[count]] <- cur.overall
-        subgroup.summaries[count,] <- 
+       #subgroup.summaries[count,] <- 
         count <- count + 1
     }
-    subgroup.data <- list("subgroup.list"=subgroup.list, "grouped.data"=grouped.data, "results"=subgroup.results)
+    res <- eval(call(fname, binary.data, params))
+    res.overall <- eval(call(paste(fname, ".overall", sep=""), res))
+    grouped.data[[count]] <- binary.data
+    subgroup.results[[count]] <- res.overall
+    subgroup.names <- paste("Subgroup ", subgroup.list, sep="")
+    subgroup.names <- c(subgroup.names, "Overall")
+    subgroup.disp <- create.overall.display(subgroup.results, subgroup.names, params, data.type="binary")
+    forest.path <- paste(params$fp_outpath, sep="")
+    # pack up the data for forest plot.
+    subgroup.data <- list("subgroup.list"=subgroup.list, "grouped.data"=grouped.data, "results"=subgroup.results, 
+                          "col3.nums"=col3.nums, "col3.denoms"=col3.denoms, "col4.nums"=col4.nums, "col4.denoms"=col4.denoms)
+    plot.data <- create.subgroup.plot.data.binary(subgroup.data, params)
+    forest.plot(forest.data=plot.data, outpath=forest.path)
+    # Now we package the results in a dictionary (technically, a named 
+    # vector). In particular, there are two fields that must be returned; 
+    # a dictionary of images (mapping titles to image paths) and a list of texts
+    # (mapping titles to pretty-printed text). In this case we have only one 
+    # of each. 
+    #     
+    images <- c("Subgroups Forest Plot"=forest.path)
+    plot.names <- c("subgroups forest plot"="subgroups_forest_plot")
+    
+    results <- list("images"=images, "Subgroups Summary"=subgroup.disp, "plot_names"=plot.names)
+    results
 }
 
 #############################
-#  continusous subgroup MA  #
+#  continuous subgroup MA  #
 #############################
 
-subgroup.ma.cont <- function(fname, cont.data, params, subgroups){
+subgroup.ma.cont <- function(fname, cont.data, params, cov.name){
     if (!("ContinuousData" %in% class(cont.data))) stop("Continuous data expected.")
-    
+    cov.val.str <- paste("cont.data@covariates$", cov.name, sep="")
+    subgroups <- eval(parse(text=cov.val.str))
+    params$create.plot <- FALSE
     subgroup.list <- union(subgroups,subgroups)
-    grouped.data <- array(list(NULL), dim=c(length(subgroup.list)+1))
-    subgroup.results <- array(list(NULL), dim=c(length(subgroup.list)+1))
-    subgroup.summaries <- array(dim=c(length(subgroup.list)+1), 3)
+    grouped.data <- array(list(NULL),c(length(subgroup.list)+1))
+    subgroup.results <- array(list(NULL), c(length(subgroup.list)+1))
+    col3.nums <- NULL
+    col3.denoms <- NULL
+    col4.nums <- NULL
+    col4.denoms <- NULL
     count <- 1
     for (i in subgroup.list){
-        # build a BinaryData object 
+        # build a ContinuousData object 
         y.tmp <- cont.data@y[subgroups == i]
         SE.tmp <- cont.data@SE[subgroups == i]
         names.tmp <- cont.data@study.names[subgroups == i]
-        bin.data.tmp <- NULL
-        if (length(cont.data@g1O1) > 0){
+        cont.data.tmp <- NULL
+        if (length(cont.data@N1) > 0){
             # if we have group level data for 
-            # group 1, outcome 1, then we assume
+            # group 1, then we assume
             # we have it for all groups
             N1.tmp <- cont.data@N1[subgroups == i]
             mean1.tmp <- cont.data@mean1[subgroups == i]
@@ -648,11 +646,33 @@ subgroup.ma.cont <- function(fname, cont.data, params, subgroups){
         grouped.data[[count]] <- cont.data.tmp
         cur.res <- eval(call(fname, cont.data.tmp, params))
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
-        subgroup.summaries[i,] <- c(cur.overall$b, cur.overall$ci.lb, cur.overall$ci.ub) 
+        #subgroup.summaries[i,] <- c(cur.overall$b, cur.overall$ci.lb, cur.overall$ci.ub) 
         subgroup.results[[count]] <- cur.overall
         count <- count + 1
     }
-    subgroup.data <- list("subgroup.list"=subgroup.list, "grouped.data"=grouped.data, "results"=subgroup.results)
+    res <- eval(call(fname, cont.data, params))
+    res.overall <- eval(call(paste(fname, ".overall", sep=""), res))
+    grouped.data[[count]] <- cont.data
+    subgroup.results[[count]] <- res.overall
+    subgroup.names <- paste("Subgroup ", subgroup.list, sep="")
+    subgroup.names <- c(subgroup.names, "Overall")
+    subgroup.disp <- create.overall.display(subgroup.results, subgroup.names, params, data.type="continuous")
+    forest.path <- paste(params$fp_outpath, sep="")
+    # pack up the data for forest plot.
+    subgroup.data <- list("subgroup.list"=subgroup.list, "grouped.data"=grouped.data, "results"=subgroup.results, 
+                          "col3.nums"=col3.nums, "col3.denoms"=col3.denoms, "col4.nums"=col4.nums, "col4.denoms"=col4.denoms)
+    plot.data <- create.subgroup.plot.data.cont(subgroup.data, params)
+    forest.plot(forest.data=plot.data, outpath=forest.path)
+    # Now we package the results in a dictionary (technically, a named 
+    # vector). In particular, there are two fields that must be returned; 
+    # a dictionary of images (mapping titles to image paths) and a list of texts
+    # (mapping titles to pretty-printed text). In this case we have only one 
+    # of each. 
+    #     
+    images <- c("Subgroups Forest Plot"=forest.path)
+    plot.names <- c("subgroups forest plot"="subgroups_forest_plot")
+    results <- list("images"=images, "Subgroups Summary"=subgroup.disp, "plot_names"=plot.names)
+    results
 }
 
 multiple.ma <- function(binary.data, methods, params.vec) {

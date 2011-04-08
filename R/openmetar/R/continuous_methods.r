@@ -50,7 +50,7 @@ get.res.for.one.cont.study <- function(cont.data, params){
     ub <- y + mult*se
     lb <- y - mult*se
     # we make lists to comply with the get.overall method
-    res <- list("b"=c(y), "ci.lb"=lb, "ci.ub"=ub) 
+    res <- list("b"=c(y), "ci.lb"=lb, "ci.ub"=ub, "se"=se) 
     res
 }
 
@@ -119,7 +119,6 @@ continuous.fixed.parameters <- function(){
 continuous.fixed.overall <- function(results){
     # this parses out the overall from the computed result
     res <- results$Summary$MAResults
-    res.short <- results.short.list(res)
 }
 
 ###############################
@@ -189,5 +188,4 @@ continuous.random.parameters <- function(){
 continuous.random.overall <- function(results){
     # this parses out the overall from the computed result
     res <- results$Summary$MAResults
-    res.short <- results.short.list(res)
 }

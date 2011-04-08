@@ -69,7 +69,7 @@ get.res.for.one.binary.study <- function(binary.data, params){
     ub <- y + mult*se
     lb <- y - mult*se
     # we make lists to comply with the get.overall method
-    res <- list("b"=c(y), "ci.lb"=lb, "ci.ub"=ub) 
+    res <- list("b"=c(y), "ci.lb"=lb, "ci.ub"=ub, "se"=se) 
     res
 }
 
@@ -167,7 +167,6 @@ binary.fixed.inv.var.overall <- function(results) {
 binary.fixed.mh <- function(binary.data, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")  
-
     results <- NULL
     if (length(binary.data@g1O1) == 1 || length(binary.data@y) == 1){
         res <- get.res.for.one.binary.study(binary.data, params)
@@ -178,7 +177,8 @@ binary.fixed.mh <- function(binary.data, params){
     else{
         res<-rma.mh(ai=binary.data@g1O1, bi=binary.data@g1O2, 
                                 ci=binary.data@g2O1, di=binary.data@g2O2, slab=binary.data@study.names,
-                                level=params$conf.level, digits=params$digits, measure=params$measure) 
+                                level=params$conf.level, digits=params$digits, measure=params$measure,
+                                add=params$adjust, to=params$to) 
         #                        
         # Create list to display summary of results
         #
@@ -193,7 +193,7 @@ binary.fixed.mh <- function(binary.data, params){
             # compute point estimates for plot.data in case they are missing
             forest.path <- paste(params$fp_outpath, sep="")
             plot.data <- create.plot.data.binary(binary.data, params, res)
-            forest.plot(plot.data, outpath=forest.path)
+            forest.plot(forest.data=plot.data, outpath=forest.path)
     
         #
         # Now we package the results in a dictionary (technically, a named 
@@ -240,7 +240,6 @@ binary.fixed.mh.is.feasible <- function(binary.data){
 binary.fixed.mh.overall <- function(results) {
     # this parses out the overall from the computed result
     res <- results$Summary$MAResults
-    res.short <- results.short.list(res)
 }
                                                                                                                          
 ##################################################
@@ -279,7 +278,7 @@ binary.fixed.peto <- function(binary.data, params){
             # compute point estimates for plot.data in case they are missing
             forest.path <- paste(params$fp_outpath, sep="")
             plot.data <- create.plot.data.binary(binary.data, params, res)
-            forest.plot(plot.data, outpath=forest.path)
+            forest.plot(forest.data=plot.data, outpath=forest.path)
     
         #
         # Now we package the results in a dictionary (technically, a named 
@@ -326,7 +325,6 @@ binary.fixed.peto.is.feasible <- function(binary.data){
 binary.fixed.peto.overall <- function(results) {
     # this parses out the overall from the computed result
     res <- results$Summary$MAResults
-    res.short <- results.short.list(res)
 }
 
 
@@ -364,8 +362,8 @@ binary.random <- function(binary.data, params){
     #
     if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
         forest.path <- paste(params$fp_outpath, sep="")
-        plot.data <- create.plot.data.binary(binary.data, params, res)
-        forest.plot(plot.data, outpath=forest.path)
+        plot.data <- create.plot.data.binary(binary.data, params, res, types)
+        forest.plot(forest.data=plot.data, outpath=forest.path)
         
         #
         # Now we package the results in a dictionary (technically, a named 
@@ -400,5 +398,4 @@ binary.random.parameters <- function(){
 binary.random.overall <- function(results) {
     # this parses out the overall from the computed result
     res <- results$Summary$MAResults
-    res.short <- results.short.list(res)
 }

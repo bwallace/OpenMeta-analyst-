@@ -122,39 +122,56 @@ create.summary.disp <- function(res, params, degf, model.title, data.type) {
         transform.name <- "binary.transform.f"
     }
     QLabel =  paste("Q(df = ", degf, ")", sep="")
-    I2 <- max(0, (res$QE - degf)/res$QE)
-    I2 <- paste(100 * round(I2, digits = 2), "%")
-    QE <- round(res$QE, digits=params$digits)
-    QEp <- round.display(x=res$QEp, digits=params$digits)
-    het.array <-  array(c(QLabel, QE, "p-Value", QEp, "I^2", I2), dim=c(2,3))
-    class(het.array) <- "summary.data"
-    het.title <- "  Test for Heterogeneity"
+    if (!is.null(res$QE)) {
+      I2 <- max(0, (res$QE - degf)/res$QE)
+      I2 <- paste(100 * round(I2, digits = 2), "%")
+      QE <- round(res$QE, digits=params$digits)
+    } else {
+      I2 <- "NA"
+      QE <- "NA"
+    }
+    if (!is.null(res$QEp)) {
+      QEp <- round.display(x=res$QEp, digits=params$digits)
+    } else {
+      QEp <- "NA"
+    }
+    if (!is.null(res$pval)) {
+      pVal <- round.display(res$pval, digits=params$digits)
+    } else {
+      pVal <- "NA"
+    }
+    if (!is.null(res$zval)) {
+      zVal <- round.display(res$zval, digits=params$digits)
+    } else {
+      zVal <- "NA"
+    }
+    #het.array <-  array(c(QLabel, QE, "p-Value", QEp, "I^2", I2), dim=c(2,3))
+    #class(het.array) <- "summary.data"
+    #het.title <- "  Test for Heterogeneity"
     res.title <- "  Model Results (reporting scale)"
-    est.disp <- round(eval(call(transform.name, params$measure))$display.scale(res$b), digits=params$digits)
+    y.disp <- round(eval(call(transform.name, params$measure))$display.scale(res$b), digits=params$digits)
     lb.disp <- round(eval(call(transform.name, params$measure))$display.scale(res$ci.lb), digits=params$digits)
     ub.disp <- round(eval(call(transform.name, params$measure))$display.scale(res$ci.ub), digits=params$digits)
-
-    pVal <- round.display(res$pval, digits=params$digits)
-    zVal <- round(res$zval, digits=params$digits)
     se <- round(res$se, digits=params$digits)
 
    if ((metric.is.log.scale(params$measure)) | (metric.is.logit.scale(params$measure))) {
          # display and calculation scales are different - create two tables for results
-         res.array <- array(c("Estimate", est.disp, "p-Value", pVal, "Z-Value", zVal, "Lower bound", lb.disp,
-                                        "Upper bound", ub.disp, QLabel, QE, "Het. p-Value", QEp, "I^2", I2), dim=c(2,8))
+         res.array <- array(c("Estimate", y.disp, "Lower bound", lb.disp,
+                              "Upper bound", ub.disp, "p-Value", pVal, "Z-Value", zVal,  
+                              QLabel, QE, "Het. p-Value", QEp, "I^2", I2), dim=c(2,8))
          
          estCalc <- round(res$b, digits=params$digits)
          lbCalc <- round(res$ci.lb, digits=params$digits)
          ubCalc <- round(res$ci.ub, digits=params$digits)
          alt.array <- array(c("Estimate", estCalc, "SE", se, "Lower bound", lbCalc, "Upper bound", ubCalc), dim=c(2,4))
-         alt.title <- "  Model Results (calculation scale)"
+         alt.title <- "  Point Estimates (calculation scale)"
          #arrays = list(arr1=het.array, arr2=res.array, arr3=alt.array)
          arrays <- list(arr1=res.array, arr2=alt.array)
     }
 
     else {
         # display and calculation scales are the same - create one table
-        res.array <- array(c("Estimate", est.disp, "SE", se, "p-Value", pVal, "Z-Value", zVal, "Lower bound", lb.disp,
+        res.array <- array(c("Estimate", y.disp, "SE", se, "p-Value", pVal, "Z-Value", zVal, "Lower bound", lb.disp,
                                         "Upper bound", ub.disp), dim=c(2,6))
         #arrays = list(arr1=het.array, arr2=res.array)
         arrays = list(arr1="res.array")
@@ -180,16 +197,82 @@ create.regression.disp <- function(res, params) {
     return(reg.disp)
 }
 
-create.overall.display <- function(res, study.names, params) {
+create.overall.display <- function(res, study.names, params, data.type) {
     # create table for diplaying summary of overall ma results
-    res <- round(res, digits = params$digits)
-    overall.array <- array(c("", study.names, "Estimates", res[,1], "Lower bounds", res[,2],"Upper bounds", res[,3]),
-                    dim=c(length(study.names) + 1, 4))
-    arrays <- list(arr1=overall.array)
-    overall.disp <- list("model.title" = "", "table.titles" = c(""), "arrays" = arrays)
+    if (data.type == "diagnostic") {
+        transform.name <- "diagnostic.transform.f"
+    }  else {  
+       # data is binary or cont
+        transform.name <- "binary.transform.f"
+    } 
+    degf <- length(study.names) - 1
+    overall.array <- array(dim=c(length(study.names) + 1, 9))
+    
+    QLabel =  paste("Q(df = ", degf, ")", sep="")
+    
+    overall.array[1,] <- c("Studies", "Estimate", "Lower bound", "Upper bound", "p-Val", "Z-Val", QLabel,
+                           "Het. p-Val", "I^2")
+    if ((metric.is.log.scale(params$measure)) | (metric.is.logit.scale(params$measure))) {
+        # display and calculation scales are different - create second table for point estimates in calc scale. 
+        overall.array.calc <- array(dim=c(length(study.names) + 1, 4))
+        overall.array.calc[1,] <- c("Studies", "Estimate", "Lower bound", "Upper bound")
+    }
+    # unpack the data
+    for (count in 1:length(study.names)) {
+      y <- res[[count]]$b
+      lb <- res[[count]]$ci.lb
+      ub <- res[[count]]$ci.ub
+      y.disp <- round(eval(call(transform.name, params$measure))$display.scale(y), digits=params$digits)
+      lb.disp <- round(eval(call(transform.name, params$measure))$display.scale(lb), digits=params$digits)
+      ub.disp <- round(eval(call(transform.name, params$measure))$display.scale(ub), digits=params$digits)
+      if (!is.null(res[[count]]$QE)) {
+        I2 <- max(0, (res[[count]]$QE - degf)/res[[count]]$QE)
+        I2 <- paste(100 * round(I2, digits = 2), "%")
+        QE <- round(res[[count]]$QE, digits=params$digits)
+      } else {
+        I2 <- "NA"
+        QE <- "NA"
+      }
+      if (!is.null(res[[count]]$QEp)) {
+        QEp <- round.display(x=res[[count]]$QEp, digits=params$digits)
+      } else {
+        QEp <- "NA"
+      }
+      if (!is.null(res[[count]]$pval)) {
+        pVal <- round.display(res[[count]]$pval, digits=params$digits)
+      } else {
+        pVal <- "NA"
+      }
+      if (!is.null(res[[count]]$zval)) {
+        zVal <- round.display(res[[count]]$zval, digits=params$digits)
+      } else {
+        zVal <- "NA"
+      }
+      overall.array[count+1,] <- c(study.names[count], y.disp, lb.disp, ub.disp, pVal, zVal, QE, QEp, I2)
+      if ((metric.is.log.scale(params$measure)) | (metric.is.logit.scale(params$measure))) {
+        # create data for second table for point estimates in calc scale.
+        y.calc <- round(y, digits=params$digits)
+        lb.calc <- round(lb, digits=params$digits)
+        ub.calc <- round(ub, digits=params$digits)  
+        overall.array.calc[count+1, ] <- c(study.names[count], y.disp, lb.disp, ub.disp)
+      }
+    }
+    
+    if ((metric.is.log.scale(params$measure)) | (metric.is.logit.scale(params$measure))) {
+        # display and calculation scales are different - create second table data    
+       table.titles <- c("  Model Results (reporting scale)", "  Point Estimates (calculation scale)")
+       arrays <- list(arr1=overall.array, arr2=overall.array.calc)
+       
+    } else {
+       # only one table
+       table.titles <- c("  Model Results")
+       arrays <- list(arr1=overall.array)
+    }
+    overall.disp <- list("model.title" = "", "table.titles" = table.titles, "arrays" = arrays)
     class(overall.disp) <- "summary.display"
-    return(overall.disp)
+    overall.disp
 }
+
 
 results.short.list <- function(res) {
     # extracts res$b, res$ci.lb, and res$ci.ub from res

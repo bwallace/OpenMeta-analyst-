@@ -27,7 +27,7 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     if (metric.is.log.scale(params$measure)){
         scale.str <- "log" 
     } 
-    transform.name <- "cont.transform.f"
+    transform.name <- "continuous.transform.f"
     data.type <- "continuous"
     # flag to distinguish between diagnostic and nondiagnostic data
     if ("DiagnosticData" %in% class(om.data)) {
@@ -39,20 +39,15 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     }
     
     plot.options <- set.plot.options(params)
+    #plot.options <- list(show.summary.line=TRUE)
     if (!is.null(params$fp_display.lb)) {
         plot.options$display.lb <- eval(call(transform.name, params$measure))$calc.scale(params$fp_display.lb)
     }
     if (!is.null(params$fp_display.ub)) {
         plot.options$display.ub <- eval(call(transform.name, params$measure))$calc.scale(params$fp_display.ub)
     }
-    if (is.null(params$fp_types)) {
-        params$fp_types <- c(3, rep(0, length(om.data@study.names)), 2)
-    } 
-    if (is.null(params$fp_label)) {
-        params$fp_label <- c(paste(params$fp_col1_str, sep = ""), om.data@study.names, "Overall")
-    } 
-    plot.data <- list(label=params$fp_label,
-                      types=params$fp_types,  
+    plot.data <- list(label = c(paste(params$fp_col1_str, sep = ""), om.data@study.names, "Overall"),
+                      types = c(3, rep(0, length(om.data@study.names)), 2),
                       scale = scale.str,
                       data.type = data.type,
                       options = plot.options)         
@@ -75,8 +70,13 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub)
     
     if (params$fp_show_col2=='TRUE') {
-        # format entries for text column in forest plot        
-        effect.size.col <- format.effect.size.col(y=y.disp, lb=lb.disp, ub=ub.disp, params)
+        # format entries for effect size text column in forest plot        
+        effect.sizes <- format.effect.sizes(y=y.disp, lb=lb.disp, ub=ub.disp, params)
+        # first row contains headers, so add label
+        effect.size.label <- create.effect.size.label(effect.sizes, params)
+        effect.size.col <- c(effect.size.label,
+                             paste(effect.sizes$y.display, effect.sizes$lb.display, ",", 
+                                   effect.sizes$ub.display, ")", sep = ""))
         plot.data$additional.col.data$es <- effect.size.col
     }
     if (scale.str == "log") {
@@ -168,12 +168,12 @@ create.plot.data.continuous <- function(cont.data, params, res, selected.cov = N
     plot.data
 }
 
-create.plot.data.overall <- function(params, res, data.type, study.names, addRow1Space){
+create.plot.data.overall <- function(res, study.names, params, data.type, addRow1Space){
     scale.str <- "standard"
     if (metric.is.log.scale(params$measure)){
         scale.str <- "log" 
     } 
-    transform.name <- "cont.transform.f"
+    transform.name <- "continuous.transform.f"
     # flag to distinguish between diagnostic and nondiagnostic data
     if (data.type == "diagnostic") {
         transform.name <- "diagnostic.transform.f"
@@ -206,9 +206,15 @@ create.plot.data.overall <- function(params, res, data.type, study.names, addRow
                 scale = scale.str,
                 data.type = data.type,
                 options = plot.options)
-    y <- res[,1]
-    lb <- res[,2]
-    ub <- res[,3]
+    # unpack data
+    y <- NULL
+    lb <- NULL
+    ub <- NULL
+    for (count in 1:length(study.names)) {
+      y <- c(y, res[[count]]$b)
+      lb <- c(lb, res[[count]]$ci.lb)
+      ub <- c(ub, res[[count]]$ci.ub)
+    }
     # transform entries to display scale
     y.disp <- eval(call(transform.name, params$measure))$display.scale(y)
     lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb)
@@ -231,57 +237,95 @@ create.plot.data.overall <- function(params, res, data.type, study.names, addRow
 }
 
 # create subgroup analysis plot data
-create.subgroup.plot.data.generic <- function(subgroup.data, params) {
+create.subgroup.plot.data.generic <- function(subgroup.data, params, selected.cov=NULL) {
     grouped.data <- subgroup.data$grouped.data
     res <- subgroup.data$results
     subgroup.list <- subgroup.data$subgroup.list
-    cur.res <- NULL
-    cur.plot.data <- NULL
-    # create plot data for first study - handled separately because there is
-    # a header row and the header for the effect size column needs to be formatted to align with the data.
-    cur.res <- res[[1]]
-    params.tmp <- params
-    params.tmp$fp_types <-c(3, rep(0, length(grouped.data[[1]]@study.names)), 1)
-    # include the type 3 header row
-    params.tmp$fp_label <- c(as.character(params$fp_col1_str), grouped.data[[1]]@study.names, paste("Subgroup ", subgroup.list[[1]], sep=""))
-    # include the header for column 1
-    plot.data <- create.plot.data.generic(grouped.data[[1]], params=params.tmp, cur.res)
-    if (params$fp_show_col2=='TRUE') {
-        cur.es.col <- cur.plot.data$additional.col.data$es
-        plot.data$additional.col.data$es <- c(plot.data$additional.col.data$es, cur.es.col)
+    scale.str <- "standard"
+    if (metric.is.log.scale(params$measure)){
+        scale.str <- "log" 
     } 
-    for (i in 2:length(subgroup.list)){
-        # call create.plot.data.generic for the remaining subgroups and concatenate results
+    transform.name <- "continuous.transform.f"
+    data.type <- "continuous"
+    # flag to distinguish between diagnostic and nondiagnostic data
+    if ("DiagnosticData" %in% class(grouped.data[[1]])) {
+        transform.name <- "diagnostic.transform.f"
+        data.type <- "diagnostic"
+    }  else if ("BinaryData" %in% class(grouped.data[[1]])) {
+        transform.name <- "binary.transform.f"
+        data.type <- "binary"
+    }
+    cur.res <- NULL
+    y <- NULL
+    lb <- NULL
+    ub <- NULL
+    label.col <- NULL
+    types <- NULL
+    alpha <- 1.0-(params$conf.level/100.0)
+    mult <- abs(qnorm(alpha/2.0))
+    for (i in 1:length(subgroup.list)){
+        # create plot data for each subgroup and concatenate results
         cur.res <- res[[i]]
         params.tmp <- params
-        params.tmp$fp_types <-c(rep(0, length(grouped.data[[i]]@study.names)), 1)
-        params.tmp$fp_label <- c(grouped.data[[i]]@study.names, paste("Subgroup ", subgroup.list[[i]], sep=""))
-        cur.plot.data <- create.plot.data.generic(grouped.data[[i]], params=params.tmp, cur.res)
-        # append current plot data
-        plot.data$label <- c(plot.data$label, cur.plot.data$label)
-        plot.data$types <- c(plot.data$types, cur.plot.data$types)
-        plot.data$effects$ES <- c(plot.data$effects$ES, cur.plot.data$effects$ES)
-        plot.data$effects$LL <- c(plot.data$effects$LL, cur.plot.data$effects$LL)
-        plot.data$effects$UL <- c(plot.data$effects$UL, cur.plot.data$effects$UL)
-        if (params$fp_show_col2=='TRUE') {
-             cur.es.col <- cur.plot.data$additional.col.data$es
-             plot.data$additional.col.data$es <- c(plot.data$additional.col.data$es, cur.es.col)
-        }           
+        types <- c(rep(0, length(grouped.data[[i]]@study.names)), 1)
+        cur.y.overall <- cur.res$b[1]
+        cur.lb.overall <- cur.res$ci.lb[1]
+        cur.ub.overall <- cur.res$ci.ub[1]
+        cur.y <- grouped.data[[i]]@y
+        cur.lb <- cur.y - mult*grouped.data[[i]]@SE
+        cur.ub <- cur.y + mult*grouped.data[[i]]@SE
+        y <- c(y, cur.y, cur.y.overall)
+        lb <- c(lb, cur.lb, cur.lb.overall)
+        ub <- c(ub, cur.ub, cur.ub.overall) 
+        types <- c(types, rep(0, length(grouped.data[[i]]@study.names)), 1)
     } 
-    # add the overall summary row
-    plot.data$label <- c(plot.data$label, "Overall")
-    plot.data$types <- c(plot.data$types, 2)
     cur.res <- res[[length(subgroup.list) + 1]]
-    cur.plot.data <- create.plot.data.generic(grouped.data[[length(subgroup.list) + 1]], params, cur.res)
-    es <- cur.plot.data$effects$ES
-    ll <- cur.plot.data$effects$LL
-    ul <- cur.plot.data$effects$UL
-    plot.data$effects$ES <- c(plot.data$effects$ES, es[length(es)])
-    plot.data$effects$LL <- c(plot.data$effects$LL, ll[length(ll)])
-    plot.data$effects$UL <- c(plot.data$effects$UL, ul[length(ul)])
+    cur.y.overall <- cur.res$b[1]
+    cur.lb.overall <- cur.res$ci.lb[1]
+    cur.ub.overall <- cur.res$ci.ub[1]
+    y <- c(y, cur.y.overall)
+    lb <- c(lb, cur.lb.overall)
+    ub <- c(ub, cur.ub.overall)
+    types <- c(3,types, 2)
+    label.col <- c("Studies", label.col, "Overall")
+    plot.options <- set.plot.options(params)
+    plot.options$fp_show.summary.line <- FALSE
+    plot.data <- list(label = label.col,
+                      types=types,
+                      scale = scale.str,
+                      data.type = data.type,
+                      options = plot.options)      
+    y.disp <- eval(call(transform.name, params$measure))$display.scale(y)
+    lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb)
+    ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub)
+    if (scale.str == "log") {
+        # if metric is log scale, pass effect sizes in log scale.
+        effects <- list(ES = y,
+                    LL = lb,
+                    UL = ub) 
+    } else {  
+        # otherwise pass effect sizes in standard scale   
+        effects <- list(ES = y.disp,
+                    LL = lb.disp,
+                    UL = ub.disp)  
+    }           
+    plot.data$effects <- effects
     if (params$fp_show_col2=='TRUE') {
-             cur.es.col <- cur.plot.data$additional.col.data$es
-             plot.data$additional.col.data$es <- c(plot.data$additional.col.data$es, cur.es.col[length(cur.es.col)])
+        # format entries for effect size text column in forest plot        
+        effect.sizes <- format.effect.sizes(y=y.disp, lb=lb.disp, ub=ub.disp, params)
+        # first row contains headers, so add label
+        effect.size.label <- create.effect.size.label(effect.sizes, params)
+        effect.size.col <- c(effect.size.label,
+                               paste(effect.sizes$y.display, effect.sizes$lb.display, ",", 
+                                     effect.sizes$ub.display, ")", sep = ""))
+        plot.data$additional.col.data$es <- effect.size.col
+    }
+    # covariates
+    if (!is.null(selected.cov)){
+        cov.val.str <- paste("om.data@covariates$", selected.cov, sep="")
+        cov.values <- eval(parse(text=cov.val.str))
+        plot.data$covariate <- list(varname = selected.cov,
+                                   values = cov.values)
     }
     plot.data
 }
@@ -903,60 +947,55 @@ diagnostic.sroc.plot <- function(plot.data, outpath,
 #  Functions for formatting data for display in plots #
 #######################################################
 
-format.effect.size.col <- function(y, lb, ub, params) {
-        # format column by padding entries with spaces for alignment
-        digits <- params$digits
-        y.display <- round(y, digits)
-        y.display <- sprintf(paste("%.", digits,"f", sep=""), y.display)
-        lb.display <- round(lb, digits)
-        lb.display <- sprintf(paste("%.", digits,"f", sep=""), lb.display)
-        ub.display <- round(ub, digits)
-        ub.display <- sprintf(paste("%.", digits,"f", sep=""), ub.display)
+format.effect.sizes <- function(y, lb, ub, params) {
+  # format column by padding entries with spaces for alignment
+  digits <- params$digits
+  y.display <- round(y, digits)
+  y.display <- sprintf(paste("%.", digits,"f", sep=""), y.display)
+  lb.display <- round(lb, digits)
+  lb.display <- sprintf(paste("%.", digits,"f", sep=""), lb.display)
+  ub.display <- round(ub, digits)
+  ub.display <- sprintf(paste("%.", digits,"f", sep=""), ub.display)
                        
-        # for ub, add an extra space to positive numbers for alignment (negative numbers display minus sign)
-        if (length(ub.display[ub.display >= 0])) {
-            ub.display[ub.display >= 0] <- mapply(pad.with.spaces, ub.display[ub.display >= 0], begin.num=1, end.num=0)
-        }
+  # for ub, add an extra space to positive numbers for alignment (negative numbers display minus sign)
+  if (length(ub.display[ub.display >= 0])) {
+    ub.display[ub.display >= 0] <- mapply(pad.with.spaces, ub.display[ub.display >= 0], begin.num=1, end.num=0)
+  }
+  # format results by padding with spaces to align columns 
+  ub.max.chars <- max(nchar(ub.display))
+  ub.extra.space <- ub.max.chars - nchar(ub.display)
+  ub.display <- mapply(pad.with.spaces, ub.display, begin.num = ub.extra.space, end.num=0)
+  # for ub, add an extra space to positive numbers for alignment (negative numbers display minus sign)
+  if (length(ub.display[ub.display >= 0])) {
+    ub.display[ub.display >= 0] <- mapply(pad.with.spaces, ub.display[ub.display >= 0], begin.num=1, end.num=0)
+  }
+  # if ub has any negative entries, add an extra space to separate entry from preceding ","
+  if (min(ub) < 0) {
+    ub.display <- paste(" ", ub.display, sep="")
+  }
+  lb.display <- paste(" (", lb.display, sep="")
+  lb.max.chars <- max(nchar(lb.display))
+  lb.extra.space <- lb.max.chars - nchar(lb.display)
+  lb.display <- mapply(pad.with.spaces, lb.display, begin.num = lb.extra.space, end.num=0)
+  effect.sizes <- list("y.display"=y.display, "lb.display"=lb.display, "ub.display"=ub.display)
+}
 
-        # format results by padding with spaces to align columns 
-        ub.max.chars <- max(nchar(ub.display))
-        ub.extra.space <- ub.max.chars - nchar(ub.display)
-        ub.display <- mapply(pad.with.spaces, ub.display, begin.num = ub.extra.space, end.num=0)
-        # for ub, add an extra space to positive numbers for alignment (negative numbers display minus sign)
-        if (length(ub.display[ub.display >= 0])) {
-            ub.display[ub.display >= 0] <- mapply(pad.with.spaces, ub.display[ub.display >= 0], begin.num=1, end.num=0)
-        }
-        # if ub has any negative entries, add an extra space to separate entry from preceding ","
-        if (min(ub) < 0) {
-            ub.display <- paste(" ", ub.display, sep="")
-        }
-       
-       
-        lb.display <- paste(" (", lb.display, sep="")
-        lb.max.chars <- max(nchar(lb.display))
-        lb.extra.space <- lb.max.chars - nchar(lb.display)
-        lb.display <- mapply(pad.with.spaces, lb.display, begin.num = lb.extra.space, end.num=0)
-        if (params$fp_types[1] == 3) {
-            # first row contains headings
-            col2.label <- as.character(params$fp_col2_str)
-            # if label contains ",", pad label to align columns
-            label.info <- check.label(label = col2.label, split.str = ",")
-            max.chars <- max(nchar(ub.display)) + 1
-            # add 1 because a space is added before each ub entry.
-            if (label.info$contains.symbol == TRUE) {
-                # label contains "," so pad label to align ","
-                # we're assuming that there is a single space after ","
-                col2.label.padded <- pad.with.spaces(col2.label, begin.num=0, end.num = max.chars - label.info$end.string.length) 
-            } else {
-                # label doesn't contain "," so pad label to center over column 
-                col2.label.padded <- pad.with.spaces(col2.label, begin.num=0, end.num = floor((col2.width - nchar(col2.label)) / 2))           
-            }
-            effect.size.col <- c(col2.label.padded,
-                                 paste(y.display, lb.display, ",", ub.display, ")", sep = ""))
-        } else {
-            # first row does not contain headings
-            effect.size.col <- c(paste(y.display, lb.display, ",", ub.display, ")", sep = ""))
-        }
+create.effect.size.label <- function(effect.sizes, params) {
+   # add label to effect.size.column if first row contains headers
+   col2.label <- as.character(params$fp_col2_str)
+   # if label contains ",", pad label to align columns
+   label.info <- check.label(label = col2.label, split.str = ",")
+   max.chars <- max(nchar(effect.sizes$ub.display)) + 1
+   # add 1 because a space is added before each ub entry.
+   if (label.info$contains.symbol == TRUE) {
+     # label contains "," so pad label to align ","
+     # we're assuming that there is a single space after ","
+     col2.label.padded <- pad.with.spaces(col2.label, begin.num=0, end.num = max.chars - label.info$end.string.length) 
+   } else {
+     # label doesn't contain "," so pad label to center over column 
+     col2.label.padded <- pad.with.spaces(col2.label, begin.num=0, end.num = floor((col2.width - nchar(col2.label)) / 2))           
+   }
+   col2.label.padded
 }
   
 format.raw.data.col <- function(nums, denoms, label) {
