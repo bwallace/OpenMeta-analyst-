@@ -112,10 +112,9 @@ binary.fixed.inv.var <- function(binary.data, params){
                                 level=params$conf.level, digits=params$digits, method="FE", add=params$adjust,
                                 to=params$to)
         # Create list to display summary of results
-        degf <- res$k - res$p
         model.title <- paste("Fixed-Effects Model - Inverse Variance (k = ", res$k, ")", sep="")
         data.type <- "binary"
-        summary.disp <- create.summary.disp(res, params, degf, model.title, data.type)
+        summary.disp <- create.summary.disp(res, params, model.title, data.type)
 
         results <- list("Summary"=summary.disp, "images"=c())
         if ((is.null(params$create.plot)) || params$create.plot == TRUE) {
@@ -177,15 +176,13 @@ binary.fixed.mh <- function(binary.data, params){
     else{
         res<-rma.mh(ai=binary.data@g1O1, bi=binary.data@g1O2, 
                                 ci=binary.data@g2O1, di=binary.data@g2O2, slab=binary.data@study.names,
-                                level=params$conf.level, digits=params$digits, measure=params$measure,
-                                add=params$adjust, to=params$to) 
+                                level=params$conf.level, digits=params$digits, measure=params$measure) 
         #                        
         # Create list to display summary of results
         #
-        degf <- res$k.yi - 1
         model.title <- paste("Fixed-Effects Model - Mantel Haenszel (k = ", res$k, ")", sep="")
         data.type <- "binary"
-        summary.disp <- create.summary.disp(res, params, degf, model.title, data.type)
+        summary.disp <- create.summary.disp(res, params, model.title, data.type)
         # generate forest plot 
         #
         if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
@@ -265,10 +262,9 @@ binary.fixed.peto <- function(binary.data, params){
         #                        
         # Create list to display summary of results
         #
-        degf <- res$k.yi - 1
         model.title <- paste("Fixed-Effects Model - Peto (k = ", res$k, ")", sep="")
         data.type <- "binary"
-        summary.disp <- create.summary.disp(res, params, degf, model.title, data.type)
+        summary.disp <- create.summary.disp(res, params, model.title, data.type)
                                             
         #
         # generate forest plot 
@@ -352,17 +348,16 @@ binary.random <- function(binary.data, params){
     #                        
     # Create list to display summary of results
     #
-    degf <- res$k.yi - 1
     model.title <- paste("Binary Random-Effects Model (k = ", res$k, ")", sep="")
     data.type <- "binary"
-    summary.disp <- create.summary.disp(res, params, degf, model.title, data.type)
+    summary.disp <- create.summary.disp(res, params, model.title, data.type)
  
     #
     # generate forest plot 
     #
     if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
         forest.path <- paste(params$fp_outpath, sep="")
-        plot.data <- create.plot.data.binary(binary.data, params, res, types)
+        plot.data <- create.plot.data.binary(binary.data, params, res)
         forest.plot(forest.data=plot.data, outpath=forest.path)
         
         #

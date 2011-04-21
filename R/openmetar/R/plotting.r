@@ -904,13 +904,13 @@ meta.regression.plot <- function(plot.data, outpath,
 #       Diagnostic SROC               #
 #######################################
 
-diagnostic.sroc.plot <- function(plot.data, outpath,
-                                  symSize=1,
-                                  lcol = "darkred",
-                                  lweight = 3,
-                                  lpatern = "dotted",
-                                  plotregion = "n",
-                                  mcolor = "darkgreen") {
+sroc.plot <- function(plot.data, outpath,
+                      symSize=1,
+                      lcol = "darkred",
+                      lweight = 3,
+                      lpatern = "dotted",
+                      plotregion = "n",
+                      mcolor = "darkgreen") {
  
     fitted.line <- plot.data$fitted.line
     weighted <- plot.data$weighted
@@ -919,7 +919,7 @@ diagnostic.sroc.plot <- function(plot.data, outpath,
     s.range <- plot.data$s.range
     
     png(file=outpath, width=5 , height=5, units="in", res=144)
-    if (weighted == TRUE) {
+    if (weighted == "weighted") {
         inv.var <- plot.data$inv.var    
         max.symbol.size <- .05
         # radius of the largest circle

@@ -107,7 +107,7 @@ round.display <- function(x, digits) {
     x.rounded
 }
 
-create.summary.disp <- function(res, params, degf, model.title, data.type) {
+create.summary.disp <- function(res, params, model.title, data.type) {
     # create table for diplaying summary of ma results
     if (data.type == "diagnostic") {
         transform.name <- "diagnostic.transform.f"
@@ -115,7 +115,8 @@ create.summary.disp <- function(res, params, degf, model.title, data.type) {
        # data is binary or cont
         transform.name <- "binary.transform.f"
     }
-    QLabel =  paste("Q(df = ", degf, ")", sep="")
+    degf <- res$k - 1
+    QLabel =  paste("Q(df=", degf, ")", sep="")
     if (!is.null(res$QE)) {
       I2 <- max(0, (res$QE - degf)/res$QE)
       I2 <- paste(100 * round(I2, digits = 2), "%")
@@ -195,13 +196,13 @@ create.overall.display <- function(res, study.names, params, data.type) {
        # data is binary or cont
         transform.name <- "binary.transform.f"
     } 
-    degf <- length(study.names) - 1
+    #degf <- length(study.names) - 1
     overall.array <- array(dim=c(length(study.names) + 1, 10))
     
-    QLabel =  paste("Q(df = ", degf, ")", sep="")
+    #QLabel =  paste("Q(df = ", degf, ")", sep="")
     
     overall.array[1,] <- c("Studies", "Estimate", "Lower bound", "Upper bound", 
-                           "Std. error", "p-Val", "Z-Val", QLabel,
+                           "Std. error", "p-Val", "Z-Val", "Q (df)",
                            "Het. p-Val", "I^2")
     if ((metric.is.log.scale(params$measure)) | (metric.is.logit.scale(params$measure))) {
         # display and calculation scales are different - create second table for point estimates in calc scale. 
@@ -219,9 +220,11 @@ create.overall.display <- function(res, study.names, params, data.type) {
       ub.disp <- round(eval(call(transform.name, params$measure))$display.scale(ub), digits=params$digits)
       se.disp <- round(se, digits=params$digits)
       if (!is.null(res[[count]]$QE)) {
+        degf <- res[[count]]$k - 1
         I2 <- max(0, (res[[count]]$QE - degf)/res[[count]]$QE)
         I2 <- paste(100 * round(I2, digits = 2), "%")
         QE <- round(res[[count]]$QE, digits=params$digits)
+        QE <- paste(QE, " (", degf,")", sep="")
       } else {
         I2 <- "NA"
         QE <- "NA"

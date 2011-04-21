@@ -19,12 +19,12 @@
 ##################################
 #  binary cumulative MA          #
 ##################################
-cum.ma.binary <- function(fname, binary.data, params){
+cumul.ma.binary <- function(fname, binary.data, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
     
     # iterate over the binaryData elements, adding one study at a time
-    cum.results <- array(list(NULL), dim=c(length(binary.data@study.names)))
+    cumul.results <- array(list(NULL), dim=c(length(binary.data@study.names)))
     params$create.plot <- FALSE
     for (i in 1:length(binary.data@study.names)){
         # build a BinaryData object including studies
@@ -53,15 +53,15 @@ cum.ma.binary <- function(fname, binary.data, params){
         # it's passing!
         cur.res <- eval(call(fname, bin.data.tmp, params))
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
-        cum.results[[i]] <- cur.overall 
+        cumul.results[[i]] <- cur.overall 
     }
     study.names <- binary.data@study.names[1] 
     for (count in 2:length(binary.data@study.names)) {
         study.names <- c(study.names, paste("+ ",binary.data@study.names[count], sep=""))
     }
-    cum.disp <- create.overall.display(res=cum.results, study.names, params, data.type="binary")
+    cumul.disp <- create.overall.display(res=cumul.results, study.names, params, data.type="binary")
     forest.path <- paste(params$fp_outpath, sep="")
-    plot.data <- create.plot.data.overall(res=cum.results, study.names, params, data.type="binary", addRow1Space=TRUE)
+    plot.data <- create.plot.data.overall(res=cumul.results, study.names, params, data.type="binary", addRow1Space=TRUE)
     forest.plot(forest.data=plot.data, outpath=forest.path)
 
     # Now we package the results in a dictionary (technically, a named 
@@ -73,7 +73,7 @@ cum.ma.binary <- function(fname, binary.data, params){
     images <- c("Cumulative Forest Plot"=forest.path)
     plot.names <- c("cumulative forest plot"="cumulative_forest_plot")
     
-    results <- list("images"=images, "Cumulative Summary"=cum.disp, "plot_names"=plot.names)
+    results <- list("images"=images, "Cumulative Summary"=cumul.disp, "plot_names"=plot.names)
     results
 }
 
@@ -159,12 +159,12 @@ loo.ma.binary <- function(fname, binary.data, params){
 ##################################
 #  diagnostic cumulative MA      #
 ##################################
-cum.ma.diagnostic <- function(fname, diagnostic.data, params){
+cumul.ma.diagnostic <- function(fname, diagnostic.data, params){
     # assert that the argument is the correct type
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
     
     # iterate over the diagnosticData elements, adding one study at a time
-    cum.results <- array(list(NULL), dim=c(length(diagnostic.data@study.names)))
+    cumul.results <- array(list(NULL), dim=c(length(diagnostic.data@study.names)))
     params$create.plot <- FALSE
     for (i in 1:length(diagnostic.data@study.names)){
         # build a DiagnosticData object including studies
@@ -193,16 +193,16 @@ cum.ma.diagnostic <- function(fname, diagnostic.data, params){
         # it's passing!
         cur.res <- eval(call(fname, diag.data.tmp, params))
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
-        cum.results[[i]] <- cur.overall
+        cumul.results[[i]] <- cur.overall
     }
     study.names <- diagnostic.data@study.names[1] 
     for (count in 2:length(diagnostic.data@study.names)) {
         study.names <- c(study.names, paste("+ ",diagnostic.data@study.names[count], sep=""))
     }
     
-    cum.disp <- create.overall.display(res=cum.results, study.names, params, data.type="diagnostic")
+    cumul.disp <- create.overall.display(res=cumul.results, study.names, params, data.type="diagnostic")
     forest.path <- paste(params$fp_outpath, sep="")
-    plot.data <- create.plot.data.overall(res=cum.results, study.names, params, data.type="diagnostic", addRow1Space=TRUE)
+    plot.data <- create.plot.data.overall(res=cumul.results, study.names, params, data.type="diagnostic", addRow1Space=TRUE)
     forest.plot(forest.data=plot.data, outpath=forest.path)
 
     # Now we package the results in a dictionary (technically, a named 
@@ -214,7 +214,7 @@ cum.ma.diagnostic <- function(fname, diagnostic.data, params){
     images <- c("Cumulative Forest Plot"=forest.path)
     plot.names <- c("cumulative forest plot"="cumulative_forest_plot")
     
-    results <- list("images"=images, "Cumulative Summary"=cum.disp, "plot_names"=plot.names)
+    results <- list("images"=images, "Cumulative Summary"=cumul.disp, "plot_names"=plot.names)
     results
 }
 
@@ -300,12 +300,12 @@ loo.ma.diagnostic <- function(fname, diagnostic.data, params){
 ##################################
 #  continuous cumulative MA      #
 ##################################
-cum.ma.continuous <- function(fname, cont.data, params){
+cumul.ma.continuous <- function(fname, cont.data, params){
     # assert that the argument is the correct type
     if (!("ContinuousData" %in% class(cont.data))) stop("Continuous data expected.")
     
     # iterate over the continuousData elements, adding one study at a time
-    cum.results <- array(list(NULL), dim=c(length(cont.data@study.names)))
+    cumul.results <- array(list(NULL), dim=c(length(cont.data@study.names)))
     params$create.plot <- FALSE
     for (i in 1:length(cont.data@study.names)){
         # build a ContinuousData object including studies
@@ -341,15 +341,15 @@ cum.ma.continuous <- function(fname, cont.data, params){
         # it's passing!
         cur.res <- eval(call(fname, cont.data.tmp, params))
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
-        cum.results[[i]] <- cur.overall
+        cumul.results[[i]] <- cur.overall
     }
     study.names <- cont.data@study.names[1] 
     for (count in 2:length(cont.data@study.names)) {
         study.names <- c(study.names, paste("+ ",cont.data@study.names[count], sep=""))
     }
-    cum.disp <- create.overall.display(res=cum.results, study.names, params, data.type="continuous")
+    cumul.disp <- create.overall.display(res=cumul.results, study.names, params, data.type="continuous")
     forest.path <- paste(params$fp_outpath, sep="")
-    plot.data <- create.plot.data.overall(res=cum.results, study.names, params, data.type="continuous", addRow1Space=TRUE)
+    plot.data <- create.plot.data.overall(res=cumul.results, study.names, params, data.type="continuous", addRow1Space=TRUE)
     forest.plot(forest.data=plot.data, outpath=forest.path)
     
     #
@@ -362,7 +362,7 @@ cum.ma.continuous <- function(fname, cont.data, params){
     images <- c("Cumulative Forest Plot"=forest.path)
     plot.names <- c("cumulative forest plot"="cumulative forest_plot")
     
-    results <- list("images"=images, "Cumulative Summary"=cum.disp, "plot_names"=plot.names)
+    results <- list("images"=images, "Cumulative Summary"=cumul.disp, "plot_names"=plot.names)
     results
 }
 

@@ -11,11 +11,14 @@
 library(metafor)
 
 compute.for.one.cont.study <- function(cont.data, params){
-    res <- escalc(params$measure, 
-                  n1i=cont.data@N1, m1i=cont.data@mean1, sd1i=cont.data@sd1,
-                  n2i=cont.data@N2, m2i=cont.data@mean2, sd2i=cont.data@sd2)
-                  
-    res      
+    n1i <- cont.data@N1
+    n2i <- cont.data@N2
+    m1i <- cont.data@mean1
+    m2i <- cont.data@mean2
+    sd1i <- cont.data@sd1
+    sd2i <- cont.data@sd2
+    res <- escalc(params$measure, n1i, n2i, m1i, m2i,sd1i,sd2i)
+    res
 }
 
 continuous.transform.f <- function(metric.str){
@@ -75,10 +78,9 @@ continuous.fixed <- function(cont.data, params){
                      method="FE", level=params$conf.level,
                      digits=params$digits)
 
-        degf <- res$k - res$p
         model.title <- paste("Continuous Fixed-Effects Model (k = ", res$k, ")", sep="")
         data.type <- "cont"
-        summary.disp <- create.summary.disp(res, params, degf, model.title, data.type)
+        summary.disp <- create.summary.disp(res, params, model.title, data.type)
     }    
     #
     # generate forest plot 
@@ -141,11 +143,9 @@ continuous.random <- function(cont.data, params){
                      slab=cont.data@study.names,
                      method=params$rm.method, level=params$conf.level,
                      digits=params$digits)
-
-        degf <- res$k - res$p
         model.title <- paste("Continuous Random-Effects Model (k = ", res$k, ")", sep="")
         data.type <- "cont"
-        summary.disp <- create.summary.disp(res, params, degf, model.title, data.type)
+        summary.disp <- create.summary.disp(res, params, model.title, data.type)
     }        
     #
     # generate forest plot 

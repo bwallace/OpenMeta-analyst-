@@ -112,7 +112,7 @@ compute.diagnostic.terms <- function(raw.data, params) {
         # diagnostic odds ratio
         DOR = FP * FN)  
 
-    list("numerator"=numerator, "denominator"=denominator)      
+    terms <- list("numerator"=numerator, "denominator"=denominator)      
 }
 
 diagnostic.transform.f <- function(metric.str){
@@ -200,10 +200,9 @@ diagnostic.fixed <- function(diagnostic.data, params){
                      method="FE", level=params$conf.level,
                      digits=params$digits)
          # Create list to display summary of results
-        degf <- res$k - res$p
-        model.title <- "Fixed-Effect Model - Inverse Variance"
+        model.title <- paste("Diagnostic Fixed-Effects Model - Inverse Variance (k = ", res$k, ")", sep="")
         data.type <- "diagnostic"
-        summary.disp <- create.summary.disp(res, params, degf, model.title, data.type)
+        summary.disp <- create.summary.disp(res, params, model.title, data.type)
         # function to pretty-print summary of results.
         if ((is.null(params$create.plot)) || params$create.plot == TRUE) {
           # A forest plot will be created unless
@@ -271,10 +270,10 @@ diagnostic.random <- function(diagnostic.data, params){
         #                        
         # Create list to display summary of results
         #
-        degf <- res$k.yi - 1
+
         model.title <- paste("Diagnostic Random-Effects Model (k = ", res$k, ")", sep="")
         data.type <- "diagnostic"
-        summary.disp <- create.summary.disp(res, params, degf, model.title, data.type)
+        summary.disp <- create.summary.disp(res, params, model.title, data.type)
  
         #
         # generate forest plot 
@@ -334,7 +333,7 @@ diagnostic.fixed.sroc <- function(diagnostic.data, params){
         S <- logit(TPR) + logit(FPR)
         D <- logit(TPR) - logit(FPR)
         s.range <- list("max"=max(S), "min"=min(S))
-        if (params$sroc_weighted) {
+        if (params$sroc.weighted == "weighted") {
             inv.var <- data.adj$TP + data.adj$FN + data.adj$FP + data.adj$TN
             # compute total number in each study
             res <- lm(D ~ S, weights=inv.var)
@@ -343,12 +342,13 @@ diagnostic.fixed.sroc <- function(diagnostic.data, params){
            res <- lm(D~S)
            # unweighted regression 
         }
-
+    summary.disp <- "SROC Plot"
     # Create list to display summary of results
     fitted.line <- list(intercept=res$coefficients[1], slope=res$coefficients[2])
-    plot.data <- list("fitted.line" = fitted.line, "TPR"=TPR, "FPR"=FPR, "inv.var" = inv.var, "s.range" = s.range, "weighted"=params$sroc_weighted)
-
-    diagnostic.sroc.plot(plot.data, outpath=params$sroc_outpath)
+    #sroc.path <- paste(params$fp_outpath, sep="")
+    sroc.path <- "./r_tmp/sroc.png"
+    plot.data <- list("fitted.line" = fitted.line, "TPR"=TPR, "FPR"=FPR, "inv.var" = inv.var, "s.range" = s.range, "weighted"=params$sroc.weighted)
+    sroc.plot(plot.data, outpath=sroc.path)
     #
     # Now we package the results in a dictionary (technically, a named
     # vector). In particular, there are two fields that must be returned;
@@ -356,23 +356,24 @@ diagnostic.fixed.sroc <- function(diagnostic.data, params){
     # (mapping titles to pretty-printed text). In this case we have only one
     # of each.
     #
-    images <- c("SROC"=params$sroc_outpath)
+    images <- c("SROC"=sroc.path)
     plot.names <- c("sroc"="sroc")
-    results <- list("images"=images, "plot_names"=plot.names)
+    results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
     results
 }
 
 diagnostic.fixed.sroc.parameters <- function(){
     # parameters
     apply_adjustment_to = c("only0", "all")
+    sroc.weighted <- c("weighted", "unweighted")
 
     params <- list("conf.level"="float", "digits"="float",
-                            "adjust"="float", "to"=apply_adjustment_to)
+                            "adjust"="float", "to"=apply_adjustment_to, "sroc.weighted"=sroc.weighted)
 
     # default values
-    defaults <- list("conf.level"=95, "digits"=3, "adjust"=.5, "to"="all")
+    defaults <- list("conf.level"=95, "digits"=3, "adjust"=.5, "to"="all", "sroc.weighted"="weighted")
 
-    var_order = c("conf.level", "digits", "adjust", "to")
+    var_order = c("conf.level", "digits", "adjust", "to", "sroc.weighted")
 
     parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
 }
