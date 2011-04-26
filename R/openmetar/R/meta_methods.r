@@ -491,10 +491,14 @@ subgroup.ma.binary <- function(fname, binary.data, params, cov.name){
         # it's passing!
         grouped.data[[count]] <- bin.data.tmp
         # collect raw data columns
-        col3.nums <- c(col3.nums, bin.data.tmp@g1O1, sum(bin.data.tmp@g1O1)) 
-        col3.denoms <- c(col3.denoms, bin.data.tmp@g1O1 + bin.data.tmp@g1O2, sum(bin.data.tmp@g1O1 + bin.data.tmp@g1O2)) 
-        col4.nums <- c(col4.nums, bin.data.tmp@g2O1, sum(bin.data.tmp@g2O1)) 
-        col4.denoms <- c(col4.denoms, bin.data.tmp@g2O1 + bin.data.tmp@g2O2, sum(bin.data.tmp@g2O1 + bin.data.tmp@g2O2)) 
+        if (params$fp_show_col3=="TRUE") {
+          col3.nums <- c(col3.nums, bin.data.tmp@g1O1, sum(bin.data.tmp@g1O1)) 
+          col3.denoms <- c(col3.denoms, bin.data.tmp@g1O1 + bin.data.tmp@g1O2, sum(bin.data.tmp@g1O1 + bin.data.tmp@g1O2)) 
+        }
+        if (params$fp_show_col4=="TRUE") {
+          col4.nums <- c(col4.nums, bin.data.tmp@g2O1, sum(bin.data.tmp@g2O1)) 
+          col4.denoms <- c(col4.denoms, bin.data.tmp@g2O1 + bin.data.tmp@g2O2, sum(bin.data.tmp@g2O1 + bin.data.tmp@g2O2)) 
+        }
         cur.res <- eval(call(fname, bin.data.tmp, params))
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
         subgroup.results[[count]] <- cur.overall
@@ -531,16 +535,21 @@ subgroup.ma.binary <- function(fname, binary.data, params, cov.name){
 #  diagnostic subgroup MA  #
 ############################
 
-subgroup.ma.diagnostic <- function(fname, diagnostic.data, params, subgroups){
-    if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Binary data expected.")
-    
+subgroup.ma.diagnostic <- function(fname, diagnostic.data, params, cov.name){
+    if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
+    cov.val.str <- paste("diagnostic.data@covariates$", cov.name, sep="")
+    subgroups <- eval(parse(text=cov.val.str))
+    params$create.plot <- FALSE
     subgroup.list <- union(subgroups,subgroups)
     grouped.data <- array(list(NULL),c(length(subgroup.list) + 1))
     subgroup.results <- array(list(NULL), c(length(subgroup.list) + 1))
-    #subgroup.summaries <- array(dim=c(length(subgroup.list) + 1))
+    col3.nums <- NULL
+    col3.denoms <- NULL
+    col4.nums <- NULL
+    col4.denoms <- NULL
     count <- 1
     for (i in subgroup.list){
-        # build a BinaryData object 
+        # build a DiagnosticData object 
         y.tmp <- diagnostic.data@y[subgroups == i]
         SE.tmp <- diagnostic.data@SE[subgroups == i]
         names.tmp <- diagnostic.data@study.names[subgroups == i]
@@ -549,10 +558,10 @@ subgroup.ma.diagnostic <- function(fname, diagnostic.data, params, subgroups){
             # if we have group level data for 
             # group 1, outcome 1, then we assume
             # we have it for all groups
-            TP.tmp <- diagnostic.data@TP[1:i]
-            FN.tmp <- diagnostic.data@FN[1:i]
-            TN.tmp <- diagnostic.data@TN[1:i]
-            FP.tmp <- diagnostic.data@FP[1:i]
+            TP.tmp <- diagnostic.data@TP[subgroups==i]
+            FN.tmp <- diagnostic.data@FN[subgroups==i]
+            TN.tmp <- diagnostic.data@TN[subgroups==i]
+            FP.tmp <- diagnostic.data@FP[subgroups==i]
             diag.data.tmp <- new('DiagnosticData', TP=TP.tmp, 
                                FN=FN.tmp , TN=TN.tmp, 
                                FP=FP.tmp, y=y.tmp, SE=SE.tmp, study.names=names.tmp)
@@ -564,24 +573,30 @@ subgroup.ma.diagnostic <- function(fname, diagnostic.data, params, subgroups){
         # neither what method its calling nor what parameters
         # it's passing!
         grouped.data[[count]] <- diag.data.tmp
+        # collect raw data columns
+        if (params$fp_show_col3=="TRUE") {
+          raw.data <- list("TP"=diag.data.tmp@TP, "FN"=diag.data.tmp@FN, "TN"=diag.data.tmp@TN, "FP"=diag.data.tmp@FP)
+          terms <- compute.diagnostic.terms(raw.data, params)
+          col3.nums <- c(col3.nums, terms$numerator, sum(terms$numerator)) 
+          col3.denoms <- c(col3.denoms, terms$denominator, sum(terms$denominator))
+        }
         cur.res <- eval(call(fname, diag.data.tmp, params))
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
         subgroup.results[[count]] <- cur.overall
-       #subgroup.summaries[count,] <- 
         count <- count + 1
     }
-    res <- eval(call(fname, binary.data, params))
+    res <- eval(call(fname, diagnostic.data, params))
     res.overall <- eval(call(paste(fname, ".overall", sep=""), res))
-    grouped.data[[count]] <- binary.data
+    grouped.data[[count]] <- diagnostic.data
     subgroup.results[[count]] <- res.overall
     subgroup.names <- paste("Subgroup ", subgroup.list, sep="")
     subgroup.names <- c(subgroup.names, "Overall")
-    subgroup.disp <- create.overall.display(subgroup.results, subgroup.names, params, data.type="binary")
+    subgroup.disp <- create.overall.display(subgroup.results, subgroup.names, params, data.type="diagnostic")
     forest.path <- paste(params$fp_outpath, sep="")
     # pack up the data for forest plot.
     subgroup.data <- list("subgroup.list"=subgroup.list, "grouped.data"=grouped.data, "results"=subgroup.results, 
                           "col3.nums"=col3.nums, "col3.denoms"=col3.denoms, "col4.nums"=col4.nums, "col4.denoms"=col4.denoms)
-    plot.data <- create.subgroup.plot.data.binary(subgroup.data, params)
+    plot.data <- create.subgroup.plot.data.diagnostic(subgroup.data, params)
     forest.plot(forest.data=plot.data, outpath=forest.path)
     # Now we package the results in a dictionary (technically, a named 
     # vector). In particular, there are two fields that must be returned; 
@@ -600,7 +615,7 @@ subgroup.ma.diagnostic <- function(fname, diagnostic.data, params, subgroups){
 #  continuous subgroup MA  #
 #############################
 
-subgroup.ma.cont <- function(fname, cont.data, params, cov.name){
+subgroup.ma.continuous <- function(fname, cont.data, params, cov.name){
     if (!("ContinuousData" %in% class(cont.data))) stop("Continuous data expected.")
     cov.val.str <- paste("cont.data@covariates$", cov.name, sep="")
     subgroups <- eval(parse(text=cov.val.str))

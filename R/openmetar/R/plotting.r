@@ -40,11 +40,11 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     
     plot.options <- set.plot.options(params)
     #plot.options <- list(show.summary.line=TRUE)
-    if (!is.null(params$fp_display.lb)) {
-        plot.options$display.lb <- eval(call(transform.name, params$measure))$calc.scale(params$fp_display.lb)
+    if (!is.null(params$fp_plot.lb)) {
+        plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(params$fp_plot.lb)
     }
-    if (!is.null(params$fp_display.ub)) {
-        plot.options$display.ub <- eval(call(transform.name, params$measure))$calc.scale(params$fp_display.ub)
+    if (!is.null(params$fp_plot.ub)) {
+        plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(params$fp_plot.ub)
     }
     plot.data <- list(label = c(paste(params$fp_col1_str, sep = ""), om.data@study.names, "Overall"),
                       types = c(3, rep(0, length(om.data@study.names)), 2),
@@ -182,12 +182,12 @@ create.plot.data.overall <- function(res, study.names, params, data.type, addRow
         transform.name <- "binary.transform.f"
     }
     plot.options <- set.plot.options(params)
-    if (!is.null(params$fp_display.lb)) {
-        plot.options$display.lb <- eval(call(transform.name, params$measure))$calc.scale(params$fp_display.lb)
+    if (!is.null(params$fp_plot.lb)) {
+        plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(params$fp_plot.lb)
     }
-    display.ub <- NULL
-    if (!is.null(params$fp_display.ub)) {
-        plot.options$display.ub <- eval(call(transform.name, params$measure))$calc.scale(params$fp_display.ub)
+    plot.ub <- NULL
+    if (!is.null(params$fp_plot.ub)) {
+        plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(params$fp_plot.ub)
     }
     if (!is.null(params$fp_show.summary.line)) { 
         plot.options$show.summary.line <- params$fp_show.summary.line
@@ -267,7 +267,6 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, selected.co
         # create plot data for each subgroup and concatenate results
         cur.res <- res[[i]]
         params.tmp <- params
-        types <- c(rep(0, length(grouped.data[[i]]@study.names)), 1)
         cur.y.overall <- cur.res$b[1]
         cur.lb.overall <- cur.res$ci.lb[1]
         cur.ub.overall <- cur.res$ci.ub[1]
@@ -278,6 +277,7 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, selected.co
         lb <- c(lb, cur.lb, cur.lb.overall)
         ub <- c(ub, cur.ub, cur.ub.overall) 
         types <- c(types, rep(0, length(grouped.data[[i]]@study.names)), 1)
+        label.col <-c(label.col, grouped.data[[i]]@study.names, paste("Subgroup ", subgroup.list[i], sep=""))
     } 
     cur.res <- res[[length(subgroup.list) + 1]]
     cur.y.overall <- cur.res$b[1]
@@ -343,7 +343,7 @@ create.subgroup.plot.data.binary <- function(subgroup.data, params) {
     if ((length(grouped.data[[1]]@g2O1) > 0) && (params$fp_show_col4=="TRUE")){
         data.column <- format.raw.data.col(nums = subgroup.data$col4.nums, denoms = subgroup.data$col4.denoms, 
         label = as.character(params$fp_col4_str))
-        plot.data$additional.col.data$controls = data.column
+        plot.data$additional.col.data$controls <- data.column
     }
     
     plot.data
@@ -354,8 +354,6 @@ create.subgroup.plot.data.diagnostic <- function(subgroup.data, params) {
     plot.data <- create.subgroup.plot.data.generic(subgroup.data, params) 
 
     if ((length(grouped.data[[1]]@TP) > 0) && (params$fp_show_col3=="TRUE")) {
-       raw.data <- list("TP"=diagnostic.data@TP, "FN"=diagnostic.data@FN, "TN"=diagnostic.data@TN, "FP"=diagnostic.data@FP)
-        terms <- compute.diagnostic.terms(raw.data, params)
         metric <- params$measure
         label <- switch(metric,
         # sensitivity
@@ -374,16 +372,10 @@ create.subgroup.plot.data.diagnostic <- function(subgroup.data, params) {
         NLR = "FN * Di- / TN * Di+",
         # diagnostic odds ratio
         DOR = "TP * TN / FP * FN")
-        data.col <- format.raw.data.col(nums = terms$numerator, denoms = terms$denominator, label = label) 
-        plot.data$additional.col.data$cases = data.col
+        data.column <- format.raw.data.col(nums = subgroup.data$col3.nums, denoms = subgroup.data$col3.denoms, 
+        label = label)
+        plot.data$additional.col.data$cases <- data.column
     }
-    
-    if ((length(grouped.data[[1]]@g2O1) > 0) && (params$fp_show_col4=="TRUE")){
-        data.column <- format.raw.data.col(nums = subgroup.data$col4.nums, denoms = subgroup.data$col4.denoms, 
-        label = as.character(params$fp_col4_str))
-        plot.data$additional.col.data$controls = data.column
-    }
-    
     plot.data
 }
 
@@ -542,7 +534,7 @@ effectsize.column <- function(forest.data, box.sca = 1) {
           precision <- sqrt(1 / ((effect.col$UL - effect.col$LL)/(2*1.96)))
     }
    
-   if (is.null(forest.data$options$display.lb) || is.null(forest.data$options$display.ub)) {
+   if (is.null(forest.data$options$plot.lb) || is.null(forest.data$options$plot.ub)) {
    # if user has not supplied both lower and upper bounds for forest plot display, compute them
    # heuristically as effect.col.range.
    
@@ -584,13 +576,13 @@ effectsize.column <- function(forest.data, box.sca = 1) {
               effect.col.range[2] <- max(merge.data$z)
       }
     }     
-    if (!is.null(forest.data$options$display.lb)) {
+    if (!is.null(forest.data$options$plot.lb)) {
         # user specifies just the lower bound for the display range, so use it instead of the default
-        effect.col.range[1] <- forest.data$options$display.lb
+        effect.col.range[1] <- forest.data$options$plot.lb
     } 
-    if (!is.null(forest.data$options$display.ub)) {
+    if (!is.null(forest.data$options$plot.ub)) {
         # user specifies just the upper bound for the display range, so use it instead of the default
-       effect.col.range[2] <- forest.data$options$display.ub
+       effect.col.range[2] <- forest.data$options$plot.ub
     } 
   
    effect.col.sizes <- box.sca * precision/max(precision)
