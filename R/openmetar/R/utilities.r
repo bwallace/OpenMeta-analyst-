@@ -196,7 +196,7 @@ create.overall.display <- function(res, study.names, params, data.type) {
        # data is binary or cont
         transform.name <- "binary.transform.f"
     } 
-    #degf <- length(study.names) - 1
+
     overall.array <- array(dim=c(length(study.names) + 1, 10))
     
     #QLabel =  paste("Q(df = ", degf, ")", sep="")
@@ -264,7 +264,8 @@ create.overall.display <- function(res, study.names, params, data.type) {
        table.titles <- c("  Model Results")
        arrays <- list(arr1=overall.array)
     }
-    overall.disp <- list("model.title" = "", "table.titles" = table.titles, "arrays" = arrays)
+    overall.disp <- list("model.title" = "", "table.titles" = table.titles, "arrays" = arrays,
+                         "MAResults" = res )
     class(overall.disp) <- "summary.display"
     overall.disp
 }

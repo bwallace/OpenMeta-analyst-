@@ -115,8 +115,7 @@ binary.fixed.inv.var <- function(binary.data, params){
         model.title <- paste("Fixed-Effects Model - Inverse Variance (k = ", res$k, ")", sep="")
         data.type <- "binary"
         summary.disp <- create.summary.disp(res, params, model.title, data.type)
-
-        results <- list("Summary"=summary.disp, "images"=c())
+        # genreate forest plot 
         if ((is.null(params$create.plot)) || params$create.plot == TRUE) {
             forest.path <- paste(params$fp_outpath, sep="")
             plot.data <- create.plot.data.binary(binary.data, params, res)
@@ -183,7 +182,8 @@ binary.fixed.mh <- function(binary.data, params){
         model.title <- paste("Fixed-Effects Model - Mantel Haenszel (k = ", res$k, ")", sep="")
         data.type <- "binary"
         summary.disp <- create.summary.disp(res, params, model.title, data.type)
-        # generate forest plot 
+        #
+        # generate forest plot
         #
         if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
             binary.data <- compute.bin.point.estimates(binary.data, params)
@@ -265,7 +265,6 @@ binary.fixed.peto <- function(binary.data, params){
         model.title <- paste("Fixed-Effects Model - Peto (k = ", res$k, ")", sep="")
         data.type <- "binary"
         summary.disp <- create.summary.disp(res, params, model.title, data.type)
-                                            
         #
         # generate forest plot 
         #

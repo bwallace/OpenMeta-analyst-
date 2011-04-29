@@ -469,40 +469,22 @@ subgroup.ma.binary <- function(fname, binary.data, params, cov.name){
     col4.denoms <- NULL
     count <- 1
     for (i in subgroup.list){
-        # build a BinaryData object for each subgourp 
-        y.tmp <- binary.data@y[subgroups == i]
-        SE.tmp <- binary.data@SE[subgroups == i]
-        names.tmp <- binary.data@study.names[subgroups == i]
-        bin.data.tmp <- NULL
-        if (length(binary.data@g1O1) > 0){
-            g1O1.tmp <- binary.data@g1O1[subgroups == i]
-            g1O2.tmp <- binary.data@g1O2[subgroups == i]
-            g2O1.tmp <- binary.data@g2O1[subgroups == i]
-            g2O2.tmp <- binary.data@g2O2[subgroups == i]
-            bin.data.tmp <- new('BinaryData', g1O1=g1O1.tmp, 
-                               g1O2=g1O2.tmp, g2O1=g2O1.tmp, 
-                               g2O2=g2O2.tmp, y=y.tmp, SE=SE.tmp, study.names=names.tmp)
-        } else {
-            bin.data.tmp <- new('BinaryData', y=y.tmp, SE=SE.tmp, study.names=names.tmp)
-        }
-        # call the parametric function by name, passing along the 
-        # data and parameters. Notice that this method knows
-        # neither what method its calling nor what parameters
-        # it's passing!
-        grouped.data[[count]] <- bin.data.tmp
-        # collect raw data columns
-        if (params$fp_show_col3=="TRUE") {
-          col3.nums <- c(col3.nums, bin.data.tmp@g1O1, sum(bin.data.tmp@g1O1)) 
-          col3.denoms <- c(col3.denoms, bin.data.tmp@g1O1 + bin.data.tmp@g1O2, sum(bin.data.tmp@g1O1 + bin.data.tmp@g1O2)) 
-        }
-        if (params$fp_show_col4=="TRUE") {
-          col4.nums <- c(col4.nums, bin.data.tmp@g2O1, sum(bin.data.tmp@g2O1)) 
-          col4.denoms <- c(col4.denoms, bin.data.tmp@g2O1 + bin.data.tmp@g2O2, sum(bin.data.tmp@g2O1 + bin.data.tmp@g2O2)) 
-        }
-        cur.res <- eval(call(fname, bin.data.tmp, params))
-        cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
-        subgroup.results[[count]] <- cur.overall
-        count <- count + 1
+      # build a BinaryData object for each subgourp
+      bin.data.tmp <- get.subgroup.data.binary(binary.data, cov.name, i)
+      grouped.data[[count]] <- bin.data.tmp
+      # collect raw data columns
+      if (params$fp_show_col3=="TRUE") {
+        col3.nums <- c(col3.nums, bin.data.tmp@g1O1, sum(bin.data.tmp@g1O1)) 
+        col3.denoms <- c(col3.denoms, bin.data.tmp@g1O1 + bin.data.tmp@g1O2, sum(bin.data.tmp@g1O1 + bin.data.tmp@g1O2)) 
+      }
+      if (params$fp_show_col4=="TRUE") {
+        col4.nums <- c(col4.nums, bin.data.tmp@g2O1, sum(bin.data.tmp@g2O1)) 
+        col4.denoms <- c(col4.denoms, bin.data.tmp@g2O1 + bin.data.tmp@g2O2, sum(bin.data.tmp@g2O1 + bin.data.tmp@g2O2)) 
+      }
+      cur.res <- eval(call(fname, bin.data.tmp, params))
+      cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
+      subgroup.results[[count]] <- cur.overall
+      count <- count + 1
     }
     res <- eval(call(fname, binary.data, params))
     res.overall <- eval(call(paste(fname, ".overall", sep=""), res))
@@ -527,8 +509,31 @@ subgroup.ma.binary <- function(fname, binary.data, params, cov.name){
     images <- c("Subgroups Forest Plot"=forest.path)
     plot.names <- c("subgroups forest plot"="subgroups_forest_plot")
     
-    results <- list("images"=images, "Subgroups Summary"=subgroup.disp, "plot_names"=plot.names)
+    results <- list("images"=images, "Summary"=subgroup.disp, "plot_names"=plot.names)
     results
+}
+
+get.subgroup.data.binary <- function(binary.data, cov.name, cov.val) {
+  # returns the subgroup data corresponding to a categorical covariant cov.name
+  # and value cov.val
+  if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
+  cov.val.str <- paste("binary.data@covariates$", cov.name, sep="")
+  subgroups <- eval(parse(text=cov.val.str))
+  y.tmp <- binary.data@y[subgroups == cov.val]
+  SE.tmp <- binary.data@SE[subgroups == cov.val]
+  names.tmp <- binary.data@study.names[subgroups == cov.val]
+  if (length(binary.data@g1O1) > 0){
+    g1O1.tmp <- binary.data@g1O1[subgroups == cov.val]
+    g1O2.tmp <- binary.data@g1O2[subgroups == cov.val]
+    g2O1.tmp <- binary.data@g2O1[subgroups == cov.val]
+    g2O2.tmp <- binary.data@g2O2[subgroups == cov.val]
+    subgroup.data <- new('BinaryData', g1O1=g1O1.tmp, 
+                          g1O2=g1O2.tmp, g2O1=g2O1.tmp, 
+                          g2O2=g2O2.tmp, y=y.tmp, SE=SE.tmp, study.names=names.tmp)
+  } else {
+    subgroup.data <- new('BinaryData', y=y.tmp, SE=SE.tmp, study.names=names.tmp)
+  }
+  subgroup.data
 }
 
 ############################
@@ -549,27 +554,10 @@ subgroup.ma.diagnostic <- function(fname, diagnostic.data, params, cov.name){
     col4.denoms <- NULL
     count <- 1
     for (i in subgroup.list){
-        # build a DiagnosticData object 
-        y.tmp <- diagnostic.data@y[subgroups == i]
-        SE.tmp <- diagnostic.data@SE[subgroups == i]
-        names.tmp <- diagnostic.data@study.names[subgroups == i]
-        diag.data.tmp <- NULL
-        if (length(diagnostic.data@TP) > 0){
-            # if we have group level data for 
-            # group 1, outcome 1, then we assume
-            # we have it for all groups
-            TP.tmp <- diagnostic.data@TP[subgroups==i]
-            FN.tmp <- diagnostic.data@FN[subgroups==i]
-            TN.tmp <- diagnostic.data@TN[subgroups==i]
-            FP.tmp <- diagnostic.data@FP[subgroups==i]
-            diag.data.tmp <- new('DiagnosticData', TP=TP.tmp, 
-                               FN=FN.tmp , TN=TN.tmp, 
-                               FP=FP.tmp, y=y.tmp, SE=SE.tmp, study.names=names.tmp)
-        } else {
-            diag.data.tmp <- new('DiagnosticData', y=y.tmp, SE=SE.tmp, study.names=names.tmp)
-        }
-        # call the parametric function by name, passing along the 
-        # data and parameters. Notice that this method knows
+      # build a DiagnosticData object 
+      diag.data.tmp <- get.subgroup.data.diagnostic(diagnostic.data, cov.name, i)
+      # call the parametric function by name, passing along the 
+      # data and parameters. Notice that this method knows
         # neither what method its calling nor what parameters
         # it's passing!
         grouped.data[[count]] <- diag.data.tmp
@@ -607,8 +595,31 @@ subgroup.ma.diagnostic <- function(fname, diagnostic.data, params, cov.name){
     images <- c("Subgroups Forest Plot"=forest.path)
     plot.names <- c("subgroups forest plot"="subgroups_forest_plot")
     
-    results <- list("images"=images, "Subgroups Summary"=subgroup.disp, "plot_names"=plot.names)
+    results <- list("images"=images, "Summary"=subgroup.disp, "plot_names"=plot.names)
     results
+}
+
+get.subgroup.data.diagnostic <- function(diagnostic.data, cov.name, cov.val) {
+  # returns the subgroup data corresponding to a categorical covariant cov.name
+  # and value cov.val
+  if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
+  cov.val.str <- paste("diagnostic.data@covariates$", cov.name, sep="")
+  subgroups <- eval(parse(text=cov.val.str))
+  y.tmp <- diagnostic.data@y[subgroups == cov.val]
+  SE.tmp <- diagnostic.data@SE[subgroups == cov.val]
+  names.tmp <- diagnostic.data@study.names[subgroups == cov.val]
+  if (length(diagnostic.data@TP) > 0){
+    TP.tmp <- diagnostic.data@TP[subgroups==cov.val]
+    FN.tmp <- diagnostic.data@FN[subgroups==cov.val]
+    TN.tmp <- diagnostic.data@TN[subgroups==cov.val]
+    FP.tmp <- diagnostic.data@FP[subgroups==cov.val]
+    subgroup.data <- new('DiagnosticData', TP=TP.tmp, 
+                          FN=FN.tmp , TN=TN.tmp, 
+                          FP=FP.tmp, y=y.tmp, SE=SE.tmp, study.names=names.tmp)
+  } else {
+    subgroup.data <- new('DiagnosticData', y=y.tmp, SE=SE.tmp, study.names=names.tmp)
+  }
+  subgroup.data
 }
 
 #############################
@@ -629,41 +640,13 @@ subgroup.ma.continuous <- function(fname, cont.data, params, cov.name){
     col4.denoms <- NULL
     count <- 1
     for (i in subgroup.list){
-        # build a ContinuousData object 
-        y.tmp <- cont.data@y[subgroups == i]
-        SE.tmp <- cont.data@SE[subgroups == i]
-        names.tmp <- cont.data@study.names[subgroups == i]
-        cont.data.tmp <- NULL
-        if (length(cont.data@N1) > 0){
-            # if we have group level data for 
-            # group 1, then we assume
-            # we have it for all groups
-            N1.tmp <- cont.data@N1[subgroups == i]
-            mean1.tmp <- cont.data@mean1[subgroups == i]
-            sd1.tmp <- cont.data@sd1[subgroups == i]
-            N2.tmp <- cont.data@N2[subgroups == i]
-            mean2.tmp <- cont.data@mean2[subgroups == i]
-            sd2.tmp <- cont.data@sd2[subgroups == i]
-            cont.data.tmp <- new('ContinuousData', 
-                               N1=N1.tmp, mean1=mean1.tmp , sd1=sd1.tmp, 
-                               N2=N2.tmp, mean2=mean2.tmp, sd2=sd2.tmp,
-                               y=y.tmp, SE=SE.tmp, 
-                               study.names=names.tmp)
-        } else {
-            cont.data.tmp <- new('ContinuousData', 
-                                y=y.tmp, SE=SE.tmp, 
-                                study.names=names.tmp)
-        }
-        # call the parametric function by name, passing along the 
-        # data and parameters. Notice that this method knows
-        # neither what method its calling nor what parameters
-        # it's passing!
-        grouped.data[[count]] <- cont.data.tmp
-        cur.res <- eval(call(fname, cont.data.tmp, params))
-        cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
-        #subgroup.summaries[i,] <- c(cur.overall$b, cur.overall$ci.lb, cur.overall$ci.ub) 
-        subgroup.results[[count]] <- cur.overall
-        count <- count + 1
+      # build a ContinuousData object 
+      cont.data.tmp <- get.subgroup.data.cont(cont.data, cov.name, i) 
+      grouped.data[[count]] <- cont.data.tmp
+      cur.res <- eval(call(fname, cont.data.tmp, params))
+      cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
+      subgroup.results[[count]] <- cur.overall
+      count <- count + 1
     }
     res <- eval(call(fname, cont.data, params))
     res.overall <- eval(call(paste(fname, ".overall", sep=""), res))
@@ -686,8 +669,37 @@ subgroup.ma.continuous <- function(fname, cont.data, params, cov.name){
     #     
     images <- c("Subgroups Forest Plot"=forest.path)
     plot.names <- c("subgroups forest plot"="subgroups_forest_plot")
-    results <- list("images"=images, "Subgroups Summary"=subgroup.disp, "plot_names"=plot.names)
+    results <- list("images"=images, "Summary"=subgroup.disp, "plot_names"=plot.names)
     results
+}
+
+get.subgroup.data.cont <- function(cont.data, cov.name, cov.val) {
+  # returns the subgroup data corresponding to a categorical covariant cov.name
+  # and value cov.val
+  if (!("ContinuousData" %in% class(cont.data))) stop("Continuous data expected.")
+  cov.val.str <- paste("cont.data@covariates$", cov.name, sep="")
+  subgroups <- eval(parse(text=cov.val.str))
+  y.tmp <- cont.data@y[subgroups == cov.val]
+  SE.tmp <- cont.data@SE[subgroups == cov.val]
+  names.tmp <- cont.data@study.names[subgroups == cov.val]
+  if (length(cont.data@N1) > 0){
+    N1.tmp <- cont.data@N1[subgroups == i]
+    mean1.tmp <- cont.data@mean1[subgroups == i]
+    sd1.tmp <- cont.data@sd1[subgroups == i]
+    N2.tmp <- cont.data@N2[subgroups == i]
+    mean2.tmp <- cont.data@mean2[subgroups == i]
+    sd2.tmp <- cont.data@sd2[subgroups == i]
+    subgroup.data <- new('ContinuousData', 
+                          N1=N1.tmp, mean1=mean1.tmp , sd1=sd1.tmp, 
+                          N2=N2.tmp, mean2=mean2.tmp, sd2=sd2.tmp,
+                          y=y.tmp, SE=SE.tmp, 
+                          study.names=names.tmp)
+    } else {
+    subgroup.data <- new('ContinuousData', 
+                          y=y.tmp, SE=SE.tmp, 
+                          study.names=names.tmp)
+    }
+    subgroup.data
 }
 
 multiple.ma <- function(binary.data, methods, params.vec) {
