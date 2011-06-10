@@ -39,12 +39,13 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     }
     
     plot.options <- set.plot.options(params)
-    #plot.options <- list(show.summary.line=TRUE)
-    if (!is.null(params$fp_plot.lb)) {
-        plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(params$fp_plot.lb)
+    if (!is.null(params$fp_plot_lb)) {
+        plot.lb <- eval(parse(text=params$fp_plot_lb))
+        plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(plot.lb)
     }
-    if (!is.null(params$fp_plot.ub)) {
-        plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(params$fp_plot.ub)
+    if (!is.null(params$fp_plot_ub)) {
+        plot.ub <- eval(parse(text=params$fp_plot_ub))
+        plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(plot.ub)
     }
     plot.data <- list(label = c(paste(params$fp_col1_str, sep = ""), om.data@study.names, "Overall"),
                       types = c(3, rep(0, length(om.data@study.names)), 2),
@@ -182,12 +183,12 @@ create.plot.data.overall <- function(res, study.names, params, data.type, addRow
         transform.name <- "binary.transform.f"
     }
     plot.options <- set.plot.options(params)
-    if (!is.null(params$fp_plot.lb)) {
-        plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(params$fp_plot.lb)
+    if (!is.null(params$fp_plot_lb)) {
+        plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(params$fp_plot_lb)
     }
     plot.ub <- NULL
-    if (!is.null(params$fp_plot.ub)) {
-        plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(params$fp_plot.ub)
+    if (!is.null(params$fp_plot_ub)) {
+        plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(params$fp_plot_ub)
     }
     if (!is.null(params$fp_show.summary.line)) { 
         plot.options$show.summary.line <- params$fp_show.summary.line
@@ -409,7 +410,7 @@ create.plot.data.reg <- function(reg.data, params, fitted.line, selected.cov=cov
 
 set.plot.options <- function(params) {
     # set default plot options
-    plot.options <- list(NULL)
+    plot.options <- list()
     if (!is.null(params$fp_xticks)) {
         plot.options$xticks <- eval(parse(text=paste("c(", params$fp_xticks, ")", sep="")))
     } else {
@@ -524,6 +525,8 @@ effectsize.column <- function(forest.data, box.sca = 1) {
     # this is just scaling the boxes according to the SE
     precision <- NULL
     effect.col.range <- NULL
+    user.lb <- NULL
+    user.ub <- NULL
     effect.col<-forest.data$effects
     # i have kept the "ifs" below: when we decide to include more metrics
     # these will be expanded
@@ -533,10 +536,32 @@ effectsize.column <- function(forest.data, box.sca = 1) {
     } else if (forest.data$scale == "standard") {
           precision <- sqrt(1 / ((effect.col$UL - effect.col$LL)/(2*1.96)))
     }
-   
-   if (is.null(forest.data$options$plot.lb) || is.null(forest.data$options$plot.ub)) {
-   # if user has not supplied both lower and upper bounds for forest plot display, compute them
-   # heuristically as effect.col.range.
+    
+    effect.col.sizes <- box.sca * precision/max(precision)
+    # sizes of the boxes in the forest plot - proportional to width of CI
+    
+    # Check whether user input's for plot lower and upper bounds are acceptable.
+    min.user.input <- min(effect.col$ES)
+    # smallest value for which we accept user's input for plot lower bound. We require all
+    # effect sizes to be greater than the user's lower bound.
+    max.user.input <- max(effect.col$ES) 
+    # largest user input for plot upper bound. All effect sizes must be less than this value.
+    if (!is.null(forest.data$options$plot.lb)) {
+        # user specifies the lower bound for the display range, so use it if not too large.
+        if (forest.data$options$plot.lb < min.user.input) {
+          user.lb <- forest.data$options$plot.lb
+        }
+    } 
+    if (!is.null(forest.data$options$plot.ub)) {
+        # user specifies just the upper bound for the display range, so use it if not too small
+        if (forest.data$options$plot.ub > max.user.input) {
+          user.ub <- forest.data$options$plot.ub
+        }
+    }
+    
+    if (is.null(user.lb) || is.null(user.ub)) {
+    # if user has not supplied both lower and upper bounds (that meet the requirements), compute them
+    # heuristically as effect.col.range.
    
        if ((forest.data$data.type == "diagnostic") && (forest.data$scale == "standard")) {
           # calculate the range of the data and round the lower limit down to neareast tenth
@@ -544,49 +569,70 @@ effectsize.column <- function(forest.data, box.sca = 1) {
           a <- floor(10*min(effect.col$LL)) / 10
           b <- ceiling(10*max(effect.col$UL)) / 10
           effect.col.range <- c(a, b)
-      } else  {   
+       } else  {   
           # For non-diagnostic data, this is a heuristic to determine a reasonable range for the displayed values - 
           # confidence intervals that exceed this range are truncated and left or right arrows are displayed instead of the full CI. 
          if (min(effect.col$LL)>0 && max(effect.col$UL)>0) {
-             effect.col.range <- c(max(0.5*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
+           effect.col.range <- c(max(0.5*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
          } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)<=0) { 
-         effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(-1.5*max(effect.col$ES) , max(effect.col$UL)))
+           effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(-1.5*max(effect.col$ES) , max(effect.col$UL)))
           } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)>0) { 
            effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
          } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)>0 && max(effect.col$ES)>0) { 
-              effect.col.range <- c(max(-2*min(effect.col$ES) , min(effect.col$LL)), min(1.5*max(effect.col$ES) , max(effect.col$UL)))
+           effect.col.range <- c(max(-2*min(effect.col$ES) , min(effect.col$LL)), min(1.5*max(effect.col$ES) , max(effect.col$UL)))
           } else if (min(effect.col$LL)<=0 && max(effect.col$UL)<0) { 
-            effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(0.10*max(effect.col$ES) , max(effect.col$UL)))
+           effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(0.10*max(effect.col$ES) , max(effect.col$UL)))
           } 
-      }
+       }  
+         # These are Issa's original heuristics - I increased the multipliers before the min's and max's by a factor of 10 in order to
+         # to widen effect.col.range so as to show more of the confidence intervals - that is, not to truncate them so close to the max
+         # and min of the effect sizes. Leaving the original code commented for now, in case this turns out to be a bad idea!
+         #
+         #if (min(effect.col$LL)>0 && max(effect.col$UL)>0) {
+         #    effect.col.range <- c(max(0.5*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
+         #} else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)<=0) { 
+         #effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(-1.5*max(effect.col$ES) , max(effect.col$UL)))
+         # } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)>0) { 
+         #  effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
+         #} else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)>0 && max(effect.col$ES)>0) { 
+         #     effect.col.range <- c(max(-2*min(effect.col$ES) , min(effect.col$LL)), min(1.5*max(effect.col$ES) , max(effect.col$UL)))
+         # } else if (min(effect.col$LL)<=0 && max(effect.col$UL)<0) { 
+         #   effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(0.10*max(effect.col$ES) , max(effect.col$UL)))
+         #  }
       # this is an ugly solution to an uncommon problem
-      if (forest.data$types[1] == 3) {
+        merge.data <- data.frame(x = forest.data$types[-1], y = effect.col$LL, z = effect.col$UL)
+        merge.data <- subset(merge.data, x>0)
+      
+        if (min(effect.col.range) >= min(merge.data$y)) 
+          effect.col.range[1] <- min(merge.data$y)
+        if (max(effect.col.range) <= max(merge.data$z)) 
+          effect.col.range[2] <- max(merge.data$z)
+    }  
+    
+    if (! is.null(user.lb)) {
+      # if the user's lb input is OK, set lower bound of range equal it.
+      effect.col.range[1] <- user.lb
+    }
+    if (! is.null(user.ub)) {
+      # if the user's ub input is OK, set upper bound of range equal it.
+      effect.col.range[2] <- user.ub
+    }
+      #if (forest.data$types[1] == 3) {
           # first row contains headings 
-          x <- forest.data$types[-1]
-      } else {
-          x <- forest.data$types
-      }
-      if (any(x > 0)) {
+      #    x <- forest.data$types[-1]
+     # } else {
+      #    x <- forest.data$types
+     # }
+     # if (any(x > 0)) {
           # at least one type is not 0
-          merge.data <- data.frame(x = x, y = effect.col$LL, z = effect.col$UL)
-          merge.data <- subset(merge.data, x>0)                                  
-          if (min(effect.col.range) >= min(merge.data$y)) 
-              effect.col.range[1] <- min(merge.data$y)
-          if (max(effect.col.range) <= max(merge.data$z)) 
-              effect.col.range[2] <- max(merge.data$z)
-      }
-    }     
-    if (!is.null(forest.data$options$plot.lb)) {
-        # user specifies just the lower bound for the display range, so use it instead of the default
-        effect.col.range[1] <- forest.data$options$plot.lb
-    } 
-    if (!is.null(forest.data$options$plot.ub)) {
-        # user specifies just the upper bound for the display range, so use it instead of the default
-       effect.col.range[2] <- forest.data$options$plot.ub
-    } 
-  
-   effect.col.sizes <- box.sca * precision/max(precision)
-   # sizes of the boxes in the forest plot - proportional to width of CI    
+       #   merge.data <- data.frame(x = x, y = effect.col$LL, z = effect.col$UL)
+       #   merge.data <- subset(merge.data, x>0)                                  
+       #   if (min(effect.col.range) >= min(merge.data$y)) 
+       #       effect.col.range[1] <- min(merge.data$y)
+        #  if (max(effect.col.range) <= max(merge.data$z)) 
+       #       effect.col.range[2] <- max(merge.data$z)
+     # }
+
    list(ES = forest.data$effects$ES, LL = forest.data$effects$LL, 
                   UL = forest.data$effects$UL, rows = rows[-1], types = forest.data$types[-1],
                   range = effect.col.range,
@@ -724,10 +770,11 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
             log.ticks <- log.ticks[log.ticks < max(col$range) + 0.5]
             ticks <- exp(log.ticks)
         } else {
-		        log.ticks <- log(user.ticks)
-		        log.ticks <- log.ticks[log.ticks > min(col$range) - 0.5]    # remember it is additive on this scale
-            log.ticks <- log.ticks[log.ticks < max(col$range) + 0.5]
-            ticks <- exp(log.ticks)
+		        ticks <- user.ticks
+            log.ticks <- log(user.ticks)
+		        #log.ticks <- log.ticks[log.ticks > min(col$range) - 0.5]    # remember it is additive on this scale
+            #log.ticks <- log.ticks[log.ticks < max(col$range) + 0.5]
+            #ticks <- exp(log.ticks)
         }
         
         grid.xaxis(at = log.ticks , label = round(ticks, 3), gp=gpar(cex=0.6))          
