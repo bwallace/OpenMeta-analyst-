@@ -37,16 +37,23 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
         transform.name <- "binary.transform.f"
         data.type <- "binary"
     }
-    
     plot.options <- set.plot.options(params)
-    if (!is.null(params$fp_plot_lb)) {
-        plot.lb <- eval(parse(text=params$fp_plot_lb))
+ 
+    if (params$fp_plot_lb == "NULL" || is.null(params$fp_plot_lb)) {
+        # value can be set to string "NULL" by the GUI or can be NULL 
+        # if the function is called at the command line
+        plot.options$plot.lb <- NULL
+    } else {
+        plot.lb <- eval(parse(text=paste("c(", params$fp_plot_lb, ")", sep="")))
         plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(plot.lb)
-    }
-    if (!is.null(params$fp_plot_ub)) {
-        plot.ub <- eval(parse(text=params$fp_plot_ub))
+    } 
+    
+    if (params$fp_plot_ub == "NULL" || is.null(params$fp_plot_lb))  {
+        plot.options$plot.ub <- NULL
+    } else {
+        plot.ub <- eval(parse(text=paste("c(", params$fp_plot_ub, ")", sep="")))
         plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(plot.ub)
-    }
+    } 
     plot.data <- list(label = c(paste(params$fp_col1_str, sep = ""), om.data@study.names, "Overall"),
                       types = c(3, rep(0, length(om.data@study.names)), 2),
                       scale = scale.str,
@@ -183,20 +190,19 @@ create.plot.data.overall <- function(res, study.names, params, data.type, addRow
         transform.name <- "binary.transform.f"
     }
     plot.options <- set.plot.options(params)
-    if (!is.null(params$fp_plot_lb)) {
+    if (params$fp_plot_lb == "NULL" || is.null(params$fp_plot_lb)) {
+        plot.options$plot.lb <- NULL
+    } else {
         plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(params$fp_plot_lb)
     }
-    plot.ub <- NULL
-    if (!is.null(params$fp_plot_ub)) {
-        plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(params$fp_plot_ub)
-    }
-    if (!is.null(params$fp_show.summary.line)) { 
-        plot.options$show.summary.line <- params$fp_show.summary.line
+    if (params$fp_plot_ub == "NULL" || is.null(params$fp_plot_ub)) {
+        plot.options$plot.ub <- NULL
     } else {
-        # Don't show summary line for overall plots - should we?
-        plot.options$show.summary.line <- FALSE
+        plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(params$fp_plot_ub)
     } 
-                                                                   
+    plot.options$fp_show_summary_line <- FALSE
+    # turning off the summary line for cumulative and loo, as it doesn't make 
+    # sense. This overrides the check box in forest plot options pane.
     if (addRow1Space == TRUE) {
         # Add space to row 1 for cumulative ma to align study names.
         study.names[1] <- paste("   ", study.names[1], sep="")
@@ -290,7 +296,19 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, selected.co
     types <- c(3,types, 2)
     label.col <- c("Studies", label.col, "Overall")
     plot.options <- set.plot.options(params)
-    plot.options$fp_show.summary.line <- FALSE
+    plot.options <- set.plot.options(params)
+    if (params$fp_plot_lb == "NULL" || is.null(params$fp_plot_lb)) {
+        plot.options$plot.lb <- NULL
+    } else {
+        plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(params$fp_plot_lb)
+    }
+    if (params$fp_plot_ub == "NULL" || is.null(params$fp_plot_ub)) {
+        plot.options$plot.ub <- NULL
+    } else {
+        plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(params$fp_plot_ub)
+    }
+    # plot.options$fp_show_summary_line <- FALSE
+    # should we show summary line for subgroup plots??
     plot.data <- list(label = label.col,
                       types=types,
                       scale = scale.str,
@@ -411,21 +429,21 @@ create.plot.data.reg <- function(reg.data, params, fitted.line, selected.cov=cov
 set.plot.options <- function(params) {
     # set default plot options
     plot.options <- list()
-    if (!is.null(params$fp_xticks)) {
-        plot.options$xticks <- eval(parse(text=paste("c(", params$fp_xticks, ")", sep="")))
+    # xticks is a vector of tick marks for the x-axis
+    if (params$fp_xticks == "NULL" || is.null(params$fp_xticks)) {
+        params$fp_xticks <- NULL
     } else {
-        plot.options$xticks <- NULL
+        plot.options$xticks <- eval(parse(text=paste("c(", params$fp_xticks, ")", sep="")))
     }
+    # xlabel is the label for the x-axis
     if (!is.null(params$fp_xlabel)) {
         plot.options$xlabel <- params$fp_xlabel
     } else {
         plot.options$xlabel <- "Effect Sizes"
     }
-    if (!is.null(params$fp_show.summary.line)) { 
-        plot.options$show.summary.line <- params$fp_show.summary.line
-    } else {
-        plot.options$show.summary.line <- TRUE
-    } 
+    # if show.summary.line is TRUE, a vertical dashed line is displayed at the
+    # overall summary.
+    plot.options$show.summary.line <- params$fp_show_summary_line
     plot.options
 }    
 
@@ -542,8 +560,8 @@ effectsize.column <- function(forest.data, box.sca = 1) {
     
     # Check whether user input's for plot lower and upper bounds are acceptable.
     min.user.input <- min(effect.col$ES)
-    # smallest value for which we accept user's input for plot lower bound. We require all
-    # effect sizes to be greater than the user's lower bound.
+    # smallest value for which we accept user's input for plot lower bound.
+    # User's lower bound must be less thant all effect sizes.
     max.user.input <- max(effect.col$ES) 
     # largest user input for plot upper bound. All effect sizes must be less than this value.
     if (!is.null(forest.data$options$plot.lb)) {

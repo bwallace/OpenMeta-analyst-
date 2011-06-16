@@ -454,9 +454,11 @@ loo.ma.continuous <- function(fname, cont.data, params){
 #  binary subgroup MA  #
 ########################
 
-subgroup.ma.binary <- function(fname, binary.data, params, cov.name){
+subgroup.ma.binary <- function(fname, binary.data, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
+    cov.name <- params$cov_name
+    print(cov.name) 
     cov.val.str <- paste("binary.data@covariates$", cov.name, sep="")
     subgroups <- eval(parse(text=cov.val.str))
     params$create.plot <- FALSE
@@ -540,8 +542,9 @@ get.subgroup.data.binary <- function(binary.data, cov.name, cov.val) {
 #  diagnostic subgroup MA  #
 ############################
 
-subgroup.ma.diagnostic <- function(fname, diagnostic.data, params, cov.name){
+subgroup.ma.diagnostic <- function(fname, diagnostic.data, params){
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
+    cov.name <- cov_name
     cov.val.str <- paste("diagnostic.data@covariates$", cov.name, sep="")
     subgroups <- eval(parse(text=cov.val.str))
     params$create.plot <- FALSE
@@ -626,8 +629,9 @@ get.subgroup.data.diagnostic <- function(diagnostic.data, cov.name, cov.val) {
 #  continuous subgroup MA  #
 #############################
 
-subgroup.ma.continuous <- function(fname, cont.data, params, cov.name){
+subgroup.ma.continuous <- function(fname, cont.data, params){
     if (!("ContinuousData" %in% class(cont.data))) stop("Continuous data expected.")
+    cov.name <- params$cov_name
     cov.val.str <- paste("cont.data@covariates$", cov.name, sep="")
     subgroups <- eval(parse(text=cov.val.str))
     params$create.plot <- FALSE
@@ -702,7 +706,7 @@ get.subgroup.data.cont <- function(cont.data, cov.name, cov.val) {
     subgroup.data
 }
 
-multiple.ma <- function(binary.data, methods, params.vec) {
+#multiple.ma <- function(binary.data, methods, params.vec) {
 # performs multiple meta-analyses. methods is a vector of ma function names (e.g. "binary.fixed.inv.var").
 # params.vec is a vector of parameter lists of the same length as methods. To use the same params for each method, set
 # params.vec <- array(list(NULL), dim=c(length(methods)))
@@ -710,40 +714,40 @@ multiple.ma <- function(binary.data, methods, params.vec) {
 #     params.vec[[count]] <- params
 # }
 
-if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
+#if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
     
-    results <- array(dim=c(length(methods),3))
+#    results <- array(dim=c(length(methods),3))
     
-    fname <- methods[1]
-    params <- params.vec[[1]]
-    params$fp_show.summary.line <- FALSE
-    params$create.plot <- FALSE
-    bin.data.tmp <- binary.data
-    bin.data.tmp <- compute.bin.point.estimates(binary.data=bin.data.tmp, params=params.vec[[1]])
+#    fname <- methods[1]
+#    params <- params.vec[[1]]
+#    params$fp_show.summary.line <- FALSE
+#    params$create.plot <- FALSE
+#    bin.data.tmp <- binary.data
+#    bin.data.tmp <- compute.bin.point.estimates(binary.data=bin.data.tmp, params=params.vec[[1]])
     # point estimates will vary depending on params, so we need to compute them for each analysis
-    cur.res <- eval(call(fname, bin.data.tmp, params))
+#    cur.res <- eval(call(fname, bin.data.tmp, params))
     # run the first analysis
-    forest.path <- paste(params$fp_outpath, sep="")
-    plot.data <- create.plot.data.binary(binary.data, params, res)
-    plot.data$label[length(binary.data@study.names)+2] <- fname
+#    forest.path <- paste(params$fp_outpath, sep="")
+#    plot.data <- create.plot.data.binary(binary.data, params, res)
+#    plot.data$label[length(binary.data@study.names)+2] <- fname
     # rename the last row from "Overall" to the name of the method used
     # run the rest of the analyses and update plot.data
-    for (count in 2:length(methods)) {
-        bin.data.tmp <- binary.data
-        bin.data.tmp <- compute.bin.point.estimates(bin.data.tmp, params.vec[[count]])
-        params.vec[[count]]$create.plot <- FALSE
-        fname <- methods[count]
-        cur.res <- eval(call(fname, binary.data=bin.data.tmp, params=params.vec[[count]]))
-        cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
-        plot.data$label <- c(plot.data$label, fname)
-        plot.data$types <- c(plot.data$types, 2)
+#    for (count in 2:length(methods)) {
+#        bin.data.tmp <- binary.data
+#        bin.data.tmp <- compute.bin.point.estimates(bin.data.tmp, params.vec[[count]])
+#        params.vec[[count]]$create.plot <- FALSE
+#        fname <- methods[count]
+#        cur.res <- eval(call(fname, binary.data=bin.data.tmp, params=params.vec[[count]]))
+#        cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
+#        plot.data$label <- c(plot.data$label, fname)
+#        plot.data$types <- c(plot.data$types, 2)
         # add a 2 at the end for the new summary line.
-        plot.data$effects$ES <- c(plot.data$effects$ES, cur.overall[1])
-        plot.data$effects$LL <- c(plot.data$effects$LL, cur.overall[2])
-        plot.data$effects$UL <- c(plot.data$effects$UL, cur.overall[3])
-    }
-    forest.plot(plot.data, outpath=params$fp_outpath)
-}
+#        plot.data$effects$ES <- c(plot.data$effects$ES, cur.overall[1])
+#        plot.data$effects$LL <- c(plot.data$effects$LL, cur.overall[2])
+#        plot.data$effects$UL <- c(plot.data$effects$UL, cur.overall[3])
+#    }
+#    forest.plot(plot.data, outpath=params$fp_outpath)
+#}
 
 update.plot.data.multiple <- function(binary.data, params, results) {
 

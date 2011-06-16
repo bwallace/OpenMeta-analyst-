@@ -38,6 +38,7 @@ import add_new_dialogs
 import results_window
 import ma_specs
 import meta_reg_form
+import meta_subgroup_form
 import edit_dialog
 import network_view
 import meta_globals 
@@ -129,6 +130,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.action_cum_ma.setEnabled(enable)
         self.action_loo_ma.setEnabled(enable)
         self.action_meta_regression.setEnabled(enable)
+        self.action_subgroup_ma.setEnabled(enable)
         
     def disable_menu_options_that_require_dataset(self):
         self.toggle_menu_options_that_require_dataset(False)
@@ -196,6 +198,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             QObject.connect(self.action_add_covariate, SIGNAL("triggered()"), self.add_covariate)
             
             QObject.connect(self.action_meta_regression, SIGNAL("triggered()"), self.meta_reg)
+            QObject.connect(self.action_subgroup_ma, SIGNAL("triggered()"), self.meta_subgroup_get_cov)
 
     def go(self):
         # the spec form gets *this* form as a parameter.
@@ -208,7 +211,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         form = meta_reg_form.MetaRegForm(self.model, parent=self)
         form.show()
         
-        
+    def meta_subgroup_get_cov(self):
+        form = meta_subgroup_form.MetaSubgroupForm(self.model, parent=self)
+        form.show()
+  
     # Here are the calls to ma_specs with so-called `meta-methods`
     # which operate over the output of meta-analytic methods. Note
     # that we don't care what sort of data we're operating over here;
@@ -225,7 +231,14 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         print "gettin' meta -- leave-one-out meta-analysis"
         form =  ma_specs.MA_Specs(self.model, meta_f_str="loo.ma", parent=self)
         form.show()
-
+        
+    def meta_subgroup(self, selected_cov):
+        print "gettin' meta -- cumulative meta-analysis"
+        form = ma_specs.MA_Specs(self.model, meta_f_str="subgroup.ma", 
+                                  parent=self, 
+                                  external_params={"cov_name":selected_cov})
+        form.show()
+    
     def undo(self):
         self.tableView.undoStack.undo()
         

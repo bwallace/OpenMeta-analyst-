@@ -2,11 +2,11 @@
 #                                           #
 #  Byron C. Wallace                         #
 #  Tufts Medical Center                     #
-#  OpenMeta[analyst]                        #
-#                                           #
 #  This is the code for the ui dialog       #
 #  that handles the method selection        #
 #  and algorithm specifications             #
+#                                           #                                                                            
+#  OpenMeta[analyst]                        #
 #                                           #
 #  This is also where the calls to run      #
 #  meta-analyses originate, via a callback  #
@@ -26,7 +26,8 @@ from meta_globals import *
 
 class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
-    def __init__(self, model, parent=None, meta_f_str=None):
+    def __init__(self, model, parent=None, meta_f_str=None,
+                    external_params=None):
         super(MA_Specs, self).__init__(parent)
         self.setupUi(self)
         self.model = model
@@ -58,7 +59,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.current_params = None
         self.current_defaults = None
         self.var_order = None
-        self.current_param_vals = {}
+        self.current_param_vals = external_params or {}
         self.populate_cbo_box()
 
     def cancel(self):
@@ -106,7 +107,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             if self.meta_f_str is None:
                 #####
                 # This is somewhat hacky. We are building up a single
-                # dictionary containing resutls for both sens. and spec.
+                # dictionary containing results for both sens. and spec.
                 # This is constructed by parsing out the results from 
                 # individual runs.
                 #####
@@ -123,8 +124,6 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                     self.current_param_vals["fp_outpath"] = new_str
                     ### build a new MetaAnalysis object with the current metric.
                     meta_py_r.ma_dataset_to_simple_diagnostic_robj(self.model, metric=diag_metric)
-                    pyqtRemoveInputHook()
-                    pdb.set_trace()
                     ### despite looking ok here, this returns the value of the first iteration!!!
                     cur_result = meta_py_r.run_diagnostic_ma(self.current_method, self.current_param_vals)
                     for field in result.keys():
@@ -146,15 +145,24 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.current_param_vals["fp_col3_str"] = unicode(self.col3_str_edit.text().toUtf8(), "utf-8")
         self.current_param_vals["fp_show_col4"] = self.show_4.isChecked()
         self.current_param_vals["fp_col4_str"] = unicode(self.col4_str_edit.text().toUtf8(), "utf-8")
-        
         self.current_param_vals["fp_xlabel"] = unicode(self.x_lbl_le.text().toUtf8(), "utf-8")
         self.current_param_vals["fp_outpath"] = unicode(self.image_path.text().toUtf8(), "utf-8")
+        plot_lb = unicode(self.plot_lb_le.text().toUtf8(), "utf-8")
+        if plot_lb != "[default]" and self.check_plot_bound(plot_lb):
+            self.current_param_vals["fp_plot_lb"] = plot_lb
+        else:
+            self.current_param_vals["fp_plot_lb"] = "NULL"
+        plot_ub = unicode(self.plot_ub_le.text().toUtf8(), "utf-8")
+        if plot_ub != "[default]" and self.check_plot_bound(plot_ub):
+            self.current_param_vals["fp_plot_ub"] = plot_ub
+        else:
+            self.current_param_vals["fp_plot_ub"] = "NULL"
         xticks = unicode(self.x_ticks_le.text().toUtf8(), "utf-8")
         if xticks != "[default]" and self.seems_sane(xticks):
             self.current_param_vals["fp_xticks"] = xticks
         else:
             self.current_param_vals["fp_xticks"] = "NULL"
-            
+        self.current_param_vals["fp_show_summary_line"] = self.show_summary_line.isChecked()
     def seems_sane(self, xticks):
         num_list = xticks.split(",")
         if len(num_list) == 1:
@@ -165,7 +173,13 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             return False
         return True
         
-        
+    def check_plot_bound(self, bound):
+        try:
+            eval(bound)
+        except:
+            return False
+        return True
+    
     def disable_bin_only_fields(self):
         self.col3_str_edit.setEnabled(False)
         self.col4_str_edit.setEnabled(False)
@@ -305,5 +319,6 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         layout.addWidget(lbl, cur_grid_row, 0)
 
     def setup_params(self):
-        self.current_params, self.current_defaults, self.var_order = meta_py_r.get_params(self.current_method)
+        self.current_params, self.current_defaults, self.var_order = \
+                    meta_py_r.get_params(self.current_method)
         print self.current_defaults
