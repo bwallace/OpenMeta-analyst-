@@ -19,7 +19,7 @@
    <string>OpenMeta[analyst]</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="images/icons.qrc">
+   <iconset>
     <normaloff>:/images/meta.png</normaloff>:/images/meta.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -131,7 +131,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="images/icons.qrc">
+              <iconset>
                <normaloff>:/images/left_arrow.png</normaloff>:/images/left_arrow.png</iconset>
              </property>
              <property name="iconSize">
@@ -157,7 +157,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="images/icons.qrc">
+              <iconset>
                <normaloff>:/images/up_arrow.png</normaloff>:/images/up_arrow.png</iconset>
              </property>
              <property name="iconSize">
@@ -183,7 +183,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="images/icons.qrc">
+              <iconset>
                <normaloff>:/images/down_arrow.png</normaloff>:/images/down_arrow.png</iconset>
              </property>
              <property name="iconSize">
@@ -238,7 +238,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="images/icons.qrc">
+              <iconset>
                <normaloff>:/images/right_arrow.png</normaloff>:/images/right_arrow.png</iconset>
              </property>
              <property name="iconSize">
@@ -264,7 +264,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="images/icons.qrc">
+              <iconset>
                <normaloff>:/images/function_icon_set/add_48.png</normaloff>:/images/function_icon_set/add_48.png</iconset>
              </property>
              <property name="iconSize">
@@ -384,6 +384,7 @@
     <addaction name="separator"/>
     <addaction name="action_cum_ma"/>
     <addaction name="action_loo_ma"/>
+    <addaction name="action_subgroup_ma"/>
     <addaction name="separator"/>
     <addaction name="action_meta_regression"/>
    </widget>
@@ -510,6 +511,11 @@
   <action name="action_paste">
    <property name="text">
     <string>paste (ctrl + v)</string>
+   </property>
+  </action>
+  <action name="action_subgroup_ma">
+   <property name="text">
+    <string>subgroup meta-analysis</string>
    </property>
   </action>
  </widget>
