@@ -458,7 +458,6 @@ subgroup.ma.binary <- function(fname, binary.data, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
     cov.name <- params$cov_name
-    print(cov.name) 
     cov.val.str <- paste("binary.data@covariates$", cov.name, sep="")
     subgroups <- eval(parse(text=cov.val.str))
     params$create.plot <- FALSE
@@ -544,7 +543,7 @@ get.subgroup.data.binary <- function(binary.data, cov.name, cov.val) {
 
 subgroup.ma.diagnostic <- function(fname, diagnostic.data, params){
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
-    cov.name <- cov_name
+    ccov.name <- params$cov_name
     cov.val.str <- paste("diagnostic.data@covariates$", cov.name, sep="")
     subgroups <- eval(parse(text=cov.val.str))
     params$create.plot <- FALSE
