@@ -138,6 +138,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     def enable_menu_options_that_require_dataset(self):
         self.toggle_menu_options_that_require_dataset(True)
         
+    '''
     def keyPressEvent(self, event):
         if (event.modifiers() & QtCore.Qt.ControlModifier):
             if event.key() == QtCore.Qt.Key_S:
@@ -149,7 +150,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 self.open()
             elif event.key() == QtCore.Qt.Key_A:
                 self.analysis()
-
+    '''
 
     def _disconnections(self):
         ''' 
@@ -172,7 +173,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                                                                 self.tableView.displayed_ma_changed)
         QObject.connect(self.tableView.model(), SIGNAL("followUpChanged()"),
                                                                 self.tableView.displayed_ma_changed)
-                                                                
+           
+                                                        
         if menu_actions:                
             QObject.connect(self.nav_add_btn, SIGNAL("pressed()"), self.add_new)
             QObject.connect(self.nav_right_btn, SIGNAL("pressed()"), self.next)
@@ -200,6 +202,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             QObject.connect(self.action_meta_regression, SIGNAL("triggered()"), self.meta_reg)
             QObject.connect(self.action_subgroup_ma, SIGNAL("triggered()"), self.meta_subgroup_get_cov)
 
+
+    def yo(self):
+        print "LDJFLKDJLKJDf"
+    
     def go(self):
         # the spec form gets *this* form as a parameter.
         # this allows the spec form to callback to this

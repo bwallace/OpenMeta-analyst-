@@ -43,6 +43,7 @@ class MADataTable(QtGui.QTableView):
         self.setAlternatingRowColors(True)
         
         
+  
     def keyPressEvent(self, event):                                       
         if (event.modifiers() & QtCore.Qt.ControlModifier):
             ## undo/redo
@@ -62,7 +63,18 @@ class MADataTable(QtGui.QTableView):
                 # if the command hasn't anything to do with the table view
                 # in particular, we pass the event up to the main UI
                 self.main_gui.keyPressEvent(event)
-                
+        else:
+            ### 
+            # This is a call to the default keyPressEvent function,
+            # which we are here overwriting, thereby eliminating
+            # many of the annoying properties (no tab navigation; double
+            # click editing only) that have been brought up/reported
+            # as bugs. See issues: #21, #19
+            # 
+            QTableView.keyPressEvent(self, event)
+
+            
+                         
     def copy(self):
         # copy/paste: these only happen if at least one cell is selected
         selected_indexes = self.selectionModel().selectedIndexes()
