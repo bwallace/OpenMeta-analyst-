@@ -301,6 +301,9 @@ class DatasetModel(QAbstractTableModel):
                         self.dataset.add_study(new_study)
                         self.study_auto_added = int(new_study.id)
                         self.reset()
+                        # new_index is where the user *should* be editing.
+                        new_index = self.index(index.row(), index.column()+1)
+                        self.emit(SIGNAL("modelReset(QModelIndex)"), new_index)
                 else:
                     study.year = value.toInt()[0]
             elif self.current_outcome is not None and column in self.RAW_DATA:
