@@ -19,6 +19,7 @@ import meta_py_r
 
 PageSize = (612, 792)
 padding = 25
+SCALE_P = .5 # percent images are to be scaled
 
 class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
@@ -90,11 +91,25 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
             print "cur_y: %s" % cur_y
             # first add the title
             qt_item = self.add_title(title)
-
+            
             # now the image
             pixmap = QPixmap(image)
+            
+            ###
+            # we scale to address issue #23.
+            # should probably pick a 'target' width/height, in case
+            # others generate smaller images by default.
+            scaled_width = SCALE_P*pixmap.width()
+            scaled_height = SCALE_P*pixmap.height()
+            
+            # arbitrary
+            pixmap = pixmap.scaled(scaled_width, scaled_height, transformMode = Qt.SmoothTransformation)
+            
             img_shape = self.create_pixmap_item(pixmap, self.position())
             disp_rect = QRectF(self.x_coord, cur_y, img_shape.width(), img_shape.height()+padding)
+            
+            #pyqtRemoveInputHook()
+            #pdb.set_trace()
             self.items_to_coords[qt_item] =  disp_rect
 
     def add_text(self):
