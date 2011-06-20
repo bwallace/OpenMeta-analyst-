@@ -165,6 +165,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                                                                  
        
     def set_edit_focus(self, index):
+        ''' sets edit focus to the row,col specified by index.'''
         self.tableView.setCurrentIndex(index)
         self.tableView.edit(index)
          
