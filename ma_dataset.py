@@ -52,10 +52,7 @@ class Dataset:
         return cloned
         
     def get_outcome_names(self):
-        if len(self) == 0:
-            return []
-        
-        return sorted(self.studies[0].outcomes_to_follow_ups.keys())
+        return sorted(self.outcome_names_to_follow_ups.keys())
         
     def get_group_names(self):
         if len(self.studies) == 0:
@@ -121,6 +118,9 @@ class Dataset:
         return outcome.data_type if not get_string else TYPE_TO_STR_DICT[outcome.data_type]
         
     def get_outcome_obj(self, outcome_name):
+        if outcome_name == "something2":
+            pyqtRemoveInputHook()
+            pdb.set_trace()
         for study in self.studies:
             outcome_obj = study.get_outcome(outcome_name)
             if outcome_obj is not None:
@@ -301,15 +301,16 @@ class Dataset:
         self.outcome_names_to_follow_ups[outcome][follow_up_key] = new_name
 
     def get_follow_up_names(self):
+        ''' returns *all* known follow-up names '''
         follow_up_names = []
-        for study in self.studies:
-            for follow_up_d in study.outcomes_to_follow_ups.values():
-                # follow_up_d is a dictionary mapping follow up names to
-                # MA units
-                follow_up_names.extend(follow_up_d.keys())
+        ## iterate over each outcome
+        for outcome in self.outcome_names_to_follow_ups.keys():
+            follow_up_names.extend(outcome.values())
         return list(set(follow_up_names))
         
     def get_follow_up_names_for_outcome(self, outcome):
+        return self.outcome_names_to_follow_ups[outcome].values()
+        '''
         follow_up_names = []
         for study in self.studies:
             try:
@@ -317,6 +318,7 @@ class Dataset:
             except:
                 pass
         return list(set(follow_up_names))
+        '''
         
     def get_network(self, outcome, time_point):
         node_list = [] # list of all nodes

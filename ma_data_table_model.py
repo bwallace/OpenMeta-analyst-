@@ -36,16 +36,19 @@ class DatasetModel(QAbstractTableModel):
     names; the former are due to the QT framework, but I just couldn't
     bring myself to maintain this blighted style.
     '''
-    def __init__(self, filename=QString(), dataset=None):
+    def __init__(self, filename=QString(), dataset=None, add_blank_study=True):
         super(DatasetModel, self).__init__()
 
         self.dataset = dataset
         if dataset is None:
             self.dataset = Dataset()
 
-        # include an extra blank study to begin with
-        self.dataset.studies.append(Study(self.max_study_id() +1))
-
+        if add_blank_study:
+            # include an extra blank study to begin with
+            self.dataset.studies.append(Study(self.max_study_id() +1))
+            # ... and mark this study as such.
+            self.study_auto_added = self.dataset.studies[-1].id
+        
         # these variables track which meta-analytic unit,
         # i.e., outcome and time period, are being viewed
         self.current_outcome = None
@@ -82,7 +85,7 @@ class DatasetModel(QAbstractTableModel):
         self.headers = ["include", "study name", "year"]
 
         self.NUM_DIGITS = 3
-        self.study_auto_added = None
+        
 
 
         
@@ -708,15 +711,15 @@ class DatasetModel(QAbstractTableModel):
             self.tx_index_a = 0
             
     def outcome_has_follow_up(self, outcome, follow_up):
-        ## we just pull the outcome from the first study; we tacitly
-        # assume that all studies have the same outcomes/follow-ups
-        outcome_d = self.dataset.studies[0].outcomes_to_follow_ups[outcome]   
+        outcome_d = self.dataset.outcome_names_to_follow_ups[outcome]
         return follow_up in outcome_d.keys()
         
     def outcome_fu_has_group(self, outcome, follow_up, group):
         ## we just pull the outcome from the first study; we tacitly
-        # assume that all studies have the same outcomes/follow-ups
+        # assume that all studies have the same outcomes/follow-ups.
+        # 
         outcome_d = self.dataset.studies[0].outcomes_to_follow_ups[outcome]
+
         ## we _assume_ that the follow_up is in this outcome!
         return group in outcome_d[follow_up].tx_groups.keys()
     
@@ -918,6 +921,7 @@ class DatasetModel(QAbstractTableModel):
                 
     def get_cur_raw_data(self, only_if_included=True):
         raw_data = []
+        
         for study_index in range(len(self.dataset.studies)):
             if not only_if_included or self.dataset.studies[study_index].include:
                 raw_data.append(self.get_cur_raw_data_for_study(study_index))

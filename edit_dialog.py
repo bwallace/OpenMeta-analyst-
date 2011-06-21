@@ -69,8 +69,8 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         ### studies
         # this is sort of hacky; we lop off the last study, which is 
         # always 'blank'. this is a recurring, rather annoying issue.
-        self.blank_study = dataset.studies[-1]
-        dataset.studies = dataset.studies[:-1]
+        #self.blank_study = dataset.studies[-1]
+        #dataset.studies = dataset.studies[:-1]
         self.studies_model = edit_list_models.StudiesModel(dataset = dataset)
         self.study_list.setModel(self.studies_model)
         
@@ -135,8 +135,8 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         form.group_name_le.setFocus()        
         if form.exec_():
             new_group_name = unicode(form.group_name_le.text().toUtf8(), "utf-8")
-            self.group_list.model().dataset.add_group(new_group_name)
-            self.group_list.model().refresh_group_list()
+            self.group_list.model().dataset.add_group(new_group_name, self.selected_outcome)
+            self.group_list.model().refresh_group_list(self.selected_outcome, self.selected_follow_up)
             
     def remove_group(self):
         index = self.group_list.currentIndex()
@@ -150,7 +150,7 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
         self.remove_group_btn.setEnabled(True)
         
     def add_outcome(self):
-        form =  add_new_dialogs.AddNewOutcomeForm(self)
+        form =  add_new_dialogs.AddNewOutcomeForm(self, is_diag=self.dataset.is_diag)
         form.outcome_name_le.setFocus()
         if form.exec_():
             # then the user clicked ok and has added a new outcome.
@@ -162,6 +162,7 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
             data_type = str(form.datatype_cbo_box.currentText())
             data_type = STR_TO_TYPE_DICT[data_type.lower()]
             self.outcome_list.model().dataset.add_outcome(Outcome(new_outcome_name, data_type))
+
             self.outcome_list.model().refresh_outcome_list()
             self.outcome_list.model().current_outcome = new_outcome_name
             
@@ -271,8 +272,6 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
             study_id = self.study_list.model().dataset.max_study_id()+1
             new_study = Study(study_id, name = study_name)
             self.study_list.model().dataset.add_study(new_study)
-            #pyqtRemoveInputHook()
-            #pdb.set_trace()
             self.study_list.model().update_study_list()
              
     def remove_study(self):

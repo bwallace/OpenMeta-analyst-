@@ -278,7 +278,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             new_state_dict["current_outcome"] = old_state_dict["current_outcome"]
             if edit_window.outcome_list.model().current_outcome is not None:
                 new_state_dict["current_outcome"] = edit_window.outcome_list.model().current_outcome
-            new_state_dict["current_time_point"] =  max(edit_window.follow_up_list.currentIndex(), 0)
+            new_state_dict["current_time_point"] =  max(edit_window.follow_up_list.currentIndex().row(), 0)
             grp_list = edit_window.group_list.model().group_list
             if len(grp_list) >= 2:
                 new_state_dict["current_txs"] = grp_list[:2]
@@ -289,7 +289,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             # blank study original at the end of the dataset here because
             # set_model assumes it should remove the last (blank)
             # study in the dataset (see in-line comments there).
-            modified_dataset.add_study(edit_window.blank_study)
+            #modified_dataset.add_study(edit_window.blank_study)
+
             redo_f = lambda : self.set_model(modified_dataset, new_state_dict)
             original_dataset = copy.deepcopy(self.model.dataset)
             undo_f = lambda : self.set_model(original_dataset, old_state_dict) 
@@ -416,7 +417,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     def add_new(self):
         redo_f, undo_f = None, None
         if self.cur_dimension == "outcome":
-            form = add_new_dialogs.AddNewOutcomeForm(self)
+            form = add_new_dialogs.AddNewOutcomeForm(parent=self, is_diag=self.model.is_diag())
             form.outcome_name_le.setFocus()
             if form.exec_():
                 # then the user clicked ok and has added a new outcome.
@@ -584,7 +585,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         
     def display_outcome(self, outcome_name, group_names=None, follow_up_name=None):
         print "displaying outcome: %s" % outcome_name
-
         ###
         # We need to update which groups & follow-ups are current
         # in order to avoid attempting to display a group/fu that
@@ -673,20 +673,13 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.tableView.undoStack.push(open_command)
         
     def set_model(self, data_model, state_dict=None):
-        # this is questionable; we explicitly remove the last study, because
-        # there is *always* a blank study appended to the current dataset.
-        # thus when the dataset was dumped (via pickle) it included this study,
-        # but the model will append *another* blank study to the dataset
-        # when it is opened. this was the easiest way to resolve this issue.
-        # TODO we need a better solution for this pesky problem -- i.e.,
-        # the 'blank' study problem. this has caused problems, e.g., for our
-        # data editing step. for now I'm adding a switch to override the
-        # lopping off the last study (do_not_remove_last_study)
-        # 
-        if  state_dict is not None and state_dict["study_auto_added"] is not None:
-            data_model.studies = data_model.studies[:-1]
-            
-        self.model = DatasetModel(dataset=data_model)
+        ##
+        # we explicitly append a blank study to the
+        # dataset iff there is fewer than 1 study 
+        # in the dataset. in this case, the only 
+        # row is essentially a blank study. 
+        add_blank_study = len(data_model) < 1
+        self.model = DatasetModel(dataset=data_model, add_blank_study=add_blank_study)
         if state_dict is not None:
             self.model.set_state(state_dict)
         self._disconnections()
@@ -694,6 +687,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.enable_menu_options_that_require_dataset()
         else:
             self.disable_menu_options_that_require_dataset()
+        
         self.tableView.setModel(self.model)
         self.model_updated()
         print "ok -- model set."
@@ -703,8 +697,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         ''' Call me when the model is changed. '''
         self.model.update_current_group_names()
         self.model.update_current_outcome()
-        self.model.try_to_update_outcomes()
         self.model.update_current_time_points()
+
+        self.model.try_to_update_outcomes()
+            
         # This is kind of subtle. We have to reconnect
         # our signals and slots when the underlying model 
         # changes, because otherwise the antiquated/replaced
@@ -718,6 +714,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.update_outcome_lbl()
         self.update_follow_up_label()
         self.populate_metrics_menu()
+     
         self.model.reset()
         
         

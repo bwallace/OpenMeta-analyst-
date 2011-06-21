@@ -23,15 +23,19 @@ class AddNewFollowUpForm(QDialog, ui_new_follow_up.Ui_new_follow_up_dialog):
         
 class AddNewOutcomeForm(QDialog, ui_new_outcome.Ui_Dialog):
     
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, is_diag=False):
         super(AddNewOutcomeForm, self).__init__(parent)
+        ###
+        # we need to know if the outcome should be diagnostic
+        # or not.
+        self.is_diag = is_diag
+        
         self.setupUi(self)
         self._populate_combo_box()
-
         
     def _populate_combo_box(self):
         # diagnostic datasets can have only diagnostic outcomes
-        if self.parent().model.is_diag():
+        if self.is_diag:
             self.datatype_cbo_box.addItem(QString("Diagnostic"), QVariant(DIAGNOSTIC))
         else:
             for name, type_id in zip([QString(s) for s in ["Binary", "Continuous"]],
