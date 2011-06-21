@@ -59,7 +59,17 @@ cum.ma.binary <- function(fname, binary.data, params){
     for (count in 2:length(binary.data@study.names)) {
         study.names <- c(study.names, paste("+ ",binary.data@study.names[count], sep=""))
     }
-    cum.disp <- create.overall.display(res=cum.results, study.names, params, data.type="binary")
+    model.title <- ""
+    if (fname == "binary.fixed.inv.var") {
+        model.title <- paste("Binary Fixed-Effects Model - Inverse Variance\n\nMetric: ", params$measure, sep="") 
+    } else if (fname == "binary.fixed.mh") {
+        model.title <- paste("Binary Fixed-Effects Model - Mantel Haenszel\n\nMetric: ", params$measure, sep="")
+    } else if (fname == "binary.fixed.peto") {
+        model.title <- paste("Binary Fixed-Effects Model - Peto\n\nMetric: ", params$measure, sep="")
+    } else if (fname == "binary.random") {
+        model.title <- paste("Binary Random-Effects Model\n\nMetric: ", params$measure, sep="")
+    }
+    cum.disp <- create.overall.display(res=cum.results, study.names, params, model.title, data.type="binary")
     forest.path <- paste(params$fp_outpath, sep="")
     plot.data <- create.plot.data.overall(res=cum.results, study.names, params, data.type="binary", addRow1Space=TRUE)
     forest.plot(forest.data=plot.data, outpath=forest.path)
@@ -135,7 +145,17 @@ loo.ma.binary <- function(fname, binary.data, params){
     for (count in 1:length(binary.data@study.names)) {
         study.names <- c(study.names, paste("- ",binary.data@study.names[count], sep=""))
     }
-    loo.disp <- create.overall.display(res=loo.results, study.names, params, data.type="binary")
+    model.title <- ""
+    if (fname == "binary.fixed.inv.var") {
+        model.title <- paste("Binary Fixed-Effects Model - Inverse Variance\n\nMetric: ", params$measure, sep="") 
+    } else if (fname == "binary.fixed.mh") {
+        model.title <- paste("Binary Fixed-Effects Model - Mantel Haenszel\n\nMetric: ", params$measure, sep="")
+    } else if (fname == "binary.fixed.peto") {
+        model.title <- paste("Binary Fixed-Effects Model - Peto\n\nMetric: ", params$measure, sep="")
+    } else if (fname == "binary.random") {
+        model.title <- paste("Binary Random-Effects Model\n\nMetric: ", params$measure, sep="")
+    }
+    loo.disp <- create.overall.display(res=loo.results, study.names, params, model.title, data.type="binary")
     forest.path <- paste(params$fp_outpath, sep="")
     plot.data <- create.plot.data.overall(res=loo.results, study.names, params, data.type="binary", addRow1Space=FALSE)
     forest.plot(forest.data=plot.data, outpath=forest.path)
@@ -199,8 +219,8 @@ cum.ma.diagnostic <- function(fname, diagnostic.data, params){
     for (count in 2:length(diagnostic.data@study.names)) {
         study.names <- c(study.names, paste("+ ",diagnostic.data@study.names[count], sep=""))
     }
-    
-    cum.disp <- create.overall.display(res=cum.results, study.names, params, data.type="diagnostic")
+    model.title <- ""
+    cum.disp <- create.overall.display(res=cum.results, study.names, params, model.title, data.type="diagnostic")
     forest.path <- paste(params$fp_outpath, sep="")
     plot.data <- create.plot.data.overall(res=cum.results, study.names, params, data.type="diagnostic", addRow1Space=TRUE)
     forest.plot(forest.data=plot.data, outpath=forest.path)
@@ -347,7 +367,13 @@ cum.ma.continuous <- function(fname, cont.data, params){
     for (count in 2:length(cont.data@study.names)) {
         study.names <- c(study.names, paste("+ ",cont.data@study.names[count], sep=""))
     }
-    cum.disp <- create.overall.display(res=cum.results, study.names, params, data.type="continuous")
+    model.title <- ""
+    if (fname == "continuous.fixed") {
+        model.title <- paste("Continuous Fixed-Effects Model - Inverse Variance\n\nMetric: ", params$measure, sep="") 
+    } else if (fname == "binary.random") {
+        model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", params$measure, sep="")
+    }
+    cum.disp <- create.overall.display(res=cum.results, study.names, params, model.title, data.type="continuous")
     forest.path <- paste(params$fp_outpath, sep="")
     plot.data <- create.plot.data.overall(res=cum.results, study.names, params, data.type="continuous", addRow1Space=TRUE)
     forest.plot(forest.data=plot.data, outpath=forest.path)
@@ -430,7 +456,13 @@ loo.ma.continuous <- function(fname, cont.data, params){
     for (count in 1:length(cont.data@study.names)) {
         study.names <- c(study.names, paste("- ",cont.data@study.names[count], sep=""))
     }
-    loo.disp <- create.overall.display(res=loo.results, study.names, params, data.type="continuous")
+    model.title <- ""
+    if (fname == "continuous.fixed") {
+        model.title <- paste("Continuous Fixed-Effects Model - Inverse Variance\n\nMetric: ", params$measure, sep="") 
+    } else if (fname == "binary.random") {
+        model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", params$measure, sep="")
+    }
+    loo.disp <- create.overall.display(res=loo.results, study.names, params, model.title, data.type="continuous")
 
     forest.path <- paste(params$fp_outpath, sep="")
     plot.data <- create.plot.data.overall(res=loo.results, study.names, params, data.type="continuous", addRow1Space=FALSE)
@@ -458,7 +490,6 @@ subgroup.ma.binary <- function(fname, binary.data, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
     cov.name <- params$cov_name
-    print(cov.name) 
     cov.val.str <- paste("binary.data@covariates$", cov.name, sep="")
     subgroups <- eval(parse(text=cov.val.str))
     params$create.plot <- FALSE
@@ -494,7 +525,17 @@ subgroup.ma.binary <- function(fname, binary.data, params){
     subgroup.results[[count]] <- res.overall
     subgroup.names <- paste("Subgroup ", subgroup.list, sep="")
     subgroup.names <- c(subgroup.names, "Overall")
-    subgroup.disp <- create.overall.display(subgroup.results, subgroup.names, params, data.type="binary")
+    model.title <- ""
+    if (fname == "binary.fixed.inv.var") {
+        model.title <- paste("Binary Fixed-Effects Model - Inverse Variance\n\nMetric: ", params$measure, sep="") 
+    } else if (fname == "binary.fixed.mh") {
+        model.title <- paste("Binary Fixed-Effects Model - Mantel Haenszel\n\nMetric: ", params$measure, sep="")
+    } else if (fname == "binary.fixed.peto") {
+        model.title <- paste("Binary Fixed-Effects Model - Peto\n\nMetric: ", params$measure, sep="")
+    } else if (fname == "binary.random") {
+        model.title <- paste("Binary Random-Effects Model\n\nMetric: ", params$measure, sep="")
+    }
+    subgroup.disp <- create.overall.display(subgroup.results, subgroup.names, params, model.title, data.type="binary")
     forest.path <- paste(params$fp_outpath, sep="")
     # pack up the data for forest plot.
     subgroup.data <- list("subgroup.list"=subgroup.list, "grouped.data"=grouped.data, "results"=subgroup.results, 
@@ -544,7 +585,7 @@ get.subgroup.data.binary <- function(binary.data, cov.name, cov.val) {
 
 subgroup.ma.diagnostic <- function(fname, diagnostic.data, params){
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
-    cov.name <- cov_name
+    ccov.name <- params$cov_name
     cov.val.str <- paste("diagnostic.data@covariates$", cov.name, sep="")
     subgroups <- eval(parse(text=cov.val.str))
     params$create.plot <- FALSE
@@ -658,7 +699,13 @@ subgroup.ma.continuous <- function(fname, cont.data, params){
     subgroup.results[[count]] <- res.overall
     subgroup.names <- paste("Subgroup ", subgroup.list, sep="")
     subgroup.names <- c(subgroup.names, "Overall")
-    subgroup.disp <- create.overall.display(subgroup.results, subgroup.names, params, data.type="continuous")
+    model.title <- ""
+    if (fname == "continuous.fixed") {
+        model.title <- paste("Continuous Fixed-Effects Model - Inverse Variance\n\nMetric: ", params$measure, sep="") 
+    } else if (fname == "binary.random") {
+        model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", params$measure, sep="")
+    }
+    subgroup.disp <- create.overall.display(subgroup.results, subgroup.names, params, model.title, data.type="continuous")
     forest.path <- paste(params$fp_outpath, sep="")
     # pack up the data for forest plot.
     subgroup.data <- list("subgroup.list"=subgroup.list, "grouped.data"=grouped.data, "results"=subgroup.results, 

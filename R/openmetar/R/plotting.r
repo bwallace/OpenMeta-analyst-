@@ -26,16 +26,15 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     scale.str <- "standard"
     if (metric.is.log.scale(params$measure)){
         scale.str <- "log" 
-    } 
-    transform.name <- "continuous.transform.f"
-    data.type <- "continuous"
-    # flag to distinguish between diagnostic and nondiagnostic data
-    if ("DiagnosticData" %in% class(om.data)) {
+    } else if (metric.is.logit.scale(params$measure)) {
+        scale.str <- "logit"
+    }
+    if ("ContinuousData" %in% class(om.data)) {
+        transform.name <-"continuous.transform.f"
+    } else if ("DiagnosticData" %in% class(om.data)) {
         transform.name <- "diagnostic.transform.f"
-        data.type <- "diagnostic"
     }  else if ("BinaryData" %in% class(om.data)) {
         transform.name <- "binary.transform.f"
-        data.type <- "binary"
     }
     plot.options <- set.plot.options(params)
  
@@ -48,7 +47,7 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
         plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(plot.lb)
     } 
     
-    if (params$fp_plot_ub == "NULL" || is.null(params$fp_plot_lb))  {
+    if (params$fp_plot_ub == "NULL" || is.null(params$fp_plot_ub))  {
         plot.options$plot.ub <- NULL
     } else {
         plot.ub <- eval(parse(text=paste("c(", params$fp_plot_ub, ")", sep="")))
@@ -57,7 +56,6 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     plot.data <- list(label = c(paste(params$fp_col1_str, sep = ""), om.data@study.names, "Overall"),
                       types = c(3, rep(0, length(om.data@study.names)), 2),
                       scale = scale.str,
-                      data.type = data.type,
                       options = plot.options)         
     alpha <- 1.0-(params$conf.level/100.0)
     mult <- abs(qnorm(alpha/2.0))
@@ -72,12 +70,11 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     lb <- c(lb, lb.overall)
     ub <- c(ub, ub.overall)
     
-    # transform entries to display scale
-    y.disp <- eval(call(transform.name, params$measure))$display.scale(y)
-    lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb)
-    ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub)
-    
     if (params$fp_show_col2=='TRUE') {
+        # transform entries to display scale
+        y.disp <- eval(call(transform.name, params$measure))$display.scale(y)
+        lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb)
+        ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub)  
         # format entries for effect size text column in forest plot        
         effect.sizes <- format.effect.sizes(y=y.disp, lb=lb.disp, ub=ub.disp, params)
         # first row contains headers, so add label
@@ -87,17 +84,9 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
                                    effect.sizes$ub.display, ")", sep = ""))
         plot.data$additional.col.data$es <- effect.size.col
     }
-    if (scale.str == "log") {
-        # if metric is log scale, pass effect sizes in log scale.
-        effects <- list(ES = y,
+    effects <- list(ES = y,
                     LL = lb,
                     UL = ub) 
-    } else {  
-        # otherwise pass effect sizes in standard scale   
-        effects <- list(ES = y.disp,
-                    LL = lb.disp,
-                    UL = ub.disp)  
-    }           
     plot.data$effects <- effects
     # covariates
     if (!is.null(selected.cov)){
@@ -180,27 +169,31 @@ create.plot.data.overall <- function(res, study.names, params, data.type, addRow
     scale.str <- "standard"
     if (metric.is.log.scale(params$measure)){
         scale.str <- "log" 
-    } 
-    transform.name <- "continuous.transform.f"
-    # flag to distinguish between diagnostic and nondiagnostic data
-    if (data.type == "diagnostic") {
-        transform.name <- "diagnostic.transform.f"
-        data.type <- "diagnostic"
+    } else if (metric.is.logit.scale(params$measure)) {
+        scale.str <- "logit"
+    }
+    ## TO DO - don't really nead three transforms - the transform only depends on the measure.
+    if (data.type == "continuous") {
+      transform.name <- "continuous.transform.f"
+    } else if (data.type == "diagnostic") {
+      transform.name <- "diagnostic.transform.f"
     }  else if (data.type == "binary") {
-        transform.name <- "binary.transform.f"
+      transform.name <- "binary.transform.f"
     }
     plot.options <- set.plot.options(params)
     if (params$fp_plot_lb == "NULL" || is.null(params$fp_plot_lb)) {
         plot.options$plot.lb <- NULL
     } else {
-        plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(params$fp_plot_lb)
+        plot.lb <- eval(parse(text=paste("c(", params$fp_plot_lb, ")", sep="")))
+        plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(plot.lb)
     }
     if (params$fp_plot_ub == "NULL" || is.null(params$fp_plot_ub)) {
         plot.options$plot.ub <- NULL
     } else {
-        plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(params$fp_plot_ub)
+        plot.ub <- eval(parse(text=paste("c(", params$fp_plot_ub, ")", sep="")))
+        plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(plot.ub)
     } 
-    plot.options$fp_show_summary_line <- FALSE
+    plot.options$fp.show.summary.line <- FALSE
     # turning off the summary line for cumulative and loo, as it doesn't make 
     # sense. This overrides the check box in forest plot options pane.
     if (addRow1Space == TRUE) {
@@ -211,7 +204,6 @@ create.plot.data.overall <- function(res, study.names, params, data.type, addRow
     plot.data <- list( label = c("Studies", study.names),
                 types = c(3, rep(0, length(study.names))),
                 scale = scale.str,
-                data.type = data.type,
                 options = plot.options)
     # unpack data
     y <- NULL
@@ -222,45 +214,45 @@ create.plot.data.overall <- function(res, study.names, params, data.type, addRow
       lb <- c(lb, res[[count]]$ci.lb)
       ub <- c(ub, res[[count]]$ci.ub)
     }
-    # transform entries to display scale
-    y.disp <- eval(call(transform.name, params$measure))$display.scale(y)
-    lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb)
-    ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub)
-    
-    if (scale.str == "log") {
-        # if metric is log scale, pass effect sizes in log scale.
-        effects <- list(ES = y,
+    if (params$fp_show_col2=='TRUE') {
+        # transform entries to display scale
+        y.disp <- eval(call(transform.name, params$measure))$display.scale(y)
+        lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb)
+        ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub)  
+        # format entries for effect size text column in forest plot        
+        effect.sizes <- format.effect.sizes(y=y.disp, lb=lb.disp, ub=ub.disp, params)
+        # first row contains headers, so add label
+        effect.size.label <- create.effect.size.label(effect.sizes, params)
+        effect.size.col <- c(effect.size.label,
+                          paste(effect.sizes$y.display, effect.sizes$lb.display, ",", 
+                          effect.sizes$ub.display, ")", sep = ""))
+        plot.data$additional.col.data$es <- effect.size.col
+    }
+    effects <- list(ES = y,
                     LL = lb,
                     UL = ub) 
-    } else {  
-        # otherwise pass effect sizes in standard scale   
-        effects <- list(ES = y.disp,
-                    LL = lb.disp,
-                    UL = ub.disp)  
-    }           
-   
     plot.data$effects <- effects
     plot.data
 }
 
 # create subgroup analysis plot data
-create.subgroup.plot.data.generic <- function(subgroup.data, params, selected.cov=NULL) {
+create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, selected.cov=NULL) {
     grouped.data <- subgroup.data$grouped.data
     res <- subgroup.data$results
     subgroup.list <- subgroup.data$subgroup.list
     scale.str <- "standard"
     if (metric.is.log.scale(params$measure)){
         scale.str <- "log" 
-    } 
-    transform.name <- "continuous.transform.f"
-    data.type <- "continuous"
-    # flag to distinguish between diagnostic and nondiagnostic data
-    if ("DiagnosticData" %in% class(grouped.data[[1]])) {
-        transform.name <- "diagnostic.transform.f"
-        data.type <- "diagnostic"
-    }  else if ("BinaryData" %in% class(grouped.data[[1]])) {
-        transform.name <- "binary.transform.f"
-        data.type <- "binary"
+    } else if (metric.is.logit.scale(params$measure)) {
+        scale.str <- "logit"
+    }
+    ## TO DO - don't really nead three transforms - the transform only depends on the measure.
+    if (data.type == "continuous") {
+      transform.name <- "continuous.transform.f"
+    } else if (data.type == "diagnostic") {
+      transform.name <- "diagnostic.transform.f"
+    }  else if (data.type == "binary") {
+      transform.name <- "binary.transform.f"
     }
     cur.res <- NULL
     y <- NULL
@@ -296,38 +288,30 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, selected.co
     types <- c(3,types, 2)
     label.col <- c("Studies", label.col, "Overall")
     plot.options <- set.plot.options(params)
-    plot.options <- set.plot.options(params)
     if (params$fp_plot_lb == "NULL" || is.null(params$fp_plot_lb)) {
         plot.options$plot.lb <- NULL
     } else {
-        plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(params$fp_plot_lb)
+        plot.lb <- eval(parse(text=paste("c(", params$fp_plot_lb, ")", sep="")))
+        plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(plot.lb)
     }
     if (params$fp_plot_ub == "NULL" || is.null(params$fp_plot_ub)) {
         plot.options$plot.ub <- NULL
     } else {
-        plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(params$fp_plot_ub)
+        plot.ub <- eval(parse(text=paste("c(", params$fp_plot_ub, ")", sep="")))
+        plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(plot.ub)
     }
     # plot.options$fp_show_summary_line <- FALSE
     # should we show summary line for subgroup plots??
     plot.data <- list(label = label.col,
                       types=types,
                       scale = scale.str,
-                      data.type = data.type,
                       options = plot.options)      
     y.disp <- eval(call(transform.name, params$measure))$display.scale(y)
     lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb)
     ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub)
-    if (scale.str == "log") {
-        # if metric is log scale, pass effect sizes in log scale.
-        effects <- list(ES = y,
+    effects <- list(ES = y,
                     LL = lb,
                     UL = ub) 
-    } else {  
-        # otherwise pass effect sizes in standard scale   
-        effects <- list(ES = y.disp,
-                    LL = lb.disp,
-                    UL = ub.disp)  
-    }           
     plot.data$effects <- effects
     if (params$fp_show_col2=='TRUE') {
         # format entries for effect size text column in forest plot        
@@ -351,7 +335,7 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, selected.co
 
 create.subgroup.plot.data.binary <- function(subgroup.data, params) {
     grouped.data <- subgroup.data$grouped.data
-    plot.data <- create.subgroup.plot.data.generic(subgroup.data, params) 
+    plot.data <- create.subgroup.plot.data.generic(subgroup.data, params, data.type="binary") 
 
     if ((length(grouped.data[[1]]@g1O1) > 0) && (params$fp_show_col3=="TRUE")) {
         data.column <- format.raw.data.col(nums = subgroup.data$col3.nums, denoms = subgroup.data$col3.denoms, 
@@ -370,7 +354,7 @@ create.subgroup.plot.data.binary <- function(subgroup.data, params) {
 
 create.subgroup.plot.data.diagnostic <- function(subgroup.data, params) {
     grouped.data <- subgroup.data$grouped.data
-    plot.data <- create.subgroup.plot.data.generic(subgroup.data, params) 
+    plot.data <- create.subgroup.plot.data.generic(subgroup.data, params, data.type="diagnostic") 
 
     if ((length(grouped.data[[1]]@TP) > 0) && (params$fp_show_col3=="TRUE")) {
         metric <- params$measure
@@ -400,7 +384,7 @@ create.subgroup.plot.data.diagnostic <- function(subgroup.data, params) {
 
 create.subgroup.plot.data.cont <- function(subgroup.data, params) {
     grouped.data <- subgroup.data$grouped.data
-    plot.data <- create.subgroup.plot.data.generic(subgroup.data, params) 
+    plot.data <- create.subgroup.plot.data.generic(subgroup.data, params, data.type=continuous) 
 }
 
 # create regression plot data
@@ -553,6 +537,8 @@ effectsize.column <- function(forest.data, box.sca = 1) {
            precision <- sqrt(1 / ((effect.col$UL - effect.col$LL)/(2*1.96)))
     } else if (forest.data$scale == "standard") {
           precision <- sqrt(1 / ((effect.col$UL - effect.col$LL)/(2*1.96)))
+    } else if (forest.data$scale == "logit") {
+          precision <- sqrt(1 / ((effect.col$UL - effect.col$LL)/(2*1.96)))
     }
     
     effect.col.sizes <- box.sca * precision/max(precision)
@@ -580,53 +566,39 @@ effectsize.column <- function(forest.data, box.sca = 1) {
     if (is.null(user.lb) || is.null(user.ub)) {
     # if user has not supplied both lower and upper bounds (that meet the requirements), compute them
     # heuristically as effect.col.range.
-   
-       if ((forest.data$data.type == "diagnostic") && (forest.data$scale == "standard")) {
-          # calculate the range of the data and round the lower limit down to neareast tenth
-           # and the upper limit up to the nearest tenth
-          a <- floor(10*min(effect.col$LL)) / 10
-          b <- ceiling(10*max(effect.col$UL)) / 10
-          effect.col.range <- c(a, b)
-       } else  {   
-          # For non-diagnostic data, this is a heuristic to determine a reasonable range for the displayed values - 
-          # confidence intervals that exceed this range are truncated and left or right arrows are displayed instead of the full CI. 
-         if (min(effect.col$LL)>0 && max(effect.col$UL)>0) {
-           effect.col.range <- c(max(0.5*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
-         } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)<=0) { 
+      if (forest.data$scale == "logit") { 
+        effect.col.range <- c(min(effect.col$LL), max(effect.col$UL))
+        # the obvious bounds seem to work OK for logit scale
+      }
+      else {
+          # When scale is log or standard, this is a heuristic to determine a reasonable range for the displayed values - 
+          # confidence intervals that exceed this range are truncated and left or right arrows are displayed instead of the full CI.
+        if (min(effect.col$LL)>0 && max(effect.col$UL)>0) {
+          effect.col.range <- c(max(0.5*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
+        } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)<=0) { 
            effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(-1.5*max(effect.col$ES) , max(effect.col$UL)))
-          } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)>0) { 
+        } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)>0) { 
            effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
-         } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)>0 && max(effect.col$ES)>0) { 
+        } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)>0 && max(effect.col$ES)>0) { 
            effect.col.range <- c(max(-2*min(effect.col$ES) , min(effect.col$LL)), min(1.5*max(effect.col$ES) , max(effect.col$UL)))
-          } else if (min(effect.col$LL)<=0 && max(effect.col$UL)<0) { 
+        } else if (min(effect.col$LL)<=0 && max(effect.col$UL)<0) { 
            effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(0.10*max(effect.col$ES) , max(effect.col$UL)))
-          } 
-       }  
-         # These are Issa's original heuristics - I increased the multipliers before the min's and max's by a factor of 10 in order to
-         # to widen effect.col.range so as to show more of the confidence intervals - that is, not to truncate them so close to the max
-         # and min of the effect sizes. Leaving the original code commented for now, in case this turns out to be a bad idea!
-         #
-         #if (min(effect.col$LL)>0 && max(effect.col$UL)>0) {
-         #    effect.col.range <- c(max(0.5*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
-         #} else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)<=0) { 
-         #effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(-1.5*max(effect.col$ES) , max(effect.col$UL)))
-         # } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)>0) { 
-         #  effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
-         #} else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)>0 && max(effect.col$ES)>0) { 
-         #     effect.col.range <- c(max(-2*min(effect.col$ES) , min(effect.col$LL)), min(1.5*max(effect.col$ES) , max(effect.col$UL)))
-         # } else if (min(effect.col$LL)<=0 && max(effect.col$UL)<0) { 
-         #   effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(0.10*max(effect.col$ES) , max(effect.col$UL)))
-         #  }
+        } 
+      }
       # this is an ugly solution to an uncommon problem
         merge.data <- data.frame(x = forest.data$types[-1], y = effect.col$LL, z = effect.col$UL)
         merge.data <- subset(merge.data, x>0)
-      
-        if (min(effect.col.range) >= min(merge.data$y)) 
-          effect.col.range[1] <- min(merge.data$y)
-        if (max(effect.col.range) <= max(merge.data$z)) 
-          effect.col.range[2] <- max(merge.data$z)
-    }  
-    
+        if (length(merge.data$y) > 0) {
+          if (min(effect.col.range) >= min(merge.data$y)) { 
+            effect.col.range[1] <- min(merge.data$y)
+          }
+        }
+        if (length(merge.data$z) > 0) {
+          if (max(effect.col.range) <= max(merge.data$z)) { 
+            effect.col.range[2] <- max(merge.data$z)
+          }
+        }
+    }
     if (! is.null(user.lb)) {
       # if the user's lb input is OK, set lower bound of range equal it.
       effect.col.range[1] <- user.lb
@@ -754,6 +726,9 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
   if (forest.data$scale == "standard" && min(col$range)<0 && max(col$range)>0 ) { 
       grid.lines(x=unit(0, "native"), y=0:1)
   }
+  if (forest.data$scale == "logit" && min(col$range)<0 && max(col$range)>0 ) { 
+      grid.lines(x=unit(0, "native"), y=0:1)
+  }
    
   if (!is.null(forest.data$options$show.summary.line)) {
       if (forest.data$options$show.summary.line == TRUE) {
@@ -763,27 +738,17 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
       }
   }  
   if  (forest.data$scale == "standard") {
-      if (forest.data$data.type == "diagnostic") {
-        # data lies in [0,1], so set default ticks to go by .1
-        if (length(user.ticks) == 0) {
-              grid.xaxis(at = seq(from=col$range[1], to=col$range[2], by=.1), gp=gpar(cex=0.6))
-        } else {+6
-              grid.xaxis(at = user.ticks , label = user.ticks, gp=gpar(cex=0.6))
-        }
-      } else {
-       # data is not diagnostic 
-          if (length(user.ticks) == 0) {
-              grid.xaxis(gp=gpar(cex=0.6))
-          } else {+6
-              grid.xaxis(at = user.ticks , label = user.ticks, gp=gpar(cex=0.6))
-          }
-      }
+    if (length(user.ticks) == 0) {
+      grid.xaxis(gp=gpar(cex=0.6))
+    } else {+6
+      grid.xaxis(at = user.ticks , label = user.ticks, gp=gpar(cex=0.6))
+    }
   }
   if (forest.data$scale == "log")  {
         if (length(user.ticks) == 0) { # some cheap tricks to make the axis ticks look nice (in most cases)...
             to.make.ticks <- range(exp(col$range))
             ticks <- axTicks(1, axp=c(to.make.ticks, 3), usr=c(-100, 100), log=TRUE)
-		        log.ticks <- log(ticks)
+  	        log.ticks <- log(ticks)
 		        log.ticks <- log.ticks[log.ticks > min(col$range) - 0.5]    # remember it is additive on this scale
             log.ticks <- log.ticks[log.ticks < max(col$range) + 0.5]
             ticks <- exp(log.ticks)
@@ -797,7 +762,28 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
         
         grid.xaxis(at = log.ticks , label = round(ticks, 3), gp=gpar(cex=0.6))          
   } 
-      
+  if (forest.data$scale == "logit")  {
+        if (length(user.ticks) == 0) { # some cheap tricks to make the axis ticks look nice (in most cases)...
+            to.make.ticks <- invlogit(col$range)
+            lower.gap <- to.make.ticks[1]
+            upper.gap <- 1 - to.make.ticks[2]
+            #ticks <- axTicks(1, axp=c(to.make.ticks, 3), usr=c(-100, 100), log=TRUE)
+  	        logit.ticks <- seq(from=floor(col$range[1]), to=ceiling(col$range[2]), by=1)
+            #logit.ticks <- logit(ticks)
+		        #logit.ticks <- logit.ticks[logit.ticks > min(col$range) - 0.5]    # remember it is additive on this scale
+            #logit.ticks <- logit.ticks[logit.ticks < max(col$range) + 0.5]
+            ticks <- invlogit(logit.ticks)
+        } else {
+		        ticks <- user.ticks
+            logit.ticks <- logit(user.ticks)
+		        #log.ticks <- log.ticks[log.ticks > min(col$range) - 0.5]    # remember it is additive on this scale
+            #log.ticks <- log.ticks[log.ticks < max(col$range) + 0.5]
+            #ticks <- exp(log.ticks)
+        }
+        
+        grid.xaxis(at = logit.ticks , label = round(ticks, 3), gp=gpar(cex=0.6))          
+  } 
+        
   grid.text(x.axis.label, y=unit(-2, "lines"), gp=gpar(cex=0.8))
   popViewport()
   for (i in 1:length(col$rows)) {
@@ -884,10 +870,7 @@ forest.plot <- function(forest.data, outpath){
     }  
    
     xticks <- forest.data$options$xticks
-    #if (!is.null(xticks)) {
-    #   xticks <- eval(parse(text=paste("c(", xticks, ")", sep="")))
-    #}
-  
+      
     draw.data.col(forest.data, effect.col, 2*length(additional.cols)+3,
                              color.overall = "lightblue",
                              color.subgroup = "yellow",
