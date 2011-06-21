@@ -588,11 +588,16 @@ effectsize.column <- function(forest.data, box.sca = 1) {
       # this is an ugly solution to an uncommon problem
         merge.data <- data.frame(x = forest.data$types[-1], y = effect.col$LL, z = effect.col$UL)
         merge.data <- subset(merge.data, x>0)
-      
-        if (min(effect.col.range) >= min(merge.data$y)) 
-          effect.col.range[1] <- min(merge.data$y)
-        if (max(effect.col.range) <= max(merge.data$z)) 
-          effect.col.range[2] <- max(merge.data$z)
+        if (length(merge.data$y) > 0) {
+          if (min(effect.col.range) >= min(merge.data$y)) { 
+            effect.col.range[1] <- min(merge.data$y)
+          }
+        }
+        if (length(merge.data$z) > 0) {
+          if (max(effect.col.range) <= max(merge.data$z)) { 
+            effect.col.range[2] <- max(merge.data$z)
+          }
+        }
     }
     if (! is.null(user.lb)) {
       # if the user's lb input is OK, set lower bound of range equal it.
