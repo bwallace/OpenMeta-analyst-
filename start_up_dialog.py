@@ -4,7 +4,7 @@ import ui_start_up
 
 class StartUp(QDialog, ui_start_up.Ui_WelcomeDialog):
     
-    def __init__(self, parent=None, recent_datasets=None):
+    def __init__(self, parent=None, recent_datasets=None, start_up=True):
 
         super(StartUp, self).__init__(parent)
         self.recent_datasets = recent_datasets or []
@@ -15,7 +15,18 @@ class StartUp(QDialog, ui_start_up.Ui_WelcomeDialog):
         self._setup_connections()
         self.parent = parent
         self.setFocus()
-        
+        self.start-up = start_up
+        if not self.start_up:
+            ### 
+            # in the case that the user has selected
+            # 'new dataset', we don't want to show
+            # options to, e.g., open an existing
+            # dataset.
+            self.setWindowTitle("New Dataset")
+            self.chk_show.setVisible(False)
+            self.open_btn.setVisible(False)
+            self.open_recent_btn.setVisible(False)
+            self.adjustSize()
       
     def _setup_connections(self):
         QObject.connect(self.create_new_btn, SIGNAL("pressed()"),
@@ -26,10 +37,10 @@ class StartUp(QDialog, ui_start_up.Ui_WelcomeDialog):
                             lambda: self.parent.update_user_prefs("splash", \
                                     self.chk_show.isChecked()))
 
-        if len(self.recent_datasets) > 0:
-            ### then add a drop-down to the
-            # 'open recent' button with the recent
-            # datasets.
+        if self.start_up and len(self.recent_datasets) > 0:
+            ### 
+            # then add a drop-down to the 'open recent' 
+            # button with the recent datasets.
             qm = QMenu()
             for dataset in self.recent_datasets:
                 action_item = qm.addAction(QString(dataset))

@@ -109,6 +109,16 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 start_up_window.setFocus()
                 start_up_window.dataset_name_le.setFocus()
             
+    def create_new_dataset(self):
+        new_data_window = start_up_dialog.StartUp(parent=self, \
+                    recent_datasets=self.user_prefs['recent datasets'],
+                    start_up=False)
+        new_data_window.show()
+        ## arg -- this won't work!
+        new_data_window.setFocus()
+        new_data_window.dataset_name_le.setFocus()
+        
+        
     def new_dataset(self, name=None, is_diag=False):
         data_model = Dataset(title=name, is_diag=is_diag)
         if self.model is not None:
@@ -196,7 +206,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     
             QObject.connect(self.action_save, SIGNAL("triggered()"), self.save)
             QObject.connect(self.action_open, SIGNAL("triggered()"), self.open)
-            QObject.connect(self.action_new_dataset, SIGNAL("triggered()"), self.new_dataset)
+            QObject.connect(self.action_new_dataset, SIGNAL("triggered()"), self.create_new_dataset)
             QObject.connect(self.action_quit, SIGNAL("triggered()"), self.quit)
             QObject.connect(self.action_go, SIGNAL("triggered()"), self.go)
             QObject.connect(self.action_cum_ma, SIGNAL("triggered()"), self.cum_ma)
