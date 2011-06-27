@@ -100,10 +100,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         else:
             ###
             # show the welcome dialog 
-            # @TODO need to check if the user has opted out of this
             self.load_user_prefs()
             if self.user_prefs["splash"]:
-                start_up_window =  start_up_dialog.StartUp(parent=self)
+                start_up_window =  start_up_dialog.StartUp(parent=self, \
+                            recent_datasets=self.user_prefs['recent datasets'])
                 start_up_window.show()
                 ## arg -- this won't work!
                 start_up_window.setFocus()
@@ -634,15 +634,28 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     def update_follow_up_label(self):
         self.cur_time_lbl.setText(u"<font color='Blue'>%s</font>" % self.model.get_current_follow_up_name())
         
-    def open(self):
+    def open(self, file_path=None):
         '''
         This gets called when the use opts to open an existing dataset. Note that we make use
         of the pickled dataset itself (.oma) and we also look for a corresponding `state`
         dictionary, which contains things like which outcome was currently displayed, etc.
         Also note that, as in Excel, the open operation is undoable. 
         '''
-        file_path = unicode(QFileDialog.getOpenFileName(self, "OpenMeta[analyst] - Open File",
+        
+        # if no file path is provided, prompt the user.
+        if file_path is None:
+            file_path = unicode(QFileDialog.getOpenFileName(self, "OpenMeta[analyst] - Open File",
                                                               ".", "open meta files (*.oma)"))
+                                                              
+                                                              
+        if file_path in self.user_prefs['recent datasets']:
+            # delete it; we'll re-insert it
+            self.user_prefs['recent datasets'].remove(file_path)
+        
+        self.user_prefs['recent datasets'].append(file_path)
+        self._save_user_prefs()
+        
+        
         data_model = None
         print "loading %s..." % file_path
         try:
@@ -666,7 +679,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
         prev_dataset = self.model.dataset.copy()
         
-        undo_f = lambda : self.undo_set_model(prev_out_path, prev_state_dict, prev_dataset)
+        undo_f = lambda : self.undo_set_model(prev_out_path, prev_state_dict, \
+                                                prev_dataset)
         redo_f = lambda : self.set_model(data_model, state_dict)
         
         open_command = CommandGenericDo(redo_f, undo_f)
@@ -753,6 +767,12 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             f = open(self.out_path + ".state", 'wb')
             pickle.dump(d, f)
             f.close()
+            ###
+            # update user preferences to save the location of 
+            # this dataset
+            self.user_prefs['recent datasets'].append(self.out_paths)
+            self._save_user_prefs()
+            
         except Exception, e:
             # @TODO handle this elegantly?
             print e

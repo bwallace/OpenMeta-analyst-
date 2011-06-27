@@ -4,25 +4,49 @@ import ui_start_up
 
 class StartUp(QDialog, ui_start_up.Ui_WelcomeDialog):
     
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, recent_datasets=None):
 
         super(StartUp, self).__init__(parent)
+        self.recent_datasets = recent_datasets or []
+        ###
+        # most recently accessed dataset first
+        self.recent_datasets.reverse()
         self.setupUi(self)
         self._setup_connections()
         self.parent = parent
         self.setFocus()
         
-        
+      
     def _setup_connections(self):
         QObject.connect(self.create_new_btn, SIGNAL("pressed()"),
                                     self.new_dataset)
         QObject.connect(self.open_btn, SIGNAL("pressed()"),
                                     self.open_dataset)
-                                    
-        # TODO implement open recent dataset...
-        QObject.connect(self.chk_show,  SIGNAL('stateChanged(int)'),
-                            lambda: self.parent.update_user_prefs("splash", self.chk_show.isChecked()))
+        QObject.connect(self.chk_show,  SIGNAL("stateChanged(int)"),
+                            lambda: self.parent.update_user_prefs("splash", \
+                                    self.chk_show.isChecked()))
+
+        if len(self.recent_datasets) > 0:
+            ### then add a drop-down to the
+            # 'open recent' button with the recent
+            # datasets.
+            qm = QMenu()
+            for dataset in self.recent_datasets:
+                action_item = qm.addAction(QString(dataset))
+                QObject.connect(action_item, SIGNAL("triggered()"), \
+                                lambda : self.dataset_selected(dataset)) 
+            #QObject.connect(qm, SIGNAL("triggered()"), self.dataset_selected) 
+            self.open_recent_btn.setMenu(qm)
+            
+        else:
+            self.open_recent_btn.setEnabled(False)
+        
       
+    def dataset_selected(self, dataset_path):
+        self.parent.open(file_path=dataset_path)
+        self.close()
+        
+        
     def new_dataset(self):
         name = unicode(self.dataset_name_le.text().toUtf8(), "utf-8")
         is_diag = self.diag_radio.isChecked()
