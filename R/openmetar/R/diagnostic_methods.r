@@ -243,6 +243,18 @@ diagnostic.fixed.parameters <- function(){
     parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
 }
 
+diagnostic.fixed.pretty.names <- function() {
+    pretty.names <- list("diagnostic.fixed"=list("pretty_name"="Diagnostic Fixed-Effects Inverse Variance", 
+                                                     "description" = "Performs fixed-effects meta-analysis with inverse variance weighting."),
+                         "conf.level"=list("pretty_name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
+                         "digits"=list("pretty_name"="Number of digits", "description"="Number of digits to display in results"),
+                         "adjust"=list("pretty_name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
+                         "to"=list("pretty_name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
+                                   is added to all cells of each two-by-two table that contains at leason one zero. When set to \"all\", the correction factor
+                                   is added to all two-by-two tables if at least one table contains a zero.")
+                          )
+}
+
 diagnostic.fixed.overall <- function(results) {
     # this parses out the overall from the computed result
     res <- results$Summary$MAResults
@@ -313,6 +325,18 @@ diagnostic.random.parameters <- function(){
     parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
 }
 
+diagnostic.random.pretty.names <- function() {
+    pretty.names <- list("diagnostic.random"=list("pretty_name"="diagnostic Random-Effects Mantel Haenszel", 
+                                              "description" = "Performs random-effects meta-analysis."),
+                         "rm.method"=list("pretty_name"="Random method", "description"="Method for estimating between-studies heterogeneity"),                      
+                         "conf.level"=list("pretty_name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
+                         "digits"=list("pretty_name"="Number of digits", "description"="Number of digits to display in results"),
+                         "adjust"=list("pretty_name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
+                         "to"=list("pretty_name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
+                                   is added to all cells of each two-by-two table that contains at leason one zero. When set to \"all\", the correction factor
+                                   is added to all two-by-two tables if at least one table contains a zero.")
+                         )
+}
 diagnostic.random.overall <- function(results) {
     # this parses out the overall from the computed result
     res <- results$Summary$MAResults
@@ -376,4 +400,16 @@ diagnostic.fixed.sroc.parameters <- function(){
     var_order = c("conf.level", "digits", "adjust", "to", "sroc.weighted")
 
     parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
+}
+
+diagnostic.fixed.sroc.pretty.names <- function() {
+    pretty.names <- list("diagnostic.fixed.sroc"=list("pretty_name"="Diagnostic ", 
+                                                     "description" = "Plots diagonostic SROC."),
+                         "conf.level"=list("pretty_name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
+                         "digits"=list("pretty_name"="Number of digits", "description"="Number of digits to display in results"),
+                         "adjust"=list("pretty_name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
+                         "to"=list("pretty_name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
+                                   is added to all cells of each two-by-two table that contains at leason one zero. When set to \"all\", the correction factor
+                                   is added to all two-by-two tables if at least one table contains a zero.")
+                          )
 }
