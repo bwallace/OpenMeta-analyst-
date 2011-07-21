@@ -780,7 +780,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             ###
             # update user preferences to save the location of 
             # this dataset
-            self.user_prefs['recent datasets'].append(self.out_paths)
+            self.user_prefs['recent datasets'].append(self.out_path)
             self._save_user_prefs()
             
         except Exception, e:

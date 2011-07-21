@@ -12,10 +12,10 @@ class StartUp(QDialog, ui_start_up.Ui_WelcomeDialog):
         # most recently accessed dataset first
         self.recent_datasets.reverse()
         self.setupUi(self)
+        self.start_up = start_up
         self._setup_connections()
         self.parent = parent
         self.setFocus()
-        self.start-up = start_up
         if not self.start_up:
             ### 
             # in the case that the user has selected
@@ -54,6 +54,7 @@ class StartUp(QDialog, ui_start_up.Ui_WelcomeDialog):
         
       
     def dataset_selected(self, dataset_path):
+        print dataset_path
         self.parent.open(file_path=dataset_path)
         self.close()
         
