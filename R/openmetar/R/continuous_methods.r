@@ -119,12 +119,12 @@ continuous.fixed.parameters <- function(){
 }
 
 continuous.fixed.pretty.names <- function() {
-    pretty.names <- list("continuous.fixed"=list("pretty_name"="Continuous Fixed-Effects Inverse Variance", 
-                                                     "description" = "Performs fixed-effects meta-analysis with inverse variance weighting."),
-                         "conf.level"=list("pretty_name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
-                         "digits"=list("pretty_name"="Number of digits", "description"="Number of digits to display in results"),
-                         "adjust"=list("pretty_name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
-                         "to"=list("pretty_name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
+    pretty.names <- list("pretty.name"="Continuous Fixed-Effects Inverse Variance", 
+                         "description" = "Performs fixed-effects meta-analysis with inverse variance weighting.",
+                         "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
+                         "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
+                         "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
+                         "to"=list("pretty.name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
                                    is added to all cells of each two-by-two table that contains at leason one zero. When set to \"all\", the correction factor
                                    is added to all two-by-two tables if at least one table contains a zero.")
                           )
@@ -162,7 +162,7 @@ continuous.random <- function(cont.data, params){
     #
     # generate forest plot 
     #
-    if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
+    if ((is.null(params$create.plot)) || params$create.plot) {
         forest.path <- paste(params$fp_outpath, sep="")
         plot.data <- create.plot.data.continuous(cont.data, params, res)
         forest.plot(plot.data, outpath=forest.path)
@@ -179,7 +179,7 @@ continuous.random <- function(cont.data, params){
         results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
     }
     else {
-    results <- list("Summary"=summary.disp)
+        results <- list("Summary"=summary.disp)
     } 
     results
 }
@@ -198,13 +198,13 @@ continuous.random.parameters <- function(){
 }
 
 continuous.random.pretty.names <- function() {
-    pretty.names <- list("continuous.random"=list("pretty_name"="Continuous Random-Effects Mantel Haenszel", 
-                                              "description" = "Performs random-effects meta-analysis."),
-                         "rm.method"=list("pretty_name"="Random method", "description"="Method for estimating between-studies heterogeneity"),                      
-                         "conf.level"=list("pretty_name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
-                         "digits"=list("pretty_name"="Number of digits", "description"="Number of digits to display in results"),
-                         "adjust"=list("pretty_name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
-                         "to"=list("pretty_name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
+    pretty.names <- list("pretty.name"="Continuous Random-Effects Mantel Haenszel", 
+                         "description" = "Performs random-effects meta-analysis.",
+                         "rm.method"=list("pretty.name"="Random method", "description"="Method for estimating between-studies heterogeneity"),                      
+                         "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
+                         "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
+                         "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
+                         "to"=list("pretty.name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
                                    is added to all cells of each two-by-two table that contains at leason one zero. When set to \"all\", the correction factor
                                    is added to all two-by-two tables if at least one table contains a zero.")
                          )

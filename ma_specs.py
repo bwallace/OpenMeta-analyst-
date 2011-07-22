@@ -188,7 +188,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
     def method_changed(self):
         self.clear_param_ui()
         self.current_widgets= []
-        self.current_method = self.method_cbo_box.currentText()
+        self.current_method = self.available_method_d[str(self.method_cbo_box.currentText())]
         self.setup_params()
         self.parameter_grp_box.setTitle(self.current_method)
         self.ui_for_params()
@@ -206,11 +206,13 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         elif self.data_type == "diagnostic":
             meta_py_r.ma_dataset_to_simple_diagnostic_robj(self.model, var_name=tmp_obj_name)
             
-        available_methods = meta_py_r.get_available_methods(for_data_type=self.data_type, data_obj_name=tmp_obj_name)
-        print "\n\navailable %s methods: %s" % (self.data_type, ", ".join(available_methods))
-        for method in available_methods:
+        self.available_method_d = meta_py_r.get_available_methods(for_data_type=self.data_type, data_obj_name=tmp_obj_name)
+        print "\n\navailable %s methods: %s" % (self.data_type, ", ".join(self.available_method_d.keys()))
+        for method in self.available_method_d.keys():
             self.method_cbo_box.addItem(method)
-        self.current_method = self.method_cbo_box.currentText()
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
+        self.current_method = self.available_method_d[str(self.method_cbo_box.currentText())]
         self.setup_params()
         self.parameter_grp_box.setTitle(self.current_method)
 

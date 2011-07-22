@@ -156,12 +156,12 @@ binary.fixed.inv.var.parameters <- function(){
 }
 
 binary.fixed.inv.var.pretty.names <- function() {
-    pretty.names <- list("binary.fixed.inv.var"=list("pretty_name"="Binary Fixed-Effects Inverse Variance", 
-                                                     "description" = "Performs fixed-effects meta-analysis with inverse variance weighting."),
-                         "conf.level"=list("pretty_name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
-                         "digits"=list("pretty_name"="Number of digits", "description"="Number of digits to display in results"),
-                         "adjust"=list("pretty_name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
-                         "to"=list("pretty_name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
+    pretty.names <- list("pretty.name"="Binary Fixed-Effects Inverse Variance", 
+                         "description" = "Performs fixed-effects meta-analysis with inverse variance weighting.",
+                         "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
+                         "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
+                         "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
+                         "to"=list("pretty.name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
                                    is added to all cells of each two-by-two table that contains at leason one zero. When set to \"all\", the correction factor
                                    is added to all two-by-two tables if at least one table contains a zero.")
                           )
@@ -240,12 +240,12 @@ binary.fixed.mh.parameters <- function(){
 }
 
 binary.fixed.mh.pretty.names <- function() {
-    pretty.names <- list("binary.fixed.mh"=list("pretty_name"="Binary Fixed-Effects Mantel Haenszel", 
-                                                "description" = "Performs fixed-effects meta-analysis using the Mantel Haenszel method."),
-                         "conf.level"=list("pretty_name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
-                         "digits"=list("pretty_name"="Number of digits", "description"="Number of digits to display in results"),
-                         "adjust"=list("pretty_name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
-                         "to"=list("pretty_name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
+    pretty.names <- list("pretty.name"="Binary Fixed-Effects Mantel Haenszel", 
+                         "description" = "Performs fixed-effects meta-analysis using the Mantel Haenszel method.",
+                         "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
+                         "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
+                         "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
+                         "to"=list("pretty.name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
                                    is added to all cells of each two-by-two table that contains at leason one zero. When set to \"all\", the correction factor
                                    is added to all two-by-two tables if at least one table contains a zero.")
                           )
@@ -334,12 +334,12 @@ binary.fixed.peto.parameters <- function(){
     parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
 }
 binary.fixed.peto.pretty.names <- function() {
-    pretty.names <- list("binary.fixed.peto"=list("pretty_name"="Binary Fixed-Effects Peto", 
-                                                  "description" = "Performs fixed-effects meta-analysis using the Peto method."),
-                         "conf.level"=list("pretty_name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
-                         "digits"=list("pretty_name"="Number of digits", "description"="Number of digits to display in results"),
-                         "adjust"=list("pretty_name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
-                         "to"=list("pretty_name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
+    pretty.names <- list("pretty.name"="Binary Fixed-Effects Peto", 
+                         "description" = "Performs fixed-effects meta-analysis using the Peto method.",
+                         "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
+                         "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
+                         "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
+                         "to"=list("pretty.name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
                                    is added to all cells of each two-by-two table that contains at leason one zero. When set to \"all\", the correction factor
                                    is added to all two-by-two tables if at least one table contains a zero.")
                          )
@@ -426,13 +426,13 @@ binary.random.parameters <- function(){
 }
 
 binary.random.pretty.names <- function() {
-    pretty.names <- list("binary.random"=list("pretty_name"="Binary Random-Effects Mantel Haenszel", 
-                                              "description" = "Performs random-effects meta-analysis."),
-                         "rm.method"=list("pretty_name"="Random method", "description"="Method for estimating between-studies heterogeneity"),                      
-                         "conf.level"=list("pretty_name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
-                         "digits"=list("pretty_name"="Number of digits", "description"="Number of digits to display in results"),
-                         "adjust"=list("pretty_name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
-                         "to"=list("pretty_name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
+    pretty.names <- list("pretty.name"="Binary Random-Effects Mantel Haenszel", 
+                         "description" = "Performs random-effects meta-analysis.",
+                         "rm.method"=list("pretty.name"="Random method", "description"="Method for estimating between-studies heterogeneity"),                      
+                         "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
+                         "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
+                         "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
+                         "to"=list("pretty.name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
                                    is added to all cells of each two-by-two table that contains at leason one zero. When set to \"all\", the correction factor
                                    is added to all two-by-two tables if at least one table contains a zero.")
                          )

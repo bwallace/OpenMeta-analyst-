@@ -161,14 +161,27 @@ def get_available_methods(for_data_type=None, data_obj_name=None):
     feasible_methods = all_methods
     # now, if a data object handle was provided, check which methods are feasible
     if data_obj_name is not None:
-        feasible_methods = []
+        # we will return a dictionary mapping pretty
+        # names (optionally) to method names; if no pretty name exists,
+        # then we just map the method name to itself.
+        # note that if more than one method exists with the same pretty name
+        # it will be overwritten!
+        feasible_methods = {}
         for method in all_methods:
             is_feasible = True
             is_feas_f = "%s.is.feasible" % method
             if is_feas_f in method_list:
                 is_feasible = ro.r("%s(%s)" % (is_feas_f, data_obj_name))[0]
             if is_feasible:
-                feasible_methods.append(method)
+                # do we have a pretty name?
+                pretty_names_f = "%s.pretty.names" % method
+                if pretty_names_f in method_list:
+                    pretty_name = ro.r("%s()$pretty.name" % pretty_names_f)
+                    pretty_name = pretty_name[0]
+                    feasible_methods[pretty_name] = method
+                else:
+                    # no? then just map to the function name
+                    feasible_methods[method] = method
     return feasible_methods
 
 
