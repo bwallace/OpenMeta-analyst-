@@ -153,10 +153,9 @@ get.res.for.one.diag.study <- function(diagnostic.data, params){
     # get the point estimate and lower/upper bounds.
     
     ######
-    ## bcw -- 2/17/11 -- Paul, please don't change this back to checking
-    ## if it's NA; we want to recompute the data here regardless, and
-    ## the program will throwup on this check if the y estimate doesn't
-    ## exist on the object.
+    ## Do not check here if the object is NA; we want to recompute the 
+    ## data here regardless, and the program will throwup on this check if 
+    ## the y estimate doesn't exist on the object.
     #####
     diagnostic.data <- compute.diag.point.estimates(diagnostic.data, params)
     
@@ -244,12 +243,12 @@ diagnostic.fixed.parameters <- function(){
 }
 
 diagnostic.fixed.pretty.names <- function() {
-    pretty.names <- list("diagnostic.fixed"=list("pretty_name"="Diagnostic Fixed-Effects Inverse Variance", 
-                                                     "description" = "Performs fixed-effects meta-analysis with inverse variance weighting."),
-                         "conf.level"=list("pretty_name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
-                         "digits"=list("pretty_name"="Number of digits", "description"="Number of digits to display in results"),
-                         "adjust"=list("pretty_name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
-                         "to"=list("pretty_name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
+    pretty.names <- list("pretty.name"="Diagnostic Fixed-Effects Inverse Variance", 
+                         "description" = "Performs fixed-effects meta-analysis with inverse variance weighting.",
+                         "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
+                         "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
+                         "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
+                         "to"=list("pretty.name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
                                    is added to all cells of each two-by-two table that contains at leason one zero. When set to \"all\", the correction factor
                                    is added to all two-by-two tables if at least one table contains a zero.")
                           )
@@ -326,13 +325,13 @@ diagnostic.random.parameters <- function(){
 }
 
 diagnostic.random.pretty.names <- function() {
-    pretty.names <- list("diagnostic.random"=list("pretty_name"="diagnostic Random-Effects Mantel Haenszel", 
-                                              "description" = "Performs random-effects meta-analysis."),
-                         "rm.method"=list("pretty_name"="Random method", "description"="Method for estimating between-studies heterogeneity"),                      
-                         "conf.level"=list("pretty_name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
-                         "digits"=list("pretty_name"="Number of digits", "description"="Number of digits to display in results"),
-                         "adjust"=list("pretty_name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
-                         "to"=list("pretty_name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
+    pretty.names <- list("pretty.name"="Diagnostic Random-Effects Mantel Haenszel", 
+                         "description" = "Performs random-effects meta-analysis.",
+                         "rm.method"=list("pretty.name"="Random method", "description"="Method for estimating between-studies heterogeneity"),                      
+                         "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
+                         "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
+                         "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
+                         "to"=list("pretty.name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
                                    is added to all cells of each two-by-two table that contains at leason one zero. When set to \"all\", the correction factor
                                    is added to all two-by-two tables if at least one table contains a zero.")
                          )
@@ -403,12 +402,12 @@ diagnostic.fixed.sroc.parameters <- function(){
 }
 
 diagnostic.fixed.sroc.pretty.names <- function() {
-    pretty.names <- list("diagnostic.fixed.sroc"=list("pretty_name"="Diagnostic ", 
-                                                     "description" = "Plots diagonostic SROC."),
-                         "conf.level"=list("pretty_name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
-                         "digits"=list("pretty_name"="Number of digits", "description"="Number of digits to display in results"),
-                         "adjust"=list("pretty_name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
-                         "to"=list("pretty_name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
+    pretty.names <- list("pretty.name"="Diagnostic fixed SROC", 
+                         "description" = "Plots diagonostic SROC.",
+                         "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
+                         "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
+                         "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
+                         "to"=list("pretty.name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
                                    is added to all cells of each two-by-two table that contains at leason one zero. When set to \"all\", the correction factor
                                    is added to all two-by-two tables if at least one table contains a zero.")
                           )
