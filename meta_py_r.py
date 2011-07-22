@@ -158,7 +158,7 @@ def get_available_methods(for_data_type=None, data_obj_name=None):
     if for_data_type is not None:
         all_methods = [method for method in all_methods if method.startswith(for_data_type)]
     
-    feasible_methods = all_methods
+    feasible_methods = dict(zip(all_methods, all_methods))
     # now, if a data object handle was provided, check which methods are feasible
     if data_obj_name is not None:
         # we will return a dictionary mapping pretty
@@ -176,15 +176,21 @@ def get_available_methods(for_data_type=None, data_obj_name=None):
                 # do we have a pretty name?
                 pretty_names_f = "%s.pretty.names" % method
                 if pretty_names_f in method_list:
-                    pretty_name = ro.r("%s()$pretty.name" % pretty_names_f)
-                    pretty_name = pretty_name[0]
+                    pretty_name = ro.r("%s()$pretty.name" % pretty_names_f)[0]
                     feasible_methods[pretty_name] = method
                 else:
                     # no? then just map to the function name
                     feasible_methods[method] = method
     return feasible_methods
 
-
+def get_method_description(method_name):
+    pretty_names_f = "%s.pretty.names" % method_name
+    method_list = ro.r("lsf.str('package:openmetar')")
+    if not pretty_names_f in method_list:
+        return ""
+    else:
+        return ro.r("%s()$description" % pretty_names_f)[0]
+    
 def ma_dataset_to_binary_robj(table_model, var_name):
     pass
     

@@ -210,8 +210,6 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         print "\n\navailable %s methods: %s" % (self.data_type, ", ".join(self.available_method_d.keys()))
         for method in self.available_method_d.keys():
             self.method_cbo_box.addItem(method)
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
         self.current_method = self.available_method_d[str(self.method_cbo_box.currentText())]
         self.setup_params()
         self.parameter_grp_box.setTitle(self.current_method)
@@ -229,6 +227,14 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
            self.parameter_grp_box.setLayout(layout)
 
         cur_grid_row = 0
+        
+        # add the method description
+        method_description = meta_py_r.get_method_description(self.current_method)
+        
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
+        self.add_label(self.parameter_grp_box.layout(), cur_grid_row, "Description: %s" % method_description)
+        cur_grid_row += 1
         
         if self.var_order is not None:
             for var_name in self.var_order:
