@@ -186,10 +186,13 @@ def get_available_methods(for_data_type=None, data_obj_name=None):
 def get_method_description(method_name):
     pretty_names_f = "%s.pretty.names" % method_name
     method_list = ro.r("lsf.str('package:openmetar')")
-    if not pretty_names_f in method_list:
-        return ""
-    else:
-        return ro.r("%s()$description" % pretty_names_f)[0]
+    description = "None provided."
+    if pretty_names_f in method_list:
+        try:
+            description = ro.r("%s()$description" % pretty_names_f)[0]
+        except:
+            pass
+    return description
     
 def ma_dataset_to_binary_robj(table_model, var_name):
     pass
