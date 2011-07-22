@@ -22,7 +22,7 @@
    <string>Method &amp; Parameters</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="images/icons.qrc">
     <normaloff>:/images/meta.png</normaloff>:/images/meta.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
