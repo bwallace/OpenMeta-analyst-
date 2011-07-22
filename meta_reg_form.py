@@ -22,7 +22,7 @@ class MetaRegForm(QDialog, ui_meta_reg.Ui_cov_reg_dialog):
         selected_cov = self.cov_cbo_box.currentText()
         print selected_cov
         meta_py_r.ma_dataset_to_simple_binary_robj(self.model)
-        result = meta_py_r.run_binary_meta_regression(selected_cov)
+        result = meta_py_r.run_binary_fixed_meta_regression(selected_cov)
         self.parent().analysis(result)
         self.accept()
         
