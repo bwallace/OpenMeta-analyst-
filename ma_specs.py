@@ -231,8 +231,6 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         # add the method description
         method_description = meta_py_r.get_method_description(self.current_method)
         
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
         self.add_label(self.parameter_grp_box.layout(), cur_grid_row, "Description: %s" % method_description)
         cur_grid_row += 1
         
