@@ -606,7 +606,6 @@ def run_meta_method(meta_function_name, function_name, params, \
                                               "texts":text_d}    
           
                                                                                   
-
 def _rls_to_pyd(r_ls):
     # base case is that the type is a native python type, rather
     # than an Rvector
