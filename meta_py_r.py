@@ -139,9 +139,36 @@ def get_params(method_name):
     order_vars = None
     if param_d.has_key("var_order"):
         order_vars = list(param_d["var_order"])
-    
-    return (_rlist_to_pydict(param_d['parameters']), _rlist_to_pydict(param_d['defaults']), order_vars)
 
+    pretty_names_and_descriptions = get_pretty_names_and_descriptions_for_params(\
+                                        method_name, param_list)
+                                    
+    return (_rlist_to_pydict(param_d['parameters']), \
+            _rlist_to_pydict(param_d['defaults']), \
+            order_vars,\
+            pretty_names_and_descriptions)
+            
+
+def get_pretty_names_and_descriptions_for_params(method_name, param_list):
+    method_list = ro.r("lsf.str('package:openmetar')")
+    pretty_names_f = "%s.pretty.names" % method_name
+    params_d = {}
+    if pretty_names_f in method_list:
+        # try to match params to their pretty names and descriptions
+        pretty_names_and_descriptions = ro.r("%s()" % pretty_names_f)
+        # this dictionary is assumed to be as follows:
+        #      params_d[param] --> {"pretty.name":XX, "description":XX}
+        params_d = _rls_to_pyd(pretty_names_and_descriptions)
+
+    # fill in entries for parameters for which pretty names/descriptions were
+    # not provided-- these are just place-holders to make processing this
+    # easier 
+    for param in param_list:
+        if not param in params_d.keys():
+            params_d[param] = {"pretty.name":param, "description":"None provided"}
+    
+    return params_d
+    
 def get_available_methods(for_data_type=None, data_obj_name=None):
     '''
     Returns a list of methods available in OpenMeta for the particular data_type
@@ -586,12 +613,12 @@ def _rls_to_pyd(r_ls):
     d = {}
 
     for name, val in zip(r_ls.getnames(), r_ls):
+        ###
+        # I know we shouldn't wrap the whole thing in a (generic) try block,
+        # but rpy2 can throw some funky exceptions...
         try:
-        
             # first check the key
             if str(name) != "NULL":
-                #print name
-                #print type(name)
                 if "rpy2.robjects" in str(type(name)):
                     name = str(name[0])
                 if not "rpy2.robjects" in str(type(val)):
@@ -602,6 +629,7 @@ def _rls_to_pyd(r_ls):
                 elif str(val.getnames())=="NULL":
                     d[name] = val[0]
                 else:
+                    # recurse
                     d[name] = _rls_to_pyd(val)
                 if not isinstance(name, str):
                     raise Exception, "arg"
@@ -610,7 +638,7 @@ def _rls_to_pyd(r_ls):
                 return val
 
         except Exception,  inst:
-            print "error parsing R tuple.. "
+            print "error parsing R tuple.. here's the exception "
             print inst
             print "ignoring."
 

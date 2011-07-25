@@ -268,7 +268,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         elif value.lower() == "float":
             self.add_float_box(layout, cur_grid_row, name)
         else:
-            print "uknown type! throwing up. bleccch."
+            print "unknown type! throwing up. bleccch."
             print "name:%s. value: %s" % (name, value)
             # throw exception here
 
@@ -277,7 +277,10 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         Adds an enumeration to the UI, with the name and possible
         values as specified per the parameters.
         '''
-        self.add_label(layout, cur_grid_row, name)
+        
+        ### 
+        # using the pretty name for the label now.
+        self.add_label(layout, cur_grid_row, self.param_d[name]["pretty.name"])
         cbo_box = QComboBox()
         for value in values:
             cbo_box.addItem(value)
@@ -293,7 +296,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         layout.addWidget(cbo_box, cur_grid_row, 1)
 
     def add_float_box(self, layout, cur_grid_row, name):
-        self.add_label(layout, cur_grid_row, name)
+        self.add_label(layout, cur_grid_row, self.param_d[name]["pretty.name"])
         # now add the float input line edit
         finput = QLineEdit()
 
@@ -325,6 +328,10 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         layout.addWidget(lbl, cur_grid_row, 0)
 
     def setup_params(self):
-        self.current_params, self.current_defaults, self.var_order = \
+        # parses out information about the parameters of the current method
+        # param_d holds (meta) information about the parameter -- it's a each param
+        # itself maps to a dictionary with a pretty name and description (assuming
+        # they were provided for the given param)
+        self.current_params, self.current_defaults, self.var_order, self.param_d = \
                     meta_py_r.get_params(self.current_method)
         print self.current_defaults
