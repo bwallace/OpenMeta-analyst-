@@ -431,6 +431,30 @@ set.plot.options <- function(params) {
     plot.options
 }    
 
+pretty.metric.name <- function(metric) {
+  denominator <- switch(metric,
+        OR = "Odds ratio",
+        RD = "Risk difference,"
+        RR = "Relative risk",
+        AS = "Arcsine risk difference"
+        PETO = "Peto"
+        YUQ = "Yule's Q"
+        YUY = "Yules Y"
+        Sens = "Sensitivity", 
+        Spec = "Specificity",
+        # pos. predictive value
+        PPV =  "Pos. predictive value",
+        #neg. predictive value
+        NPV =  "Neg. predictive value",
+        # accuracy
+        Acc = "Accuracy",
+        # positive likelihood ratio
+        PLR = "Pos. likelihood ratio", 
+        # negative likelihood ratio
+        NLR = "Pos. likelihood ratio",
+        # diagnostic odds ratio
+        DOR = "Diagnostic odds ratio")
+  
 ###################################
 #   functions for creating plots  #
 ###################################
