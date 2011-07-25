@@ -280,7 +280,8 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         
         ### 
         # using the pretty name for the label now.
-        self.add_label(layout, cur_grid_row, self.param_d[name]["pretty.name"])
+        self.add_label(layout, cur_grid_row, self.param_d[name]["pretty.name"], \
+                                tool_tip_text=self.param_d[name]["description"])
         cbo_box = QComboBox()
         for value in values:
             cbo_box.addItem(value)
@@ -296,7 +297,8 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         layout.addWidget(cbo_box, cur_grid_row, 1)
 
     def add_float_box(self, layout, cur_grid_row, name):
-        self.add_label(layout, cur_grid_row, self.param_d[name]["pretty.name"])
+        self.add_label(layout, cur_grid_row, self.param_d[name]["pretty.name"],\
+                                tool_tip_text=self.param_d[name]["description"])
         # now add the float input line edit
         finput = QLineEdit()
 
@@ -322,8 +324,10 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
         return set_param
 
-    def add_label(self, layout, cur_grid_row, name):
+    def add_label(self, layout, cur_grid_row, name, tool_tip_text = None):
         lbl = QLabel(name, self.parameter_grp_box)
+        if not tool_tip_text is None:
+            lbl.setToolTip(tool_tip_text)
         self.current_widgets.append(lbl)
         layout.addWidget(lbl, cur_grid_row, 0)
 
