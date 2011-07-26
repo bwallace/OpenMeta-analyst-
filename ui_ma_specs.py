@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'ma_specs2.ui'
 #
-# Created: Tue Jun 14 09:53:55 2011
-#      by: PyQt4 UI code generator 4.7.7
+# Created: Fri Jul 22 11:53:02 2011
+#      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -18,7 +18,7 @@ class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName(_fromUtf8("Dialog"))
         Dialog.setWindowModality(QtCore.Qt.ApplicationModal)
-        Dialog.resize(551, 573)
+        Dialog.resize(506, 381)
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Verdana"))
         Dialog.setFont(font)
@@ -171,7 +171,7 @@ class Ui_Dialog(object):
         self.verticalLayout.addWidget(self.buttonBox)
 
         self.retranslateUi(Dialog)
-        self.specs_tab.setCurrentIndex(1)
+        self.specs_tab.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):

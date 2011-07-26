@@ -43,21 +43,24 @@ class StartUp(QDialog, ui_start_up.Ui_WelcomeDialog):
             # button with the recent datasets.
             qm = QMenu()
             for dataset in self.recent_datasets:
-                action_item = qm.addAction(QString(dataset))
-                QObject.connect(action_item, SIGNAL("triggered()"), \
-                                lambda : self.dataset_selected(dataset)) 
-            #QObject.connect(qm, SIGNAL("triggered()"), self.dataset_selected) 
+                action_item = QAction(QString(dataset), qm)
+                qm.addAction(action_item)
+                # I wanted to handle this with lambdas, but the method would
+                # inexplicably always be invoked with the last dataset as the
+                # argument. Instead, I've opted to use the .sender method to
+                # retrieve the action_item, i.e., dataset, selected (see
+                # the dataset_selected routine).
+                QObject.connect(action_item, SIGNAL("triggered()"), self.dataset_selected) 
             self.open_recent_btn.setMenu(qm)
-            
         else:
             self.open_recent_btn.setEnabled(False)
-        
-      
-    def dataset_selected(self, dataset_path):
-        print dataset_path
+       
+    def dataset_selected(self):
+        # we use the sender method to see which menu item was
+        # triggered
+        dataset_path = QObject.sender(self).text()
         self.parent.open(file_path=dataset_path)
         self.close()
-        
         
     def new_dataset(self):
         name = unicode(self.dataset_name_le.text().toUtf8(), "utf-8")

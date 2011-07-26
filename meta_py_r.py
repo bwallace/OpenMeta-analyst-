@@ -139,9 +139,36 @@ def get_params(method_name):
     order_vars = None
     if param_d.has_key("var_order"):
         order_vars = list(param_d["var_order"])
-    
-    return (_rlist_to_pydict(param_d['parameters']), _rlist_to_pydict(param_d['defaults']), order_vars)
 
+    pretty_names_and_descriptions = get_pretty_names_and_descriptions_for_params(\
+                                        method_name, param_list)
+                                    
+    return (_rlist_to_pydict(param_d['parameters']), \
+            _rlist_to_pydict(param_d['defaults']), \
+            order_vars,\
+            pretty_names_and_descriptions)
+            
+
+def get_pretty_names_and_descriptions_for_params(method_name, param_list):
+    method_list = ro.r("lsf.str('package:openmetar')")
+    pretty_names_f = "%s.pretty.names" % method_name
+    params_d = {}
+    if pretty_names_f in method_list:
+        # try to match params to their pretty names and descriptions
+        pretty_names_and_descriptions = ro.r("%s()" % pretty_names_f)
+        # this dictionary is assumed to be as follows:
+        #      params_d[param] --> {"pretty.name":XX, "description":XX}
+        params_d = _rls_to_pyd(pretty_names_and_descriptions)
+
+    # fill in entries for parameters for which pretty names/descriptions were
+    # not provided-- these are just place-holders to make processing this
+    # easier 
+    for param in param_list:
+        if not param in params_d.keys():
+            params_d[param] = {"pretty.name":param, "description":"None provided"}
+    
+    return params_d
+    
 def get_available_methods(for_data_type=None, data_obj_name=None):
     '''
     Returns a list of methods available in OpenMeta for the particular data_type
@@ -158,20 +185,42 @@ def get_available_methods(for_data_type=None, data_obj_name=None):
     if for_data_type is not None:
         all_methods = [method for method in all_methods if method.startswith(for_data_type)]
     
-    feasible_methods = all_methods
+    feasible_methods = dict(zip(all_methods, all_methods))
     # now, if a data object handle was provided, check which methods are feasible
     if data_obj_name is not None:
-        feasible_methods = []
+        # we will return a dictionary mapping pretty
+        # names (optionally) to method names; if no pretty name exists,
+        # then we just map the method name to itself.
+        # note that if more than one method exists with the same pretty name
+        # it will be overwritten!
+        feasible_methods = {}
         for method in all_methods:
             is_feasible = True
             is_feas_f = "%s.is.feasible" % method
             if is_feas_f in method_list:
                 is_feasible = ro.r("%s(%s)" % (is_feas_f, data_obj_name))[0]
             if is_feasible:
-                feasible_methods.append(method)
+                # do we have a pretty name?
+                pretty_names_f = "%s.pretty.names" % method
+                if pretty_names_f in method_list:
+                    pretty_name = ro.r("%s()$pretty.name" % pretty_names_f)[0]
+                    feasible_methods[pretty_name] = method
+                else:
+                    # no? then just map to the function name
+                    feasible_methods[method] = method
     return feasible_methods
 
-
+def get_method_description(method_name):
+    pretty_names_f = "%s.pretty.names" % method_name
+    method_list = ro.r("lsf.str('package:openmetar')")
+    description = "None provided."
+    if pretty_names_f in method_list:
+        try:
+            description = ro.r("%s()$description" % pretty_names_f)[0]
+        except:
+            pass
+    return description
+    
 def ma_dataset_to_binary_robj(table_model, var_name):
     pass
     
@@ -557,19 +606,18 @@ def run_meta_method(meta_function_name, function_name, params, \
                                               "texts":text_d}    
           
                                                                                   
-
 def _rls_to_pyd(r_ls):
     # base case is that the type is a native python type, rather
     # than an Rvector
     d = {}
 
     for name, val in zip(r_ls.getnames(), r_ls):
+        ###
+        # I know we shouldn't wrap the whole thing in a (generic) try block,
+        # but rpy2 can throw some funky exceptions...
         try:
-        
             # first check the key
             if str(name) != "NULL":
-                #print name
-                #print type(name)
                 if "rpy2.robjects" in str(type(name)):
                     name = str(name[0])
                 if not "rpy2.robjects" in str(type(val)):
@@ -580,6 +628,7 @@ def _rls_to_pyd(r_ls):
                 elif str(val.getnames())=="NULL":
                     d[name] = val[0]
                 else:
+                    # recurse
                     d[name] = _rls_to_pyd(val)
                 if not isinstance(name, str):
                     raise Exception, "arg"
@@ -588,7 +637,7 @@ def _rls_to_pyd(r_ls):
                 return val
 
         except Exception,  inst:
-            print "error parsing R tuple.. "
+            print "error parsing R tuple.. here's the exception "
             print inst
             print "ignoring."
 

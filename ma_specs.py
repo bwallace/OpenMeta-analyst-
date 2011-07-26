@@ -188,7 +188,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
     def method_changed(self):
         self.clear_param_ui()
         self.current_widgets= []
-        self.current_method = self.method_cbo_box.currentText()
+        self.current_method = self.available_method_d[str(self.method_cbo_box.currentText())]
         self.setup_params()
         self.parameter_grp_box.setTitle(self.current_method)
         self.ui_for_params()
@@ -206,11 +206,11 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         elif self.data_type == "diagnostic":
             meta_py_r.ma_dataset_to_simple_diagnostic_robj(self.model, var_name=tmp_obj_name)
             
-        available_methods = meta_py_r.get_available_methods(for_data_type=self.data_type, data_obj_name=tmp_obj_name)
-        print "\n\navailable %s methods: %s" % (self.data_type, ", ".join(available_methods))
-        for method in available_methods:
+        self.available_method_d = meta_py_r.get_available_methods(for_data_type=self.data_type, data_obj_name=tmp_obj_name)
+        print "\n\navailable %s methods: %s" % (self.data_type, ", ".join(self.available_method_d.keys()))
+        for method in self.available_method_d.keys():
             self.method_cbo_box.addItem(method)
-        self.current_method = self.method_cbo_box.currentText()
+        self.current_method = self.available_method_d[str(self.method_cbo_box.currentText())]
         self.setup_params()
         self.parameter_grp_box.setTitle(self.current_method)
 
@@ -227,6 +227,12 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
            self.parameter_grp_box.setLayout(layout)
 
         cur_grid_row = 0
+        
+        # add the method description
+        method_description = meta_py_r.get_method_description(self.current_method)
+        
+        self.add_label(self.parameter_grp_box.layout(), cur_grid_row, "Description: %s" % method_description)
+        cur_grid_row += 1
         
         if self.var_order is not None:
             for var_name in self.var_order:
@@ -262,7 +268,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         elif value.lower() == "float":
             self.add_float_box(layout, cur_grid_row, name)
         else:
-            print "uknown type! throwing up. bleccch."
+            print "unknown type! throwing up. bleccch."
             print "name:%s. value: %s" % (name, value)
             # throw exception here
 
@@ -271,7 +277,11 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         Adds an enumeration to the UI, with the name and possible
         values as specified per the parameters.
         '''
-        self.add_label(layout, cur_grid_row, name)
+        
+        ### 
+        # using the pretty name for the label now.
+        self.add_label(layout, cur_grid_row, self.param_d[name]["pretty.name"], \
+                                tool_tip_text=self.param_d[name]["description"])
         cbo_box = QComboBox()
         for value in values:
             cbo_box.addItem(value)
@@ -287,7 +297,8 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         layout.addWidget(cbo_box, cur_grid_row, 1)
 
     def add_float_box(self, layout, cur_grid_row, name):
-        self.add_label(layout, cur_grid_row, name)
+        self.add_label(layout, cur_grid_row, self.param_d[name]["pretty.name"],\
+                                tool_tip_text=self.param_d[name]["description"])
         # now add the float input line edit
         finput = QLineEdit()
 
@@ -313,12 +324,18 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
         return set_param
 
-    def add_label(self, layout, cur_grid_row, name):
+    def add_label(self, layout, cur_grid_row, name, tool_tip_text = None):
         lbl = QLabel(name, self.parameter_grp_box)
+        if not tool_tip_text is None:
+            lbl.setToolTip(tool_tip_text)
         self.current_widgets.append(lbl)
         layout.addWidget(lbl, cur_grid_row, 0)
 
     def setup_params(self):
-        self.current_params, self.current_defaults, self.var_order = \
+        # parses out information about the parameters of the current method
+        # param_d holds (meta) information about the parameter -- it's a each param
+        # itself maps to a dictionary with a pretty name and description (assuming
+        # they were provided for the given param)
+        self.current_params, self.current_defaults, self.var_order, self.param_d = \
                     meta_py_r.get_params(self.current_method)
         print self.current_defaults
