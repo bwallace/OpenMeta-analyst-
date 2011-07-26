@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'ma_specs2.ui'
 #
-# Created: Fri Jul 22 11:53:02 2011
-#      by: PyQt4 UI code generator 4.8.3
+# Created: Tue Jul 26 14:31:24 2011
+#      by: PyQt4 UI code generator 4.7.7
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -183,7 +183,7 @@ class Ui_Dialog(object):
         self.col1_str_edit.setText(QtGui.QApplication.translate("Dialog", "Studies", None, QtGui.QApplication.UnicodeUTF8))
         self.show_1.setText(QtGui.QApplication.translate("Dialog", "show", None, QtGui.QApplication.UnicodeUTF8))
         self.label_4.setText(QtGui.QApplication.translate("Dialog", "col 2 label:", None, QtGui.QApplication.UnicodeUTF8))
-        self.col2_str_edit.setText(QtGui.QApplication.translate("Dialog", "ES (LL, UL)", None, QtGui.QApplication.UnicodeUTF8))
+        self.col2_str_edit.setText(QtGui.QApplication.translate("Dialog", "Estimate (Conf. Int.)", None, QtGui.QApplication.UnicodeUTF8))
         self.show_2.setText(QtGui.QApplication.translate("Dialog", "show", None, QtGui.QApplication.UnicodeUTF8))
         self.label_5.setText(QtGui.QApplication.translate("Dialog", "col 3 label:", None, QtGui.QApplication.UnicodeUTF8))
         self.col3_str_edit.setText(QtGui.QApplication.translate("Dialog", "Ev/Trt", None, QtGui.QApplication.UnicodeUTF8))
@@ -192,7 +192,7 @@ class Ui_Dialog(object):
         self.col4_str_edit.setText(QtGui.QApplication.translate("Dialog", "Ev/Ctrl", None, QtGui.QApplication.UnicodeUTF8))
         self.show_4.setText(QtGui.QApplication.translate("Dialog", "show", None, QtGui.QApplication.UnicodeUTF8))
         self.label_7.setText(QtGui.QApplication.translate("Dialog", "x label:", None, QtGui.QApplication.UnicodeUTF8))
-        self.x_lbl_le.setText(QtGui.QApplication.translate("Dialog", "Effect size", None, QtGui.QApplication.UnicodeUTF8))
+        self.x_lbl_le.setText(QtGui.QApplication.translate("Dialog", "[default]", None, QtGui.QApplication.UnicodeUTF8))
         self.label_8.setText(QtGui.QApplication.translate("Dialog", "x ticks:", None, QtGui.QApplication.UnicodeUTF8))
         self.x_ticks_le.setText(QtGui.QApplication.translate("Dialog", "[default]", None, QtGui.QApplication.UnicodeUTF8))
         self.label_9.setText(QtGui.QApplication.translate("Dialog", "x-axis lower bound", None, QtGui.QApplication.UnicodeUTF8))
