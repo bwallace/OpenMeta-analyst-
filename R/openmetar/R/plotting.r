@@ -423,7 +423,7 @@ set.plot.options <- function(params) {
     if (!is.null(params$fp_xlabel)) {
         plot.options$xlabel <- params$fp_xlabel
     } else {
-        plot.options$xlabel <- "Effect Sizes"
+        plot.options$xlabel <- pretty.metric.name(params$measure)
     }
     # if show.summary.line is TRUE, a vertical dashed line is displayed at the
     # overall summary.
@@ -432,14 +432,14 @@ set.plot.options <- function(params) {
 }    
 
 pretty.metric.name <- function(metric) {
-  denominator <- switch(metric,
+  metric.name <- switch(metric,
         OR = "Odds ratio",
-        RD = "Risk difference,"
+        RD = "Risk difference",
         RR = "Relative risk",
-        AS = "Arcsine risk difference"
-        PETO = "Peto"
-        YUQ = "Yule's Q"
-        YUY = "Yules Y"
+        AS = "Arcsine risk difference",
+        PETO = "Peto",
+        YUQ = "Yule's Q",
+        YUY = "Yules Y",
         Sens = "Sensitivity", 
         Spec = "Specificity",
         # pos. predictive value
@@ -454,7 +454,8 @@ pretty.metric.name <- function(metric) {
         NLR = "Pos. likelihood ratio",
         # diagnostic odds ratio
         DOR = "Diagnostic odds ratio")
-  
+}
+
 ###################################
 #   functions for creating plots  #
 ###################################
@@ -1057,7 +1058,14 @@ create.effect.size.label <- function(effect.sizes, params) {
      col2.label.padded <- pad.with.spaces(col2.label, begin.num=0, end.num = max.chars - label.info$end.string.length) 
    } else {
      # label doesn't contain "," so pad label to center over column 
-     col2.label.padded <- pad.with.spaces(col2.label, begin.num=0, end.num = floor((col2.width - nchar(col2.label)) / 2))           
+     col2.width <- max(nchar(effect.sizes$y.disp) + nchar(effect.sizes$lb.disp) + nchar(effect.sizes$ub.disp))
+     if (col2.width > nchar(col2.label)) {
+       # width of data greater than the length of col. label 
+       col2.label.padded <- pad.with.spaces(col2.label, begin.num=0, end.num = floor((col2.width - nchar(col2.label)) / 2)) 
+     } else {
+       # don't pad with spaces
+       col2.label.padded <- col2.label
+     }
    }
    col2.label.padded
 }
