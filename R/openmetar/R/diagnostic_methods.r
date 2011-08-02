@@ -259,6 +259,111 @@ diagnostic.fixed.overall <- function(results) {
     res <- results$Summary$MAResults
 }
 
+###################################################
+#            diagnostic fixed sens and spec       #
+###################################################
+
+diagnostic.fixed.sens.and.spec <- function(diagnostic.data, params){
+    # assert that the argument is the correct type
+    if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
+    results <- NULL
+    if (length(diagnostic.data@TP) == 1){
+        res <- get.res.for.one.diag.study(diagnostic.data, params)
+        # Package res for use by overall method.
+        summary.disp <- list("MAResults" = res) 
+        results <- list("Summary"=summary.disp)
+    } else {
+        params.sens <- params
+        params.sens$measure <- "Sens"
+        params.spec <- params
+        params.spec$measure <- "Spec"
+        diagnostic.data.sens <- compute.diag.point.estimates(diagnostic.data, params.sens)
+        diagnostic.data.spec <- compute.diag.point.estimates(diagnostic.data, params.spec)
+        res.sens<-rma.uni(yi=diagnostic.data.sens@y, sei=diagnostic.data.sens@SE, 
+                     slab=diagnostic.data.sens@study.names,
+                     method="FE", level=params$conf.level,
+                     digits=params$digits)
+        res.spec<-rma.uni(yi=diagnostic.data.sens@y, sei=diagnostic.data.sens@SE, 
+                     slab=diagnostic.data.sens@study.names,
+                     method="FE", level=params$conf.level,
+                     digits=params$digits)             
+        
+        # Create list to display summary of results
+        model.title <- paste("Diagnostic Fixed-Effects Model - Sensitivity and Specificity", sep="")
+        data.type <- "diagnostic"
+        # combine summaries for sens and spec
+        summary.disp.sens <- create.summary.disp(res.sens, params.sens, model.title, data.type)
+        summary.disp.spec <- create.summary.disp(res.spec, params.spec, model.title, data.type)
+        # attach "Sensitivity" to each table title.
+        for (count in 1:length(summary.disp.sens$table.titles)) {
+          summary.disp.sens$table.titles[count] <- paste(summary.disp.sens$table.titles[count], " - Sensitivity", sep="")
+        }
+        for (count in 1:length(summary.disp.spec$table.titles)) {
+          summary.disp.spec$table.titles[count] <- paste(summary.disp.spec$table.titles[count], " - Specificity", sep="")
+        }
+        table.titles<-c(summary.disp.sens$table.titles,summary.disp.spec$table.titles)
+        arrays<-c(summary.disp.sens$arrays,summary.disp.spec$arrays)
+        MAResults<-c(summary.disp.sens$MAResults,summary.disp.spec$MAResults)
+        summary.disp <- list(model.title=model.title, table.titles=table.titles, arrays=arrays, MAResults=MAResults)
+        class(summary.disp) <- "summary.display"
+        
+        if ((is.null(params$create.plot)) || params$create.plot == TRUE) {
+          # A forest plot will be created unless
+          # params.create.plot is set to FALSE.
+          forest.path <- paste(params$fp_outpath, sep="")
+          plot.data.sens <- create.plot.data.diagnostic(diagnostic.data.sens, params.sens, res.sens)
+          plot.data.spec <- create.plot.data.diagnostic(diagnostic.data.spec, params.spec, res.spec)
+          two.forest.plots(plot.data.sens, plot.data.spec, outpath=forest.path)
+          #
+          # Now we package the results in a dictionary (technically, a named
+          # vector). In particular, there are two fields that must be returned;
+          # a dictionary of images (mapping titles to image paths) and a list of texts
+          # (mapping titles to pretty-printed text). In this case we have only one
+          # of each.
+          #
+          images <- c("Forest Plot"=forest.path)
+          plot.names <- c("forest plot"="forest_plot")
+          results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
+        }
+        else {
+            results <- list("Summary"=summary.disp)
+        } 
+    }
+    results
+}
+
+diagnostic.fixed.sens.and.spec.parameters <- function(){
+    # parameters
+    apply_adjustment_to = c("only0", "all")
+
+    params <- list("conf.level"="float", "digits"="float",
+                            "adjust"="float", "to"=apply_adjustment_to)
+
+    # default values
+    defaults <- list("conf.level"=95, "digits"=3, "adjust"=.5, "to"="only0")
+
+    var_order = c("conf.level", "digits", "adjust", "to")
+
+    parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
+}
+
+diagnostic.fixed.sens.and.spec.pretty.names <- function() {
+    pretty.names <- list("pretty.name"="Diagnostic Fixed-Effects Sensitivity and Specificity", 
+                         "description" = "Performs fixed-effects meta-analysis of sensitivity and specificity with inverse variance weighting.",
+                         "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
+                         "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
+                         "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
+                         "to"=list("pretty.name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
+                                   is added to all cells of each two-by-two table that contains at leason one zero. When set to \"all\", the correction factor
+                                   is added to all two-by-two tables if at least one table contains a zero.")
+                          )
+}
+
+diagnostic.fixed.sens.and.spec.overall <- function(results) {
+    # this parses out the overall from the computed result
+    res <- results$Summary$MAResults
+}
+
 ##################################
 #  diagnostic random effects     #
 ##################################

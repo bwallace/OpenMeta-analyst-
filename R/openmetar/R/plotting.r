@@ -8,7 +8,7 @@
 #  (And more?)                     #
 #                                  #
 # This code due mostly to Issa     #
-#   Dahabreh                       #    
+#   Dahabreh and Paul Trow       #    
 ####################################
 
 # largely a generalization based on an example by
@@ -137,21 +137,21 @@ create.plot.data.diagnostic <- function(diagnostic.data, params, res, selected.c
         metric <- params$measure
         label <- switch(metric,
         # sensitivity
-        Sens = "TP / Di+", 
+        Sens = "TP / (TP + FN)", 
         # specificity
-        Spec = "TN / D-",
+        Spec = "TN / (FP + TN)",
         # pos. predictive value
-        PPV =  "TP / T+",
+        PPV =  "TP / (TP + FP)",
         #neg. predictive value
-        NPV =  "TN / T-",
+        NPV =  "TN / (TN + FN)",
         # accuracy
-        Acc = "TP + TN / Tot",
+        Acc = "(TP + TN) / Tot",
         # positive likelihood ratio
-        PLR = "TP * Di- / FP * Di+", 
+        PLR = "(TP * Di-) / (FP * Di+)", 
         # negative likelihood ratio
-        NLR = "FN * Di- / TN * Di+",
+        NLR = "(FN * Di-) / (TN * Di+)",
         # diagnostic odds ratio
-        DOR = "TP * TN / FP * FN")
+        DOR = "(TP * TN) / (FP * FN")
         data.col <- format.raw.data.col(nums = terms$numerator, denoms = terms$denominator, label = label) 
         plot.data$additional.col.data$cases = data.col
     }
@@ -420,10 +420,10 @@ set.plot.options <- function(params) {
         plot.options$xticks <- eval(parse(text=paste("c(", params$fp_xticks, ")", sep="")))
     }
     # xlabel is the label for the x-axis
-    if (!is.null(params$fp_xlabel)) {
-        plot.options$xlabel <- params$fp_xlabel
-    } else {
+    if (is.null(params$fp_xlabel) || params$fp_xlabel == "[default]") {
         plot.options$xlabel <- pretty.metric.name(params$measure)
+    } else {
+        plot.options$xlabel <- params$fp_xlabel
     }
     # if show.summary.line is TRUE, a vertical dashed line is displayed at the
     # overall summary.
@@ -738,9 +738,8 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
                           summary.line.pat = "dashed",
                           x.axis.label, diam.size=1,
                           user.ticks) {
-                          
   pushViewport(viewport(layout.pos.col=j, xscale=col$range))
-  
+
 # This is the "null" line
 # "ifs" left in as we will possibly expand this when new metrics become available
 # note that if the line extends outside the xscale bounds, it will be 
@@ -863,17 +862,17 @@ forest.plot <- function(forest.data, outpath){
         }
         how.wide <- convertX(max(unit(rep(1, length(forest.data$label)), 
                         "grobwidth", study.col$content)), "inches" , valueOnly=TRUE  ) +
-        convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )  +
-                 sum( convertX(   unit.c(width.list[[length(additional.cols)]]) , "inches" , valueOnly=TRUE ) )  + 
-                 length(additional.cols)*   convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )   + 
-                 convertX(forest.plot.params$effect.col.width, "inches" , valueOnly=TRUE ) 
+                    convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )  +
+                    sum( convertX(   unit.c(width.list[[length(additional.cols)]]) , "inches" , valueOnly=TRUE ) )  + 
+                    length(additional.cols)*   convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )   + 
+                    convertX(forest.plot.params$effect.col.width, "inches" , valueOnly=TRUE ) 
         how.tall <- convertY(unit(rep(1, height)  , "lines"), "inches" , valueOnly=TRUE )
         png(file=outpath, width = how.wide + 1, height = height*how.tall+2 , units = "in", res = 144)
         pushViewport(viewport(layout=grid.layout(height ,2*length(additional.cols)+3,
-        width=unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
-        forest.plot.params$col.gap,  width.list[[length(additional.cols)]]  ,  forest.plot.params$effect.col.width),
-        height = unit(rep(1, height)  , "lines"))))
-    }   else  { # if no additional colums things are simple
+                              width=unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
+                              forest.plot.params$col.gap,  width.list[[length(additional.cols)]]  ,  forest.plot.params$effect.col.width),
+                              height = unit(rep(1, height)  , "lines"))))
+    }   else  { # if no additional columns things are simple
         how.wide <- convertX(max(unit(rep(1, length(forest.data$label)), 
                                  "grobwidth", study.col$content)), "inches" , valueOnly=TRUE  ) +
                                  convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )  +
@@ -889,7 +888,7 @@ forest.plot <- function(forest.data, outpath){
     # Draw the text in study col and additional cols
     draw.label.col(study.col, 1)
     if (length(additional.cols)>0 )  {
-           for (i in 1:length(additional.cols)){
+        for (i in 1:length(additional.cols)){
                draw.label.col(additional.cols[[i]], 1+2*i)
         }
     }  
@@ -904,10 +903,149 @@ forest.plot <- function(forest.data, outpath){
                              x.axis.label = forest.data$options$xlabel,
                              diam.size = 1.2,
                              user.ticks = xticks)
-    graphics.off()
+                             
+   graphics.off()
 }
  
+#######################################
+#      forest plot data               #
+####################################### 
+ forest.plot.data <- function(forest.data, just, include.study.col){
+    # Calculates data for viewport
+    # these are calls to data functions
+    study.col <- study.column(forest.data, "bold")
+    additional.cols <- c()
+    if (length(forest.data$additional.col.data)>0 ){
+        additional.cols <- additional.columns(forest.data, "bold")    
+    } 
+    effect.col <- effectsize.column(forest.data, box.sca=0.8)
+    # return the LL, ES, and UL and range of data to display
+    forest.plot.params <- create.plot.options(forest.data, gapSize = 3.2, plotWidth=5)
 
+    # these are calls to plotting functions
+    if (forest.data$types[length(forest.data$types)] != 0) {
+      # last row is a summary
+        extra.space <- sum(forest.data$types != 0) 
+    } else {
+      # add a little more space because last row is not a summary
+        extra.space <- sum(forest.data$types != 0) + 1 
+    }   
+    height <- length(forest.data$types)+ extra.space
+  
+    if (length(forest.data$additional.col.data)>0 )      {         # first if additional colums are present
+        width.list <-vector("list")
+        width.list[[1]] <- unit.c(max(unit(rep(1, length(forest.data$label)), 
+                               "grobwidth", additional.cols[[1]]$content)), forest.plot.params$col.gap)
+        if  (length(forest.data$additional.col.data)>1 )  {   
+            for (i in 2:length(additional.cols))  {
+            width.list[[i]] <- unit.c(width.list[[i-1]], max(unit(rep(1, length(forest.data$label)), 
+                                   "grobwidth", additional.cols[[i]]$content)), forest.plot.params$col.gap) 
+                 }
+        }
+        if (include.study.col==TRUE) {
+          how.wide <- convertX(max(unit(rep(1, length(forest.data$label)), 
+                          "grobwidth", study.col$content)), "inches" , valueOnly=TRUE  ) +
+                      convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )  +
+                      sum( convertX(   unit.c(width.list[[length(additional.cols)]]) , "inches" , valueOnly=TRUE ) )  + 
+                      length(additional.cols)*   convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )   + 
+                      convertX(forest.plot.params$effect.col.width, "inches" , valueOnly=TRUE ) 
+        } else {  
+          how.wide <- convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )  +
+                      sum( convertX(   unit.c(width.list[[2:length(additional.cols)]]) , "inches" , valueOnly=TRUE ) )  + 
+                      length(additional.cols)*   convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )   + 
+                      convertX(forest.plot.params$effect.col.width, "inches" , valueOnly=TRUE )
+        }
+        
+        #how.tall <- convertY(unit(rep(1, height)  , "lines"), "inches" , valueOnly=TRUE )
+        vp.width = unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
+                              forest.plot.params$col.gap,  width.list[[length(additional.cols)]]  ,  forest.plot.params$effect.col.width)
+        vp.layout <- grid.layout(height , 2*length(additional.cols)+3,
+                              width=vp.width,
+                              height = unit(rep(1, height)  , "lines"),
+                              just=just)
+    }   else  { # if no additional columns things are simple
+          how.wide <- convertX(max(unit(rep(1, length(forest.data$label)), 
+                                   "grobwidth", study.col$content)), "inches" , valueOnly=TRUE  ) +
+                      convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )  +
+                      convertX(forest.plot.params$effect.col.width, "inches" , valueOnly=TRUE ) 
+        #how.tall <- convertY(unit(rep(1, height)  , "lines") , "inches" , valueOnly=TRUE ) 
+        vp.width=unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
+                                  forest.plot.params$col.gap,   forest.plot.params$effect.col.width)
+        
+        vp.layout <- grid.layout(height , 2*length(additional.cols)+3,
+                              width=vp.width,
+                              height = unit(rep(1, height)  , "lines"),
+                              just=just)
+    }
+    vp.data <- list("how.wide"=how.wide, "height"=height,
+                          "vp.layout"=vp.layout)
+}
+
+#######################################
+#            two forest plots         #
+####################################### 
+forest.plot2 <- function(forest.data, vp.data, include.study.col){
+    # Draws forest plots using viewport data extracted by forest.plot.data
+    # This is a refactoring of forest.plot to plot two forest.plots side.by.side
+    how.wide <- vp.data$how.wide
+    #how.tall <- vp.data$how.tall
+    height <- vp.data$height
+    vp.layout <- vp.data$vp.layout
+    # these are calls to data functions
+    study.col <- study.column(forest.data, "bold")
+    additional.cols <- c()
+    if (length(forest.data$additional.col.data)>0 ){
+        additional.cols <- additional.columns(forest.data, "bold")    
+    } 
+    effect.col <- effectsize.column(forest.data, box.sca=0.8)
+    # return the LL, ES, and UL and range of data to display
+    forest.plot.params <- create.plot.options(forest.data, gapSize = 3.2, plotWidth=5)
+    
+    # Draw the text in study col and additional cols
+    if (include.study.col==TRUE) {
+      draw.label.col(study.col, 1)
+    }
+    if (length(additional.cols)>0 )  {
+      for (i in 1:length(additional.cols)){
+               draw.label.col(additional.cols[[i]], 1+2*i)
+      }
+    }  
+   
+    xticks <- forest.data$options$xticks
+      
+    draw.data.col(forest.data, effect.col, 2*length(additional.cols)+3,
+                             color.overall = "lightblue",
+                             color.subgroup = "yellow",
+                             summary.line.col= "red",
+                             summary.line.pat = "dashed",
+                             x.axis.label = forest.data$options$xlabel,
+                             diam.size = 1.2,
+                             user.ticks = xticks)
+}
+ 
+two.forest.plots <- function(forest.data1, forest.data2, outpath) {
+  
+   vp.data1 <- forest.plot.data(forest.data1, just="left", include.study.col=TRUE)     
+   vp.data2 <- forest.plot.data(forest.data2, just="right", include.study.col=FALSE)
+   vp.layout1 <- vp.data1$vp.layout
+   vp.layout2 <- vp.data2$vp.layout
+   how.wide1 <- vp.data1$how.wide
+   how.wide2 <- vp.data2$how.wide
+   height1 <- vp.data1$height
+   height2 <- vp.data2$height
+   height <- max(height1, height2)
+   how.tall <- convertY(unit(rep(1, height)  , "lines") , "inches" , valueOnly=TRUE )
+   pushViewport(viewport(layout=grid.layout(1,2), width=how.wide1 + how.wide2))                           
+   png(file=outpath, width = how.wide1 + how.wide2, height = height*how.tall+2 , units = "in", res = 144)                      
+   pushViewport(viewport(layout=vp.layout1, layout.pos.col=1))
+   forest.plot2(forest.data1, vp.data1, include.study.col=TRUE)   
+   popViewport()
+   pushViewport(viewport(layout=vp.layout2, layout.pos.col=2))
+   forest.plot2(forest.data2, vp.data2, include.study.col=FALSE)
+   popViewport()
+   
+   graphics.off()
+}
 #######################################
 #       meta-regression scatter       #
 #######################################
@@ -1008,6 +1146,33 @@ sroc.plot <- function(plot.data, outpath,
     graphics.off()
 }
 
+################################################
+#   Diagnostic PPV and NPV by Prevalence       #
+################################################
+
+compute.ppv <- function(sens, spec, prev) {
+  ppv <- sens * prev / (sens * prev + (1-spec) * (1-prev))
+}
+
+plot.p_npv.by.prev <- function(diagnostic.data) {
+prev.indiv <- ((diagnostic.data@TP + diagnostic.data@FN) / 
+              (diagnostic.data@TP + diagnostic.data@FN + diagnostic.data@FP + diagnostic.data@TN))
+sens.indiv <- diagnostic.data@TP / (diagnostic.data@TP + diagnostic.data@FN)
+spec.indiv <- diagnostic.data@TN / (diagnostic.data@TN + diagnostic.data@FP)
+ppv.indiv <- compute.ppv(sens.indiv, spec.indiv, prev.indiv)
+plot(prev.indiv, ppv.indiv)
+
+res.sens<-rma.uni(yi=diagnostic.data.sens@y, sei=diagnostic.data.sens@SE, 
+                     slab=diagnostic.data.sens@study.names,
+                     method="FE", level=params$conf.level,
+                     digits=params$digits)
+#sens.overall <- diagnostic.transform.f(display.scale)(res.sens$b[1])                     
+ppv.overall <- vector()
+prev <- seq(from=0, to=1, by=.01)
+#for (count in 1:length(prev)) {
+#  ppv.overall[count] <- compute.ppv(sens, spec, prev[count])
+#}
+}
 #######################################################
 #  Functions for formatting data for display in plots #
 #######################################################
@@ -1046,7 +1211,10 @@ format.effect.sizes <- function(y, lb, ub, params) {
 }
 
 create.effect.size.label <- function(effect.sizes, params) {
-   # add label to effect.size.column if first row contains headers
+   # add label to effect.size.column and align
+   # The purpose of this code is to align the comma if the label
+   # is of the form ES(LL, UL), with the data entries below it. Since the default label
+   # is no longer of that form, this function could be removed.
    col2.label <- as.character(params$fp_col2_str)
    # if label contains ",", pad label to align columns
    label.info <- check.label(label = col2.label, split.str = ",")
