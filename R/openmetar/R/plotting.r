@@ -384,7 +384,7 @@ create.subgroup.plot.data.diagnostic <- function(subgroup.data, params) {
 
 create.subgroup.plot.data.cont <- function(subgroup.data, params) {
     grouped.data <- subgroup.data$grouped.data
-    plot.data <- create.subgroup.plot.data.generic(subgroup.data, params, data.type=continuous) 
+    plot.data <- create.subgroup.plot.data.generic(subgroup.data, params, data.type="continuous") 
 }
 
 # create regression plot data
@@ -418,6 +418,11 @@ set.plot.options <- function(params) {
         params$fp_xticks <- NULL
     } else {
         plot.options$xticks <- eval(parse(text=paste("c(", params$fp_xticks, ")", sep="")))
+    }
+    if ((params$fp_show_col1=='TRUE') || is.null(params$show.fp_show_col1)) {
+      plot.options$show.study.col <- TRUE
+    } else {
+      plot.options$show.study.col <- FALSE
     }
     # xlabel is the label for the x-axis
     if (is.null(params$fp_xlabel) || params$fp_xlabel == "[default]") {
@@ -632,21 +637,6 @@ effectsize.column <- function(forest.data, box.sca = 1) {
       # if the user's ub input is OK, set upper bound of range equal it.
       effect.col.range[2] <- user.ub
     }
-      #if (forest.data$types[1] == 3) {
-          # first row contains headings 
-      #    x <- forest.data$types[-1]
-     # } else {
-      #    x <- forest.data$types
-     # }
-     # if (any(x > 0)) {
-          # at least one type is not 0
-       #   merge.data <- data.frame(x = x, y = effect.col$LL, z = effect.col$UL)
-       #   merge.data <- subset(merge.data, x>0)                                  
-       #   if (min(effect.col.range) >= min(merge.data$y)) 
-       #       effect.col.range[1] <- min(merge.data$y)
-        #  if (max(effect.col.range) <= max(merge.data$z)) 
-       #       effect.col.range[2] <- max(merge.data$z)
-     # }
 
    list(ES = forest.data$effects$ES, LL = forest.data$effects$LL, 
                   UL = forest.data$effects$UL, rows = rows[-1], types = forest.data$types[-1],
@@ -829,7 +819,22 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
 #######################################
 #            forest plot              #
 ####################################### 
-forest.plot <- function(forest.data, outpath){
+
+forest.plot <- function(forest.data, outpath) {
+  show.study.col <- forest.data$options$show.study.col
+  vp.data <- forest.plot.data(forest.data, just="left", show.study.col=TRUE)
+  vp.layout <- vp.data$vp.layout
+  how.wide <- vp.data$how.wide
+  height <- vp.data$height
+  how.tall <- convertY(unit(rep(1, height)  , "lines") , "inches" , valueOnly=TRUE )
+  png(file=outpath, width = how.wide+1, height = height*how.tall+2 , units = "in", res = 144)                      
+  pushViewport(viewport(layout=vp.layout))
+  forest.plot2(forest.data, vp.data, show.study.col)
+  
+  graphics.off()
+}
+
+forest.plot.old <- function(forest.data, outpath){
     # these are calls to data functions
     study.col <- study.column(forest.data, "bold")
     additional.cols <- c()
@@ -910,7 +915,7 @@ forest.plot <- function(forest.data, outpath){
 #######################################
 #      forest plot data               #
 ####################################### 
- forest.plot.data <- function(forest.data, just, include.study.col){
+ forest.plot.data <- function(forest.data, just, show.study.col){
     # Calculates data for viewport
     # these are calls to data functions
     study.col <- study.column(forest.data, "bold")
@@ -942,7 +947,7 @@ forest.plot <- function(forest.data, outpath){
                                    "grobwidth", additional.cols[[i]]$content)), forest.plot.params$col.gap) 
                  }
         }
-        if (include.study.col==TRUE) {
+        if (show.study.col==TRUE) {
           how.wide <- convertX(max(unit(rep(1, length(forest.data$label)), 
                           "grobwidth", study.col$content)), "inches" , valueOnly=TRUE  ) +
                       convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )  +
@@ -984,7 +989,7 @@ forest.plot <- function(forest.data, outpath){
 #######################################
 #            two forest plots         #
 ####################################### 
-forest.plot2 <- function(forest.data, vp.data, include.study.col){
+forest.plot2 <- function(forest.data, vp.data, show.study.col){
     # Draws forest plots using viewport data extracted by forest.plot.data
     # This is a refactoring of forest.plot to plot two forest.plots side.by.side
     how.wide <- vp.data$how.wide
@@ -1002,7 +1007,7 @@ forest.plot2 <- function(forest.data, vp.data, include.study.col){
     forest.plot.params <- create.plot.options(forest.data, gapSize = 3.2, plotWidth=5)
     
     # Draw the text in study col and additional cols
-    if (include.study.col==TRUE) {
+    if (show.study.col==TRUE) {
       draw.label.col(study.col, 1)
     }
     if (length(additional.cols)>0 )  {
@@ -1025,8 +1030,8 @@ forest.plot2 <- function(forest.data, vp.data, include.study.col){
  
 two.forest.plots <- function(forest.data1, forest.data2, outpath) {
   
-   vp.data1 <- forest.plot.data(forest.data1, just="left", include.study.col=TRUE)     
-   vp.data2 <- forest.plot.data(forest.data2, just="right", include.study.col=FALSE)
+   vp.data1 <- forest.plot.data(forest.data1, just="left", show.study.col=TRUE)     
+   vp.data2 <- forest.plot.data(forest.data2, just="right", show.study.col=FALSE)
    vp.layout1 <- vp.data1$vp.layout
    vp.layout2 <- vp.data2$vp.layout
    how.wide1 <- vp.data1$how.wide
@@ -1038,14 +1043,15 @@ two.forest.plots <- function(forest.data1, forest.data2, outpath) {
    pushViewport(viewport(layout=grid.layout(1,2), width=how.wide1 + how.wide2))                           
    png(file=outpath, width = how.wide1 + how.wide2, height = height*how.tall+2 , units = "in", res = 144)                      
    pushViewport(viewport(layout=vp.layout1, layout.pos.col=1))
-   forest.plot2(forest.data1, vp.data1, include.study.col=TRUE)   
+   forest.plot2(forest.data1, vp.data1, show.study.col=TRUE)   
    popViewport()
    pushViewport(viewport(layout=vp.layout2, layout.pos.col=2))
-   forest.plot2(forest.data2, vp.data2, include.study.col=FALSE)
+   forest.plot2(forest.data2, vp.data2, show.study.col=FALSE)
    popViewport()
    
    graphics.off()
 }
+
 #######################################
 #       meta-regression scatter       #
 #######################################
@@ -1151,27 +1157,55 @@ sroc.plot <- function(plot.data, outpath,
 ################################################
 
 compute.ppv <- function(sens, spec, prev) {
-  ppv <- sens * prev / (sens * prev + (1-spec) * (1-prev))
+  npv <- sens * prev / (sens * prev + (1 - spec) * (1 - prev))
 }
 
-plot.p_npv.by.prev <- function(diagnostic.data) {
-prev.indiv <- ((diagnostic.data@TP + diagnostic.data@FN) / 
-              (diagnostic.data@TP + diagnostic.data@FN + diagnostic.data@FP + diagnostic.data@TN))
-sens.indiv <- diagnostic.data@TP / (diagnostic.data@TP + diagnostic.data@FN)
-spec.indiv <- diagnostic.data@TN / (diagnostic.data@TN + diagnostic.data@FP)
-ppv.indiv <- compute.ppv(sens.indiv, spec.indiv, prev.indiv)
-plot(prev.indiv, ppv.indiv)
+compute.npv <- function(sens, spec, prev) {
+  ppv <- spec * (1 - prev) / (spec * (1 - prev) + (1 - sens) * prev)
+}
 
-res.sens<-rma.uni(yi=diagnostic.data.sens@y, sei=diagnostic.data.sens@SE, 
+plot.pred.vals.by.prev <- function(diagnostic.data, params) {
+  params$measure <- "Sens"
+  diagnostic.data.sens <- compute.diag.point.estimates(diagnostic.data, params)
+  params$measure <- "Spec"
+  diagnostic.data.spec <- compute.diag.point.estimates(diagnostic.data, params)
+  params$measure <- "NPV"
+  diagnostic.data.npv <- compute.diag.point.estimates(diagnostic.data, params)
+  params$measure <- "PPV"
+  diagnostic.data.ppv <- compute.diag.point.estimates(diagnostic.data, params)
+  
+  prev <- ((diagnostic.data@TP + diagnostic.data@FN) / 
+              (diagnostic.data@TP + diagnostic.data@FN + diagnostic.data@FP + diagnostic.data@TN))
+  
+  npv <- diagnostic.data.npv@y
+  npv <- diagnostic.transform.f("NPV")$display.scale(npv)
+  ppv <- diagnostic.data.ppv@y
+  ppv <- diagnostic.transform.f("PPV")$display.scale(ppv)
+  
+  plot(0:1, 0:1, type="n",xlab="Prevalence")
+  points(prev, npv, col="red",)
+  points(prev, ppv, col="blue")
+  legend("right", c("Negative predictive value", "Positive predictive value"), col=c("red", "blue"))
+
+  res.sens <- rma.uni(yi=diagnostic.data.sens@y, sei=diagnostic.data.sens@SE, 
                      slab=diagnostic.data.sens@study.names,
                      method="FE", level=params$conf.level,
                      digits=params$digits)
-#sens.overall <- diagnostic.transform.f(display.scale)(res.sens$b[1])                     
-ppv.overall <- vector()
-prev <- seq(from=0, to=1, by=.01)
-#for (count in 1:length(prev)) {
-#  ppv.overall[count] <- compute.ppv(sens, spec, prev[count])
-#}
+  res.spec <- rma.uni(yi=diagnostic.data.spec@y, sei=diagnostic.data.spec@SE, 
+                     slab=diagnostic.data.spec@study.names,
+                     method="FE", level=params$conf.level,
+                     digits=params$digits)                     
+  sens.est <- diagnostic.transform.f("Sens")$display.scale(res.sens$b[1])
+  spec.est <- diagnostic.transform.f("Spec")$display.scale(res.spec$b[1])
+  prev.overall <- seq(from=0, to=1, by=.01)
+  sens.overall <- rep(sens.est, length(prev.overall))
+  spec.overall <- rep(spec.est, length(prev.overall))
+  npv.overall <- compute.npv(sens.overall, spec.overall, prev.overall)
+  ppv.overall <- compute.ppv(sens.overall, spec.overall, prev.overall)
+  lines(prev.overall, npv.overall, col="red")
+  lines(prev.overall, ppv.overall, col="blue")
+  
+ 
 }
 #######################################################
 #  Functions for formatting data for display in plots #

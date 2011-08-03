@@ -155,11 +155,11 @@ loo.ma.binary <- function(fname, binary.data, params){
     } else if (fname == "binary.random") {
         model.title <- paste("Binary Random-Effects Model\n\nMetric: ", params$measure, sep="")
     }
+    
     loo.disp <- create.overall.display(res=loo.results, study.names, params, model.title, data.type="binary")
     forest.path <- paste(params$fp_outpath, sep="")
     plot.data <- create.plot.data.overall(res=loo.results, study.names, params, data.type="binary", addRow1Space=FALSE)
     forest.plot(forest.data=plot.data, outpath=forest.path)
-    
 
     #
     # Now we package the results in a dictionary (technically, a named 
@@ -220,6 +220,12 @@ cum.ma.diagnostic <- function(fname, diagnostic.data, params){
         study.names <- c(study.names, paste("+ ",diagnostic.data@study.names[count], sep=""))
     }
     model.title <- ""
+    if (fname == "diagnostic.fixed") {
+        model.title <- paste("Diagnostic Fixed-Effects Model - Inverse Variance\n\nMetric: ", params$measure, sep="") 
+    } else if (fname == "diagnostic.random") {
+        model.title <- paste("Diagnostic Random-Effects Model\n\nMetric: ", params$measure, sep="")
+    }
+    
     cum.disp <- create.overall.display(res=cum.results, study.names, params, model.title, data.type="diagnostic")
     forest.path <- paste(params$fp_outpath, sep="")
     plot.data <- create.plot.data.overall(res=cum.results, study.names, params, data.type="diagnostic", addRow1Space=TRUE)
@@ -296,7 +302,14 @@ loo.ma.diagnostic <- function(fname, diagnostic.data, params){
     for (count in 1:length(diagnostic.data@study.names)) {
         study.names <- c(study.names, paste("- ",diagnostic.data@study.names[count], sep=""))
     }
-    loo.disp <- create.overall.display(res=loo.results, study.names, params, data.type="diagnostic")
+    model.title <- ""
+    if (fname == "diagnostic.fixed") {
+        model.title <- paste("Diagnostic Fixed-Effects Model - Inverse Variance\n\nMetric: ", params$measure, sep="") 
+    } else if (fname == "diagnostic.random") {
+        model.title <- paste("Diagnostic Random-Effects Model\n\nMetric: ", params$measure, sep="")
+    }
+    
+    loo.disp <- create.overall.display(res=loo.results, study.names, params, model.title, data.type="diagnostic")
     forest.path <- paste(params$fp_outpath, sep="")
     plot.data <- create.plot.data.overall(res=loo.results, study.names, params, data.type="diagnostic", addRow1Space=FALSE)
     forest.plot(forest.data=plot.data, outpath=forest.path)
@@ -370,7 +383,7 @@ cum.ma.continuous <- function(fname, cont.data, params){
     model.title <- ""
     if (fname == "continuous.fixed") {
         model.title <- paste("Continuous Fixed-Effects Model - Inverse Variance\n\nMetric: ", params$measure, sep="") 
-    } else if (fname == "binary.random") {
+    } else if (fname == "continuous.random") {
         model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", params$measure, sep="")
     }
     cum.disp <- create.overall.display(res=cum.results, study.names, params, model.title, data.type="continuous")
@@ -459,7 +472,7 @@ loo.ma.continuous <- function(fname, cont.data, params){
     model.title <- ""
     if (fname == "continuous.fixed") {
         model.title <- paste("Continuous Fixed-Effects Model - Inverse Variance\n\nMetric: ", params$measure, sep="") 
-    } else if (fname == "binary.random") {
+    } else if (fname == "continuous.random") {
         model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", params$measure, sep="")
     }
     loo.disp <- create.overall.display(res=loo.results, study.names, params, model.title, data.type="continuous")
@@ -585,7 +598,7 @@ get.subgroup.data.binary <- function(binary.data, cov.name, cov.val) {
 
 subgroup.ma.diagnostic <- function(fname, diagnostic.data, params){
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
-    ccov.name <- params$cov_name
+    cov.name <- params$cov_name
     cov.val.str <- paste("diagnostic.data@covariates$", cov.name, sep="")
     subgroups <- eval(parse(text=cov.val.str))
     params$create.plot <- FALSE
@@ -623,7 +636,13 @@ subgroup.ma.diagnostic <- function(fname, diagnostic.data, params){
     subgroup.results[[count]] <- res.overall
     subgroup.names <- paste("Subgroup ", subgroup.list, sep="")
     subgroup.names <- c(subgroup.names, "Overall")
-    subgroup.disp <- create.overall.display(subgroup.results, subgroup.names, params, data.type="diagnostic")
+    model.title <- ""
+    if (fname == "diagnostic.fixed") {
+        model.title <- paste("Diagnostic Fixed-Effects Model - Inverse Variance\n\nMetric: ", params$measure, sep="") 
+    } else if (fname == "diagnostic.random") {
+        model.title <- paste("Diagnostic Random-Effects Model\n\nMetric: ", params$measure, sep="")
+    }
+    subgroup.disp <- create.overall.display(subgroup.results, subgroup.names, params, model.title, data.type="diagnostic")
     forest.path <- paste(params$fp_outpath, sep="")
     # pack up the data for forest plot.
     subgroup.data <- list("subgroup.list"=subgroup.list, "grouped.data"=grouped.data, "results"=subgroup.results, 
@@ -702,7 +721,7 @@ subgroup.ma.continuous <- function(fname, cont.data, params){
     model.title <- ""
     if (fname == "continuous.fixed") {
         model.title <- paste("Continuous Fixed-Effects Model - Inverse Variance\n\nMetric: ", params$measure, sep="") 
-    } else if (fname == "binary.random") {
+    } else if (fname == "continuous.random") {
         model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", params$measure, sep="")
     }
     subgroup.disp <- create.overall.display(subgroup.results, subgroup.names, params, model.title, data.type="continuous")
