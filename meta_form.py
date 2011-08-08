@@ -295,7 +295,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             else:
                 new_state_dict["current_txs"] = ["tx A", "tx B"]
             modified_dataset = edit_window.dataset
-            
+
             redo_f = lambda : self.set_model(modified_dataset, new_state_dict)
             original_dataset = copy.deepcopy(self.model.dataset)
             undo_f = lambda : self.set_model(original_dataset, old_state_dict) 
@@ -321,8 +321,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             # diagnostic data; deactive metrics option
             # we always show sens. + spec. for diag. data.
             self.menuMetric.setDisabled(True)
-            #pyqtRemoveInputHook()
-            #pdb.set_trace()
+
                 
     def add_binary_metrics(self):
         self.add_metrics(meta_globals.BINARY_ONE_ARM_METRICS,\
