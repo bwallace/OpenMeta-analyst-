@@ -37,7 +37,7 @@ CONTINUOUS_ONE_ARM_METRICS = ["TX Mean"]
 ONE_ARM_METRICS = BINARY_ONE_ARM_METRICS + CONTINUOUS_ONE_ARM_METRICS 
 
 # Diagnostic metrics
-DIAGNOSTIC_METRICS = ["Sens", "Spec", "PPV", "NPV", "Acc", "PLR", "NLR", "DOR"]
+DIAGNOSTIC_METRICS = ["Sens", "Spec", "PLR", "NLR", "DOR"]
 DIAGNOSTIC_LOG_METRICS = ["PLR", "NLR", "DOR"]
 
 # enumeration of data types and dictionaries mapping both ways

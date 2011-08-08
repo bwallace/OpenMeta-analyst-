@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'diagnostic_metrics.ui'
 #
-# Created: Mon Aug 08 14:51:25 2011
+# Created: Mon Aug 08 15:25:09 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -43,15 +43,15 @@ class Ui_diag_metric(object):
         self.chk_box_spec.setChecked(True)
         self.chk_box_spec.setObjectName(_fromUtf8("chk_box_spec"))
         self.gridLayout.addWidget(self.chk_box_spec, 0, 1, 1, 1)
-        self.chk_bo_plr = QtGui.QCheckBox(self.metrics_grp_box)
-        self.chk_bo_plr.setObjectName(_fromUtf8("chk_bo_plr"))
-        self.gridLayout.addWidget(self.chk_bo_plr, 1, 0, 1, 1)
+        self.chk_box_plr = QtGui.QCheckBox(self.metrics_grp_box)
+        self.chk_box_plr.setObjectName(_fromUtf8("chk_box_plr"))
+        self.gridLayout.addWidget(self.chk_box_plr, 1, 0, 1, 1)
         self.chk_box_nlr = QtGui.QCheckBox(self.metrics_grp_box)
         self.chk_box_nlr.setObjectName(_fromUtf8("chk_box_nlr"))
         self.gridLayout.addWidget(self.chk_box_nlr, 1, 1, 1, 1)
-        self.chkbox_dor = QtGui.QCheckBox(self.metrics_grp_box)
-        self.chkbox_dor.setObjectName(_fromUtf8("chkbox_dor"))
-        self.gridLayout.addWidget(self.chkbox_dor, 2, 0, 1, 1)
+        self.chk_box_dor = QtGui.QCheckBox(self.metrics_grp_box)
+        self.chk_box_dor.setObjectName(_fromUtf8("chk_box_dor"))
+        self.gridLayout.addWidget(self.chk_box_dor, 2, 0, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
         self.formLayout_2.setWidget(0, QtGui.QFormLayout.LabelRole, self.metrics_grp_box)
         self.horizontalLayout = QtGui.QHBoxLayout()
@@ -72,9 +72,9 @@ class Ui_diag_metric(object):
         self.metrics_grp_box.setTitle(QtGui.QApplication.translate("diag_metric", "select metrics for analysis", None, QtGui.QApplication.UnicodeUTF8))
         self.chk_box_sens.setText(QtGui.QApplication.translate("diag_metric", "sensitivity", None, QtGui.QApplication.UnicodeUTF8))
         self.chk_box_spec.setText(QtGui.QApplication.translate("diag_metric", "specificity", None, QtGui.QApplication.UnicodeUTF8))
-        self.chk_bo_plr.setText(QtGui.QApplication.translate("diag_metric", "positive likelihood ratio", None, QtGui.QApplication.UnicodeUTF8))
+        self.chk_box_plr.setText(QtGui.QApplication.translate("diag_metric", "positive likelihood ratio", None, QtGui.QApplication.UnicodeUTF8))
         self.chk_box_nlr.setText(QtGui.QApplication.translate("diag_metric", "negative likelihood ratio", None, QtGui.QApplication.UnicodeUTF8))
-        self.chkbox_dor.setText(QtGui.QApplication.translate("diag_metric", "diagnostic odds ratio", None, QtGui.QApplication.UnicodeUTF8))
+        self.chk_box_dor.setText(QtGui.QApplication.translate("diag_metric", "diagnostic odds ratio", None, QtGui.QApplication.UnicodeUTF8))
         self.btn_ok.setText(QtGui.QApplication.translate("diag_metric", "next >", None, QtGui.QApplication.UnicodeUTF8))
 
 import icons_rc

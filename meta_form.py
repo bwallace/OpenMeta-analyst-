@@ -37,12 +37,14 @@ import meta_py_r
 import add_new_dialogs
 import results_window
 import ma_specs
+import diag_metrics
 import meta_reg_form
 import meta_subgroup_form
 import edit_dialog
 import network_view
 import meta_globals 
 import start_up_dialog
+
 
 class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
@@ -225,10 +227,19 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             QObject.connect(self.action_subgroup_ma, SIGNAL("triggered()"), self.meta_subgroup_get_cov)
 
     def go(self):
-        # the spec form gets *this* form as a parameter.
-        # this allows the spec form to callback to this
-        # module when specifications have been provided.
-        form =  ma_specs.MA_Specs(self.model, parent=self)
+        form = None
+        if self.model.get_current_outcome_type() != "diagnostic":
+            # in the binary and continuous case, we go straight 
+            # to selecting the metric/parameters here.
+            #
+            # note that the spec form gets *this* form as a parameter.
+            # this allows the spec form to callback to this
+            # module when specifications have been provided.
+            form =  ma_specs.MA_Specs(self.model, parent=self)
+        else:
+            # diagnostic data; we first have the user select metric(s),
+            # and only then the model, &etc.
+            form = diag_metrics.Diag_Metrics(self.model, parent=self)
         form.show()
     
     def meta_reg(self):

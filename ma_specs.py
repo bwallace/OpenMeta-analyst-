@@ -27,10 +27,13 @@ from meta_globals import *
 class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
     def __init__(self, model, parent=None, meta_f_str=None,
-                    external_params=None):
+                    external_params=None, diag_metrics=None):
         super(MA_Specs, self).__init__(parent)
         self.setupUi(self)
         self.model = model
+        
+        # this only makes sense for diagnostic data, of course
+        self.diag_metrics = diag_metrics 
         
         # if not none, we assume we're running a meta
         # method 
