@@ -641,8 +641,9 @@ effectsize.column <- function(forest.data, box.sca = 1) {
     # if user has not supplied both lower and upper bounds (that meet the requirements), compute them
     # heuristically as effect.col.range.
       if (forest.data$scale == "logit") { 
-        effect.col.range <- c(min(effect.col$LL), max(effect.col$UL))
-        # this is essentially (0, 1) when converted back to standard scale.
+        effect.col.range <- c(0, 1)
+        # this is in standard scale.
+        #effect.col.range <- c(min(effect.col$LL), max(effect.col$UL))
       }
       else {
           # When scale is log or standard, this is a heuristic to determine a reasonable range for the displayed values - 
