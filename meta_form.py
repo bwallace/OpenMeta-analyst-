@@ -295,12 +295,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             else:
                 new_state_dict["current_txs"] = ["tx A", "tx B"]
             modified_dataset = edit_window.dataset
-            ### this is a rather unfortunate hack, but we append the 
-            # blank study original at the end of the dataset here because
-            # set_model assumes it should remove the last (blank)
-            # study in the dataset (see in-line comments there).
-            #modified_dataset.add_study(edit_window.blank_study)
-
+            
             redo_f = lambda : self.set_model(modified_dataset, new_state_dict)
             original_dataset = copy.deepcopy(self.model.dataset)
             undo_f = lambda : self.set_model(original_dataset, old_state_dict) 
@@ -314,11 +309,20 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         current datatype.
         '''
         self.menuMetric.clear()
+        self.menuMetric.setDisabled(False)
+
         if self.model.get_current_outcome_type()=="binary":
             self.add_binary_metrics()
             
         elif self.model.get_current_outcome_type()=="continuous":
             self.add_continuous_metrics()
+        
+        else:
+            # diagnostic data; deactive metrics option
+            # we always show sens. + spec. for diag. data.
+            self.menuMetric.setDisabled(True)
+            #pyqtRemoveInputHook()
+            #pdb.set_trace()
                 
     def add_binary_metrics(self):
         self.add_metrics(meta_globals.BINARY_ONE_ARM_METRICS,\

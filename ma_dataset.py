@@ -310,15 +310,7 @@ class Dataset:
         
     def get_follow_up_names_for_outcome(self, outcome):
         return self.outcome_names_to_follow_ups[outcome].values()
-        '''
-        follow_up_names = []
-        for study in self.studies:
-            try:
-                follow_up_names.extend(study.outcomes_to_follow_ups[outcome].keys())
-            except:
-                pass
-        return list(set(follow_up_names))
-        '''
+
         
     def get_network(self, outcome, time_point):
         node_list = [] # list of all nodes
