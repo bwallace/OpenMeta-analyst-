@@ -273,9 +273,14 @@ diagnostic.fixed.sens.and.spec <- function(diagnostic.data, params){
         summary.disp <- list("MAResults" = res) 
         results <- list("Summary"=summary.disp)
     } else {
+        params$fp_show_col2 <- 'FALSE'
+        params$fp_show_col3 <- 'FALSE'
+        params$fp_show_col4 <- 'FALSE'
         params.sens <- params
         params.sens$measure <- "Sens"
+        params.sens$fp_show_col1 <- 'TRUE'
         params.spec <- params
+        params.spec$fp_show_col1 <- 'FALSE'
         params.spec$measure <- "Spec"
         diagnostic.data.sens <- compute.diag.point.estimates(diagnostic.data, params.sens)
         diagnostic.data.spec <- compute.diag.point.estimates(diagnostic.data, params.spec)
@@ -283,8 +288,8 @@ diagnostic.fixed.sens.and.spec <- function(diagnostic.data, params){
                      slab=diagnostic.data.sens@study.names,
                      method="FE", level=params$conf.level,
                      digits=params$digits)
-        res.spec<-rma.uni(yi=diagnostic.data.sens@y, sei=diagnostic.data.sens@SE, 
-                     slab=diagnostic.data.sens@study.names,
+        res.spec<-rma.uni(yi=diagnostic.data.spec@y, sei=diagnostic.data.spec@SE, 
+                     slab=diagnostic.data.spec@study.names,
                      method="FE", level=params$conf.level,
                      digits=params$digits)             
         
@@ -357,11 +362,6 @@ diagnostic.fixed.sens.and.spec.pretty.names <- function() {
                                    is added to all cells of each two-by-two table that contains at leason one zero. When set to \"all\", the correction factor
                                    is added to all two-by-two tables if at least one table contains a zero.")
                           )
-}
-
-diagnostic.fixed.sens.and.spec.overall <- function(results) {
-    # this parses out the overall from the computed result
-    res <- results$Summary$MAResults
 }
 
 ##################################

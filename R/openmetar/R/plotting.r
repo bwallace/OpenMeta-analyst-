@@ -51,8 +51,18 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
         plot.options$plot.ub <- NULL
     } else {
         plot.ub <- eval(parse(text=paste("c(", params$fp_plot_ub, ")", sep="")))
+        if (scale.str == "logit") {
+          plot.ub <- min(1, plot.ub)
+        }  
         plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(plot.ub)
     } 
+    
+    if ("DiagnosticData" %in% class(om.data)) {
+        plot.options$show.y.axis <- FALSE
+        # don't show y-axis for diagnostic forest plots
+    } else {
+        plot.options$show.y.axis <- TRUE
+    }
     plot.data <- list(label = c(paste(params$fp_col1_str, sep = ""), om.data@study.names, "Overall"),
                       types = c(3, rep(0, length(om.data@study.names)), 2),
                       scale = scale.str,
@@ -70,12 +80,18 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     lb <- c(lb, lb.overall)
     ub <- c(ub, ub.overall)
     
+    y.disp <- eval(call(transform.name, params$measure))$display.scale(y)
+    lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb)
+    ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub)
+    
+    if (metric.is.logit.scale(params$measure)) {
+        # in logit scale, pass data in display scale - no scaling on x-axis
+        y <- y.disp
+        lb <- lb.disp
+        ub <- ub.disp
+    }
     if (params$fp_show_col2=='TRUE') {
         # transform entries to display scale
-        y.disp <- eval(call(transform.name, params$measure))$display.scale(y)
-        lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb)
-        ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub)  
-        # format entries for effect size text column in forest plot        
         effect.sizes <- format.effect.sizes(y=y.disp, lb=lb.disp, ub=ub.disp, params)
         # first row contains headers, so add label
         effect.size.label <- create.effect.size.label(effect.sizes, params)
@@ -196,29 +212,47 @@ create.plot.data.overall <- function(res, study.names, params, data.type, addRow
     plot.options$fp.show.summary.line <- FALSE
     # turning off the summary line for cumulative and loo, as it doesn't make 
     # sense. This overrides the check box in forest plot options pane.
+    if (metric.is.log.scale(params$measure)) {
+        plot.options$show.y.axis <- FALSE
+        # don't show y-axis for diagnostic forest plots
+    } else {
+        plot.options$show.y.axis <- TRUE
+    }    
     if (addRow1Space == TRUE) {
         # Add space to row 1 for cumulative ma to align study names.
         study.names[1] <- paste("   ", study.names[1], sep="")
     }
 
-    plot.data <- list( label = c("Studies", study.names),
-                types = c(3, rep(0, length(study.names))),
-                scale = scale.str,
-                options = plot.options)
+    plot.data <- list( label = c(params$fp_col1_str, c(study.names, "")),  
+                       # add blank line to study.names to align with Overall row
+                       types = c(3, rep(0, length(study.names)), 2),
+                       scale = scale.str,
+                       options = plot.options)
     # unpack data
     y <- NULL
     lb <- NULL
     ub <- NULL
+    
     for (count in 1:length(study.names)) {
+      # subtract because of blank line for overall
       y <- c(y, res[[count]]$b)
       lb <- c(lb, res[[count]]$ci.lb)
       ub <- c(ub, res[[count]]$ci.ub)
     }
+      
+    y.disp <- eval(call(transform.name, params$measure))$display.scale(y)
+    lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb)
+    ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub)                   
+      
+    if (metric.is.logit.scale(params$measure)) {
+        # in logit scale, pass data in display scale - no scaling on x-axis
+        y <- y.disp
+        lb <- lb.disp
+        ub <- ub.disp
+    }
+                       
     if (params$fp_show_col2=='TRUE') {
         # transform entries to display scale
-        y.disp <- eval(call(transform.name, params$measure))$display.scale(y)
-        lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb)
-        ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub)  
         # format entries for effect size text column in forest plot        
         effect.sizes <- format.effect.sizes(y=y.disp, lb=lb.disp, ub=ub.disp, params)
         # first row contains headers, so add label
@@ -300,7 +334,7 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, 
         plot.ub <- eval(parse(text=paste("c(", params$fp_plot_ub, ")", sep="")))
         plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(plot.ub)
     }
-    # plot.options$fp_show_summary_line <- FALSE
+
     # should we show summary line for subgroup plots??
     plot.data <- list(label = label.col,
                       types=types,
@@ -419,7 +453,7 @@ set.plot.options <- function(params) {
     } else {
         plot.options$xticks <- eval(parse(text=paste("c(", params$fp_xticks, ")", sep="")))
     }
-    if ((params$fp_show_col1=='TRUE') || is.null(params$show.fp_show_col1)) {
+    if ((params$fp_show_col1=='TRUE') || is.null(params$fp_show_col1)) {
       plot.options$show.study.col <- TRUE
     } else {
       plot.options$show.study.col <- FALSE
@@ -432,7 +466,17 @@ set.plot.options <- function(params) {
     }
     # if show.summary.line is TRUE, a vertical dashed line is displayed at the
     # overall summary.
-    plot.options$show.summary.line <- params$fp_show_summary_line
+    if ((params$fp_show_summary_line=='TRUE') || is.null(params$show.fp_show_summary_line)) {  
+      plot.options$show.summary.line <- TRUE
+    } else {
+      plot.options$show.summary.line <- FALSE
+    }
+    
+    if ((params$fp_show_y_axis=='TRUE') || is.null(params$show.fp_show_y_axis)) {  
+      plot.options$show.y.axis <- TRUE
+    } else {
+      plot.options$show.y.axis <- FALSE
+    }
     plot.options
 }    
 
@@ -535,9 +579,9 @@ additional.columns <- function(forest.data, font = "bold") {
 }
 
 effectsize.column <- function(forest.data, box.sca = 1) {
-    # calculate range of data to display, etc.
-    rows<-c(1, rep(NA, (length(forest.data$label)-1) ) )
-    for (i in 1:(length(forest.data$label) -1)){
+    # calculate range of data to display
+    rows<-c(1, rep(NA, (length(forest.data$effects$ES)) ) )
+    for (i in 1:(length(forest.data$effects$ES))){
       if (forest.data$types[i] == 3  &&  forest.data$types[i+1] == 0)
         rows[i+1] <- rows[i] + 2
       else if (forest.data$types[i] == 0  &&  forest.data$types[i+1] == 2)
@@ -574,21 +618,21 @@ effectsize.column <- function(forest.data, box.sca = 1) {
     effect.col.sizes <- box.sca * precision/max(precision)
     # sizes of the boxes in the forest plot - proportional to width of CI
     
-    # Check whether user input's for plot lower and upper bounds are acceptable.
-    min.user.input <- min(effect.col$ES)
+    # Check whether user input's for plot lower and upper bounds are OK.
+    plot.lb.max <- min(effect.col$ES)
     # smallest value for which we accept user's input for plot lower bound.
     # User's lower bound must be less thant all effect sizes.
-    max.user.input <- max(effect.col$ES) 
+    plot.ub.min <- max(effect.col$ES) 
     # largest user input for plot upper bound. All effect sizes must be less than this value.
     if (!is.null(forest.data$options$plot.lb)) {
         # user specifies the lower bound for the display range, so use it if not too large.
-        if (forest.data$options$plot.lb < min.user.input) {
+        if (forest.data$options$plot.lb < plot.lb.max) {
           user.lb <- forest.data$options$plot.lb
         }
     } 
     if (!is.null(forest.data$options$plot.ub)) {
         # user specifies just the upper bound for the display range, so use it if not too small
-        if (forest.data$options$plot.ub > max.user.input) {
+        if (forest.data$options$plot.ub > plot.ub.min) {
           user.ub <- forest.data$options$plot.ub
         }
     }
@@ -598,25 +642,41 @@ effectsize.column <- function(forest.data, box.sca = 1) {
     # heuristically as effect.col.range.
       if (forest.data$scale == "logit") { 
         effect.col.range <- c(min(effect.col$LL), max(effect.col$UL))
-        # the obvious bounds seem to work OK for logit scale
+        # this is essentially (0, 1) when converted back to standard scale.
       }
       else {
           # When scale is log or standard, this is a heuristic to determine a reasonable range for the displayed values - 
           # confidence intervals that exceed this range are truncated and left or right arrows are displayed instead of the full CI.
         if (min(effect.col$LL)>0 && max(effect.col$UL)>0) {
-          effect.col.range <- c(max(0.5*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
+          effect.col.range <- c(max(0.5*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) + 0.3, max(effect.col$UL)))
         } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)<=0) { 
-           effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(-1.5*max(effect.col$ES) , max(effect.col$UL)))
+           effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(-1.5*max(effect.col$ES) + 0.3, max(effect.col$UL)))
+           # if 
         } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)>0) { 
-           effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
+           effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) + 0.3 , max(effect.col$UL)))
+           # add .3 because if max(effect.col$ES is close to 0) the ub is too small
         } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)>0 && max(effect.col$ES)>0) { 
-           effect.col.range <- c(max(-2*min(effect.col$ES) , min(effect.col$LL)), min(1.5*max(effect.col$ES) , max(effect.col$UL)))
+           effect.col.range <- c(max(-2*min(effect.col$ES) , min(effect.col$LL)), min(1.5*max(effect.col$ES) + 0.3, max(effect.col$UL)))
         } else if (min(effect.col$LL)<=0 && max(effect.col$UL)<0) { 
            effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(0.10*max(effect.col$ES) , max(effect.col$UL)))
         } 
+        
+        # Origninal heuristics
+        #if (min(effect.col$LL)>0 && max(effect.col$UL)>0) {
+        #  effect.col.range <- c(max(0.5*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
+        #} else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)<=0) { 
+        #   effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(-1.5*max(effect.col$ES) , max(effect.col$UL)))
+        #} else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)>0) { 
+        #   effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
+        #} else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)>0 && max(effect.col$ES)>0) { 
+        #   effect.col.range <- c(max(-2*min(effect.col$ES) , min(effect.col$LL)), min(1.5*max(effect.col$ES) , max(effect.col$UL)))
+        #} else if (min(effect.col$LL)<=0 && max(effect.col$UL)<0) { 
+        #   effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(0.10*max(effect.col$ES) , max(effect.col$UL)))
+        #}
       }
       # this is an ugly solution to an uncommon problem
-        merge.data <- data.frame(x = forest.data$types[-1], y = effect.col$LL, z = effect.col$UL)
+        
+        merge.data <- data.frame(x = forest.data$types[-1][1:length(forest.data$effects$ES)], y = effect.col$LL, z = effect.col$UL)
         merge.data <- subset(merge.data, x>0)
         if (length(merge.data$y) > 0) {
           if (min(effect.col.range) >= min(merge.data$y)) { 
@@ -639,7 +699,7 @@ effectsize.column <- function(forest.data, box.sca = 1) {
     }
 
    list(ES = forest.data$effects$ES, LL = forest.data$effects$LL, 
-                  UL = forest.data$effects$UL, rows = rows[-1], types = forest.data$types[-1],
+                  UL = forest.data$effects$UL, rows = rows[-1], types = forest.data$types[-1][1:length(forest.data$effects$ES)],
                   range = effect.col.range,
                   sizes = effect.col.sizes)
 }
@@ -722,80 +782,103 @@ draw.summary.CI <- function(LL, ES, UL, size, color, diam.height) {
                y=unit(0.5 + c(0, 0.25*diam.height*size, 0, -0.25*diam.height*size), "npc"), gp=gpar(fill=color))
 }
 
-# Function to draw the forest plot graphs
+###########################################
+# Function to draw the forest plot graphs #
+########################################### 
 draw.data.col <- function(forest.data, col, j, color.overall = "black",
                           color.subgroup = "black", summary.line.col = "darkred",
                           summary.line.pat = "dashed",
                           x.axis.label, diam.size=1,
-                          user.ticks) {
+                          user.ticks,
+                          show.y.axis) {
   pushViewport(viewport(layout.pos.col=j, xscale=col$range))
 
 # This is the "null" line
 # "ifs" left in as we will possibly expand this when new metrics become available
 # note that if the line extends outside the xscale bounds, it will be 
 # truncated and replaced with a left or right arrow (or both).
-  if (forest.data$scale == "log" && min(col$range)<0 && max(col$range)>0 ) {
+  if (show.y.axis == TRUE) {
+    if (forest.data$scale == "log" && min(col$range)<0 && max(col$range)>0 ) {
       grid.lines(x=unit(0, "native"), y=0:1)
-  }
-  if (forest.data$scale == "standard" && min(col$range)<0 && max(col$range)>0 ) { 
+    }
+    if (forest.data$scale == "standard" && min(col$range)<0 && max(col$range)>0 ) { 
       grid.lines(x=unit(0, "native"), y=0:1)
+    }
+    if (forest.data$scale == "logit" && min(col$range)<0 && max(col$range)>0 ) { 
+        grid.lines(x=unit(0, "native"), y=0:1)
+    }
   }
-  if (forest.data$scale == "logit" && min(col$range)<0 && max(col$range)>0 ) { 
-      grid.lines(x=unit(0, "native"), y=0:1)
-  }
-   
+  
   if (!is.null(forest.data$options$show.summary.line)) {
-      if (forest.data$options$show.summary.line == TRUE) {
+    if (forest.data$options$show.summary.line == TRUE) {
           # draw vertical line for summary
-          grid.lines(x=unit(col$ES[length(col$ES)], "native"),
+        grid.lines(x=unit(col$ES[length(col$ES)], "native"),
              y=0:1, gp=gpar(lty = summary.line.pat, col= summary.line.col))
-      }
+    }
   }  
+  
   if  (forest.data$scale == "standard") {
     if (length(user.ticks) == 0) {
       grid.xaxis(gp=gpar(cex=0.6))
     } else {+6
-      grid.xaxis(at = user.ticks , label = user.ticks, gp=gpar(cex=0.6))
+        grid.xaxis(at = user.ticks , label = user.ticks, gp=gpar(cex=0.6))
+      }
     }
-  }
+    
   if (forest.data$scale == "log")  {
-        if (length(user.ticks) == 0) { # some cheap tricks to make the axis ticks look nice (in most cases)...
+    if (length(user.ticks) == 0) { # some cheap tricks to make the axis ticks look nice (in most cases)...
             to.make.ticks <- range(exp(col$range))
             ticks <- axTicks(1, axp=c(to.make.ticks, 3), usr=c(-100, 100), log=TRUE)
   	        log.ticks <- log(ticks)
 		        log.ticks <- log.ticks[log.ticks > min(col$range) - 0.5]    # remember it is additive on this scale
             log.ticks <- log.ticks[log.ticks < max(col$range) + 0.5]
             ticks <- exp(log.ticks)
-        } else {
+    } else {
 		        ticks <- user.ticks
             log.ticks <- log(user.ticks)
 		        #log.ticks <- log.ticks[log.ticks > min(col$range) - 0.5]    # remember it is additive on this scale
             #log.ticks <- log.ticks[log.ticks < max(col$range) + 0.5]
             #ticks <- exp(log.ticks)
-        }
-        
+    }
         grid.xaxis(at = log.ticks , label = round(ticks, 3), gp=gpar(cex=0.6))          
   } 
   if (forest.data$scale == "logit")  {
         if (length(user.ticks) == 0) { # some cheap tricks to make the axis ticks look nice (in most cases)...
-            to.make.ticks <- invlogit(col$range)
-            lower.gap <- to.make.ticks[1]
-            upper.gap <- 1 - to.make.ticks[2]
-            #ticks <- axTicks(1, axp=c(to.make.ticks, 3), usr=c(-100, 100), log=TRUE)
-  	        logit.ticks <- seq(from=floor(col$range[1]), to=ceiling(col$range[2]), by=1)
-            #logit.ticks <- logit(ticks)
-		        #logit.ticks <- logit.ticks[logit.ticks > min(col$range) - 0.5]    # remember it is additive on this scale
-            #logit.ticks <- logit.ticks[logit.ticks < max(col$range) + 0.5]
-            ticks <- invlogit(logit.ticks)
+            ticks <- c(0, .25, .5, .75, 1)
+            #to.make.ticks <- invlogit(col$range)
+            #lower.gap <- to.make.ticks[1]
+            #upper.gap <- 1 - to.make.ticks[2]
+            #ticks <- vector()
+            #ticks[3] <- .5
+            #ticks.lb <- invlogit(min(col$range[1]))
+            #ticks.ub <- invlogit(max(col$range[2]))
+            #if (floor(10 * ticks.ub) != 9) {
+              # first digit of ticks.ub != 9
+              #ticks[5] <- .9
+              #ticks[4] <- floor(10*ticks.ub) / 10
+              
+            #} else { 
+            #  i <- 1
+           
+            #  while (ceiling(10^i * ticks.ub) == 10^i) {
+            #    i <- i + 1
+            #  }
+            # ticks[5] <-  10^(-i) * (10^i - 1)
+            #  ticks[4] <- 10^(-i+1) * (10 ^ (i-1) -1)
+            #}        
+            # i <- 0
+               # find the largest power of 10 smaller than ticks.lb
+            #while (10^(-i) > ticks.lb) {
+            #  i<-i+1
+            #}
+            #ticks[2] <- 10^(-i) * ceiling(10^i * ticks.lb)
+            #ticks[1] <- 10^(-i)
+             
         } else {
 		        ticks <- user.ticks
-            logit.ticks <- logit(user.ticks)
-		        #log.ticks <- log.ticks[log.ticks > min(col$range) - 0.5]    # remember it is additive on this scale
-            #log.ticks <- log.ticks[log.ticks < max(col$range) + 0.5]
-            #ticks <- exp(log.ticks)
         }
         
-        grid.xaxis(at = logit.ticks , label = round(ticks, 3), gp=gpar(cex=0.6))          
+        grid.xaxis(at = ticks , label = ticks, gp=gpar(cex=0.6))          
   } 
         
   grid.text(x.axis.label, y=unit(-2, "lines"), gp=gpar(cex=0.8))
@@ -822,14 +905,14 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
 
 forest.plot <- function(forest.data, outpath) {
   show.study.col <- forest.data$options$show.study.col
-  vp.data <- forest.plot.data(forest.data, just="left", show.study.col=TRUE)
+  vp.data <- forest.plot.data(forest.data, just="left")
   vp.layout <- vp.data$vp.layout
   how.wide <- vp.data$how.wide
   height <- vp.data$height
   how.tall <- convertY(unit(rep(1, height)  , "lines") , "inches" , valueOnly=TRUE )
   png(file=outpath, width = how.wide+1, height = height*how.tall+2 , units = "in", res = 144)                      
   pushViewport(viewport(layout=vp.layout))
-  forest.plot2(forest.data, vp.data, show.study.col)
+  draw.forest.plot(forest.data, vp.data)
   
   graphics.off()
 }
@@ -915,9 +998,9 @@ forest.plot.old <- function(forest.data, outpath){
 #######################################
 #      forest plot data               #
 ####################################### 
- forest.plot.data <- function(forest.data, just, show.study.col){
-    # Calculates data for viewport
-    # these are calls to data functions
+ forest.plot.data <- function(forest.data, just){
+    # Calculates width and height for viewport and output file
+    show.study.col <- forest.data$options$show.study.col
     study.col <- study.column(forest.data, "bold")
     additional.cols <- c()
     if (length(forest.data$additional.col.data)>0 ){
@@ -935,7 +1018,7 @@ forest.plot.old <- function(forest.data, outpath){
       # add a little more space because last row is not a summary
         extra.space <- sum(forest.data$types != 0) + 1 
     }   
-    height <- length(forest.data$types)+ extra.space
+    height <- length(forest.data$types) + extra.space
   
     if (length(forest.data$additional.col.data)>0 )      {         # first if additional colums are present
         width.list <-vector("list")
@@ -987,11 +1070,12 @@ forest.plot.old <- function(forest.data, outpath){
 }
 
 #######################################
-#            two forest plots         #
+#            draw forest plot         #
 ####################################### 
-forest.plot2 <- function(forest.data, vp.data, show.study.col){
+draw.forest.plot <- function(forest.data, vp.data){
     # Draws forest plots using viewport data extracted by forest.plot.data
     # This is a refactoring of forest.plot to plot two forest.plots side.by.side
+    show.study.col <- forest.data$options$show.study.col                             
     how.wide <- vp.data$how.wide
     #how.tall <- vp.data$how.tall
     height <- vp.data$height
@@ -1025,28 +1109,38 @@ forest.plot2 <- function(forest.data, vp.data, show.study.col){
                              summary.line.pat = "dashed",
                              x.axis.label = forest.data$options$xlabel,
                              diam.size = 1.2,
-                             user.ticks = xticks)
+                             user.ticks = xticks,
+                             show.y.axis = forest.data$options$show.y.axis)
 }
+
+#######################################
+#            two forest plots         #
+#######################################
  
 two.forest.plots <- function(forest.data1, forest.data2, outpath) {
-  
-   vp.data1 <- forest.plot.data(forest.data1, just="left", show.study.col=TRUE)     
-   vp.data2 <- forest.plot.data(forest.data2, just="right", show.study.col=FALSE)
+   # draw two forest plots side by side.
+   vp.data1 <- forest.plot.data(forest.data1, just="left")     
+   vp.data2 <- forest.plot.data(forest.data2, just="right")
    vp.layout1 <- vp.data1$vp.layout
    vp.layout2 <- vp.data2$vp.layout
    how.wide1 <- vp.data1$how.wide
-   how.wide2 <- vp.data2$how.wide
+   if (forest.data2$options$show.study.col == TRUE) {
+     how.wide2 <- vp.data2$how.wide + .75
+     # add some more space if to the right graph if showing study cols.
+   } else {
+     how.wide2 <- vp.data2$how.wide
+   }
    height1 <- vp.data1$height
    height2 <- vp.data2$height
    height <- max(height1, height2)
    how.tall <- convertY(unit(rep(1, height)  , "lines") , "inches" , valueOnly=TRUE )
    pushViewport(viewport(layout=grid.layout(1,2), width=how.wide1 + how.wide2))                           
-   png(file=outpath, width = how.wide1 + how.wide2, height = height*how.tall+2 , units = "in", res = 144)                      
+   png(file=outpath, width = how.wide1 + how.wide2, height = height*how.tall+1 , units = "in", res = 144)                      
    pushViewport(viewport(layout=vp.layout1, layout.pos.col=1))
-   forest.plot2(forest.data1, vp.data1, show.study.col=TRUE)   
+   draw.forest.plot(forest.data1, vp.data1)   
    popViewport()
-   pushViewport(viewport(layout=vp.layout2, layout.pos.col=2))
-   forest.plot2(forest.data2, vp.data2, show.study.col=FALSE)
+   pushViewport(viewport(layout=vp.layout2,layout.pos.col=2))
+   draw.forest.plot(forest.data2, vp.data2)
    popViewport()
    
    graphics.off()
@@ -1164,7 +1258,7 @@ compute.npv <- function(sens, spec, prev) {
   ppv <- spec * (1 - prev) / (spec * (1 - prev) + (1 - sens) * prev)
 }
 
-plot.pred.vals.by.prev <- function(diagnostic.data, params) {
+plot.ppv.npv.by.prev <- function(diagnostic.data, params) {
   params$measure <- "Sens"
   diagnostic.data.sens <- compute.diag.point.estimates(diagnostic.data, params)
   params$measure <- "Spec"
@@ -1176,16 +1270,17 @@ plot.pred.vals.by.prev <- function(diagnostic.data, params) {
   
   prev <- ((diagnostic.data@TP + diagnostic.data@FN) / 
               (diagnostic.data@TP + diagnostic.data@FN + diagnostic.data@FP + diagnostic.data@TN))
-  
+  prev.min <- min(prev)
+  prev.max <- max(prev)
   npv <- diagnostic.data.npv@y
   npv <- diagnostic.transform.f("NPV")$display.scale(npv)
   ppv <- diagnostic.data.ppv@y
   ppv <- diagnostic.transform.f("PPV")$display.scale(ppv)
   
-  plot(0:1, 0:1, type="n",xlab="Prevalence")
-  points(prev, npv, col="red",)
-  points(prev, ppv, col="blue")
-  legend("right", c("Negative predictive value", "Positive predictive value"), col=c("red", "blue"))
+  plot(0:1, 0:1, type="n",main="PPV and NPV by Prevalence", xlab="Prevalence", ylab="")
+  points(prev, npv, col=3,)
+  points(prev, ppv, col=4)
+  legend("right", c("Negative predictive value", "Positive predictive value"), bty="n", col=c(3,4), text.col=c(3,4), pch=c(1,1))
 
   res.sens <- rma.uni(yi=diagnostic.data.sens@y, sei=diagnostic.data.sens@SE, 
                      slab=diagnostic.data.sens@study.names,
@@ -1197,13 +1292,13 @@ plot.pred.vals.by.prev <- function(diagnostic.data, params) {
                      digits=params$digits)                     
   sens.est <- diagnostic.transform.f("Sens")$display.scale(res.sens$b[1])
   spec.est <- diagnostic.transform.f("Spec")$display.scale(res.spec$b[1])
-  prev.overall <- seq(from=0, to=1, by=.01)
+  prev.overall <- seq(from=prev.min, to=prev.max, by=.01)
   sens.overall <- rep(sens.est, length(prev.overall))
   spec.overall <- rep(spec.est, length(prev.overall))
   npv.overall <- compute.npv(sens.overall, spec.overall, prev.overall)
   ppv.overall <- compute.ppv(sens.overall, spec.overall, prev.overall)
-  lines(prev.overall, npv.overall, col="red")
-  lines(prev.overall, ppv.overall, col="blue")
+  lines(prev.overall, npv.overall, col=3)
+  lines(prev.overall, ppv.overall, col=4)
   
  
 }
