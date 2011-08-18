@@ -9,19 +9,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>365</width>
+    <width>300</width>
     <height>147</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>365</width>
+    <width>250</width>
     <height>140</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>367</width>
+    <width>300</width>
     <height>147</height>
    </size>
   </property>
@@ -66,26 +66,38 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
-         <widget class="QCheckBox" name="chk_box_plr">
-          <property name="text">
-           <string>positive likelihood ratio</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QCheckBox" name="chk_box_nlr">
-          <property name="text">
-           <string>negative likelihood ratio</string>
-          </property>
-         </widget>
-        </item>
         <item row="2" column="0">
+         <widget class="QCheckBox" name="chk_box_lr">
+          <property name="text">
+           <string>likelihood ratio</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
          <widget class="QCheckBox" name="chk_box_dor">
           <property name="text">
            <string>diagnostic odds ratio</string>
           </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
          </widget>
+        </item>
+        <item row="1" column="0">
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </item>
@@ -101,7 +113,7 @@
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>260</width>
+         <width>200</width>
          <height>20</height>
         </size>
        </property>

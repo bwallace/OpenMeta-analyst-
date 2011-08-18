@@ -21,20 +21,27 @@ import pdb
 import sip
 
 import ui_ma_specs
+import ma_specs
 import meta_py_r
 from meta_globals import *
+
+try:
+    _fromUtf8 = QtCore.QString.fromUtf8
+except AttributeError:
+    _fromUtf8 = lambda s: s
 
 class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
     def __init__(self, model, parent=None, meta_f_str=None,
-                    external_params=None, diag_metrics=None):
+                    external_params=None, diag_metrics=None,
+                    diag_metrics_to_analysis_details_d=None):
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
         super(MA_Specs, self).__init__(parent)
         self.setupUi(self)
+
         self.model = model
-        
-        # this only makes sense for diagnostic data, of course
-        self.diag_metrics = diag_metrics 
-        
+
         # if not none, we assume we're running a meta
         # method 
         self.meta_f_str = meta_f_str
@@ -64,6 +71,38 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.var_order = None
         self.current_param_vals = external_params or {}
         self.populate_cbo_box()
+        
+        ####
+        # the following are variables for the case of diagnostic 
+        # data. in other cases, these are meaningless/None.
+        # diagnostic data is special because we allow the user to
+        # to run analyses on multiple metrics at once.
+        #
+        # this dictionary maps metrics to analysis methods and
+        # corresponding parameters. e.g., 
+        #   diag_metrics["sens"] -> (method, parameters)
+        # for each metric selected by the user. note that
+        # the method and parameters will in fact be the same for 
+        # sens/spec (and for lr/dor), but we map the metrics
+        # to their own tuples for convenience.
+        self.diag_metrics_to_analysis_details = \
+                        diag_metrics_to_analysis_details_d or {}
+
+        # note that we assume the metrics for which analysis
+        # details have already been acquired (i.e,. those in 
+        # the above dictionary) are not included in the diag_metrics
+        # list -- we do not explicitly check for this here.
+        self.diag_metrics = diag_metrics 
+
+        # diagnostic data requires a different UI because multiple
+        # metrics can be selected. we handle this by allowing the 
+        # user to specify different methods for different groups
+        # of metrics.
+        self.sens_spec, self.lr_dor = False, False
+        if self.diag_metrics is not None:
+            self.setup_diagnostic_ui()
+            
+        
 
     def cancel(self):
         print "(cancel)"
@@ -134,7 +173,9 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                             result[field]["%s %s" % (diag_metric, val)] = cur_result[field][val]
                 
             else:
+                # TODO -- meta methods for diagnostic data
                 pass
+
         self.parent().analysis(result)
         self.accept()
     
@@ -166,6 +207,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         else:
             self.current_param_vals["fp_xticks"] = "NULL"
         self.current_param_vals["fp_show_summary_line"] = self.show_summary_line.isChecked()
+
     def seems_sane(self, xticks):
         num_list = xticks.split(",")
         if len(num_list) == 1:
@@ -196,7 +238,20 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.parameter_grp_box.setTitle(self.current_method)
         self.ui_for_params()
 
-    def populate_cbo_box(self):
+    def lr_dor_method_changed(self):
+        self.clear_param_ui()
+        self.current_widgets= []
+        self.current_method = self.available_method_d[str(self.method_cbo_box.currentText())]
+        self.setup_params()
+        self.parameter_grp_box.setTitle(self.current_method)
+        self.ui_for_params()
+
+    def populate_cbo_box(self, cbo_box=None, param_box=None):
+        # if no combo box is passed in, use the default 'method_cbo_box'
+        if cbo_box is None:
+            cbo_box = self.method_cbo_box
+            param_box = self.parameter_grp_box
+
         # we first build an R object with the current data. this is to pass off         
         # to the R side to check the feasibility of the methods over the current data.
         # i.e., we do not display methods that cannot be performed over the 
@@ -209,13 +264,15 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         elif self.data_type == "diagnostic":
             meta_py_r.ma_dataset_to_simple_diagnostic_robj(self.model, var_name=tmp_obj_name)
             
-        self.available_method_d = meta_py_r.get_available_methods(for_data_type=self.data_type, data_obj_name=tmp_obj_name)
+        self.available_method_d = meta_py_r.get_available_methods(for_data_type=self.data_type,\
+                                     data_obj_name=tmp_obj_name)
         print "\n\navailable %s methods: %s" % (self.data_type, ", ".join(self.available_method_d.keys()))
+
         for method in self.available_method_d.keys():
-            self.method_cbo_box.addItem(method)
-        self.current_method = self.available_method_d[str(self.method_cbo_box.currentText())]
+            cbo_box.addItem(method)
+        self.current_method = self.available_method_d[str(cbo_box.currentText())]
         self.setup_params()
-        self.parameter_grp_box.setTitle(self.current_method)
+        param_box.setTitle(self.current_method)
 
 
     def clear_param_ui(self):
@@ -342,3 +399,55 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.current_params, self.current_defaults, self.var_order, self.param_d = \
                     meta_py_r.get_params(self.current_method)
         print self.current_defaults
+
+
+    def diag_next(self):
+        self.add_plot_params()
+
+        # if the user selected both sens/spec and lr/dor
+        # then we will always show them the former first.
+        # thus the parameters we have now are for sens/spec
+        # note that we first add the forest plot parameters!
+        for metric in ("sensitivity", "specificity"):
+            self.diag_metrics_to_analysis_details[metric] = \
+                    (self.current_method, self.current_param_vals)
+
+        
+        # we're going to show another analysis details form for the
+        # liklihood ratio and diagnostic odds ratio analyses.
+        # we pass along the parameters acquired for sens/spec
+        # in the diag_metrics* dictionary.
+        pyqtRemoveInputHook()
+        pdb.set_trace()
+        form =  MA_Specs(self.model, parent=self.parent(),\
+                    diag_metrics=("lr", "dor"), \
+                    diag_metrics_to_analysis_details_d=self.diag_metrics_to_analysis_details)
+        form.show()
+        self.hide()
+
+
+    def setup_diagnostic_ui(self):
+        self.sens_spec = any([m in ("sens", "spec") for m in self.diag_metrics])
+        self.lr_dor = any([m in ("lr", "dor") for m in self.diag_metrics])
+
+        if self.sens_spec and self.lr_dor:
+            self.buttonBox.clear()    
+            next_button = self.buttonBox.addButton(QString("next >"), 0)
+            
+            # if both sets of metrics are selected, we need to next prompt the
+            # user for parameters regarding the second
+            QObject.disconnect(self.buttonBox, SIGNAL("accepted()"), self.run_ma)
+            QObject.connect(self.buttonBox, SIGNAL("accepted()"), self.diag_next)
+
+        elif self.sens_spec:
+            pass
+
+        window_title = ""
+        if self.sens_spec:
+            window_title = "Method & Parameters for Sens./Spec."
+        else:
+            window_title = "Method & Parameters for DOR/LR"
+
+        self.setWindowTitle(QtGui.QApplication.translate("Dialog", window_title, \
+                None, QtGui.QApplication.UnicodeUTF8))
+        
