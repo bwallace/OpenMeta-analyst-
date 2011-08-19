@@ -884,15 +884,15 @@ class DatasetModel(QAbstractTableModel):
             elif data_type == DIAGNOSTIC: 
                 # diagnostic data
                 tp, fn, fp, tn = self.get_cur_raw_data_for_study(study_index)
-                
+
                 # sensitivity and specificity
-                ests_and_cis = meta_py_r.diagnostic_effects_for_study(tp, fn, fp, tn)
+                ests_and_cis = meta_py_r.diagnostic_effects_for_study(\
+                                        tp, fn, fp, tn, metrics=DIAGNOSTIC_METRICS)
                 
                 ###
                 # now we're going to set the effect estimate/CI on the MA object.
-                # if we have diagnostic data, this requires doing  
                 ma_unit = self.get_current_ma_unit_for_study(study_index)
-                for metric in ("Sens", "Spec"):
+                for metric in DIAGNOSTIC_METRICS:
                     est, lower, upper = ests_and_cis[metric]["calc_scale"]
                     ma_unit.set_effect_and_ci(metric, group_str, est, lower, upper)
                     

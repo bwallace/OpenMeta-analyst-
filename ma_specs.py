@@ -29,8 +29,19 @@ try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
     _fromUtf8 = lambda s: s
-
+    
 class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
+
+    # for diagnostic data -- this dictionary maps
+    # the mteric names as they appear in the UI/ure
+    # used here to the names used in the model.
+    # see get_diag_metrics_to_run.
+    DIAG_METRIC_NAMES_D = {
+                            "Sens":["Sens"], 
+                            "Spec":["Spec"],
+                            "dor":["DOR"],
+                            "lr":["PLR", "NLR"]
+                          }
 
     def __init__(self, model, parent=None, meta_f_str=None,
                     external_params=None, diag_metrics=None,
@@ -158,20 +169,37 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                 # output paths for each individual forest plot (one 
                 # per diagnostic metric).
                 split_fp_path = self.current_param_vals["fp_outpath"].split(".")
-                for diag_metric in ("Sens", "Spec"):
-                    self.current_param_vals["measure"] = diag_metric
+
+              
+
+                # add the current metrics (e.g., PLR, etc.) to the method/params
+                # dictionary
+                self.add_cur_analysis_details()
+                
+                for diag_metric in self.diag_metrics_to_analysis_details:
+                    
                     new_str = split_fp_path[0] if len(split_fp_path) == 1 else \
                               ".".join(split_fp_path[:-1])
                     new_str = new_str + "_%s" % diag_metric + ".png"
-                    self.current_param_vals["fp_outpath"] = new_str
-                    ### build a new MetaAnalysis object with the current metric.
+
+                    
+
+                    # build a new MetaAnalysis object with the current metric.
                     meta_py_r.ma_dataset_to_simple_diagnostic_robj(self.model, metric=diag_metric)
-                    ### despite looking ok here, this returns the value of the first iteration!!!
-                    cur_result = meta_py_r.run_diagnostic_ma(self.current_method, self.current_param_vals)
+
+                    # pull out the method and parameters object specified for this
+                    # metric.
+                    method, param_vals = self.diag_metrics_to_analysis_details[diag_metric]
+                    # update the metric & out_str
+                    param_vals["fp_outpath"] = new_str
+                    param_vals["measure"] = diag_metric
+
+                    # despite looking ok here, this returns the value of the first iteration
+                    cur_result = meta_py_r.run_diagnostic_ma(method, param_vals)
                     for field in result.keys():
                         for val in cur_result[field].keys():
                             result[field]["%s %s" % (diag_metric, val)] = cur_result[field][val]
-                
+                    
             else:
                 # TODO -- meta methods for diagnostic data
                 pass
@@ -179,6 +207,26 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.parent().analysis(result)
         self.accept()
     
+    def get_diag_metrics_to_run(self):
+        '''
+        this method is necessary to map the metrics as coded in UI 
+        (sens, spec, DOR, LR) to metrics the model knows about -- 
+        some of this is as simple (silly?) as camel casing; but
+        also the user selects only 'lr', rather than 'lr+/-', and
+        the model knows about these only as separate metrics. we break
+        these up here.
+
+        ["Sens", "Spec", "PLR", "NLR", "DOR"]
+        '''
+        to_run= []
+
+        for metric in self.diag_metrics_to_analysis_details:
+            pyqtRemoveInputHook()
+            pdb.set_trace()
+            to_run.extend(self.DIAG_METRIC_NAMES_D[metric])
+
+        return to_run
+
     def add_plot_params(self):
         ### TODO shouldn't couple R plotting routine with UI so tightly
         self.current_param_vals["fp_show_col1"] = self.show_1.isChecked()
@@ -231,14 +279,6 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
          
 
     def method_changed(self):
-        self.clear_param_ui()
-        self.current_widgets= []
-        self.current_method = self.available_method_d[str(self.method_cbo_box.currentText())]
-        self.setup_params()
-        self.parameter_grp_box.setTitle(self.current_method)
-        self.ui_for_params()
-
-    def lr_dor_method_changed(self):
         self.clear_param_ui()
         self.current_widgets= []
         self.current_method = self.available_method_d[str(self.method_cbo_box.currentText())]
@@ -408,22 +448,36 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         # then we will always show them the former first.
         # thus the parameters we have now are for sens/spec
         # note that we first add the forest plot parameters!
-        for metric in ("sensitivity", "specificity"):
-            self.diag_metrics_to_analysis_details[metric] = \
-                    (self.current_method, self.current_param_vals)
+        self.add_cur_analysis_details()
 
         
         # we're going to show another analysis details form for the
         # liklihood ratio and diagnostic odds ratio analyses.
         # we pass along the parameters acquired for sens/spec
         # in the diag_metrics* dictionary.
-        pyqtRemoveInputHook()
-        pdb.set_trace()
         form =  MA_Specs(self.model, parent=self.parent(),\
                     diag_metrics=("lr", "dor"), \
                     diag_metrics_to_analysis_details_d=self.diag_metrics_to_analysis_details)
         form.show()
         self.hide()
+
+
+    def add_cur_analysis_details(self):
+        ''' 
+        this method only applicable for diagnostic data, wherein
+        we have multiple metrics. here the parameters/method for 
+        these metrics are added to a dictionary.
+        '''
+        if self.sens_spec:
+            for metric in ("Sens", "Spec"):
+                self.diag_metrics_to_analysis_details[metric] = \
+                        (self.current_method, self.current_param_vals)
+        else:
+            # lr/dor
+            for metric in ("DOR", "PLR", "NLR"):
+                self.diag_metrics_to_analysis_details[metric] = \
+                        (self.current_method, self.current_param_vals)
+
 
 
     def setup_diagnostic_ui(self):
