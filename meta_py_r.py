@@ -530,8 +530,7 @@ def _to_R_params(params):
 
 def run_diagnostic_ma(function_name, params, res_name="result", diag_data_name="tmp_obj"):
     params_str = _to_R_params(params)
-    pyqtRemoveInputHook()
-    pdb.set_trace()
+
     r_str = "%s<-%s(%s, %s)" % \
                         (res_name, function_name, diag_data_name, params_str) 
     

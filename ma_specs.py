@@ -46,8 +46,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
     def __init__(self, model, parent=None, meta_f_str=None,
                     external_params=None, diag_metrics=None,
                     diag_metrics_to_analysis_details_d=None):
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
+
         super(MA_Specs, self).__init__(parent)
         self.setupUi(self)
 
@@ -207,25 +206,6 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.parent().analysis(result)
         self.accept()
     
-    def get_diag_metrics_to_run(self):
-        '''
-        this method is necessary to map the metrics as coded in UI 
-        (sens, spec, DOR, LR) to metrics the model knows about -- 
-        some of this is as simple (silly?) as camel casing; but
-        also the user selects only 'lr', rather than 'lr+/-', and
-        the model knows about these only as separate metrics. we break
-        these up here.
-
-        ["Sens", "Spec", "PLR", "NLR", "DOR"]
-        '''
-        to_run= []
-
-        for metric in self.diag_metrics_to_analysis_details:
-            pyqtRemoveInputHook()
-            pdb.set_trace()
-            to_run.extend(self.DIAG_METRIC_NAMES_D[metric])
-
-        return to_run
 
     def add_plot_params(self):
         ### TODO shouldn't couple R plotting routine with UI so tightly
