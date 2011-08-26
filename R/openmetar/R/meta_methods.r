@@ -23,7 +23,7 @@ cum.ma.binary <- function(fname, binary.data, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
     
-    res <- res<-rma.uni(yi=binary.data@y, sei=binary.data@SE, slab=binary.data@study.names,
+    res<-rma.uni(yi=binary.data@y, sei=binary.data@SE, slab=binary.data@study.names,
                                 level=params$conf.level, digits=params$digits, method="FE", add=params$adjust,
                                 to=params$to)
     params$fp_show_col2 <- FALSE
@@ -67,7 +67,7 @@ cum.ma.binary <- function(fname, binary.data, params){
     for (count in 2:length(binary.data@study.names)) {
         study.names <- c(study.names, paste("+ ",binary.data@study.names[count], sep=""))
     }
-   
+    
     model.title <- ""
     if (fname == "binary.fixed.inv.var") {
         model.title <- paste("Binary Fixed-Effects Model - Inverse Variance\n\nMetric: ", params$measure, sep="") 
@@ -193,6 +193,14 @@ cum.ma.diagnostic <- function(fname, diagnostic.data, params){
     # assert that the argument is the correct type
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
     
+    res<-rma.uni(yi=diagnostic.data@y, sei=diagnostic.data@SE, slab=diagnostic.data@study.names,
+                                level=params$conf.level, digits=params$digits, method="FE", add=params$adjust,
+                                to=params$to)
+    params$fp_show_col2 <- FALSE
+    params$fp_show_col3 <- FALSE
+    params$fp_show_col4 <- FALSE
+    plot.data <- create.plot.data.diagnostic(diagnostic.data, params, res)
+    
     # iterate over the diagnosticData elements, adding one study at a time
     cum.results <- array(list(NULL), dim=c(length(diagnostic.data@study.names)))
     params$create.plot <- FALSE
@@ -229,6 +237,7 @@ cum.ma.diagnostic <- function(fname, diagnostic.data, params){
     for (count in 2:length(diagnostic.data@study.names)) {
         study.names <- c(study.names, paste("+ ",diagnostic.data@study.names[count], sep=""))
     }
+
     model.title <- ""
     if (fname == "diagnostic.fixed") {
         model.title <- paste("Diagnostic Fixed-Effects Model - Inverse Variance\n\nMetric: ", params$measure, sep="") 
@@ -238,8 +247,9 @@ cum.ma.diagnostic <- function(fname, diagnostic.data, params){
     
     cum.disp <- create.overall.display(res=cum.results, study.names, params, model.title, data.type="diagnostic")
     forest.path <- paste(params$fp_outpath, sep="")
-    plot.data <- create.plot.data.overall(res=cum.results, study.names, params, data.type="diagnostic", addRow1Space=TRUE)
-    forest.plot(forest.data=plot.data, outpath=forest.path)
+    params$fp_col1_str <- "Cumulative Studies"
+    plot.data.cum <- create.plot.data.overall(res=cum.results, study.names, params, data.type="diagnostic", addRow1Space=TRUE)
+    two.forest.plots(plot.data, plot.data.cum, outpath=forest.path)
 
     # Now we package the results in a dictionary (technically, a named 
     # vector). In particular, there are two fields that must be returned; 
@@ -347,6 +357,13 @@ cum.ma.continuous <- function(fname, cont.data, params){
     # assert that the argument is the correct type
     if (!("ContinuousData" %in% class(cont.data))) stop("Continuous data expected.")
     
+    res<-rma.uni(yi=cont.data@y, sei=cont.data@SE, slab=cont.data@study.names,
+                                level=params$conf.level, digits=params$digits, method="FE", add=params$adjust,
+                                to=params$to)
+    params$fp_show_col2 <- FALSE
+    params$fp_show_col3 <- FALSE
+    params$fp_show_col4 <- FALSE
+    plot.data <- create.plot.data.continuous(cont.data, params, res)
     # iterate over the continuousData elements, adding one study at a time
     cum.results <- array(list(NULL), dim=c(length(cont.data@study.names)))
     params$create.plot <- FALSE
@@ -390,6 +407,7 @@ cum.ma.continuous <- function(fname, cont.data, params){
     for (count in 2:length(cont.data@study.names)) {
         study.names <- c(study.names, paste("+ ",cont.data@study.names[count], sep=""))
     }
+
     model.title <- ""
     if (fname == "continuous.fixed") {
         model.title <- paste("Continuous Fixed-Effects Model - Inverse Variance\n\nMetric: ", params$measure, sep="") 
@@ -398,8 +416,10 @@ cum.ma.continuous <- function(fname, cont.data, params){
     }
     cum.disp <- create.overall.display(res=cum.results, study.names, params, model.title, data.type="continuous")
     forest.path <- paste(params$fp_outpath, sep="")
-    plot.data <- create.plot.data.overall(res=cum.results, study.names, params, data.type="continuous", addRow1Space=TRUE)
-    forest.plot(forest.data=plot.data, outpath=forest.path)
+    params$fp_col1_str <- "Cumulative Studies"
+    plot.data.cum <- create.plot.data.overall(res=cum.results, study.names, params, data.type="continuous", addRow1Space=TRUE)
+    two.forest.plots(plot.data, plot.data.cum, outpath=forest.path)
+
     
     #
     # Now we package the results in a dictionary (technically, a named 

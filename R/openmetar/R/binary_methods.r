@@ -426,7 +426,7 @@ binary.random.parameters <- function(){
 }
 
 binary.random.pretty.names <- function() {
-    pretty.names <- list("pretty.name"="Binary Random-Effects Mantel Haenszel", 
+    pretty.names <- list("pretty.name"="Binary Random-Effects", 
                          "description" = "Performs random-effects meta-analysis.",
                          "rm.method"=list("pretty.name"="Random method", "description"="Method for estimating between-studies heterogeneity"),                      
                          "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 

@@ -90,6 +90,12 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
         lb <- lb.disp
         ub <- ub.disp
     }
+    
+    effects <- list(ES = y,
+                    LL = lb,
+                    UL = ub) 
+    plot.data$effects <- effects
+    
     if (params$fp_show_col2=='TRUE') {
         # transform entries to display scale
         effect.sizes <- format.effect.sizes(y=y.disp, lb=lb.disp, ub=ub.disp, params)
@@ -100,10 +106,7 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
                                    effect.sizes$ub.display, ")", sep = ""))
         plot.data$additional.col.data$es <- effect.size.col
     }
-    effects <- list(ES = y,
-                    LL = lb,
-                    UL = ub) 
-    plot.data$effects <- effects
+    
     # covariates
     if (!is.null(selected.cov)){
         cov.val.str <- paste("om.data@covariates$", selected.cov, sep="")
@@ -223,7 +226,7 @@ create.plot.data.overall <- function(res, study.names, params, data.type, addRow
         study.names[1] <- paste("   ", study.names[1], sep="")
     }
 
-    plot.data <- list( label = c(params$fp_col1_str, c(study.names, "")),  
+    plot.data <- list( label = c(params$fp_col1_str, study.names),  
                        # add blank line to study.names to align with Overall row
                        types = c(3, rep(0, length(study.names)), 2),
                        scale = scale.str,
@@ -250,6 +253,11 @@ create.plot.data.overall <- function(res, study.names, params, data.type, addRow
         lb <- lb.disp
         ub <- ub.disp
     }
+    
+    effects <- list(ES = y,
+                    LL = lb,
+                    UL = ub) 
+    plot.data$effects <- effects
                        
     if (params$fp_show_col2=='TRUE') {
         # transform entries to display scale
@@ -262,10 +270,7 @@ create.plot.data.overall <- function(res, study.names, params, data.type, addRow
                           effect.sizes$ub.display, ")", sep = ""))
         plot.data$additional.col.data$es <- effect.size.col
     }
-    effects <- list(ES = y,
-                    LL = lb,
-                    UL = ub) 
-    plot.data$effects <- effects
+   
     plot.data
 }
 
@@ -343,10 +348,20 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, 
     y.disp <- eval(call(transform.name, params$measure))$display.scale(y)
     lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb)
     ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub)
+    
+    if (metric.is.logit.scale(params$measure)) {
+        # in logit scale, pass data in display scale - no scaling on x-axis
+        y <- y.disp
+        lb <- lb.disp
+        ub <- ub.disp
+    }
+    
     effects <- list(ES = y,
                     LL = lb,
-                    UL = ub) 
+                    UL = ub)
+   
     plot.data$effects <- effects
+    
     if (params$fp_show_col2=='TRUE') {
         # format entries for effect size text column in forest plot        
         effect.sizes <- format.effect.sizes(y=y.disp, lb=lb.disp, ub=ub.disp, params)
@@ -357,6 +372,7 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, 
                                      effect.sizes$ub.display, ")", sep = ""))
         plot.data$additional.col.data$es <- effect.size.col
     }
+    
     # covariates
     if (!is.null(selected.cov)){
         cov.val.str <- paste("om.data@covariates$", selected.cov, sep="")
