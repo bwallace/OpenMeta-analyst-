@@ -37,8 +37,8 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
     # used here to the names used in the model.
     # see get_diag_metrics_to_run.
     DIAG_METRIC_NAMES_D = {
-                            "Sens":["Sens"], 
-                            "Spec":["Spec"],
+                            "sens":["Sens"], 
+                            "spec":["Spec"],
                             "dor":["DOR"],
                             "lr":["PLR", "NLR"]
                           }
@@ -133,7 +133,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.add_plot_params()
         # also add the metric to the parameters
         # -- this is for scaling
-        
+
         if not self.data_type == "diagnostic":
             self.current_param_vals["measure"] = self.model.current_effect 
         
@@ -163,25 +163,39 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                 # This is constructed by parsing out the results from 
                 # individual runs.
                 #####
+
                 result = {'images':{}, 'texts':{}, 'image_var_names':{}}
+
                 # This provides us a 'base' path; from this we construc
                 # output paths for each individual forest plot (one 
                 # per diagnostic metric).
                 split_fp_path = self.current_param_vals["fp_outpath"].split(".")
 
-              
-
+            
                 # add the current metrics (e.g., PLR, etc.) to the method/params
                 # dictionary
                 self.add_cur_analysis_details()
-                
+            
+
+                '''
+                TODO this needs to be modified simply call the run_diagnostic_ma
+                function in meta_py_r.
+
+                everything you need is in the self.diag_metrics_to_analysis_details
+                dictionary -- you'll want to pass along a list of params objects
+                (*including* the metric) and the analysis details. we'll assume that the
+                R routine runs the analyses appropriately and returns us nice output.
+                '''
+
+                pyqtRemoveInputHook()
+                pdb.set_trace()
+
                 for diag_metric in self.diag_metrics_to_analysis_details:
                     
                     new_str = split_fp_path[0] if len(split_fp_path) == 1 else \
                               ".".join(split_fp_path[:-1])
                     new_str = new_str + "_%s" % diag_metric + ".png"
 
-                    
 
                     # build a new MetaAnalysis object with the current metric.
                     meta_py_r.ma_dataset_to_simple_diagnostic_robj(self.model, metric=diag_metric)
@@ -448,13 +462,18 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         we have multiple metrics. here the parameters/method for 
         these metrics are added to a dictionary.
         '''
+
+        # this was extracted earlier, ultimately from the checkboxes
+        # selected by the user
+        metrics_to_run = self.diag_metrics_to_analysis_details.keys()
+
         if self.sens_spec:
-            for metric in ("Sens", "Spec"):
+            for metric in [m for m in ("Sens", "Spec") if m in metrics_to_run]:
                 self.diag_metrics_to_analysis_details[metric] = \
                         (self.current_method, self.current_param_vals)
         else:
             # lr/dor
-            for metric in ("DOR", "PLR", "NLR"):
+            for metric in [m for m in ("DOR", "PLR", "NLR") if m in metrics_to_run]:
                 self.diag_metrics_to_analysis_details[metric] = \
                         (self.current_method, self.current_param_vals)
 
@@ -468,6 +487,21 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             self.buttonBox.clear()    
             next_button = self.buttonBox.addButton(QString("next >"), 0)
             
+            # here is where we set the keys of the _to_analysis_details
+            # dictionary to the metrics the user selected
+            
+            # the names of the metrics internally are different than those that 
+            # are displayed to the user, e.g., the user selects Likelihood Ratio
+            # instead of LR+/LR-. we map from the UI names to the internal names
+            # here
+            metrics_to_run = []
+            for m in self.diag_metrics:
+                metrics_to_run.extend(self.DIAG_METRIC_NAMES_D[m])
+
+            self.diag_metrics_to_analysis_details = \
+                dict(zip(metrics_to_run, [None for m in metrics_to_run]))
+
+
             # if both sets of metrics are selected, we need to next prompt the
             # user for parameters regarding the second
             QObject.disconnect(self.buttonBox, SIGNAL("accepted()"), self.run_ma)
