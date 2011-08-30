@@ -16,7 +16,6 @@ import pdb
 import ui_results_window
 import meta_py_r
 
-
 PageSize = (612, 792)
 padding = 25
 SCALE_P = .5 # percent images are to be scaled
@@ -172,12 +171,29 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         self.y_coord +=item.boundingRect().size().height()
         item.setFlags(QGraphicsItem.ItemIsSelectable|
                       QGraphicsItem.ItemIsMovable)
+        
+        print "creating item @:\n\n%s\n\n" % position
         item.setPos(position)
         item.setMatrix(matrix)
         self.scene.clearSelection()
         self.scene.addItem(item)
         self.scene.setSceneRect(0, 0, PageSize[0], self.y_coord+padding)
+        
+        # attach event handler for mouse-clicks, i.e., to handle
+        # user right-clicks
+        #item.mousePressEvent = self._mouse_click_on_graphics_item
+        item.contextMenuEvent = self._graphics_item_context_menu
+
         return item.boundingRect().size()
+
+    def _graphics_item_context_menu(self, event):
+
+        context_menu = QMenu(self)
+        context_menu.addAction("save image as...")
+        pos = event.screenPos()
+        context_menu.popup(pos)
+        event.accept()
+
 
     def position(self):
         point = QPoint(self.x_coord, self.y_coord)
