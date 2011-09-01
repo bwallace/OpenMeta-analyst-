@@ -349,7 +349,7 @@ diagnostic.fixed.sens.and.spec.parameters <- function(){
 
     var_order = c("conf.level", "digits", "adjust", "to")
 
-    parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
+    parameters <- Rlist("parameters"=params, "defaults"=defaults, "var_order"=var_order)
 }
 
 diagnostic.fixed.sens.and.spec.pretty.names <- function() {
@@ -517,3 +517,5 @@ diagnostic.fixed.sroc.pretty.names <- function() {
                                    is added to all two-by-two tables if at least one table contains a zero.")
                           )
 }
+
+

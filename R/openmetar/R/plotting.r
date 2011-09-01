@@ -919,15 +919,26 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
 #######################################
 #            forest plot              #
 ####################################### 
-
 forest.plot <- function(forest.data, outpath) {
   show.study.col <- forest.data$options$show.study.col
   vp.data <- forest.plot.data(forest.data, just="left")
   vp.layout <- vp.data$vp.layout
   how.wide <- vp.data$how.wide
   height <- vp.data$height
-  how.tall <- convertY(unit(rep(1, height)  , "lines") , "inches" , valueOnly=TRUE )
-  png(file=outpath, width = how.wide+1, height = height*how.tall+2 , units = "in", res = 144)                      
+  how.tall <- convertY(unit(rep(1, height)  , "lines") , "inches" , valueOnly=TRUE)
+
+  # so here we're just going to use the relatively hacky 
+  # strategy of (R-)grepping for the literal ".png"
+  # note that this means that, technically, if someone tries 
+  # to save an iamge to my.pngimg.pdf, it will save it instead
+  # as a png. on the other hand, why would someone do that?
+  if (grep(".png", outpath)){
+      png(file=outpath, width = how.wide+1, height = height*how.tall+2 , units = "in", res = 144) 
+  }
+  else{
+      pdf(file=outpath) 
+  }
+                        
   pushViewport(viewport(layout=vp.layout))
   draw.forest.plot(forest.data, vp.data)
   
