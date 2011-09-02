@@ -187,9 +187,6 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                 R routine runs the analyses appropriately and returns us nice output.
                 '''
 
-                pyqtRemoveInputHook()
-                pdb.set_trace()
-
                 for diag_metric in self.diag_metrics_to_analysis_details:
                     
                     new_str = split_fp_path[0] if len(split_fp_path) == 1 else \
@@ -207,7 +204,6 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                     param_vals["fp_outpath"] = new_str
                     param_vals["measure"] = diag_metric
 
-                    # despite looking ok here, this returns the value of the first iteration
                     cur_result = meta_py_r.run_diagnostic_ma(method, param_vals)
                     for field in result.keys():
                         for val in cur_result[field].keys():
