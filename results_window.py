@@ -12,7 +12,7 @@
 import random
 from PyQt4.Qt import *
 import pdb
-
+import os
 import ui_results_window
 import meta_py_r
 
@@ -58,7 +58,12 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
         self.images = results["images"]
         print "images returned from analytic routine: %s" % self.images
-        
+
+        self.params_paths = results["image_params_paths"]
+    
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
+
         self.image_var_names = results["image_var_names"]
         self.set_psuedo_console_text()
         self.items_to_coords = {}
@@ -84,6 +89,7 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
 
     def add_images(self):
+
         for title, image in self.images.items():
             print "title: %s; image: %s" % (title, image)
             cur_y = max(0, self.y_coord)
@@ -104,11 +110,19 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
             # arbitrary
             pixmap = pixmap.scaled(scaled_width, scaled_height, transformMode = Qt.SmoothTransformation)
             
-            img_shape = self.create_pixmap_item(pixmap, self.position())
+            # if there is a parameters object associated with this object
+            # (i.e., it is a forest plot of some variety), we pass it along
+            # to the create_pixmap_item method to for the context_menu 
+            # construction
+            params_path = None
+
+            if self.params_paths is not None and title in self.params_paths:
+                params_path = self.params_paths[title]
+
+            img_shape = self.create_pixmap_item(pixmap, self.position(), params_path=params_path)
             disp_rect = QRectF(self.x_coord, cur_y, img_shape.width(), img_shape.height()+padding)
             
-            #pyqtRemoveInputHook()
-            #pdb.set_trace()
+
             self.items_to_coords[qt_item] =  disp_rect
 
     def add_text(self):
@@ -166,7 +180,7 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         last_line = self.psuedo_console.toPlainText().split("\n")[-1]
         return str(last_line.replace(">>", "")).strip()
 
-    def create_pixmap_item(self, pixmap, position, matrix=QMatrix()):
+    def create_pixmap_item(self, pixmap, position, params_path=None, matrix=QMatrix()):
         item = QGraphicsPixmapItem(pixmap)
         self.y_coord +=item.boundingRect().size().height()
         item.setFlags(QGraphicsItem.ItemIsSelectable|
@@ -181,19 +195,43 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         
         # attach event handler for mouse-clicks, i.e., to handle
         # user right-clicks
-        #item.mousePressEvent = self._mouse_click_on_graphics_item
-        item.contextMenuEvent = self._graphics_item_context_menu
+        if params_path is not None:
+            item.contextMenuEvent = self._make_context_menu(params_path)
 
         return item.boundingRect().size()
 
-    def _graphics_item_context_menu(self, event):
+    def _make_context_menu(self, params_path):
+        def _graphics_item_context_menu(event):
+            action = QAction("save image as...", self)
+            QObject.connect(action, SIGNAL("triggered()"), lambda : self.save_image_as(params_path))
+            context_menu = QMenu(self)
+            #context_menu.addAction("save image as %s..." % params_path)
+            context_menu.addAction(action)
+            pos = event.screenPos()
+            context_menu.popup(pos)
+            event.accept()
+        return _graphics_item_context_menu
 
-        context_menu = QMenu(self)
-        context_menu.addAction("save image as...")
-        pos = event.screenPos()
-        context_menu.popup(pos)
-        event.accept()
+    def save_image_as(self, params_path):
+        
+        # note that the params object will, by convention,
+        # have the (generic) name 'plot.data' -- after this
+        # call, this object will be in the namespace
+        meta_py_r.load_plot_params(params_path)
 
+        # where to save the graphic?
+        file_path = unicode(QFileDialog.getSaveFileName(self, "OpenMeta[Analyst] -- save plot as", 
+                                                        "forest_plot.pdf"))
+
+        # now we re-generate it
+
+
+
+        ##
+        # convert the file path to R-friendly path
+        # joiners (only relevant on Windows, I believe)
+        #file_path = os.path.normpath(file_path)
+        meta_py_r.generate_forest_plot(file_path)
 
     def position(self):
         point = QPoint(self.x_coord, self.y_coord)

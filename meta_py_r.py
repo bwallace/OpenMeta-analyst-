@@ -538,21 +538,33 @@ def run_diagnostic_ma(function_name, params, res_name="result", diag_data_name="
     ro.r(r_str)
     result = ro.r("%s" % res_name)
     return parse_out_results(result)
-        
+      
+def load_plot_params(params_path):
+    ''' loads what is presumed to be .Rdata into the environment '''
+    ro.r("load('%s')" % params_path)
+
+def generate_forest_plot(file_path, params_name="plot.data"):
+    ro.r("forest.plot(%s, '%s')" % (params_name, file_path))
+
 def parse_out_results(result):
     # parse out text field(s). note that "plot names" is 'reserved', i.e., it's
     # a special field which is assumed to contain the plot variable names
     # in R (for graphics manipulation).
     text_d = {}
-    image_var_name_d = None
+    image_var_name_d, image_params_paths_d = None, None
     for text_n, text in zip(list(result.getnames())[1:], list(result)[1:]):
-        if not text_n == "plot_names":
-           text_d[text_n]=text
+        # some special cases, notably the plot names and the path for a forest
+        # plot. TODO in the case of diagnostic data, we're probably going to 
+        # need to parse out multiple forest plot param objects...
+        if text_n == "plot_names":
+            image_var_name_d = _rls_to_pyd(text)
+        elif text_n == "plot_params_paths":
+            image_params_paths_d = _rls_to_pyd(text)
         else:
-           image_var_name_d = _rls_to_pyd(text)
+            text_d[text_n]=text
 
     return {"images":_rls_to_pyd(result[0]), "image_var_names":image_var_name_d,
-                                              "texts":text_d}
+                    "texts":text_d, "image_params_paths":image_params_paths_d}
                                               
                                        
 def run_binary_fixed_meta_regression(selected_cov, bin_data_name="tmp_obj", res_name="result"):

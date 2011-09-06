@@ -130,7 +130,21 @@ binary.fixed.inv.var <- function(binary.data, params){
             #  
             images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
-            results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
+
+            #####
+            # TODO here we need to:
+            #       1. save the forest.data object to a *unique* temp file
+            #           on disk
+            #       2. return the path to this saved object in the results.
+            
+            # we use the system time as our unique-enough string to store
+            # the params object
+            forest.plot.params.path <- as.character(as.numeric(Sys.time()))
+            save(plot.data, file=forest.plot.params.path)
+
+            results <- list("images"=images, "Summary"=summary.disp, 
+                            "plot_names"=plot.names, 
+                            "path_to_forest_plot_params"=forest.plot.params.path)
 
         }
         else {
