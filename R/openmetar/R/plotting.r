@@ -932,11 +932,11 @@ forest.plot <- function(forest.data, outpath) {
   # note that this means that, technically, if someone tries 
   # to save an iamge to my.pngimg.pdf, it will save it instead
   # as a png. on the other hand, why would someone do that?
-  if (grep(".png", outpath)){
+  if (length(grep(".png", outpath)) != 0){
       png(file=outpath, width = how.wide+1, height = height*how.tall+2 , units = "in", res = 144) 
   }
   else{
-      pdf(file=outpath) 
+      pdf(file=outpath, width = how.wide+1, height = height*how.tall+2) 
   }
                         
   pushViewport(viewport(layout=vp.layout))

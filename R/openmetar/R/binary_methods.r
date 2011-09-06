@@ -131,20 +131,13 @@ binary.fixed.inv.var <- function(binary.data, params){
             images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
 
-            #####
-            # TODO here we need to:
-            #       1. save the forest.data object to a *unique* temp file
-            #           on disk
-            #       2. return the path to this saved object in the results.
-            
             # we use the system time as our unique-enough string to store
             # the params object
-            forest.plot.params.path <- as.character(as.numeric(Sys.time()))
-            save(plot.data, file=forest.plot.params.path)
-
+            forest.plot.params.path <- save.plot.data(plot.data)
+            plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
             results <- list("images"=images, "Summary"=summary.disp, 
                             "plot_names"=plot.names, 
-                            "path_to_forest_plot_params"=forest.plot.params.path)
+                            "plot_params_paths"=plot.params.paths)
 
         }
         else {
@@ -219,16 +212,22 @@ binary.fixed.mh <- function(binary.data, params){
             plot.data <- create.plot.data.binary(binary.data, params, res)
             forest.plot(forest.data=plot.data, outpath=forest.path)
     
-        #
-        # Now we package the results in a dictionary (technically, a named 
-        # vector). In particular, there are two fields that must be returned; 
-        # a dictionary of images (mapping titles to image paths) and a list of texts
-        # (mapping titles to pretty-printed text). In this case we have only one 
-        # of each. 
-        #     
+            #
+            # Now we package the results in a dictionary (technically, a named 
+            # vector). In particular, there are two fields that must be returned; 
+            # a dictionary of images (mapping titles to image paths) and a list of texts
+            # (mapping titles to pretty-printed text). In this case we have only one 
+            # of each. 
+            #     
             images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
-            results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
+
+            # dump the forest plot params to disk; return path to
+            # this .Rdata for later use
+            forest.plot.params.path <- save.plot.data(plot.data)
+            plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+            results <- list("images"=images, "Summary"=summary.disp, 
+                            "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)
         }
         else {
             results <- list("Summary"=summary.disp)
@@ -314,16 +313,23 @@ binary.fixed.peto <- function(binary.data, params){
             plot.data <- create.plot.data.binary(binary.data, params, res)
             forest.plot(forest.data=plot.data, outpath=forest.path)
     
-        #
-        # Now we package the results in a dictionary (technically, a named 
-        # vector). In particular, there are two fields that must be returned; 
-        # a dictionary of images (mapping titles to image paths) and a list of texts
-        # (mapping titles to pretty-printed text). In this case we have only one 
-        # of each. 
-        #     
+            #
+            # Now we package the results in a dictionary (technically, a named 
+            # vector). In particular, there are two fields that must be returned; 
+            # a dictionary of images (mapping titles to image paths) and a list of texts
+            # (mapping titles to pretty-printed text). In this case we have only one 
+            # of each. 
+            #     
+
+            # dump the forest plot params to disk; return path to
+            # this .Rdata for later use
+            forest.plot.params.path <- save.plot.data(plot.data)
+            plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+
             images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
-            results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
+            results <- list("images"=images, "Summary"=summary.disp, 
+                            "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)
         }
         else {
             results <- list("Summary"=summary.disp)
@@ -347,6 +353,7 @@ binary.fixed.peto.parameters <- function(){
     
     parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
 }
+
 binary.fixed.peto.pretty.names <- function() {
     pretty.names <- list("pretty.name"="Binary Fixed-Effects Peto", 
                          "description" = "Performs fixed-effects meta-analysis using the Peto method.",
@@ -418,7 +425,14 @@ binary.random <- function(binary.data, params){
         #     
         images <- c("Forest Plot"=forest.path)
         plot.names <- c("forest plot"="forest_plot")
-        results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
+
+
+        # dump the forest plot params to disk; return path to
+        # this .Rdata for later use
+        forest.plot.params.path <- save.plot.data(plot.data)
+        plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+        results <- list("images"=images, "Summary"=summary.disp, 
+                        "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)
     }
     else {
         results <- list("Summary"=summary.disp)

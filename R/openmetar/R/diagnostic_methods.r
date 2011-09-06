@@ -473,18 +473,7 @@ sens.and.spec <- function(diagnostic.data, params.sens, params.spec){
         # combine summaries for sens and spec
         summary.disp.sens <- create.summary.disp(res.sens, params.sens, model.title.sens, data.type)
         summary.disp.spec <- create.summary.disp(res.spec, params.spec, model.title.spec, data.type)
-        # attach "Sensitivity" to table titles.
-        #for (count in 1:length(summary.disp.sens$table.titles)) {
-        #  summary.disp.sens$table.titles[count] <- paste("Sensitivity ", summary.disp.sens$table.titles[count], sep="")
-        #}
-        # attach "Specificity" to table titles.
-        #for (count in 1:length(summary.disp.spec$table.titles)) {
-        #  summary.disp.spec$table.titles[count] <- paste("Specificity ", summary.disp.spec$table.titles[count], sep="")
-        #}
-        #table.titles<-c(summary.disp.sens$table.titles,summary.disp.spec$table.titles)
-        #arrays<-c(summary.disp.sens$arrays,summary.disp.spec$arrays)
-        #MAResults<-c(summary.disp.sens$MAResults,summary.disp.spec$MAResults)
-        #summary.disp <- list(model.title=model.title, table.titles=table.titles, arrays=arrays, MAResults=MAResults)
+
         #class(summary.disp) <- "summary.display"
         forest.path <- paste(params.sens$fp_outpath, sep="")
         plot.data.sens <- create.plot.data.diagnostic(diagnostic.data.sens, params.sens, res.sens)
@@ -566,19 +555,7 @@ plr.and.nlr <- function(diagnostic.data, params.plr, params.nlr){
         # combine summaries for plr and nlr
         summary.disp.plr <- create.summary.disp(res.plr, params.plr, model.title.plr, data.type)
         summary.disp.nlr <- create.summary.disp(res.nlr, params.nlr, model.title.nlr, data.type)
-        # attach "Sensitivity" to table titles.
-        #for (count in 1:length(summary.disp.sens$table.titles)) {
-        #  summary.disp.sens$table.titles[count] <- paste("Sensitivity ", summary.disp.sens$table.titles[count], sep="")
-        #}
-        # attach "Specificity" to table titles.
-        #for (count in 1:length(summary.disp.spec$table.titles)) {
-        #  summary.disp.spec$table.titles[count] <- paste("Specificity ", summary.disp.spec$table.titles[count], sep="")
-        #}
-        #table.titles<-c(summary.disp.sens$table.titles,summary.disp.spec$table.titles)
-        #arrays<-c(summary.disp.sens$arrays,summary.disp.spec$arrays)
-        #MAResults<-c(summary.disp.sens$MAResults,summary.disp.spec$MAResults)
-        #summary.disp <- list(model.title=model.title, table.titles=table.titles, arrays=arrays, MAResults=MAResults)
-        #class(summary.disp) <- "summary.display"
+
         forest.path <- paste(params.plr$fp_outpath, sep="")
         plot.data.plr <- create.plot.data.diagnostic(diagnostic.data.plr, params.plr, res.plr)
         plot.data.nlr <- create.plot.data.diagnostic(diagnostic.data.nlr, params.nlr, res.nlr)
