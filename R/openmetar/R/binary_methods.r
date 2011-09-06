@@ -202,7 +202,8 @@ binary.fixed.mh <- function(binary.data, params){
     else{
         res<-rma.mh(ai=binary.data@g1O1, bi=binary.data@g1O2, 
                                 ci=binary.data@g2O1, di=binary.data@g2O2, slab=binary.data@study.names,
-                                level=params$conf.level, digits=params$digits, measure=params$measure) 
+                                level=params$conf.level, digits=params$digits, measure=params$measure,
+                                add=c(params$adjust, 0), to=c(params$to, "none")) 
         #                        
         # Create list to display summary of results
         #
@@ -213,8 +214,11 @@ binary.fixed.mh <- function(binary.data, params){
         # generate forest plot
         #
         if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
-            binary.data <- compute.bin.point.estimates(binary.data, params)
-            # compute point estimates for plot.data in case they are missing
+            if (is.null(binary.data@y) || is.null(binary.data@SE)) {
+                binary.data <- compute.bin.point.estimates(binary.data, params)
+                # compute point estimates for plot.data in case they are missing
+            }
+            
             forest.path <- paste(params$fp_outpath, sep="")
             plot.data <- create.plot.data.binary(binary.data, params, res)
             forest.plot(forest.data=plot.data, outpath=forest.path)

@@ -1146,7 +1146,7 @@ draw.forest.plot <- function(forest.data, vp.data){
 #######################################
  
 two.forest.plots <- function(forest.data1, forest.data2, outpath) {
-   # draw two forest plots side by side.
+   # draw two forest plots side by side. Called by side.by.side.plots.
    vp.data1 <- forest.plot.data(forest.data1, just="left")     
    vp.data2 <- forest.plot.data(forest.data2, just="right")
    vp.layout1 <- vp.data1$vp.layout
