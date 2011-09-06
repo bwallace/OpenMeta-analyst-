@@ -122,6 +122,7 @@ create.summary.disp <- function(res, params, model.title, data.type) {
     } else if (metric.is.logit.scale(params$measure)) {
         scale.str <- "logit"
     }
+    tau2 <- round(res$tau2, digits=params$digits)
     degf <- res$k - 1
     QLabel =  paste("Q(df=", degf, ")", sep="")
     if (!is.null(res$QE)) {
@@ -153,11 +154,15 @@ create.summary.disp <- function(res, params, model.title, data.type) {
     lb.disp <- round(eval(call(transform.name, params$measure))$display.scale(res$ci.lb), digits=params$digits)
     ub.disp <- round(eval(call(transform.name, params$measure))$display.scale(res$ci.ub), digits=params$digits)
     se <- round(res$se, digits=params$digits)
-
+   
     res.array <- array(c("Estimate", y.disp, "Lower bound", lb.disp,
                      "Upper bound", ub.disp, "Std. error", se, "p-Value", pVal, "Z-Value", zVal),  
                      dim=c(2,6))
-    het.array <-  array(c(QLabel, QE, "Het. p-Value", QEp, "I^2", I2), dim=c(2,3))
+    if (res$method=="FE") {
+        het.array <-  array(c(QLabel, QE, "Het. p-Value", QEp, "I^2", I2), dim=c(2,3)) 
+    } else {    
+        het.array <-  array(c("tau^2", tau2, QLabel, QE, "Het. p-Value", QEp, "I^2", I2), dim=c(2,4))
+    }
     class(het.array) <- "summary.data"
     het.title <- "  Heterogeneity"
    
