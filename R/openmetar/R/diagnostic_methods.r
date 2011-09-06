@@ -489,21 +489,21 @@ side.by.side.plots <- function(diagnostic.data, params.left, params.right){
     } else {
         params.left$fp_show_col1 <- 'TRUE'
         params.right$fp_show_col1 <- 'FALSE'
-        diagnostic.data.sens <- compute.diag.point.estimates(diagnostic.data, params.left)
-        diagnostic.data.spec <- compute.diag.point.estimates(diagnostic.data, params.right)
-        res.sens<-rma.uni(yi=diagnostic.data.sens@y, sei=diagnostic.data.sens@SE, 
-                     slab=diagnostic.data.sens@study.names,
+        diagnostic.data.left <- compute.diag.point.estimates(diagnostic.data, params.left)
+        diagnostic.data.right <- compute.diag.point.estimates(diagnostic.data, params.right)
+        res.left<-rma.uni(yi=diagnostic.data.left@y, sei=diagnostic.data.left@SE, 
+                     slab=diagnostic.data.left@study.names,
                      method="FE", level=params.left$conf.level,
                      digits=params.left$digits)
-        res.spec<-rma.uni(yi=diagnostic.data.spec@y, sei=diagnostic.data.spec@SE, 
-                     slab=diagnostic.data.spec@study.names,
+        res.right<-rma.uni(yi=diagnostic.data.right@y, sei=diagnostic.data.right@SE, 
+                     slab=diagnostic.data.right@study.names,
                      method="FE", level=params.right$conf.level,
                      digits=params.right$digits)             
         
         forest.path <- paste(params.left$fp_outpath, sep="")
-        plot.data.sens <- create.plot.data.diagnostic(diagnostic.data.sens, params.left, res.sens)
-        plot.data.spec <- create.plot.data.diagnostic(diagnostic.data.spec, params.right, res.spec)
-        two.forest.plots(plot.data.sens, plot.data.spec, outpath=forest.path)
+        plot.data.left <- create.plot.data.diagnostic(diagnostic.data.left, params.left, res.left)
+        plot.data.right <- create.plot.data.diagnostic(diagnostic.data.right, params.right, res.right)
+        two.forest.plots(plot.data.left, plot.data.right, outpath=forest.path)
         #
         # Now we package the results in a dictionary (technically, a named
         # vector). In particular, there are two fields that must be returned;
@@ -516,6 +516,33 @@ side.by.side.plots <- function(diagnostic.data, params.left, params.right){
         results <- list("images"=images, "plot.names"=plot.names)
     }
     results
+}
+
+sens.and.spec.parameters <- function(){
+    # parameters
+    apply_adjustment_to = c("only0", "all")
+
+    params <- list("conf.level"="float", "digits"="float",
+                            "adjust"="float", "to"=apply_adjustment_to)
+
+    # default values
+    defaults <- list("conf.level"=95, "digits"=3, "adjust"=.5, "to"="only0")
+
+    var_order = c("conf.level", "digits", "adjust", "to")
+
+    parameters <- Rlist("parameters"=params, "defaults"=defaults, "var_order"=var_order)
+}
+
+sens.and.spec.pretty.names <- function() {
+    pretty.names <- list("pretty.name"="Diagnostic Fixed-Effects Sensitivity and Specificity", 
+                         "description" = "Performs fixed-effects meta-analysis of sensitivity and specificity with inverse variance weighting.",
+                         "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
+                         "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
+                         "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
+                         "to"=list("pretty.name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
+                                   is added to all cells of each two-by-two table that contains at leason one zero. When set to \"all\", the correction factor
+                                   is added to all two-by-two tables if at least one table contains a zero.")
+                          )
 }
 
 ##################################

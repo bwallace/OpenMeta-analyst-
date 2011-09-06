@@ -186,6 +186,14 @@ create.summary.disp <- function(res, params, model.title, data.type) {
     summary.disp
 }
 
+
+save.plot.data <- function(plot.data) {
+  forest.plot.params.path <- paste("r_tmp/", 
+                              as.character(as.numeric(Sys.time())), sep="")
+  save(plot.data, file=forest.plot.params.path)
+  forest.plot.params.path
+}
+
 create.regression.disp <- function(res, params) {
     # create table for diplaying summary of regression ma results
     coeffs <- round(res$b, digits=params$digits)
