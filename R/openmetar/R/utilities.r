@@ -274,7 +274,7 @@ create.overall.display <- function(res, study.names, params, model.title, data.t
     
     if (scale.str == "log" || scale.str == "logit") {
         # display and calculation scales are different - create second table data    
-       table.titles <- c("  Model Results", paste("  Point Estimates (", scale.str, " scale)", sep=""))
+       table.titles <- c("Model Results", paste("  Point Estimates (", scale.str, " scale)", sep=""))
        arrays <- list(arr1=overall.array, arr2=overall.array.calc)
        
     } else {
