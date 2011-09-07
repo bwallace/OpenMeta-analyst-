@@ -383,13 +383,13 @@ diagnostic.fixed.mh <- function(diagnostic.data, params){
             plot.data <- create.plot.data.diagnostic(diagnostic.data, params, res)
             forest.plot(forest.data=plot.data, outpath=forest.path)
     
-        #
-        # Now we package the results in a dictionary (technically, a named 
-        # vector). In particular, there are two fields that must be returned; 
-        # a dictionary of images (mapping titles to image paths) and a list of texts
-        # (mapping titles to pretty-printed text). In this case we have only one 
-        # of each. 
-        #     
+            #
+            # Now we package the results in a dictionary (technically, a named 
+            # vector). In particular, there are two fields that must be returned; 
+            # a dictionary of images (mapping titles to image paths) and a list of texts
+            # (mapping titles to pretty-printed text). In this case we have only one 
+            # of each. 
+            #     
             images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
             results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
