@@ -184,7 +184,7 @@ invlogit <- function(x) {
 #     multiple diagnostic fixed effects           #
 ###################################################
 
-multiple.diagnostic<- function(diagnostic.data, params) {
+multiple.diagnostic <- function(fname, diagnostic.data, params) {
     # wrapper for applying single.diagnostic.fixed for multiple metrics    
     metrics <- c()
     results <- list()
@@ -204,25 +204,31 @@ multiple.diagnostic<- function(diagnostic.data, params) {
         }
     }
     
-    results.sens.spec <- NULL
     metrics.reduced <- metrics
     images <- c()
     plot.names <- c()
     if (("Sens" %in% metrics) & ("Spec" %in% metrics)) {
-        results.sens.spec <- sens.and.spec(diagnostic.data, params.sens=params[[sens.index]], params.spec=params[[spec.index]])
+        results.sens.spec <- NULL
+        results.sens.spec <- side.by.side.plots(diagnostic.data, params.left=params[[sens.index]], params.right=params[[spec.index]])
         images <- c(results.sens.spec$images)
         plot_names <- c(results.sens.spec$plot_names)
+        params[[sens.index]]$create.plot <- FALSE
+        params[[spec.index]]$create.plot <- FALSE
+        # Don't create individual forest plots for sens and spec if both are checked.
         metrics.reduced <- setdiff(metrics, c("Sens", "Spec"))
         #summaries.sens.spec <- c(results$"Sensitivity Summary", results$"Specificity Summary")
-        results$"Specificity_Summary" <- results.sens.spec$"Specificity Summary"
-        results$"Specificity_Summary" <- results.sens.spec$"Specificity Summary"
+        #results$"Specificity_Summary" <- results.sens.spec$"Specificity Summary"
+        #results$"Specificity_Summary" <- results.sens.spec$"Specificity Summary"
     }
     
-    results.plr.nlr <- NULL
     if ("PLR" %in% metrics) {
-        results.plr.nlr <- plr.and.nlr(diagnostic.data, params.plr=params[[plr.index]], params.nlr=params[[nlr.index]])
+        results.plr.nlr <- NULL
+        results.plr.nlr <- side.by.side.plots(diagnostic.data, params.left=params[[plr.index]], params.right=params[[nlr.index]])
         images <- c(images, results.plr.nlr$images)
         plot.names <- c(plot.names, results.plr.nlr$plot_names)
+        params[[plr.index]]$create.plot <- FALSE
+        params[[nlr.index]]$create.plot <- FALSE
+        # Don't create individual forest plots for plr and nlr if plr is checked.
         metrics.reduced <- setdiff(metrics.reduced, c("PLR", "NLR"))
         #results$"Positive_Likelihood_Ratio_Summary" <- results.plr.nlr$"PLR Summary"
         #results$"Negative_Likelihood_Ratio_Summary" <- results.plr.nlr$"NLR Summary"
@@ -230,7 +236,8 @@ multiple.diagnostic<- function(diagnostic.data, params) {
     }
     pretty.names <- diagnostic.fixed.pretty.names()
     for (count in 1:length(params)) {
-        results.tmp <- diagnostic.fixed.inv.var(diagnostic.data, params=params[[count]])
+        results.tmp <- eval(call(fname, diagnostic.data, params[[count]]))
+        #results.tmp <- diagnostic.fixed.inv.var(diagnostic.data, params=params[[count]])
         images <- c(images, results.tmp$images)
         plot.names <- c(plot.names, results.tmp$plot_names)
         results[[count]] <- results.tmp
@@ -279,9 +286,10 @@ diagnostic.fixed.inv.var <- function(diagnostic.data, params){
         model.title <- paste("Diagnostic Fixed-Effects Model - Inverse Variance (k = ", res$k, ")", sep="")
         data.type <- "diagnostic"
         summary.disp <- create.summary.disp(res, params, model.title, data.type)
-        
+        pretty.names <- diagnostic.fixed.inv.var.pretty.names()
+        pretty.metric <- eval(parse(text=paste("pretty.names$measure$", params$measure,sep="")))
         for (count in 1:length(summary.disp$table.titles)) {
-          summary.disp$table.titles[count] <- paste(summary.disp$table.titles[count], " - ", pretty.metric, sep="")
+          summary.disp$table.titles[count] <- paste(pretty.metric, " -", summary.disp$table.titles[count], sep="")
         }
         if ((is.null(params$create.plot)) || params$create.plot == TRUE) {
           # A forest plot will be created unless
@@ -299,16 +307,14 @@ diagnostic.fixed.inv.var <- function(diagnostic.data, params){
           images <- c("Forest Plot"=forest.path)
           plot.names <- c("forest plot"="forest_plot")
           results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
-        }
+          names(results)[2] <- paste(pretty.metric, " Summary", sep="")
+       }
         else {
           results <- list("Summary"=summary.disp)
+          names(results)[1] <- paste(pretty.metric, " Summary", sep="")
         } 
     }
-    # function to pretty-print summary of results.
-    # attach "Specificity" to table titles.
-    pretty.names <- diagnostic.fixed.pretty.names()
-    pretty.metric <- eval(parse(text=paste("pretty.names$measure$",params$measure,sep="")))
-    names(results)[2] <- paste(pretty.metric, " Summary", sep="")
+    
     results
 }
 
@@ -341,11 +347,11 @@ diagnostic.fixed.inv.var.pretty.names <- function() {
                           )
 }
 
-diagnostic.fixed.is.feasible <- function(diagnostic.data, metric){
+diagnostic.fixed.inv.var.is.feasible <- function(diagnostic.data, metric){
     metric %in% c("Sens", "Spec", "PLR", "NLR", "DOR")
 }
 
-diagnostic.fixed.overall <- function(results) {
+diagnostic.fixed.inv.var.overall <- function(results) {
     # this parses out the overall from the computed result
     res <- results$Summary$MAResults
 }
@@ -357,28 +363,52 @@ diagnostic.fixed.mh <- function(diagnostic.data, params){
     # assert that the argument is the correct type
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")  
     results <- NULL
-    if (length(diagnostic.data@g1O1) == 1 || length(diagnostic.data@y) == 1){
+    if (length(diagnostic.data@TP) == 1 || length(diagnostic.data@y) == 1){
         res <- get.res.for.one.diagnostic.study(diagnostic.data, params)
          # Package res for use by overall method.
         summary.disp <- list("MAResults" = res) 
         results <- list("Summary"=summary.disp)
-    }
-    else{
-        res<-rma.mh(ai=diagnostic.data@g1O1, bi=diagnostic.data@g1O2, 
-                                ci=diagnostic.data@g2O1, di=diagnostic.data@g2O2, slab=diagnostic.data@study.names,
-                                level=params$conf.level, digits=params$digits, measure=params$measure) 
+    } 
+    else {
+        res <- switch(params$measure,
+        
+            "DOR" = rma.mh(ai=diagnostic.data@TP, bi=diagnostic.data@FN, 
+                                ci=diagnostic.data@FP, di=diagnostic.data@TN, slab=diagnostic.data@study.names,
+                                level=params$conf.level, digits=params$digits, measure="OR",
+                                add=c(params$adjust, 0), to=c(params$to, "none")),
+                                
+            "PLR" = rma.mh(ai=diagnostic.data@TP, bi=diagnostic.data@FN, 
+                                ci=diagnostic.data@FP, di=diagnostic.data@TN, slab=diagnostic.data@study.names,
+                                level=params$conf.level, digits=params$digits, measure="RR",
+                                add=c(params$adjust, 0), to=c(params$to, "none")),
+        
+            "NLR" = rma.mh(ai=diagnostic.data@FN, bi=diagnostic.data@TP, 
+                                ci=diagnostic.data@TN, di=diagnostic.data@FP, slab=diagnostic.data@study.names,
+                                level=params$conf.level, digits=params$digits, measure="RR",
+                                add=c(params$adjust, 0), to=c(params$to, "none")))
+  
+            # if measure is "NLR", switch ai with bi, and ci with di
+            # in order to use rma.mh with measure "RR"
+
         #                        
         # Create list to display summary of results
         #
         model.title <- paste("Diagnostic Fixed-Effects Model - Mantel Haenszel\n\nMetric: ", params$measure, sep="")
         data.type <- "diagnostic"
         summary.disp <- create.summary.disp(res, params, model.title, data.type)
+        pretty.names <- diagnostic.fixed.mh.pretty.names()
+        pretty.metric <- eval(parse(text=paste("pretty.names$measure$", params$measure,sep="")))
+        for (count in 1:length(summary.disp$table.titles)) {
+          summary.disp$table.titles[count] <- paste(pretty.metric, " -", summary.disp$table.titles[count], sep="")
+        }
         #
         # generate forest plot
         #
         if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
-            diagnostic.data <- compute.bin.point.estimates(diagnostic.data, params)
-            # compute point estimates for plot.data in case they are missing
+            if (is.null(diagnostic.data@y) || is.null(diagnostic.data@SE)) {
+                diagnostic.data <- compute.diag.point.estimates(diagnostic.data, params)
+                # compute point estimates for plot.data in case they are missing
+            }
             forest.path <- paste(params$fp_outpath, sep="")
             plot.data <- create.plot.data.diagnostic(diagnostic.data, params, res)
             forest.plot(forest.data=plot.data, outpath=forest.path)
@@ -393,9 +423,11 @@ diagnostic.fixed.mh <- function(diagnostic.data, params){
             images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
             results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
+            names(results)[2] <- paste(pretty.metric, " Summary", sep="")
         }
         else {
             results <- list("Summary"=summary.disp)
+            names(results)[1] <- paste(pretty.metric, " Summary", sep="")
         }    
     }
     results
@@ -425,12 +457,14 @@ diagnostic.fixed.mh.pretty.names <- function() {
                          "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
                          "to"=list("pretty.name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
                                    is added to all cells of each two-by-two table that contains at leason one zero. When set to \"all\", the correction factor
-                                   is added to all two-by-two tables if at least one table contains a zero.")
+                                   is added to all two-by-two tables if at least one table contains a zero."),
+                          "measure"=list("Sens"="Sensitivity", "Spec"="Specificity", "DOR"="Odds Ratio", "PLR"="Positive Likelihood Ratio",
+                                        "NLR"="Negative Likelihood Ratio")
                           )
 }
 
-diagnostic.fixed.mh.is.feasible <- function(diagnostic.data, metrics){
-    metrics %in% c("Sens", "Spec", "PLR", "NLR")
+diagnostic.fixed.mh.is.feasible <- function(diagnostic.data, metric){
+    metric %in% c("DOR", "PLR", "NLR")
 }
 
 diagnostic.fixed.mh.overall <- function(results) {
@@ -439,46 +473,37 @@ diagnostic.fixed.mh.overall <- function(results) {
 }
 
 ###################################################
-#            diagnostic fixed sens and spec       #
+#            create side-by-side forest.plots     #
 ###################################################
 
-sens.and.spec <- function(diagnostic.data, params.sens, params.spec){
+side.by.side.plots <- function(diagnostic.data, params.left, params.right){
+    # creates two side-by-side forest plots
     # assert that the argument is the correct type
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
     results <- NULL
     if (length(diagnostic.data@TP) == 1){
-        res <- get.res.for.one.diag.study(diagnostic.data, params.sens)
+        res <- get.res.for.one.diag.study(diagnostic.data, params.left)
         # Package res for use by overall method.
         summary.disp <- list("MAResults" = res) 
         results <- list("Summary"=summary.disp)
     } else {
-        params.sens$fp_show_col1 <- 'TRUE'
-        params.spec$fp_show_col1 <- 'FALSE'
-        diagnostic.data.sens <- compute.diag.point.estimates(diagnostic.data, params.sens)
-        diagnostic.data.spec <- compute.diag.point.estimates(diagnostic.data, params.spec)
-        res.sens<-rma.uni(yi=diagnostic.data.sens@y, sei=diagnostic.data.sens@SE, 
-                     slab=diagnostic.data.sens@study.names,
-                     method="FE", level=params.sens$conf.level,
-                     digits=params.sens$digits)
-        res.spec<-rma.uni(yi=diagnostic.data.spec@y, sei=diagnostic.data.spec@SE, 
-                     slab=diagnostic.data.spec@study.names,
-                     method="FE", level=params.spec$conf.level,
-                     digits=params.spec$digits)             
+        params.left$fp_show_col1 <- 'TRUE'
+        params.right$fp_show_col1 <- 'FALSE'
+        diagnostic.data.left <- compute.diag.point.estimates(diagnostic.data, params.left)
+        diagnostic.data.right <- compute.diag.point.estimates(diagnostic.data, params.right)
+        res.left<-rma.uni(yi=diagnostic.data.left@y, sei=diagnostic.data.left@SE, 
+                     slab=diagnostic.data.left@study.names,
+                     method="FE", level=params.left$conf.level,
+                     digits=params.left$digits)
+        res.right<-rma.uni(yi=diagnostic.data.right@y, sei=diagnostic.data.right@SE, 
+                     slab=diagnostic.data.right@study.names,
+                     method="FE", level=params.right$conf.level,
+                     digits=params.right$digits)             
         
-        # Create list to display summary of results
-        
-        model.title.sens <- paste("Diagnostic Sensitivity Fixed-Effects Model", sep="")
-        model.title.spec <- paste("Diagnostic Specificity Fixed-Effects Model", sep="")
-        data.type <- "diagnostic"
-        # combine summaries for sens and spec
-        summary.disp.sens <- create.summary.disp(res.sens, params.sens, model.title.sens, data.type)
-        summary.disp.spec <- create.summary.disp(res.spec, params.spec, model.title.spec, data.type)
-
-        #class(summary.disp) <- "summary.display"
-        forest.path <- paste(params.sens$fp_outpath, sep="")
-        plot.data.sens <- create.plot.data.diagnostic(diagnostic.data.sens, params.sens, res.sens)
-        plot.data.spec <- create.plot.data.diagnostic(diagnostic.data.spec, params.spec, res.spec)
-        two.forest.plots(plot.data.sens, plot.data.spec, outpath=forest.path)
+        forest.path <- paste(params.left$fp_outpath, sep="")
+        plot.data.left <- create.plot.data.diagnostic(diagnostic.data.left, params.left, res.left)
+        plot.data.right <- create.plot.data.diagnostic(diagnostic.data.right, params.right, res.right)
+        two.forest.plots(plot.data.left, plot.data.right, outpath=forest.path)
         #
         # Now we package the results in a dictionary (technically, a named
         # vector). In particular, there are two fields that must be returned;
@@ -488,7 +513,7 @@ sens.and.spec <- function(diagnostic.data, params.sens, params.spec){
         #
         images <- c("Forest Plot"=forest.path)
         plot.names <- c("forest plot"="forest_plot")
-        results <- list("images"=images, "Sensitivity Summary"=summary.disp.sens, "Specificity Summary"=summary.disp.spec, "plot_names"=plot.names)
+        results <- list("images"=images, "plot.names"=plot.names)
     }
     results
 }
@@ -510,87 +535,6 @@ sens.and.spec.parameters <- function(){
 
 sens.and.spec.pretty.names <- function() {
     pretty.names <- list("pretty.name"="Diagnostic Fixed-Effects Sensitivity and Specificity", 
-                         "description" = "Performs fixed-effects meta-analysis of sensitivity and specificity with inverse variance weighting.",
-                         "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
-                         "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
-                         "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
-                         "to"=list("pretty.name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
-                                   is added to all cells of each two-by-two table that contains at leason one zero. When set to \"all\", the correction factor
-                                   is added to all two-by-two tables if at least one table contains a zero.")
-                          )
-}
-
-###################################################
-#            diagnostic fixed PLR and NLR         #
-###################################################
-
-plr.and.nlr <- function(diagnostic.data, params.plr, params.nlr){
-    # assert that the argument is the correct type
-    if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
-    results <- NULL
-    if (length(diagnostic.data@TP) == 1){
-        res <- get.res.for.one.diag.study(diagnostic.data, params.plr)
-        # Package res for use by overall method.
-        summary.disp <- list("MAResults" = res) 
-        results <- list("Summary"=summary.disp)
-    } else {
-        params.plr$fp_show_col1 <- 'TRUE'
-        params.nlr$fp_show_col1 <- 'FALSE'
-        diagnostic.data.plr <- compute.diag.point.estimates(diagnostic.data, params.plr)
-        diagnostic.data.nlr <- compute.diag.point.estimates(diagnostic.data, params.nlr)
-        res.plr<-rma.uni(yi=diagnostic.data.plr@y, sei=diagnostic.data.plr@SE, 
-                     slab=diagnostic.data.plr@study.names,
-                     method="FE", level=params.plr$conf.level,
-                     digits=params.plr$digits)
-        res.nlr<-rma.uni(yi=diagnostic.data.nlr@y, sei=diagnostic.data.nlr@SE, 
-                     slab=diagnostic.data.nlr@study.names,
-                     method="FE", level=params.nlr$conf.level,
-                     digits=params.nlr$digits)             
-        
-        # Create list to display summary of results
-        
-        model.title.plr <- paste("Positive Likelihood Ratio Fixed-Effects Model", sep="")
-        model.title.nlr <- paste("Negative Likelihood Ratio Fixed-Effects Model", sep="")
-        data.type <- "diagnostic"
-        # combine summaries for plr and nlr
-        summary.disp.plr <- create.summary.disp(res.plr, params.plr, model.title.plr, data.type)
-        summary.disp.nlr <- create.summary.disp(res.nlr, params.nlr, model.title.nlr, data.type)
-
-        forest.path <- paste(params.plr$fp_outpath, sep="")
-        plot.data.plr <- create.plot.data.diagnostic(diagnostic.data.plr, params.plr, res.plr)
-        plot.data.nlr <- create.plot.data.diagnostic(diagnostic.data.nlr, params.nlr, res.nlr)
-        two.forest.plots(plot.data.plr, plot.data.nlr, outpath=forest.path)
-        #
-        # Now we package the results in a dictionary (technically, a named
-        # vector). In particular, there are two fields that must be returned;
-        # a dictionary of images (mapping titles to image paths) and a list of texts
-        # (mapping titles to pretty-printed text). In this case we have only one
-        # of each.
-        #
-        images <- c("Forest Plot"=forest.path)
-        plot.names <- c("forest plot"="forest_plot")
-        results <- list("images"=images, "PLR Summary"=summary.disp.plr, "NLR Summary"=summary.disp.nlr, "plot_names"=plot.names)
-    }
-    results
-}
-
-plr.and.nlr.parameters <- function(){
-    # parameters
-    apply_adjustment_to = c("only0", "all")
-
-    params <- list("conf.level"="float", "digits"="float",
-                            "adjust"="float", "to"=apply_adjustment_to)
-
-    # default values
-    defaults <- list("conf.level"=95, "digits"=3, "adjust"=.5, "to"="only0")
-
-    var_order = c("conf.level", "digits", "adjust", "to")
-
-    parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
-}
-
-plr.and.nlr.pretty.names <- function() {
-    pretty.names <- list("pretty.name"="Diagnostic Fixed-Effects Positive Likelihood Ratio and Specificity", 
                          "description" = "Performs fixed-effects meta-analysis of sensitivity and specificity with inverse variance weighting.",
                          "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
                          "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
@@ -627,7 +571,11 @@ diagnostic.random <- function(diagnostic.data, params){
         model.title <- paste("Diagnostic Random-Effects Model (k = ", res$k, ")", sep="")
         data.type <- "diagnostic"
         summary.disp <- create.summary.disp(res, params, model.title, data.type)
- 
+        pretty.names <- diagnostic.random.pretty.names()
+        pretty.metric <- eval(parse(text=paste("pretty.names$measure$", params$measure,sep="")))
+        for (count in 1:length(summary.disp$table.titles)) {
+          summary.disp$table.titles[count] <- paste(pretty.metric, " -", summary.disp$table.titles[count], sep="")
+        }
         #
         # generate forest plot 
         #
@@ -646,9 +594,11 @@ diagnostic.random <- function(diagnostic.data, params){
             images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
             results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
+            names(results)[2] <- paste(pretty.metric, " Summary", sep="")
         }
         else {
             results <- list("Summary"=summary.disp)
+            names(results)[1] <- paste(pretty.metric, " Summary", sep="")
         } 
     } 
     results
@@ -675,12 +625,14 @@ diagnostic.random.pretty.names <- function() {
                          "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
                          "to"=list("pretty.name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
                                    is added to all cells of each two-by-two table that contains at leason one zero. When set to \"all\", the correction factor
-                                   is added to all two-by-two tables if at least one table contains a zero.")
+                                   is added to all two-by-two tables if at least one table contains a zero."),
+                         "measure"=list("Sens"="Sensitivity", "Spec"="Specificity", "DOR"="Odds Ratio", "PLR"="Positive Likelihood Ratio",
+                                        "NLR"="Negative Likelihood Ratio")
                          )
 }
 
-diagnostic.random.is.feasible <- function(diagnostic.data, metrics){
-   # metrics %in%         
+diagnostic.random.is.feasible <- function(diagnostic.data, metric){
+    metric %in% c("Sens", "Spec", "PLR", "NLR", "DOR")      
 }
 diagnostic.random.overall <- function(results) {
     # this parses out the overall from the computed result
