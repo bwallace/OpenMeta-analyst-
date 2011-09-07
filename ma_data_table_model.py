@@ -272,7 +272,6 @@ class DatasetModel(QAbstractTableModel):
             group_str = "-".join(self.current_txs)
         return group_str
         
-        
     def setData(self, index, value, role=Qt.EditRole):
         '''
         Implementation of the AbstractDataTable method. The view uses this method
@@ -287,6 +286,7 @@ class DatasetModel(QAbstractTableModel):
             column = index.column()
             old_val = self.data(index)
             study = self.dataset.studies[index.row()]
+
             if column in (self.NAME, self.YEAR):
                 if column == self.NAME:
                     study.name = unicode(value.toString().toUtf8(), encoding="utf8")

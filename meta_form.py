@@ -775,7 +775,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         if self.out_path is None:
             out_f = "."
             out_f = unicode(QFileDialog.getSaveFileName(self, "OpenMeta[analyst] - Save File",
-                                                                                    out_f, "open meta files: (.oma)"))
+                                                         out_f, "open meta files: (.oma)"))
             if out_f == "" or out_f == None:
                 return None
             else:
@@ -870,7 +870,7 @@ class CommandNext(QUndoCommand):
         self.undo_f()
         
 
-########################################################
+#############################################################################
 #  Unit tests! Use nose
 #           [http://somethingaboutorange.com/mrl/projects/nose] or just
 #           > easy_install nose
@@ -878,7 +878,7 @@ class CommandNext(QUndoCommand):
 #   e.g., while in this directory:
 #           > nosetests meta_form
 #
-########################################################
+##############################################################################
 def _gen_some_data():
     ''' For testing purposes. Generates a toy dataset.'''
     dataset = Dataset()

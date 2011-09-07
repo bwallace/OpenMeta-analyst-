@@ -16,6 +16,14 @@ from PyQt4.Qt import *
 import binary_data_form
 import continuous_data_form
 
+# it's a questionable practice to import the
+# underlying model into the view, but sometimes
+# it's easiest to manipulate the model directly
+# on interaction rather than that tabe_model
+# intermediary 
+import ma_dataset
+from ma_dataset import *
+
 class MADataTable(QtGui.QTableView):
 
     def __init__(self, parent=None):
@@ -88,6 +96,7 @@ class MADataTable(QtGui.QTableView):
         selected_indexes = self.selectionModel().selectedIndexes()
         upper_left_index, lower_right_index = (self._upper_left(selected_indexes),
                                                self._lower_right(selected_indexes))
+
         self.paste_from_clipboard(upper_left_index)                                      
                                                
     def row_header_clicked(self, row):
@@ -172,7 +181,7 @@ class MADataTable(QtGui.QTableView):
         studies_pre_paste = list(self.model().dataset.studies)
         lower_right_index = self.model().createIndex(lower_row-1, lower_col-1)
         old_content = self._str_to_matrix(self.copy_contents_in_range(upper_left_index, lower_right_index, to_clipboard=False))
-
+        
         print "old content: %s" % old_content
         print "new content: %s" % new_content
         print "upper left index:"
@@ -239,6 +248,7 @@ class MADataTable(QtGui.QTableView):
             cur_row_count = self.model().rowCount()
             if  cur_row_count <= origin_row + src_row:
                 self._add_new_row()
+             
             for src_col in range(len(source_content[0])):
                 try:
                     # note that we treat all of the data pasted as
@@ -324,6 +334,33 @@ class MADataTable(QtGui.QTableView):
             return lower_right
         return None
 
+    def _add_studies_if_necessary(self, upper_left_index, content):
+        '''
+        if there are not enough studies to contain the content, this will 
+        add them.
+        '''
+        origin_row, origin_col = upper_left_index.row(), upper_left_index.column()
+        num_existing_studies = len(self.model().dataset)
+
+        num_to_add = len(content) - num_existing_studies - origin_row
+
+        last_id = -1
+        for i in range(num_to_add):
+            # first let's give this a default study name, in case
+            # none has been provided
+            tmp_study_name = "study %s" % (num_existing_studies + i)
+            study_index = self.model().createIndex(num_existing_studies + i, self.model().NAME)
+            study_id = self.model().dataset.max_study_id()+1
+            new_study = Study(study_id)
+            self.model().dataset.add_study(new_study)
+
+        # now append a blank study if studies were added.
+        if num_to_add > 0:
+            new_study = Study(self.model().dataset.max_study_id()+1)
+            self.model().dataset.add_study(new_study)
+            self.model().dataset.study_auto_added = int(new_study.id)
+
+        self.model().reset()
 
 class CommandCellEdit(QUndoCommand):
     '''
@@ -408,19 +445,27 @@ class CommandPaste(QUndoCommand):
         self.upper_left_coord = upper_left_coord
         self.old_column_widths = old_col_widths
         self.ma_data_table_view = ma_data_table_view
-        self.old_studies = old_studies
+        #self.old_studies = copy.deepcopy(old_studies)
         self.added_study = None
 
+
     def redo(self):
+        # cache the original dataset
+        self.original_dataset = copy.deepcopy(self.ma_data_table_view.model().dataset)
+        self.original_state_dict = copy.copy(self.ma_data_table_view.model().get_stateful_dict())
+
+        # paste the data
+        self.ma_data_table_view._add_studies_if_necessary(self.upper_left_coord, self.new_content)
         self.ma_data_table_view.paste_contents(self.upper_left_coord, self.new_content)
-        self.added_study = self.ma_data_table_view.model().study_auto_added
-        self.ma_data_table_view.model().study_auto_added = None
+
+        self.ma_data_table_view.model().reset()
 
     def undo(self):
-        self.ma_data_table_view.paste_contents(self.upper_left_coord, self.old_content)
         if self.added_study is not None:
             self.ma_data_table_view.model().remove_study(self.added_study)
-        self.ma_data_table_view.model().dataset.studies = self.old_studies
+        self.ma_data_table_view.main_gui.set_model(self.original_dataset,\
+                                 state_dict=self.original_state_dict)
+
         self.ma_data_table_view.model().reset()
 
 

@@ -396,7 +396,15 @@ class Study:
         # until there is sufficient data
         self.id = id
         self.year = year
-        self.name = name
+        self.name= name
+      
+        '''
+        if name != "":
+            self.name = name
+        else:
+            self.name = "study %s" % (id+1)
+        '''
+        
         self.N = None
         self.notes = ""
         # this dictionary maps outcome names to dictionaries
