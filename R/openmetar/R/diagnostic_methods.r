@@ -202,30 +202,39 @@ multiple.diagnostic <- function(fname, diagnostic.data, params) {
         if (params[[count]]$measure=="NLR") {
             nlr.index <- count
         }
+        params[[count]]$create.plot <- TRUE
     }
     
+    pretty.names<-eval(call(paste(fname,".pretty.names",sep="")))
     metrics.reduced <- metrics
     images <- c()
     plot.names <- c()
+    plot.params.paths <- c()
+    results <- list()
     if (("Sens" %in% metrics) & ("Spec" %in% metrics)) {
         results.sens.spec <- NULL
         results.sens.spec <- side.by.side.plots(diagnostic.data, params.left=params[[sens.index]], params.right=params[[spec.index]])
-        images <- c(results.sens.spec$images)
-        plot_names <- c(results.sens.spec$plot_names)
+        images.tmp <- results.sens.spec$images
+        names(images.tmp) <- "Sensitivity and Specificity Forest Plot"
+        images <- c(images, images.tmp)
+        plot.names <- c(plot.names, results.sens.spec$plot_names)
+        plot.params.paths <- c(plot.params.paths, results.sens.spec$plot_params_paths)
+        #results <- c(results, results.sens.spec)
         params[[sens.index]]$create.plot <- FALSE
         params[[spec.index]]$create.plot <- FALSE
         # Don't create individual forest plots for sens and spec if both are checked.
         metrics.reduced <- setdiff(metrics, c("Sens", "Spec"))
-        #summaries.sens.spec <- c(results$"Sensitivity Summary", results$"Specificity Summary")
-        #results$"Specificity_Summary" <- results.sens.spec$"Specificity Summary"
-        #results$"Specificity_Summary" <- results.sens.spec$"Specificity Summary"
     }
     
     if ("PLR" %in% metrics) {
         results.plr.nlr <- NULL
         results.plr.nlr <- side.by.side.plots(diagnostic.data, params.left=params[[plr.index]], params.right=params[[nlr.index]])
-        images <- c(images, results.plr.nlr$images)
+        images.tmp <- results.plr.nlr$images
+        names(images.tmp) <- "Likelihood Ratios Forest Plot"
+        images <- c(images, images.tmp)
         plot.names <- c(plot.names, results.plr.nlr$plot_names)
+        plot.params.paths <- c(plot.params.paths, results.sens.spec$plot_params_paths)
+        # results <- c(results, results.plr.nlr)
         params[[plr.index]]$create.plot <- FALSE
         params[[nlr.index]]$create.plot <- FALSE
         # Don't create individual forest plots for plr and nlr if plr is checked.
@@ -234,17 +243,24 @@ multiple.diagnostic <- function(fname, diagnostic.data, params) {
         #results$"Negative_Likelihood_Ratio_Summary" <- results.plr.nlr$"NLR Summary"
         
     }
-    pretty.names <- diagnostic.fixed.pretty.names()
+
     for (count in 1:length(params)) {
         results.tmp <- eval(call(fname, diagnostic.data, params[[count]]))
         #results.tmp <- diagnostic.fixed.inv.var(diagnostic.data, params=params[[count]])
-        images <- c(images, results.tmp$images)
+        if (params[[count]]$create.plot==TRUE) {
+          images.tmp <- results.tmp$images
+          names(images.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params[[count]]$measure,sep=""))), " Forest Plot", sep="")
+          images <- c(images, images.tmp)
+        }
+        summary.tmp <- list("Summary"=results.tmp$Summary)
+        names(summary.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params[[count]]$measure,sep=""))), " Summary", sep="")
+        results <- c(results, summary.tmp)
         plot.names <- c(plot.names, results.tmp$plot_names)
-        results[[count]] <- results.tmp
-        names(results[count]) <- eval(parse(text=paste("pretty.names$measure$",params[[count]]$measure,sep="")))
+        plot.params.paths <- c(plot.params.paths, results.tmp$plot_params_paths)
     }
     results$images <- images
     results$plot_names <- plot.names
+    results$plot_params_paths <- plot.params.paths
     results
 }
 
@@ -306,15 +322,19 @@ diagnostic.fixed.inv.var <- function(diagnostic.data, params){
           #
           images <- c("Forest Plot"=forest.path)
           plot.names <- c("forest plot"="forest_plot")
-          results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
-          names(results)[2] <- paste(pretty.metric, " Summary", sep="")
+          
+          # we use the system time as our unique-enough string to store
+          # the params object
+          forest.plot.params.path <- save.plot.data(plot.data)
+          plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+          results <- list("images"=images, "Summary"=summary.disp, 
+                          "plot_names"=plot.names, 
+                          "plot_params_paths"=plot.params.paths)
        }
         else {
           results <- list("Summary"=summary.disp)
-          names(results)[1] <- paste(pretty.metric, " Summary", sep="")
         } 
     }
-    
     results
 }
 
@@ -422,12 +442,17 @@ diagnostic.fixed.mh <- function(diagnostic.data, params){
             #     
             images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
-            results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
-            names(results)[2] <- paste(pretty.metric, " Summary", sep="")
+            
+            # we use the system time as our unique-enough string to store
+            # the params object
+            forest.plot.params.path <- save.plot.data(plot.data)
+            plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+            results <- list("images"=images, "Summary"=summary.disp, 
+                            "plot_names"=plot.names, 
+                            "plot_params_paths"=plot.params.paths)
         }
         else {
             results <- list("Summary"=summary.disp)
-            names(results)[1] <- paste(pretty.metric, " Summary", sep="")
         }    
     }
     results
@@ -470,79 +495,6 @@ diagnostic.fixed.mh.is.feasible <- function(diagnostic.data, metric){
 diagnostic.fixed.mh.overall <- function(results) {
     # this parses out the overall from the computed result
     res <- results$Summary$MAResults
-}
-
-###################################################
-#            create side-by-side forest.plots     #
-###################################################
-
-side.by.side.plots <- function(diagnostic.data, params.left, params.right){
-    # creates two side-by-side forest plots
-    # assert that the argument is the correct type
-    if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
-    results <- NULL
-    if (length(diagnostic.data@TP) == 1){
-        res <- get.res.for.one.diag.study(diagnostic.data, params.left)
-        # Package res for use by overall method.
-        summary.disp <- list("MAResults" = res) 
-        results <- list("Summary"=summary.disp)
-    } else {
-        params.left$fp_show_col1 <- 'TRUE'
-        params.right$fp_show_col1 <- 'FALSE'
-        diagnostic.data.left <- compute.diag.point.estimates(diagnostic.data, params.left)
-        diagnostic.data.right <- compute.diag.point.estimates(diagnostic.data, params.right)
-        res.left<-rma.uni(yi=diagnostic.data.left@y, sei=diagnostic.data.left@SE, 
-                     slab=diagnostic.data.left@study.names,
-                     method="FE", level=params.left$conf.level,
-                     digits=params.left$digits)
-        res.right<-rma.uni(yi=diagnostic.data.right@y, sei=diagnostic.data.right@SE, 
-                     slab=diagnostic.data.right@study.names,
-                     method="FE", level=params.right$conf.level,
-                     digits=params.right$digits)             
-        
-        forest.path <- paste(params.left$fp_outpath, sep="")
-        plot.data.left <- create.plot.data.diagnostic(diagnostic.data.left, params.left, res.left)
-        plot.data.right <- create.plot.data.diagnostic(diagnostic.data.right, params.right, res.right)
-        two.forest.plots(plot.data.left, plot.data.right, outpath=forest.path)
-        #
-        # Now we package the results in a dictionary (technically, a named
-        # vector). In particular, there are two fields that must be returned;
-        # a dictionary of images (mapping titles to image paths) and a list of texts
-        # (mapping titles to pretty-printed text). In this case we have only one
-        # of each.
-        #
-        images <- c("Forest Plot"=forest.path)
-        plot.names <- c("forest plot"="forest_plot")
-        results <- list("images"=images, "plot.names"=plot.names)
-    }
-    results
-}
-
-sens.and.spec.parameters <- function(){
-    # parameters
-    apply_adjustment_to = c("only0", "all")
-
-    params <- list("conf.level"="float", "digits"="float",
-                            "adjust"="float", "to"=apply_adjustment_to)
-
-    # default values
-    defaults <- list("conf.level"=95, "digits"=3, "adjust"=.5, "to"="only0")
-
-    var_order = c("conf.level", "digits", "adjust", "to")
-
-    parameters <- Rlist("parameters"=params, "defaults"=defaults, "var_order"=var_order)
-}
-
-sens.and.spec.pretty.names <- function() {
-    pretty.names <- list("pretty.name"="Diagnostic Fixed-Effects Sensitivity and Specificity", 
-                         "description" = "Performs fixed-effects meta-analysis of sensitivity and specificity with inverse variance weighting.",
-                         "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
-                         "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
-                         "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
-                         "to"=list("pretty.name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
-                                   is added to all cells of each two-by-two table that contains at leason one zero. When set to \"all\", the correction factor
-                                   is added to all two-by-two tables if at least one table contains a zero.")
-                          )
 }
 
 ##################################
@@ -593,12 +545,18 @@ diagnostic.random <- function(diagnostic.data, params){
             #     
             images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
+            
+            # we use the system time as our unique-enough string to store
+            # the params object
+            forest.plot.params.path <- save.plot.data(plot.data)
+            plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+            results <- list("images"=images, "Summary"=summary.disp, 
+                            "plot_names"=plot.names, 
+                            "plot_params_paths"=plot.params.paths)
             results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
-            names(results)[2] <- paste(pretty.metric, " Summary", sep="")
         }
         else {
             results <- list("Summary"=summary.disp)
-            names(results)[1] <- paste(pretty.metric, " Summary", sep="")
         } 
     } 
     results
@@ -679,6 +637,14 @@ diagnostic.fixed.sroc <- function(diagnostic.data, params){
     #
     images <- c("SROC"=sroc.path)
     plot.names <- c("sroc"="sroc")
+    
+    # we use the system time as our unique-enough string to store
+    # the params object
+    forest.plot.params.path <- save.plot.data(plot.data)
+    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+    results <- list("images"=images, "Summary"=summary.disp, 
+                    "plot_names"=plot.names, 
+                    "plot_params_paths"=plot.params.paths)
     results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
     results
 }
@@ -702,6 +668,92 @@ diagnostic.fixed.sroc.parameters <- function(){
 diagnostic.fixed.sroc.pretty.names <- function() {
     pretty.names <- list("pretty.name"="Diagnostic fixed SROC", 
                          "description" = "Plots diagonostic SROC.",
+                         "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
+                         "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
+                         "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
+                         "to"=list("pretty.name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
+                                   is added to all cells of each two-by-two table that contains at leason one zero. When set to \"all\", the correction factor
+                                   is added to all two-by-two tables if at least one table contains a zero.")
+                          )
+}
+
+###################################################
+#            create side-by-side forest.plots     #
+###################################################
+
+side.by.side.plots <- function(diagnostic.data, params.left, params.right){
+    # creates two side-by-side forest plots
+    # assert that the argument is the correct type
+    if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
+    results <- NULL
+    if (length(diagnostic.data@TP) == 1){
+        res <- get.res.for.one.diag.study(diagnostic.data, params.left)
+        # Package res for use by overall method.
+        summary.disp <- list("MAResults" = res) 
+        results <- list("Summary"=summary.disp)
+    } else {
+        params.left$fp_show_col1 <- 'TRUE'
+        params.right$fp_show_col1 <- 'FALSE'
+        diagnostic.data.left <- compute.diag.point.estimates(diagnostic.data, params.left)
+        diagnostic.data.right <- compute.diag.point.estimates(diagnostic.data, params.right)
+        res.left<-rma.uni(yi=diagnostic.data.left@y, sei=diagnostic.data.left@SE, 
+                     slab=diagnostic.data.left@study.names,
+                     method="FE", level=params.left$conf.level,
+                     digits=params.left$digits)
+        res.right<-rma.uni(yi=diagnostic.data.right@y, sei=diagnostic.data.right@SE, 
+                     slab=diagnostic.data.right@study.names,
+                     method="FE", level=params.right$conf.level,
+                     digits=params.right$digits)             
+        
+        forest.path <- paste(params.left$fp_outpath, sep="")
+        plot.data.left <- create.plot.data.diagnostic(diagnostic.data.left, params.left, res.left)
+        plot.data.right <- create.plot.data.diagnostic(diagnostic.data.right, params.right, res.right)
+        two.forest.plots(plot.data.left, plot.data.right, outpath=forest.path)
+        # combine plot.data.left and plot.data.right into single list to save
+        plot.data.left <- list("name.tmp"=plot.data.left)
+        names(plot.data.left) <- paste(params.left$measure, " data", sep="")
+        plot.data.right <- list("name.tmp"=plot.data.right)
+        names(plot.data.right) <- paste(params.right$measure, " data", sep="")
+        plot.data <- c(plot.data.left, plot.data.right)
+        #
+        # Now we package the results in a dictionary (technically, a named
+        # vector). In particular, there are two fields that must be returned;
+        # a dictionary of images (mapping titles to image paths) and a list of texts
+        # (mapping titles to pretty-printed text). In this case we have only one
+        # of each.
+        #
+        images <- c("Forest Plot"=forest.path)
+        plot.names <- c("forest plot"="forest_plot")
+        
+        # we use the system time as our unique-enough string to store
+        # the params object
+        forest.plot.params.path <- save.plot.data(plot.data)
+        plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+        results <- list("images"=images,
+                        "plot_names"=plot.names, 
+                        "plot_params_paths"=plot.params.paths)
+    }
+    results
+}
+
+side.by.side.parameters <- function(){
+    # parameters
+    apply_adjustment_to = c("only0", "all")
+
+    params <- list("conf.level"="float", "digits"="float",
+                            "adjust"="float", "to"=apply_adjustment_to)
+
+    # default values
+    defaults <- list("conf.level"=95, "digits"=3, "adjust"=.5, "to"="only0")
+
+    var_order = c("conf.level", "digits", "adjust", "to")
+
+    parameters <- Rlist("parameters"=params, "defaults"=defaults, "var_order"=var_order)
+}
+
+side.by.side.pretty.names <- function() {
+    pretty.names <- list("pretty.name"="Diagnostic Fixed-Effects Sensitivity and Specificity", 
+                         "description" = "Performs fixed-effects meta-analysis of sensitivity and specificity with inverse variance weighting.",
                          "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
                          "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
                          "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),

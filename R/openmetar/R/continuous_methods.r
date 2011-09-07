@@ -104,7 +104,7 @@ continuous.fixed <- function(cont.data, params){
         # this .Rdata for later use
         forest.plot.params.path <- save.plot.data(plot.data)
         plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
-
+        
         results <- list("images"=images, "Summary"=summary.disp, 
                         "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)
     }
@@ -184,12 +184,10 @@ continuous.random <- function(cont.data, params){
         images <- c("Forest Plot"=forest.path)
         plot.names <- c("forest plot"="forest_plot")
 
-
         # dump the forest plot params to disk; return path to
         # this .Rdata for later use
         forest.plot.params.path <- save.plot.data(plot.data)
         plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
-
         results <- list("images"=images, "Summary"=summary.disp, 
                         "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)
     }

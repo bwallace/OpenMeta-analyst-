@@ -93,7 +93,13 @@ cum.ma.binary <- function(fname, binary.data, params){
     images <- c("Cumulative Forest Plot"=forest.path)
     plot.names <- c("cumulative forest plot"="cumulative_forest_plot")
     
-    results <- list("images"=images, "Cumulative Summary"=cum.disp, "plot_names"=plot.names)
+    # we use the system time as our unique-enough string to store
+    # the params object
+    forest.plot.params.path <- save.plot.data(plot.data)
+    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+    results <- list("images"=images, "Cumulative Summary"=cum.disp, 
+                    "plot_names"=plot.names, 
+                    "plot_params_paths"=plot.params.paths)
     results
 }
 
@@ -181,8 +187,14 @@ loo.ma.binary <- function(fname, binary.data, params){
 
     images <- c("Leave-one-out Forest plot"=forest.path)
     plot.names <- c("loo forest plot"="loo_forest_plot")
-    results <- list("images"=images, "Leave-one-out Summary"=loo.disp, "plot_names"=plot.names)
-
+    
+    # we use the system time as our unique-enough string to store
+    # the params object
+    forest.plot.params.path <- save.plot.data(plot.data)
+    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+    results <- list("images"=images, "Leave-one-out Summary"=loo.disp, 
+                    "plot_names"=plot.names, 
+                    "plot_params_paths"=plot.params.paths)
     results
 }
 
@@ -260,7 +272,13 @@ cum.ma.diagnostic <- function(fname, diagnostic.data, params){
     images <- c("Cumulative Forest Plot"=forest.path)
     plot.names <- c("cumulative forest plot"="cumulative_forest_plot")
     
-    results <- list("images"=images, "Cumulative Summary"=cum.disp, "plot_names"=plot.names)
+    # we use the system time as our unique-enough string to store
+    # the params object
+    forest.plot.params.path <- save.plot.data(plot.data)
+    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+    results <- list("images"=images, "Cumulative Summary"=cum.disp, 
+                    "plot_names"=plot.names, 
+                    "plot_params_paths"=plot.params.paths)
     results
 }
 
@@ -345,8 +363,14 @@ loo.ma.diagnostic <- function(fname, diagnostic.data, params){
 
     images <- c("Leave-one-out Forest plot"=forest.path)
     plot.names <- c("loo forest plot"="loo_forest_plot")
-    results <- list("images"=images, "Leave-one-out Summary"=loo.disp, "plot_names"=plot.names)
-
+    
+    # we use the system time as our unique-enough string to store
+    # the params object
+    forest.plot.params.path <- save.plot.data(plot.data)
+    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+    results <- list("images"=images, "Leave-one-out Summary"=loo.disp, 
+                    "plot_names"=plot.names, 
+                    "plot_params_paths"=plot.params.paths)
     results
 }
 
@@ -431,7 +455,13 @@ cum.ma.continuous <- function(fname, cont.data, params){
     images <- c("Cumulative Forest Plot"=forest.path)
     plot.names <- c("cumulative forest plot"="cumulative forest_plot")
     
-    results <- list("images"=images, "Cumulative Summary"=cum.disp, "plot_names"=plot.names)
+    # we use the system time as our unique-enough string to store
+    # the params object
+    forest.plot.params.path <- save.plot.data(plot.data)
+    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+    results <- list("images"=images, "Cumulative Summary"=cum.disp, 
+                    "plot_names"=plot.names, 
+                    "plot_params_paths"=plot.params.paths)
     results
 }
 
@@ -521,7 +551,13 @@ loo.ma.continuous <- function(fname, cont.data, params){
     images <- c("Leave-one-out Forest Plot"=forest.path)
     plot.names <- c("loo forest plot"="loo_forest_plot")
     
-    results <- list("images"=images, "Leave-one-out Summary"=loo.disp, "plot_names"=plot.names)
+    # we use the system time as our unique-enough string to store
+    # the params object
+    forest.plot.params.path <- save.plot.data(plot.data)
+    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+    results <- list("images"=images, "Leave-one-out Summary"=loo.disp, 
+                    "plot_names"=plot.names, 
+                    "plot_params_paths"=plot.params.paths)
     results
 }
 
@@ -595,7 +631,13 @@ subgroup.ma.binary <- function(fname, binary.data, params){
     images <- c("Subgroups Forest Plot"=forest.path)
     plot.names <- c("subgroups forest plot"="subgroups_forest_plot")
     
-    results <- list("images"=images, "Summary"=subgroup.disp, "plot_names"=plot.names)
+    # we use the system time as our unique-enough string to store
+    # the params object
+    forest.plot.params.path <- save.plot.data(plot.data)
+    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+    results <- list("images"=images, "Subgroup Summary"=subgroup.disp, 
+                    "plot_names"=plot.names, 
+                    "plot_params_paths"=plot.params.paths)
     results
 }
 
@@ -688,7 +730,13 @@ subgroup.ma.diagnostic <- function(fname, diagnostic.data, params){
     images <- c("Subgroups Forest Plot"=forest.path)
     plot.names <- c("subgroups forest plot"="subgroups_forest_plot")
     
-    results <- list("images"=images, "Summary"=subgroup.disp, "plot_names"=plot.names)
+    # we use the system time as our unique-enough string to store
+    # the params object
+    forest.plot.params.path <- save.plot.data(plot.data)
+    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+    results <- list("images"=images, "Subgroup Summary"=subgroup.disp, 
+                    "plot_names"=plot.names, 
+                    "plot_params_paths"=plot.params.paths)
     results
 }
 
@@ -769,7 +817,14 @@ subgroup.ma.continuous <- function(fname, cont.data, params){
     #     
     images <- c("Subgroups Forest Plot"=forest.path)
     plot.names <- c("subgroups forest plot"="subgroups_forest_plot")
-    results <- list("images"=images, "Summary"=subgroup.disp, "plot_names"=plot.names)
+    
+    # we use the system time as our unique-enough string to store
+    # the params object
+    forest.plot.params.path <- save.plot.data(plot.data)
+    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+    results <- list("images"=images, "Subgroup Summary"=subgroup.disp, 
+                    "plot_names"=plot.names, 
+                    "plot_params_paths"=plot.params.paths)
     results
 }
 
