@@ -242,7 +242,7 @@ multiple.diagnostic <- function(fnames, params, diagnostic.data) {
         params[[plr.index]]$create.plot <- FALSE
         params[[nlr.index]]$create.plot <- FALSE
         # Don't create individual forest plots for plr and nlr if plr is checked.
-        metrics.reduced <- setdiff(metrics.reduced, c("PLR", "NLR")
+        metrics.reduced <- setdiff(metrics.reduced, c("PLR", "NLR"))
     }
 
     for (count in 1:length(params)) {
@@ -549,7 +549,7 @@ diagnostic.random.parameters <- function(){
 }
 
 diagnostic.random.pretty.names <- function() {
-    pretty.names <- list("pretty.name"="Diagnostic Random-Effect", 
+    pretty.names <- list("pretty.name"="Diagnostic Random-Effects", 
                          "description" = "Performs random-effects meta-analysis.",
                          "rm.method"=list("pretty.name"="Random method", "description"="Method for estimating between-studies heterogeneity"),                      
                          "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
@@ -635,7 +635,7 @@ diagnostic.fixed.sroc.parameters <- function(){
 }
 
 diagnostic.fixed.sroc.pretty.names <- function() {
-    pretty.names <- list("pretty.name"="Diagnostic fixed SROC", 
+    pretty.names <- list("pretty.name"="Diagnostic Fixed SROC", 
                          "description" = "Plots diagonostic SROC.",
                          "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
                          "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
@@ -645,6 +645,12 @@ diagnostic.fixed.sroc.pretty.names <- function() {
                                    is added to all two-by-two tables if at least one table contains a zero.")
                           )
 }
+
+
+diagnostic.fixed.sroc.is.feasible <- function(diagnostic.data, metric){
+    metric %in% c("Sens", "Spec") # really only if we're doing this jointly, of course...      
+}
+
 
 ###################################################
 #            create side-by-side forest.plots     #

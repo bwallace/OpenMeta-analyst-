@@ -80,7 +80,6 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.current_defaults = None
         self.var_order = None
         self.current_param_vals = external_params or {}
-        self.populate_cbo_box()
         
         ####
         # the following are variables for the case of diagnostic 
@@ -108,11 +107,14 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         # metrics can be selected. we handle this by allowing the 
         # user to specify different methods for different groups
         # of metrics.
-        self.sens_spec, self.lr_dor = False, False
         if self.diag_metrics is not None:
+            # these are the two 'groups' of metrics (sens/spec & DOR/LR+/-)
+            # these booleans tell us for which of these grups we're getting parameters
+            self.sens_spec = any([m in ("sens", "spec") for m in self.diag_metrics])
+            self.lr_dor = any([m in ("lr", "dor") for m in self.diag_metrics])
             self.setup_diagnostic_ui()
-            
-        
+
+        self.populate_cbo_box()
 
     def cancel(self):
         print "(cancel)"
@@ -186,6 +188,9 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                 (*including* the metric) and the analysis details. we'll assume that the
                 R routine runs the analyses appropriately and returns us nice output.
                 '''
+
+                pyqtRemoveInputHook()
+                pdb.set_trace()
 
                 for diag_metric in self.diag_metrics_to_analysis_details:
                     
@@ -293,9 +298,28 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             meta_py_r.ma_dataset_to_simple_continuous_robj(self.model, var_name=tmp_obj_name)
         elif self.data_type == "diagnostic":
             meta_py_r.ma_dataset_to_simple_diagnostic_robj(self.model, var_name=tmp_obj_name)
+
+        
+        self.available_method_d = None
+        ###
+        # in the case of diagnostic data, the is.feasible methods need also to know
+        # which metric the analysis is to be run over. here we check this. note that
+        # we're setting params for multiple metrics (e.g., sens./spec.) but the is.feasible
+        # method only wants *one* metric. thus we arbitrarily select one or the other --
+        # this is tacitly assuming that the *same* methods are feasible for, say, sens.
+        # as for spec. this is a reasonable assumption is all cases of which I'm aware, 
+        # but a more conservative/correct thing to do would be to pass in the *most restrictive*
+        # metric to the _get_available_methods_routine
+        ###
+        if self.data_type == "diagnostic":
+            metric = "Sens" if self.sens_spec else "DOR"      
+            self.available_method_d = meta_py_r.get_available_methods(for_data_type=self.data_type,\
+                                         data_obj_name=tmp_obj_name, metric=metric)
             
-        self.available_method_d = meta_py_r.get_available_methods(for_data_type=self.data_type,\
-                                     data_obj_name=tmp_obj_name)
+        else:
+            self.available_method_d = meta_py_r.get_available_methods(for_data_type=self.data_type,\
+                                         data_obj_name=tmp_obj_name)
+
         print "\n\navailable %s methods: %s" % (self.data_type, ", ".join(self.available_method_d.keys()))
 
         for method in self.available_method_d.keys():
@@ -476,8 +500,6 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
 
     def setup_diagnostic_ui(self):
-        self.sens_spec = any([m in ("sens", "spec") for m in self.diag_metrics])
-        self.lr_dor = any([m in ("lr", "dor") for m in self.diag_metrics])
 
         if self.sens_spec and self.lr_dor:
             self.buttonBox.clear()    

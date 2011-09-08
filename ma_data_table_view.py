@@ -109,7 +109,7 @@ class MADataTable(QtGui.QTableView):
         cur_effect = self.model().current_effect
         cur_group_str = self.model().get_cur_group_str()
         data_type = self.model().get_current_outcome_type()
-        
+
         ####
         # here we implement undo/redo.
         # in particular, we cache the raw data prior to editing;

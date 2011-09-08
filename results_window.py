@@ -207,7 +207,6 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
             action = QAction("save image as...", self)
             QObject.connect(action, SIGNAL("triggered()"), lambda : self.save_image_as(params_path))
             context_menu = QMenu(self)
-            #context_menu.addAction("save image as %s..." % params_path)
             context_menu.addAction(action)
             pos = event.screenPos()
             context_menu.popup(pos)
