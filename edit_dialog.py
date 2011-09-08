@@ -172,6 +172,12 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
             return None
         return self.outcome_list.model().outcome_list[index.row()]
         
+    def get_selected_covariate(self):
+        index = self.covariate_list.currentIndex()
+        if index.row() < 0:
+            return None
+        return self.covariate_list.model().covariates_list[index.row()]
+
     def remove_outcome(self):
         self.selected_outcome = self.get_selected_outcome()
         self.outcome_list.model().dataset.remove_outcome(self.selected_outcome)
@@ -240,7 +246,11 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
             self.covariate_list.model().update_covariates_list()
         
     def remove_covariate(self):
-        pass
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
+        cov_obj = self.get_selected_covariate()
+        self.covariate_list.model().dataset.remove_covariate(cov_obj)
+        self.covariate_list.model().update_covariates_list()
         
     def remove_follow_up(self):
         self.selected_follow_up = self.get_selected_follow_up()

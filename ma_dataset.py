@@ -142,7 +142,8 @@ class Dataset:
         # now remove the covariate from all of the studies
         # in the dataset
         for study in self.studies:
-            study.covariate_dict.pop(covariate.name)
+            if covariate.name in study.covariate_dict:
+                study.covariate_dict.pop(covariate.name)
         
             
     def add_covariate(self, covariate, cov_values=None):
@@ -168,15 +169,6 @@ class Dataset:
                     study.covariate_dict[covariate.name] = cov_values[study.name]
                 else:
                     study.covariate_dict[covariate.name] = None
-        
-    def remove_covariate(self, covariate_name):
-        for cov in self.covariates:
-            if cov.name == covariate_name:
-                self.covariates.remove(cov)
-                break
-                
-        for study in self.studies:
-            study.covariate_dict.pop(covariate_name)
         
             
     def get_values_for_cov(self, covariate):
@@ -404,7 +396,7 @@ class Study:
         else:
             self.name = "study %s" % (id+1)
         '''
-        
+
         self.N = None
         self.notes = ""
         # this dictionary maps outcome names to dictionaries
