@@ -181,31 +181,30 @@ invlogit <- function(x) {
 }
 
 ###################################################
-#     multiple diagnostic fixed effects           #
+#     multiple diagnostic methods                 #
 ###################################################
 
-multiple.diagnostic <- function(fname, diagnostic.data, params) {
+multiple.diagnostic <- function(diagnostic.data, fnames, params.list) {
     # wrapper for applying single.diagnostic.fixed for multiple metrics    
     metrics <- c()
     results <- list()
-    for (count in 1:length(params)) {
-        metrics <- c(metrics, params[[count]]$measure)
-        if (params[[count]]$measure=="Sens") {
+    for (count in 1:length(params.list)) {
+        metrics <- c(metrics, params.list[[count]]$measure)
+        if (params.list[[count]]$measure=="Sens") {
             sens.index <- count
         }
-        if (params[[count]]$measure=="Spec") {
+        if (params.list[[count]]$measure=="Spec") {
             spec.index <- count
         }
-        if (params[[count]]$measure=="PLR") {
+        if (params.list[[count]]$measure=="PLR") {
             plr.index <- count
         }
-        if (params[[count]]$measure=="NLR") {
+        if (params.list[[count]]$measure=="NLR") {
             nlr.index <- count
         }
-        params[[count]]$create.plot <- TRUE
+        params.list[[count]]$create.plot <- TRUE
     }
     
-    pretty.names<-eval(call(paste(fname,".pretty.names",sep="")))
     metrics.reduced <- metrics
     images <- c()
     plot.names <- c()
@@ -213,72 +212,63 @@ multiple.diagnostic <- function(fname, diagnostic.data, params) {
     results <- list()
     if (("Sens" %in% metrics) & ("Spec" %in% metrics)) {
         results.sens.spec <- NULL
-        results.sens.spec <- side.by.side.plots(diagnostic.data, params.left=params[[sens.index]], params.right=params[[spec.index]])
+        results.sens.spec <- side.by.side.plots(diagnostic.data, fname.left=fnames[sens.index], 
+                                                                 params.left=params.list[[sens.index]], 
+                                                                 fname.right=fnames[spec.index],
+                                                                 params.right=params.list[[spec.index]])
         images.tmp <- results.sens.spec$images
         names(images.tmp) <- "Sensitivity and Specificity Forest Plot"
         images <- c(images, images.tmp)
+        plot.params.paths.tmp <- results.sens.spec$plot_params_paths
+        names(plot.params.paths.tmp) <- "Sensitivity and Specificity Forest Plot"
+        plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
         plot.names <- c(plot.names, results.sens.spec$plot_names)
-        plot.params.paths <- c(plot.params.paths, results.sens.spec$plot_params_paths)
-        #results <- c(results, results.sens.spec)
-        params[[sens.index]]$create.plot <- FALSE
-        params[[spec.index]]$create.plot <- FALSE
+        params.list[[sens.index]]$create.plot <- FALSE
+        params.list[[spec.index]]$create.plot <- FALSE
         # Don't create individual forest plots for sens and spec if both are checked.
         metrics.reduced <- setdiff(metrics, c("Sens", "Spec"))
     }
     
     if ("PLR" %in% metrics) {
         results.plr.nlr <- NULL
-        results.plr.nlr <- side.by.side.plots(diagnostic.data, params.left=params[[plr.index]], params.right=params[[nlr.index]])
+        results.plr.nlr <- side.by.side.plots(diagnostic.data, fname.left=fnames[plr.index], 
+                                                               params.left=params.list[[plr.index]], 
+                                                               fname.right=fnames[nlr.index],
+                                                               params.right=params.list[[nlr.index]])
         images.tmp <- results.plr.nlr$images
         names(images.tmp) <- "Likelihood Ratios Forest Plot"
         images <- c(images, images.tmp)
+        plot.params.paths.tmp <- results.plr.nlr$plot_params_paths
+        names(plot.params.paths.tmp) <- "Likelihood Ratios Forest Plot"
+        plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
         plot.names <- c(plot.names, results.plr.nlr$plot_names)
-        plot.params.paths <- c(plot.params.paths, results.sens.spec$plot_params_paths)
-        # results <- c(results, results.plr.nlr)
-        params[[plr.index]]$create.plot <- FALSE
-        params[[nlr.index]]$create.plot <- FALSE
+        params.list[[plr.index]]$create.plot <- FALSE
+        params.list[[nlr.index]]$create.plot <- FALSE
         # Don't create individual forest plots for plr and nlr if plr is checked.
         metrics.reduced <- setdiff(metrics.reduced, c("PLR", "NLR"))
-        #results$"Positive_Likelihood_Ratio_Summary" <- results.plr.nlr$"PLR Summary"
-        #results$"Negative_Likelihood_Ratio_Summary" <- results.plr.nlr$"NLR Summary"
-        
     }
 
-    for (count in 1:length(params)) {
-        results.tmp <- eval(call(fname, diagnostic.data, params[[count]]))
-        #results.tmp <- diagnostic.fixed.inv.var(diagnostic.data, params=params[[count]])
-        if (params[[count]]$create.plot==TRUE) {
+    for (count in 1:length(params.list)) {
+        pretty.names <- eval(call(paste(fnames[count],".pretty.names",sep="")))
+        results.tmp <- eval(call(fnames[count], diagnostic.data, params.list[[count]]))
+        if (params.list[[count]]$create.plot==TRUE) {
           images.tmp <- results.tmp$images
-          names(images.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params[[count]]$measure,sep=""))), " Forest Plot", sep="")
+          names(images.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
           images <- c(images, images.tmp)
+          plot.params.paths.tmp <- results.tmp$plot_params_paths
+          names(plot.params.paths.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$", params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
+          plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
         }
         summary.tmp <- list("Summary"=results.tmp$Summary)
-        names(summary.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params[[count]]$measure,sep=""))), " Summary", sep="")
+        names(summary.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Summary", sep="")
         results <- c(results, summary.tmp)
         plot.names <- c(plot.names, results.tmp$plot_names)
-        plot.params.paths <- c(plot.params.paths, results.tmp$plot_params_paths)
     }
     results$images <- images
     results$plot_names <- plot.names
     results$plot_params_paths <- plot.params.paths
     results
 }
-
-multiple.diagnostic.params <- function(){
-    # parameters
-    apply_adjustment_to = c("only0", "all")
-
-    params <- list("conf.level"="float", "digits"="float",
-                            "adjust"="float", "to"=apply_adjustment_to)
-
-    # default values
-    defaults <- list("conf.level"=95, "digits"=3, "adjust"=.5, "to"="only0")
-
-    var_order = c("conf.level", "digits", "adjust", "to")
-
-    parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
-}
-
 
 ###################################################
 #            diagnostic fixed effects             #
@@ -553,7 +543,6 @@ diagnostic.random <- function(diagnostic.data, params){
             results <- list("images"=images, "Summary"=summary.disp, 
                             "plot_names"=plot.names, 
                             "plot_params_paths"=plot.params.paths)
-            results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
         }
         else {
             results <- list("Summary"=summary.disp)
@@ -681,7 +670,7 @@ diagnostic.fixed.sroc.pretty.names <- function() {
 #            create side-by-side forest.plots     #
 ###################################################
 
-side.by.side.plots <- function(diagnostic.data, params.left, params.right){
+side.by.side.plots <- function(diagnostic.data, fname.left, params.left, fname.right, params.right){
     # creates two side-by-side forest plots
     # assert that the argument is the correct type
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
@@ -696,17 +685,21 @@ side.by.side.plots <- function(diagnostic.data, params.left, params.right){
         params.right$fp_show_col1 <- 'FALSE'
         diagnostic.data.left <- compute.diag.point.estimates(diagnostic.data, params.left)
         diagnostic.data.right <- compute.diag.point.estimates(diagnostic.data, params.right)
-        res.left<-rma.uni(yi=diagnostic.data.left@y, sei=diagnostic.data.left@SE, 
-                     slab=diagnostic.data.left@study.names,
-                     method="FE", level=params.left$conf.level,
-                     digits=params.left$digits)
-        res.right<-rma.uni(yi=diagnostic.data.right@y, sei=diagnostic.data.right@SE, 
-                     slab=diagnostic.data.right@study.names,
-                     method="FE", level=params.right$conf.level,
-                     digits=params.right$digits)             
+        #res.left<-rma.uni(yi=diagnostic.data.left@y, sei=diagnostic.data.left@SE, 
+        #             slab=diagnostic.data.left@study.names,
+        #             method="FE", level=params.left$conf.level,
+        #             digits=params.left$digits)
+        res.tmp <- eval(call(fname.left, diagnostic.data, params.left))
+        res.left <- eval(call(paste(fname.left, ".overall", sep=""), res.tmp))
+        #res.right<-rma.uni(yi=diagnostic.data.right@y, sei=diagnostic.data.right@SE, 
+        #             slab=diagnostic.data.right@study.names,
+        #             method="FE", level=params.right$conf.level,
+        #             digits=params.right$digits)     
+        res.tmp <- eval(call(fname.right, diagnostic.data, params.right))
+        res.right <- eval(call(paste(fname.right, ".overall", sep=""), res.tmp))
         
         forest.path <- paste(params.left$fp_outpath, sep="")
-        plot.data.left <- create.plot.data.diagnostic(diagnostic.data.left, params.left, res.left)
+        plot.data.left <- create.plot.data.diagnostic(diagnostic.data, params.left, res.left)
         plot.data.right <- create.plot.data.diagnostic(diagnostic.data.right, params.right, res.right)
         two.forest.plots(plot.data.left, plot.data.right, outpath=forest.path)
         # combine plot.data.left and plot.data.right into single list to save
@@ -734,31 +727,4 @@ side.by.side.plots <- function(diagnostic.data, params.left, params.right){
                         "plot_params_paths"=plot.params.paths)
     }
     results
-}
-
-side.by.side.parameters <- function(){
-    # parameters
-    apply_adjustment_to = c("only0", "all")
-
-    params <- list("conf.level"="float", "digits"="float",
-                            "adjust"="float", "to"=apply_adjustment_to)
-
-    # default values
-    defaults <- list("conf.level"=95, "digits"=3, "adjust"=.5, "to"="only0")
-
-    var_order = c("conf.level", "digits", "adjust", "to")
-
-    parameters <- Rlist("parameters"=params, "defaults"=defaults, "var_order"=var_order)
-}
-
-side.by.side.pretty.names <- function() {
-    pretty.names <- list("pretty.name"="Diagnostic Fixed-Effects Sensitivity and Specificity", 
-                         "description" = "Performs fixed-effects meta-analysis of sensitivity and specificity with inverse variance weighting.",
-                         "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
-                         "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
-                         "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
-                         "to"=list("pretty.name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
-                                   is added to all cells of each two-by-two table that contains at leason one zero. When set to \"all\", the correction factor
-                                   is added to all two-by-two tables if at least one table contains a zero.")
-                          )
 }
