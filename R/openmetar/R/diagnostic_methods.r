@@ -183,9 +183,13 @@ invlogit <- function(x) {
 ###################################################
 #     multiple diagnostic fixed effects           #
 ###################################################
-
-multiple.diagnostic <- function(fname, diagnostic.data, params) {
-    # wrapper for applying single.diagnostic.fixed for multiple metrics    
+multiple.diagnostic <- function(fnames, params, diagnostic.data) {
+    ####
+    # fnames -- names of diagnostic meta-analytic functions to call
+    # params -- parameter lists to be passed along to the functions in
+    #              fnames
+    # diagnostic.data -- the (diagnostic data) that is to be analyzed 
+    ###
     metrics <- c()
     results <- list()
     for (count in 1:length(params)) {
@@ -238,15 +242,12 @@ multiple.diagnostic <- function(fname, diagnostic.data, params) {
         params[[plr.index]]$create.plot <- FALSE
         params[[nlr.index]]$create.plot <- FALSE
         # Don't create individual forest plots for plr and nlr if plr is checked.
-        metrics.reduced <- setdiff(metrics.reduced, c("PLR", "NLR"))
-        #results$"Positive_Likelihood_Ratio_Summary" <- results.plr.nlr$"PLR Summary"
-        #results$"Negative_Likelihood_Ratio_Summary" <- results.plr.nlr$"NLR Summary"
-        
+        metrics.reduced <- setdiff(metrics.reduced, c("PLR", "NLR")
     }
 
     for (count in 1:length(params)) {
         results.tmp <- eval(call(fname, diagnostic.data, params[[count]]))
-        #results.tmp <- diagnostic.fixed.inv.var(diagnostic.data, params=params[[count]])
+        
         if (params[[count]]$create.plot==TRUE) {
           images.tmp <- results.tmp$images
           names(images.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params[[count]]$measure,sep=""))), " Forest Plot", sep="")
@@ -264,20 +265,7 @@ multiple.diagnostic <- function(fname, diagnostic.data, params) {
     results
 }
 
-multiple.diagnostic.params <- function(){
-    # parameters
-    apply_adjustment_to = c("only0", "all")
 
-    params <- list("conf.level"="float", "digits"="float",
-                            "adjust"="float", "to"=apply_adjustment_to)
-
-    # default values
-    defaults <- list("conf.level"=95, "digits"=3, "adjust"=.5, "to"="only0")
-
-    var_order = c("conf.level", "digits", "adjust", "to")
-
-    parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
-}
 
 
 ###################################################
@@ -433,13 +421,6 @@ diagnostic.fixed.mh <- function(diagnostic.data, params){
             plot.data <- create.plot.data.diagnostic(diagnostic.data, params, res)
             forest.plot(forest.data=plot.data, outpath=forest.path)
     
-            #
-            # Now we package the results in a dictionary (technically, a named 
-            # vector). In particular, there are two fields that must be returned; 
-            # a dictionary of images (mapping titles to image paths) and a list of texts
-            # (mapping titles to pretty-printed text). In this case we have only one 
-            # of each. 
-            #     
             images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
             
@@ -536,13 +517,6 @@ diagnostic.random <- function(diagnostic.data, params){
             plot.data <- create.plot.data.diagnostic(diagnostic.data, params, res)
             forest.plot(plot.data, outpath=forest.path)
         
-            #
-            # Now we package the results in a dictionary (technically, a named 
-            # vector). In particular, there are two fields that must be returned; 
-            # a dictionary of images (mapping titles to image paths) and a list of texts
-            # (mapping titles to pretty-printed text). In this case we have only one 
-            # of each. 
-            #     
             images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
             
@@ -603,24 +577,25 @@ diagnostic.random.overall <- function(results) {
 diagnostic.fixed.sroc <- function(diagnostic.data, params){
     # assert that the argument is the correct type
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
-        # add constant to zero cells
-        data.adj <- adjust.raw.data(diagnostic.data,params)
-        # compute true positive ratio = sensitivity 
-        TPR <- data.adj$TP / (data.adj$TP + data.adj$FN)
-        # compute false positive ratio = 1 - specificity
-        FPR <- data.adj$FP / (data.adj$TN + data.adj$FP)
-        S <- logit(TPR) + logit(FPR)
-        D <- logit(TPR) - logit(FPR)
-        s.range <- list("max"=max(S), "min"=min(S))
-        if (params$sroc.weighted == "weighted") {
-            inv.var <- data.adj$TP + data.adj$FN + data.adj$FP + data.adj$TN
-            # compute total number in each study
-            res <- lm(D ~ S, weights=inv.var)
-           # weighted linear regression
-        } else {
-           res <- lm(D~S)
-           # unweighted regression 
-        }
+
+    # add constant to zero cells
+    data.adj <- adjust.raw.data(diagnostic.data,params)
+    # compute true positive ratio = sensitivity 
+    TPR <- data.adj$TP / (data.adj$TP + data.adj$FN)
+    # compute false positive ratio = 1 - specificity
+    FPR <- data.adj$FP / (data.adj$TN + data.adj$FP)
+    S <- logit(TPR) + logit(FPR)
+    D <- logit(TPR) - logit(FPR)
+    s.range <- list("max"=max(S), "min"=min(S))
+    if (params$sroc.weighted == "weighted") {
+        inv.var <- data.adj$TP + data.adj$FN + data.adj$FP + data.adj$TN
+        # compute total number in each study
+        res <- lm(D ~ S, weights=inv.var)
+       # weighted linear regression
+    } else {
+       res <- lm(D~S)
+       # unweighted regression 
+    }
     summary.disp <- "SROC Plot"
     # Create list to display summary of results
     fitted.line <- list(intercept=res$coefficients[1], slope=res$coefficients[2])
@@ -628,13 +603,7 @@ diagnostic.fixed.sroc <- function(diagnostic.data, params){
     sroc.path <- "./r_tmp/sroc.png"
     plot.data <- list("fitted.line" = fitted.line, "TPR"=TPR, "FPR"=FPR, "inv.var" = inv.var, "s.range" = s.range, "weighted"=params$sroc.weighted)
     sroc.plot(plot.data, outpath=sroc.path)
-    #
-    # Now we package the results in a dictionary (technically, a named
-    # vector). In particular, there are two fields that must be returned;
-    # a dictionary of images (mapping titles to image paths) and a list of texts
-    # (mapping titles to pretty-printed text). In this case we have only one
-    # of each.
-    #
+
     images <- c("SROC"=sroc.path)
     plot.names <- c("sroc"="sroc")
     
@@ -715,13 +684,7 @@ side.by.side.plots <- function(diagnostic.data, params.left, params.right){
         plot.data.right <- list("name.tmp"=plot.data.right)
         names(plot.data.right) <- paste(params.right$measure, " data", sep="")
         plot.data <- c(plot.data.left, plot.data.right)
-        #
-        # Now we package the results in a dictionary (technically, a named
-        # vector). In particular, there are two fields that must be returned;
-        # a dictionary of images (mapping titles to image paths) and a list of texts
-        # (mapping titles to pretty-printed text). In this case we have only one
-        # of each.
-        #
+
         images <- c("Forest Plot"=forest.path)
         plot.names <- c("forest plot"="forest_plot")
         
@@ -736,29 +699,3 @@ side.by.side.plots <- function(diagnostic.data, params.left, params.right){
     results
 }
 
-side.by.side.parameters <- function(){
-    # parameters
-    apply_adjustment_to = c("only0", "all")
-
-    params <- list("conf.level"="float", "digits"="float",
-                            "adjust"="float", "to"=apply_adjustment_to)
-
-    # default values
-    defaults <- list("conf.level"=95, "digits"=3, "adjust"=.5, "to"="only0")
-
-    var_order = c("conf.level", "digits", "adjust", "to")
-
-    parameters <- Rlist("parameters"=params, "defaults"=defaults, "var_order"=var_order)
-}
-
-side.by.side.pretty.names <- function() {
-    pretty.names <- list("pretty.name"="Diagnostic Fixed-Effects Sensitivity and Specificity", 
-                         "description" = "Performs fixed-effects meta-analysis of sensitivity and specificity with inverse variance weighting.",
-                         "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
-                         "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
-                         "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
-                         "to"=list("pretty.name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
-                                   is added to all cells of each two-by-two table that contains at leason one zero. When set to \"all\", the correction factor
-                                   is added to all two-by-two tables if at least one table contains a zero.")
-                          )
-}
