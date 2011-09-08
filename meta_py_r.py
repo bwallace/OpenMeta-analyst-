@@ -231,7 +231,6 @@ def get_method_description(method_name):
 def ma_dataset_to_binary_robj(table_model, var_name):
     pass
     
-    
 def draw_network(edge_list, unconnected_vertices, network_path = '"./r_tmp/network.png"'):
     '''
     This draws the parametric network specified by edge_list.
@@ -533,6 +532,12 @@ def _to_R_params(params):
     
     params_str = "list("+ ",".join(params_str) + ")"
     return params_str
+
+def run_diagnostic_multi(function_names, list_of_params, res_name="result", diag_data_name="tmp_obj"):
+    r_params_str = "list(%s)" % ",".join([_to_R_params(p) for p in list_of_params])
+    pyqtRemoveInputHook()
+    pdb.set_trace()
+    pass
 
 def run_diagnostic_ma(function_name, params, res_name="result", diag_data_name="tmp_obj"):
     params_str = _to_R_params(params)

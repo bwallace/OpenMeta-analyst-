@@ -18,6 +18,7 @@
 from PyQt4 import QtCore, QtGui, Qt
 from PyQt4.Qt import *
 import pdb
+import copy
 import sip
 
 import ui_ma_specs
@@ -159,20 +160,6 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                 result = meta_py_r.run_meta_method(self.meta_f_str, self.current_method, self.current_param_vals)
         elif self.data_type == "diagnostic":
             if self.meta_f_str is None:
-                #####
-                # This is somewhat hacky. We are building up a single
-                # dictionary containing results for both sens. and spec.
-                # This is constructed by parsing out the results from 
-                # individual runs.
-                #####
-
-                result = {'images':{}, 'texts':{}, 'image_var_names':{}}
-
-                # This provides us a 'base' path; from this we construc
-                # output paths for each individual forest plot (one 
-                # per diagnostic metric).
-                split_fp_path = self.current_param_vals["fp_outpath"].split(".")
-
             
                 # add the current metrics (e.g., PLR, etc.) to the method/params
                 # dictionary
@@ -188,32 +175,31 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                 (*including* the metric) and the analysis details. we'll assume that the
                 R routine runs the analyses appropriately and returns us nice output.
                 '''
+                method_names, list_of_param_vals = [], []
+                
+                #pyqtRemoveInputHook()
+                #pdb.set_trace()
 
-                pyqtRemoveInputHook()
-                pdb.set_trace()
-
-                for diag_metric in self.diag_metrics_to_analysis_details:
-                    
-                    new_str = split_fp_path[0] if len(split_fp_path) == 1 else \
-                              ".".join(split_fp_path[:-1])
-                    new_str = new_str + "_%s" % diag_metric + ".png"
-
-
-                    # build a new MetaAnalysis object with the current metric.
-                    meta_py_r.ma_dataset_to_simple_diagnostic_robj(self.model, metric=diag_metric)
-
+                ordered_metrics = ["Sens", "Spec", "NLR", "PLR", "DOR"]
+                for diag_metric in \
+                    [metric for metric in ordered_metrics if metric in self.diag_metrics_to_analysis_details]:
                     # pull out the method and parameters object specified for this
                     # metric.
                     method, param_vals = self.diag_metrics_to_analysis_details[diag_metric]
-                    # update the metric & out_str
-                    param_vals["fp_outpath"] = new_str
+                    param_vals = copy.deepcopy(param_vals)
+
+                    # update the metric 
                     param_vals["measure"] = diag_metric
 
-                    cur_result = meta_py_r.run_diagnostic_ma(method, param_vals)
-                    for field in result.keys():
-                        for val in cur_result[field].keys():
-                            result[field]["%s %s" % (diag_metric, val)] = cur_result[field][val]
-                    
+                    method_names.append(method)
+                    list_of_param_vals.append(param_vals)
+                
+
+                # create the DiagnosticData object on the R side -- this is going 
+                # to be the same for all analyses
+                meta_py_r.ma_dataset_to_simple_diagnostic_robj(self.model)
+                result = meta_py_r.run_diagnostic_multi(method_names, list_of_param_vals)
+
             else:
                 # TODO -- meta methods for diagnostic data
                 pass
