@@ -196,7 +196,7 @@ binary.fixed.mh <- function(binary.data, params){
         res<-rma.mh(ai=binary.data@g1O1, bi=binary.data@g1O2, 
                                 ci=binary.data@g2O1, di=binary.data@g2O2, slab=binary.data@study.names,
                                 level=params$conf.level, digits=params$digits, measure=params$measure,
-                                add=c(params$adjust, 0), to=c(params$to, "none")) 
+                                add=c(params$adjust, 0), to=c(as.character(params$to), "none")) 
         #                        
         # Create list to display summary of results
         #
@@ -404,43 +404,44 @@ binary.random <- function(binary.data, params){
                      slab=binary.data@study.names,
                      method=params$rm.method, level=params$conf.level,
                      digits=params$digits)
-    }
-    #                        
-    # Create list to display summary of results
-    #
-    model.title <- paste("Binary Random-Effects Model\n\nMetric: ", params$measure, sep="")
-    data.type <- "binary"
-    summary.disp <- create.summary.disp(res, params, model.title, data.type)
- 
-    #
-    # generate forest plot 
-    #
-    if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
-        forest.path <- paste(params$fp_outpath, sep="")
-        plot.data <- create.plot.data.binary(binary.data, params, res)
-        forest.plot(forest.data=plot.data, outpath=forest.path)
-        
+
+        #                        
+        # Create list to display summary of results
         #
-        # Now we package the results in a dictionary (technically, a named 
-        # vector). In particular, there are two fields that must be returned; 
-        # a dictionary of images (mapping titles to image paths) and a list of texts
-        # (mapping titles to pretty-printed text). In this case we have only one 
-        # of each. 
-        #     
-        images <- c("Forest Plot"=forest.path)
-        plot.names <- c("forest plot"="forest_plot")
+        model.title <- paste("Binary Random-Effects Model\n\nMetric: ", params$measure, sep="")
+        data.type <- "binary"
+        summary.disp <- create.summary.disp(res, params, model.title, data.type)
+ 
+        #
+        # generate forest plot 
+        #
+        if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
+           forest.path <- paste(params$fp_outpath, sep="")
+           plot.data <- create.plot.data.binary(binary.data, params, res)
+           forest.plot(forest.data=plot.data, outpath=forest.path)
+        
+           #
+           # Now we package the results in a dictionary (technically, a named 
+           # vector). In particular, there are two fields that must be returned; 
+           # a dictionary of images (mapping titles to image paths) and a list of texts
+           # (mapping titles to pretty-printed text). In this case we have only one 
+           # of each. 
+           #     
+           images <- c("Forest Plot"=forest.path)
+           plot.names <- c("forest plot"="forest_plot")
 
 
-        # dump the forest plot params to disk; return path to
-        # this .Rdata for later use
-        forest.plot.params.path <- save.plot.data(plot.data)
-        plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
-        results <- list("images"=images, "Summary"=summary.disp, 
+           # dump the forest plot params to disk; return path to
+           # this .Rdata for later use
+           forest.plot.params.path <- save.plot.data(plot.data)
+           plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+           results <- list("images"=images, "Summary"=summary.disp, 
                         "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)
+        }
+        else {
+           results <- list("Summary"=summary.disp)
+        }  
     }
-    else {
-        results <- list("Summary"=summary.disp)
-    }    
     results
 }
 

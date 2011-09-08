@@ -395,17 +395,17 @@ diagnostic.fixed.mh <- function(diagnostic.data, params){
             "DOR" = rma.mh(ai=diagnostic.data@TP, bi=diagnostic.data@FN, 
                                 ci=diagnostic.data@FP, di=diagnostic.data@TN, slab=diagnostic.data@study.names,
                                 level=params$conf.level, digits=params$digits, measure="OR",
-                                add=c(params$adjust, 0), to=c(params$to, "none")),
+                                add=c(params$adjust, 0), to=c(as.character(params$to), "none")),
                                 
             "PLR" = rma.mh(ai=diagnostic.data@TP, bi=diagnostic.data@FN, 
                                 ci=diagnostic.data@FP, di=diagnostic.data@TN, slab=diagnostic.data@study.names,
                                 level=params$conf.level, digits=params$digits, measure="RR",
-                                add=c(params$adjust, 0), to=c(params$to, "none")),
+                                add=c(params$adjust, 0), to=c(as.character(params$to), "none")),
         
             "NLR" = rma.mh(ai=diagnostic.data@FN, bi=diagnostic.data@TP, 
                                 ci=diagnostic.data@TN, di=diagnostic.data@FP, slab=diagnostic.data@study.names,
                                 level=params$conf.level, digits=params$digits, measure="RR",
-                                add=c(params$adjust, 0), to=c(params$to, "none")))
+                                add=c(params$adjust, 0), to=c(as.character(params$to), "none")))
   
             # if measure is "NLR", switch ai with bi, and ci with di
             # in order to use rma.mh with measure "RR"
