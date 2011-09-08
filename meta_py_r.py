@@ -169,7 +169,7 @@ def get_pretty_names_and_descriptions_for_params(method_name, param_list):
     
     return params_d
     
-def get_available_methods(for_data_type=None, data_obj_name=None):
+def get_available_methods(for_data_type=None, data_obj_name=None, metric=None):
     '''
     Returns a list of methods available in OpenMeta for the particular data_type
     (if one is given). Excludes "*.parameters" methods
@@ -187,6 +187,7 @@ def get_available_methods(for_data_type=None, data_obj_name=None):
         all_methods = [method for method in all_methods if method.startswith(for_data_type)]
     
     feasible_methods = dict(zip(all_methods, all_methods))
+
     # now, if a data object handle was provided, check which methods are feasible
     if data_obj_name is not None:
         # we will return a dictionary mapping pretty
@@ -199,7 +200,12 @@ def get_available_methods(for_data_type=None, data_obj_name=None):
             is_feasible = True
             is_feas_f = "%s.is.feasible" % method
             if is_feas_f in method_list:
-                is_feasible = ro.r("%s(%s)" % (is_feas_f, data_obj_name))[0]
+                # in the case of diagnostic data, we need to pass along the metric
+                # along with the data object to assess if a given method is feasible
+                if for_data_type == "diagnostic":
+                    is_feasible = ro.r("%s(%s, '%s')" % (is_feas_f, data_obj_name, metric))[0]
+                else:
+                    is_feasible = ro.r("%s(%s)" % (is_feas_f, data_obj_name))[0]
             if is_feasible:
                 # do we have a pretty name?
                 pretty_names_f = "%s.pretty.names" % method
@@ -224,7 +230,6 @@ def get_method_description(method_name):
     
 def ma_dataset_to_binary_robj(table_model, var_name):
     pass
-    
     
 def draw_network(edge_list, unconnected_vertices, network_path = '"./r_tmp/network.png"'):
     '''
@@ -527,6 +532,12 @@ def _to_R_params(params):
     
     params_str = "list("+ ",".join(params_str) + ")"
     return params_str
+
+def run_diagnostic_multi(function_names, list_of_params, res_name="result", diag_data_name="tmp_obj"):
+    r_params_str = "list(%s)" % ",".join([_to_R_params(p) for p in list_of_params])
+    pyqtRemoveInputHook()
+    pdb.set_trace()
+    pass
 
 def run_diagnostic_ma(function_name, params, res_name="result", diag_data_name="tmp_obj"):
     params_str = _to_R_params(params)

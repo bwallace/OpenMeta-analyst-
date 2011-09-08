@@ -184,8 +184,16 @@ invlogit <- function(x) {
 #     multiple diagnostic methods                 #
 ###################################################
 
-multiple.diagnostic <- function(diagnostic.data, fnames, params.list) {
+multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
     # wrapper for applying single.diagnostic.fixed for multiple metrics    
+
+    ####
+    # fnames -- names of diagnostic meta-analytic functions to call
+    # params.list -- parameter lists to be passed along to the functions in
+    #              fnames
+    # diagnostic.data -- the (diagnostic data) that is to be analyzed 
+    ###
+
     metrics <- c()
     results <- list()
     for (count in 1:length(params.list)) {
@@ -251,6 +259,7 @@ multiple.diagnostic <- function(diagnostic.data, fnames, params.list) {
     for (count in 1:length(params.list)) {
         pretty.names <- eval(call(paste(fnames[count],".pretty.names",sep="")))
         results.tmp <- eval(call(fnames[count], diagnostic.data, params.list[[count]]))
+
         if (params.list[[count]]$create.plot==TRUE) {
           images.tmp <- results.tmp$images
           names(images.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
@@ -423,13 +432,6 @@ diagnostic.fixed.mh <- function(diagnostic.data, params){
             plot.data <- create.plot.data.diagnostic(diagnostic.data, params, res)
             forest.plot(forest.data=plot.data, outpath=forest.path)
     
-            #
-            # Now we package the results in a dictionary (technically, a named 
-            # vector). In particular, there are two fields that must be returned; 
-            # a dictionary of images (mapping titles to image paths) and a list of texts
-            # (mapping titles to pretty-printed text). In this case we have only one 
-            # of each. 
-            #     
             images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
             
@@ -526,13 +528,6 @@ diagnostic.random <- function(diagnostic.data, params){
             plot.data <- create.plot.data.diagnostic(diagnostic.data, params, res)
             forest.plot(plot.data, outpath=forest.path)
         
-            #
-            # Now we package the results in a dictionary (technically, a named 
-            # vector). In particular, there are two fields that must be returned; 
-            # a dictionary of images (mapping titles to image paths) and a list of texts
-            # (mapping titles to pretty-printed text). In this case we have only one 
-            # of each. 
-            #     
             images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
             
@@ -564,7 +559,7 @@ diagnostic.random.parameters <- function(){
 }
 
 diagnostic.random.pretty.names <- function() {
-    pretty.names <- list("pretty.name"="Diagnostic Random-Effect", 
+    pretty.names <- list("pretty.name"="Diagnostic Random-Effects", 
                          "description" = "Performs random-effects meta-analysis.",
                          "rm.method"=list("pretty.name"="Random method", "description"="Method for estimating between-studies heterogeneity"),                      
                          "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
@@ -592,24 +587,25 @@ diagnostic.random.overall <- function(results) {
 diagnostic.fixed.sroc <- function(diagnostic.data, params){
     # assert that the argument is the correct type
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
-        # add constant to zero cells
-        data.adj <- adjust.raw.data(diagnostic.data,params)
-        # compute true positive ratio = sensitivity 
-        TPR <- data.adj$TP / (data.adj$TP + data.adj$FN)
-        # compute false positive ratio = 1 - specificity
-        FPR <- data.adj$FP / (data.adj$TN + data.adj$FP)
-        S <- logit(TPR) + logit(FPR)
-        D <- logit(TPR) - logit(FPR)
-        s.range <- list("max"=max(S), "min"=min(S))
-        if (params$sroc.weighted == "weighted") {
-            inv.var <- data.adj$TP + data.adj$FN + data.adj$FP + data.adj$TN
-            # compute total number in each study
-            res <- lm(D ~ S, weights=inv.var)
-           # weighted linear regression
-        } else {
-           res <- lm(D~S)
-           # unweighted regression 
-        }
+
+    # add constant to zero cells
+    data.adj <- adjust.raw.data(diagnostic.data,params)
+    # compute true positive ratio = sensitivity 
+    TPR <- data.adj$TP / (data.adj$TP + data.adj$FN)
+    # compute false positive ratio = 1 - specificity
+    FPR <- data.adj$FP / (data.adj$TN + data.adj$FP)
+    S <- logit(TPR) + logit(FPR)
+    D <- logit(TPR) - logit(FPR)
+    s.range <- list("max"=max(S), "min"=min(S))
+    if (params$sroc.weighted == "weighted") {
+        inv.var <- data.adj$TP + data.adj$FN + data.adj$FP + data.adj$TN
+        # compute total number in each study
+        res <- lm(D ~ S, weights=inv.var)
+       # weighted linear regression
+    } else {
+       res <- lm(D~S)
+       # unweighted regression 
+    }
     summary.disp <- "SROC Plot"
     # Create list to display summary of results
     fitted.line <- list(intercept=res$coefficients[1], slope=res$coefficients[2])
@@ -617,13 +613,7 @@ diagnostic.fixed.sroc <- function(diagnostic.data, params){
     sroc.path <- "./r_tmp/sroc.png"
     plot.data <- list("fitted.line" = fitted.line, "TPR"=TPR, "FPR"=FPR, "inv.var" = inv.var, "s.range" = s.range, "weighted"=params$sroc.weighted)
     sroc.plot(plot.data, outpath=sroc.path)
-    #
-    # Now we package the results in a dictionary (technically, a named
-    # vector). In particular, there are two fields that must be returned;
-    # a dictionary of images (mapping titles to image paths) and a list of texts
-    # (mapping titles to pretty-printed text). In this case we have only one
-    # of each.
-    #
+
     images <- c("SROC"=sroc.path)
     plot.names <- c("sroc"="sroc")
     
@@ -655,7 +645,7 @@ diagnostic.fixed.sroc.parameters <- function(){
 }
 
 diagnostic.fixed.sroc.pretty.names <- function() {
-    pretty.names <- list("pretty.name"="Diagnostic fixed SROC", 
+    pretty.names <- list("pretty.name"="Diagnostic Fixed SROC", 
                          "description" = "Plots diagonostic SROC.",
                          "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
                          "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
@@ -665,6 +655,12 @@ diagnostic.fixed.sroc.pretty.names <- function() {
                                    is added to all two-by-two tables if at least one table contains a zero.")
                           )
 }
+
+
+diagnostic.fixed.sroc.is.feasible <- function(diagnostic.data, metric){
+    metric %in% c("Sens", "Spec") # really only if we're doing this jointly, of course...      
+}
+
 
 ###################################################
 #            create side-by-side forest.plots     #
@@ -708,13 +704,7 @@ side.by.side.plots <- function(diagnostic.data, fname.left, params.left, fname.r
         plot.data.right <- list("name.tmp"=plot.data.right)
         names(plot.data.right) <- paste(params.right$measure, " data", sep="")
         plot.data <- c(plot.data.left, plot.data.right)
-        #
-        # Now we package the results in a dictionary (technically, a named
-        # vector). In particular, there are two fields that must be returned;
-        # a dictionary of images (mapping titles to image paths) and a list of texts
-        # (mapping titles to pretty-printed text). In this case we have only one
-        # of each.
-        #
+
         images <- c("Forest Plot"=forest.path)
         plot.names <- c("forest plot"="forest_plot")
         
