@@ -59,7 +59,9 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         self.images = results["images"]
         print "images returned from analytic routine: %s" % self.images
 
-        self.params_paths = results["image_params_paths"]
+        self.params_paths = {}
+        if "image_params_paths" in results:
+            self.params_paths = results["image_params_paths"]
     
         #pyqtRemoveInputHook()
         #pdb.set_trace()
