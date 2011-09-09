@@ -185,7 +185,7 @@ invlogit <- function(x) {
 ###################################################
 
 multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
-    # wrapper for applying single.diagnostic.fixed for multiple metrics    
+    # wrapper for applying multiple diagnostic functions and metrics    
 
     ####
     # fnames -- names of diagnostic meta-analytic functions to call
@@ -213,7 +213,6 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         params.list[[count]]$create.plot <- TRUE
     }
     
-    metrics.reduced <- metrics
     images <- c()
     plot.names <- c()
     plot.params.paths <- c()
@@ -234,7 +233,6 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         params.list[[sens.index]]$create.plot <- FALSE
         params.list[[spec.index]]$create.plot <- FALSE
         # Don't create individual forest plots for sens and spec if both are checked.
-        metrics.reduced <- setdiff(metrics, c("Sens", "Spec"))
     }
     
     if ("PLR" %in% metrics) {
@@ -253,7 +251,6 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         params.list[[plr.index]]$create.plot <- FALSE
         params.list[[nlr.index]]$create.plot <- FALSE
         # Don't create individual forest plots for plr and nlr if plr is checked.
-        metrics.reduced <- setdiff(metrics.reduced, c("PLR", "NLR"))
     }
 
     for (count in 1:length(params.list)) {
@@ -273,9 +270,8 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         results <- c(results, summary.tmp)
         plot.names <- c(plot.names, results.tmp$plot_names)
     }
-    results$images <- images
-    results$plot_names <- plot.names
-    results$plot_params_paths <- plot.params.paths
+    results.plots <- list("images"=images, "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)
+    results <- c(results, results.plots)
     results
 }
 
