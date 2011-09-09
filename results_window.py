@@ -188,7 +188,7 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         item.setFlags(QGraphicsItem.ItemIsSelectable|
                       QGraphicsItem.ItemIsMovable)
         
-        print "creating item @:\n\n%s\n\n" % position
+        print "creating item @:%s" % position
         item.setPos(position)
         item.setMatrix(matrix)
         self.scene.clearSelection()

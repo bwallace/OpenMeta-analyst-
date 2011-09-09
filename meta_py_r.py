@@ -535,9 +535,12 @@ def _to_R_params(params):
 
 def run_diagnostic_multi(function_names, list_of_params, res_name="result", diag_data_name="tmp_obj"):
     r_params_str = "list(%s)" % ",".join([_to_R_params(p) for p in list_of_params])
-    pyqtRemoveInputHook()
-    pdb.set_trace()
-    pass
+
+    ro.r("list.of.params <- %s" % r_params_str)
+    ro.r("f.names <- c(%s)" % ",".join(["'%s'" % f_name for f_name in function_names]))
+    result = ro.r("multiple.diagnostic(f.names, list.of.params, %s)" % diag_data_name)
+    
+    return parse_out_results(result)
 
 def run_diagnostic_ma(function_name, params, res_name="result", diag_data_name="tmp_obj"):
     params_str = _to_R_params(params)
@@ -561,6 +564,7 @@ def parse_out_results(result):
     # parse out text field(s). note that "plot names" is 'reserved', i.e., it's
     # a special field which is assumed to contain the plot variable names
     # in R (for graphics manipulation).
+
     text_d = {}
     image_var_name_d, image_params_paths_d = None, None
     for text_n, text in zip(list(result.getnames())[1:], list(result)[1:]):
@@ -574,6 +578,7 @@ def parse_out_results(result):
         else:
             text_d[text_n]=text
 
+    
     return {"images":_rls_to_pyd(result[0]), "image_var_names":image_var_name_d,
                     "texts":text_d, "image_params_paths":image_params_paths_d}
                                               
