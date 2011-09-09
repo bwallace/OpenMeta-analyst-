@@ -185,15 +185,12 @@ invlogit <- function(x) {
 ###################################################
 
 multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
-    # wrapper for applying single.diagnostic.fixed for multiple metrics    
-
     ####
     # fnames -- names of diagnostic meta-analytic functions to call
     # params.list -- parameter lists to be passed along to the functions in
     #              fnames
     # diagnostic.data -- the (diagnostic data) that is to be analyzed 
     ###
-
     metrics <- c()
     results <- list()
     for (count in 1:length(params.list)) {
@@ -273,9 +270,9 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         results <- c(results, summary.tmp)
         plot.names <- c(plot.names, results.tmp$plot_names)
     }
-    results$images <- images
-    results$plot_names <- plot.names
-    results$plot_params_paths <- plot.params.paths
+    results <- list("images"=images, "Summary"=results, 
+                          "plot_names"=plot.names, 
+                          "plot_params_paths"=plot.params.paths)
     results
 }
 
@@ -547,15 +544,17 @@ diagnostic.random <- function(diagnostic.data, params){
 }
 
 diagnostic.random.parameters <- function(){
-    # parameters
-    rm_method_ls <- c("HE", "DL", "SJ", "ML", "REML", "EB")
-    params <- list("rm.method"=rm_method_ls, "conf.level"="float", "digits"="float")
+    apply.adjustment.to = c("only0", "all")
+    rm.method.ls <- c("HE", "DL", "SJ", "ML", "REML", "EB")
+    params <- list("rm.method"=rm.method.ls, "conf.level"="float", "digits"="float",
+                            "adjust"="float", "to"=apply.adjustment.to)
     
     # default values
-    defaults <- list("rm.method"="DL", "conf.level"=95, "digits"=3)
+    defaults <- list("rm.method"="DL", "conf.level"=95, "digits"=3,  
+                            "adjust"=.5, "to"="only0")
     
-    var_order <- c("rm.method", "conf.level", "digits")
-    parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
+    var.order <- c("rm.method", "conf.level", "digits", "adjust", "to")
+    parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var.order)
 }
 
 diagnostic.random.pretty.names <- function() {
