@@ -494,7 +494,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
 
     def setup_diagnostic_ui(self):
-
+        ###
         # here is where we set the keys of the _to_analysis_details
         # dictionary to the metrics the user selected
         
@@ -502,13 +502,17 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         # are displayed to the user, e.g., the user selects Likelihood Ratio
         # instead of LR+/LR-. we map from the UI names to the internal names
         # here
-        metrics_to_run = []
-        for m in self.diag_metrics:
-            metrics_to_run.extend(self.DIAG_METRIC_NAMES_D[m])
+        ####
 
-        self.diag_metrics_to_analysis_details = \
-            dict(zip(metrics_to_run, [None for m in metrics_to_run]))
-            
+        # lr_dor is, by convention, the 'second screen' shown to the user
+        if len(self.diag_metrics_to_analysis_details) == 0:
+            metrics_to_run = []
+            for m in self.diag_metrics:
+                metrics_to_run.extend(self.DIAG_METRIC_NAMES_D[m])
+
+            self.diag_metrics_to_analysis_details = \
+                dict(zip(metrics_to_run, [None for m in metrics_to_run]))
+                
         if self.sens_spec and self.lr_dor:
             self.buttonBox.clear()    
             next_button = self.buttonBox.addButton(QString("next >"), 0)
