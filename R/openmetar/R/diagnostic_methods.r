@@ -270,8 +270,10 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         results <- c(results, summary.tmp)
         plot.names <- c(plot.names, results.tmp$plot_names)
     }
-    results.plots <- list("images"=images, "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)
-    results <- c(results, results.plots)
+    results <- list("images"=images, "Summary"=results,
+                          "plot_names"=plot.names,
+                          "plot_params_paths"=plot.params.paths)
+    
     results
 }
 
