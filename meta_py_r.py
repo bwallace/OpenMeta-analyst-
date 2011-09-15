@@ -291,7 +291,7 @@ def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj"):
                         % (var_name, Ns1_str, means1_str, SDs1_str, \
                             Ns2_str, means2_str, SDs2_str, \
                             ests_str, SEs_str, study_names, cov_str)
-        
+         
     else:
         print "no raw data... using effects"
         r_str = "%s <- new('ContinuousData', \
