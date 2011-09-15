@@ -123,9 +123,7 @@ class MADataTable(QtGui.QTableView):
             form =  binary_data_form.BinaryDataForm2(ma_unit, cur_txs, cur_group_str, cur_effect, parent=self)
             if form.exec_():
                 ### TODO do the same for continuous data!
-                # push the edit event
-                #pyqtRemoveInputHook()
-                #pdb.set_trace()
+                # push the edit even
                 #raw_data_edit = CommandEditRawData(ma_unit, self.model(), copy.deepcopy(cur_raw_data_dict), form.raw_data_d)
                 ma_edit = CommandEditMAUnit(self, study_index, ma_unit, old_ma_unit)
                 self.undoStack.push(ma_edit)
@@ -173,6 +171,11 @@ class MADataTable(QtGui.QTableView):
 
         clipboard = QApplication.clipboard()
         new_content = self._str_to_matrix(clipboard.text())
+
+        # fix for issue 64. excel likes to append a blank row
+        # to copied data -- we drop that here
+        if self._is_blank_row(new_content[-1]):
+            new_content = new_content[:-1]
 
         lower_row = upper_left_index.row() + len(new_content)
         lower_col = upper_left_index.column() + len(new_content[0])

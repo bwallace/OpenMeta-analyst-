@@ -394,6 +394,7 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
     # whereas QT uses UTF8. this can cause situations where
     # rpy2 throws up on this call due to it not being able
     # to parse a character. we'll encod
+
     r_str = _sanitize_for_R(r_str)
     print "executing: %s" % r_str
     ro.r(r_str)
