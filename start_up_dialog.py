@@ -74,5 +74,7 @@ class StartUp(QDialog, ui_start_up.Ui_WelcomeDialog):
         self.close()
     
     def open_dataset(self):
-        self.parent.open()
-        self.close()
+        # fix for issue #61 -keep dialog open if the 
+        # user cancels.
+        if self.parent.open():
+            self.close()

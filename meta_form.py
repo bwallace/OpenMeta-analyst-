@@ -670,8 +670,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         if file_path is None:
             file_path = unicode(QFileDialog.getOpenFileName(self, "OpenMeta[analyst] - Open File",
                                                               ".", "open meta files (*.oma)"))
-                                                              
-                                                              
+            # if the user didn't select anything, we return false.                                  
+            if file_path == "":
+                return False                                               
+
         if file_path in self.user_prefs['recent datasets']:
             # delete it; we'll re-insert it
             self.user_prefs['recent datasets'].remove(file_path)
@@ -709,6 +711,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         
         open_command = CommandGenericDo(redo_f, undo_f)
         self.tableView.undoStack.push(open_command)
+        return True
+
         
     def set_model(self, data_model, state_dict=None):
         ##
