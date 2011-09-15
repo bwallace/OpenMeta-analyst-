@@ -172,7 +172,7 @@ class MADataTable(QtGui.QTableView):
         clipboard = QApplication.clipboard()
         new_content = self._str_to_matrix(clipboard.text())
 
-        # fix for issue 64. excel likes to append a blank row
+        # fix for issue #64. excel likes to append a blank row
         # to copied data -- we drop that here
         if self._is_blank_row(new_content[-1]):
             new_content = new_content[:-1]

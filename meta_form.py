@@ -293,7 +293,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             ### get stateful dictionary here, update, pass to 
             old_state_dict = self.tableView.model().get_stateful_dict()
             new_state_dict = copy.deepcopy(old_state_dict)
-            
+             
+            # self.tableView.model().current_effect
+
+
             # update the new state dict to reflect the currently selected
             # outcomes, etc.
             new_state_dict["current_outcome"] = old_state_dict["current_outcome"]
@@ -722,8 +725,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # row is essentially a blank study. 
         add_blank_study = len(data_model) < 1
         self.model = DatasetModel(dataset=data_model, add_blank_study=add_blank_study)
-        if state_dict is not None:
-            self.model.set_state(state_dict)
+
         self._disconnections()
         if len(data_model) >= 2:
             self.enable_menu_options_that_require_dataset()
@@ -732,6 +734,14 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         
         self.tableView.setModel(self.model)
         self.model_updated()
+
+        ## moving the statefuleness 
+        # update below the model swap-out
+        # to fix issue #62
+        if state_dict is not None:
+            self.model.set_state(state_dict)
+
+        #self.model.current_effect = state_dict['current_effect']
         print "ok -- model set."
         
         
@@ -755,6 +765,11 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.tableView.resizeColumnsToContents()
         self.update_outcome_lbl()
         self.update_follow_up_label()
+        ####
+        # note that this will change the current metric!
+        # we should check here to see if the active
+        # metric is appropriate for the new model datatype
+        # and if so keep it.
         self.populate_metrics_menu()
      
         self.model.reset()
