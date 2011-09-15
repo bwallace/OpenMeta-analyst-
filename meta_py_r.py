@@ -298,6 +298,8 @@ def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj"):
                                      y=c(%s), SE=c(%s), study.names=c(%s))" \
                         % (var_name, ests_str, SEs_str, study_names)
     
+    # character encodings for R
+    r_str = _sanitize_for_R(r_str)
     print "executing: %s" % r_str
     ro.r(r_str)
     print "ok."
@@ -386,11 +388,21 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
     else:
         print "there is neither sufficient raw data nor entered effects/CIs. I cannot run an analysis."
         # @TODO complain to the user here
+    
+    ###
+    # ok, it seems R uses latin-1 for its unicode encodings,
+    # whereas QT uses UTF8. this can cause situations where
+    # rpy2 throws up on this call due to it not being able
+    # to parse a character. we'll encod
+    r_str = _sanitize_for_R(r_str)
     print "executing: %s" % r_str
     ro.r(r_str)
     print "ok."
     return r_str
 
+def _sanitize_for_R(str):
+    # may want to do something fancier in the future...
+    return str.encode('latin-1', 'ignore')
 
 def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", metric="Sens"):
     '''
@@ -446,6 +458,9 @@ def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", metric
     else:
         print "there is neither sufficient raw data nor entered effects/CIs. I cannot run an analysis."
         # @TODO complain to the user here
+    
+    # character (unicode) encodings for R
+    r_str = _sanitize_for_R(r_str)
     print "executing: %s" % r_str
     ro.r(r_str)
     print "ok."
