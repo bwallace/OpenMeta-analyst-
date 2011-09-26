@@ -398,7 +398,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                                              QTableWidgetItem(str(n2)))
             
         self.incosistent = False
-        if not any([x is None or x=="" for x in (n1, n2)]):
+        if not any([x is None or x=="" for x in (n1, n2, total_events, total_no_events)]):
             if n1 < 0 or n2 < 0 or not (n1 + n2 == total_events + total_no_events == total_total_events):
                 self._color_all()
                 self.inconsistent = True
