@@ -18,7 +18,12 @@ import meta_py_r
 
 PageSize = (612, 792)
 padding = 25
+horizontal_padding = 75
 SCALE_P = .5 # percent images are to be scaled
+
+# these are special forest plots, in that multiple parameters objects are
+# require to re-generate them (and we invoke a different method!)
+SIDE_BY_SIDE_FOREST_PLOTS = ("Likelihood Ratios", "Sensitivity and Specificity")
 
 class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
@@ -53,8 +58,6 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         self.splitter.setSizes([400, 100])
         self.y_coord = 5
         self.scene = QGraphicsScene(self)
-        self.scene.setSceneRect(0, 0, PageSize[0], PageSize[1])
-        self.graphics_view.setScene(self.scene)
 
         self.images = results["images"]
         print "images returned from analytic routine: %s" % self.images
@@ -63,17 +66,20 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         if "image_params_paths" in results:
             self.params_paths = results["image_params_paths"]
     
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
-
         self.image_var_names = results["image_var_names"]
         self.set_psuedo_console_text()
         self.items_to_coords = {}
         self.texts = results["texts"]
 
+        # first add the text to self.scene
         self.add_text()
+
+        # and now the images
         self.add_images()
-        # scroll to top
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
+        # reset the scene
+        self.graphics_view.setScene(self.scene)
         self.graphics_view.ensureVisible(QRectF(0,0,0,0))
 
 
@@ -98,7 +104,7 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
             print "cur_y: %s" % cur_y
             # first add the title
             qt_item = self.add_title(title)
-            
+
             # now the image
             pixmap = QPixmap(image)
             
@@ -109,23 +115,29 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
             scaled_width = SCALE_P*pixmap.width()
             scaled_height = SCALE_P*pixmap.height()
             
-            # arbitrary
-            pixmap = pixmap.scaled(scaled_width, scaled_height, transformMode = Qt.SmoothTransformation)
+ 
+            if scaled_width > self.scene.width():
+                self.scene.setSceneRect(0, 0, \
+                                             scaled_width+horizontal_padding, self.scene.height())
+
+
+            pixmap = pixmap.scaled(scaled_width, scaled_height, transformMode=Qt.SmoothTransformation)
             
             # if there is a parameters object associated with this object
             # (i.e., it is a forest plot of some variety), we pass it along
             # to the create_pixmap_item method to for the context_menu 
             # construction
             params_path = None
-
             if self.params_paths is not None and title in self.params_paths:
                 params_path = self.params_paths[title]
 
-            img_shape = self.create_pixmap_item(pixmap, self.position(), params_path=params_path)
-            disp_rect = QRectF(self.x_coord, cur_y, img_shape.width(), img_shape.height()+padding)
-            
+            img_shape, pos = self.create_pixmap_item(pixmap, self.position(), title, params_path=params_path)
 
-            self.items_to_coords[qt_item] =  disp_rect
+            #disp_rect = QRectF(pos[0], pos[1], \
+            #                0, self.scene.height()+img_shape.height())
+            self.items_to_coords[qt_item] = pos
+
+            #self.items_to_coords[qt_item] =  disp_rect
 
     def add_text(self):
         for title, text in self.texts.items():
@@ -136,8 +148,8 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
             qt_item = self.add_title(title)
 
             # now the text
-            text_item_rect = self.create_text_item(str(text), self.position())
-            self.items_to_coords[qt_item] =  text_item_rect
+            text_item_rect, pos = self.create_text_item(str(text), self.position())
+            self.items_to_coords[qt_item] =  pos
 
 
     def add_title(self, title):
@@ -152,13 +164,13 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         self.y_coord += padding
         self.scene.addItem(text)
         qt_item = QTreeWidgetItem(self.nav_tree, [title])
-        self.scene.setSceneRect(0, 0, PageSize[0], self.y_coord+padding)
+        self.scene.setSceneRect(0, 0, self.scene.width(), self.y_coord + padding)
         return qt_item
 
     def item_clicked(self, item, column):
         print self.items_to_coords[item]
-        #self.graphics_view.centerOn(self.x_coord, self.items_to_coords[item])
-        self.graphics_view.ensureVisible(self.items_to_coords[item])
+        #self.graphics_view.ensureVisible(self.items_to_coords[item])
+        self.graphics_view.centerOn(self.items_to_coords[item])
 
     def create_text_item(self, text, position):
         txt_item = QGraphicsTextItem(QString(text))
@@ -166,9 +178,11 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         txt_item.setTextInteractionFlags(Qt.TextEditable)
         self.scene.addItem(txt_item)
         self.y_coord +=txt_item.boundingRect().size().height()
-        self.scene.setSceneRect(0, 0, max(PageSize[0], txt_item.boundingRect().size().width()), self.y_coord+padding)
+        self.scene.setSceneRect(0, 0, max(self.scene.width(), \
+                                          txt_item.boundingRect().size().width()),\
+                                          self.y_coord+padding)
         txt_item.setPos(position)
-        return txt_item.boundingRect()
+        return (txt_item.boundingRect(), position)
 
 
     def process_console_input(self):
@@ -182,30 +196,37 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         last_line = self.psuedo_console.toPlainText().split("\n")[-1]
         return str(last_line.replace(">>", "")).strip()
 
-    def create_pixmap_item(self, pixmap, position, params_path=None, matrix=QMatrix()):
+    def create_pixmap_item(self, pixmap, position, title, params_path=None, matrix=QMatrix()):
         item = QGraphicsPixmapItem(pixmap)
-        self.y_coord +=item.boundingRect().size().height()
+        self.y_coord += item.boundingRect().size().height()
         item.setFlags(QGraphicsItem.ItemIsSelectable|
                       QGraphicsItem.ItemIsMovable)
         
+
+        self.scene.setSceneRect(0, 0, \
+                                   max(self.scene.width(), item.boundingRect().size().width()),\
+                                   self.y_coord+padding)
+
         print "creating item @:%s" % position
-        item.setPos(position)
+        
         item.setMatrix(matrix)
         self.scene.clearSelection()
         self.scene.addItem(item)
-        self.scene.setSceneRect(0, 0, PageSize[0], self.y_coord+padding)
+        item.setPos(position)
         
         # attach event handler for mouse-clicks, i.e., to handle
         # user right-clicks
         if params_path is not None:
-            item.contextMenuEvent = self._make_context_menu(params_path)
+            item.contextMenuEvent = self._make_context_menu(params_path, title)
 
-        return item.boundingRect().size()
+        return (item.boundingRect().size(), position)
 
-    def _make_context_menu(self, params_path):
+
+    def _make_context_menu(self, params_path, title):
         def _graphics_item_context_menu(event):
             action = QAction("save image as...", self)
-            QObject.connect(action, SIGNAL("triggered()"), lambda : self.save_image_as(params_path))
+            QObject.connect(action, SIGNAL("triggered()"), \
+                        lambda : self.save_image_as(params_path, title))
             context_menu = QMenu(self)
             context_menu.addAction(action)
             pos = event.screenPos()
@@ -213,26 +234,28 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
             event.accept()
         return _graphics_item_context_menu
 
-    def save_image_as(self, params_path):
+    def save_image_as(self, params_path, title):
         
         # note that the params object will, by convention,
         # have the (generic) name 'plot.data' -- after this
         # call, this object will be in the namespace
         meta_py_r.load_plot_params(params_path)
 
+ 
         # where to save the graphic?
         file_path = unicode(QFileDialog.getSaveFileName(self, "OpenMeta[Analyst] -- save plot as", 
                                                         "forest_plot.pdf"))
 
         # now we re-generate it
 
-
-
         ##
         # convert the file path to R-friendly path
         # joiners (only relevant on Windows, I believe)
         #file_path = os.path.normpath(file_path)
-        meta_py_r.generate_forest_plot(file_path)
+        if any([side_by_side in title for side_by_side in SIDE_BY_SIDE_FOREST_PLOTS]):
+            meta_py_r.generate_forest_plot(file_path, side_by_side=True)
+        else:
+            meta_py_r.generate_forest_plot(file_path)
 
     def position(self):
         point = QPoint(self.x_coord, self.y_coord)

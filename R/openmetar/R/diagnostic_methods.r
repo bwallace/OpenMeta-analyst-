@@ -681,16 +681,10 @@ side.by.side.plots <- function(diagnostic.data, fname.left, params.left, fname.r
         params.right$fp_show_col1 <- 'FALSE'
         diagnostic.data.left <- compute.diag.point.estimates(diagnostic.data, params.left)
         diagnostic.data.right <- compute.diag.point.estimates(diagnostic.data, params.right)
-        #res.left<-rma.uni(yi=diagnostic.data.left@y, sei=diagnostic.data.left@SE, 
-        #             slab=diagnostic.data.left@study.names,
-        #             method="FE", level=params.left$conf.level,
-        #             digits=params.left$digits)
+
         res.tmp <- eval(call(fname.left, diagnostic.data, params.left))
         res.left <- eval(call(paste(fname.left, ".overall", sep=""), res.tmp))
-        #res.right<-rma.uni(yi=diagnostic.data.right@y, sei=diagnostic.data.right@SE, 
-        #             slab=diagnostic.data.right@study.names,
-        #             method="FE", level=params.right$conf.level,
-        #             digits=params.right$digits)     
+  
         res.tmp <- eval(call(fname.right, diagnostic.data, params.right))
         res.right <- eval(call(paste(fname.right, ".overall", sep=""), res.tmp))
         
@@ -698,18 +692,20 @@ side.by.side.plots <- function(diagnostic.data, fname.left, params.left, fname.r
         plot.data.left <- create.plot.data.diagnostic(diagnostic.data, params.left, res.left)
         plot.data.right <- create.plot.data.diagnostic(diagnostic.data.right, params.right, res.right)
         two.forest.plots(plot.data.left, plot.data.right, outpath=forest.path)
+
         # combine plot.data.left and plot.data.right into single list to save
         plot.data.left <- list("name.tmp"=plot.data.left)
         names(plot.data.left) <- paste(params.left$measure, " data", sep="")
         plot.data.right <- list("name.tmp"=plot.data.right)
         names(plot.data.right) <- paste(params.right$measure, " data", sep="")
-        plot.data <- c(plot.data.left, plot.data.right)
+
+        plot.data <- list("diagnostic.data"=diagnostic.data, 
+                          "fname.left"=fname.left, "params.left"=params.left,
+                          "fname.right"=fname.right, "params.right"=params.right)
 
         images <- c("Forest Plot"=forest.path)
         plot.names <- c("forest plot"="forest_plot")
-        
-        # we use the system time as our unique-enough string to store
-        # the params object
+     
         forest.plot.params.path <- save.plot.data(plot.data)
         plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
         results <- list("images"=images,

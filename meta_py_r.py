@@ -573,8 +573,22 @@ def load_plot_params(params_path):
     ''' loads what is presumed to be .Rdata into the environment '''
     ro.r("load('%s')" % params_path)
 
-def generate_forest_plot(file_path, params_name="plot.data"):
-    ro.r("forest.plot(%s, '%s')" % (params_name, file_path))
+def generate_forest_plot(file_path, side_by_side=False, params_name="plot.data"):
+    if side_by_side:
+        print "side-by-side!"
+        ##
+        # a bit hacky, or at least, could be made clearer: the
+        # side.by.side* method pulls the output path out of the
+        # params.left object, so we change this here to the
+        # user-selected output path
+        ro.r("%s$params.left$fp_outpath <- '%s'" % (params_name, file_path))
+        ro.r("side.by.side.plots(%s$diagnostic.data, \
+                                    %s$fname.left, %s$params.left,\
+                                    %s$fname.right, %s$params.right)" % 
+                    (params_name, params_name, params_name, params_name, params_name)
+            )
+    else:
+        ro.r("forest.plot(%s, '%s')" % (params_name, file_path))
 
 def parse_out_results(result):
     # parse out text field(s). note that "plot names" is 'reserved', i.e., it's
