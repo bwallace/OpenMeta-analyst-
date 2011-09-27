@@ -26,6 +26,9 @@ import ma_specs
 import meta_py_r
 from meta_globals import *
 
+
+###
+# ack.. string encoding messiness
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -166,15 +169,6 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                 self.add_cur_analysis_details()
             
 
-                '''
-                TODO this needs to be modified simply call the run_diagnostic_ma
-                function in meta_py_r.
-
-                everything you need is in the self.diag_metrics_to_analysis_details
-                dictionary -- you'll want to pass along a list of params objects
-                (*including* the metric) and the analysis details. we'll assume that the
-                R routine runs the analyses appropriately and returns us nice output.
-                '''
                 method_names, list_of_param_vals = [], []
 
                 if len(self.diag_metrics_to_analysis_details) == 0:
@@ -183,7 +177,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
                 ordered_metrics = ["Sens", "Spec", "NLR", "PLR", "DOR"]
                 for diag_metric in \
-                    [metric for metric in ordered_metrics if metric in self.diag_metrics_to_analysis_details]:
+                      [metric for metric in ordered_metrics if metric in self.diag_metrics_to_analysis_details]:
                     # pull out the method and parameters object specified for this
                     # metric.
                     method, param_vals = self.diag_metrics_to_analysis_details[diag_metric]
@@ -202,7 +196,6 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                     method_names.append(method)
                     list_of_param_vals.append(param_vals)
                 
-
                 # create the DiagnosticData object on the R side -- this is going 
                 # to be the same for all analyses
                 meta_py_r.ma_dataset_to_simple_diagnostic_robj(self.model)

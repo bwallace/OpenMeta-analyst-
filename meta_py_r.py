@@ -437,8 +437,8 @@ def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", metric
 
         ### assembling TP, FP, TN and FN strings ...
         tps_str = ", ".join(_to_strs(_get_col(raw_data, 0)))
-        fps_str = ", ".join(_to_strs(_get_col(raw_data, 1)))
-        fns_str = ", ".join(_to_strs(_get_col(raw_data, 2)))
+        fns_str = ", ".join(_to_strs(_get_col(raw_data, 1)))
+        fps_str = ", ".join(_to_strs(_get_col(raw_data, 2)))
         tns_str = ", ".join(_to_strs(_get_col(raw_data, 3)))
         
         # actually creating a new object on the R side seems the path of least resistance here.
@@ -554,6 +554,10 @@ def run_diagnostic_multi(function_names, list_of_params, res_name="result", diag
 
     ro.r("list.of.params <- %s" % r_params_str)
     ro.r("f.names <- c(%s)" % ",".join(["'%s'" % f_name for f_name in function_names]))
+
+
+    pyqtRemoveInputHook()
+    pdb.set_trace()
     result = ro.r("multiple.diagnostic(f.names, list.of.params, %s)" % diag_data_name)
     
     return parse_out_results(result)
