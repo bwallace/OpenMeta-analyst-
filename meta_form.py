@@ -424,14 +424,25 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         if form.exec_():
             # then the user clicked 'ok'.
             new_covariate_name = unicode(form.covariate_name_le.text().toUtf8(), "utf-8")
-            new_covariate_type = str(form.datatype_cbo_box.currentText())
 
-            redo_f = lambda: self._add_new_covariate(new_covariate_name, new_covariate_type)
-            undo_f = lambda: self._undo_add_new_covariate(new_covariate_name)
-            
-            add_cov_command = CommandGenericDo(redo_f, undo_f)
-            self.tableView.undoStack.push(add_cov_command)
-       
+            # fix for issue #59; do not allow the user to create two covariates with
+            # the same name!
+            new_covariate_type = str(form.datatype_cbo_box.currentText())
+            if new_covariate_name in self.model.get_covariate_names():
+                QMessageBox.warning(self,
+                            "whoops.",
+                            "you've already entered a covariate with the name %s; please pick another name." % \
+                                    new_covariate_name)
+                self.add_covariate()
+                
+            else:
+                redo_f = lambda: self._add_new_covariate(new_covariate_name, new_covariate_type)
+                undo_f = lambda: self._undo_add_new_covariate(new_covariate_name)
+                
+                add_cov_command = CommandGenericDo(redo_f, undo_f)
+                self.tableView.undoStack.push(add_cov_command)
+     
+
     def _add_new_covariate(self, cov_name, cov_type):
         self.model.add_covariate(cov_name, cov_type)
         print "new covariate name: %s with type %s" % (cov_name, cov_type)

@@ -556,6 +556,9 @@ class DatasetModel(QAbstractTableModel):
                         self.current_outcome is not None else table_col_index - 3
         return self.dataset.covariates[cov_index]
         
+    def get_covariate_names(self):
+        return [cov.name for cov in self.dataset.covariates]
+
     def _get_col_count(self):
         '''
         Calculate how many columns to display; this is contingent on the data type,
