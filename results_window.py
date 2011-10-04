@@ -246,16 +246,16 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         file_path = unicode(QFileDialog.getSaveFileName(self, "OpenMeta[Analyst] -- save plot as", 
                                                         "forest_plot.pdf"))
 
-        # now we re-generate it
-
-        ##
-        # convert the file path to R-friendly path
-        # joiners (only relevant on Windows, I believe)
-        #file_path = os.path.normpath(file_path)
-        if any([side_by_side in title for side_by_side in SIDE_BY_SIDE_FOREST_PLOTS]):
-            meta_py_r.generate_forest_plot(file_path, side_by_side=True)
-        else:
-            meta_py_r.generate_forest_plot(file_path)
+        # now we re-generate it, unless they cancled, of course
+        if file_path != "":
+            ##
+            # convert the file path to R-friendly path
+            # joiners (only relevant on Windows, I believe)
+            #file_path = os.path.normpath(file_path)
+            if any([side_by_side in title for side_by_side in SIDE_BY_SIDE_FOREST_PLOTS]):
+                meta_py_r.generate_forest_plot(file_path, side_by_side=True)
+            else:
+                meta_py_r.generate_forest_plot(file_path)
 
     def position(self):
         point = QPoint(self.x_coord, self.y_coord)
