@@ -205,7 +205,15 @@ class DatasetModel(QAbstractTableModel):
                 if not self.is_diag():
                     est_and_ci = self.get_current_ma_unit_for_study(index.row()).\
                                                     get_display_effect_and_ci(self.current_effect, group_str)
-                    outcome_val = est_and_ci[outcome_index]
+                    
+                    try:
+                        outcome_val = est_and_ci[outcome_index]
+                    except:
+                        #pyqtRemoveInputHook()
+                        #pdb.set_trace()
+                        #print "?? %s" % column
+                        print self.OUTCOMES
+                        print "! %s" % self.get_current_outcome_type()
                     if outcome_val is None:
                         return QVariant("")
                     outcome_val = est_and_ci[outcome_index]
@@ -509,11 +517,15 @@ class DatasetModel(QAbstractTableModel):
                     outcome_headers = ["sens.", "lower", "upper", "spec.", "lower", "upper"]
                     return QVariant(outcome_headers[outcome_index])
 
-            else:
+            elif self.current_outcome is not None:
                 # then the column is to the right of the outcomes, and must
                 # be a covariate.
                 cov_name = self.get_cov(section).name
                 return QVariant(cov_name)
+            else:
+                # pass, basically
+                return QVariant("")
+   
         
         # this is the vertical -- non-table header -- case.
         # we just show row numbers (not zero-based; hence the +1).

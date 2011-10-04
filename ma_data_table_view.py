@@ -97,7 +97,8 @@ class MADataTable(QtGui.QTableView):
         upper_left_index, lower_right_index = (self._upper_left(selected_indexes),
                                                self._lower_right(selected_indexes))
 
-        self.paste_from_clipboard(upper_left_index)                                      
+        self.paste_from_clipboard(upper_left_index)     
+        self._enable_analysis_menus_if_appropriate()
                                                
     def row_header_clicked(self, row):
         # dispatch on the data type
@@ -277,6 +278,12 @@ class MADataTable(QtGui.QTableView):
         for col_index, width in enumerate(widths):
             self.setColumnWidth(col_index, width)
 
+    def _enable_analysis_menus_if_appropriate(self):
+        if len(self.model().dataset) >= 2:
+            self.main_gui.enable_menu_options_that_require_dataset()
+        else:
+            self.main_gui.disable_menu_options_that_require_dataset()
+
     def _print_index(self, index):
         print "(%s, %s)" % (index.row(), index.column())
 
@@ -405,11 +412,12 @@ class CommandCellEdit(QUndoCommand):
         
         # here is where we check if there are enough studies to actually
         # perform an analysis. if so, enable the menu options.
-        if len(self.ma_data_table_view.model().dataset) >= 2:
-            self.ma_data_table_view.main_gui.enable_menu_options_that_require_dataset()
-        else:
-            self.ma_data_table_view.main_gui.disable_menu_options_that_require_dataset()
-            
+        #if len(self.ma_data_table_view.model().dataset) >= 2:
+        #    self.ma_data_table_view.main_gui.enable_menu_options_that_require_dataset()
+        #else:
+        #    self.ma_data_table_view.main_gui.disable_menu_options_that_require_dataset()
+        self.ma_data_table_view._enable_analysis_menus_if_appropriate()
+           
         self.ma_data_table_view.resizeColumnsToContents()
 
     def undo(self):
@@ -426,10 +434,11 @@ class CommandCellEdit(QUndoCommand):
             
         # here is where we check if there are enough studies to actually
         # perform an analysis.
-        if len(self.ma_data_table_view.model().dataset) >= 2:
-            self.ma_data_table_view.main_gui.enable_menu_options_that_require_dataset()
-        else:
-            self.ma_data_table_view.main_gui.disable_menu_options_that_require_dataset()
+        self.ma_data_table_view._enable_analysis_menus_if_appropriate()
+        #if len(self.ma_data_table_view.model().dataset) >= 2:
+        #    self.ma_data_table_view.main_gui.enable_menu_options_that_require_dataset()
+        #else:
+        #    self.ma_data_table_view.main_gui.disable_menu_options_that_require_dataset()
         self.ma_data_table_view.resizeColumnsToContents()
         
     def _get_index(self):
@@ -462,7 +471,8 @@ class CommandPaste(QUndoCommand):
         self.ma_data_table_view.paste_contents(self.upper_left_coord, self.new_content)
 
         self.ma_data_table_view.model().reset()
-
+        self.ma_data_table_view._enable_analysis_menus_if_appropriate()
+        
     def undo(self):
         if self.added_study is not None:
             self.ma_data_table_view.model().remove_study(self.added_study)
@@ -470,7 +480,7 @@ class CommandPaste(QUndoCommand):
                                  state_dict=self.original_state_dict)
 
         self.ma_data_table_view.model().reset()
-
+        self.ma_data_table_view._enable_analysis_menus_if_appropriate()
 
 class CommandEditMAUnit(QUndoCommand):
     def __init__(self, table_view, study_index, new_ma_unit, old_ma_unit, description="MA unit edit"):
