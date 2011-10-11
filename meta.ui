@@ -19,7 +19,7 @@
    <string>OpenMeta[analyst]</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="images/icons.qrc">
     <normaloff>:/images/meta.png</normaloff>:/images/meta.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -31,7 +31,7 @@
    <property name="cursor">
     <cursorShape>ArrowCursor</cursorShape>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout_3">
     <property name="spacing">
      <number>0</number>
     </property>
@@ -131,7 +131,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset>
+              <iconset resource="images/icons.qrc">
                <normaloff>:/images/left_arrow.png</normaloff>:/images/left_arrow.png</iconset>
              </property>
              <property name="iconSize">
@@ -157,7 +157,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset>
+              <iconset resource="images/icons.qrc">
                <normaloff>:/images/up_arrow.png</normaloff>:/images/up_arrow.png</iconset>
              </property>
              <property name="iconSize">
@@ -183,7 +183,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset>
+              <iconset resource="images/icons.qrc">
                <normaloff>:/images/down_arrow.png</normaloff>:/images/down_arrow.png</iconset>
              </property>
              <property name="iconSize">
@@ -238,7 +238,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset>
+              <iconset resource="images/icons.qrc">
                <normaloff>:/images/right_arrow.png</normaloff>:/images/right_arrow.png</iconset>
              </property>
              <property name="iconSize">
@@ -264,7 +264,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset>
+              <iconset resource="images/icons.qrc">
                <normaloff>:/images/function_icon_set/add_48.png</normaloff>:/images/function_icon_set/add_48.png</iconset>
              </property>
              <property name="iconSize">
@@ -343,6 +343,13 @@
         </layout>
        </item>
       </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="dataset_file_lbl">
+      <property name="text">
+       <string/>
+      </property>
      </widget>
     </item>
    </layout>

@@ -405,7 +405,8 @@ def _sanitize_for_R(str):
     # may want to do something fancier in the future...
     return str.encode('latin-1', 'ignore')
 
-def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", metric="Sens"):
+def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", \
+                                            metric="Sens"):
     '''
     This converts a DatasetModel to an OpenMetaData (OMData) R object. We use type DatasetModel
     rather than a DataSet model directly to access the current variables. Furthermore, this allows
@@ -552,12 +553,10 @@ def _to_R_params(params):
 def run_diagnostic_multi(function_names, list_of_params, res_name="result", diag_data_name="tmp_obj"):
     r_params_str = "list(%s)" % ",".join([_to_R_params(p) for p in list_of_params])
 
+  
     ro.r("list.of.params <- %s" % r_params_str)
     ro.r("f.names <- c(%s)" % ",".join(["'%s'" % f_name for f_name in function_names]))
 
-
-    pyqtRemoveInputHook()
-    pdb.set_trace()
     result = ro.r("multiple.diagnostic(f.names, list.of.params, %s)" % diag_data_name)
     
     return parse_out_results(result)

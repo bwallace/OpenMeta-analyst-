@@ -64,7 +64,11 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # to be given on the console.
         self.model = None
         self.new_dataset()
-        
+
+        # flag maintaining whether the current dataset
+        # has been saved
+        self.current_data_unsaved = True
+
         self.tableView.setModel(self.model)
         # attach a delegate for editing
         self.tableView.setItemDelegate(StudyDelegate(self))
@@ -136,7 +140,15 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.disable_menu_options_that_require_dataset()
         # set the out_path to None; this (new) dataset is unsaved.
         self.out_path = None
-        
+        self.current_data_unsaved = True
+        self._notify_user_that_data_is_unsaved()
+
+    def _notify_user_that_data_is_unsaved(self):
+        if self.out_path is None:
+            self.dataset_file_lbl.setText("<font color='red'>careful! your data isn't saved yet</font>")
+        else:
+            self.dataset_file_lbl.setText("open file: <font color='red'>%s</font>" % self.out_path)
+
     def toggle_menu_options_that_require_dataset(self, enable):
         self.action_go.setEnabled(enable)
         self.action_cum_ma.setEnabled(enable)
@@ -168,14 +180,19 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         in a new model, e.g., when a dataset is loaded, to tear down the relevant connections. 
         _setup_connections (with menu_actiosn set to False) should subsequently be invoked. 
         '''
-        QObject.disconnect(self.tableView.model(), SIGNAL("cellContentChanged(QModelIndex, QVariant, QVariant)"),
+        #QObject.disconnect(self.tableView.model(), SIGNAL("cellContentChanged(QModelIndex, QVariant, QVariant)"),
+        #                                                        self.tableView.cell_content_changed)
+        QObject.disconnect(self.tableView.model(), SIGNAL("pyCellContentChanged(PyQt_PyObject, PyQt_PyObject, PyQt_PyObject, PyQt_PyObject)"),
                                                                 self.tableView.cell_content_changed)
+
         QObject.disconnect(self.tableView.model(), SIGNAL("outcomeChanged()"),
                                                                 self.tableView.displayed_ma_changed)
         QObject.disconnect(self.tableView.model(), SIGNAL("followUpChanged()"),
                                                                 self.tableView.displayed_ma_changed)
                                                                  
-       
+        QObject.disconnect(self.tableView, SIGNAL("dataDirtied()"), self.data_dirtied)
+
+
     def set_edit_focus(self, index):
         ''' sets edit focus to the row,col specified by index.'''
         self.tableView.setCurrentIndex(index)
@@ -183,8 +200,12 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
          
     def _setup_connections(self, menu_actions=True):
         ''' Signals & slots '''
-        QObject.connect(self.tableView.model(), SIGNAL("cellContentChanged(QModelIndex, QVariant, QVariant)"),
+        #QObject.connect(self.tableView.model(), SIGNAL("cellContentChanged(QModelIndex, QVariant, QVariant)"),
+        #                                                        self.tableView.cell_content_changed)
+        QObject.connect(self.tableView.model(), SIGNAL("pyCellContentChanged(PyQt_PyObject, PyQt_PyObject, PyQt_PyObject, PyQt_PyObject)"),
                                                                 self.tableView.cell_content_changed)
+
+
         QObject.connect(self.tableView.model(), SIGNAL("outcomeChanged()"),
                                                                 self.tableView.displayed_ma_changed)
         QObject.connect(self.tableView.model(), SIGNAL("followUpChanged()"),
@@ -198,7 +219,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # this index is the QModelIndex. this is used, e.g., when a new study is added.
         # this fixes bug #20.
         QObject.connect(self.tableView.model(), SIGNAL("modelReset(QModelIndex)"),
-                                                                self.set_edit_focus)                                                        
+                                                                self.set_edit_focus) 
+                                                        
+        QObject.connect(self.tableView, SIGNAL("dataDirtied()"),
+                                                self.data_dirtied)                                                       
         if menu_actions:                
             QObject.connect(self.nav_add_btn, SIGNAL("pressed()"), self.add_new)
             QObject.connect(self.nav_right_btn, SIGNAL("pressed()"), self.next)
@@ -226,6 +250,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             QObject.connect(self.action_meta_regression, SIGNAL("triggered()"), self.meta_reg)
             QObject.connect(self.action_subgroup_ma, SIGNAL("triggered()"), self.meta_subgroup_get_cov)
 
+
     def go(self):
         form = None
         if self.model.get_current_outcome_type() != "diagnostic":
@@ -246,6 +271,9 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         form = meta_reg_form.MetaRegForm(self.model, parent=self)
         form.show()
         
+    def data_dirtied(self):
+        self._notify_user_that_data_is_unsaved()
+
     def meta_subgroup_get_cov(self):
         form = meta_subgroup_form.MetaSubgroupForm(self.model, parent=self)
         form.show()
@@ -725,6 +753,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         
         open_command = CommandGenericDo(redo_f, undo_f)
         self.tableView.undoStack.push(open_command)
+        self.dataset_file_lbl.setText("open file: %s" % file_path)
         return True
 
         
@@ -793,6 +822,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self._disconnections()
         self.tableView.setModel(self.model)
         self.model_updated()
+        self.dataset_file_lbl.setText("open file: %s" % self.out_path)
+
         
     def update_outcome_lbl(self):
         self.cur_outcome_lbl.setText(\
@@ -803,7 +834,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
     def save(self):
         if self.out_path is None:
-            out_f = "."
+            # fix for issue #58,1. -- use current dataset name in save path
+            out_f = os.path.join("." , self.model.get_name())
             out_f = unicode(QFileDialog.getSaveFileName(self, "OpenMeta[analyst] - Save File",
                                                          out_f, "open meta files: (.oma)"))
             if out_f == "" or out_f == None:
@@ -826,7 +858,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             # this dataset
             self.user_prefs['recent datasets'].append(self.out_path)
             self._save_user_prefs()
-            
+            self.dataset_file_lbl.setText("open file: %s" % self.out_path)
         except Exception, e:
             # @TODO handle this elegantly?
             print e

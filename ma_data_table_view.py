@@ -148,8 +148,8 @@ class MADataTable(QtGui.QTableView):
         cur_outcome = self.model().current_outcome
         cur_follow_up = self.model().current_time_point
 
-    def cell_content_changed(self, index, old_val, new_val):
-        cell_edit = CommandCellEdit(self, index, old_val, new_val)
+    def cell_content_changed(self, index, old_val, new_val, study_added):
+        cell_edit = CommandCellEdit(self, index, old_val, new_val, study_added)
         self.undoStack.push(cell_edit)
 
     def header_clicked(self, column):
@@ -378,20 +378,31 @@ class CommandCellEdit(QUndoCommand):
     cell edits (as opposed to paste actions, which are represented by CommandPaste objects,
     defined below).
     '''
-    def __init__(self, ma_data_table_view, index, original_content, new_content, description=""):
+    def __init__(self, ma_data_table_view, index, original_content, new_content, 
+                        added_study=None, description=""):
         super(CommandCellEdit, self).__init__(description)
         self.first_call = True
         self.original_content = original_content
         self.new_content = new_content
         self.row, self.col = index.row(), index.column()
         self.ma_data_table_view = ma_data_table_view
-        self.added_study = None
+        self.added_study = added_study
+        self.something_else = added_study
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
 
     def redo(self):
         index = self._get_index()
         if self.first_call:
             self.first_call = False
-            self.added_study = self.ma_data_table_view.model().study_auto_added
+            ###
+            # the self.added_study should be true if and only if
+            # the event being done *caused* a study to be added.
+            # in this case, we'll need to remove the added study
+            # on the undo() call
+            
+
+            #self.added_study = self.ma_data_table_view.model().study_auto_added
             # note: previously (10/14/10) there was a call here to set the
             # model's study_auto_added field to None. I don't know why it was
             # here, and removed it.  
@@ -410,36 +421,44 @@ class CommandCellEdit(QUndoCommand):
             # make the view reflect the update
             self.ma_data_table_view.model().reset()
         
-        # here is where we check if there are enough studies to actually
-        # perform an analysis. if so, enable the menu options.
-        #if len(self.ma_data_table_view.model().dataset) >= 2:
-        #    self.ma_data_table_view.main_gui.enable_menu_options_that_require_dataset()
-        #else:
-        #    self.ma_data_table_view.main_gui.disable_menu_options_that_require_dataset()
         self.ma_data_table_view._enable_analysis_menus_if_appropriate()
            
         self.ma_data_table_view.resizeColumnsToContents()
 
+        # let everyone know that the data is dirty
+        self.ma_data_table_view.emit(SIGNAL("dataDirtied()"))
+
     def undo(self):
+        '''
+        if self.col == 1 and self.row == len(self.ma_data_table_view.model().get_studies())-1:
+            self.ma_data_table_view.model().remove_study(self.added_study)
+        '''
+
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
+
+        # in this case, the original editing action
+        # had the effect of appending a row to the spreadsheet.
+        # here we remove it.
+        if self.added_study is not None:
+            self.ma_data_table_view.model().remove_study(self.added_study)
+
         index = self._get_index()
         model = self.ma_data_table_view.model()
+
         # as in the redo method, we block signals before
         # editing the model data
         model.blockSignals(True)
         model.setData(index, self.original_content)
         model.blockSignals(False)
         self.ma_data_table_view.model().reset()
-        if self.added_study is not None:
-            self.ma_data_table_view.model().remove_study(self.added_study)
+
             
         # here is where we check if there are enough studies to actually
         # perform an analysis.
         self.ma_data_table_view._enable_analysis_menus_if_appropriate()
-        #if len(self.ma_data_table_view.model().dataset) >= 2:
-        #    self.ma_data_table_view.main_gui.enable_menu_options_that_require_dataset()
-        #else:
-        #    self.ma_data_table_view.main_gui.disable_menu_options_that_require_dataset()
         self.ma_data_table_view.resizeColumnsToContents()
+        self.ma_data_table_view.emit(SIGNAL("dataDirtied()"))
         
     def _get_index(self):
         return self.ma_data_table_view.model().createIndex(self.row, self.col)
@@ -457,7 +476,6 @@ class CommandPaste(QUndoCommand):
         self.upper_left_coord = upper_left_coord
         self.old_column_widths = old_col_widths
         self.ma_data_table_view = ma_data_table_view
-        #self.old_studies = copy.deepcopy(old_studies)
         self.added_study = None
 
 
@@ -472,8 +490,10 @@ class CommandPaste(QUndoCommand):
 
         self.ma_data_table_view.model().reset()
         self.ma_data_table_view._enable_analysis_menus_if_appropriate()
-        
+        self.ma_data_table_view.emit(SIGNAL("dataDirtied()"))
+
     def undo(self):
+
         if self.added_study is not None:
             self.ma_data_table_view.model().remove_study(self.added_study)
         self.ma_data_table_view.main_gui.set_model(self.original_dataset,\
@@ -481,6 +501,7 @@ class CommandPaste(QUndoCommand):
 
         self.ma_data_table_view.model().reset()
         self.ma_data_table_view._enable_analysis_menus_if_appropriate()
+        self.ma_data_table_view.emit(SIGNAL("dataDirtied()"))
 
 class CommandEditMAUnit(QUndoCommand):
     def __init__(self, table_view, study_index, new_ma_unit, old_ma_unit, description="MA unit edit"):
@@ -495,12 +516,14 @@ class CommandEditMAUnit(QUndoCommand):
         self.model.set_current_ma_unit_for_study(self.study_index, self.old_ma_unit)
         self.model.reset()
         self.table_view.resizeColumnsToContents()
-        
+        self.ma_data_table_view.emit(SIGNAL("dataDirtied()"))
+
     def redo(self):
         self.model.set_current_ma_unit_for_study(self.study_index, self.new_ma_unit)
         self.model.reset()    
         self.table_view.resizeColumnsToContents()
-    
+        self.ma_data_table_view.emit(SIGNAL("dataDirtied()"))
+
 class CommandEditRawData(QUndoCommand):
     def __init__(self, ma_unit, model, old_raw_data_dict, new_raw_data_dict, description="Raw data edit"):
         super(CommandEditRawData, self).__init__(description)
@@ -517,12 +540,14 @@ class CommandEditRawData(QUndoCommand):
         for group_name in self.group_names:
             self.ma_unit.tx_groups[group_name].raw_data = self.old_raw_data_dict[group_name]
         self.model.reset()
-        
+        self.ma_data_table_view.emit(SIGNAL("dataDirtied()"))
+
     def redo(self):
         for group_name in self.group_names:
             self.ma_unit.tx_groups[group_name].raw_data = self.new_raw_data_dict[group_name]
         self.model.reset()
-        
+        self.ma_data_table_view.emit(SIGNAL("dataDirtied()"))
+
 class CommandSort(QUndoCommand):
     def __init__(self, ma_data_table_model, col, reverse_order, description="Sort"):
         super(CommandSort, self).__init__(description)

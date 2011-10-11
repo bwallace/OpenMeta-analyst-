@@ -85,7 +85,7 @@ class DatasetModel(QAbstractTableModel):
         self.headers = ["include", "study name", "year"]
 
         self.NUM_DIGITS = 3
-        
+        self.dirty = False
 
 
         
@@ -209,9 +209,6 @@ class DatasetModel(QAbstractTableModel):
                     try:
                         outcome_val = est_and_ci[outcome_index]
                     except:
-                        #pyqtRemoveInputHook()
-                        #pdb.set_trace()
-                        #print "?? %s" % column
                         print self.OUTCOMES
                         print "! %s" % self.get_current_outcome_type()
                     if outcome_val is None:
@@ -289,12 +286,12 @@ class DatasetModel(QAbstractTableModel):
         For more, see: http://doc.trolltech.com/4.5/qabstracttablemodel.html
         '''
         group_str = self.get_cur_group_str()
+        study_added_due_to_edit = None
         if index.isValid() and 0 <= index.row() < len(self.dataset):
             current_data_type = self.dataset.get_outcome_type(self.current_outcome)
             column = index.column()
             old_val = self.data(index)
             study = self.dataset.studies[index.row()]
-
             if column in (self.NAME, self.YEAR):
                 if column == self.NAME:
                     study.name = unicode(value.toString().toUtf8(), encoding="utf8")
@@ -311,6 +308,7 @@ class DatasetModel(QAbstractTableModel):
                         new_study = Study(self.max_study_id()+1)
                         self.dataset.add_study(new_study)
                         self.study_auto_added = int(new_study.id)
+                        study_added_due_to_edit = int(new_study.id)
                         self.reset()
                         # new_index is where the user *should* be editing.
                         new_index = self.index(index.row(), index.column()+1)
@@ -418,7 +416,12 @@ class DatasetModel(QAbstractTableModel):
             # Tell the view that an entry in the table has changed, and what the old
             # and new values were. This for undo/redo purposes.
             new_val = self.data(index)
-            self.emit(SIGNAL("cellContentChanged(QModelIndex, QVariant, QVariant)"), index, old_val, new_val)
+
+            #self.emit(SIGNAL("cellContentChanged(QModelIndex, QVariant, QVariant)"), 
+            #                index, old_val, new_val)
+            
+            self.emit(SIGNAL("pyCellContentChanged(PyQt_PyObject, PyQt_PyObject, PyQt_PyObject, PyQt_PyObject)"), 
+                               index, old_val, new_val, study_added_due_to_edit)
          
             if not self.is_diag():
                 if self.current_outcome is not None:
@@ -432,9 +435,7 @@ class DatasetModel(QAbstractTableModel):
                     # include it once it has sufficient data.
                     elif not study.manually_excluded:
                         study.include = True
-            #else:
-                
-                        
+
             return True
         return False
 
@@ -611,6 +612,9 @@ class DatasetModel(QAbstractTableModel):
     def remove_study(self, id):
         self.dataset.studies.pop(id)
         self.reset()
+
+    def get_name(self):
+        return self.dataset.title
 
     def get_next_outcome_name(self):
         outcomes = self.dataset.get_outcome_names()
