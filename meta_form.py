@@ -67,7 +67,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
         # flag maintaining whether the current dataset
         # has been saved
-        self.current_data_unsaved = True
+        self.current_data_unsaved = False
 
         self.tableView.setModel(self.model)
         # attach a delegate for editing
@@ -114,7 +114,17 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 ## arg -- this won't work!
                 start_up_window.setFocus()
                 start_up_window.dataset_name_le.setFocus()
-            
+        
+        #QObject.connect(self.centralwidget, SIGNAL("destroyed()"), self.quit)
+
+
+    def closeEvent(self, event):
+        if self.current_data_unsaved:
+            if not self.user_is_going_to_lose_data():
+                # then they canceled!
+                event.ignore()
+        print "*** goodbye, dear analyst. ***"
+
     def create_new_dataset(self):
         new_data_window = start_up_dialog.StartUp(parent=self, \
                     recent_datasets=self.user_prefs['recent datasets'],
@@ -140,8 +150,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.disable_menu_options_that_require_dataset()
         # set the out_path to None; this (new) dataset is unsaved.
         self.out_path = None
-        self.current_data_unsaved = True
-        self._notify_user_that_data_is_unsaved()
+        #self.current_data_unsaved = True
+        #self._notify_user_that_data_is_unsaved()
 
     def _notify_user_that_data_is_unsaved(self):
         if self.out_path is None:
@@ -180,8 +190,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         in a new model, e.g., when a dataset is loaded, to tear down the relevant connections. 
         _setup_connections (with menu_actiosn set to False) should subsequently be invoked. 
         '''
-        #QObject.disconnect(self.tableView.model(), SIGNAL("cellContentChanged(QModelIndex, QVariant, QVariant)"),
-        #                                                        self.tableView.cell_content_changed)
         QObject.disconnect(self.tableView.model(), SIGNAL("pyCellContentChanged(PyQt_PyObject, PyQt_PyObject, PyQt_PyObject, PyQt_PyObject)"),
                                                                 self.tableView.cell_content_changed)
 
@@ -200,8 +208,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
          
     def _setup_connections(self, menu_actions=True):
         ''' Signals & slots '''
-        #QObject.connect(self.tableView.model(), SIGNAL("cellContentChanged(QModelIndex, QVariant, QVariant)"),
-        #                                                        self.tableView.cell_content_changed)
         QObject.connect(self.tableView.model(), SIGNAL("pyCellContentChanged(PyQt_PyObject, PyQt_PyObject, PyQt_PyObject, PyQt_PyObject)"),
                                                                 self.tableView.cell_content_changed)
 
@@ -273,6 +279,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         
     def data_dirtied(self):
         self._notify_user_that_data_is_unsaved()
+        self.current_data_unsaved = True
 
     def meta_subgroup_get_cov(self):
         form = meta_subgroup_form.MetaSubgroupForm(self.model, parent=self)
@@ -708,6 +715,11 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         Also note that, as in Excel, the open operation is undoable. 
         '''
         
+        if self.current_data_unsaved:
+            if not self.user_is_going_to_lose_data():
+                # then they canceled!
+                return
+
         # if no file path is provided, prompt the user.
         if file_path is None:
             file_path = unicode(QFileDialog.getOpenFileName(self, "OpenMeta[analyst] - Open File",
@@ -754,6 +766,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         open_command = CommandGenericDo(redo_f, undo_f)
         self.tableView.undoStack.push(open_command)
         self.dataset_file_lbl.setText("open file: %s" % file_path)
+        
+        # we just opened it, so it's 'saved'
+        self.current_data_unsaved = False
+
         return True
 
         
@@ -830,7 +846,21 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 u"<font color='Blue'>%s</font>" % self.model.current_outcome)
         
     def quit(self):
-        QApplication.quit()
+        if self.current_data_unsaved:
+            if self.user_is_going_to_lose_data():
+                QApplication.quit()
+
+    def user_is_going_to_lose_data(self):
+        save_first = QMessageBox.warning(self,
+                        "Warning",
+                        "you've made unsaved changes to your data. what do you want to do with them?",
+                        QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel)
+        
+        if save_first == QMessageBox.Save:
+            self.save()        
+
+        # return true so long as the user didn't *cancel*
+        return save_first != QMessageBox.Cancel
 
     def save(self):
         if self.out_path is None:
@@ -859,6 +889,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.user_prefs['recent datasets'].append(self.out_path)
             self._save_user_prefs()
             self.dataset_file_lbl.setText("open file: %s" % self.out_path)
+            self.current_data_unsaved = False
         except Exception, e:
             # @TODO handle this elegantly?
             print e
