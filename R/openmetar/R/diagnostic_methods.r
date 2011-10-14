@@ -218,7 +218,7 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
     plot.params.paths <- c()
     results <- list()
     if (("Sens" %in% metrics) & ("Spec" %in% metrics)) {
-        results.sens.spec <- NULL
+        
         results.sens.spec <- side.by.side.plots(diagnostic.data, fname.left=fnames[sens.index], 
                                                                  params.left=params.list[[sens.index]], 
                                                                  fname.right=fnames[spec.index],
@@ -255,7 +255,8 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
 
     for (count in 1:length(params.list)) {
         pretty.names <- eval(call(paste(fnames[count],".pretty.names",sep="")))
-        results.tmp <- eval(call(fnames[count], diagnostic.data, params.list[[count]]))
+        diagnostic.data.tmp <- compute.diag.point.estimates(diagnostic.data, params.list[[count]])
+        results.tmp <- eval(call(fnames[count], diagnostic.data.tmp, params.list[[count]]))
 
         if (params.list[[count]]$create.plot==TRUE) {
           images.tmp <- results.tmp$images
