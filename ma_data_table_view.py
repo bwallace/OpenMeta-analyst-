@@ -49,9 +49,36 @@ class MADataTable(QtGui.QTableView):
         ## TODO need to add covariate indices here, as needed
         self.reverse_column_sorts = {0: False, 1: False}
         self.setAlternatingRowColors(True)
+        self.contextMenuEvent = self._make_context_menu()
+
         
-        
-  
+    def context_menu(self, point):
+        action = QAction("do stuff man", self)
+        context_menu = QMenu(self)
+        context_menu.addAction(action)
+        context_menu.popup(point)
+
+
+    def _make_context_menu(self):
+        def _context_menu(event):
+            study_index = self.rowAt(event.y())
+            study = self.model().dataset.studies[study_index]
+            action = QAction("delete study %s" % study.name, self)
+            QObject.connect(action, SIGNAL("triggered()"), \
+                lambda : self.main_gui.delete_study(study, study_index=study_index))
+
+            context_menu = QMenu(self)
+            context_menu.addAction(action)
+            pos = event.globalPos()
+            context_menu.popup(pos)
+            event.accept()
+            #print dir(event)
+            #pyqtRemoveInputHook()
+            #pdb.set_trace()
+
+        return _context_menu
+
+
     def keyPressEvent(self, event):                                       
         if (event.modifiers() & QtCore.Qt.ControlModifier):
             ## undo/redo
@@ -121,7 +148,7 @@ class MADataTable(QtGui.QTableView):
             for group in cur_txs:
                 cur_raw_data_dict[group] = list(ma_unit.get_raw_data_for_group(group))
                 
-            form =  binary_data_form.BinaryDataForm2(ma_unit, cur_txs, cur_group_str, cur_effect, parent=self)
+            form = binary_data_form.BinaryDataForm2(ma_unit, cur_txs, cur_group_str, cur_effect, parent=self)
             if form.exec_():
                 ### TODO do the same for continuous data!
                 # push the edit even

@@ -773,6 +773,25 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         return True
 
         
+    def delete_study(self, study, study_index=None):
+        undo_f = lambda : self._add_study(study, study_index=study_index)
+        redo_f = lambda : self._remove_study(study)
+        delete_command = CommandGenericDo(redo_f, undo_f)
+        self.tableView.undoStack.push(delete_command)
+        
+
+    def _add_study(self, study, study_index=None):
+        print "adding study: %s" % study.name
+        self.model.dataset.add_study(study, study_index=study_index)
+        self.model.reset()
+        self.data_dirtied()
+        
+    def _remove_study(self, study):
+        print "deleting study: %s" % study.name
+        self.model.dataset.studies.remove(study)
+        self.model.reset()
+        self.data_dirtied()
+
     def set_model(self, data_model, state_dict=None):
         ##
         # we explicitly append a blank study to the

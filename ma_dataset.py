@@ -100,10 +100,12 @@ class Dataset:
                 for ma_unit in cur_outcome.values():                
                     ma_unit.remove_group(group_name)    
 
-    def add_study(self, study):
-        # instead, allow empty outcomes/follow-ups, but handle
+    def add_study(self, study, study_index=None):
+        # note that we allow empty outcomes/follow-ups, but handle
         # this at the point of execution
-        self.studies.append(study)
+        if study_index is None:
+            self.studies.append(study)
+        self.studies.insert(study_index, study)
         
     def remove_study(self, id):
         self.studies = [study for study in self.studies if study.id != id]
