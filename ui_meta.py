@@ -2,18 +2,19 @@
 
 # Form implementation generated from reading ui file 'meta.ui'
 #
-# Created: Tue Oct 11 14:00:02 2011
+# Created: Mon Oct 17 11:11:28 2011
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
-import ma_data_table_view
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
     _fromUtf8 = lambda s: s
+
+import ma_data_table_view
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -255,7 +256,11 @@ class Ui_MainWindow(object):
         self.action_subgroup_ma = QtGui.QAction(MainWindow)
         self.action_subgroup_ma.setText(QtGui.QApplication.translate("MainWindow", "subgroup meta-analysis", None, QtGui.QApplication.UnicodeUTF8))
         self.action_subgroup_ma.setObjectName(_fromUtf8("action_subgroup_ma"))
+        self.action_save_as = QtGui.QAction(MainWindow)
+        self.action_save_as.setText(QtGui.QApplication.translate("MainWindow", "save as...", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_save_as.setObjectName(_fromUtf8("action_save_as"))
         self.menu_file.addAction(self.action_save)
+        self.menu_file.addAction(self.action_save_as)
         self.menu_file.addAction(self.action_open)
         self.menu_file.addAction(self.action_quit)
         self.menuAnalysis.addAction(self.menuMetric.menuAction())

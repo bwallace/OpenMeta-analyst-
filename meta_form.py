@@ -869,6 +869,9 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         if self.current_data_unsaved:
             if self.user_is_going_to_lose_data():
                 QApplication.quit()
+        else:
+            # otherwise, just shutdown
+            QApplication.quit()
 
     def user_is_going_to_lose_data(self):
         save_first = QMessageBox.warning(self,
@@ -884,7 +887,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
     def save_as(self):
         return self.save(save_as=True)
-        
+
     def save(self, save_as=False):
         if self.out_path is None or save_as:
             # fix for issue #58,1. -- use current dataset name in save path
