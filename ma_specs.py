@@ -36,17 +36,6 @@ except AttributeError:
     
 class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
-    # for diagnostic data -- this dictionary maps
-    # the mteric names as they appear in the UI/ure
-    # used here to the names used in the model.
-    # see get_diag_metrics_to_run.
-    DIAG_METRIC_NAMES_D = {
-                            "sens":["Sens"], 
-                            "spec":["Spec"],
-                            "dor":["DOR"],
-                            "lr":["PLR", "NLR"]
-                          }
-
     def __init__(self, model, parent=None, meta_f_str=None,
                     external_params=None, diag_metrics=None,
                     diag_metrics_to_analysis_details_d=None):
@@ -205,8 +194,16 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                 # TODO -- meta methods for diagnostic data
                 pass
 
+        # update the user_preferences object for the selected method
+        # with the values selected for this run
+        current_dict = self.parent().get_user_method_params_d()
+        current_dict[self.current_method] = self.current_param_vals
+        self.parent().update_user_prefs("method_params", current_dict)
         self.parent().analysis(result)
         self.accept()
+
+
+
     
 
     def add_plot_params(self):
@@ -439,6 +436,18 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         # they were provided for the given param)
         self.current_params, self.current_defaults, self.var_order, self.param_d = \
                     meta_py_r.get_params(self.current_method)
+                
+        ###
+        # user selections overwrite the current parameter defaults.
+        # ie., if the user has run this analysis before, the preferences
+        # they selected then are automatically set as the defaults now.
+        # these defaults, if they exist, are stored in the user_preferences 
+        # dictionary
+        method_params = self.parent().user_prefs["method_params"]
+        if self.current_method in method_params:
+            print "loading default from user preferences!"
+            self.current_defaults = method_params[self.current_method]
+
         print self.current_defaults
 
 

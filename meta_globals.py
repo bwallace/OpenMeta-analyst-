@@ -64,3 +64,14 @@ PREFS_PATH = "user_prefs.dict"
 
 # this is a useful function sometimes.
 none_to_str = lambda x: "" if x is None else x
+
+# for diagnostic data -- this dictionary maps
+# the mteric names as they appear in the UI/ure
+# used here to the names used in the model.
+# see get_diag_metrics_to_run.
+DIAG_METRIC_NAMES_D = {
+                        "sens":["Sens"], 
+                        "spec":["Spec"],
+                        "dor":["DOR"],
+                        "lr":["PLR", "NLR"]
+                      }

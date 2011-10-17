@@ -237,6 +237,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             QObject.connect(self.nav_down_btn, SIGNAL("pressed()"), self.previous_dimension)
     
             QObject.connect(self.action_save, SIGNAL("triggered()"), self.save)
+            QObject.connect(self.action_save_as, SIGNAL("triggered()"), self.save_as)
             QObject.connect(self.action_open, SIGNAL("triggered()"), self.open)
             QObject.connect(self.action_new_dataset, SIGNAL("triggered()"), self.create_new_dataset)
             QObject.connect(self.action_quit, SIGNAL("triggered()"), self.quit)
@@ -881,8 +882,11 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # return true so long as the user didn't *cancel*
         return save_first != QMessageBox.Cancel
 
-    def save(self):
-        if self.out_path is None:
+    def save_as(self):
+        return self.save(save_as=True)
+        
+    def save(self, save_as=False):
+        if self.out_path is None or save_as:
             # fix for issue #58,1. -- use current dataset name in save path
             out_f = os.path.join("." , self.model.get_name())
             out_f = unicode(QFileDialog.getSaveFileName(self, "OpenMeta[analyst] - Save File",
@@ -931,6 +935,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         else:
             self.user_prefs = self._default_user_prefs()
 
+        # for backwards-compatibility
+        if not "method_params" in self.user_prefs:
+            self.user_prefs["method_params"] = {}
+
         self._save_user_prefs()
         print "loaded user preferences: %s" % self.user_prefs
 
@@ -939,6 +947,9 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.user_prefs[field] = value
         self._save_user_prefs()
             
+    def get_user_method_params_d(self):
+        return self.user_prefs["method_params"]
+
     def _save_user_prefs(self):
         try:
             fout = open(PREFS_PATH, 'wb')
@@ -948,7 +959,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             print "failed to write preferences data!"
         
     def _default_user_prefs(self):       
-        return {"splash":True, "digits":3, "recent datasets":[]}
+        return {"splash":True, "digits":3, "recent datasets":[], 
+                    "method_params":{}}
         
 class CommandGenericDo(QUndoCommand):
     '''
