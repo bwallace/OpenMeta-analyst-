@@ -194,16 +194,25 @@ save.plot.data <- function(plot.data) {
   forest.plot.params.path
 }
 
-create.regression.disp <- function(res, params) {
+create.regression.disp <- function(res, params, cov.names) {
     # create table for diplaying summary of regression ma results
     coeffs <- round(res$b, digits=params$digits)
     pvals <- round.display(res$pval, digits=params$digits)
     lbs <- round(res$ci.lb, digits=params$digits)
     ubs <- round(res$ci.ub, digits=params$digits)
-    reg.array <- array(c("", "Intercept", "Slope", "Estimates", coeffs[1], coeffs[2], "p-Values", pvals[1], pvals[2],
-                      "Lower bounds", lbs[1], lbs[2], "Upper bounds", ubs[1], ubs[2]), dim=c(3, 5))
+    dimnames(coeffs) <- NULL
+    dimnames(pvals) <- NULL
+    dimnames(lbs) <- NULL
+    dimnames(ubs) <- NULL
+    cov.names <- c("", "Intercept", cov.names)
+    estimates <- c("Estimates", coeffs)
+    p.values <- c("p-Values", pvals)
+    l.bounds <- c("Lower bounds", lbs)
+    u.bounds <- c("Upper bounds", ubs)
+    reg.array <- cbind(cov.names, estimates, p.values, l.bounds, u.bounds)
     arrays <- list(arr1=reg.array)
-    reg.disp <- list("model.title" = "", "table.titles" = c(""), "arrays" = arrays)
+    reg.disp <- list("model.title" = "Meta-Regression", "table.titles" = c("Model Results"), "arrays" = arrays)
+
     class(reg.disp) <-  "summary.display"
     return(reg.disp)
 }
