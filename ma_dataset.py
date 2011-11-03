@@ -105,7 +105,10 @@ class Dataset:
         # this at the point of execution
         if study_index is None:
             self.studies.append(study)
-        self.studies.insert(study_index, study)
+        # the else clause was somehow removed (!!!)
+        # triggering issue #91
+        else:
+            self.studies.insert(study_index, study)
         
     def remove_study(self, id):
         self.studies = [study for study in self.studies if study.id != id]

@@ -72,9 +72,6 @@ class MADataTable(QtGui.QTableView):
             pos = event.globalPos()
             context_menu.popup(pos)
             event.accept()
-            #print dir(event)
-            #pyqtRemoveInputHook()
-            #pdb.set_trace()
 
         return _context_menu
 
