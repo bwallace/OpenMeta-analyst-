@@ -572,7 +572,7 @@ subgroup.ma.binary <- function(fname, binary.data, params){
     cov.val.str <- paste("binary.data@covariates$", cov.name, sep="")
     subgroups <- eval(parse(text=cov.val.str))
     params$create.plot <- FALSE
-    subgroup.list <- union(subgroups,subgroups)
+    subgroup.list <- unique(subgroups)
     grouped.data <- array(list(NULL),c(length(subgroup.list)+1))
     subgroup.results <- array(list(NULL), c(length(subgroup.list)+1))
     col3.nums <- NULL
@@ -674,7 +674,7 @@ subgroup.ma.diagnostic <- function(fname, diagnostic.data, params){
     cov.val.str <- paste("diagnostic.data@covariates$", cov.name, sep="")
     subgroups <- eval(parse(text=cov.val.str))
     params$create.plot <- FALSE
-    subgroup.list <- union(subgroups,subgroups)
+    subgroup.list <- unique(subgroups)
     grouped.data <- array(list(NULL),c(length(subgroup.list) + 1))
     subgroup.results <- array(list(NULL), c(length(subgroup.list) + 1))
     col3.nums <- NULL
@@ -773,7 +773,7 @@ subgroup.ma.continuous <- function(fname, cont.data, params){
     cov.val.str <- paste("cont.data@covariates$", cov.name, sep="")
     subgroups <- eval(parse(text=cov.val.str))
     params$create.plot <- FALSE
-    subgroup.list <- union(subgroups,subgroups)
+    subgroup.list <- unique(subgroups)
     grouped.data <- array(list(NULL),c(length(subgroup.list)+1))
     subgroup.results <- array(list(NULL), c(length(subgroup.list)+1))
     col3.nums <- NULL
@@ -838,12 +838,12 @@ get.subgroup.data.cont <- function(cont.data, cov.name, cov.val) {
   SE.tmp <- cont.data@SE[subgroups == cov.val]
   names.tmp <- cont.data@study.names[subgroups == cov.val]
   if (length(cont.data@N1) > 0){
-    N1.tmp <- cont.data@N1[subgroups == i]
-    mean1.tmp <- cont.data@mean1[subgroups == i]
-    sd1.tmp <- cont.data@sd1[subgroups == i]
-    N2.tmp <- cont.data@N2[subgroups == i]
-    mean2.tmp <- cont.data@mean2[subgroups == i]
-    sd2.tmp <- cont.data@sd2[subgroups == i]
+    N1.tmp <- cont.data@N1[subgroups == cov.val]
+    mean1.tmp <- cont.data@mean1[subgroups == cov.val]
+    sd1.tmp <- cont.data@sd1[subgroups == cov.val]
+    N2.tmp <- cont.data@N2[subgroups == cov.val]
+    mean2.tmp <- cont.data@mean2[subgroups == cov.val]
+    sd2.tmp <- cont.data@sd2[subgroups == cov.val]
     subgroup.data <- new('ContinuousData', 
                           N1=N1.tmp, mean1=mean1.tmp , sd1=sd1.tmp, 
                           N2=N2.tmp, mean2=mean2.tmp, sd2=sd2.tmp,
@@ -856,49 +856,6 @@ get.subgroup.data.cont <- function(cont.data, cov.name, cov.val) {
     }
     subgroup.data
 }
-
-#multiple.ma <- function(binary.data, methods, params.vec) {
-# performs multiple meta-analyses. methods is a vector of ma function names (e.g. "binary.fixed.inv.var").
-# params.vec is a vector of parameter lists of the same length as methods. To use the same params for each method, set
-# params.vec <- array(list(NULL), dim=c(length(methods)))
-# for (count in 1:length(methods)) {
-#     params.vec[[count]] <- params
-# }
-
-#if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
-    
-#    results <- array(dim=c(length(methods),3))
-    
-#    fname <- methods[1]
-#    params <- params.vec[[1]]
-#    params$fp_show.summary.line <- FALSE
-#    params$create.plot <- FALSE
-#    bin.data.tmp <- binary.data
-#    bin.data.tmp <- compute.bin.point.estimates(binary.data=bin.data.tmp, params=params.vec[[1]])
-    # point estimates will vary depending on params, so we need to compute them for each analysis
-#    cur.res <- eval(call(fname, bin.data.tmp, params))
-    # run the first analysis
-#    forest.path <- paste(params$fp_outpath, sep="")
-#    plot.data <- create.plot.data.binary(binary.data, params, res)
-#    plot.data$label[length(binary.data@study.names)+2] <- fname
-    # rename the last row from "Overall" to the name of the method used
-    # run the rest of the analyses and update plot.data
-#    for (count in 2:length(methods)) {
-#        bin.data.tmp <- binary.data
-#        bin.data.tmp <- compute.bin.point.estimates(bin.data.tmp, params.vec[[count]])
-#        params.vec[[count]]$create.plot <- FALSE
-#        fname <- methods[count]
-#        cur.res <- eval(call(fname, binary.data=bin.data.tmp, params=params.vec[[count]]))
-#        cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
-#        plot.data$label <- c(plot.data$label, fname)
-#        plot.data$types <- c(plot.data$types, 2)
-        # add a 2 at the end for the new summary line.
-#        plot.data$effects$ES <- c(plot.data$effects$ES, cur.overall[1])
-#        plot.data$effects$LL <- c(plot.data$effects$LL, cur.overall[2])
-#        plot.data$effects$UL <- c(plot.data$effects$UL, cur.overall[3])
-#    }
-#    forest.plot(plot.data, outpath=params$fp_outpath)
-#}
 
 update.plot.data.multiple <- function(binary.data, params, results) {
 
