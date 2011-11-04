@@ -10,16 +10,17 @@
 library(metafor)
 
 binary.fixed.meta.regression <- function(reg.data, params, cov.names){
-    cov.matrix <- array(dim=c(length(reg.data@y), length(cov.names)), dimnames=list(NULL, cov.names))  
+  # meta regression for numerical covariates
+  cov.data <- array(dim=c(length(reg.data@y), length(cov.names)), dimnames=list(NULL, cov.names))  
     for (cov.name in cov.names) {
       # extract matrix of covariates
        cov.val.str <- paste("reg.data@covariates$", cov.name, sep="")
        cov.vals <- eval(parse(text=cov.val.str))
-       cov.matrix[,cov.name] <- cov.vals
+       cov.data[,cov.name] <- cov.vals
     }     
     res<-rma.uni(yi=reg.data@y, sei=reg.data@SE, slab=reg.data@study.names,
                                 level=params$conf.level, digits=params$digits, method="FE", 
-                                mods=cov.matrix)
+                                mods=cov.data)
     reg.disp <- create.regression.disp(res, params, cov.names)
     if (length(cov.names)==1) {
         # if just 1 covariate, create reg. plot
@@ -90,20 +91,28 @@ binary.random.meta.regression.parameters <- function(){
     parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
 }
 
-categorical.meta.regression <- function(om.data, params, cov.name) {
-  y <- om.data@y
-  cov.val.str <- paste("om.data@covariates$", cov.name, sep="")
-  subgroups <- eval(parse(text=cov.val.str))
-  subgroup.list <- unique(subgroups)
-  form <- "om.data@y"
-  for (i in subgroup.list) {
-    #g[count,] <- as.numeric(subgroups == i)
-    index.var <- paste("g", i, sep="")
-    assign(index.var, as.numeric(subgroups == i))
+categorical.meta.regression <- function(reg.data, params, cov.names) {
+  # meta-regression for categorical covariates 
+  cov.data <- array()
+  var.names <- NULL
+  for (cov.name in cov.names) {
+      # extract matrix of covariates
+       cov.val.str <- paste("reg.data@covariates$", cov.name, sep="")
+       groups <- eval(parse(text=cov.val.str))
+       group.list <- unique(groups)
+       array.tmp <- array(dim=c(length(reg.data@y), length(group.list)-1), dimnames=list(NULL, group.list[-1]))
+       for (group in group.list[-1]) {
+           array.tmp[,group] <- as.numeric(groups == group)
+       }
+       if (length(cov.data) > 1) {
+           cov.data <- cbind(cov.data, array.tmp)
+       } else {
+           cov.data <- array.tmp
+       }
   }
-  gnam <- paste("g", 1:length(subgroup.list), sep="")
-  fmla <- as.formula(paste("y ~ ", paste(gnam, collapse= "+"), "- 1"))
-  weights <- 1/(om.data@SE^2)
-  res <- lm(fmla, weights=weights)
-  res
+  res <- res<-rma.uni(yi=reg.data@y, sei=reg.data@SE, slab=reg.data@study.names,
+                                level=params$conf.level, digits=params$digits, method="FE", 
+                                mods=cov.data)
+  reg.disp <- create.regression.disp(res, params, cov.names=dimnames(cov.data)[[2]]) 
+  results <- list("Summary"=reg.disp)
 }
