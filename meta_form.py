@@ -286,6 +286,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         form = meta_subgroup_form.MetaSubgroupForm(self.model, parent=self)
         form.show()
   
+    ####
     # Here are the calls to ma_specs with so-called `meta-methods`
     # which operate over the output of meta-analytic methods. Note
     # that we don't care what sort of data we're operating over here;
@@ -425,9 +426,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                     action.blockSignals(True)
                     action.setChecked(False)
                     action.blockSignals(False)
-        ##
-        # @TODO -- diagnostic data.
-        
+
     def metric_selected(self, metric_name, menu):
         # first deselect the previous metric
         self.deselect_all_metrics()
@@ -1092,7 +1091,6 @@ def test_remove_outcome():
     outcome_names = meta.model.dataset.get_outcome_names()
     assert (new_outcome_name not in outcome_names)
     
-#def test_add
 def paste_from_excel_test():
     meta, app = _setup_app()
 

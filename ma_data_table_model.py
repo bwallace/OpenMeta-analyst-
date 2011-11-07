@@ -87,7 +87,6 @@ class DatasetModel(QAbstractTableModel):
         self.NUM_DIGITS = 3
         self.dirty = False
 
-
         
     def set_current_metric(self, metric):
         self.current_effect = metric
@@ -271,10 +270,14 @@ class DatasetModel(QAbstractTableModel):
         #    tx A-tx B
         # if we have a one group outcome, the string is just:
         #    tx A
+        #print "\n--get_cur_group_str. current effect is: %s. one arm metrics are: %s" %\
+        #                (self.current_effect, ONE_ARM_METRICS)
+        #print self.current_effect in ONE_ARM_METRICS
         if self.current_effect in ONE_ARM_METRICS:
             group_str = self.current_txs[0] 
         else:
             group_str = "-".join(self.current_txs)
+        #print "GRUOP STR: %s" % group_str
         return group_str
         
     def setData(self, index, value, role=Qt.EditRole):
@@ -413,27 +416,34 @@ class DatasetModel(QAbstractTableModel):
                 
             self.emit(SIGNAL("dataChanged(QModelIndex, QModelIndex)"), index, index)
 
-            # Tell the view that an entry in the table has changed, and what the old
+            # tell the view that an entry in the table has changed, and what the old
             # and new values were. This for undo/redo purposes.
             new_val = self.data(index)
 
-            #self.emit(SIGNAL("cellContentChanged(QModelIndex, QVariant, QVariant)"), 
-            #                index, old_val, new_val)
-            
+
             self.emit(SIGNAL("pyCellContentChanged(PyQt_PyObject, PyQt_PyObject, PyQt_PyObject, PyQt_PyObject)"), 
                                index, old_val, new_val, study_added_due_to_edit)
          
+
             if not self.is_diag():
+                group_str = self.get_cur_group_str()
+
+                print group_str
+                print "ok checking it; cur outcome: %s. cur group: %s" % (self.current_outcome, group_str)
                 if self.current_outcome is not None:
                     effect_d = self.get_current_ma_unit_for_study(index.row()).effects_dict[\
                                           self.current_effect][group_str]
+                    
+                    print effect_d
                     # if any of the effect values are empty, we cannot include this study in the analysis, so it
                     # is automatically excluded.
                     if any([val is None for val in [effect_d[effect_key] for effect_key in ("upper", "lower", "est")]]):
+                        print "game over\n\n"
                         study.include = False
                     # if the study has not been explicitly excluded by the user, then we automatically
                     # include it once it has sufficient data.
                     elif not study.manually_excluded:
+                        print "okey@\n\n"
                         study.include = True
 
             return True
@@ -854,18 +864,42 @@ class DatasetModel(QAbstractTableModel):
         data_type = self.get_current_outcome_type(get_str=False)
         # if first_arm_only is true, we are only concerned with whether
         # or not there is sufficient raw data for the first arm of the study
+        
         if first_arm_only:
             if data_type == BINARY:
                 raw_data = raw_data[:2]
             elif data_type == CONTINUOUS:
                 raw_data = raw_data[:3]
-                
-        return not "" in raw_data
+        
+        raw_data_is_complete = not "" in raw_data and not None in raw_data
+        return raw_data_is_complete
+
+
+    def data_for_only_one_arm(self):
+        '''
+        really this should read 'data for one *and only one* arm.
+        '''
+        data_for_arm_one, data_for_arm_two = False, False
+
+        data_type = self.get_current_outcome_type(get_str=False)
+        per_group_raw_data_size = 2 if data_type == BINARY else 3
+
+        for study_index in range(len(self.dataset.studies)):
+            cur_raw_data = self.get_cur_raw_data_for_study(study_index)
+            
+            if len([x for x in cur_raw_data[:per_group_raw_data_size] if x is not None and x!='']) > 0:
+                data_for_arm_one = True
+            if len([x for x in cur_raw_data[per_group_raw_data_size:] if x is not None and x!='']) > 0:
+                data_for_arm_two = True
+
+        return (data_for_arm_one and not data_for_arm_two) or\
+                 (data_for_arm_two and not data_for_arm_one)
 
     def try_to_update_outcomes(self):
         for study_index in range(len(self.dataset.studies)):
             self.update_outcome_if_possible(study_index)
 
+        
     def update_outcome_if_possible(self, study_index):
         '''
         Checks the parametric study to ascertain if enough raw data has been
@@ -881,9 +915,13 @@ class DatasetModel(QAbstractTableModel):
         # metric then if sufficient raw data exists to compute this
         if self.raw_data_is_complete_for_study(study_index) or \
                 (one_arm_effect and self.raw_data_is_complete_for_study(study_index, first_arm_only=True)):
+            
+            # include the study -- note that if the user excluded the study, then
+            # edited the raw data, this will re-include it automatically
+            self.dataset.studies[study_index].include = True
+
             if data_type == BINARY:
                 e1, n1, e2, n2 = self.get_cur_raw_data_for_study(study_index)
-                print self.current_effect
                 if self.current_effect in BINARY_TWO_ARM_METRICS:
                     est_and_ci_d = meta_py_r.effect_for_study(e1, n1, e2, n2, metric=self.current_effect)
                 else:

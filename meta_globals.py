@@ -35,6 +35,7 @@ CONTINUOUS_ONE_ARM_METRICS = ["TX Mean"]
 # Sometimes it's useful to know if we're dealing with a one-arm outcome,
 # in general
 ONE_ARM_METRICS = BINARY_ONE_ARM_METRICS + CONTINUOUS_ONE_ARM_METRICS 
+TWO_ARM_METRICS = BINARY_TWO_ARM_METRICS + CONTINUOUS_TWO_ARM_METRICS
 
 # Diagnostic metrics
 DIAGNOSTIC_METRICS = ["Sens", "Spec", "PLR", "NLR", "DOR"]

@@ -23,6 +23,7 @@ import continuous_data_form
 # intermediary 
 import ma_dataset
 from ma_dataset import *
+from meta_globals import *
 
 class MADataTable(QtGui.QTableView):
 
@@ -173,8 +174,59 @@ class MADataTable(QtGui.QTableView):
         cur_follow_up = self.model().current_time_point
 
     def cell_content_changed(self, index, old_val, new_val, study_added):
-        cell_edit = CommandCellEdit(self, index, old_val, new_val, study_added)
+        metric_changed, old_metric = self.change_metric_if_appropriate()
+        new_metric = None
+        if metric_changed:
+            new_metric = self.model().current_effect
+            
+
+        cell_edit = CommandCellEdit(self, index, old_val, new_val, added_study=study_added,\
+                                        metric_changed=metric_changed, old_metric=old_metric,\
+                                        new_metric=new_metric)
         self.undoStack.push(cell_edit)
+
+    def change_metric_if_appropriate(self):
+        '''
+        if: 
+            1) there are at least 2 studies, and 
+            2) none of them have data for two-arms, and,
+            3) the current metric is a two-arm metric
+        then:
+            we automatically change the metric to single-arm
+
+        returns a tuple, wherein the first element is a boolean
+        indicating whether or not the metric was indeed changed,
+        and the second is the original metric
+        '''
+        original_metric = self.model().current_effect
+        if len(self.model().dataset) > 2:
+            data_type = self.model().get_current_outcome_type()
+            if data_type == "binary" or data_type == "continuous":
+                default_metric = {"binary":BINARY_ONE_ARM_METRICS[0], 
+                                  "continuous":CONTINUOUS_ONE_ARM_METRICS[0]}[data_type]
+                
+                if default_metric != original_metric and self.model().data_for_only_one_arm():
+                    #self.model().set_current_metric(default_metric)
+                    #self.model().try_to_update_outcomes()
+                    self.set_metric_in_ui(default_metric)
+                    return (True, original_metric)
+        return (False,  original_metric)
+
+    def _data_for_only_one_group(self):
+
+        study_index = row
+        ma_unit = self.model().get_current_ma_unit_for_study(study_index)
+        old_ma_unit = copy.deepcopy(ma_unit)
+        cur_txs = self.model().current_txs
+        cur_effect = self.model().current_effect
+        '''
+        ma_unit = self.model().get_current_ma_unit_for_study(study_index)
+        old_ma_unit = copy.deepcopy(ma_unit)
+        cur_txs = self.model().current_txs
+        cur_effect = self.model().current_effect
+        cur_group_str = self.model().get_cur_group_str()
+        data_type = self.model().get_current_outcome_type()
+        '''
 
     def header_clicked(self, column):
         can_sort_by = [self.model().NAME, self.model().YEAR]
@@ -190,6 +242,13 @@ class MADataTable(QtGui.QTableView):
             sort_command = CommandSort(self.model(), column, self.reverse_column_sorts[column])
             self.undoStack.push(sort_command)
             self.reverse_column_sorts[column] = not self.reverse_column_sorts[column]
+
+
+
+    def _data_for_only_one_of_two_arms(self):
+        cur_txs = self.model().current_txs
+        for group in cur_txs:
+            cur_raw_data_dict[group] = list(ma_unit.get_raw_data_for_group(group))
 
     def paste_from_clipboard(self, upper_left_index):
         ''' pastes the data in the clipboard starting at the currently selected cell.'''
@@ -214,11 +273,10 @@ class MADataTable(QtGui.QTableView):
         print "new content: %s" % new_content
         print "upper left index:"
         print self._print_index(upper_left_index)
-        paste_command =  CommandPaste(self, new_content, old_content,
-                                                                upper_left_index, studies_pre_paste,
-                                                                self.column_widths(),
-                                                                "paste %s" % new_content)
 
+        paste_command =  CommandPaste(self, new_content, old_content,
+                                        upper_left_index, studies_pre_paste,
+                                        self.column_widths(), "paste %s" % new_content)
         self.undoStack.push(paste_command)
 
     def copy_contents_in_range(self, upper_left_index, lower_right_index, to_clipboard):
@@ -301,6 +359,19 @@ class MADataTable(QtGui.QTableView):
     def set_column_widths(self, widths):
         for col_index, width in enumerate(widths):
             self.setColumnWidth(col_index, width)
+
+
+    def set_metric_in_ui(self, metric):
+        '''
+        calls the method on the UI to change
+        the current metric -- this is the same
+        method binded to the menu items, so call
+        this to programmatically change the metric.
+        '''
+        menu = self.main_gui.oneArmMetricMenu
+        if metric in TWO_ARM_METRICS:
+            menu = self.main_gui.twoArmMetricMenu
+        self.main_gui.metric_selected(metric, menu)
 
     def _enable_analysis_menus_if_appropriate(self):
         if len(self.model().dataset) >= 2:
@@ -403,6 +474,7 @@ class CommandCellEdit(QUndoCommand):
     defined below).
     '''
     def __init__(self, ma_data_table_view, index, original_content, new_content, 
+                        metric_changed=False, old_metric=None, new_metric=None,
                         added_study=None, description=""):
         super(CommandCellEdit, self).__init__(description)
         self.first_call = True
@@ -412,11 +484,13 @@ class CommandCellEdit(QUndoCommand):
         self.ma_data_table_view = ma_data_table_view
         self.added_study = added_study
         self.something_else = added_study
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
+        self.metric_changed = metric_changed
+        self.old_metric = old_metric
+        self.new_metric = new_metric
 
     def redo(self):
         index = self._get_index()
+     
         if self.first_call:
             self.first_call = False
             ###
@@ -427,7 +501,7 @@ class CommandCellEdit(QUndoCommand):
             
 
             #self.added_study = self.ma_data_table_view.model().study_auto_added
-            # note: previously (10/14/10) there was a call here to set the
+            # note: previously (10/14/11) there was a call here to set the
             # model's study_auto_added field to None. I don't know why it was
             # here, and removed it.  
             #     > self.ma_data_table_view.model().study_auto_added = None
@@ -441,6 +515,11 @@ class CommandCellEdit(QUndoCommand):
             model.setData(index, self.new_content)
             self.added_study = self.ma_data_table_view.model().study_auto_added
             self.ma_data_table_view.model().study_auto_added = None
+
+            # did the metric change? if so re-change it here
+            if self.metric_changed is not None:
+                self.ma_data_table_view.set_metric_in_ui(self.new_metric)
+
             model.blockSignals(False)
             # make the view reflect the update
             self.ma_data_table_view.model().reset()
@@ -457,10 +536,6 @@ class CommandCellEdit(QUndoCommand):
         if self.col == 1 and self.row == len(self.ma_data_table_view.model().get_studies())-1:
             self.ma_data_table_view.model().remove_study(self.added_study)
         '''
-
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
-
         # in this case, the original editing action
         # had the effect of appending a row to the spreadsheet.
         # here we remove it.
@@ -474,6 +549,14 @@ class CommandCellEdit(QUndoCommand):
         # editing the model data
         model.blockSignals(True)
         model.setData(index, self.original_content)
+
+        # did we change the metric automatically (e.g., because it
+        # looked like the user was exploring single-arm data?) if
+        # so, change it back
+        if self.metric_changed:
+            #self.ma_data_table_view.model().set_current_metric(self.old_metric)
+            self.ma_data_table_view.set_metric_in_ui(self.old_metric)
+            print "?????"
         model.blockSignals(False)
         self.ma_data_table_view.model().reset()
 
@@ -493,14 +576,19 @@ class CommandPaste(QUndoCommand):
     We again make use of QT's undo/redo framework. this implementation handles the paste action;
     the redo is just repasting the former contents into the same cells.
     '''
-    def __init__(self, ma_data_table_view, new_content, old_content,
-                                        upper_left_coord, old_studies, old_col_widths, description):
+    def __init__(self, ma_data_table_view, new_content, old_content,\
+                    upper_left_coord, old_studies, old_col_widths, description):
         super(CommandPaste, self).__init__(description)
         self.new_content, self.old_content = new_content, old_content
         self.upper_left_coord = upper_left_coord
         self.old_column_widths = old_col_widths
         self.ma_data_table_view = ma_data_table_view
         self.added_study = None
+        self.metric_changed = None
+        self.old_metric = None
+        self.new_metric = None
+        # is this the first time? 
+        self.first_call = True
 
 
     def redo(self):
@@ -512,16 +600,40 @@ class CommandPaste(QUndoCommand):
         self.ma_data_table_view._add_studies_if_necessary(self.upper_left_coord, self.new_content)
         self.ma_data_table_view.paste_contents(self.upper_left_coord, self.new_content)
 
+        if self.first_call:
+            # on the first application of the paste, we need to ascertain
+            # whether the metric changed automatically (e.g., because it
+            # looks like tpasted data is single-arm)
+            self.metric_changed, self.old_metric = \
+                self.ma_data_table_view.change_metric_if_appropriate()
+
+            if self.metric_changed:
+                self.new_metric = self.ma_data_table_view.model().current_effect
+                #self.ma_data_table_view.set_metric_in_ui(self.new_metric)
+            self.first_call = False
+        else:
+            # did the metric change on the original paste? 
+            # if so re-change it here
+            if self.metric_changed is not None:
+                self.ma_data_table_view.set_metric_in_ui(self.new_metric)
+
         self.ma_data_table_view.model().reset()
         self.ma_data_table_view._enable_analysis_menus_if_appropriate()
         self.ma_data_table_view.emit(SIGNAL("dataDirtied()"))
+        self.ma_data_table_view.resizeColumnsToContents()
 
     def undo(self):
-
         if self.added_study is not None:
             self.ma_data_table_view.model().remove_study(self.added_study)
         self.ma_data_table_view.main_gui.set_model(self.original_dataset,\
                                  state_dict=self.original_state_dict)
+
+
+        # did we change the metric automatically (e.g., because it
+        # looked like the user was exploring single-arm data?) if
+        # so, change it back
+        if self.metric_changed:
+            self.ma_data_table_view.set_metric_in_ui(self.old_metric)
 
         self.ma_data_table_view.model().reset()
         self.ma_data_table_view._enable_analysis_menus_if_appropriate()

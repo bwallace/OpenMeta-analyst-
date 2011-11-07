@@ -123,9 +123,6 @@ class Dataset:
         return outcome.data_type if not get_string else TYPE_TO_STR_DICT[outcome.data_type]
         
     def get_outcome_obj(self, outcome_name):
-        if outcome_name == "something2":
-            pyqtRemoveInputHook()
-            pdb.set_trace()
         for study in self.studies:
             outcome_obj = study.get_outcome(outcome_name)
             if outcome_obj is not None:

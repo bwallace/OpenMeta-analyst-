@@ -157,7 +157,6 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                 # dictionary
                 self.add_cur_analysis_details()
             
-
                 method_names, list_of_param_vals = [], []
 
                 if len(self.diag_metrics_to_analysis_details) == 0:
