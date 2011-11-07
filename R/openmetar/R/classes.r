@@ -50,4 +50,9 @@ setClass("ContinuousData",
 #
 setClass("AnalysisSpecification", 
                 representation(parameters="data.frame"))
+
+#
+# The covariate class contains covariate values.
+#
+setClass("CovariateValues", representation(cov.name="character", cov.vals="vector", cov.type="character"))
                 
