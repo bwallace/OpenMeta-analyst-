@@ -52,24 +52,29 @@ class MADataTable(QtGui.QTableView):
         self.setAlternatingRowColors(True)
         self.contextMenuEvent = self._make_context_menu()
 
-        
-    def context_menu(self, point):
-        action = QAction("do stuff man", self)
-        context_menu = QMenu(self)
-        context_menu.addAction(action)
-        context_menu.popup(point)
-
 
     def _make_context_menu(self):
         def _context_menu(event):
+            context_menu = QMenu(self)
+
+            ### delete study
             study_index = self.rowAt(event.y())
             study = self.model().dataset.studies[study_index]
             action = QAction("delete study %s" % study.name, self)
             QObject.connect(action, SIGNAL("triggered()"), \
                 lambda : self.main_gui.delete_study(study, study_index=study_index))
-
-            context_menu = QMenu(self)
             context_menu.addAction(action)
+
+            ### copy
+            action = QAction("copy", self)
+            QObject.connect(action, SIGNAL("triggered()"), self.copy)
+            context_menu.addAction(action)
+
+            ### paste
+            action = QAction("paste", self)
+            QObject.connect(action, SIGNAL("triggered()"), self.paste)
+            context_menu.addAction(action)
+
             pos = event.globalPos()
             context_menu.popup(pos)
             event.accept()
