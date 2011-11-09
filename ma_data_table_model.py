@@ -900,6 +900,25 @@ class DatasetModel(QAbstractTableModel):
             self.update_outcome_if_possible(study_index)
 
         
+    def blank_all_studies(self, include_them):
+        for study in self.dataset.studies:
+            study.include=include_them
+    
+    ###
+    # syntactic high-fructose corn syrup
+    def include_all_studies(self):
+        self.blank_all_studies(True)
+    
+    def exclude_all_studies(self):
+        self.blank_all_studies(False)
+
+    def all_studies_are_included(self):
+        return all([study.include for study in self.dataset.studies])
+    
+    def all_studies_are_excluded(self):
+        return all([not study.include for study in self.dataset.studies])
+
+
     def update_outcome_if_possible(self, study_index):
         '''
         Checks the parametric study to ascertain if enough raw data has been

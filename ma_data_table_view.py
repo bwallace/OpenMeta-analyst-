@@ -50,7 +50,16 @@ class MADataTable(QtGui.QTableView):
         ## TODO need to add covariate indices here, as needed
         self.reverse_column_sorts = {0: False, 1: False}
         self.setAlternatingRowColors(True)
+
+        ### horizontal (row) header
         self.contextMenuEvent = self._make_context_menu()
+
+        ### vertical (column) header
+        headers = self.horizontalHeader()
+        headers.setContextMenuPolicy(Qt.CustomContextMenu)
+        headers.customContextMenuRequested.connect(self.header_context_menu)
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
 
 
     def _make_context_menu(self):
@@ -81,6 +90,34 @@ class MADataTable(QtGui.QTableView):
 
         return _context_menu
 
+    def header_context_menu(self, pos):
+        column_clicked = self.columnAt(pos.x())
+        print "right click @ column: %s" % column_clicked
+        if column_clicked == 0:
+            # option to (de-)select / include all studies
+            # per Ethan (issue #100)
+            context_menu = QMenu(self)
+
+            action = QAction("include all", self)
+            QObject.connect(action, SIGNAL("triggered()"), self.include_all_studies)
+            if self.model().all_studies_are_included():
+                action.setEnabled(False)
+            context_menu.addAction(action)
+
+            action = QAction("exclude all", self)
+            QObject.connect(action, SIGNAL("triggered()"), self.exclude_all_studies)
+            if self.model().all_studies_are_excluded():
+                action.setEnabled(False)
+            context_menu.addAction(action)
+
+            context_menu.popup(self.mapToGlobal(pos))
+            
+
+    def include_all_studies(self):
+        self.model().include_all_studies()
+    
+    def exclude_all_studies(self):
+        self.model().exclude_all_studies()
 
     def keyPressEvent(self, event):                                       
         if (event.modifiers() & QtCore.Qt.ControlModifier):
