@@ -9,7 +9,86 @@
 
 library(metafor)
 
-binary.fixed.meta.regression <- function(reg.data, params, cov.names){
+meta.regression <- function(reg.data, params) {
+   cov.data <- extract.cov.data(reg.data)
+   cov.array <- cov.data$cov.array
+   res<-rma.uni(yi=reg.data@y, sei=reg.data@SE, slab=reg.data@study.names,
+                                level=params$conf.level, digits=params$digits, method="FE", 
+                                mods=cov.array)
+   display.data <- cov.data$display.data
+   reg.disp <- create.regression.display(res, params, display.data)
+   
+   if (length(display.data$cont.cov.names)==1 & length(display.data$factor.cov.names)==0) {
+        # if just 1 covariate, create reg. plot
+        betas <- res$b
+        fitted.line <- list(intercept=betas[1], slope=betas[2])
+        plot.path <- "./r_tmp/reg.png"
+        plot.data <- create.plot.data.reg(reg.data, params, fitted.line, selected.cov=cov.name)
+        meta.regression.plot(plot.data, outpath=plot.path, symSize=1,
+                                  lcol = "darkred",
+                                  y.axis.label = "Effect size",
+                                  xlabel= cov.name,
+                                  lweight = 3,
+                                  lpatern = "dotted",
+                                  plotregion = "n",
+                                  mcolor = "darkgreen",
+                                  regline = TRUE)   
+        images <- c("Regression Plot"=plot.path)
+        plot.names <- c("forest plot"="reg.plot")
+        results <- list("images"=images, "Summary"=reg.disp, "plot_names"=plot.names)
+    } else {
+        results <- list("Summary"=reg.disp)
+    }
+}
+
+extract.cov.data <- function(reg.data) {
+  # extract covariate date
+  cont.cov.array <- NULL
+  factor.cov.array <- NULL
+  # the following are for the regression display
+  cont.cov.names <- NULL
+  factor.cov.names <- NULL
+  factor.n.levels <- NULL
+  factor.cov.display.col <- NULL
+  levels.display.col <- NULL
+  # first col. of regression display
+  for (name in names(reg.data@covariates)) {
+    # put covariate data into two arrays, for continuous and factor covariates.
+    cov.val.str <- paste("reg.data@covariates$", name, sep="")
+    cov <- eval(parse(text=cov.val.str))
+    if (cov@cov.type=="continuous") {
+      cov.col <- array(cov@cov.vals, dim=c(length(reg.data@y), 1), dimnames=list(NULL, cov@cov.name))
+      cont.cov.array <- cbind(cont.cov.array, cov.col)
+      cont.cov.names <- c(cont.cov.names, name)
+    }
+    if (cov@cov.type=="factor") {
+      levels <- unique(cov@cov.vals)
+      levels.minus.one <- setdiff(levels, cov@ref.var)
+      
+      # levels except for reference variable
+      cov.cols <- array(dim=c(length(reg.data@y), length(levels.minus.one)), dimnames=list(NULL, levels.minus.one))
+      for (level in levels.minus.one) {
+           cov.cols[,level] <- as.numeric(cov@cov.vals==level)
+      }
+      factor.cov.array <- cbind(factor.cov.array, cov.cols)
+      factor.cov.names <- c(factor.cov.names, name)
+      factor.n.levels <- c(factor.n.levels, length(levels))
+      factor.cov.display.col <- c(factor.cov.display.col, name, rep("",length(levels.minus.one)))
+      levels.display.col <- c(levels.display.col, cov@ref.var, levels.minus.one)
+    }
+  }
+  cov.array <- cbind(cont.cov.array, factor.cov.array)
+  cov.display.col <- c("Intercept", cont.cov.names, factor.cov.display.col)
+  levels.display.col <- c(rep("",length(cont.cov.names) + 1), levels.display.col)
+  
+  display.data <- list(cov.display.col=cov.display.col, levels.display.col=levels.display.col,
+                       cont.cov.names=cont.cov.names, factor.cov.names=factor.cov.names,
+                       factor.n.levels=factor.n.levels)
+  cov.data <- list(cov.array=cov.array, display.data=display.data)
+                   
+}
+
+binary.fixed.meta.regression <- function(reg.data, params){
   # meta regression for numerical covariates
   cov.data <- array(dim=c(length(reg.data@y), length(cov.names)), dimnames=list(NULL, cov.names))  
     for (cov.name in cov.names) {

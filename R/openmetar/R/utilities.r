@@ -194,22 +194,58 @@ save.plot.data <- function(plot.data) {
   forest.plot.params.path
 }
 
-create.regression.disp <- function(res, params, cov.names) {
+create.regression.display <- function(res, params, display.data) {
     # create table for diplaying summary of regression ma results
+    cov.display.col <- display.data$cov.display.col
+    levels.display.col <- display.data$levels.display.col
+    cont.cov.names <- display.data$cont.cov.names
+    factor.cov.names <- display.data$factor.cov.names
+    factor.n.levels <- display.data$factor.n.levels
+    n.cont.rows <- length(cont.cov.names) + 1
+    
+    n.rows <- length(cov.display.col) + 1
+    col.labels <- c("Covariate", "Level", "Estimate", "Std. error", "p-Value", "Z-Value", "Lower bound", "Upper bound")
+    reg.array <- array(dim=c(n.rows, 8), dimnames=list(NULL, col.names))
+    reg.array[1,] <- col.labels
     coeffs <- round(res$b, digits=params$digits)
+    se <- round.display(res$se, digits=params$digits)
     pvals <- round.display(res$pval, digits=params$digits)
+    zvals <- round.display(res$zval, digits=params$digits)
     lbs <- round(res$ci.lb, digits=params$digits)
     ubs <- round(res$ci.ub, digits=params$digits)
-    dimnames(coeffs) <- NULL
-    dimnames(pvals) <- NULL
-    dimnames(lbs) <- NULL
-    dimnames(ubs) <- NULL
-    cov.names <- c("", "Intercept", cov.names)
-    estimates <- c("Estimates", coeffs)
-    p.values <- c("p-Values", pvals)
-    l.bounds <- c("Lower bounds", lbs)
-    u.bounds <- c("Upper bounds", ubs)
-    reg.array <- cbind(cov.names, estimates, p.values, l.bounds, u.bounds)
+    
+    coeffs.tmp <- coeffs[1:n.cont.rows]
+    # extra row for intercept
+    se.tmp <- se[1:n.cont.rows]
+    pvals.tmp <- pvals[1:n.cont.rows]
+    zvals.tmp <- zvals[1:n.cont.rows]
+    lbs.tmp <- lbs[1:n.cont.rows]
+    ubs.tmp <- ubs[1:n.cont.rows]
+    if (length(factor.cov.names) > 0) {
+      # there are factor covariants - insert spaces for reference var. row.
+      insert.row <- n.cont.rows + 1
+      for (count in 1:length(factor.cov.names)) {
+        n.levels <- factor.n.levels[count] 
+        coeffs.tmp <- c(coeffs.tmp,"", coeffs[insert.row:(insert.row + n.levels - 2)])
+        se.tmp <- c(se.tmp,"", se[insert.row:(insert.row + n.levels - 2)])
+        pvals.tmp <- c(pvals.tmp,"",coeffs[insert.row:(insert.row + n.levels - 2)])
+        zvals.tmp <- c(zvals.tmp,"",coeffs[insert.row:(insert.row + n.levels - 2)])
+        lbs.tmp <- c(lbs.tmp,"",coeffs[insert.row:(insert.row + n.levels - 2)])
+        ubs.tmp <- c(ubs.tmp,"",coeffs[insert.row:(insert.row + n.levels - 2)])
+        insert.row <- insert.row + n.levels - 1
+      }   
+      
+    }
+
+    # add data to array
+    reg.array[2:n.rows,"Covariate"] <- cov.display.col
+    reg.array[2:n.rows, "Level"] <- levels.display.col
+    reg.array[2:n.rows,"Estimate"] <- coeffs.tmp 
+    reg.array[2:n.rows,"Std. error"] <- se.tmp
+    reg.array[2:n.rows, "p-Value"] <- pvals.tmp
+    reg.array[2:n.rows,"Z-Value"] <- zvals.tmp
+    reg.array[2:n.rows, "Lower bound"] <- lbs.tmp
+    reg.array[2:n.rows, "Upper bound"] <- ubs.tmp
     arrays <- list(arr1=reg.array)
     reg.disp <- list("model.title" = "Meta-Regression", "table.titles" = c("Model Results"), "arrays" = arrays)
 
