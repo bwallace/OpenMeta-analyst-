@@ -110,7 +110,7 @@ categorical.meta.regression <- function(reg.data, params, cov.names) {
            cov.data <- array.tmp
        }
   }
-  res <- res<-rma.uni(yi=reg.data@y, sei=reg.data@SE, slab=reg.data@study.names,
+  res <-rma.uni(yi=reg.data@y, sei=reg.data@SE, slab=reg.data@study.names,
                                 level=params$conf.level, digits=params$digits, method="FE", 
                                 mods=cov.data)
   reg.disp <- create.regression.disp(res, params, cov.names=dimnames(cov.data)[[2]]) 
