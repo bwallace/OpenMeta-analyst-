@@ -437,22 +437,21 @@ create.subgroup.plot.data.cont <- function(subgroup.data, params) {
 }
 
 # create regression plot data
-create.plot.data.reg <- function(reg.data, params, fitted.line, selected.cov=cov.name) {
+create.plot.data.reg <- function(reg.data, params, fitted.line) {
      scale.str <- "standard"
+     cov.name <- reg.data@covariates[[1]]@cov.name
+     cov.vals <- reg.data@covariates[[1]]@cov.vals
      plot.data <- list("fitted.line" = fitted.line,
-                    types = c(rep(0, length(reg.data@study.names))),
-                    scale = scale.str)
+                      types = c(rep(0, length(reg.data@study.names))),
+                      scale = scale.str,
+                      covariate = list(varname = cov.name, values = cov.vals)
+                       )
      alpha <- 1.0-(params$conf.level/100.0)
      mult <- abs(qnorm(alpha/2.0))
     
+     
      y <- reg.data@y
      se <- reg.data@SE
-     if (!is.null(selected.cov)){
-        cov.val.str <- paste("reg.data@covariates$", selected.cov, sep="")
-        cov.values <- eval(parse(text=cov.val.str))
-        plot.data$covariate <- list(varname = selected.cov,
-                                   values = cov.values)
-     } 
      effects <- list(ES = y,
                     se = se)
      plot.data$effects <- effects
@@ -852,44 +851,12 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
     } else {
 		        ticks <- user.ticks
             log.ticks <- log(user.ticks)
-		        #log.ticks <- log.ticks[log.ticks > min(col$range) - 0.5]    # remember it is additive on this scale
-            #log.ticks <- log.ticks[log.ticks < max(col$range) + 0.5]
-            #ticks <- exp(log.ticks)
     }
         grid.xaxis(at = log.ticks , label = round(ticks, 3), gp=gpar(cex=0.6))          
   } 
   if (forest.data$scale == "logit")  {
         if (length(user.ticks) == 0) { # some cheap tricks to make the axis ticks look nice (in most cases)...
             ticks <- c(0, .25, .5, .75, 1)
-            #to.make.ticks <- invlogit(col$range)
-            #lower.gap <- to.make.ticks[1]
-            #upper.gap <- 1 - to.make.ticks[2]
-            #ticks <- vector()
-            #ticks[3] <- .5
-            #ticks.lb <- invlogit(min(col$range[1]))
-            #ticks.ub <- invlogit(max(col$range[2]))
-            #if (floor(10 * ticks.ub) != 9) {
-              # first digit of ticks.ub != 9
-              #ticks[5] <- .9
-              #ticks[4] <- floor(10*ticks.ub) / 10
-              
-            #} else { 
-            #  i <- 1
-           
-            #  while (ceiling(10^i * ticks.ub) == 10^i) {
-            #    i <- i + 1
-            #  }
-            # ticks[5] <-  10^(-i) * (10^i - 1)
-            #  ticks[4] <- 10^(-i+1) * (10 ^ (i-1) -1)
-            #}        
-            # i <- 0
-               # find the largest power of 10 smaller than ticks.lb
-            #while (10^(-i) > ticks.lb) {
-            #  i<-i+1
-            #}
-            #ticks[2] <- 10^(-i) * ceiling(10^i * ticks.lb)
-            #ticks[1] <- 10^(-i)
-             
         } else {
 		        ticks <- user.ticks
         }
@@ -1025,7 +992,6 @@ forest.plot <- function(forest.data, outpath) {
 ####################################### 
 draw.forest.plot <- function(forest.data, vp.data){
     # Draws forest plots using viewport data extracted by forest.plot.data
-    # This is a refactoring of forest.plot to plot two forest.plots side.by.side
     show.study.col <- forest.data$options$show.study.col                             
     how.wide <- vp.data$how.wide
     #how.tall <- vp.data$how.tall

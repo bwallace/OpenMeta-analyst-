@@ -12,8 +12,13 @@ library(metafor)
 meta.regression <- function(reg.data, params) {
    cov.data <- extract.cov.data(reg.data)
    cov.array <- cov.data$cov.array
+   if (params$method == "FE") {
+     method <- "FE"
+   } else {
+     method <- params$rm.method
+   }
    res<-rma.uni(yi=reg.data@y, sei=reg.data@SE, slab=reg.data@study.names,
-                                level=params$conf.level, digits=params$digits, method="FE", 
+                                level=params$conf.level, digits=params$digits, method=method, 
                                 mods=cov.array)
    display.data <- cov.data$display.data
    reg.disp <- create.regression.display(res, params, display.data)
@@ -23,7 +28,7 @@ meta.regression <- function(reg.data, params) {
         betas <- res$b
         fitted.line <- list(intercept=betas[1], slope=betas[2])
         plot.path <- "./r_tmp/reg.png"
-        plot.data <- create.plot.data.reg(reg.data, params, fitted.line, selected.cov=cov.name)
+        plot.data <- create.plot.data.reg(reg.data, params, fitted.line)
         meta.regression.plot(plot.data, outpath=plot.path, symSize=1,
                                   lcol = "darkred",
                                   y.axis.label = "Effect size",
@@ -42,39 +47,41 @@ meta.regression <- function(reg.data, params) {
 }
 
 extract.cov.data <- function(reg.data) {
-  # extract covariate date
+  # separate continuous and factor covariates and extract data
   cont.cov.array <- NULL
   factor.cov.array <- NULL
-  # the following are for the regression display
+  # the following are passed to create.regression.display
   cont.cov.names <- NULL
   factor.cov.names <- NULL
   factor.n.levels <- NULL
   factor.cov.display.col <- NULL
   levels.display.col <- NULL
-  # first col. of regression display
-  for (name in names(reg.data@covariates)) {
+
+  for (cov in reg.data@covariates) {
     # put covariate data into two arrays, for continuous and factor covariates.
-    cov.val.str <- paste("reg.data@covariates$", name, sep="")
-    cov <- eval(parse(text=cov.val.str))
-    if (cov@cov.type=="continuous") {
-      cov.col <- array(cov@cov.vals, dim=c(length(reg.data@y), 1), dimnames=list(NULL, cov@cov.name))
+    cov.name <- cov@cov.name
+    cov.vals <- cov@cov.vals
+    cov.type <- cov@cov.type
+    ref.var <- cov@ref.var
+    if (cov.type=="continuous") {
+      cov.col <- array(cov.vals, dim=c(length(reg.data@y), 1), dimnames=list(NULL, cov.name))
       cont.cov.array <- cbind(cont.cov.array, cov.col)
-      cont.cov.names <- c(cont.cov.names, name)
+      cont.cov.names <- c(cont.cov.names, cov.name)
     }
-    if (cov@cov.type=="factor") {
-      levels <- unique(cov@cov.vals)
-      levels.minus.one <- setdiff(levels, cov@ref.var)
+    if (cov.type=="factor") {
+      levels <- unique(cov.vals)
+      levels.minus.one <- setdiff(levels, ref.var)
       
       # levels except for reference variable
       cov.cols <- array(dim=c(length(reg.data@y), length(levels.minus.one)), dimnames=list(NULL, levels.minus.one))
       for (level in levels.minus.one) {
-           cov.cols[,level] <- as.numeric(cov@cov.vals==level)
+           cov.cols[,level] <- as.numeric(cov.vals==level)
       }
       factor.cov.array <- cbind(factor.cov.array, cov.cols)
-      factor.cov.names <- c(factor.cov.names, name)
+      factor.cov.names <- c(factor.cov.names, cov.name)
       factor.n.levels <- c(factor.n.levels, length(levels))
-      factor.cov.display.col <- c(factor.cov.display.col, name, rep("",length(levels.minus.one)))
-      levels.display.col <- c(levels.display.col, cov@ref.var, levels.minus.one)
+      factor.cov.display.col <- c(factor.cov.display.col, cov.name, rep("",length(levels.minus.one)))
+      levels.display.col <- c(levels.display.col, ref.var, levels.minus.one)
     }
   }
   cov.array <- cbind(cont.cov.array, factor.cov.array)
