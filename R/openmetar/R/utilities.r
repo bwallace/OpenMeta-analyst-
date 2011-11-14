@@ -172,7 +172,7 @@ create.summary.disp <- function(res, params, model.title, data.type) {
          lbCalc <- round(res$ci.lb, digits=params$digits)
          ubCalc <- round(res$ci.ub, digits=params$digits)
          alt.array <- array(c("Estimate", estCalc, "Lower bound", lbCalc, "Upper bound", ubCalc), dim=c(2,3))
-         alt.title <- paste("  Point Estimates (", scale.str, " scale)", sep="")
+         alt.title <- paste("  Results (", scale.str, " scale)", sep="")
          arrays <- list(arr1=res.array, arr2=het.array, arr3=alt.array)
          table.titles <- c(res.title, het.title, alt.title)
     } else {
@@ -327,7 +327,7 @@ create.overall.display <- function(res, study.names, params, model.title, data.t
     
     if (scale.str == "log" || scale.str == "logit") {
         # display and calculation scales are different - create second table data    
-       table.titles <- c("Model Results", paste("  Point Estimates (", scale.str, " scale)", sep=""))
+       table.titles <- c("  Model Results", paste("  Results (", scale.str, " scale)", sep=""))
        arrays <- list(arr1=overall.array, arr2=overall.array.calc)
        
     } else {

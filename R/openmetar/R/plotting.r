@@ -668,7 +668,7 @@ effectsize.column <- function(forest.data, box.sca = 1) {
            effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(-1.5*max(effect.col$ES) + 0.3, max(effect.col$UL)))
            # if 
         } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)>0) { 
-           effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) + 0.3 , max(effect.col$UL)))
+           effect.col.range <- c(max(5*min(effect.col$ES) , min(effect.col$LL)), min(5*max(effect.col$ES), max(effect.col$UL)))
            # add .3 because if max(effect.col$ES is close to 0) the ub is too small
         } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)>0 && max(effect.col$ES)>0) { 
            effect.col.range <- c(max(-2*min(effect.col$ES) , min(effect.col$LL)), min(1.5*max(effect.col$ES) + 0.3, max(effect.col$UL)))
