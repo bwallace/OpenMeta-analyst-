@@ -34,9 +34,6 @@ class MetaRegForm(QDialog, ui_meta_reg.Ui_cov_reg_dialog):
             # for all of the selected covariates
             cov_d = self.model.dataset.get_values_for_cov(cov.name)
 
-            #pyqtRemoveInputHook()
-            #pdb.set_trace()
-
         studies = []
         for study in [study.name for study in self.model.dataset.studies]:
             if study != '' and cov_d[study] is not None and cov_d[study] != '':
