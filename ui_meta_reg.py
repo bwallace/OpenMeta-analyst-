@@ -1,48 +1,53 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'cov_reg_dlg.ui'
+# Form implementation generated from reading ui file 'cov_reg_dlg2.ui'
 #
-# Created: Tue Oct 12 16:02:31 2010
-#      by: PyQt4 UI code generator 4.7.3
+# Created: Thu Nov 10 13:24:44 2011
+#      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
 
+try:
+    _fromUtf8 = QtCore.QString.fromUtf8
+except AttributeError:
+    _fromUtf8 = lambda s: s
+
 class Ui_cov_reg_dialog(object):
     def setupUi(self, cov_reg_dialog):
-        cov_reg_dialog.setObjectName("cov_reg_dialog")
-        cov_reg_dialog.resize(301, 132)
+        cov_reg_dialog.setObjectName(_fromUtf8("cov_reg_dialog"))
+        cov_reg_dialog.resize(398, 201)
         font = QtGui.QFont()
-        font.setFamily("Verdana")
+        font.setFamily(_fromUtf8("Verdana"))
         cov_reg_dialog.setFont(font)
+        cov_reg_dialog.setWindowTitle(QtGui.QApplication.translate("cov_reg_dialog", "select covariates", None, QtGui.QApplication.UnicodeUTF8))
+        self.verticalLayout = QtGui.QVBoxLayout(cov_reg_dialog)
+        self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
+        self.label = QtGui.QLabel(cov_reg_dialog)
+        self.label.setText(QtGui.QApplication.translate("cov_reg_dialog", "select covariates for regression:", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setObjectName(_fromUtf8("label"))
+        self.verticalLayout.addWidget(self.label)
+        spacerItem = QtGui.QSpacerItem(20, 10, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
+        self.verticalLayout.addItem(spacerItem)
+        self.cov_grp_box = QtGui.QGroupBox(cov_reg_dialog)
+        self.cov_grp_box.setTitle(QtGui.QApplication.translate("cov_reg_dialog", "available covariates", None, QtGui.QApplication.UnicodeUTF8))
+        self.cov_grp_box.setObjectName(_fromUtf8("cov_grp_box"))
+        self.verticalLayout.addWidget(self.cov_grp_box)
+        spacerItem1 = QtGui.QSpacerItem(20, 60, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.verticalLayout.addItem(spacerItem1)
         self.buttonBox = QtGui.QDialogButtonBox(cov_reg_dialog)
-        self.buttonBox.setGeometry(QtCore.QRect(10, 100, 281, 32))
         font = QtGui.QFont()
-        font.setFamily("Verdana")
+        font.setFamily(_fromUtf8("Verdana"))
         self.buttonBox.setFont(font)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
-        self.buttonBox.setObjectName("buttonBox")
-        self.label = QtGui.QLabel(cov_reg_dialog)
-        self.label.setGeometry(QtCore.QRect(20, 30, 121, 41))
-        font = QtGui.QFont()
-        font.setFamily("Verdana")
-        font.setPointSize(10)
-        self.label.setFont(font)
-        self.label.setObjectName("label")
-        self.cov_cbo_box = QtGui.QComboBox(cov_reg_dialog)
-        self.cov_cbo_box.setGeometry(QtCore.QRect(130, 40, 152, 20))
-        font = QtGui.QFont()
-        font.setFamily("Verdana")
-        self.cov_cbo_box.setFont(font)
-        self.cov_cbo_box.setObjectName("cov_cbo_box")
+        self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
+        self.verticalLayout.addWidget(self.buttonBox)
 
         self.retranslateUi(cov_reg_dialog)
         QtCore.QMetaObject.connectSlotsByName(cov_reg_dialog)
 
     def retranslateUi(self, cov_reg_dialog):
-        cov_reg_dialog.setWindowTitle(QtGui.QApplication.translate("cov_reg_dialog", "select covariate", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("cov_reg_dialog", "covariate for \n"
-"regression:", None, QtGui.QApplication.UnicodeUTF8))
+        pass
 

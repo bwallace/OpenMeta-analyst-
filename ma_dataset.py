@@ -302,10 +302,12 @@ class Dataset:
             follow_up_names.extend(outcome.values())
         return list(set(follow_up_names))
         
+    def get_study_names(self):
+        return [study.name for study in self.studies]
+
     def get_follow_up_names_for_outcome(self, outcome):
         return self.outcome_names_to_follow_ups[outcome].values()
 
-        
     def get_network(self, outcome, time_point):
         node_list = [] # list of all nodes
         adjacency_list = [] # list of edges

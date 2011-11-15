@@ -51,8 +51,8 @@ FACTOR = 4
 
 STR_TO_TYPE_DICT = {u"binary":BINARY, u"continuous":CONTINUOUS, 
                                     u"diagnostic":DIAGNOSTIC, u"OTHER":OTHER}
-TYPE_TO_STR_DICT = {BINARY:u"binary", CONTINUOUS:u"continuous", 
-                                    DIAGNOSTIC:u"diagnostic", OTHER:u"OTHER"}
+TYPE_TO_STR_DICT = {BINARY:u"binary", CONTINUOUS:u"continuous", DIAGNOSTIC:u"diagnostic", 
+						OTHER:u"OTHER", FACTOR:u"factor"}
                                     
 # enumeration of meta-analytic types
 VANILLA, NETWORK = range(2)
