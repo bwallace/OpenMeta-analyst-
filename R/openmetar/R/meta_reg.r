@@ -61,6 +61,10 @@ extract.cov.data <- function(reg.data) {
   factor.n.levels <- NULL # vector containing number of levels for each factor cov.
   factor.cov.display.col <- NULL
   levels.display.col <- NULL
+  
+  # initialize names of the two types of covariate to empty lists
+  factor.cov.names <- c()
+  cont.cov.names <- c()
 
   for (cov in reg.data@covariates) {
     # put covariate data into two arrays, for continuous and factor covariates.
@@ -95,7 +99,8 @@ extract.cov.data <- function(reg.data) {
   levels.display.col <- c(rep("",length(cont.cov.names) + 1), levels.display.col)
   
   display.data <- list(cov.display.col=cov.display.col, levels.display.col=levels.display.col,
-                       factor.n.levels=factor.n.levels, n.cont.covs=n.cont.covs)
+                       factor.n.levels=factor.n.levels, n.cont.covs=n.cont.covs,
+                       factor.cov.names=factor.cov.names, cont.cov.names=cont.cov.names)
   cov.data <- list(cov.array=cov.array, display.data=display.data)
                    
 }
