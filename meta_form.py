@@ -114,9 +114,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 ## arg -- this won't work!
                 start_up_window.setFocus()
                 start_up_window.dataset_name_le.setFocus()
-        
-        #QObject.connect(self.centralwidget, SIGNAL("destroyed()"), self.quit)
-
+      
 
     def closeEvent(self, event):
         if self.current_data_unsaved:

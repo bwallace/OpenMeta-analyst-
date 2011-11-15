@@ -34,14 +34,18 @@ try:
 except AttributeError:
     _fromUtf8 = lambda s: s
     
+
 class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
     def __init__(self, model, parent=None, meta_f_str=None,
                     external_params=None, diag_metrics=None,
-                    diag_metrics_to_analysis_details_d=None):
+                    diag_metrics_to_analysis_details_d=None,
+                    fp_specs_only=False):
 
         super(MA_Specs, self).__init__(parent)
         self.setupUi(self)
+
+        self.current_param_vals = external_params or {}
 
         self.model = model
 
@@ -72,7 +76,6 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.current_params = None
         self.current_defaults = None
         self.var_order = None
-        self.current_param_vals = external_params or {}
         
         ####
         # the following are variables for the case of diagnostic 
@@ -124,8 +127,10 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         
     def run_ma(self):
         result = None
-        ### add forest plot parameters
-        self.add_plot_params()
+        
+        # this method is defined statically, below
+        add_plot_params(self)
+
         # also add the metric to the parameters
         # -- this is for scaling
 
@@ -201,61 +206,10 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.parent().analysis(result)
         self.accept()
 
-
-
-    
-
-    def add_plot_params(self):
-        ### TODO shouldn't couple R plotting routine with UI so tightly
-        self.current_param_vals["fp_show_col1"] = self.show_1.isChecked()
-        self.current_param_vals["fp_col1_str"] = unicode(self.col1_str_edit.text().toUtf8(), "utf-8")
-        self.current_param_vals["fp_show_col2"] = self.show_2.isChecked()
-        self.current_param_vals["fp_col2_str"] = unicode(self.col2_str_edit.text().toUtf8(), "utf-8")
-        self.current_param_vals["fp_show_col3"] = self.show_3.isChecked()
-        self.current_param_vals["fp_col3_str"] = unicode(self.col3_str_edit.text().toUtf8(), "utf-8")
-        self.current_param_vals["fp_show_col4"] = self.show_4.isChecked()
-        self.current_param_vals["fp_col4_str"] = unicode(self.col4_str_edit.text().toUtf8(), "utf-8")
-        self.current_param_vals["fp_xlabel"] = unicode(self.x_lbl_le.text().toUtf8(), "utf-8")
-        self.current_param_vals["fp_outpath"] = unicode(self.image_path.text().toUtf8(), "utf-8")
-        plot_lb = unicode(self.plot_lb_le.text().toUtf8(), "utf-8")
-        if plot_lb != "[default]" and self.check_plot_bound(plot_lb):
-            self.current_param_vals["fp_plot_lb"] = plot_lb
-        else:
-            self.current_param_vals["fp_plot_lb"] = "NULL"
-        plot_ub = unicode(self.plot_ub_le.text().toUtf8(), "utf-8")
-        if plot_ub != "[default]" and self.check_plot_bound(plot_ub):
-            self.current_param_vals["fp_plot_ub"] = plot_ub
-        else:
-            self.current_param_vals["fp_plot_ub"] = "NULL"
-        xticks = unicode(self.x_ticks_le.text().toUtf8(), "utf-8")
-        if xticks != "[default]" and self.seems_sane(xticks):
-            self.current_param_vals["fp_xticks"] = xticks
-        else:
-            self.current_param_vals["fp_xticks"] = "NULL"
-        self.current_param_vals["fp_show_summary_line"] = self.show_summary_line.isChecked()
-
-    def seems_sane(self, xticks):
-        num_list = xticks.split(",")
-        if len(num_list) == 1:
-            return False
-        try:
-            num_list = [eval(x) for x in num_list]
-        except:
-            return False
-        return True
-        
-    def check_plot_bound(self, bound):
-        try:
-            eval(bound)
-        except:
-            return False
-        return True
-    
     def disable_bin_only_fields(self):
         self.col3_str_edit.setEnabled(False)
         self.col4_str_edit.setEnabled(False)
          
-
     def method_changed(self):
         self.clear_param_ui()
         self.current_widgets= []
@@ -421,7 +375,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
         return set_param
 
-    def add_label(self, layout, cur_grid_row, name, tool_tip_text = None):
+    def add_label(self, layout, cur_grid_row, name, tool_tip_text=None):
         lbl = QLabel(name, self.parameter_grp_box)
         if not tool_tip_text is None:
             lbl.setToolTip(tool_tip_text)
@@ -533,3 +487,56 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.setWindowTitle(QtGui.QApplication.translate("Dialog", window_title, \
                 None, QtGui.QApplication.UnicodeUTF8))
         
+###
+# the following methods are defined statically because
+# they are also used by the forest plot editing window,
+# which isn't really a 'child' of ma_specs, so inheritance
+# didn't feel appropriate
+###
+def add_plot_params(specs_form):
+    specs_form.current_param_vals["fp_show_col1"] = specs_form.show_1.isChecked()
+    specs_form.current_param_vals["fp_col1_str"] = unicode(specs_form.col1_str_edit.text().toUtf8(), "utf-8")
+    specs_form.current_param_vals["fp_show_col2"] = specs_form.show_2.isChecked()
+    specs_form.current_param_vals["fp_col2_str"] = unicode(specs_form.col2_str_edit.text().toUtf8(), "utf-8")
+    specs_form.current_param_vals["fp_show_col3"] = specs_form.show_3.isChecked()
+    specs_form.current_param_vals["fp_col3_str"] = unicode(specs_form.col3_str_edit.text().toUtf8(), "utf-8")
+    specs_form.current_param_vals["fp_show_col4"] = specs_form.show_4.isChecked()
+    specs_form.current_param_vals["fp_col4_str"] = unicode(specs_form.col4_str_edit.text().toUtf8(), "utf-8")
+    specs_form.current_param_vals["fp_xlabel"] = unicode(specs_form.x_lbl_le.text().toUtf8(), "utf-8")
+    specs_form.current_param_vals["fp_outpath"] = unicode(specs_form.image_path.text().toUtf8(), "utf-8")
+    plot_lb = unicode(specs_form.plot_lb_le.text().toUtf8(), "utf-8")
+    if plot_lb != "[default]" and check_plot_bound(plot_lb):
+        specs_form.current_param_vals["fp_plot_lb"] = plot_lb
+    else:
+        specs_form.current_param_vals["fp_plot_lb"] = "NULL"
+
+    plot_ub = unicode(specs_form.plot_ub_le.text().toUtf8(), "utf-8")
+    if plot_ub != "[default]" and check_plot_bound(plot_ub):
+        specs_form.current_param_vals["fp_plot_ub"] = plot_ub
+    else:
+        specs_form.current_param_vals["fp_plot_ub"] = "NULL"
+
+    xticks = unicode(specs_form.x_ticks_le.text().toUtf8(), "utf-8")
+    if xticks != "[default]" and seems_sane(xticks):
+        specs_form.current_param_vals["fp_xticks"] = xticks
+    else:
+        specs_form.current_param_vals["fp_xticks"] = "NULL"
+    specs_form.current_param_vals["fp_show_summary_line"] = specs_form.show_summary_line.isChecked()
+
+
+def seems_sane(specs_form, xticks):
+    num_list = xticks.split(",")
+    if len(num_list) == 1:
+        return False
+    try:
+        num_list = [eval(x) for x in num_list]
+    except:
+        return False
+    return True
+    
+def check_plot_bound(specs_form, bound):
+    try:
+        eval(bound)
+    except:
+        return False
+    return True

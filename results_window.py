@@ -14,6 +14,7 @@ from PyQt4.Qt import *
 import pdb
 import os
 import ui_results_window
+import edit_forest_plot_form
 import meta_py_r
 
 PageSize = (612, 792)
@@ -131,7 +132,8 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
             if self.params_paths is not None and title in self.params_paths:
                 params_path = self.params_paths[title]
 
-            img_shape, pos = self.create_pixmap_item(pixmap, self.position(), title, params_path=params_path)
+            img_shape, pos = self.create_pixmap_item(pixmap, self.position(),\
+                                     title, params_path=params_path)
 
             #disp_rect = QRectF(pos[0], pos[1], \
             #                0, self.scene.height()+img_shape.height())
@@ -229,13 +231,19 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
                         lambda : self.save_image_as(params_path, title))
             context_menu = QMenu(self)
             context_menu.addAction(action)
+
+            action = QAction("edit plot...", self)
+            QObject.connect(action, SIGNAL("triggered()"), \
+                        lambda : self.edit_image(params_path, title))
+            context_menu.addAction(action)
+
             pos = event.screenPos()
             context_menu.popup(pos)
             event.accept()
+
         return _graphics_item_context_menu
 
     def save_image_as(self, params_path, title):
-        
         # note that the params object will, by convention,
         # have the (generic) name 'plot.data' -- after this
         # call, this object will be in the namespace
@@ -257,6 +265,12 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
             else:
                 meta_py_r.generate_forest_plot(file_path)
 
+    def edit_image(self, params_path, title):
+        meta_py_r.load_plot_params(params_path)
+
+        plot_editor_window = edit_forest_plot_form.EditPlotWindow(params_path, parent=self)
+        plot_editor_window.show()
+        
     def position(self):
         point = QPoint(self.x_coord, self.y_coord)
         return self.graphics_view.mapToScene(point)

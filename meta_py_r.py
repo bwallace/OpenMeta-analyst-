@@ -313,7 +313,8 @@ def _get_str(M, col_index, reverse=True):
     return ", ".join(_to_strs(x))
     
     
-def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
+def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj", 
+                                        include_raw_data=True):
     '''
     This converts a DatasetModel to an OpenMetaData (OMData) R object. We use type DatasetModel
     rather than a DataSet model directly to access the current variables. Furthermore, this allows
@@ -342,7 +343,7 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
     cov_str = gen_cov_str(table_model.dataset, studies)
     
     # first try and construct an object with raw data
-    if table_model.included_studies_have_raw_data():
+    if include_raw_data and table_model.included_studies_have_raw_data():
         print "ok; raw data has been entered for all included studies"
         
         # get the point estimates
@@ -393,8 +394,8 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj"):
     # ok, it seems R uses latin-1 for its unicode encodings,
     # whereas QT uses UTF8. this can cause situations where
     # rpy2 throws up on this call due to it not being able
-    # to parse a character. we'll encod
-
+    # to parse a character; so we sanitize. This isn't great,
+    # because sometimes characters get garbled...
     r_str = _sanitize_for_R(r_str)
     print "executing: %s" % r_str
     ro.r(r_str)
@@ -484,13 +485,18 @@ def gen_cov_str(dataset, studies):
     return cov_str
 
 
-def cov_to_str(cov, study_names, dataset):
+def cov_to_str(cov, study_names, dataset, named_list=True, return_cov_vals=False):
     '''
     The string is constructured so that the covariate
     values are in the same order as the 'study_names'
     list.
     '''
-    cov_str = "%s=c(" % cov.name
+    cov_str = None
+    if named_list:
+        cov_str = "%s=c(" % cov.name
+    else:
+        cov_str = "c("
+
     cov_value_d = dataset.get_values_for_cov(cov.name)
     cov_values = []
     for study in study_names:
@@ -506,6 +512,9 @@ def cov_to_str(cov, study_names, dataset):
             else:
                 cov_values.append("NA")
     cov_str += ",".join(cov_values) + ")"
+    
+    if return_cov_vals:
+        return (cov_str, cov_values)
     return cov_str
         
 
@@ -519,6 +528,7 @@ def run_continuous_ma(function_name, params, res_name = "result", cont_data_name
     
 def run_binary_ma(function_name, params, res_name="result", bin_data_name="tmp_obj"):
     params_df = ro.r['data.frame'](**params)
+
     r_str = "%s<-%s(%s, %s)" % (res_name, function_name, bin_data_name, params_df.r_repr())
     print "\n\n(run_binary_ma): executing:\n %s\n" % r_str
     ro.r(r_str)
@@ -576,6 +586,7 @@ def load_plot_params(params_path):
     ''' loads what is presumed to be .Rdata into the environment '''
     ro.r("load('%s')" % params_path)
 
+
 def generate_forest_plot(file_path, side_by_side=False, params_name="plot.data"):
     if side_by_side:
         print "side-by-side!"
@@ -616,9 +627,10 @@ def parse_out_results(result):
                     "texts":text_d, "image_params_paths":image_params_paths_d}
                                               
                                        
-def run_binary_fixed_meta_regression(selected_cov, bin_data_name="tmp_obj", res_name="result"):
+def run_binary_fixed_meta_regression(selected_cov, bin_data_name="tmp_obj", \
+                                                res_name="result"):
     # equiavlent to params <- list(conf.level=95, digits=3)
-    params = {"conf.level":95, "digits":3}
+    params = {"conf.level":95, "digits":3, "method":"RE"}
     params_df = ro.r['data.frame'](**params)
     r_str = "%s<-binary.fixed.meta.regression(%s, %s, %s)" % \
             (res_name, bin_data_name, params_df.r_repr(), "'"+ selected_cov + "'")
@@ -627,6 +639,53 @@ def run_binary_fixed_meta_regression(selected_cov, bin_data_name="tmp_obj", res_
     result = ro.r("%s" % res_name)
     return parse_out_results(result)
     
+def _gen_cov_vals_obj_str(cov, study_names, dataset):
+    values_str, cov_vals = cov_to_str(cov, study_names, dataset, \
+                            named_list=False, return_cov_vals=True)
+    ref_var = cov_vals[0].replace("'", "") # arbitrary
+
+    pyqtRemoveInputHook()
+    pdb.set_trace()
+    ## setting the reference variable to the first entry
+    # for now -- this only matters for factors, obviously
+    r_str = "new('CovariateValues', cov.name='%s', cov.vals=%s, \
+                    cov.type='%s', ref.var='%s')" % \
+                (cov.name, values_str, TYPE_TO_STR_DICT[cov.data_type], ref_var)
+    return r_str
+
+def run_meta_regression(dataset, study_names, cov_list, data_name="tmp_obj", \
+                            results_name="results_obj"):    
+    # @TODO conf.level, digits should be user-specified
+    params = {"conf.level":95, "digits":3, "method":"FE", "rm.method":"ML"}
+    params_df = ro.r['data.frame'](**params)
+
+    # create a lit of covariate objects on the R side
+    r_cov_str = []
+    for cov in cov_list:
+        r_cov_str.append(_gen_cov_vals_obj_str(cov, study_names, dataset))
+
+    r_cov_str = "list(" + ",".join(r_cov_str) + ")"
+    print "meta_regression -- here the regression string: %s" % r_cov_str
+
+
+
+    # now attach the covariates object to the R data object
+    ro.r("%s@covariates <- %s" % (data_name, r_cov_str))
+
+    pyqtRemoveInputHook()
+    pdb.set_trace()
+
+    r_str = "%s<- meta.regression(%s, %s)" % \
+                            (results_name, data_name, params_df.r_repr())
+
+    print "\n\n(run_binary_ma): executing:\n %s\n" % r_str
+
+
+    
+    ro.r(r_str)
+    result = ro.r("%s" % res_name)
+    return parse_out_results(result)
+
 def run_subgroup_ma(meta_function_name, function_name, params, selected_cov,
                     bin_data_name="tmp_obj", res_name="result"):
     # equiavlent to params <- list(conf.level=95, digits=3)
@@ -640,7 +699,7 @@ def run_subgroup_ma(meta_function_name, function_name, params, selected_cov,
     return parse_out_results(result)    
     
 def run_meta_method(meta_function_name, function_name, params, \
-                        res_name = "result", data_name="tmp_obj"):
+                        res_name="result", data_name="tmp_obj"):
     '''
     Runs a binary `meta` method over the data in the bin_data_name argument
     (on the R side). The meta-method called is specified by the meta_function_name
