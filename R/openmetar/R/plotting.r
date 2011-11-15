@@ -38,8 +38,8 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     }
     plot.options <- set.plot.options(params)
  
-    if (params$fp_plot_lb == "NULL" || is.null(params$fp_plot_lb)) {
-        # value can be set to string "NULL" by the GUI or can be NULL 
+    if (params$fp_plot_lb == "[default]") {
+        # value can be set to string  [default] by the GUI or can be NULL 
         # if the function is called at the command line
         plot.options$plot.lb <- NULL
     } else {
@@ -47,7 +47,7 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
         plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(plot.lb)
     } 
     
-    if (params$fp_plot_ub == "NULL" || is.null(params$fp_plot_ub))  {
+    if (params$fp_plot_ub == "[default]")  {
         plot.options$plot.ub <- NULL
     } else {
         plot.ub <- eval(parse(text=paste("c(", params$fp_plot_ub, ")", sep="")))
@@ -199,13 +199,14 @@ create.plot.data.overall <- function(res, study.names, params, data.type, addRow
       transform.name <- "binary.transform.f"
     }
     plot.options <- set.plot.options(params)
-    if (params$fp_plot_lb == "NULL" || is.null(params$fp_plot_lb)) {
+
+    if (params$fp_plot_lb == "[default]") {
         plot.options$plot.lb <- NULL
     } else {
         plot.lb <- eval(parse(text=paste("c(", params$fp_plot_lb, ")", sep="")))
         plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(plot.lb)
     }
-    if (params$fp_plot_ub == "NULL" || is.null(params$fp_plot_ub)) {
+    if (params$fp_plot_ub == "[default]") {
         plot.options$plot.ub <- NULL
     } else {
         plot.ub <- eval(parse(text=paste("c(", params$fp_plot_ub, ")", sep="")))
@@ -326,13 +327,13 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, 
     types <- c(3,types, 2)
     label.col <- c("Studies", label.col, "Overall")
     plot.options <- set.plot.options(params)
-    if (params$fp_plot_lb == "NULL" || is.null(params$fp_plot_lb)) {
+    if (params$fp_plot_lb == "[default]") {
         plot.options$plot.lb <- NULL
     } else {
         plot.lb <- eval(parse(text=paste("c(", params$fp_plot_lb, ")", sep="")))
         plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(plot.lb)
     }
-    if (params$fp_plot_ub == "NULL" || is.null(params$fp_plot_ub)) {
+    if (params$fp_plot_ub == "[default]") {
         plot.options$plot.ub <- NULL
     } else {
         plot.ub <- eval(parse(text=paste("c(", params$fp_plot_ub, ")", sep="")))
@@ -462,7 +463,7 @@ set.plot.options <- function(params) {
     # set default plot options
     plot.options <- list()
     # xticks is a vector of tick marks for the x-axis
-    if (params$fp_xticks == "NULL" || is.null(params$fp_xticks)) {
+    if (params$fp_xticks == "[default]") {
         params$fp_xticks <- NULL
     } else {
         plot.options$xticks <- eval(parse(text=paste("c(", params$fp_xticks, ")", sep="")))
@@ -472,6 +473,7 @@ set.plot.options <- function(params) {
     } else {
       plot.options$show.study.col <- FALSE
     }
+
     # xlabel is the label for the x-axis
     if (is.null(params$fp_xlabel) || params$fp_xlabel == "[default]") {
         plot.options$xlabel <- pretty.metric.name(params$measure)
