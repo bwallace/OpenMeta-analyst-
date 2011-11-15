@@ -12,14 +12,10 @@ library(metafor)
 meta.regression <- function(reg.data, params) {
    cov.data <- extract.cov.data(reg.data)
    cov.array <- cov.data$cov.array
-   if (params$method == "FE") {
-     method <- "FE"
-   } else {
-     method <- params$rm.method
-   }
+   method <- params$rm.method
    res<-rma.uni(yi=reg.data@y, sei=reg.data@SE, slab=reg.data@study.names,
-                                level=params$conf.level, digits=params$digits, method=method, 
-                                mods=cov.array)
+                                level=params$conf.level, digits=params$digits, 
+                                method=method, mods=cov.array)
    display.data <- cov.data$display.data
    reg.disp <- create.regression.display(res, params, display.data)
    
@@ -64,7 +60,8 @@ extract.cov.data <- function(reg.data) {
     cov.type <- cov@cov.type
     ref.var <- cov@ref.var
     if (cov.type=="continuous") {
-      cov.col <- array(cov.vals, dim=c(length(reg.data@y), 1), dimnames=list(NULL, cov.name))
+      cov.col <- array(cov.vals, dim=c(length(reg.data@y), 1), 
+                    dimnames=list(NULL, cov.name))
       cont.cov.array <- cbind(cont.cov.array, cov.col)
       cont.cov.names <- c(cont.cov.names, cov.name)
     }

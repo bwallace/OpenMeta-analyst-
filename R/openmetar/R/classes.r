@@ -54,5 +54,5 @@ setClass("AnalysisSpecification",
 #
 # The covariate class contains covariate values.
 #
-setClass("CovariateValues", representation(cov.name="character", cov.vals="vector", cov.type="character"))
+setClass("CovariateValues", representation(cov.name="character", cov.vals="vector", cov.type="character", ref.var="character"))
                 
