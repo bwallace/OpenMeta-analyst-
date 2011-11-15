@@ -200,15 +200,16 @@ create.regression.display <- function(res, params, display.data) {
     # create table for diplaying summary of regression ma results
     cov.display.col <- display.data$cov.display.col
     levels.display.col <- display.data$levels.display.col
-    #factor.cov.names <- display.data$factor.cov.names
+    # first two columns of table
     factor.n.levels <- display.data$factor.n.levels
     n.cont.covs <- display.data$n.cont.covs
     n.cont.rows <- n.cont.covs + 1 # extra row for intercept
     n.factor.covs <- length(factor.n.levels)
-
+    n.rows <- length(cov.display.col) + 1
+    # extra row for col. labels
     
     col.labels <- c("Covariate", "Level", "Estimate", "Std. error", "p-Value", "Z-Value", "Lower bound", "Upper bound")
-    reg.array <- array(dim=c(length(cov.display.col)+1, 8), dimnames=list(NULL, col.labels))
+    reg.array <- array(dim=c(length(cov.display.col)+1, length(col.labels)), dimnames=list(NULL, col.labels))
     reg.array[1,] <- col.labels
     coeffs <- round(res$b, digits=params$digits)
     se <- round.display(res$se, digits=params$digits)

@@ -22,11 +22,11 @@ meta.regression <- function(reg.data, params) {
    res<-try(rma.uni(yi=reg.data@y, sei=reg.data@SE, slab=reg.data@study.names,
                                 level=params$conf.level, digits=params$digits, method=method, 
                                 mods=cov.array))
-   if (class(res) != "try-error") {
+   if (class(res)[1] != "try-error") {
        display.data <- cov.data$display.data
        reg.disp <- create.regression.display(res, params, display.data)
    
-       if (length(display.data$cont.cov.names)==1 & length(display.data$factor.cov.names)==0) {
+       if (length(display.data$n.cont.covs)==1 & length(display.data$factor.n.levels)==0) {
         # if just 1 covariate, create reg. plot
             betas <- res$b
             fitted.line <- list(intercept=betas[1], slope=betas[2])
@@ -35,7 +35,7 @@ meta.regression <- function(reg.data, params) {
             meta.regression.plot(plot.data, outpath=plot.path, symSize=1,
                                   lcol = "darkred",
                                   y.axis.label = "Effect size",
-                                  xlabel= cov.name,
+                                  xlabel= reg.data@covariates[[1]]@cov.name,
                                   lweight = 3,
                                   lpatern = "dotted",
                                   plotregion = "n",
@@ -58,12 +58,11 @@ extract.cov.data <- function(reg.data) {
   factor.cov.array <- NULL
   # the following are passed to create.regression.display
   n.cont.covs <- 0
-  factor.n.levels <- NULL # vector containing number of levels for each factor cov.
+  factor.n.levels <- NULL # vector containing number of levels for each factor covariate
   factor.cov.display.col <- NULL
   levels.display.col <- NULL
   
-  # initialize names of the two types of covariate to empty lists
-  factor.cov.names <- c()
+  # initialize names of continuous covariates to empty list
   cont.cov.names <- c()
 
   for (cov in reg.data@covariates) {
@@ -88,7 +87,7 @@ extract.cov.data <- function(reg.data) {
            cov.cols[,level] <- as.numeric(cov.vals==level)
       }
       factor.cov.array <- cbind(factor.cov.array, cov.cols)
-      factor.cov.names <- c(factor.cov.names, cov.name)
+      #factor.cov.names <- c(factor.cov.names, cov.name)
       factor.n.levels <- c(factor.n.levels, length(levels))
       factor.cov.display.col <- c(factor.cov.display.col, cov.name, rep("",length(levels.minus.one)))
       levels.display.col <- c(levels.display.col, ref.var, levels.minus.one)
@@ -99,8 +98,7 @@ extract.cov.data <- function(reg.data) {
   levels.display.col <- c(rep("",length(cont.cov.names) + 1), levels.display.col)
   
   display.data <- list(cov.display.col=cov.display.col, levels.display.col=levels.display.col,
-                       factor.n.levels=factor.n.levels, n.cont.covs=n.cont.covs,
-                       factor.cov.names=factor.cov.names, cont.cov.names=cont.cov.names)
+                       factor.n.levels=factor.n.levels, n.cont.covs=n.cont.covs)
   cov.data <- list(cov.array=cov.array, display.data=display.data)
                    
 }
