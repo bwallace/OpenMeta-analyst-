@@ -188,6 +188,8 @@ create.summary.disp <- function(res, params, model.title, data.type) {
 
 
 save.plot.data <- function(plot.data) {
+  # saves plot data to the r_tmp directory; uses the 
+  # current system time as a 'unique enough' filename
   forest.plot.params.path <- paste("r_tmp/", 
                               as.character(as.numeric(Sys.time())), sep="")
   save(plot.data, file=forest.plot.params.path)
