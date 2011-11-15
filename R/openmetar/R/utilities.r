@@ -172,7 +172,7 @@ create.summary.disp <- function(res, params, model.title, data.type) {
          lbCalc <- round(res$ci.lb, digits=params$digits)
          ubCalc <- round(res$ci.ub, digits=params$digits)
          alt.array <- array(c("Estimate", estCalc, "Lower bound", lbCalc, "Upper bound", ubCalc), dim=c(2,3))
-         alt.title <- paste("  Point Estimates (", scale.str, " scale)", sep="")
+         alt.title <- paste("  Results (", scale.str, " scale)", sep="")
          arrays <- list(arr1=res.array, arr2=het.array, arr3=alt.array)
          table.titles <- c(res.title, het.title, alt.title)
     } else {
@@ -198,14 +198,15 @@ create.regression.display <- function(res, params, display.data) {
     # create table for diplaying summary of regression ma results
     cov.display.col <- display.data$cov.display.col
     levels.display.col <- display.data$levels.display.col
-    cont.cov.names <- display.data$cont.cov.names
-    factor.cov.names <- display.data$factor.cov.names
+    #factor.cov.names <- display.data$factor.cov.names
     factor.n.levels <- display.data$factor.n.levels
-    n.cont.rows <- length(cont.cov.names) + 1
+    n.cont.covs <- display.data$n.cont.covs
+    n.cont.rows <- n.cont.covs + 1 # extra row for intercept
+    n.factor.covs <- length(factor.n.levels)
+
     
-    n.rows <- length(cov.display.col) + 1
     col.labels <- c("Covariate", "Level", "Estimate", "Std. error", "p-Value", "Z-Value", "Lower bound", "Upper bound")
-    reg.array <- array(dim=c(n.rows, 8), dimnames=list(NULL, col.names))
+    reg.array <- array(dim=c(length(cov.display.col)+1, 8), dimnames=list(NULL, col.labels))
     reg.array[1,] <- col.labels
     coeffs <- round(res$b, digits=params$digits)
     se <- round.display(res$se, digits=params$digits)
@@ -221,10 +222,10 @@ create.regression.display <- function(res, params, display.data) {
     zvals.tmp <- zvals[1:n.cont.rows]
     lbs.tmp <- lbs[1:n.cont.rows]
     ubs.tmp <- ubs[1:n.cont.rows]
-    if (length(factor.cov.names) > 0) {
+    if (n.factor.covs > 0) {
       # there are factor covariants - insert spaces for reference var. row.
       insert.row <- n.cont.rows + 1
-      for (count in 1:length(factor.cov.names)) {
+      for (count in 1:n.factor.covs) {
         n.levels <- factor.n.levels[count] 
         coeffs.tmp <- c(coeffs.tmp,"", coeffs[insert.row:(insert.row + n.levels - 2)])
         se.tmp <- c(se.tmp,"", se[insert.row:(insert.row + n.levels - 2)])
@@ -232,9 +233,8 @@ create.regression.display <- function(res, params, display.data) {
         zvals.tmp <- c(zvals.tmp,"",coeffs[insert.row:(insert.row + n.levels - 2)])
         lbs.tmp <- c(lbs.tmp,"",coeffs[insert.row:(insert.row + n.levels - 2)])
         ubs.tmp <- c(ubs.tmp,"",coeffs[insert.row:(insert.row + n.levels - 2)])
-        insert.row <- insert.row + n.levels - 1
+        insert.row <- insert.row + n.levels
       }   
-      
     }
 
     # add data to array
@@ -327,7 +327,7 @@ create.overall.display <- function(res, study.names, params, model.title, data.t
     
     if (scale.str == "log" || scale.str == "logit") {
         # display and calculation scales are different - create second table data    
-       table.titles <- c("Model Results", paste("  Point Estimates (", scale.str, " scale)", sep=""))
+       table.titles <- c("  Model Results", paste("  Results (", scale.str, " scale)", sep=""))
        arrays <- list(arr1=overall.array, arr2=overall.array.calc)
        
     } else {

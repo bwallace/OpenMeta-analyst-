@@ -448,13 +448,15 @@ binary.random <- function(binary.data, params){
 
 binary.random.parameters <- function(){
     # parameters
+    apply_adjustment_to = c("only0", "all")
     rm_method_ls <- c("HE", "DL", "SJ", "ML", "REML", "EB")
-    params <- list("rm.method"=rm_method_ls, "conf.level"="float", "digits"="float")
-    
+    params <- list("rm.method"=rm_method_ls, "conf.level"="float", "digits"="float",
+                   "adjust"="float", "to"=apply_adjustment_to)
+       
     # default values
-    defaults <- list("rm.method"="DL", "conf.level"=95, "digits"=3)
+    defaults <- list("rm.method"="DL", "conf.level"=95, "digits"=3, "adjust"=.5, "to"="only0")
     
-    var_order <- c("rm.method", "conf.level", "digits")
+    var_order <- c("rm.method", "conf.level", "digits", "adjust", "to")
     parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
 }
 
