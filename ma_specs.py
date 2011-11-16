@@ -405,7 +405,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
 
     def diag_next(self):
-        self.add_plot_params()
+        add_plot_params(self)
 
         # if the user selected both sens/spec and lr/dor
         # then we will always show them the former first.
@@ -463,7 +463,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         if len(self.diag_metrics_to_analysis_details) == 0:
             metrics_to_run = []
             for m in self.diag_metrics:
-                metrics_to_run.extend(self.DIAG_METRIC_NAMES_D[m])
+                metrics_to_run.extend(DIAG_METRIC_NAMES_D[m])
 
             self.diag_metrics_to_analysis_details = \
                 dict(zip(metrics_to_run, [None for m in metrics_to_run]))
