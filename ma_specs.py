@@ -504,23 +504,22 @@ def add_plot_params(specs_form):
     specs_form.current_param_vals["fp_col4_str"] = unicode(specs_form.col4_str_edit.text().toUtf8(), "utf-8")
     specs_form.current_param_vals["fp_xlabel"] = unicode(specs_form.x_lbl_le.text().toUtf8(), "utf-8")
     specs_form.current_param_vals["fp_outpath"] = unicode(specs_form.image_path.text().toUtf8(), "utf-8")
+    
     plot_lb = unicode(specs_form.plot_lb_le.text().toUtf8(), "utf-8")
+    specs_form.current_param_vals["fp_plot_lb"] = "[default]"
     if plot_lb != "[default]" and check_plot_bound(plot_lb):
         specs_form.current_param_vals["fp_plot_lb"] = plot_lb
-    else:
-        specs_form.current_param_vals["fp_plot_lb"] = "NULL"
 
     plot_ub = unicode(specs_form.plot_ub_le.text().toUtf8(), "utf-8")
+    specs_form.current_param_vals["fp_plot_ub"] = "[default]"
     if plot_ub != "[default]" and check_plot_bound(plot_ub):
         specs_form.current_param_vals["fp_plot_ub"] = plot_ub
-    else:
-        specs_form.current_param_vals["fp_plot_ub"] = "NULL"
 
     xticks = unicode(specs_form.x_ticks_le.text().toUtf8(), "utf-8")
+    specs_form.current_param_vals["fp_xticks"] = "[default]"
     if xticks != "[default]" and seems_sane(xticks):
         specs_form.current_param_vals["fp_xticks"] = xticks
-    else:
-        specs_form.current_param_vals["fp_xticks"] = "NULL"
+    
     specs_form.current_param_vals["fp_show_summary_line"] = specs_form.show_summary_line.isChecked()
 
 

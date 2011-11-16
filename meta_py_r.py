@@ -508,7 +508,7 @@ def cov_to_str(cov, study_names, dataset, named_list=True, return_cov_vals=False
         else:
             if cov_value_d.has_key(study):
                 # factor; note the string.
-                cov_values.append("'%s'" % cov_value_d[study])
+                cov_values.append("'%s'" % unicode(cov_value_d[study].toLatin1(), "latin1"))
             else:
                 cov_values.append("NA")
     cov_str += ",".join(cov_values) + ")"
@@ -608,23 +608,29 @@ def parse_out_results(result):
     # parse out text field(s). note that "plot names" is 'reserved', i.e., it's
     # a special field which is assumed to contain the plot variable names
     # in R (for graphics manipulation).
+    #pyqtRemoveInputHook()
+    #pdb.set_trace()
 
     text_d = {}
-    image_var_name_d, image_params_paths_d = None, None
-    for text_n, text in zip(list(result.getnames())[1:], list(result)[1:]):
+    image_var_name_d, image_params_paths_d, image_path_d  = {}, {}, {}
+    for text_n, text in zip(list(result.getnames()), list(result)):
         # some special cases, notably the plot names and the path for a forest
         # plot. TODO in the case of diagnostic data, we're probably going to 
         # need to parse out multiple forest plot param objects...
-        if text_n == "plot_names":
+        if text_n == "images":
+            image_path_d = _rls_to_pyd(text)
+        elif text_n == "plot_names":
             image_var_name_d = _rls_to_pyd(text)
         elif text_n == "plot_params_paths":
             image_params_paths_d = _rls_to_pyd(text)
         else:
             text_d[text_n]=text
 
+    #if image_var_name_d is not None:
+    return {"images":image_path_d, "image_var_names":image_var_name_d,
+                        "texts":text_d, "image_params_paths":image_params_paths_d}
     
-    return {"images":_rls_to_pyd(result[0]), "image_var_names":image_var_name_d,
-                    "texts":text_d, "image_params_paths":image_params_paths_d}
+    #return {"images":{}, "image_var_names":{}, "texts":text_d, "image_params_paths":{}}
                                               
                                        
 def run_binary_fixed_meta_regression(selected_cov, bin_data_name="tmp_obj", \
@@ -644,8 +650,6 @@ def _gen_cov_vals_obj_str(cov, study_names, dataset):
                             named_list=False, return_cov_vals=True)
     ref_var = cov_vals[0].replace("'", "") # arbitrary
 
-    pyqtRemoveInputHook()
-    pdb.set_trace()
     ## setting the reference variable to the first entry
     # for now -- this only matters for factors, obviously
     r_str = "new('CovariateValues', cov.name='%s', cov.vals=%s, \
@@ -672,19 +676,19 @@ def run_meta_regression(dataset, study_names, cov_list, data_name="tmp_obj", \
     # now attach the covariates object to the R data object
     ro.r("%s@covariates <- %s" % (data_name, r_cov_str))
 
-    pyqtRemoveInputHook()
-    pdb.set_trace()
 
     r_str = "%s<- meta.regression(%s, %s)" % \
                             (results_name, data_name, params_df.r_repr())
 
-    print "\n\n(run_binary_ma): executing:\n %s\n" % r_str
+    print "\n\n(run_meta_regression): executing:\n %s\n" % r_str
 
-
-    
+    ### to do -- this is hacky
     ro.r(r_str)
-    result = ro.r("%s" % res_name)
-    return parse_out_results(result)
+    result = ro.r("%s" % results_name)
+
+    parsed_results = parse_out_results(result)
+
+    return parsed_results
 
 def run_subgroup_ma(meta_function_name, function_name, params, selected_cov,
                     bin_data_name="tmp_obj", res_name="result"):
