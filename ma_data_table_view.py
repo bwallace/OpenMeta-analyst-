@@ -45,7 +45,8 @@ class MADataTable(QtGui.QTableView):
         self.connect(header, SIGNAL("sectionClicked(int)"), self.header_clicked)
 
         vert_header = self.verticalHeader()
-        self.connect(vert_header, SIGNAL("sectionClicked(int)"), self.row_header_clicked)
+        self.connect(vert_header, SIGNAL("sectionClicked(int)"), \
+                            self.row_header_clicked)
     
         ## TODO need to add covariate indices here, as needed
         self.reverse_column_sorts = {0: False, 1: False}
@@ -58,8 +59,6 @@ class MADataTable(QtGui.QTableView):
         headers = self.horizontalHeader()
         headers.setContextMenuPolicy(Qt.CustomContextMenu)
         headers.customContextMenuRequested.connect(self.header_context_menu)
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
 
 
     def _make_context_menu(self):
@@ -216,7 +215,10 @@ class MADataTable(QtGui.QTableView):
         cur_follow_up = self.model().current_time_point
 
     def cell_content_changed(self, index, old_val, new_val, study_added):
-        metric_changed, old_metric = self.change_metric_if_appropriate()
+        metric_changed, old_metric = False, None
+        if index.column in self.model().RAW_DATA:
+            metric_changed, old_metric = self.change_metric_if_appropriate()
+            
         new_metric = None
         if metric_changed:
             new_metric = self.model().current_effect
@@ -241,6 +243,7 @@ class MADataTable(QtGui.QTableView):
         and the second is the original metric
         '''
         original_metric = self.model().current_effect
+    
         if len(self.model().dataset) > 2:
             data_type = self.model().get_current_outcome_type()
             if data_type == "binary" or data_type == "continuous":
@@ -248,8 +251,6 @@ class MADataTable(QtGui.QTableView):
                                   "continuous":CONTINUOUS_ONE_ARM_METRICS[0]}[data_type]
                 
                 if default_metric != original_metric and self.model().data_for_only_one_arm():
-                    #self.model().set_current_metric(default_metric)
-                    #self.model().try_to_update_outcomes()
                     self.set_metric_in_ui(default_metric)
                     return (True, original_metric)
         return (False,  original_metric)
@@ -261,14 +262,7 @@ class MADataTable(QtGui.QTableView):
         old_ma_unit = copy.deepcopy(ma_unit)
         cur_txs = self.model().current_txs
         cur_effect = self.model().current_effect
-        '''
-        ma_unit = self.model().get_current_ma_unit_for_study(study_index)
-        old_ma_unit = copy.deepcopy(ma_unit)
-        cur_txs = self.model().current_txs
-        cur_effect = self.model().current_effect
-        cur_group_str = self.model().get_cur_group_str()
-        data_type = self.model().get_current_outcome_type()
-        '''
+
 
     def header_clicked(self, column):
         can_sort_by = [self.model().NAME, self.model().YEAR]

@@ -930,6 +930,9 @@ class DatasetModel(QAbstractTableModel):
         group_str = self.get_cur_group_str() 
         data_type = self.get_current_outcome_type(get_str=False) 
         one_arm_effect = self.current_effect in BINARY_ONE_ARM_METRICS + CONTINUOUS_ONE_ARM_METRICS  
+
+        self.dataset.studies[study_index].include = False
+
         # we try to compute outcomes if either all raw data is there, or, if we have a one-arm
         # metric then if sufficient raw data exists to compute this
         if self.raw_data_is_complete_for_study(study_index) or \

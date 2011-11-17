@@ -92,7 +92,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.tableView.main_gui = self
         self.tableView.resizeColumnsToContents()
         self.out_path = None
-        
+        self.metric_menu_is_set_for = None
+
         if len(sys.argv)>1 and sys.argv[-1]=="--toy-data":
             # toy data for now
             data_model = _gen_some_data()
@@ -328,9 +329,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             ### get stateful dictionary here, update, pass to 
             old_state_dict = self.tableView.model().get_stateful_dict()
             new_state_dict = copy.deepcopy(old_state_dict)
-             
-            # self.tableView.model().current_effect
-
 
             # update the new state dict to reflect the currently selected
             # outcomes, etc.
@@ -352,7 +350,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.tableView.undoStack.push(edit_command)
             
     
-    def populate_metrics_menu(self):
+    def populate_metrics_menu(self, metric_to_check=None):
         '''
         Populates the `metric` sub-menu with available metrics for the
         current datatype.
@@ -361,40 +359,50 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.menuMetric.setDisabled(False)
 
         if self.model.get_current_outcome_type()=="binary":
-            self.add_binary_metrics()
-            
+            self.add_binary_metrics(metric_to_check=metric_to_check)
+            self.metric_menu_is_set_for = BINARY
+
         elif self.model.get_current_outcome_type()=="continuous":
-            self.add_continuous_metrics()
+            self.add_continuous_metrics(metric_to_check=metric_to_check)
+            self.metric_menu_is_set_for = CONTINUOUS
         
         else:
             # diagnostic data; deactive metrics option
             # we always show sens. + spec. for diag. data.
             self.menuMetric.setDisabled(True)
+            self.metric_menu_is_set_for = DIAGNOSTIC
 
                 
-    def add_binary_metrics(self):
+    def add_binary_metrics(self, metric_to_check=None):
         self.add_metrics(meta_globals.BINARY_ONE_ARM_METRICS,\
-                         meta_globals.BINARY_TWO_ARM_METRICS)
+                         meta_globals.BINARY_TWO_ARM_METRICS,
+                         metric_to_check=metric_to_check)
         
-    def add_continuous_metrics(self):
+    def add_continuous_metrics(self, metric_to_check=None):
         self.add_metrics(meta_globals.CONTINUOUS_ONE_ARM_METRICS,\
-                         meta_globals.CONTINUOUS_TWO_ARM_METRICS)
+                         meta_globals.CONTINUOUS_TWO_ARM_METRICS,
+                         metric_to_check=metric_to_check)
         
-    def add_metrics(self, one_arm_metrics, two_arm_metrics):
+    def add_metrics(self, one_arm_metrics, two_arm_metrics, \
+                        metric_to_check=None):
         # we'll add sub-menus for two-arm and one-arm metrics
         self.twoArmMetricMenu = self.add_sub_metric_menu("two-arm")
         self.oneArmMetricMenu = self.add_sub_metric_menu("one-arm")
 
         for i,metric in enumerate(two_arm_metrics):
             metric_action = self.add_metric_action(metric, self.twoArmMetricMenu)
-            if i == 0:
-                # arbitrarily check the first metric
+            if metric == metric_to_check or (metric_to_check is None and i == 0):
+                # arbitrarily check the first metric in the case that none
+                # is specificied 
                 metric_action.setChecked(True)
                 
         # now add the one-arm metrics
         for metric in one_arm_metrics:
-            self.add_metric_action(metric, self.oneArmMetricMenu)    
+            metric_action = self.add_metric_action(metric, self.oneArmMetricMenu)    
+            if metric == metric_to_check:
+                metric_action.setChecked(True)
       
+
     def add_sub_metric_menu(self, name):
         sub_menu = QtGui.QMenu(QString(name), self.menuMetric)
         self.menuMetric.addAction(sub_menu.menuAction())
@@ -755,6 +763,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         except:
             print "no state dictionary found!"
 
+
         prev_dataset = self.model.dataset.copy()
         
         undo_f = lambda : self.undo_set_model(prev_out_path, prev_state_dict, \
@@ -797,7 +806,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # in the dataset. in this case, the only 
         # row is essentially a blank study. 
         add_blank_study = len(data_model) < 1
-        self.model = DatasetModel(dataset=data_model, add_blank_study=add_blank_study)
+        self.model = DatasetModel(dataset=data_model, 
+                                    add_blank_study=add_blank_study)
 
         self._disconnections()
         if len(data_model) >= 2:
@@ -806,14 +816,23 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.disable_menu_options_that_require_dataset()
         
         self.tableView.setModel(self.model)
-        self.model_updated()
 
+        #self.model_updated()
         ## moving the statefuleness 
         # update below the model swap-out
         # to fix issue #62
         if state_dict is not None:
             self.model.set_state(state_dict)
 
+        self.tableView.resizeColumnsToContents()
+        self.model_updated()
+        '''
+        self.tableView.model().set_current_metric(metric_name)
+        self.model.try_to_update_outcomes()    
+        self.model.reset()
+        
+        
+        '''
         #self.model.current_effect = state_dict['current_effect']
         print "ok -- model set."
         
@@ -838,13 +857,15 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.tableView.resizeColumnsToContents()
         self.update_outcome_lbl()
         self.update_follow_up_label()
+        
         ####
-        # note that this will change the current metric!
-        # we should check here to see if the active
-        # metric is appropriate for the new model datatype
-        # and if so keep it.
-        self.populate_metrics_menu()
-     
+        # adding check to ascertain that the menu
+        # isn't already ready for the current kind of data
+        cur_data_type = self.tableView.model().get_current_outcome_type(get_str=False)
+        if self.metric_menu_is_set_for != cur_data_type:
+            self.populate_metrics_menu(\
+                metric_to_check=self.tableView.model().current_effect)
+
         self.model.reset()
         
         
