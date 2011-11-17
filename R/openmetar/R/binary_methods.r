@@ -113,7 +113,8 @@ binary.fixed.inv.var <- function(binary.data, params){
                                 level=params$conf.level, digits=params$digits, method="FE", add=params$adjust,
                                 to=params$to)
         # Create list to display summary of results
-        model.title <- paste("Binary Fixed-Effects Model - Inverse Variance\n\nMetric: ", params$measure, sep="")
+        metric.name <- pretty.metric.name(params$measure)
+        model.title <- paste("Binary Fixed-Effects Model - Inverse Variance\n\nMetric: ", metric.name, sep="")
         data.type <- "binary"
         summary.disp <- create.summary.disp(res, params, model.title, data.type)
         # genreate forest plot 
@@ -200,7 +201,8 @@ binary.fixed.mh <- function(binary.data, params){
         #                        
         # Create list to display summary of results
         #
-        model.title <- paste("Binary Fixed-Effects Model - Mantel Haenszel\n\nMetric: ", params$measure, sep="")
+        metric.name <- pretty.metric.name(params$measure)
+        model.title <- paste("Binary Fixed-Effects Model - Mantel Haenszel\n\nMetric: ", metric.name, sep="")
         data.type <- "binary"
         summary.disp <- create.summary.disp(res, params, model.title, data.type)
         #
@@ -304,7 +306,8 @@ binary.fixed.peto <- function(binary.data, params){
         #                        
         # Create list to display summary of results
         #
-        model.title <- paste("Binary Fixed-Effects Model - Peto\n\nMetric: ", params$measure, sep="")
+        metric.name <- pretty.metric.name(params$measure)
+        model.title <- paste("Binary Fixed-Effects Model - Peto\n\nMetric: ", metric.name, sep="")
         data.type <- "binary"
         summary.disp <- create.summary.disp(res, params, model.title, data.type)
         #
@@ -408,7 +411,8 @@ binary.random <- function(binary.data, params){
         #                        
         # Create list to display summary of results
         #
-        model.title <- paste("Binary Random-Effects Model\n\nMetric: ", params$measure, sep="")
+        metric.name <- pretty.metric.name(params$measure)
+        model.title <- paste("Binary Random-Effects Model\n\nMetric: ", metric.name, sep="")
         data.type <- "binary"
         summary.disp <- create.summary.disp(res, params, model.title, data.type)
  

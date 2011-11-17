@@ -77,8 +77,8 @@ continuous.fixed <- function(cont.data, params){
                      slab=cont.data@study.names,
                      method="FE", level=params$conf.level,
                      digits=params$digits)
-
-        model.title <- paste("Continuous Fixed-Effects Model\n\nMetric: ", params$measure, sep="")
+        metric.name <- pretty.metric.name(params$measure)
+        model.title <- paste("Continuous Fixed-Effects Model\n\nMetric: ", metric.name, sep="")
         data.type <- "cont"
         summary.disp <- create.summary.disp(res, params, model.title, data.type)
     }    
@@ -162,7 +162,8 @@ continuous.random <- function(cont.data, params){
                      slab=cont.data@study.names,
                      method=params$rm.method, level=params$conf.level,
                      digits=params$digits)
-        model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", params$measure, sep="")
+        metric.name <- pretty.metric.name(params$measure)
+        model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", metric.name, sep="")
         data.type <- "cont"
         summary.disp <- create.summary.disp(res, params, model.title, data.type)
     }        
