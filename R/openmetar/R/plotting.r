@@ -57,12 +57,6 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
         plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(plot.ub)
     } 
     
-    if ("DiagnosticData" %in% class(om.data)) {
-        plot.options$show.y.axis <- FALSE
-        # don't show y-axis for diagnostic forest plots
-    } else {
-        plot.options$show.y.axis <- TRUE
-    }
     plot.data <- list(label = c(paste(params$fp_col1_str, sep = ""), om.data@study.names, "Overall"),
                       types = c(3, rep(0, length(om.data@study.names)), 2),
                       scale = scale.str,
@@ -84,6 +78,10 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb)
     ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub)
     
+    effects.disp <- list(y.disp=y.disp, lb.disp=lb.disp, ub.disp=ub.disp)
+    # these values will be displayed on the plot
+    plot.data$effects.disp <- effects.disp
+    
     if (metric.is.logit.scale(params$measure)) {
         # in logit scale, pass data in display scale - no scaling on x-axis
         y <- y.disp
@@ -95,19 +93,8 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
                     LL = lb,
                     UL = ub) 
     plot.data$effects <- effects
-    
-    if (params$fp_show_col2=='TRUE') {
-        # transform entries to display scale
-        effect.sizes <- format.effect.sizes(y=y.disp, lb=lb.disp, ub=ub.disp, params)
-        # first row contains headers, so add label
-        effect.size.label <- create.effect.size.label(effect.sizes, params)
-        effect.size.col <- c(effect.size.label,
-                             paste(effect.sizes$y.display, effect.sizes$lb.display, ",", 
-                                   effect.sizes$ub.display, ")", sep = ""))
-        plot.data$additional.col.data$es <- effect.size.col
-    }
-    
-    # covariates
+     
+     # covariates
     if (!is.null(selected.cov)){
         cov.val.str <- paste("om.data@covariates$", selected.cov, sep="")
         cov.values <- eval(parse(text=cov.val.str))
@@ -130,29 +117,33 @@ create.plot.data.binary <- function(binary.data, params, res, selected.cov = NUL
     
     plot.data <- create.plot.data.generic(binary.data, params, res, selected.cov=selected.cov)
         
-    # if we have raw data, add it to the additional columns field
-    if ((length(binary.data@g1O1) > 0) && (params$fp_show_col3=="TRUE")) {
-        data.column <- format.raw.data.col(nums = binary.data@g1O1, denoms = binary.data@g1O1 + binary.data@g1O2, label = as.character(params$fp_col3_str))
-        plot.data$additional.col.data$cases <- data.column
+    # if we have raw data, add it to plot.data
+    if (length(binary.data@g1O1) > 0)  {
+    
+        plot.data$col3 <- list(nums = binary.data@g1O1, denoms = binary.data@g1O1 + binary.data@g1O2)
     }
     
-    if ((length(binary.data@g2O1) > 0) && (params$fp_show_col4=="TRUE")){
-        data.column <- format.raw.data.col(nums = binary.data@g2O1, denoms = binary.data@g2O1 + binary.data@g2O2, label = as.character(params$fp_col4_str))
-        plot.data$additional.col.data$controls = data.column
+    if (length(binary.data@g2O1) > 0) {
+         plot.data$col4 <- list(nums = binary.data@g2O1, denoms = binary.data@g2O1 + binary.data@g2O2)
     }
-    
+  
     plot.data
 }
 
 create.plot.data.diagnostic <- function(diagnostic.data, params, res, selected.cov = NULL){
 
     plot.data <- create.plot.data.generic(diagnostic.data, params, res, selected.cov=selected.cov)
-        
-    # if we have raw data, add it to the additional columns field
-    if ((length(diagnostic.data@TP) > 0) && (params$fp_show_col3=="TRUE")) {
+    plot.options <- plot.data$plot.options
+    plot.options$show.y.axis <- FALSE
+    # don't show y axis in diagnostic forest plots
+    # if we have raw data, add it to plot.data
+    if (length(diagnostic.data@TP) > 0) {
         raw.data <- list("TP"=diagnostic.data@TP, "FN"=diagnostic.data@FN, "TN"=diagnostic.data@TN, "FP"=diagnostic.data@FP)
         terms <- compute.diagnostic.terms(raw.data, params)
+        plot.data$col3 <- list(nums=terms$numerator, denoms=terms$denominator)
+        
         metric <- params$measure
+        # create label for column 3 based on metric
         label <- switch(metric,
         # sensitivity
         Sens = "TP / (TP + FN)", 
@@ -170,8 +161,9 @@ create.plot.data.diagnostic <- function(diagnostic.data, params, res, selected.c
         NLR = "(FN * Di-) / (TN * Di+)",
         # diagnostic odds ratio
         DOR = "(TP * TN) / (FP * FN")
-        data.col <- format.raw.data.col(nums = terms$numerator, denoms = terms$denominator, label = label) 
-        plot.data$additional.col.data$cases = data.col
+        #data.col <- format.raw.data.col(nums = terms$numerator, denoms = terms$denominator, label = label) 
+        #plot.data$additional.col.data$cases = data.col
+        plot.data$options$col3.str <- label
     }
     plot.data
 }
@@ -246,7 +238,7 @@ create.plot.data.overall <- function(res, study.names, params, data.type, addRow
     y.disp <- eval(call(transform.name, params$measure))$display.scale(y)
     lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb)
     ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub)                   
-      
+    
     if (metric.is.logit.scale(params$measure)) {
         # in logit scale, pass data in display scale - no scaling on x-axis
         y <- y.disp
@@ -258,19 +250,6 @@ create.plot.data.overall <- function(res, study.names, params, data.type, addRow
                     LL = lb,
                     UL = ub) 
     plot.data$effects <- effects
-                       
-    if (params$fp_show_col2=='TRUE') {
-        # transform entries to display scale
-        # format entries for effect size text column in forest plot        
-        effect.sizes <- format.effect.sizes(y=y.disp, lb=lb.disp, ub=ub.disp, params)
-        # first row contains headers, so add label
-        effect.size.label <- create.effect.size.label(effect.sizes, params)
-        effect.size.col <- c(effect.size.label,
-                          paste(effect.sizes$y.display, effect.sizes$lb.display, ",", 
-                          effect.sizes$ub.display, ")", sep = ""))
-        plot.data$additional.col.data$es <- effect.size.col
-    }
-   
     plot.data
 }
 
@@ -349,6 +328,10 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, 
     lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb)
     ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub)
     
+    # these values will be displayed on the plot
+    effects.disp <- list(y.disp=y.disp, lb.disp=lb.disp, ub.disp=ub.disp)
+    plot.data$effects.disp <- effects.disp
+    
     if (metric.is.logit.scale(params$measure)) {
         # in logit scale, pass data in display scale - no scaling on x-axis
         y <- y.disp
@@ -361,17 +344,6 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, 
                     UL = ub)
    
     plot.data$effects <- effects
-    
-    if (params$fp_show_col2=='TRUE') {
-        # format entries for effect size text column in forest plot        
-        effect.sizes <- format.effect.sizes(y=y.disp, lb=lb.disp, ub=ub.disp, params)
-        # first row contains headers, so add label
-        effect.size.label <- create.effect.size.label(effect.sizes, params)
-        effect.size.col <- c(effect.size.label,
-                               paste(effect.sizes$y.display, effect.sizes$lb.display, ",", 
-                                     effect.sizes$ub.display, ")", sep = ""))
-        plot.data$additional.col.data$es <- effect.size.col
-    }
     
     # covariates
     if (!is.null(selected.cov)){
@@ -387,47 +359,48 @@ create.subgroup.plot.data.binary <- function(subgroup.data, params) {
     grouped.data <- subgroup.data$grouped.data
     plot.data <- create.subgroup.plot.data.generic(subgroup.data, params, data.type="binary") 
 
-    if ((length(grouped.data[[1]]@g1O1) > 0) && (params$fp_show_col3=="TRUE")) {
-        data.column <- format.raw.data.col(nums = subgroup.data$col3.nums, denoms = subgroup.data$col3.denoms, 
-        label = as.character(params$fp_col3_str))
-        plot.data$additional.col.data$cases <- data.column
+    # if we have raw data, add it to plot.data
+    if (length(grouped.data[[1]]@g1O1) > 0) {
+    
+        plot.data$col3 <- list(nums = subgroup.data$col3.nums, denoms = subgroup.data$col3.denoms)
     }
     
-    if ((length(grouped.data[[1]]@g2O1) > 0) && (params$fp_show_col4=="TRUE")){
-        data.column <- format.raw.data.col(nums = subgroup.data$col4.nums, denoms = subgroup.data$col4.denoms, 
-        label = as.character(params$fp_col4_str))
-        plot.data$additional.col.data$controls <- data.column
+    if (length(grouped.data[[1]]@g2O1) > 0) {
+         plot.data$col4 <- list(nums = subgroup.data$col4.nums, denoms = subgroup.data$col4.denoms)
     }
-    
     plot.data
 }
 
 create.subgroup.plot.data.diagnostic <- function(subgroup.data, params) {
     grouped.data <- subgroup.data$grouped.data
     plot.data <- create.subgroup.plot.data.generic(subgroup.data, params, data.type="diagnostic") 
-
-    if ((length(grouped.data[[1]]@TP) > 0) && (params$fp_show_col3=="TRUE")) {
+    if (length(grouped.data[[1]]@TP) > 0) {
+        raw.data <- list("TP"=diagnostic.data@TP, "FN"=diagnostic.data@FN, "TN"=diagnostic.data@TN, "FP"=diagnostic.data@FP)
+        terms <- compute.diagnostic.terms(raw.data, params)
+        plot.data$col3 <- list(nums = subgroup.data$col3.nums, denoms = subgroup.data$col3.denoms)
+        
         metric <- params$measure
+        # create label for column 3 based on metric
         label <- switch(metric,
         # sensitivity
-        Sens = "TP / Di+", 
+        Sens = "TP / (TP + FN)", 
         # specificity
-        Spec = "TN / D-",
+        Spec = "TN / (FP + TN)",
         # pos. predictive value
-        PPV =  "TP / T+",
+        PPV =  "TP / (TP + FP)",
         #neg. predictive value
-        NPV =  "TN / T-",
+        NPV =  "TN / (TN + FN)",
         # accuracy
-        Acc = "TP + TN / Tot",
+        Acc = "(TP + TN) / Tot",
         # positive likelihood ratio
-        PLR = "TP * Di- / FP * Di+", 
+        PLR = "(TP * Di-) / (FP * Di+)", 
         # negative likelihood ratio
-        NLR = "FN * Di- / TN * Di+",
+        NLR = "(FN * Di-) / (TN * Di+)",
         # diagnostic odds ratio
-        DOR = "TP * TN / FP * FN")
-        data.column <- format.raw.data.col(nums = subgroup.data$col3.nums, denoms = subgroup.data$col3.denoms, 
-        label = label)
-        plot.data$additional.col.data$cases <- data.column
+        DOR = "(TP * TN) / (FP * FN")
+        #data.col <- format.raw.data.col(nums = terms$numerator, denoms = terms$denominator, label = label) 
+        #plot.data$additional.col.data$cases = data.col
+        plot.data$options$col3.str <- label
     }
     plot.data
 }
@@ -468,31 +441,54 @@ set.plot.options <- function(params) {
     } else {
         plot.options$xticks <- eval(parse(text=paste("c(", params$fp_xticks, ")", sep="")))
     }
-    if ((params$fp_show_col1=='TRUE') || is.null(params$fp_show_col1)) {
+    if (params$fp_show_col1=='TRUE') {
       plot.options$show.study.col <- TRUE
     } else {
       plot.options$show.study.col <- FALSE
     }
-
+    plot.options$col1.str <- as.character(params$fp_col1_str)
+    
+    if (params$fp_show_col2=='TRUE') {
+      plot.options$show.col2 <- TRUE
+    } else {
+      plot.options$show.col2 <- FALSE
+    }
+    plot.options$col2.str <- as.character(params$fp_col2_str)
+    
+    if (params$fp_show_col3=='TRUE') {
+      plot.options$show.col3 <- TRUE
+    } else {
+      plot.options$show.col3 <- FALSE
+    }
+    if (!is.null(params$fp_col3_str)) {
+       plot.options$col3.str <- as.character(params$fp_col3_str)
+    }
+    
+    if (params$fp_show_col4=='TRUE') {
+      plot.options$show.col4 <- TRUE
+    } else {
+      plot.options$show.col4 <- FALSE
+    }
+    if (!is.null(params$fp_col4_str)) {
+       plot.options$col4.str <- as.character(params$fp_col4_str)
+    }
+    
     # xlabel is the label for the x-axis
-    if (is.null(params$fp_xlabel) || params$fp_xlabel == "[default]") {
+    if (params$fp_xlabel == "[default]") {
         plot.options$xlabel <- pretty.metric.name(params$measure)
     } else {
-        plot.options$xlabel <- params$fp_xlabel
+        plot.options$xlabel <- as.character(params$fp_xlabel)
     }
     # if show.summary.line is TRUE, a vertical dashed line is displayed at the
     # overall summary.
-    if ((params$fp_show_summary_line=='TRUE') || is.null(params$show.fp_show_summary_line)) {  
+    if (params$fp_show_summary_line=='TRUE') {  
       plot.options$show.summary.line <- TRUE
     } else {
       plot.options$show.summary.line <- FALSE
     }
+    plot.options$show.y.axis <- TRUE
     
-    if ((params$fp_show_y_axis=='TRUE') || is.null(params$show.fp_show_y_axis)) {  
-      plot.options$show.y.axis <- TRUE
-    } else {
-      plot.options$show.y.axis <- FALSE
-    }
+    plot.options$digits <- params$digits
     plot.options
 }    
 
@@ -501,7 +497,7 @@ pretty.metric.name <- function(metric) {
   metric.name <- switch(metric,
         OR = "Odds Ratio",
         RD = "Risk Difference",
-        RR = "Relative Risk",
+        RR = "Risk Ratio",
         AS = "Arcsine Risk Difference",
         PR = "Proportion",
         PLN = "Log Proportion",  
@@ -670,6 +666,7 @@ effectsize.column <- function(forest.data, box.sca = 1) {
       else {
           # When scale is log or standard, this is a heuristic to determine a reasonable range for the displayed values - 
           # confidence intervals that exceed this range are truncated and left or right arrows are displayed instead of the full CI.
+        # left.distance <- mean(effect.col$ES) - min(effect.col$LL)
         if (min(effect.col$LL)>0 && max(effect.col$UL)>0) {
           effect.col.range <- c(max(0.5*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) + 0.3, max(effect.col$UL)))
         } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)<=0) { 
@@ -893,11 +890,13 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
 #            forest plot              #
 ####################################### 
 forest.plot <- function(forest.data, outpath) {
+  forest.data <- format.data.cols(forest.data)
+  # format the data columns displayed on fores plot
   show.study.col <- forest.data$options$show.study.col
-  vp.data <- forest.plot.data(forest.data, just="left")
-  vp.layout <- vp.data$vp.layout
-  how.wide <- vp.data$how.wide
-  height <- vp.data$height
+  viewport.data <- forest.plot.data(forest.data, just="left")
+  viewport.layout <- viewport.data$vp.layout
+  how.wide <- viewport.data$how.wide
+  height <- viewport.data$height
   how.tall <- convertY(unit(rep(1, height)  , "lines") , "inches" , valueOnly=TRUE)
 
   # so here we're just going to use the relatively hacky 
@@ -912,8 +911,8 @@ forest.plot <- function(forest.data, outpath) {
       pdf(file=outpath, width = how.wide+1, height = height*how.tall+2) 
   }
                         
-  pushViewport(viewport(layout=vp.layout))
-  draw.forest.plot(forest.data, vp.data)
+  pushViewport(viewport(layout=viewport.layout))
+  draw.forest.plot(forest.data, viewport.data)
   
   graphics.off()
 }
@@ -997,13 +996,13 @@ forest.plot <- function(forest.data, outpath) {
 #######################################
 #            draw forest plot         #
 ####################################### 
-draw.forest.plot <- function(forest.data, vp.data){
+draw.forest.plot <- function(forest.data, viewport.data){
     # Draws forest plots using viewport data extracted by forest.plot.data
     show.study.col <- forest.data$options$show.study.col                             
-    how.wide <- vp.data$how.wide
+    how.wide <- viewport.data$how.wide
     #how.tall <- vp.data$how.tall
-    height <- vp.data$height
-    vp.layout <- vp.data$vp.layout
+    height <- viewport.data$height
+    viewport.layout <- viewport.data$vp.layout
     # these are calls to data functions
     study.col <- study.column(forest.data, "bold")
     additional.cols <- c()
@@ -1042,20 +1041,22 @@ draw.forest.plot <- function(forest.data, vp.data){
 #######################################
  
 two.forest.plots <- function(forest.data1, forest.data2, outpath) {
-   # draw two forest plots side by side. Called by side.by.side.plots.
-   vp.data1 <- forest.plot.data(forest.data1, just="left")     
-   vp.data2 <- forest.plot.data(forest.data2, just="right")
-   vp.layout1 <- vp.data1$vp.layout
-   vp.layout2 <- vp.data2$vp.layout
-   how.wide1 <- vp.data1$how.wide
+   # draw two forest plots side by side.
+   forest.data1 <- format.data.cols(forest.data1)
+   forest.data2 <- format.data.cols(forest.data2)
+   viewport.data1 <- forest.plot.data(forest.data1, just="left")     
+   viewport.data2 <- forest.plot.data(forest.data2, just="right")
+   viewport.layout1 <- viewport.data1$vp.layout
+   viewport.layout2 <- viewport.data2$vp.layout
+   how.wide1 <- viewport.data1$how.wide
    if (forest.data2$options$show.study.col == TRUE) {
-     how.wide2 <- vp.data2$how.wide + .75
+     how.wide2 <- viewport.data2$how.wide + .75
      # add some more space if to the right graph if showing study cols.
    } else {
-     how.wide2 <- vp.data2$how.wide
+     how.wide2 <- viewport.data2$how.wide
    }
-   height1 <- vp.data1$height
-   height2 <- vp.data2$height
+   height1 <- viewport.data1$height
+   height2 <- viewport.data2$height
    height <- max(height1, height2)
    how.tall <- convertY(unit(rep(1, height)  , "lines") , "inches" , valueOnly=TRUE )
    pushViewport(viewport(layout=grid.layout(1,2), width=how.wide1 + how.wide2))               
@@ -1068,11 +1069,11 @@ two.forest.plots <- function(forest.data1, forest.data2, outpath) {
       pdf(file=outpath, width = how.wide1 + how.wide2 + 1, height = height*how.tall+2) 
    }
                                     
-   pushViewport(viewport(layout=vp.layout1, layout.pos.col=1))
-   draw.forest.plot(forest.data1, vp.data1)   
+   pushViewport(viewport(layout=viewport.layout1, layout.pos.col=1))
+   draw.forest.plot(forest.data1, viewport.data1)   
    popViewport()
-   pushViewport(viewport(layout=vp.layout2,layout.pos.col=2))
-   draw.forest.plot(forest.data2, vp.data2)
+   pushViewport(viewport(layout=viewport.layout2,layout.pos.col=2))
+   draw.forest.plot(forest.data2, viewport.data2)
    popViewport()
    
    graphics.off()
@@ -1238,9 +1239,39 @@ plot.ppv.npv.by.prev <- function(diagnostic.data, params) {
 #  Functions for formatting data for display in plots #
 #######################################################
 
-format.effect.sizes <- function(y, lb, ub, params) {
+format.data.cols <- function(plot.data) {
+  # formats data columns for display on forest plot
+  options <- plot.data$options
+  
+  if (options$show.col2==TRUE) {
+    
+        y.disp <- plot.data$effects.disp$y.disp
+        lb.disp <- plot.data$effects.disp$lb.disp
+        ub.disp <- plot.data$effects.disp$ub.disp
+        effect.sizes <- format.effect.sizes(y=y.disp, lb=lb.disp, ub=ub.disp, options)
+        # first row contains headers, so add label
+        effect.size.label <- create.effect.size.label(effect.sizes, options)
+        effect.size.col <- c(effect.size.label,
+                             paste(effect.sizes$y.display, effect.sizes$lb.display, ",", 
+                                   effect.sizes$ub.display, ")", sep = ""))
+        plot.data$additional.col.data$es <- effect.size.col
+  }  
+  if ((options$show.col3==TRUE) && (!is.null(plot.data$col3))) {
+        label <- options$col3.str
+        data.col <- format.raw.data.col(nums = plot.data$col3$nums, denoms = plot.data$col3$denoms, label = label) 
+        plot.data$additional.col.data$cases = data.col
+  }
+  if ((options$show.col4==TRUE) && (!is.null(plot.data$col4))) {
+        label <- options$col4.str
+        data.col <- format.raw.data.col(nums = plot.data$col4$nums, denoms = plot.data$col4$denoms, label = label) 
+        plot.data$additional.col.data$controls = data.col
+  }
+  plot.data
+}
+
+format.effect.sizes <- function(y, lb, ub, options) {
   # format column by padding entries with spaces for alignment
-  digits <- params$digits
+  digits <- options$digits
   y.display <- round(y, digits)
   y.display <- sprintf(paste("%.", digits,"f", sep=""), y.display)
   lb.display <- round(lb, digits)
@@ -1271,12 +1302,12 @@ format.effect.sizes <- function(y, lb, ub, params) {
   effect.sizes <- list("y.display"=y.display, "lb.display"=lb.display, "ub.display"=ub.display)
 }
 
-create.effect.size.label <- function(effect.sizes, params) {
+create.effect.size.label <- function(effect.sizes, options) {
    # add label to effect.size.column and align
    # The purpose of this code is to align the comma if the label
    # is of the form ES(LL, UL), with the data entries below it. Since the default label
    # is no longer of that form, this function could be removed.
-   col2.label <- as.character(params$fp_col2_str)
+   col2.label <- as.character(options$col2.str)
    # if label contains ",", pad label to align columns
    label.info <- check.label(label = col2.label, split.str = ",")
    max.chars <- max(nchar(effect.sizes$ub.display)) + 1
