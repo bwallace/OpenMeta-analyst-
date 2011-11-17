@@ -191,6 +191,9 @@ create.plot.data.overall <- function(res, study.names, params, data.type, addRow
       transform.name <- "binary.transform.f"
     }
     plot.options <- set.plot.options(params)
+    plot.options$show.col3 <- FALSE
+    plot.options$show.col4 <- FALSE
+    # These can be removed if and when raw data columns are added to overall plots
 
     if (params$fp_plot_lb == "[default]") {
         plot.options$plot.lb <- NULL
@@ -238,6 +241,8 @@ create.plot.data.overall <- function(res, study.names, params, data.type, addRow
     y.disp <- eval(call(transform.name, params$measure))$display.scale(y)
     lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb)
     ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub)                   
+    effects.disp <- list(y.disp=y.disp, lb.disp=lb.disp, ub.disp=ub.disp)
+    plot.data$effects.disp <- effects.disp
     
     if (metric.is.logit.scale(params$measure)) {
         # in logit scale, pass data in display scale - no scaling on x-axis

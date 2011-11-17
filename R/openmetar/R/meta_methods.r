@@ -26,10 +26,15 @@ cum.ma.binary <- function(fname, binary.data, params){
     res<-rma.uni(yi=binary.data@y, sei=binary.data@SE, slab=binary.data@study.names,
                                 level=params$conf.level, digits=params$digits, method="FE", add=params$adjust,
                                 to=params$to)
+    
+    plot.data <- create.plot.data.binary(binary.data, params, res)
+    # data for standard fores plot
+    
     params$fp_show_col2 <- FALSE
     params$fp_show_col3 <- FALSE
     params$fp_show_col4 <- FALSE
-    plot.data <- create.plot.data.binary(binary.data, params, res)
+    params$fp_col1_str <- "Cumulative Studies"
+    # cumulative plot does not display numerical data
     
     # iterate over the binaryData elements, adding one study at a time
     cum.results <- array(list(NULL), dim=c(length(binary.data@study.names)))
@@ -68,19 +73,19 @@ cum.ma.binary <- function(fname, binary.data, params){
         study.names <- c(study.names, paste("+ ",binary.data@study.names[count], sep=""))
     }
     
+    metric.name <- pretty.metric.name(params$measure)
     model.title <- ""
     if (fname == "binary.fixed.inv.var") {
-        model.title <- paste("Binary Fixed-Effects Model - Inverse Variance\n\nMetric: ", params$measure, sep="") 
+        model.title <- paste("Binary Fixed-Effects Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
     } else if (fname == "binary.fixed.mh") {
-        model.title <- paste("Binary Fixed-Effects Model - Mantel Haenszel\n\nMetric: ", params$measure, sep="")
+        model.title <- paste("Binary Fixed-Effects Model - Mantel Haenszel\n\nMetric: ", metric.name, sep="")
     } else if (fname == "binary.fixed.peto") {
-        model.title <- paste("Binary Fixed-Effects Model - Peto\n\nMetric: ", params$measure, sep="")
+        model.title <- paste("Binary Fixed-Effects Model - Peto\n\nMetric: ", metric.name, sep="")
     } else if (fname == "binary.random") {
-        model.title <- paste("Binary Random-Effects Model\n\nMetric: ", params$measure, sep="")
+        model.title <- paste("Binary Random-Effects Model\n\nMetric: ", metric.name, sep="")
     }
     cum.disp <- create.overall.display(res=cum.results, study.names, params, model.title, data.type="binary")
     forest.path <- paste(params$fp_outpath, sep="")
-    params$fp_col1_str <- "Cumulative Studies"
     plot.data.cum <- create.plot.data.overall(res=cum.results, study.names, params, data.type="binary", addRow1Space=TRUE)
     two.forest.plots(plot.data, plot.data.cum, outpath=forest.path)
 
@@ -110,6 +115,9 @@ cum.ma.binary <- function(fname, binary.data, params){
 loo.ma.binary <- function(fname, binary.data, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
+    res<-rma.uni(yi=binary.data@y, sei=binary.data@SE, slab=binary.data@study.names,
+                                level=params$conf.level, digits=params$digits, method="FE", add=params$adjust,
+                                to=params$to)
     
     loo.results <- array(list(NULL), dim=c(length(binary.data@study.names)))
     params$create.plot <- FALSE
@@ -117,16 +125,7 @@ loo.ma.binary <- function(fname, binary.data, params){
     for (i in 1:N){
         # get a list of indices, i.e., the subset
         # that is 1:N with i left out
-        index.ls <- 1:N
-        if (i == 1){
-            index.ls <- index.ls[2:N]
-        }
-        else if (i==N){
-            index.ls <- index.ls[1:N-1]
-        }
-        else{
-            index.ls <- c(index.ls[1:i-1], index.ls[(i+1):N])  
-        }
+        index.ls <- setdiff(1:N, i)
         
         # build a BinaryData object with the 
         # ith study removed.  
@@ -161,15 +160,16 @@ loo.ma.binary <- function(fname, binary.data, params){
     for (count in 1:length(binary.data@study.names)) {
         study.names <- c(study.names, paste("- ",binary.data@study.names[count], sep=""))
     }
+    metric.name <- pretty.metric.name(params$measure)
     model.title <- ""
     if (fname == "binary.fixed.inv.var") {
-        model.title <- paste("Binary Fixed-Effects Model - Inverse Variance\n\nMetric: ", params$measure, sep="") 
+        model.title <- paste("Binary Fixed-Effects Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
     } else if (fname == "binary.fixed.mh") {
-        model.title <- paste("Binary Fixed-Effects Model - Mantel Haenszel\n\nMetric: ", params$measure, sep="")
+        model.title <- paste("Binary Fixed-Effects Model - Mantel Haenszel\n\nMetric: ", metric.name, sep="")
     } else if (fname == "binary.fixed.peto") {
-        model.title <- paste("Binary Fixed-Effects Model - Peto\n\nMetric: ", params$measure, sep="")
+        model.title <- paste("Binary Fixed-Effects Model - Peto\n\nMetric: ", metric.name, sep="")
     } else if (fname == "binary.random") {
-        model.title <- paste("Binary Random-Effects Model\n\nMetric: ", params$measure, sep="")
+        model.title <- paste("Binary Random-Effects Model\n\nMetric: ", metric.name, sep="")
     }
     
     loo.disp <- create.overall.display(res=loo.results, study.names, params, model.title, data.type="binary")
@@ -249,12 +249,12 @@ cum.ma.diagnostic <- function(fname, diagnostic.data, params){
     for (count in 2:length(diagnostic.data@study.names)) {
         study.names <- c(study.names, paste("+ ",diagnostic.data@study.names[count], sep=""))
     }
-
+    metric.name <- pretty.metric.name(params$measure)
     model.title <- ""
     if (fname == "diagnostic.fixed") {
-        model.title <- paste("Diagnostic Fixed-Effects Model - Inverse Variance\n\nMetric: ", params$measure, sep="") 
+        model.title <- paste("Diagnostic Fixed-Effects Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
     } else if (fname == "diagnostic.random") {
-        model.title <- paste("Diagnostic Random-Effects Model\n\nMetric: ", params$measure, sep="")
+        model.title <- paste("Diagnostic Random-Effects Model\n\nMetric: ", metric.name, sep="")
     }
     
     cum.disp <- create.overall.display(res=cum.results, study.names, params, model.title, data.type="diagnostic")
@@ -340,6 +340,7 @@ loo.ma.diagnostic <- function(fname, diagnostic.data, params){
     for (count in 1:length(diagnostic.data@study.names)) {
         study.names <- c(study.names, paste("- ",diagnostic.data@study.names[count], sep=""))
     }
+    metric.name <- pretty.metric.name(params$measure)
     model.title <- ""
     if (fname == "diagnostic.fixed") {
         model.title <- paste("Diagnostic Fixed-Effects Model - Inverse Variance\n\nMetric: ", params$measure, sep="") 
@@ -431,12 +432,12 @@ cum.ma.continuous <- function(fname, cont.data, params){
     for (count in 2:length(cont.data@study.names)) {
         study.names <- c(study.names, paste("+ ",cont.data@study.names[count], sep=""))
     }
-
+    metric.name <- pretty.metric.name(params$measure)
     model.title <- ""
     if (fname == "continuous.fixed") {
-        model.title <- paste("Continuous Fixed-Effects Model - Inverse Variance\n\nMetric: ", params$measure, sep="") 
+        model.title <- paste("Continuous Fixed-Effects Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
     } else if (fname == "continuous.random") {
-        model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", params$measure, sep="")
+        model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", metric.name, sep="")
     }
     cum.disp <- create.overall.display(res=cum.results, study.names, params, model.title, data.type="continuous")
     forest.path <- paste(params$fp_outpath, sep="")
@@ -529,11 +530,12 @@ loo.ma.continuous <- function(fname, cont.data, params){
     for (count in 1:length(cont.data@study.names)) {
         study.names <- c(study.names, paste("- ",cont.data@study.names[count], sep=""))
     }
+    metric.name <- pretty.metric.name(params$measure)
     model.title <- ""
     if (fname == "continuous.fixed") {
-        model.title <- paste("Continuous Fixed-Effects Model - Inverse Variance\n\nMetric: ", params$measure, sep="") 
+        model.title <- paste("Continuous Fixed-Effects Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
     } else if (fname == "continuous.random") {
-        model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", params$measure, sep="")
+        model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", metric.name, sep="")
     }
     loo.disp <- create.overall.display(res=loo.results, study.names, params, model.title, data.type="continuous")
 
@@ -568,9 +570,9 @@ loo.ma.continuous <- function(fname, cont.data, params){
 subgroup.ma.binary <- function(fname, binary.data, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
-    cov.name <- params$cov_name
-    cov.val.str <- paste("binary.data@covariates$", cov.name, sep="")
-    subgroups <- eval(parse(text=cov.val.str))
+    #cov.name <- params$cov_name
+    #cov.val.str <- paste("binary.data@covariates$", cov.name, sep="")
+    subgroups <- binary.data@covariates[[1]]@cov.vals
     params$create.plot <- FALSE
     subgroup.list <- unique(subgroups)
     grouped.data <- array(list(NULL),c(length(subgroup.list)+1))
@@ -581,18 +583,18 @@ subgroup.ma.binary <- function(fname, binary.data, params){
     col4.denoms <- NULL
     count <- 1
     for (i in subgroup.list){
-      # build a BinaryData object for each subgourp
-      bin.data.tmp <- get.subgroup.data.binary(binary.data, cov.name, i)
+      # build a BinaryData object for each subgroup
+      bin.data.tmp <- get.subgroup.data.binary(binary.data, i)
       grouped.data[[count]] <- bin.data.tmp
       # collect raw data columns
-      if (params$fp_show_col3=="TRUE") {
+      #if (params$fp_show_col3=="TRUE") {
         col3.nums <- c(col3.nums, bin.data.tmp@g1O1, sum(bin.data.tmp@g1O1)) 
         col3.denoms <- c(col3.denoms, bin.data.tmp@g1O1 + bin.data.tmp@g1O2, sum(bin.data.tmp@g1O1 + bin.data.tmp@g1O2)) 
-      }
-      if (params$fp_show_col4=="TRUE") {
+      #}
+      #if (params$fp_show_col4=="TRUE") {
         col4.nums <- c(col4.nums, bin.data.tmp@g2O1, sum(bin.data.tmp@g2O1)) 
         col4.denoms <- c(col4.denoms, bin.data.tmp@g2O1 + bin.data.tmp@g2O2, sum(bin.data.tmp@g2O1 + bin.data.tmp@g2O2)) 
-      }
+      #}
       cur.res <- eval(call(fname, bin.data.tmp, params))
       cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
       subgroup.results[[count]] <- cur.overall
@@ -604,13 +606,14 @@ subgroup.ma.binary <- function(fname, binary.data, params){
     subgroup.results[[count]] <- res.overall
     subgroup.names <- paste("Subgroup ", subgroup.list, sep="")
     subgroup.names <- c(subgroup.names, "Overall")
+    metric.name <- pretty.metric.name(params$measure)
     model.title <- ""
     if (fname == "binary.fixed.inv.var") {
-        model.title <- paste("Binary Fixed-Effects Model - Inverse Variance\n\nMetric: ", params$measure, sep="") 
+        model.title <- paste("Binary Fixed-Effects Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
     } else if (fname == "binary.fixed.mh") {
-        model.title <- paste("Binary Fixed-Effects Model - Mantel Haenszel\n\nMetric: ", params$measure, sep="")
+        model.title <- paste("Binary Fixed-Effects Model - Mantel Haenszel\n\nMetric: ", metric.name, sep="")
     } else if (fname == "binary.fixed.peto") {
-        model.title <- paste("Binary Fixed-Effects Model - Peto\n\nMetric: ", params$measure, sep="")
+        model.title <- paste("Binary Fixed-Effects Model - Peto\n\nMetric: ", metric.name, sep="")
     } else if (fname == "binary.random") {
         model.title <- paste("Binary Random-Effects Model\n\nMetric: ", params$measure, sep="")
     }
@@ -641,12 +644,11 @@ subgroup.ma.binary <- function(fname, binary.data, params){
     results
 }
 
-get.subgroup.data.binary <- function(binary.data, cov.name, cov.val) {
-  # returns the subgroup data corresponding to a categorical covariant cov.name
-  # and value cov.val
+get.subgroup.data.binary <- function(binary.data, cov.val) {
+  # returns the subgroup data corresponding to a categorical covariant 
+  # for value cov.val
   if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
-  cov.val.str <- paste("binary.data@covariates$", cov.name, sep="")
-  subgroups <- eval(parse(text=cov.val.str))
+  subgroups <- binary.data@covariates[[1]]@cov.vals
   y.tmp <- binary.data@y[subgroups == cov.val]
   SE.tmp <- binary.data@SE[subgroups == cov.val]
   names.tmp <- binary.data@study.names[subgroups == cov.val]
@@ -670,9 +672,7 @@ get.subgroup.data.binary <- function(binary.data, cov.name, cov.val) {
 
 subgroup.ma.diagnostic <- function(fname, diagnostic.data, params){
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
-    cov.name <- params$cov_name
-    cov.val.str <- paste("diagnostic.data@covariates$", cov.name, sep="")
-    subgroups <- eval(parse(text=cov.val.str))
+    subgroups <- diagnostic.data@covariates[[1]]@cov.vals
     params$create.plot <- FALSE
     subgroup.list <- unique(subgroups)
     grouped.data <- array(list(NULL),c(length(subgroup.list) + 1))
@@ -684,7 +684,7 @@ subgroup.ma.diagnostic <- function(fname, diagnostic.data, params){
     count <- 1
     for (i in subgroup.list){
       # build a DiagnosticData object 
-      diag.data.tmp <- get.subgroup.data.diagnostic(diagnostic.data, cov.name, i)
+      diag.data.tmp <- get.subgroup.data.diagnostic(diagnostic.data, i)
       # call the parametric function by name, passing along the 
       # data and parameters. Notice that this method knows
         # neither what method its calling nor what parameters
@@ -708,11 +708,12 @@ subgroup.ma.diagnostic <- function(fname, diagnostic.data, params){
     subgroup.results[[count]] <- res.overall
     subgroup.names <- paste("Subgroup ", subgroup.list, sep="")
     subgroup.names <- c(subgroup.names, "Overall")
+    metric.name <- pretty.metric.name(params$measure)
     model.title <- ""
     if (fname == "diagnostic.fixed") {
-        model.title <- paste("Diagnostic Fixed-Effects Model - Inverse Variance\n\nMetric: ", params$measure, sep="") 
+        model.title <- paste("Diagnostic Fixed-Effects Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
     } else if (fname == "diagnostic.random") {
-        model.title <- paste("Diagnostic Random-Effects Model\n\nMetric: ", params$measure, sep="")
+        model.title <- paste("Diagnostic Random-Effects Model\n\nMetric: ", metric.name, sep="")
     }
     subgroup.disp <- create.overall.display(subgroup.results, subgroup.names, params, model.title, data.type="diagnostic")
     forest.path <- paste(params$fp_outpath, sep="")
@@ -740,12 +741,11 @@ subgroup.ma.diagnostic <- function(fname, diagnostic.data, params){
     results
 }
 
-get.subgroup.data.diagnostic <- function(diagnostic.data, cov.name, cov.val) {
+get.subgroup.data.diagnostic <- function(diagnostic.data, cov.val) {
   # returns the subgroup data corresponding to a categorical covariant cov.name
   # and value cov.val
   if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
-  cov.val.str <- paste("diagnostic.data@covariates$", cov.name, sep="")
-  subgroups <- eval(parse(text=cov.val.str))
+  subgroups <- diagnostic.data@covariates[[1]]@cov.vals
   y.tmp <- diagnostic.data@y[subgroups == cov.val]
   SE.tmp <- diagnostic.data@SE[subgroups == cov.val]
   names.tmp <- diagnostic.data@study.names[subgroups == cov.val]
@@ -796,11 +796,12 @@ subgroup.ma.continuous <- function(fname, cont.data, params){
     subgroup.results[[count]] <- res.overall
     subgroup.names <- paste("Subgroup ", subgroup.list, sep="")
     subgroup.names <- c(subgroup.names, "Overall")
+    metric.name <- pretty.metric.name(params$measure)
     model.title <- ""
     if (fname == "continuous.fixed") {
-        model.title <- paste("Continuous Fixed-Effects Model - Inverse Variance\n\nMetric: ", params$measure, sep="") 
+        model.title <- paste("Continuous Fixed-Effects Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
     } else if (fname == "continuous.random") {
-        model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", params$measure, sep="")
+        model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", metric.name, sep="")
     }
     subgroup.disp <- create.overall.display(subgroup.results, subgroup.names, params, model.title, data.type="continuous")
     forest.path <- paste(params$fp_outpath, sep="")
