@@ -664,22 +664,35 @@ effectsize.column <- function(forest.data, box.sca = 1) {
         #effect.col.range <- c(min(effect.col$LL), max(effect.col$UL))
       }
       else {
-          # When scale is log or standard, this is a heuristic to determine a reasonable range for the displayed values - 
-          # confidence intervals that exceed this range are truncated and left or right arrows are displayed instead of the full CI.
+          
         # left.distance <- mean(effect.col$ES) - min(effect.col$LL)
-        if (min(effect.col$LL)>0 && max(effect.col$UL)>0) {
-          effect.col.range <- c(max(0.5*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) + 0.3, max(effect.col$UL)))
-        } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)<=0) { 
-           effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(-1.5*max(effect.col$ES) + 0.3, max(effect.col$UL)))
+        #if (min(effect.col$LL)>0 && max(effect.col$UL)>0) {
+        #  effect.col.range <- c(max(0.5*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) + 0.3, max(effect.col$UL)))
+        #} else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)<=0) { 
+        #   effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(-1.5*max(effect.col$ES) + 0.3, max(effect.col$UL)))
            # if 
-        } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)>0) { 
-           effect.col.range <- c(max(5*min(effect.col$ES) , min(effect.col$LL)), min(5*max(effect.col$ES), max(effect.col$UL)))
-        } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)>0 && max(effect.col$ES)>0) { 
-           effect.col.range <- c(max(-2*min(effect.col$ES) , min(effect.col$LL)), min(1.5*max(effect.col$ES) + 0.3, max(effect.col$UL)))
-        } else if (min(effect.col$LL)<=0 && max(effect.col$UL)<0) { 
-           effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(0.10*max(effect.col$ES) , max(effect.col$UL)))
-        } 
+        #} else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)>0) { 
+       #     effect.col.range <- c(max(5*min(effect.col$ES) , min(effect.col$LL)), min(5*max(effect.col$ES), max(effect.col$UL)))
+       # } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)>0 && max(effect.col$ES)>0) { 
+        #   effect.col.range <- c(max(-2*min(effect.col$ES) , min(effect.col$LL)), min(1.5*max(effect.col$ES) + 0.3, max(effect.col$UL)))
+        #} else if (min(effect.col$LL)<=0 && max(effect.col$UL)<0) { 
+        #   effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(0.10*max(effect.col$ES) , max(effect.col$UL)))
+        #} 
         
+        # When scale is log or standard, this is a heuristic to determine a reasonable range for the displayed values - 
+        # confidence intervals that exceed this range are truncated and left or right arrows are displayed instead of the full CI.
+        effect.size.max <- max(effect.col$ES) 
+        effect.size.min <- min(effect.col$ES)
+        effect.size.width <- effect.size.max - effect.size.min
+        
+        effect.col.max <- max(effect.col$UL)
+        effect.col.min <- min(effect.col$LL)
+        arrow.factor <- 2
+        # confidence intervals extend at most arrow.factor times effect.size.width beyond (effect.size.min, effect.size.max)
+        effect.col.range.max <- min(effect.col.max, effect.size.max + arrow.factor * effect.size.width)
+        effect.col.range.min <- max(effect.col.min, effect.size.min - arrow.factor * effect.size.width)
+        
+        effect.col.range <- c(effect.col.range.min, effect.col.range.max)
         # Origninal heuristics
         #if (min(effect.col$LL)>0 && max(effect.col$UL)>0) {
         #  effect.col.range <- c(max(0.5*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
@@ -1242,7 +1255,7 @@ plot.ppv.npv.by.prev <- function(diagnostic.data, params) {
 format.data.cols <- function(plot.data) {
   # formats data columns for display on forest plot
   options <- plot.data$options
-  
+  types <- plot.data$types
   if (options$show.col2==TRUE) {
     
         y.disp <- plot.data$effects.disp$y.disp
@@ -1258,12 +1271,12 @@ format.data.cols <- function(plot.data) {
   }  
   if ((options$show.col3==TRUE) && (!is.null(plot.data$col3))) {
         label <- options$col3.str
-        data.col <- format.raw.data.col(nums = plot.data$col3$nums, denoms = plot.data$col3$denoms, label = label) 
+        data.col <- format.raw.data.col(nums = plot.data$col3$nums, denoms = plot.data$col3$denoms, label = label, types=types) 
         plot.data$additional.col.data$cases = data.col
   }
   if ((options$show.col4==TRUE) && (!is.null(plot.data$col4))) {
         label <- options$col4.str
-        data.col <- format.raw.data.col(nums = plot.data$col4$nums, denoms = plot.data$col4$denoms, label = label) 
+        data.col <- format.raw.data.col(nums = plot.data$col4$nums, denoms = plot.data$col4$denoms, label = label, types=types) 
         plot.data$additional.col.data$controls = data.col
   }
   plot.data
@@ -1330,10 +1343,13 @@ create.effect.size.label <- function(effect.sizes, options) {
    col2.label.padded
 }
   
-format.raw.data.col <- function(nums, denoms, label) {
+format.raw.data.col <- function(nums, denoms, label, types) {
     # format raw data columns to align forward slashes
-    nums.total <- sum(nums)
-    denoms.total <- sum(denoms)
+    types.short <- types[types %in% c(0,1)]
+    # remove types 3 (labels) and 2 (overall total) if present
+    nums.total <- sum(nums[types.short==0])
+    denoms.total <- sum(denoms[types.short==0])
+    # only sum over types==0 (individual studies)
     max.chars <- nchar(denoms.total) + 1
     # add 1 because a space is added before each denom.
     overall.row <- paste(nums.total, " / ", denoms.total, sep = "")
