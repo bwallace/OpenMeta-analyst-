@@ -769,9 +769,7 @@ get.subgroup.data.diagnostic <- function(diagnostic.data, cov.val) {
 
 subgroup.ma.continuous <- function(fname, cont.data, params){
     if (!("ContinuousData" %in% class(cont.data))) stop("Continuous data expected.")
-    cov.name <- params$cov_name
-    cov.val.str <- paste("cont.data@covariates$", cov.name, sep="")
-    subgroups <- eval(parse(text=cov.val.str))
+    subgroups <- cont.data@covariates[[1]]@cov.vals
     params$create.plot <- FALSE
     subgroup.list <- unique(subgroups)
     grouped.data <- array(list(NULL),c(length(subgroup.list)+1))
@@ -783,7 +781,7 @@ subgroup.ma.continuous <- function(fname, cont.data, params){
     count <- 1
     for (i in subgroup.list){
       # build a ContinuousData object 
-      cont.data.tmp <- get.subgroup.data.cont(cont.data, cov.name, i) 
+      cont.data.tmp <- get.subgroup.data.cont(cont.data, i) 
       grouped.data[[count]] <- cont.data.tmp
       cur.res <- eval(call(fname, cont.data.tmp, params))
       cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
@@ -829,23 +827,22 @@ subgroup.ma.continuous <- function(fname, cont.data, params){
     results
 }
 
-get.subgroup.data.cont <- function(cont.data, cov.name, cov.val) {
+get.subgroup.data.cont <- function(cont.data, cov.val) {
   # returns the subgroup data corresponding to a categorical covariant cov.name
   # and value cov.val
   if (!("ContinuousData" %in% class(cont.data))) stop("Continuous data expected.")
-  cov.val.str <- paste("cont.data@covariates$", cov.name, sep="")
-  subgroups <- eval(parse(text=cov.val.str))
-  y.tmp <- cont.data@y[subgroups == cov.val]
-  SE.tmp <- cont.data@SE[subgroups == cov.val]
-  names.tmp <- cont.data@study.names[subgroups == cov.val]
+      subgroups <- cont.data@covariates[[1]]@cov.vals
+      y.tmp <- cont.data@y[subgroups == cov.val]
+      SE.tmp <- cont.data@SE[subgroups == cov.val]
+      names.tmp <- cont.data@study.names[subgroups == cov.val]
   if (length(cont.data@N1) > 0){
-    N1.tmp <- cont.data@N1[subgroups == cov.val]
-    mean1.tmp <- cont.data@mean1[subgroups == cov.val]
-    sd1.tmp <- cont.data@sd1[subgroups == cov.val]
-    N2.tmp <- cont.data@N2[subgroups == cov.val]
-    mean2.tmp <- cont.data@mean2[subgroups == cov.val]
-    sd2.tmp <- cont.data@sd2[subgroups == cov.val]
-    subgroup.data <- new('ContinuousData', 
+      N1.tmp <- cont.data@N1[subgroups == cov.val]
+      mean1.tmp <- cont.data@mean1[subgroups == cov.val]
+      sd1.tmp <- cont.data@sd1[subgroups == cov.val]
+      N2.tmp <- cont.data@N2[subgroups == cov.val]
+      mean2.tmp <- cont.data@mean2[subgroups == cov.val]
+      sd2.tmp <- cont.data@sd2[subgroups == cov.val]
+      subgroup.data <- new('ContinuousData', 
                           N1=N1.tmp, mean1=mean1.tmp , sd1=sd1.tmp, 
                           N2=N2.tmp, mean2=mean2.tmp, sd2=sd2.tmp,
                           y=y.tmp, SE=SE.tmp, 
