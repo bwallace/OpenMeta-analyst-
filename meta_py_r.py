@@ -638,9 +638,7 @@ def parse_out_results(result):
     #if image_var_name_d is not None:
     return {"images":image_path_d, "image_var_names":image_var_name_d,
                         "texts":text_d, "image_params_paths":image_params_paths_d}
-    
-    #return {"images":{}, "image_var_names":{}, "texts":text_d, "image_params_paths":{}}
-                                              
+                
                                        
 def run_binary_fixed_meta_regression(selected_cov, bin_data_name="tmp_obj", \
                                                 res_name="result"):
@@ -685,21 +683,6 @@ def run_meta_regression(dataset, study_names, cov_list, data_name="tmp_obj", \
     params_df = ro.r['data.frame'](**params)
 
     # create a lit of covariate objects on the R side
-    '''
-    r_cov_str = []
-    for cov in cov_list:
-        r_cov_str.append(_gen_cov_vals_obj_str(cov, study_names, dataset))
-
-    r_cov_str = "list(" + ",".join(r_cov_str) + ")"
-
-    print "meta_regression -- here the regression string: %s" % r_cov_str
-
-
-
-    # now attach the covariates object to the R data object
-    ro.r("%s@covariates <- %s" % (data_name, r_cov_str))
-    '''
-
     r_str = "%s<- meta.regression(%s, %s)" % \
                             (results_name, data_name, params_df.r_repr())
 
@@ -726,9 +709,10 @@ def run_subgroup_ma(meta_function_name, function_name, params, selected_cov,
     params_df = ro.r['data.frame'](**params)
     r_str = "%s<-subgroup_ma(%s, %s, %s)" % \
             (res_name, bin_data_name, params_df.r_repr(), "'"+ selected_cov + "'")
-    print "\n\n(run_binary_ma): executing:\n %s\n" % r_str
+    print "\n\n(run_subgroup_ma): executing:\n %s\n" % r_str
     ro.r(r_str)
     result = ro.r("%s" % res_name)
+ 
     return parse_out_results(result)    
     
 def run_meta_method(meta_function_name, function_name, params, \
@@ -749,16 +733,7 @@ def run_meta_method(meta_function_name, function_name, params, \
     # parse out text field(s). note that "plot names" is 'reserved', i.e., it's
     # a special field which is assumed to contain the plot variable names
     # in R (for graphics manipulation).
-    text_d = {}
-    image_var_name_d = None
-    for text_n, text in zip(list(result.getnames())[1:], list(result)[1:]):
-        if not text_n == "plot_names":
-           text_d[text_n]=text
-        else:
-           image_var_name_d = _rls_to_pyd(text)
-
-    return {"images":_rls_to_pyd(result[0]), "image_var_names":image_var_name_d,
-                                              "texts":text_d}    
+    return parse_out_results(result)  
           
                                                                                   
 def _rls_to_pyd(r_ls):

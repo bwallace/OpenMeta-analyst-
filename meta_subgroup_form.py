@@ -22,6 +22,7 @@ class MetaSubgroupForm(QDialog, ui_cov_subgroup_dlg.Ui_cov_subgroup_dialog):
     def get_selected_cov(self):
         selected_cov = unicode(self.cov_subgroup_cbo_box.currentText().toUtf8(), "utf-8") 
         self.parent().meta_subgroup(selected_cov)
+        self.accept()
         
     def _populate_combo_box(self):
         studies = self.model.get_studies(only_if_included=True)

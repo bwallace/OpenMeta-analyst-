@@ -304,7 +304,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         form.show()
         
     def meta_subgroup(self, selected_cov):
-        print "gettin' meta -- cumulative meta-analysis"
+        print "gettin' meta -- sub-group meta-analysis"
         form = ma_specs.MA_Specs(self.model, meta_f_str="subgroup.ma", 
                                   parent=self, 
                                   external_params={"cov_name":selected_cov})
