@@ -135,9 +135,10 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
                 params_path = self.params_paths[title]
 
             img_shape, pos = self.create_pixmap_item(pixmap, self.position(),\
-                                     title, params_path=params_path)
+                                                title, image, params_path=params_path)
 
             self.items_to_coords[qt_item] = pos
+
 
 
     def add_text(self):
@@ -197,7 +198,8 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         last_line = self.psuedo_console.toPlainText().split("\n")[-1]
         return str(last_line.replace(">>", "")).strip()
 
-    def create_pixmap_item(self, pixmap, position, title, params_path=None, matrix=QMatrix()):
+    def create_pixmap_item(self, pixmap, position, title, image_path,\
+                             params_path=None, matrix=QMatrix()):
         item = QGraphicsPixmapItem(pixmap)
         self.y_coord += item.boundingRect().size().height()
         item.setFlags(QGraphicsItem.ItemIsSelectable|
@@ -218,12 +220,16 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         # attach event handler for mouse-clicks, i.e., to handle
         # user right-clicks
         if params_path is not None:
-            item.contextMenuEvent = self._make_context_menu(params_path, title)
+            item.contextMenuEvent = self._make_context_menu(\
+                            params_path, title, image_path, item)
 
+        # I think we're going to need to also return a handle
+        # to the item in order to replace the graphic with an updated
+        # one, e.g., plot
         return (item.boundingRect().size(), position)
 
 
-    def _make_context_menu(self, params_path, title):
+    def _make_context_menu(self, params_path, title, png_path, qpixmap_item):
         def _graphics_item_context_menu(event):
             action = QAction("save image as...", self)
             QObject.connect(action, SIGNAL("triggered()"), \
@@ -233,7 +239,8 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
             action = QAction("edit plot...", self)
             QObject.connect(action, SIGNAL("triggered()"), \
-                        lambda : self.edit_image(params_path, title))
+                        lambda : self.edit_image(\
+                                   params_path, title, png_path, qpixmap_item))
             context_menu.addAction(action)
 
             pos = event.screenPos()
@@ -264,10 +271,12 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
             else:
                 meta_py_r.generate_forest_plot(file_path)
 
-    def edit_image(self, params_path, title):
+    def edit_image(self, params_path, title, png_path, pixmap_item):
         meta_py_r.load_plot_params(params_path)
 
-        plot_editor_window = edit_forest_plot_form.EditPlotWindow(params_path, parent=self)
+        plot_editor_window = edit_forest_plot_form.EditPlotWindow(\
+                                            params_path, png_path,\
+                                            pixmap_item, parent=self)
         plot_editor_window.show()
         
     def position(self):

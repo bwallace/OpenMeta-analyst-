@@ -6,7 +6,7 @@ import pdb
 
 class EditPlotWindow(QDialog, ui_edit_forest_plot.Ui_edit_forest_plot_dlg):
 
-    def __init__(self, img_params_name, png_path, parent=None):
+    def __init__(self, img_params_name, png_path, qpixmap_item, parent=None):
         super(EditPlotWindow, self).__init__(parent)
         self.setupUi(self)
 
@@ -43,8 +43,8 @@ class EditPlotWindow(QDialog, ui_edit_forest_plot.Ui_edit_forest_plot_dlg):
         # the variable name will be plot.data
         meta_py_r.load_plot_params(os.path.join("r_tmp", self.img_params_name))
         self.update_plot_params()
-        meta_py_r.generate_forest_plot(png_path)
-
+        meta_py_r.generate_forest_plot(self.png_path)
+        print "OK!"
    
     
 
