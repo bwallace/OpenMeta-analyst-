@@ -347,7 +347,6 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj",
     SEs_str = ", ".join(_to_strs(SEs))
                 
     # generate the covariate string
-    #cov_str = gen_cov_str(table_model.dataset, studies)
     cov_str = list_of_cov_value_objects_str(table_model.dataset,\
                                                 [study.name for study in studies],\
                                                 cov_list=covs_to_include)
@@ -540,7 +539,6 @@ def run_continuous_ma(function_name, params, res_name = "result", cont_data_name
     
 def run_binary_ma(function_name, params, res_name="result", bin_data_name="tmp_obj"):
     params_df = ro.r['data.frame'](**params)
-
     r_str = "%s<-%s(%s, %s)" % (res_name, function_name, bin_data_name, params_df.r_repr())
     print "\n\n(run_binary_ma): executing:\n %s\n" % r_str
     ro.r(r_str)
