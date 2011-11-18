@@ -257,14 +257,14 @@ def draw_network(edge_list, unconnected_vertices, network_path = '"./r_tmp/netwo
     ro.r("dev.off()")
     return "r_tmp/network.png"
     
-def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj"):
+def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj", \
+                                                covs_to_include=None):
     r_str = None
     
     # grab the study names. note: the list is pulled out in reverse order from the 
     # model, so we, er, reverse it.
     studies = table_model.get_studies()
-    #pyqtRemoveInputHook()
-    #pdb.set_trace()
+
     study_names = ", ".join(["'" + study.name + "'" for study in studies])
     studies.reverse()
     
@@ -274,10 +274,8 @@ def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj"):
     
     #cov_str = gen_cov_str(table_model.dataset, studies) 
     cov_str = list_of_cov_value_objects_str(table_model.dataset,\
-                                                [study.name for study in studies])
-
-    #pyqtRemoveInputHook()
-    #pdb.set_trace()
+                                                [study.name for study in studies],\
+                                                cov_list=covs_to_include)
 
 
     # first try and construct an object with raw data
@@ -295,7 +293,8 @@ def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj"):
         r_str = "%s <- new('ContinuousData', \
                                      N1=c(%s), mean1=c(%s), sd1=c(%s), \
                                      N2=c(%s), mean2=c(%s), sd2=c(%s), \
-                                     y=c(%s), SE=c(%s), study.names=c(%s), covariates=%s)" \
+                                     y=c(%s), SE=c(%s), study.names=c(%s),\
+                                    covariates=%s)" \
                         % (var_name, Ns1_str, means1_str, SDs1_str, \
                             Ns2_str, means2_str, SDs2_str, \
                             ests_str, SEs_str, study_names, cov_str)
@@ -322,7 +321,7 @@ def _get_str(M, col_index, reverse=True):
     
     
 def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj", 
-                                        include_raw_data=True):
+                                        include_raw_data=True, covs_to_include=None):
     '''
     This converts a DatasetModel to an OpenMetaData (OMData) R object. We use type DatasetModel
     rather than a DataSet model directly to access the current variables. Furthermore, this allows
@@ -348,9 +347,10 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj",
     SEs_str = ", ".join(_to_strs(SEs))
                 
     # generate the covariate string
-    cov_str = gen_cov_str(table_model.dataset, studies)
-    
-
+    #cov_str = gen_cov_str(table_model.dataset, studies)
+    cov_str = list_of_cov_value_objects_str(table_model.dataset,\
+                                                [study.name for study in studies],\
+                                                cov_list=covs_to_include)
     # first try and construct an object with raw data
     if include_raw_data and table_model.included_studies_have_raw_data():
         print "ok; raw data has been entered for all included studies"
@@ -416,7 +416,7 @@ def _sanitize_for_R(str):
     return str.encode('latin-1', 'ignore')
 
 def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", \
-                                            metric="Sens"):
+                                            metric="Sens", covs_to_include=None):
     '''
     This converts a DatasetModel to an OpenMetaData (OMData) R object. We use type DatasetModel
     rather than a DataSet model directly to access the current variables. Furthermore, this allows
@@ -437,7 +437,9 @@ def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", \
     y_SEs_str = ", ".join(_to_strs(y_SEs))
                
     # generate the covariate string
-    cov_str = gen_cov_str(table_model.dataset, studies)
+    cov_str = list_of_cov_value_objects_str(table_model.dataset,\
+                                            [study.name for study in studies],
+                                            cov_list=covs_to_include)
     
     # first try and construct an object with raw data
     if table_model.included_studies_have_raw_data():
@@ -665,9 +667,11 @@ def _gen_cov_vals_obj_str(cov, study_names, dataset):
     return r_str
 
 
-def list_of_cov_value_objects_str(dataset, study_names):
+def list_of_cov_value_objects_str(dataset, study_names, cov_list=None):
     r_cov_str = []
-    cov_list = dataset.covariates
+    if cov_list is None:
+        # then use all covariates that belong to the dataset
+        cov_list = dataset.covariates
     for cov in cov_list:
         r_cov_str.append(_gen_cov_vals_obj_str(cov, study_names, dataset))
     r_cov_str = "list(" + ",".join(r_cov_str) + ")"
@@ -704,6 +708,12 @@ def run_meta_regression(dataset, study_names, cov_list, data_name="tmp_obj", \
     ### to do -- this is hacky
     ro.r(r_str)
     result = ro.r("%s" % results_name)
+
+    #pyqtRemoveInputHook()
+    #pdb.set_trace()
+    if "try-error" in str(result):
+        # uh-oh, there was an error
+        return str([msg for msg in result][0])
 
     parsed_results = parse_out_results(result)
 
