@@ -263,6 +263,8 @@ def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj"):
     # grab the study names. note: the list is pulled out in reverse order from the 
     # model, so we, er, reverse it.
     studies = table_model.get_studies()
+    #pyqtRemoveInputHook()
+    #pdb.set_trace()
     study_names = ", ".join(["'" + study.name + "'" for study in studies])
     studies.reverse()
     
@@ -270,8 +272,14 @@ def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj"):
     ests_str = ", ".join(_to_strs(ests))
     SEs_str = ", ".join(_to_strs(SEs))
     
-    cov_str = gen_cov_str(table_model.dataset, studies)
-    
+    #cov_str = gen_cov_str(table_model.dataset, studies) 
+    cov_str = list_of_cov_value_objects_str(table_model.dataset,\
+                                                [study.name for study in studies])
+
+    #pyqtRemoveInputHook()
+    #pdb.set_trace()
+
+
     # first try and construct an object with raw data
     if table_model.included_studies_have_raw_data():
         print "we have raw data... parsing"
@@ -342,6 +350,7 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj",
     # generate the covariate string
     cov_str = gen_cov_str(table_model.dataset, studies)
     
+
     # first try and construct an object with raw data
     if include_raw_data and table_model.included_studies_have_raw_data():
         print "ok; raw data has been entered for all included studies"
@@ -418,6 +427,7 @@ def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", \
     # grab the study names. note: the list is pulled out in reverse order from the 
     # model, so we, er, reverse it.
     studies = table_model.get_studies(only_if_included=True)
+
     study_names = ", ".join(["'" + study.name + "'" for study in studies])
     # I'm still uncomfortable that we do this.
     studies.reverse()
@@ -608,9 +618,6 @@ def parse_out_results(result):
     # parse out text field(s). note that "plot names" is 'reserved', i.e., it's
     # a special field which is assumed to contain the plot variable names
     # in R (for graphics manipulation).
-    #pyqtRemoveInputHook()
-    #pdb.set_trace()
-
     text_d = {}
     image_var_name_d, image_params_paths_d, image_path_d  = {}, {}, {}
     for text_n, text in zip(list(result.getnames()), list(result)):
@@ -657,6 +664,16 @@ def _gen_cov_vals_obj_str(cov, study_names, dataset):
                 (cov.name, values_str, TYPE_TO_STR_DICT[cov.data_type], ref_var)
     return r_str
 
+
+def list_of_cov_value_objects_str(dataset, study_names):
+    r_cov_str = []
+    cov_list = dataset.covariates
+    for cov in cov_list:
+        r_cov_str.append(_gen_cov_vals_obj_str(cov, study_names, dataset))
+    r_cov_str = "list(" + ",".join(r_cov_str) + ")"
+
+    return r_cov_str
+
 def run_meta_regression(dataset, study_names, cov_list, data_name="tmp_obj", \
                             results_name="results_obj"):    
     # @TODO conf.level, digits should be user-specified
@@ -664,18 +681,20 @@ def run_meta_regression(dataset, study_names, cov_list, data_name="tmp_obj", \
     params_df = ro.r['data.frame'](**params)
 
     # create a lit of covariate objects on the R side
+    '''
     r_cov_str = []
     for cov in cov_list:
         r_cov_str.append(_gen_cov_vals_obj_str(cov, study_names, dataset))
 
     r_cov_str = "list(" + ",".join(r_cov_str) + ")"
+
     print "meta_regression -- here the regression string: %s" % r_cov_str
 
 
 
     # now attach the covariates object to the R data object
     ro.r("%s@covariates <- %s" % (data_name, r_cov_str))
-
+    '''
 
     r_str = "%s<- meta.regression(%s, %s)" % \
                             (results_name, data_name, params_df.r_repr())

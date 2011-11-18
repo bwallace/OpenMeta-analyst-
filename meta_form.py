@@ -337,12 +337,15 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 new_state_dict["current_outcome"] = edit_window.outcome_list.model().current_outcome
             new_state_dict["current_time_point"] =  max(edit_window.follow_up_list.currentIndex().row(), 0)
             grp_list = edit_window.group_list.model().group_list
+
             if len(grp_list) >= 2:
                 new_state_dict["current_txs"] = grp_list[:2]
             else:
                 new_state_dict["current_txs"] = ["tx A", "tx B"]
             modified_dataset = edit_window.dataset
-
+            
+            pyqtRemoveInputHook()
+            pdb.set_trace()
             redo_f = lambda : self.set_model(modified_dataset, new_state_dict)
             original_dataset = copy.deepcopy(self.model.dataset)
             undo_f = lambda : self.set_model(original_dataset, old_state_dict) 

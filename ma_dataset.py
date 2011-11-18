@@ -635,6 +635,37 @@ class MetaAnalyticUnit:
     def rename_group(self, old_name, new_name):
         self.tx_groups[new_name] = self.tx_groups[old_name]
         self.tx_groups.pop(old_name)
+
+        ##
+        # also need to deal with the strings for outcome data
+        # i.e., issue #112
+        keys_to_pop = [] # keep track of antiquated group names to be removed
+        for effect in list(self.effects_dict.keys()):
+            for group_str in self.effects_dict[effect]:
+                if old_name in group_str:
+                    str_changed = False
+                    cur_group_names = group_str.split("-")
+                    cur_vals = self.effects_dict[effect][group_str]
+                    updated_group_strs = []
+                    for cur_group_name in cur_group_names:
+                        if cur_group_name == old_name:
+                            updated_group_strs.append(new_name)
+                            str_changed=True
+                        else:
+                            updated_group_strs.append(cur_group_name)
+                    
+                    # if the string changed, then we pop 
+                    # the old version and add the new
+                    if str_changed:
+                        new_str = "-".join(updated_group_strs)
+                        self.effects_dict[new_str] = self.effects_dict[effect][group_str]
+                          
+            # now remove any antiquated group names from the effects dictionary
+            for old_group_name in keys_to_pop:
+                self.effects_dict[effect].pop(old_group_name)
+
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
         
     def get_raw_data_for_group(self, group_name):
         return self.tx_groups[group_name].raw_data

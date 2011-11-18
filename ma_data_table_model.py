@@ -1070,11 +1070,15 @@ class DatasetModel(QAbstractTableModel):
         
     def get_studies(self, only_if_included=True):
         included_studies = []
+
         for study in self.dataset.studies:
             if not only_if_included or study.include:
                 included_studies.append(study)
         # we lop off the last entry because it is always a blank line/study
-        return list(included_studies[:-1])      
+        # 11/18/11 -- arg! previously we were explicitly lopping off
+        # the last study (presumed to be blank). this is not necessary! 
+        # we already check if it's included...
+        return list(included_studies)      
         
     def get_cur_raw_data_for_study(self, study_index):
         return self.get_current_ma_unit_for_study(study_index).get_raw_data_for_groups(self.current_txs)
