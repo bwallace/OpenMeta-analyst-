@@ -30,12 +30,11 @@ cum.ma.binary <- function(fname, binary.data, params){
     plot.data <- create.plot.data.binary(binary.data, params, res)
     # data for standard fores plot
     
-    params$fp_show_col2 <- FALSE
     params$fp_show_col3 <- FALSE
     params$fp_show_col4 <- FALSE
+    # cumulative plot does not display raw data
     params$fp_col1_str <- "Cumulative Studies"
-    # cumulative plot does not display numerical data
-    
+        
     # iterate over the binaryData elements, adding one study at a time
     cum.results <- array(list(NULL), dim=c(length(binary.data@study.names)))
     params$create.plot <- FALSE
@@ -76,11 +75,11 @@ cum.ma.binary <- function(fname, binary.data, params){
     metric.name <- pretty.metric.name(params$measure)
     model.title <- ""
     if (fname == "binary.fixed.inv.var") {
-        model.title <- paste("Binary Fixed-Effects Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
+        model.title <- paste("Binary Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
     } else if (fname == "binary.fixed.mh") {
-        model.title <- paste("Binary Fixed-Effects Model - Mantel Haenszel\n\nMetric: ", metric.name, sep="")
+        model.title <- paste("Binary Fixed-effect Model - Mantel Haenszel\n\nMetric: ", metric.name, sep="")
     } else if (fname == "binary.fixed.peto") {
-        model.title <- paste("Binary Fixed-Effects Model - Peto\n\nMetric: ", metric.name, sep="")
+        model.title <- paste("Binary Fixed-effect Model - Peto\n\nMetric: ", metric.name, sep="")
     } else if (fname == "binary.random") {
         model.title <- paste("Binary Random-Effects Model\n\nMetric: ", metric.name, sep="")
     }
@@ -163,11 +162,11 @@ loo.ma.binary <- function(fname, binary.data, params){
     metric.name <- pretty.metric.name(params$measure)
     model.title <- ""
     if (fname == "binary.fixed.inv.var") {
-        model.title <- paste("Binary Fixed-Effects Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
+        model.title <- paste("Binary Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
     } else if (fname == "binary.fixed.mh") {
-        model.title <- paste("Binary Fixed-Effects Model - Mantel Haenszel\n\nMetric: ", metric.name, sep="")
+        model.title <- paste("Binary Fixed-effect Model - Mantel Haenszel\n\nMetric: ", metric.name, sep="")
     } else if (fname == "binary.fixed.peto") {
-        model.title <- paste("Binary Fixed-Effects Model - Peto\n\nMetric: ", metric.name, sep="")
+        model.title <- paste("Binary Fixed-effect Model - Peto\n\nMetric: ", metric.name, sep="")
     } else if (fname == "binary.random") {
         model.title <- paste("Binary Random-Effects Model\n\nMetric: ", metric.name, sep="")
     }
@@ -208,10 +207,13 @@ cum.ma.diagnostic <- function(fname, diagnostic.data, params){
     res<-rma.uni(yi=diagnostic.data@y, sei=diagnostic.data@SE, slab=diagnostic.data@study.names,
                                 level=params$conf.level, digits=params$digits, method="FE", add=params$adjust,
                                 to=params$to)
-    params$fp_show_col2 <- FALSE
+    
+    plot.data <- create.plot.data.diagnostic(diagnostic.data, params, res)
+    
     params$fp_show_col3 <- FALSE
     params$fp_show_col4 <- FALSE
-    plot.data <- create.plot.data.diagnostic(diagnostic.data, params, res)
+    # cumulative plot does not display raw data
+    params$fp_col1_str <- "Cumulative Studies"
     
     # iterate over the diagnosticData elements, adding one study at a time
     cum.results <- array(list(NULL), dim=c(length(diagnostic.data@study.names)))
@@ -252,7 +254,7 @@ cum.ma.diagnostic <- function(fname, diagnostic.data, params){
     metric.name <- pretty.metric.name(params$measure)
     model.title <- ""
     if (fname == "diagnostic.fixed") {
-        model.title <- paste("Diagnostic Fixed-Effects Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
+        model.title <- paste("Diagnostic Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
     } else if (fname == "diagnostic.random") {
         model.title <- paste("Diagnostic Random-Effects Model\n\nMetric: ", metric.name, sep="")
     }
@@ -343,7 +345,7 @@ loo.ma.diagnostic <- function(fname, diagnostic.data, params){
     metric.name <- pretty.metric.name(params$measure)
     model.title <- ""
     if (fname == "diagnostic.fixed") {
-        model.title <- paste("Diagnostic Fixed-Effects Model - Inverse Variance\n\nMetric: ", params$measure, sep="") 
+        model.title <- paste("Diagnostic Fixed-effect Model - Inverse Variance\n\nMetric: ", params$measure, sep="") 
     } else if (fname == "diagnostic.random") {
         model.title <- paste("Diagnostic Random-Effects Model\n\nMetric: ", params$measure, sep="")
     }
@@ -385,10 +387,14 @@ cum.ma.continuous <- function(fname, cont.data, params){
     res<-rma.uni(yi=cont.data@y, sei=cont.data@SE, slab=cont.data@study.names,
                                 level=params$conf.level, digits=params$digits, method="FE", add=params$adjust,
                                 to=params$to)
-    params$fp_show_col2 <- FALSE
+    
+    plot.data <- create.plot.data.continuous(cont.data, params, res)
+    
     params$fp_show_col3 <- FALSE
     params$fp_show_col4 <- FALSE
-    plot.data <- create.plot.data.continuous(cont.data, params, res)
+    # cumulative plot does not display raw data
+    params$fp_col1_str <- "Cumulative Studies"
+    
     # iterate over the continuousData elements, adding one study at a time
     cum.results <- array(list(NULL), dim=c(length(cont.data@study.names)))
     params$create.plot <- FALSE
@@ -435,7 +441,7 @@ cum.ma.continuous <- function(fname, cont.data, params){
     metric.name <- pretty.metric.name(params$measure)
     model.title <- ""
     if (fname == "continuous.fixed") {
-        model.title <- paste("Continuous Fixed-Effects Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
+        model.title <- paste("Continuous Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
     } else if (fname == "continuous.random") {
         model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", metric.name, sep="")
     }
@@ -533,7 +539,7 @@ loo.ma.continuous <- function(fname, cont.data, params){
     metric.name <- pretty.metric.name(params$measure)
     model.title <- ""
     if (fname == "continuous.fixed") {
-        model.title <- paste("Continuous Fixed-Effects Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
+        model.title <- paste("Continuous Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
     } else if (fname == "continuous.random") {
         model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", metric.name, sep="")
     }
@@ -609,11 +615,11 @@ subgroup.ma.binary <- function(fname, binary.data, params){
     metric.name <- pretty.metric.name(params$measure)
     model.title <- ""
     if (fname == "binary.fixed.inv.var") {
-        model.title <- paste("Binary Fixed-Effects Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
+        model.title <- paste("Binary Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
     } else if (fname == "binary.fixed.mh") {
-        model.title <- paste("Binary Fixed-Effects Model - Mantel Haenszel\n\nMetric: ", metric.name, sep="")
+        model.title <- paste("Binary Fixed-effect Model - Mantel Haenszel\n\nMetric: ", metric.name, sep="")
     } else if (fname == "binary.fixed.peto") {
-        model.title <- paste("Binary Fixed-Effects Model - Peto\n\nMetric: ", metric.name, sep="")
+        model.title <- paste("Binary Fixed-effect Model - Peto\n\nMetric: ", metric.name, sep="")
     } else if (fname == "binary.random") {
         model.title <- paste("Binary Random-Effects Model\n\nMetric: ", params$measure, sep="")
     }
@@ -711,7 +717,7 @@ subgroup.ma.diagnostic <- function(fname, diagnostic.data, params){
     metric.name <- pretty.metric.name(params$measure)
     model.title <- ""
     if (fname == "diagnostic.fixed") {
-        model.title <- paste("Diagnostic Fixed-Effects Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
+        model.title <- paste("Diagnostic Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
     } else if (fname == "diagnostic.random") {
         model.title <- paste("Diagnostic Random-Effects Model\n\nMetric: ", metric.name, sep="")
     }
@@ -797,7 +803,7 @@ subgroup.ma.continuous <- function(fname, cont.data, params){
     metric.name <- pretty.metric.name(params$measure)
     model.title <- ""
     if (fname == "continuous.fixed") {
-        model.title <- paste("Continuous Fixed-Effects Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
+        model.title <- paste("Continuous Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
     } else if (fname == "continuous.random") {
         model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", metric.name, sep="")
     }
