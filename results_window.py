@@ -119,10 +119,12 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
  
             if scaled_width > self.scene.width():
                 self.scene.setSceneRect(0, 0, \
-                                             scaled_width+horizontal_padding, self.scene.height())
+                                    scaled_width+horizontal_padding,\
+                                    self.scene.height())
 
 
-            pixmap = pixmap.scaled(scaled_width, scaled_height, transformMode=Qt.SmoothTransformation)
+            pixmap = pixmap.scaled(scaled_width, scaled_height, \
+                                transformMode=Qt.SmoothTransformation)
             
             # if there is a parameters object associated with this object
             # (i.e., it is a forest plot of some variety), we pass it along
@@ -135,11 +137,8 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
             img_shape, pos = self.create_pixmap_item(pixmap, self.position(),\
                                      title, params_path=params_path)
 
-            #disp_rect = QRectF(pos[0], pos[1], \
-            #                0, self.scene.height()+img_shape.height())
             self.items_to_coords[qt_item] = pos
 
-            #self.items_to_coords[qt_item] =  disp_rect
 
     def add_text(self):
         for title, text in self.texts.items():

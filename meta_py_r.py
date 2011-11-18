@@ -609,8 +609,7 @@ def generate_forest_plot(file_path, side_by_side=False, params_name="plot.data")
         ro.r("side.by.side.plots(%s$diagnostic.data, \
                                     %s$fname.left, %s$params.left,\
                                     %s$fname.right, %s$params.right)" % 
-                    (params_name, params_name, params_name, params_name, params_name)
-            )
+                    (params_name, params_name, params_name, params_name, params_name))
     else:
         ro.r("forest.plot(%s, '%s')" % (params_name, file_path))
 
