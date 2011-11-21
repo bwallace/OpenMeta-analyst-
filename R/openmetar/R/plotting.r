@@ -160,7 +160,7 @@ create.plot.data.diagnostic <- function(diagnostic.data, params, res, selected.c
         # negative likelihood ratio
         NLR = "(FN * Di-) / (TN * Di+)",
         # diagnostic odds ratio
-        DOR = "(TP * TN) / (FP * FN")
+        DOR = "(TP * TN) / (FP * FN)")
         #data.col <- format.raw.data.col(nums = terms$numerator, denoms = terms$denominator, label = label) 
         #plot.data$additional.col.data$cases = data.col
         plot.data$options$col3.str <- label
@@ -193,8 +193,8 @@ create.plot.data.overall <- function(res, study.names, params, data.type, addRow
     plot.options <- set.plot.options(params)
     plot.options$show.col3 <- FALSE
     plot.options$show.col4 <- FALSE
-    # These can be removed if and when raw data columns are added to overall plots
-
+    # currently not displaying raw data cols. for overall plots
+    
     if (params$fp_plot_lb == "[default]") {
         plot.options$plot.lb <- NULL
     } else {
@@ -309,7 +309,7 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, 
     lb <- c(lb, cur.lb.overall)
     ub <- c(ub, cur.ub.overall)
     types <- c(3,types, 2)
-    label.col <- c("Studies", label.col, "Overall")
+    label.col <- c("params$fp_col1_str", label.col, "Overall")
     plot.options <- set.plot.options(params)
     if (params$fp_plot_lb == "[default]") {
         plot.options$plot.lb <- NULL
