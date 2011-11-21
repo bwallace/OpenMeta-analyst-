@@ -77,8 +77,7 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
         # and now the images
         self.add_images()
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
+
         # reset the scene
         self.graphics_view.setScene(self.scene)
         self.graphics_view.ensureVisible(QRectF(0,0,0,0))
@@ -98,7 +97,6 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
 
     def add_images(self):
-
         for title, image in self.images.items():
             print "title: %s; image: %s" % (title, image)
             cur_y = max(0, self.y_coord)
@@ -106,25 +104,7 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
             # first add the title
             qt_item = self.add_title(title)
 
-            # now the image
-            pixmap = QPixmap(image)
-            
-            ###
-            # we scale to address issue #23.
-            # should probably pick a 'target' width/height, in case
-            # others generate smaller images by default.
-            scaled_width = SCALE_P*pixmap.width()
-            scaled_height = SCALE_P*pixmap.height()
-            
- 
-            if scaled_width > self.scene.width():
-                self.scene.setSceneRect(0, 0, \
-                                    scaled_width+horizontal_padding,\
-                                    self.scene.height())
-
-
-            pixmap = pixmap.scaled(scaled_width, scaled_height, \
-                                transformMode=Qt.SmoothTransformation)
+            pixmap = self.generate_pixmap(image)
             
             # if there is a parameters object associated with this object
             # (i.e., it is a forest plot of some variety), we pass it along
@@ -134,11 +114,34 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
             if self.params_paths is not None and title in self.params_paths:
                 params_path = self.params_paths[title]
 
-            img_shape, pos = self.create_pixmap_item(pixmap, self.position(),\
+            img_shape, pos, pixmap_item = self.create_pixmap_item(pixmap, self.position(),\
                                                 title, image, params_path=params_path)
 
             self.items_to_coords[qt_item] = pos
 
+
+    def generate_pixmap(self, image):
+        # now the image
+        pixmap = QPixmap(image)
+        
+        ###
+        # we scale to address issue #23.
+        # should probably pick a 'target' width/height, in case
+        # others generate smaller images by default.
+        scaled_width = SCALE_P*pixmap.width()
+        scaled_height = SCALE_P*pixmap.height()
+        
+
+        if scaled_width > self.scene.width():
+            self.scene.setSceneRect(0, 0, \
+                                scaled_width+horizontal_padding,\
+                                self.scene.height())
+        
+
+        pixmap = pixmap.scaled(scaled_width, scaled_height, \
+                            transformMode=Qt.SmoothTransformation)
+
+        return pixmap
 
 
     def add_text(self):
@@ -207,7 +210,8 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         
 
         self.scene.setSceneRect(0, 0, \
-                                   max(self.scene.width(), item.boundingRect().size().width()),\
+                                   max(self.scene.width(), \
+                                   item.boundingRect().size().width()),\
                                    self.y_coord+padding)
 
         print "creating item @:%s" % position
@@ -223,10 +227,7 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
             item.contextMenuEvent = self._make_context_menu(\
                             params_path, title, image_path, item)
 
-        # I think we're going to need to also return a handle
-        # to the item in order to replace the graphic with an updated
-        # one, e.g., plot
-        return (item.boundingRect().size(), position)
+        return (item.boundingRect().size(), position, item)
 
 
     def _make_context_menu(self, params_path, title, png_path, qpixmap_item):

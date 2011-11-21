@@ -538,8 +538,13 @@ def run_continuous_ma(function_name, params, res_name = "result", cont_data_name
     return parse_out_results(result)
     
 def run_binary_ma(function_name, params, res_name="result", bin_data_name="tmp_obj"):
+
+    pyqtRemoveInputHook()
+    pdb.set_trace()
+
     params_df = ro.r['data.frame'](**params)
-    r_str = "%s<-%s(%s, %s)" % (res_name, function_name, bin_data_name, params_df.r_repr())
+    r_str = "%s<-%s(%s, %s)" % (res_name, function_name, bin_data_name,\
+                                    params_df.r_repr())
     print "\n\n(run_binary_ma): executing:\n %s\n" % r_str
     ro.r(r_str)
     result = ro.r("%s" % res_name)
@@ -592,10 +597,18 @@ def run_diagnostic_ma(function_name, params, res_name="result", diag_data_name="
     result = ro.r("%s" % res_name)
     return parse_out_results(result)
       
-def load_plot_params(params_path):
+def load_plot_params(params_path, return_dict=False):
     ''' loads what is presumed to be .Rdata into the environment '''
     ro.r("load('%s')" % params_path)
+    if return_dict:
+        return _rls_to_pyd(ro.r("plot.data"))
 
+
+def set_plot_data(plot_params, params_name="plot.data"):
+    pyqtRemoveInputHook()
+    pdb.set_trace()
+    params_df = ro.r['data.frame'](**plot_params)
+    ro.r("%s <- %s" % (params_name, params_df.r_repr()))
 
 def generate_forest_plot(file_path, side_by_side=False, params_name="plot.data"):
     if side_by_side:
@@ -689,8 +702,6 @@ def run_meta_regression(dataset, study_names, cov_list, data_name="tmp_obj", \
     ro.r(r_str)
     result = ro.r("%s" % results_name)
 
-    #pyqtRemoveInputHook()
-    #pdb.set_trace()
     if "try-error" in str(result):
         # uh-oh, there was an error
         return str([msg for msg in result][0])
