@@ -77,8 +77,8 @@ continuous.fixed <- function(cont.data, params){
                      slab=cont.data@study.names,
                      method="FE", level=params$conf.level,
                      digits=params$digits)
-        metric.name <- pretty.metric.name(params$measure)
-        model.title <- paste("Continuous Fixed-Effects Model\n\nMetric: ", metric.name, sep="")
+        metric.name <- pretty.metric.name(as.character(params$measure))
+        model.title <- paste("Continuous Fixed-effect Model\n\nMetric: ", metric.name, sep="")
         data.type <- "cont"
         summary.disp <- create.summary.disp(res, params, model.title, data.type)
     }    
@@ -126,8 +126,8 @@ continuous.fixed.parameters <- function(){
 }
 
 continuous.fixed.pretty.names <- function() {
-    pretty.names <- list("pretty.name"="Continuous Fixed-Effects Inverse Variance", 
-                         "description" = "Performs fixed-effects meta-analysis with inverse variance weighting.",
+    pretty.names <- list("pretty.name"="Continuous Fixed-effect Inverse Variance", 
+                         "description" = "Performs fixed-effect meta-analysis with inverse variance weighting.",
                          "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
                          "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
                          "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
@@ -162,7 +162,7 @@ continuous.random <- function(cont.data, params){
                      slab=cont.data@study.names,
                      method=params$rm.method, level=params$conf.level,
                      digits=params$digits)
-        metric.name <- pretty.metric.name(params$measure)
+        metric.name <- pretty.metric.name(as.character(params$measure))
         model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", metric.name, sep="")
         data.type <- "cont"
         summary.disp <- create.summary.disp(res, params, model.title, data.type)
