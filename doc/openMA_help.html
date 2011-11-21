@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Meta-Analyst Help</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta content="MSHTML 6.00.2900.5848" name="GENERATOR">
+<link href="css/help.css" type=text/css rel=stylesheet>
+<link href="css/jquery-ui-1.8.11.custom.css" type="text/css" rel="Stylesheet" />
+<link href="css/jquery.ui.accordion.css" type="text/css" rel="Stylesheet" />
+<script type="text/javascript" src="js/jquery-1.5.1.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.8.11.custom.min.js"></script>
+<script>
+	$(function() {
+		$( "#accordion" ).accordion();
+	});
+</script>
+<script language="JavaScript">
+function calcHeight()
+{
+  //find the height of the internal page
+  var the_height=
+    document.getElementById('the_iframe').contentWindow.
+      document.body.scrollHeight;
+
+  //change the height of the iframe
+  document.getElementById('the_iframe').height=
+      the_height;
+}
+</script>
+</head>
+
+<body onload="frames['IFrameName'].location.href='introduction.html'"
+<table border="0" width="600" cellpadding="10">
+<tr align="center"><td width="100" align="right"><img src="images/epc_sm3.jpg" 
+border=0></img></td>
+<td align="left"><a
+href="http://tuftscaes.org/open_meta/">Open Meta-Analyst Home</a></td>
+</tr></table>
+<h1 align="center">Open Meta-Analyst Help</h1>
+<table  border="0" cellpadding="10">
+<tr><td valign="top" width="300">
+<h3 align="center"> Contents</a></h3>
+<div id="accordion">
+<h3><a href="#">Getting Started</a></h3>
+<div>
+  <ul align="left">
+      <li><a href="#self" onclick="frames['IFrameName'].location.href='introduction.html'">Introducing Open Meta-Analyst</a></li>
+      <li><a href="#self" onclick="frames['IFrameName'].location.href='starting.html'">Starting Open Meta-Analyst</a></li>
+      <li><a href="#self" onclick="frames['IFrameName'].location.href='create_dataset.html'">Creating a New Data Set</a></li>
+      <li><a href="#self" onclick="frames['IFrameName'].location.href='entering_data.html'">Entering Data</a>
+       <li><a href="#self" onclick="frames['IFrameName'].location.href='analysis.html'">Performing a Meta-Analysis</a>
+      <ul style="left: 160px; visibility: visible;">
+        <li><a href="#self" onclick="frames['IFrameName'].location.href='analysis.html#open_dataset'">Opening the Data Set</a></li>
+        <li><a href="#self" onclick="frames['IFrameName'].location.href='analysis.html#run_analysis'">Running the Meta-Analysis</a></li>
+        <li><a href="#self" onclick="frames['IFrameName'].location.href='analysis.html#summary'">Viewing the Results </a></li>
+         <li><a href="#self" onclick="frames['IFrameName'].location.href='analysis.html#specify_metric'">Specifying a Metric</a></li>
+      </ul>
+      <li><a href="#self" onclick="frames['IFrameName'].location.href='covariate.html'">Adding a Covariate</a></li> 
+      <li><a href="#self" onclick="frames['IFrameName'].location.href='regression.html'">Performing a Meta-Regression</a></li> 
+    </ul>
+</div>
+
+<h3><a href="#">Section 1</a></h3>
+<div>
+   <ul>
+      <li><a href="#self" onclick="frames['IFrameName'].location.href='analysis_options.html'">Analysis Options</a> </li>
+       <li><a href="#self" onclick="frames['IFrameName'].location.href='plot_options.html'">Forest Plot Options</a></li>
+    </ul></div>
+</div>
+
+</td>
+<td valign="top">
+
+<IFRAME name="IFrameName" frameborder="no"  width="800" id="the_iframe" 
+	onLoad="calcHeight();" 
+  
+	scrolling="NO">
+</IFRAME>
+ 
+</td></tr>
+</table>
+</body></html>
