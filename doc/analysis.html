@@ -1,0 +1,62 @@
+<link href="help.css" 
+type=text/css rel=stylesheet>
+ <h2>Example - Performing a Meta-Analysis</a></h2>
+ <p>This section presents an example of performing a meta-analysis using Open Meta-Analyst.</p>
+ <h3><a name="open_data">Opening the Data Set</h3>
+ To run the example, first open the
+ example data set:
+ <ol>
+ <li>Select <b>open</b> from the <b>File</b> menu.</li>
+ <li>Select the fiile BCG.oma.</li>
+ <li>Click <b>Open</b>.</li>
+ </ol>
+ <p>Open Meta-Analyst displays the data shown below.</p>
+ <img src="images/BCG.png"></img>
+  <h3><a name="run_analysis">Running the Analysis</a></h3>
+  <p>To perform a meta-analysis on the data, select <b>meta-analysis</b> from the 
+  <b>Analysis</b> menu. This opens the Methods &amp; Parameters dialog, as shown 
+  below.</p><img src="images/analysis_parameters_dialog.png"></img> 
+  <p>You can select a method for the analysis in the analysis method field. The default method
+  is Binary Random, which uses the DerSimonian-Laird method to fit a random-effects model. The other options in the dialog are 
+  described in 
+  <a href="#analysis_options">Analysis Options</a>.  </p>
+  
+  <p>Click <b>OK</b> to 
+  perform the analysis. The results are displayed in the results/analysis window.</p>
+  
+  <h3><a name="summary">Viewing the Results</a></h3>
+
+<p>The results of the meta-analyis consist of two parts:</p>
+<ul>
+<li>A Summary, which displays the overall numerical results of the meta-analysis.</li>
+<li>A forest plot of the point estimates for each study and the overall results.</li>
+</ul>
+
+<img 
+  src="images/ma_standard_summary.png"></img>
+  <img 
+  src="images/ma_standard_forest_small.png"></img>&nbsp;</img> 
+  <p>In the example above, the meta-analysis calculations are performed in logarithmic scale, so the model results 
+ are displayed in standard and log scale. When calculations are performed in standary scale - for example, when the metric is risk difference - only one table is displayed.
+ </p>
+
+<p>The forest plot shows the effect sizes and confidence intervals for each individual study, as well as the overall results.
+The plot also displays the raw data for the studies and the overall results in three columns:</p>
+<ul>
+<li>ES(LL, UL) -  Effect size (lower limit, upper limit)</li>
+<li>Ev/Trt - Events in the treated group / Total number in the treated group</li>
+<li>Ev/Ctrl - Events in the control group / Total number in the control group</li>
+</ul>
+<h3><a name="specify_metric">Changing the Metric for the Effect Size</a></h3>
+<p> By default, the metric for the effect size is set to odds ratio (OR). To change 
+  the metric:
+  <ol>
+  <li>Select <b>metric</b> in the <b>Analysis</b> menu.</li>
+  <li>Select <b>two-arm</b>. </li>
+  <li>Select a metric from the pop-up 
+  menu, as shown below.</p><img 
+  src="images/select_metric.png"></img> 
+  <p><b>Note:</b> If you select <b>one-arm</b>, only the first two data columns (Tx An and Tx AN)
+  are included in the analysis. The Tx Bn and Tx BN columns are shaded grey.
+  <p>When you select a metric, the effect 
+  sizes and confidence intervals are immediately updated. </p>  

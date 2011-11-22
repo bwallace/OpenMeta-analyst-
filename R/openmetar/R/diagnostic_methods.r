@@ -216,7 +216,6 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
     images <- c()
     plot.names <- c()
     plot.params.paths <- c()
-    results <- list()
     if (("Sens" %in% metrics) & ("Spec" %in% metrics)) {
         
         results.sens.spec <- side.by.side.plots(diagnostic.data, fname.left=fnames[sens.index], 
@@ -252,7 +251,8 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         params.list[[nlr.index]]$create.plot <- FALSE
         # Don't create individual forest plots for plr and nlr if plr is checked.
     }
-
+    
+    results <- list()
     for (count in 1:length(params.list)) {
         pretty.names <- eval(call(paste(fnames[count],".pretty.names",sep="")))
         diagnostic.data.tmp <- compute.diag.point.estimates(diagnostic.data, params.list[[count]])
@@ -271,9 +271,9 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         results <- c(results, summary.tmp)
         plot.names <- c(plot.names, results.tmp$plot_names)
     }
-    results <- list("images"=images, "Summary"=results,
-                          "plot_names"=plot.names,
-                          "plot_params_paths"=plot.params.paths)
+    results$images <- images
+    results$plot_names <- plot.names
+    results$plot_params_paths <- plot.params.paths
     
     results
 }
@@ -297,7 +297,7 @@ diagnostic.fixed.inv.var <- function(diagnostic.data, params){
                      method="FE", level=params$conf.level,
                      digits=params$digits)
          # Create list to display summary of results
-        model.title <- paste("Diagnostic Fixed-Effects Model - Inverse Variance (k = ", res$k, ")", sep="")
+        model.title <- paste("Diagnostic Fixed-effect Model - Inverse Variance (k = ", res$k, ")", sep="")
         data.type <- "diagnostic"
         summary.disp <- create.summary.disp(res, params, model.title, data.type)
         pretty.names <- diagnostic.fixed.inv.var.pretty.names()
@@ -352,8 +352,8 @@ diagnostic.fixed.inv.var.parameters <- function(){
 }
 
 diagnostic.fixed.inv.var.pretty.names <- function() {
-    pretty.names <- list("pretty.name"="Diagnostic Fixed-Effects Inverse Variance", 
-                         "description" = "Performs fixed-effects meta-analysis with inverse variance weighting.",
+    pretty.names <- list("pretty.name"="Diagnostic Fixed-effect Inverse Variance", 
+                         "description" = "Performs fixed-effect meta-analysis with inverse variance weighting.",
                          "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
                          "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
                          "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
@@ -411,7 +411,7 @@ diagnostic.fixed.mh <- function(diagnostic.data, params){
         #                        
         # Create list to display summary of results
         #
-        model.title <- paste("Diagnostic Fixed-Effects Model - Mantel Haenszel\n\nMetric: ", params$measure, sep="")
+        model.title <- "Diagnostic Fixed-effect Model - Mantel Haenszel"
         data.type <- "diagnostic"
         summary.disp <- create.summary.disp(res, params, model.title, data.type)
         pretty.names <- diagnostic.fixed.mh.pretty.names()
@@ -466,8 +466,8 @@ diagnostic.fixed.mh.parameters <- function(){
 }
 
 diagnostic.fixed.mh.pretty.names <- function() {
-    pretty.names <- list("pretty.name"="Diagnostic Fixed-Effects Mantel Haenszel", 
-                         "description" = "Performs fixed-effects meta-analysis using the Mantel Haenszel method.",
+    pretty.names <- list("pretty.name"="Diagnostic Fixed-effect Mantel Haenszel", 
+                         "description" = "Performs fixed-effect meta-analysis using the Mantel Haenszel method.",
                          "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
                          "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
                          "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),

@@ -28,13 +28,8 @@ cum.ma.binary <- function(fname, binary.data, params){
                                 to=params$to)
     
     plot.data <- create.plot.data.binary(binary.data, params, res)
-    # data for standard fores plot
+    # data for standard forest plot
     
-    params$fp_show_col3 <- FALSE
-    params$fp_show_col4 <- FALSE
-    # cumulative plot does not display raw data
-    params$fp_col1_str <- "Cumulative Studies"
-        
     # iterate over the binaryData elements, adding one study at a time
     cum.results <- array(list(NULL), dim=c(length(binary.data@study.names)))
     params$create.plot <- FALSE
@@ -85,7 +80,11 @@ cum.ma.binary <- function(fname, binary.data, params){
     }
     cum.disp <- create.overall.display(res=cum.results, study.names, params, model.title, data.type="binary")
     forest.path <- paste(params$fp_outpath, sep="")
+
+    params$fp_col1_str <- "Cumulative Studies"
+    # label for the cumulative (right-hand) plot
     plot.data.cum <- create.plot.data.overall(res=cum.results, study.names, params, data.type="binary", addRow1Space=TRUE)
+
     two.forest.plots(plot.data, plot.data.cum, outpath=forest.path)
 
     # Now we package the results in a dictionary (technically, a named 
@@ -173,6 +172,7 @@ loo.ma.binary <- function(fname, binary.data, params){
     
     loo.disp <- create.overall.display(res=loo.results, study.names, params, model.title, data.type="binary")
     forest.path <- paste(params$fp_outpath, sep="")
+    
     plot.data <- create.plot.data.overall(res=loo.results, study.names, params, data.type="binary", addRow1Space=FALSE)
     forest.plot(forest.data=plot.data, outpath=forest.path)
 
@@ -209,11 +209,6 @@ cum.ma.diagnostic <- function(fname, diagnostic.data, params){
                                 to=params$to)
     
     plot.data <- create.plot.data.diagnostic(diagnostic.data, params, res)
-    
-    params$fp_show_col3 <- FALSE
-    params$fp_show_col4 <- FALSE
-    # cumulative plot does not display raw data
-    params$fp_col1_str <- "Cumulative Studies"
     
     # iterate over the diagnosticData elements, adding one study at a time
     cum.results <- array(list(NULL), dim=c(length(diagnostic.data@study.names)))
@@ -262,6 +257,7 @@ cum.ma.diagnostic <- function(fname, diagnostic.data, params){
     cum.disp <- create.overall.display(res=cum.results, study.names, params, model.title, data.type="diagnostic")
     forest.path <- paste(params$fp_outpath, sep="")
     params$fp_col1_str <- "Cumulative Studies"
+    # label for the cumulative (right-hand) plot
     plot.data.cum <- create.plot.data.overall(res=cum.results, study.names, params, data.type="diagnostic", addRow1Space=TRUE)
     two.forest.plots(plot.data, plot.data.cum, outpath=forest.path)
 
@@ -352,6 +348,7 @@ loo.ma.diagnostic <- function(fname, diagnostic.data, params){
     
     loo.disp <- create.overall.display(res=loo.results, study.names, params, model.title, data.type="diagnostic")
     forest.path <- paste(params$fp_outpath, sep="")
+    
     plot.data <- create.plot.data.overall(res=loo.results, study.names, params, data.type="diagnostic", addRow1Space=FALSE)
     forest.plot(forest.data=plot.data, outpath=forest.path)
     
@@ -448,9 +445,9 @@ cum.ma.continuous <- function(fname, cont.data, params){
     cum.disp <- create.overall.display(res=cum.results, study.names, params, model.title, data.type="continuous")
     forest.path <- paste(params$fp_outpath, sep="")
     params$fp_col1_str <- "Cumulative Studies"
+    # label for the cumulative (right-hand) plot
     plot.data.cum <- create.plot.data.overall(res=cum.results, study.names, params, data.type="continuous", addRow1Space=TRUE)
     two.forest.plots(plot.data, plot.data.cum, outpath=forest.path)
-
     
     #
     # Now we package the results in a dictionary (technically, a named 
@@ -546,6 +543,7 @@ loo.ma.continuous <- function(fname, cont.data, params){
     loo.disp <- create.overall.display(res=loo.results, study.names, params, model.title, data.type="continuous")
 
     forest.path <- paste(params$fp_outpath, sep="")
+
     plot.data <- create.plot.data.overall(res=loo.results, study.names, params, data.type="continuous", addRow1Space=FALSE)
     forest.plot(forest.data=plot.data, outpath=forest.path)
     

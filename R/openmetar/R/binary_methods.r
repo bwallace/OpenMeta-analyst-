@@ -113,8 +113,8 @@ binary.fixed.inv.var <- function(binary.data, params){
                                 level=params$conf.level, digits=params$digits, method="FE", add=params$adjust,
                                 to=params$to)
         # Create list to display summary of results
-        metric.name <- pretty.metric.name(params$measure)
-        model.title <- paste("Binary Fixed-Effects Model - Inverse Variance\n\nMetric: ", metric.name, sep="")
+        metric.name <- pretty.metric.name(as.character(params$measure))
+        model.title <- paste("Binary Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="")
         data.type <- "binary"
         summary.disp <- create.summary.disp(res, params, model.title, data.type)
         # genreate forest plot 
@@ -134,7 +134,7 @@ binary.fixed.inv.var <- function(binary.data, params){
 
             forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
             plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
-            results <- list("images"=images, "Summary"=summary.disp, 
+            results <- list("images"=images, "Summary"=summary.disp,
                             "plot_names"=plot.names, 
                             "plot_params_paths"=plot.params.paths)
 
@@ -162,8 +162,8 @@ binary.fixed.inv.var.parameters <- function(){
 }
 
 binary.fixed.inv.var.pretty.names <- function() {
-    pretty.names <- list("pretty.name"="Binary Fixed-Effects Inverse Variance", 
-                         "description" = "Performs fixed-effects meta-analysis with inverse variance weighting.",
+    pretty.names <- list("pretty.name"="Binary Fixed-effect Inverse Variance", 
+                         "description" = "Performs fixed-effect meta-analysis with inverse variance weighting.",
                          "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
                          "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
                          "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
@@ -199,8 +199,8 @@ binary.fixed.mh <- function(binary.data, params){
         #                        
         # Create list to display summary of results
         #
-        metric.name <- pretty.metric.name(params$measure)
-        model.title <- paste("Binary Fixed-Effects Model - Mantel Haenszel\n\nMetric: ", metric.name, sep="")
+        metric.name <- pretty.metric.name(as.character(params$measure))
+        model.title <- paste("Binary Fixed-effect Model - Mantel Haenszel\n\nMetric: ", metric.name, sep="")
         data.type <- "binary"
         summary.disp <- create.summary.disp(res, params, model.title, data.type)
         #
@@ -257,8 +257,8 @@ binary.fixed.mh.parameters <- function(){
 }
 
 binary.fixed.mh.pretty.names <- function() {
-    pretty.names <- list("pretty.name"="Binary Fixed-Effects Mantel Haenszel", 
-                         "description" = "Performs fixed-effects meta-analysis using the Mantel Haenszel method.",
+    pretty.names <- list("pretty.name"="Binary Fixed-effect Mantel Haenszel", 
+                         "description" = "Performs fixed-effect meta-analysis using the Mantel Haenszel method.",
                          "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
                          "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
                          "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
@@ -304,8 +304,8 @@ binary.fixed.peto <- function(binary.data, params){
         #                        
         # Create list to display summary of results
         #
-        metric.name <- pretty.metric.name(params$measure)
-        model.title <- paste("Binary Fixed-Effects Model - Peto\n\nMetric: ", metric.name, sep="")
+        metric.name <- pretty.metric.name(as.character(params$measure))
+        model.title <- paste("Binary Fixed-effect Model - Peto\n\nMetric: ", metric.name, sep="")
         data.type <- "binary"
         summary.disp <- create.summary.disp(res, params, model.title, data.type)
         #
@@ -360,8 +360,8 @@ binary.fixed.peto.parameters <- function(){
 }
 
 binary.fixed.peto.pretty.names <- function() {
-    pretty.names <- list("pretty.name"="Binary Fixed-Effects Peto", 
-                         "description" = "Performs fixed-effects meta-analysis using the Peto method.",
+    pretty.names <- list("pretty.name"="Binary Fixed-effect Peto", 
+                         "description" = "Performs fixed-effect meta-analysis using the Peto method.",
                          "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
                          "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
                          "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
@@ -409,7 +409,7 @@ binary.random <- function(binary.data, params){
         #                        
         # Create list to display summary of results
         #
-        metric.name <- pretty.metric.name(params$measure)
+        metric.name <- pretty.metric.name(as.character(params$measure))
         model.title <- paste("Binary Random-Effects Model\n\nMetric: ", metric.name, sep="")
         data.type <- "binary"
         summary.disp <- create.summary.disp(res, params, model.title, data.type)
