@@ -187,13 +187,34 @@ create.summary.disp <- function(res, params, model.title, data.type) {
 }
 
 
-save.plot.data <- function(plot.data) {
-  # saves plot data to the r_tmp directory; uses the 
-  # current system time as a 'unique enough' filename
-  forest.plot.params.path <- paste("r_tmp/", 
+save.plot.data <- function(plot.data, forest.plot.params.path=NULL) {
+    # saves plot data to the r_tmp directory
+    if (is.null(forest.plot.params.path)){
+      # by default, we use thecurrent system time as a 'unique enough' filename
+      forest.plot.params.path <- paste("r_tmp/", 
+                                as.character(as.numeric(Sys.time())), sep="")
+    }
+    save(plot.data, file=forest.plot.params.path)
+    forest.plot.params.path
+}
+
+save.data <- function(om.data, res, params, plot.data, out.path=NULL) {
+    # this saves *all* the data for certain types of plots, in contrast
+    # to the above method (save.plot.data), which saves only the plot.data
+    # object.
+    #
+    # save the data, result and plot parameters to a tmp file on disk
+    if (is.null(out.path)){
+      # by default, we use thecurrent system time as a 'unique enough' filename
+      out.path <- paste("r_tmp/", 
                               as.character(as.numeric(Sys.time())), sep="")
-  save(plot.data, file=forest.plot.params.path)
-  forest.plot.params.path
+    }
+
+    save(om.data, file=paste(out.path, ".data", sep=""))
+    save(res, file=paste(out.path, ".res", sep=""))
+    save(plot.data, file=paste(out.path, ".plotdata", sep=""))
+    save(params, file=paste(out.path, ".params", sep=""))
+    out.path
 }
 
 create.regression.display <- function(res, params, display.data) {

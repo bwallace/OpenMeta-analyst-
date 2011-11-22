@@ -192,7 +192,7 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
     def process_console_input(self):
         res = meta_py_r.evaluate_in_r(self.current_line())
-        #self.psuedo_console.setPlainText(QString(old_text + res))
+      
         # echo the result
         self.psuedo_console.append(QString(res))
         self.psuedo_console.append(">> ")
@@ -254,7 +254,7 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         # note that the params object will, by convention,
         # have the (generic) name 'plot.data' -- after this
         # call, this object will be in the namespace
-        meta_py_r.load_plot_params(params_path)
+        meta_py_r.load_in_R("%s.plotdata" % params_path)
 
  
         # where to save the graphic?
@@ -273,12 +273,14 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
                 meta_py_r.generate_forest_plot(file_path)
 
     def edit_image(self, params_path, title, png_path, pixmap_item):
-        meta_py_r.load_plot_params(params_path)
-
         plot_editor_window = edit_forest_plot_form.EditPlotWindow(\
                                             params_path, png_path,\
                                             pixmap_item, parent=self)
-        plot_editor_window.show()
+        if plot_editor_window is not None:
+            plot_editor_window.show()
+        else:
+            # TODO show a warning
+            print "sorry - can't edit"
         
     def position(self):
         point = QPoint(self.x_coord, self.y_coord)

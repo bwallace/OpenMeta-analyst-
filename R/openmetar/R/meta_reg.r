@@ -50,6 +50,7 @@ meta.regression <- function(reg.data, params) {
     } else {
         results <- res
     }
+    results
 }
 
 extract.cov.data <- function(reg.data) {
@@ -137,6 +138,7 @@ binary.fixed.meta.regression <- function(reg.data, params){
     } else {
         results <- list("Summary"=reg.disp)
     }
+
 }
 
 random.meta.regression <- function(reg.data, params, cov.name){

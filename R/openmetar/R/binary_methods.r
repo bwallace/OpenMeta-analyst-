@@ -132,9 +132,7 @@ binary.fixed.inv.var <- function(binary.data, params){
             images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
 
-            # we use the system time as our unique-enough string to store
-            # the params object
-            forest.plot.params.path <- save.plot.data(plot.data)
+            forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
             plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
             results <- list("images"=images, "Summary"=summary.disp, 
                             "plot_names"=plot.names, 
@@ -230,7 +228,7 @@ binary.fixed.mh <- function(binary.data, params){
 
             # dump the forest plot params to disk; return path to
             # this .Rdata for later use
-            forest.plot.params.path <- save.plot.data(plot.data)
+            forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
             plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
             results <- list("images"=images, "Summary"=summary.disp, 
                             "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)
@@ -330,7 +328,7 @@ binary.fixed.peto <- function(binary.data, params){
 
             # dump the forest plot params to disk; return path to
             # this .Rdata for later use
-            forest.plot.params.path <- save.plot.data(plot.data)
+            forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
             plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
 
             images <- c("Forest Plot"=forest.path)
@@ -437,7 +435,8 @@ binary.random <- function(binary.data, params){
 
            # dump the forest plot params to disk; return path to
            # this .Rdata for later use
-           forest.plot.params.path <- save.plot.data(plot.data)
+           forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
+
            plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
            results <- list("images"=images, "Summary"=summary.disp, 
                         "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)

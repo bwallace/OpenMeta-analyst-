@@ -142,13 +142,6 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="2">
-      <widget class="QLineEdit" name="x_lbl_le_2">
-       <property name="text">
-        <string>[default]</string>
-       </property>
-      </widget>
-     </item>
      <item row="4" column="0">
       <widget class="QLabel" name="label_13">
        <property name="text">
@@ -157,7 +150,7 @@
       </widget>
      </item>
      <item row="4" column="2">
-      <widget class="QLineEdit" name="x_ticks_le_2">
+      <widget class="QLineEdit" name="x_ticks_le">
        <property name="text">
         <string>[default]</string>
        </property>
@@ -171,7 +164,7 @@
       </widget>
      </item>
      <item row="1" column="2">
-      <widget class="QLineEdit" name="plot_lb_le_2">
+      <widget class="QLineEdit" name="plot_lb_le">
        <property name="text">
         <string>[default]</string>
        </property>
@@ -185,7 +178,7 @@
       </widget>
      </item>
      <item row="2" column="2">
-      <widget class="QLineEdit" name="plot_ub_le_2">
+      <widget class="QLineEdit" name="plot_ub_le">
        <property name="text">
         <string>[default]</string>
        </property>
@@ -199,12 +192,19 @@
       </widget>
      </item>
      <item row="5" column="2">
-      <widget class="QCheckBox" name="show_summary_line_2">
+      <widget class="QCheckBox" name="show_summary_line">
        <property name="text">
         <string/>
        </property>
        <property name="checked">
         <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QLineEdit" name="x_lbl_le">
+       <property name="text">
+        <string>[default]</string>
        </property>
       </widget>
      </item>
@@ -247,7 +247,7 @@
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel</set>
+      <set>QDialogButtonBox::Apply</set>
      </property>
     </widget>
    </item>

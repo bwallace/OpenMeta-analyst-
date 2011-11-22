@@ -5,6 +5,7 @@
 #  OpenMeta[analyst]                                                        #
 #                                                                           #
 #  This is a proxy module that is responsible for communicating with R.     #
+#  An unholy mixture of R and Python                                        #            
 #   **All calls to R (equivalently, all references to the rpy2 library)     #
 #   are to be made via this module **                                       #
 #                                                                           #
@@ -538,10 +539,6 @@ def run_continuous_ma(function_name, params, res_name = "result", cont_data_name
     return parse_out_results(result)
     
 def run_binary_ma(function_name, params, res_name="result", bin_data_name="tmp_obj"):
-
-    pyqtRemoveInputHook()
-    pdb.set_trace()
-
     params_df = ro.r['data.frame'](**params)
     r_str = "%s<-%s(%s, %s)" % (res_name, function_name, bin_data_name,\
                                     params_df.r_repr())
@@ -597,18 +594,63 @@ def run_diagnostic_ma(function_name, params, res_name="result", diag_data_name="
     result = ro.r("%s" % res_name)
     return parse_out_results(result)
       
-def load_plot_params(params_path, return_dict=False):
-    ''' loads what is presumed to be .Rdata into the environment '''
-    ro.r("load('%s')" % params_path)
-    if return_dict:
-        return _rls_to_pyd(ro.r("plot.data"))
+def load_vars_for_plot(params_path, return_params_dict=False):
+    ''' 
+    loads the three necessary (for plot generation) variables
+    into R. we assume a naming convention in which params_path
+    is the base, data is stored in *.data, params in *.params
+    and result in *.res.
+    '''
+    for var in ("data", "params", "res"):
+        cur_path = "%s.%s" % (params_path, var)
+        if os.path.exists(cur_path):
+            load_in_R(cur_path)
+            print "loaded %s" % cur_path
+        else:
+            print "whoops -- couldn't load %s" % cur_path
+            return False
 
+    if return_params_dict:
+        return _rls_to_pyd(ro.r("params"))
+    return True
 
-def set_plot_data(plot_params, params_name="plot.data"):
-    pyqtRemoveInputHook()
-    pdb.set_trace()
+def load_in_R(fpath):
+    ''' loads what is presumed to be .Rdata into the R environment '''
+    ro.r("load('%s')" % fpath)
+
+def update_plot_params(plot_params, plot_params_name="params"):
+    # first cast the params to an R data frame to make it
+    # R-palatable
     params_df = ro.r['data.frame'](**plot_params)
-    ro.r("%s <- %s" % (params_name, params_df.r_repr()))
+    ro.r("tmp.params <- %s" % params_df.r_repr())
+   
+    for param_name in plot_params:
+        ro.r("%s$%s <- tmp.params$%s" % \
+                (plot_params_name, param_name, param_name))
+
+
+def regenerate_plot_data(om_data_name="om.data", res_name="res",           
+                            plot_params_name="params", plot_data_name="plot.data"):
+    
+    ####
+    # this is crude, but works for now, and easier than making
+    # the results_window keep track of why type of data it's
+    # displaying. may need to re-think this ain any case for the
+    # general case of plots (what 'type' is a mixed analysis, e.g.?)
+    ####
+    data_type = str(ro.r("class(%s)" % om_data_name))
+
+
+    if "BinaryData" in data_type:
+        ro.r("plot.data<-create.plot.data.binary(%s, %s, %s)" % \
+                            (om_data_name, plot_params_name, res_name))
+    elif "ContinuousData" in data_type:
+        ro.r("plot.data<-create.plot.data.continuous(%s, %s, %s)" % \
+                            (om_data_name, plot_params_name, res_name))
+    else:
+        ro.r("plot.data<-create.plot.data.diagnostic(%s, %s, %s)" % \
+                            (om_data_name, plot_params_name, res_name))
+
 
 def generate_forest_plot(file_path, side_by_side=False, params_name="plot.data"):
     if side_by_side:

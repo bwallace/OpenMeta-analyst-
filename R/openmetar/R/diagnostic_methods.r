@@ -323,7 +323,7 @@ diagnostic.fixed.inv.var <- function(diagnostic.data, params){
           
           # we use the system time as our unique-enough string to store
           # the params object
-          forest.plot.params.path <- save.plot.data(plot.data)
+          forest.plot.params.path <- save.data(diagnostic.data, res, params, plot.data)
           plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
           results <- list("images"=images, "Summary"=summary.disp, 
                           "plot_names"=plot.names, 
@@ -436,7 +436,7 @@ diagnostic.fixed.mh <- function(diagnostic.data, params){
             
             # we use the system time as our unique-enough string to store
             # the params object
-            forest.plot.params.path <- save.plot.data(plot.data)
+            forest.plot.params.path <- save.data(diagnostic.data, res, params, plot.data)
             plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
             results <- list("images"=images, "Summary"=summary.disp, 
                             "plot_names"=plot.names, 
@@ -532,7 +532,7 @@ diagnostic.random <- function(diagnostic.data, params){
             
             # we use the system time as our unique-enough string to store
             # the params object
-            forest.plot.params.path <- save.plot.data(plot.data)
+            forest.plot.params.path <- save.data(diagnostic.data, res, params, plot.data)
             plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
             results <- list("images"=images, "Summary"=summary.disp, 
                             "plot_names"=plot.names, 

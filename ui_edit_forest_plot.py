@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'edit_forest_plot.ui'
 #
-# Created: Mon Nov 21 11:25:06 2011
+# Created: Tue Nov 22 15:47:14 2011
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -148,7 +148,7 @@ class Ui_edit_forest_plot_dlg(object):
         self.verticalLayout.addLayout(self.horizontalLayout_4)
         self.buttonBox = QtGui.QDialogButtonBox(edit_forest_plot_dlg)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Apply|QtGui.QDialogButtonBox.Cancel)
+        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Apply)
         self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
         self.verticalLayout.addWidget(self.buttonBox)
 
