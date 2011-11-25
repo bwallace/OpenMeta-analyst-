@@ -234,12 +234,12 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         # Don't create individual forest plots for sens and spec if both are checked.
     }
     
-    if ("PLR" %in% metrics) {
+    if (("NLR" %in% metrics) || ("PLR" %in% metrics)) {
         results.plr.nlr <- NULL
-        results.plr.nlr <- side.by.side.plots(diagnostic.data, fname.left=fnames[plr.index], 
-                                                               params.left=params.list[[plr.index]], 
-                                                               fname.right=fnames[nlr.index],
-                                                               params.right=params.list[[nlr.index]])
+        results.plr.nlr <- side.by.side.plots(diagnostic.data, fname.left=fnames[nlr.index], 
+                                                               params.left=params.list[[nlr.index]], 
+                                                               fname.right=fnames[plr.index],
+                                                               params.right=params.list[[plr.index]])
         images.tmp <- results.plr.nlr$images
         names(images.tmp) <- "Likelihood Ratios Forest Plot"
         images <- c(images, images.tmp)
@@ -683,14 +683,14 @@ side.by.side.plots <- function(diagnostic.data, fname.left, params.left, fname.r
         diagnostic.data.left <- compute.diag.point.estimates(diagnostic.data, params.left)
         diagnostic.data.right <- compute.diag.point.estimates(diagnostic.data, params.right)
 
-        res.tmp <- eval(call(fname.left, diagnostic.data, params.left))
+        res.tmp <- eval(call(fname.left, diagnostic.data.left, params.left))
         res.left <- eval(call(paste(fname.left, ".overall", sep=""), res.tmp))
   
-        res.tmp <- eval(call(fname.right, diagnostic.data, params.right))
+        res.tmp <- eval(call(fname.right, diagnostic.data.right, params.right))
         res.right <- eval(call(paste(fname.right, ".overall", sep=""), res.tmp))
         
         forest.path <- paste(params.left$fp_outpath, sep="")
-        plot.data.left <- create.plot.data.diagnostic(diagnostic.data, params.left, res.left)
+        plot.data.left <- create.plot.data.diagnostic(diagnostic.data.left, params.left, res.left)
         plot.data.right <- create.plot.data.diagnostic(diagnostic.data.right, params.right, res.right)
         two.forest.plots(plot.data.left, plot.data.right, outpath=forest.path)
 

@@ -523,7 +523,7 @@ pretty.metric.name <- function(metric) {
         # positive likelihood ratio
         PLR = "Pos. likelihood ratio", 
         # negative likelihood ratio
-        NLR = "Pos. likelihood ratio",
+        NLR = "Neg. likelihood ratio",
         # diagnostic odds ratio
         DOR = "Diagnostic odds ratio")
 }
