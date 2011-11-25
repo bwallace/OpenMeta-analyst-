@@ -309,7 +309,7 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, 
     lb <- c(lb, cur.lb.overall)
     ub <- c(ub, cur.ub.overall)
     types <- c(3,types, 2)
-    label.col <- c("params$fp_col1_str", label.col, "Overall")
+    label.col <- c(as.character(params$fp_col1_str), label.col, "Overall")
     plot.options <- set.plot.options(params)
     if (params$fp_plot_lb == "[default]") {
         plot.options$plot.lb <- NULL
@@ -480,7 +480,7 @@ set.plot.options <- function(params) {
     
     # xlabel is the label for the x-axis
     if (params$fp_xlabel == "[default]") {
-        plot.options$xlabel <- pretty.metric.name(params$measure)
+        plot.options$xlabel <- pretty.metric.name(as.character(params$measure))
     } else {
         plot.options$xlabel <- as.character(params$fp_xlabel)
     }
