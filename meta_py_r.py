@@ -614,11 +614,16 @@ def load_vars_for_plot(params_path, return_params_dict=False):
         return _rls_to_pyd(ro.r("params"))
     return True
 
+def write_out_plot_data(params_out_path, plot_data_name="plot.data"):
+    ro.r("save.plot.data(%s, '%s')" % (plot_data_name, params_out_path))
+
+
 def load_in_R(fpath):
     ''' loads what is presumed to be .Rdata into the R environment '''
     ro.r("load('%s')" % fpath)
 
-def update_plot_params(plot_params, plot_params_name="params"):
+def update_plot_params(plot_params, plot_params_name="params", \
+                        write_them_out=False, outpath=None):
     # first cast the params to an R data frame to make it
     # R-palatable
     params_df = ro.r['data.frame'](**plot_params)
@@ -628,6 +633,8 @@ def update_plot_params(plot_params, plot_params_name="params"):
         ro.r("%s$%s <- tmp.params$%s" % \
                 (plot_params_name, param_name, param_name))
 
+    if write_them_out:
+        ro.r("save(tmp.params, file='%s')" % outpath)
 
 def regenerate_plot_data(om_data_name="om.data", res_name="res",           
                             plot_params_name="params", plot_data_name="plot.data"):
@@ -806,7 +813,13 @@ def _rls_to_pyd(r_ls):
                 elif str(val)=="NULL":
                     d[name] = None
                 elif str(val.getnames())=="NULL":
-                    d[name] = val[0]
+                    ###
+                    # 11/28/11 -- swapping val[0] for the as.character
+                    # version below to avoid parsing an ugly structure.
+                    # this seems to be sane. did I mention we need
+                    # unit tests???
+                    #d[name] = val[0]
+                    d[name] = ro.r("as.character(%s)" % val.r_repr())[0]
                 else:
                     # recurse
                     d[name] = _rls_to_pyd(val)

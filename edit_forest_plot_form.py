@@ -22,11 +22,17 @@ class EditPlotWindow(QDialog, ui_edit_forest_plot.Ui_edit_forest_plot_dlg):
 
         # if we're unable to load the required R data files,
         # e.g., because they were moved or deleted, then fail
-        if not meta_py_r.load_vars_for_plot(self.img_params_path):
+        self.params_d = meta_py_r.load_vars_for_plot(self.img_params_path, \
+                                                return_params_dict=True)
+
+
+        if not self.params_d:
             print "can't load R data for plot editing!"
             return None
 
         # @TODO reflect current params in UI at launch
+        #self.populate_params()
+        self.set_ui_values()
 
         # this is the QPixMap object that houses the
         # plot image
@@ -37,16 +43,42 @@ class EditPlotWindow(QDialog, ui_edit_forest_plot.Ui_edit_forest_plot_dlg):
         # the handle to the window in which
         # the image is being displayed
         self.results_window = parent
-        
-        #self.current_param_vals = meta_py_r.load_plot_params(self.img_params_path, \
-        #                                return_dict=True)
-        self.current_param_vals = {}
 
+        self.current_param_vals = {}
 
         # get the button object
         self.apply_button = self.buttonBox.button(QtGui.QDialogButtonBox.Apply)
         QObject.connect(self.apply_button, SIGNAL("clicked()"), self.regenerate_graph)
         self.populate_params()
+
+
+    def set_ui_values(self):
+        _to_bool = lambda x: True if x=="TRUE" else False
+
+        # first fill in the col strs and show fields
+        for col_i in [i+1 for i in xrange(4)]:
+            cur_col_edit_box = eval("self.col%s_str_edit" % col_i)
+            cur_col_edit_box.setText(self.params_d["fp_col%s_str" % col_i])
+
+            cur_chk_box = eval("self.show_%s" % col_i)
+            cur_chk_box.setChecked(_to_bool(self.params_d["fp_show_col%s" % col_i]))
+
+
+        # x-label
+        self.x_lbl_le.setText(self.params_d["fp_xlabel"])
+
+        # set the outpath text
+        self.image_path.setText(self.params_d["fp_outpath"])
+
+        # bounds
+        self.plot_lb_le.setText(self.params_d["fp_plot_lb"])
+        self.plot_ub_le.setText(self.params_d["fp_plot_ub"])
+        
+        # xticks
+        self.x_ticks_le.setText(self.params_d["fp_xticks"])
+
+        self.show_summary_line.setChecked(_to_bool(self.params_d["fp_show_summary_line"]))
+
 
     def populate_params(self):
         '''
@@ -66,7 +98,7 @@ class EditPlotWindow(QDialog, ui_edit_forest_plot.Ui_edit_forest_plot_dlg):
         plot_lb = unicode(self.plot_lb_le.text().toUtf8(), "utf-8")
         self.current_param_vals["fp_plot_lb"] = "[default]"
         if plot_lb != "[default]" and check_plot_bound(plot_lb):
-                self.current_param_vals["fp_plot_lb"] = plot_lb
+            self.current_param_vals["fp_plot_lb"] = plot_lb
 
         plot_ub = unicode(self.plot_ub_le.text().toUtf8(), "utf-8")
         self.current_param_vals["fp_plot_ub"] = "[default]"
@@ -102,8 +134,11 @@ class EditPlotWindow(QDialog, ui_edit_forest_plot.Ui_edit_forest_plot_dlg):
         meta_py_r.load_vars_for_plot(self.img_params_path)
 
         # update relevant variables (on the R side)
-        # with new values
-        meta_py_r.update_plot_params(self.current_param_vals)
+        # with new values -- we also write the updated
+        # params out to disk here
+        meta_py_r.update_plot_params(self.current_param_vals, \
+                                      write_them_out=True, \
+                                      outpath="%s.params" % self.img_params_path)
 
         # now re-generate the plot data on the R side of
         # things
@@ -114,6 +149,7 @@ class EditPlotWindow(QDialog, ui_edit_forest_plot.Ui_edit_forest_plot_dlg):
         self.png_path = self.current_param_vals["fp_outpath"]
         meta_py_r.generate_forest_plot(self.png_path)
 
+        meta_py_r.write_out_plot_data("%s.plotdata" % self.img_params_path)
 
 
     def regenerate_graph(self):

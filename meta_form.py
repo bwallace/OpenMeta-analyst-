@@ -344,8 +344,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 new_state_dict["current_txs"] = ["tx A", "tx B"]
             modified_dataset = edit_window.dataset
             
-            pyqtRemoveInputHook()
-            pdb.set_trace()
             redo_f = lambda : self.set_model(modified_dataset, new_state_dict)
             original_dataset = copy.deepcopy(self.model.dataset)
             undo_f = lambda : self.set_model(original_dataset, old_state_dict) 
