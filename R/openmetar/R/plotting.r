@@ -221,7 +221,7 @@ create.plot.data.overall <- function(res, study.names, params, data.type, addRow
         study.names[1] <- paste("   ", study.names[1], sep="")
     }
 
-    plot.data <- list( label = c(params$fp_col1_str, study.names),  
+    plot.data <- list( label = c(as.character(params$fp_col1_str), study.names),  
                        # add blank line to study.names to align with Overall row
                        types = c(3, rep(0, length(study.names)), 2),
                        scale = scale.str,
