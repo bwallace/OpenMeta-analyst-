@@ -221,7 +221,7 @@ create.plot.data.overall <- function(res, study.names, params, data.type, addRow
         study.names[1] <- paste("   ", study.names[1], sep="")
     }
 
-    plot.data <- list( label = c(params$fp_col1_str, study.names),  
+    plot.data <- list( label = c(as.character(params$fp_col1_str), study.names),  
                        # add blank line to study.names to align with Overall row
                        types = c(3, rep(0, length(study.names)), 2),
                        scale = scale.str,
@@ -309,7 +309,7 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, 
     lb <- c(lb, cur.lb.overall)
     ub <- c(ub, cur.ub.overall)
     types <- c(3,types, 2)
-    label.col <- c("params$fp_col1_str", label.col, "Overall")
+    label.col <- c(as.character(params$fp_col1_str), label.col, "Overall")
     plot.options <- set.plot.options(params)
     if (params$fp_plot_lb == "[default]") {
         plot.options$plot.lb <- NULL
@@ -480,7 +480,7 @@ set.plot.options <- function(params) {
     
     # xlabel is the label for the x-axis
     if (params$fp_xlabel == "[default]") {
-        plot.options$xlabel <- pretty.metric.name(params$measure)
+        plot.options$xlabel <- pretty.metric.name(as.character(params$measure))
     } else {
         plot.options$xlabel <- as.character(params$fp_xlabel)
     }
@@ -523,7 +523,7 @@ pretty.metric.name <- function(metric) {
         # positive likelihood ratio
         PLR = "Pos. likelihood ratio", 
         # negative likelihood ratio
-        NLR = "Pos. likelihood ratio",
+        NLR = "Neg. likelihood ratio",
         # diagnostic odds ratio
         DOR = "Diagnostic odds ratio")
 }
