@@ -67,7 +67,7 @@ cum.ma.binary <- function(fname, binary.data, params){
         study.names <- c(study.names, paste("+ ",binary.data@study.names[count], sep=""))
     }
     
-    metric.name <- pretty.metric.name(params$measure)
+    metric.name <- pretty.metric.name(as.character(params$measure))
     model.title <- ""
     if (fname == "binary.fixed.inv.var") {
         model.title <- paste("Binary Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
@@ -158,7 +158,7 @@ loo.ma.binary <- function(fname, binary.data, params){
     for (count in 1:length(binary.data@study.names)) {
         study.names <- c(study.names, paste("- ",binary.data@study.names[count], sep=""))
     }
-    metric.name <- pretty.metric.name(params$measure)
+    metric.name <- pretty.metric.name(as.character(params$measure))
     model.title <- ""
     if (fname == "binary.fixed.inv.var") {
         model.title <- paste("Binary Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
@@ -246,7 +246,7 @@ cum.ma.diagnostic <- function(fname, diagnostic.data, params){
     for (count in 2:length(diagnostic.data@study.names)) {
         study.names <- c(study.names, paste("+ ",diagnostic.data@study.names[count], sep=""))
     }
-    metric.name <- pretty.metric.name(params$measure)
+    metric.name <- pretty.metric.name(as.character(params$measure))
     model.title <- ""
     if (fname == "diagnostic.fixed") {
         model.title <- paste("Diagnostic Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
@@ -338,12 +338,12 @@ loo.ma.diagnostic <- function(fname, diagnostic.data, params){
     for (count in 1:length(diagnostic.data@study.names)) {
         study.names <- c(study.names, paste("- ",diagnostic.data@study.names[count], sep=""))
     }
-    metric.name <- pretty.metric.name(params$measure)
+    metric.name <- pretty.metric.name(as.character(params$measure))
     model.title <- ""
     if (fname == "diagnostic.fixed") {
-        model.title <- paste("Diagnostic Fixed-effect Model - Inverse Variance\n\nMetric: ", params$measure, sep="") 
+        model.title <- paste("Diagnostic Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
     } else if (fname == "diagnostic.random") {
-        model.title <- paste("Diagnostic Random-Effects Model\n\nMetric: ", params$measure, sep="")
+        model.title <- paste("Diagnostic Random-Effects Model\n\nMetric: ", metric.name, sep="")
     }
     
     loo.disp <- create.overall.display(res=loo.results, study.names, params, model.title, data.type="diagnostic")
@@ -435,7 +435,7 @@ cum.ma.continuous <- function(fname, cont.data, params){
     for (count in 2:length(cont.data@study.names)) {
         study.names <- c(study.names, paste("+ ",cont.data@study.names[count], sep=""))
     }
-    metric.name <- pretty.metric.name(params$measure)
+    metric.name <- pretty.metric.name(as.character(params$measure))
     model.title <- ""
     if (fname == "continuous.fixed") {
         model.title <- paste("Continuous Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
@@ -533,7 +533,7 @@ loo.ma.continuous <- function(fname, cont.data, params){
     for (count in 1:length(cont.data@study.names)) {
         study.names <- c(study.names, paste("- ",cont.data@study.names[count], sep=""))
     }
-    metric.name <- pretty.metric.name(params$measure)
+    metric.name <- pretty.metric.name(as.character(params$measure))
     model.title <- ""
     if (fname == "continuous.fixed") {
         model.title <- paste("Continuous Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
@@ -574,11 +574,11 @@ loo.ma.continuous <- function(fname, cont.data, params){
 subgroup.ma.binary <- function(fname, binary.data, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
-    #cov.name <- params$cov_name
-    #cov.val.str <- paste("binary.data@covariates$", cov.name, sep="")
-    subgroups <- binary.data@covariates[[1]]@cov.vals
+    cov.name <- params$cov_name
+    selected.cov <- get.cov(binary.data, cov.name)
+    cov.vals <- selected.cov@cov.vals
     params$create.plot <- FALSE
-    subgroup.list <- unique(subgroups)
+    subgroup.list <- unique(cov.vals)
     grouped.data <- array(list(NULL),c(length(subgroup.list)+1))
     subgroup.results <- array(list(NULL), c(length(subgroup.list)+1))
     col3.nums <- NULL
@@ -588,17 +588,13 @@ subgroup.ma.binary <- function(fname, binary.data, params){
     count <- 1
     for (i in subgroup.list){
       # build a BinaryData object for each subgroup
-      bin.data.tmp <- get.subgroup.data.binary(binary.data, i)
+      bin.data.tmp <- get.subgroup.data.binary(binary.data, i, cov.vals)
       grouped.data[[count]] <- bin.data.tmp
       # collect raw data columns
-      #if (params$fp_show_col3=="TRUE") {
-        col3.nums <- c(col3.nums, bin.data.tmp@g1O1, sum(bin.data.tmp@g1O1)) 
-        col3.denoms <- c(col3.denoms, bin.data.tmp@g1O1 + bin.data.tmp@g1O2, sum(bin.data.tmp@g1O1 + bin.data.tmp@g1O2)) 
-      #}
-      #if (params$fp_show_col4=="TRUE") {
-        col4.nums <- c(col4.nums, bin.data.tmp@g2O1, sum(bin.data.tmp@g2O1)) 
-        col4.denoms <- c(col4.denoms, bin.data.tmp@g2O1 + bin.data.tmp@g2O2, sum(bin.data.tmp@g2O1 + bin.data.tmp@g2O2)) 
-      #}
+      col3.nums <- c(col3.nums, bin.data.tmp@g1O1, sum(bin.data.tmp@g1O1)) 
+      col3.denoms <- c(col3.denoms, bin.data.tmp@g1O1 + bin.data.tmp@g1O2, sum(bin.data.tmp@g1O1 + bin.data.tmp@g1O2)) 
+      col4.nums <- c(col4.nums, bin.data.tmp@g2O1, sum(bin.data.tmp@g2O1)) 
+      col4.denoms <- c(col4.denoms, bin.data.tmp@g2O1 + bin.data.tmp@g2O2, sum(bin.data.tmp@g2O1 + bin.data.tmp@g2O2)) 
       cur.res <- eval(call(fname, bin.data.tmp, params))
       cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
       subgroup.results[[count]] <- cur.overall
@@ -610,7 +606,7 @@ subgroup.ma.binary <- function(fname, binary.data, params){
     subgroup.results[[count]] <- res.overall
     subgroup.names <- paste("Subgroup ", subgroup.list, sep="")
     subgroup.names <- c(subgroup.names, "Overall")
-    metric.name <- pretty.metric.name(params$measure)
+    metric.name <- pretty.metric.name(as.character(params$measure))
     model.title <- ""
     if (fname == "binary.fixed.inv.var") {
         model.title <- paste("Binary Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
@@ -619,7 +615,7 @@ subgroup.ma.binary <- function(fname, binary.data, params){
     } else if (fname == "binary.fixed.peto") {
         model.title <- paste("Binary Fixed-effect Model - Peto\n\nMetric: ", metric.name, sep="")
     } else if (fname == "binary.random") {
-        model.title <- paste("Binary Random-Effects Model\n\nMetric: ", params$measure, sep="")
+        model.title <- paste("Binary Random-Effects Model\n\nMetric: ", metric.name, sep="")
     }
     subgroup.disp <- create.overall.display(subgroup.results, subgroup.names, params, model.title, data.type="binary")
     forest.path <- paste(params$fp_outpath, sep="")
@@ -635,7 +631,7 @@ subgroup.ma.binary <- function(fname, binary.data, params){
     # (mapping titles to pretty-printed text). In this case we have only one 
     # of each. 
     #     
-    images <- c("Subgroups Forest Plot"=forest.path)
+    images <- c("Subgroup Forest Plot"=forest.path)
     plot.names <- c("subgroups forest plot"="subgroups_forest_plot")
     
     # we use the system time as our unique-enough string to store
@@ -648,19 +644,18 @@ subgroup.ma.binary <- function(fname, binary.data, params){
     results
 }
 
-get.subgroup.data.binary <- function(binary.data, cov.val) {
+get.subgroup.data.binary <- function(binary.data, cov.val, cov.vals) {
   # returns the subgroup data corresponding to a categorical covariant 
   # for value cov.val
   if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
-  subgroups <- binary.data@covariates[[1]]@cov.vals
-  y.tmp <- binary.data@y[subgroups == cov.val]
-  SE.tmp <- binary.data@SE[subgroups == cov.val]
-  names.tmp <- binary.data@study.names[subgroups == cov.val]
+  y.tmp <- binary.data@y[cov.vals == cov.val]
+  SE.tmp <- binary.data@SE[cov.vals == cov.val]
+  names.tmp <- binary.data@study.names[cov.vals == cov.val]
   if (length(binary.data@g1O1) > 0){
-    g1O1.tmp <- binary.data@g1O1[subgroups == cov.val]
-    g1O2.tmp <- binary.data@g1O2[subgroups == cov.val]
-    g2O1.tmp <- binary.data@g2O1[subgroups == cov.val]
-    g2O2.tmp <- binary.data@g2O2[subgroups == cov.val]
+    g1O1.tmp <- binary.data@g1O1[cov.vals == cov.val]
+    g1O2.tmp <- binary.data@g1O2[cov.vals == cov.val]
+    g2O1.tmp <- binary.data@g2O1[cov.vals == cov.val]
+    g2O2.tmp <- binary.data@g2O2[cov.vals == cov.val]
     subgroup.data <- new('BinaryData', g1O1=g1O1.tmp, 
                           g1O2=g1O2.tmp, g2O1=g2O1.tmp, 
                           g2O2=g2O2.tmp, y=y.tmp, SE=SE.tmp, study.names=names.tmp)
@@ -676,9 +671,11 @@ get.subgroup.data.binary <- function(binary.data, cov.val) {
 
 subgroup.ma.diagnostic <- function(fname, diagnostic.data, params){
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
-    subgroups <- diagnostic.data@covariates[[1]]@cov.vals
+    cov.name <- params$cov_name
+    selected.cov <- get.cov(diagnostic.data, cov.name)
+    cov.vals <- selected.cov@cov.vals
     params$create.plot <- FALSE
-    subgroup.list <- unique(subgroups)
+    subgroup.list <- unique(cov.vals)
     grouped.data <- array(list(NULL),c(length(subgroup.list) + 1))
     subgroup.results <- array(list(NULL), c(length(subgroup.list) + 1))
     col3.nums <- NULL
@@ -688,23 +685,17 @@ subgroup.ma.diagnostic <- function(fname, diagnostic.data, params){
     count <- 1
     for (i in subgroup.list){
       # build a DiagnosticData object 
-      diag.data.tmp <- get.subgroup.data.diagnostic(diagnostic.data, i)
-      # call the parametric function by name, passing along the 
-      # data and parameters. Notice that this method knows
-        # neither what method its calling nor what parameters
-        # it's passing!
-        grouped.data[[count]] <- diag.data.tmp
-        # collect raw data columns
-        if (params$fp_show_col3=="TRUE") {
-          raw.data <- list("TP"=diag.data.tmp@TP, "FN"=diag.data.tmp@FN, "TN"=diag.data.tmp@TN, "FP"=diag.data.tmp@FP)
-          terms <- compute.diagnostic.terms(raw.data, params)
-          col3.nums <- c(col3.nums, terms$numerator, sum(terms$numerator)) 
-          col3.denoms <- c(col3.denoms, terms$denominator, sum(terms$denominator))
-        }
-        cur.res <- eval(call(fname, diag.data.tmp, params))
-        cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
-        subgroup.results[[count]] <- cur.overall
-        count <- count + 1
+      diag.data.tmp <- get.subgroup.data.diagnostic(diagnostic.data, i, cov.vals)
+      grouped.data[[count]] <- diag.data.tmp
+      # collect raw data columns
+      raw.data <- list("TP"=diag.data.tmp@TP, "FN"=diag.data.tmp@FN, "TN"=diag.data.tmp@TN, "FP"=diag.data.tmp@FP)
+      terms <- compute.diagnostic.terms(raw.data, params)
+      col3.nums <- c(col3.nums, terms$numerator, sum(terms$numerator))
+      col3.denoms <- c(col3.denoms, terms$denominator, sum(terms$denominator))
+      cur.res <- eval(call(fname, diag.data.tmp, params))
+      cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
+      subgroup.results[[count]] <- cur.overall
+      count <- count + 1
     }
     res <- eval(call(fname, diagnostic.data, params))
     res.overall <- eval(call(paste(fname, ".overall", sep=""), res))
@@ -712,7 +703,7 @@ subgroup.ma.diagnostic <- function(fname, diagnostic.data, params){
     subgroup.results[[count]] <- res.overall
     subgroup.names <- paste("Subgroup ", subgroup.list, sep="")
     subgroup.names <- c(subgroup.names, "Overall")
-    metric.name <- pretty.metric.name(params$measure)
+    metric.name <- pretty.metric.name(as.character(params$measure))
     model.title <- ""
     if (fname == "diagnostic.fixed") {
         model.title <- paste("Diagnostic Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
@@ -745,19 +736,18 @@ subgroup.ma.diagnostic <- function(fname, diagnostic.data, params){
     results
 }
 
-get.subgroup.data.diagnostic <- function(diagnostic.data, cov.val) {
+get.subgroup.data.diagnostic <- function(diagnostic.data, cov.val, cov.vals) {
   # returns the subgroup data corresponding to a categorical covariant cov.name
   # and value cov.val
   if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
-  subgroups <- diagnostic.data@covariates[[1]]@cov.vals
-  y.tmp <- diagnostic.data@y[subgroups == cov.val]
-  SE.tmp <- diagnostic.data@SE[subgroups == cov.val]
-  names.tmp <- diagnostic.data@study.names[subgroups == cov.val]
+  y.tmp <- diagnostic.data@y[cov.vals == cov.val]
+  SE.tmp <- diagnostic.data@SE[cov.vals == cov.val]
+  names.tmp <- diagnostic.data@study.names[cov.vals == cov.val]
   if (length(diagnostic.data@TP) > 0){
-    TP.tmp <- diagnostic.data@TP[subgroups==cov.val]
-    FN.tmp <- diagnostic.data@FN[subgroups==cov.val]
-    TN.tmp <- diagnostic.data@TN[subgroups==cov.val]
-    FP.tmp <- diagnostic.data@FP[subgroups==cov.val]
+    TP.tmp <- diagnostic.data@TP[cov.vals==cov.val]
+    FN.tmp <- diagnostic.data@FN[cov.vals==cov.val]
+    TN.tmp <- diagnostic.data@TN[cov.vals==cov.val]
+    FP.tmp <- diagnostic.data@FP[cov.vals==cov.val]
     subgroup.data <- new('DiagnosticData', TP=TP.tmp, 
                           FN=FN.tmp , TN=TN.tmp, 
                           FP=FP.tmp, y=y.tmp, SE=SE.tmp, study.names=names.tmp)
@@ -773,9 +763,11 @@ get.subgroup.data.diagnostic <- function(diagnostic.data, cov.val) {
 
 subgroup.ma.continuous <- function(fname, cont.data, params){
     if (!("ContinuousData" %in% class(cont.data))) stop("Continuous data expected.")
-    subgroups <- cont.data@covariates[[1]]@cov.vals
+    cov.name <- params$cov_name
+    selected.cov <- get.cov(cont.data, cov.name)
+    cov.vals <- selected.cov@cov.vals
     params$create.plot <- FALSE
-    subgroup.list <- unique(subgroups)
+    subgroup.list <- unique(cov.vals)
     grouped.data <- array(list(NULL),c(length(subgroup.list)+1))
     subgroup.results <- array(list(NULL), c(length(subgroup.list)+1))
     col3.nums <- NULL
@@ -785,7 +777,7 @@ subgroup.ma.continuous <- function(fname, cont.data, params){
     count <- 1
     for (i in subgroup.list){
       # build a ContinuousData object 
-      cont.data.tmp <- get.subgroup.data.cont(cont.data, i) 
+      cont.data.tmp <- get.subgroup.data.cont(cont.data, i, cov.vals) 
       grouped.data[[count]] <- cont.data.tmp
       cur.res <- eval(call(fname, cont.data.tmp, params))
       cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
@@ -798,7 +790,7 @@ subgroup.ma.continuous <- function(fname, cont.data, params){
     subgroup.results[[count]] <- res.overall
     subgroup.names <- paste("Subgroup ", subgroup.list, sep="")
     subgroup.names <- c(subgroup.names, "Overall")
-    metric.name <- pretty.metric.name(params$measure)
+    metric.name <- pretty.metric.name(as.character(params$measure))
     model.title <- ""
     if (fname == "continuous.fixed") {
         model.title <- paste("Continuous Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
@@ -831,21 +823,20 @@ subgroup.ma.continuous <- function(fname, cont.data, params){
     results
 }
 
-get.subgroup.data.cont <- function(cont.data, cov.val) {
+get.subgroup.data.cont <- function(cont.data, cov.val, cov.vals) {
   # returns the subgroup data corresponding to a categorical covariant cov.name
   # and value cov.val
   if (!("ContinuousData" %in% class(cont.data))) stop("Continuous data expected.")
-      subgroups <- cont.data@covariates[[1]]@cov.vals
-      y.tmp <- cont.data@y[subgroups == cov.val]
-      SE.tmp <- cont.data@SE[subgroups == cov.val]
-      names.tmp <- cont.data@study.names[subgroups == cov.val]
+      y.tmp <- cont.data@y[cov.vals == cov.val]
+      SE.tmp <- cont.data@SE[cov.vals == cov.val]
+      names.tmp <- cont.data@study.names[cov.vals == cov.val]
   if (length(cont.data@N1) > 0){
-      N1.tmp <- cont.data@N1[subgroups == cov.val]
-      mean1.tmp <- cont.data@mean1[subgroups == cov.val]
-      sd1.tmp <- cont.data@sd1[subgroups == cov.val]
-      N2.tmp <- cont.data@N2[subgroups == cov.val]
-      mean2.tmp <- cont.data@mean2[subgroups == cov.val]
-      sd2.tmp <- cont.data@sd2[subgroups == cov.val]
+      N1.tmp <- cont.data@N1[cov.vals == cov.val]
+      mean1.tmp <- cont.data@mean1[cov.vals == cov.val]
+      sd1.tmp <- cont.data@sd1[cov.vals == cov.val]
+      N2.tmp <- cont.data@N2[cov.vals == cov.val]
+      mean2.tmp <- cont.data@mean2[cov.vals == cov.val]
+      sd2.tmp <- cont.data@sd2[cov.vals == cov.val]
       subgroup.data <- new('ContinuousData', 
                           N1=N1.tmp, mean1=mean1.tmp , sd1=sd1.tmp, 
                           N2=N2.tmp, mean2=mean2.tmp, sd2=sd2.tmp,
@@ -859,10 +850,23 @@ get.subgroup.data.cont <- function(cont.data, cov.val) {
     subgroup.data
 }
 
+get.cov <- function(om.data, cov.name) {
+    # extracts the covariate with specified name from om.data
+    covariate <- NULL
+    count <- 1
+    while ((count <= length(om.data@covariates)) & (is.null(covariate))) {
+        if (om.data@covariates[[count]]@cov.name == cov.name) {
+            covariate <- om.data@covariates[[count]]
+        }
+        count <- count + 1
+    }
+    covariate
+}
+
 update.plot.data.multiple <- function(binary.data, params, results) {
 
     scale.str <- "standard"
-    if (metric.is.log.scale(params$measure)){
+    if (metric.is.log.scale(as.character(params$measure))){
         scale.str <- "log"
     }
     transform.name <- "binary.transform.f"
