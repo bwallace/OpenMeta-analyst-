@@ -574,7 +574,7 @@ loo.ma.continuous <- function(fname, cont.data, params){
 subgroup.ma.binary <- function(fname, binary.data, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
-    cov.name <- params$cov_name
+    cov.name <- as.character(params$cov_name)
     selected.cov <- get.cov(binary.data, cov.name)
     cov.vals <- selected.cov@cov.vals
     params$create.plot <- FALSE
@@ -671,7 +671,7 @@ get.subgroup.data.binary <- function(binary.data, cov.val, cov.vals) {
 
 subgroup.ma.diagnostic <- function(fname, diagnostic.data, params){
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
-    cov.name <- params$cov_name
+    cov.name <- as.character(params$cov_name)
     selected.cov <- get.cov(diagnostic.data, cov.name)
     cov.vals <- selected.cov@cov.vals
     params$create.plot <- FALSE
@@ -763,7 +763,7 @@ get.subgroup.data.diagnostic <- function(diagnostic.data, cov.val, cov.vals) {
 
 subgroup.ma.continuous <- function(fname, cont.data, params){
     if (!("ContinuousData" %in% class(cont.data))) stop("Continuous data expected.")
-    cov.name <- params$cov_name
+    cov.name <- as.character(params$cov_name)
     selected.cov <- get.cov(cont.data, cov.name)
     cov.vals <- selected.cov@cov.vals
     params$create.plot <- FALSE
