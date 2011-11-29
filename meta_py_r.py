@@ -273,7 +273,6 @@ def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj", \
     ests_str = ", ".join(_to_strs(ests))
     SEs_str = ", ".join(_to_strs(SEs))
     
-    #cov_str = gen_cov_str(table_model.dataset, studies) 
     cov_str = list_of_cov_value_objects_str(table_model.dataset,\
                                                 [study.name for study in studies],\
                                                 cov_list=covs_to_include)
@@ -303,8 +302,9 @@ def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj", \
     else:
         print "no raw data... using effects"
         r_str = "%s <- new('ContinuousData', \
-                                     y=c(%s), SE=c(%s), study.names=c(%s))" \
-                        % (var_name, ests_str, SEs_str, study_names)
+                            y=c(%s), SE=c(%s), study.names=c(%s),\
+                            covariates=%s)" \
+                            % (var_name, ests_str, SEs_str, study_names, cov_str)
     
     # character encodings for R
     r_str = _sanitize_for_R(r_str)
@@ -758,19 +758,7 @@ def run_meta_regression(dataset, study_names, cov_list, data_name="tmp_obj", \
     parsed_results = parse_out_results(result)
 
     return parsed_results
-
-def run_subgroup_ma(meta_function_name, function_name, params, selected_cov,
-                    bin_data_name="tmp_obj", res_name="result"):
-    # equiavlent to params <- list(conf.level=95, digits=3)
-    params = {"conf.level":95, "digits":3}
-    params_df = ro.r['data.frame'](**params)
-    r_str = "%s<-subgroup_ma(%s, %s, %s)" % \
-            (res_name, bin_data_name, params_df.r_repr(), "'"+ selected_cov + "'")
-    print "\n\n(run_subgroup_ma): executing:\n %s\n" % r_str
-    ro.r(r_str)
-    result = ro.r("%s" % res_name)
- 
-    return parse_out_results(result)    
+  
     
 def run_meta_method(meta_function_name, function_name, params, \
                         res_name="result", data_name="tmp_obj"):
