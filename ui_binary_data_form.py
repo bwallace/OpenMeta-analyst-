@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'binary_data_form2.ui'
 #
-# Created: Mon Nov 28 16:02:53 2011
+# Created: Tue Nov 29 12:46:10 2011
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -22,6 +22,9 @@ class Ui_BinaryDataForm(object):
         font.setFamily(_fromUtf8("Verdana"))
         BinaryDataForm.setFont(font)
         BinaryDataForm.setWindowTitle(QtGui.QApplication.translate("BinaryDataForm", "Binary Data", None, QtGui.QApplication.UnicodeUTF8))
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/images/meta.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        BinaryDataForm.setWindowIcon(icon)
         self.layoutWidget_5 = QtGui.QWidget(BinaryDataForm)
         self.layoutWidget_5.setGeometry(QtCore.QRect(10, 250, 359, 41))
         self.layoutWidget_5.setObjectName(_fromUtf8("layoutWidget_5"))
@@ -232,3 +235,4 @@ class Ui_BinaryDataForm(object):
     def retranslateUi(self, BinaryDataForm):
         pass
 
+import icons_rc
