@@ -210,18 +210,21 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         if (params.list[[count]]$measure=="NLR") {
             nlr.index <- count
         }
-        params.list[[count]]$create.plot <- TRUE
     }
     
     images <- c()
     plot.names <- c()
     plot.params.paths <- c()
     if (("Sens" %in% metrics) & ("Spec" %in% metrics)) {
+        params.list[[sens.index]]$create.plot <- FALSE
+        params.list[[spec.index]]$create.plot <- FALSE
+        # Don't create individual forest plots for sens and spec if both are checked.
         
         results.sens.spec <- side.by.side.plots(diagnostic.data, fname.left=fnames[sens.index], 
                                                                  params.left=params.list[[sens.index]], 
                                                                  fname.right=fnames[spec.index],
                                                                  params.right=params.list[[spec.index]])
+        # At present, fname.left is always the same as fname.right, and params.left is the same as params.right, except for measure.
         images.tmp <- results.sens.spec$images
         names(images.tmp) <- "Sensitivity and Specificity Forest Plot"
         images <- c(images, images.tmp)
@@ -229,17 +232,25 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         names(plot.params.paths.tmp) <- "Sensitivity and Specificity Forest Plot"
         plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
         plot.names <- c(plot.names, results.sens.spec$plot_names)
-        params.list[[sens.index]]$create.plot <- FALSE
-        params.list[[spec.index]]$create.plot <- FALSE
-        # Don't create individual forest plots for sens and spec if both are checked.
+        
+        results.sroc <- diagnostic.sroc(diagnostic.data, params.left)
+        images.tmp <- results.sroc$images
+        names(images.tmp) <- "Sensitivity / Specificity SROC"
+        images <- c(images, images.tmp)
+        plot.params.paths.tmp <- results.sroc$plot_params_paths
+        names(plot.params.paths.tmp) <- "Sensitivity / Specificity SROC"
+        plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
+        plot.names <- c(plot.names, results.sroc$plot_names)
     }
     
     if (("NLR" %in% metrics) || ("PLR" %in% metrics)) {
+        # At present, either both NLR and PLR are in metrics or neither, so the second condition is superfluous.
         results.plr.nlr <- NULL
         results.plr.nlr <- side.by.side.plots(diagnostic.data, fname.left=fnames[nlr.index], 
                                                                params.left=params.list[[nlr.index]], 
                                                                fname.right=fnames[plr.index],
                                                                params.right=params.list[[plr.index]])
+        # At present, fname.left is always the same as fname.right, and params.left is the same as params.right, except for measure.
         images.tmp <- results.plr.nlr$images
         names(images.tmp) <- "Likelihood Ratios Forest Plot"
         images <- c(images, images.tmp)
@@ -585,7 +596,7 @@ diagnostic.random.overall <- function(results) {
 ###################################################
 #            diagnostic SROC                      #
 ###################################################
-diagnostic.fixed.sroc <- function(diagnostic.data, params){
+diagnostic.sroc <- function(diagnostic.data, params){
     # assert that the argument is the correct type
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
 
@@ -598,13 +609,14 @@ diagnostic.fixed.sroc <- function(diagnostic.data, params){
     S <- logit(TPR) + logit(FPR)
     D <- logit(TPR) - logit(FPR)
     s.range <- list("max"=max(S), "min"=min(S))
-    if (params$sroc.weighted == "weighted") {
-        inv.var <- data.adj$TP + data.adj$FN + data.adj$FP + data.adj$TN
-        # compute total number in each study
-        res <- lm(D ~ S, weights=inv.var)
+    params$sroc.weighted <- FALSE
+    # remove if this is added in the GUI as a parameter.
+    inv.var <- data.adj$TP + data.adj$FN + data.adj$FP + data.adj$TN
+    if (params$sroc.weighted == TRUE) {
+      res <- lm(D ~ S, weights=inv.var)
        # weighted linear regression
     } else {
-       res <- lm(D~S)
+      res <- lm(D~S)
        # unweighted regression 
     }
     summary.disp <- "SROC Plot"
@@ -625,11 +637,10 @@ diagnostic.fixed.sroc <- function(diagnostic.data, params){
     results <- list("images"=images, "Summary"=summary.disp, 
                     "plot_names"=plot.names, 
                     "plot_params_paths"=plot.params.paths)
-    results <- list("images"=images, "Summary"=summary.disp, "plot_names"=plot.names)
     results
 }
 
-diagnostic.fixed.sroc.parameters <- function(){
+diagnostic.sroc.parameters <- function(){
     # parameters
     apply_adjustment_to = c("only0", "all")
     sroc.weighted <- c("weighted", "unweighted")
@@ -645,7 +656,7 @@ diagnostic.fixed.sroc.parameters <- function(){
     parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
 }
 
-diagnostic.fixed.sroc.pretty.names <- function() {
+diagnostic.sroc.pretty.names <- function() {
     pretty.names <- list("pretty.name"="Diagnostic Fixed SROC", 
                          "description" = "Plots diagonostic SROC.",
                          "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
@@ -658,7 +669,7 @@ diagnostic.fixed.sroc.pretty.names <- function() {
 }
 
 
-diagnostic.fixed.sroc.is.feasible <- function(diagnostic.data, metric){
+diagnostic.sroc.is.feasible <- function(diagnostic.data, metric){
     metric %in% c("Sens", "Spec") # really only if we're doing this jointly, of course...      
 }
 
@@ -680,6 +691,7 @@ side.by.side.plots <- function(diagnostic.data, fname.left, params.left, fname.r
     } else {
         params.left$fp_show_col1 <- 'TRUE'
         params.right$fp_show_col1 <- 'FALSE'
+        # only show study names on the left plot
         diagnostic.data.left <- compute.diag.point.estimates(diagnostic.data, params.left)
         diagnostic.data.right <- compute.diag.point.estimates(diagnostic.data, params.right)
 

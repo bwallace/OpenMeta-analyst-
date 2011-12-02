@@ -977,24 +977,22 @@ calc.viewport.layout <- function(forest.data, just){
                                    "grobwidth", additional.cols[[i]]$content)), forest.plot.params$col.gap) 
                  }
         }
-        if (show.study.col==TRUE) {
-        
-            vp.width = unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
-                              forest.plot.params$col.gap,  width.list[[length(additional.cols)]]  ,  forest.plot.params$effect.col.width)
-            vp.layout <- grid.layout(num.rows , 2*length(additional.cols)+3,
-                              width=vp.width,
-                              height = unit(rep(1, num.rows)  , "lines"),
-                              just=just)
-        }
+       
+        vp.width <- unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
+                          forest.plot.params$col.gap,  width.list[[length(additional.cols)]]  ,  forest.plot.params$effect.col.width)
+        vp.layout <- grid.layout(num.rows , 2*length(additional.cols)+3,
+                                 width=vp.width,
+                                 height = unit(rep(1, num.rows)  , "lines"),
+                                 just=just)
     }   else  { # if no additional columns things are simple
             
-            vp.width=unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
-                                  forest.plot.params$col.gap,   forest.plot.params$effect.col.width)
+        vp.width <- unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
+                        forest.plot.params$col.gap,   forest.plot.params$effect.col.width)
         
-            vp.layout <- grid.layout(num.rows , 2*length(additional.cols)+3,
-                              width=vp.width,
-                              height = unit(rep(1, num.rows)  , "lines"),
-                              just=just)
+        vp.layout <- grid.layout(num.rows , 2*length(additional.cols)+3,
+                                 width=vp.width,
+                                 height = unit(rep(1, num.rows)  , "lines"),
+                                 just=just)
     }
     vp.layout 
 }
@@ -1220,7 +1218,7 @@ sroc.plot <- function(plot.data, outpath,
     s.range <- plot.data$s.range
     
     png(file=outpath, width=5 , height=5, units="in", res=144)
-    if (weighted == "weighted") {
+    if (weighted == TRUE) {
         inv.var <- plot.data$inv.var    
         max.symbol.size <- .05
         # radius of the largest circle
