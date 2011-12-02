@@ -909,39 +909,40 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
 ####################################### 
 forest.plot <- function(forest.data, outpath) {
   forest.data <- format.data.cols(forest.data)
-  # format the data columns displayed on fores plot
+  # format the data columns displayed on forest plot
   show.study.col <- forest.data$options$show.study.col
-  viewport.data <- forest.plot.data(forest.data, just="left")
-  viewport.layout <- viewport.data$vp.layout
-  how.wide <- viewport.data$how.wide
-  height <- viewport.data$height
-  how.tall <- convertY(unit(rep(1, height)  , "lines") , "inches" , valueOnly=TRUE)
-
+  plot.size <- calc.forest.plot.size(forest.data)
+  # calculate height and width of output file
+  how.wide <- plot.size$how.wide
+  # width of output file
+  how.tall <- plot.size$how.tall
+  # height of output file
+  viewport.layout <- calc.viewport.layout(forest.data, just="left")
+  # calculate the layout of the viewport
+  
   # so here we're just going to use the relatively hacky 
   # strategy of (R-)grepping for the literal ".png"
   # note that this means that, technically, if someone tries 
   # to save an iamge to my.pngimg.pdf, it will save it instead
   # as a png. on the other hand, why would someone do that?
   if (length(grep(".png", outpath)) != 0){
-      png(file=outpath, width = how.wide+1, height = height*how.tall+2 , units = "in", res = 144) 
+      png(file=outpath, width = how.wide+1, height = how.tall+2 , units = "in", res = 144) 
   }
   else{
-      pdf(file=outpath, width = how.wide+1, height = height*how.tall+2) 
+      pdf(file=outpath, width = how.wide+1, height = how.tall+2) 
   }
                         
   pushViewport(viewport(layout=viewport.layout))
-  draw.forest.plot(forest.data, viewport.data)
+  draw.forest.plot(forest.data)
   
   graphics.off()
 }
-
-
  
 #######################################
-#      forest plot data               #
+#      calc viewport layout           #
 ####################################### 
- forest.plot.data <- function(forest.data, just){
-    # Calculates width and height for viewport and output file
+calc.viewport.layout <- function(forest.data, just){
+    # Calculates layout for forest plot viewport
     show.study.col <- forest.data$options$show.study.col
     study.col <- study.column(forest.data, "bold")
     additional.cols <- c()
@@ -960,7 +961,72 @@ forest.plot <- function(forest.data, outpath) {
       # add a little more space because last row is not a summary
         extra.space <- sum(forest.data$types != 0) + 1 
     }   
-    height <- length(forest.data$types) + extra.space
+    num.rows <- length(forest.data$types) + extra.space
+    # number of rows in plot
+    row.height <- convertY(unit(1, "lines") , "inches" , valueOnly=TRUE)
+    # height of each row in inches 
+    how.tall <- num.rows * row.height
+  
+    if (length(forest.data$additional.col.data)>0 )      {         # first if additional colums are present
+        width.list <-vector("list")
+        width.list[[1]] <- unit.c(max(unit(rep(1, length(forest.data$label)), 
+                               "grobwidth", additional.cols[[1]]$content)), forest.plot.params$col.gap)
+        if  (length(forest.data$additional.col.data)>1 )  {   
+            for (i in 2:length(additional.cols))  {
+            width.list[[i]] <- unit.c(width.list[[i-1]], max(unit(rep(1, length(forest.data$label)), 
+                                   "grobwidth", additional.cols[[i]]$content)), forest.plot.params$col.gap) 
+                 }
+        }
+        if (show.study.col==TRUE) {
+        
+            vp.width = unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
+                              forest.plot.params$col.gap,  width.list[[length(additional.cols)]]  ,  forest.plot.params$effect.col.width)
+            vp.layout <- grid.layout(num.rows , 2*length(additional.cols)+3,
+                              width=vp.width,
+                              height = unit(rep(1, num.rows)  , "lines"),
+                              just=just)
+        }
+    }   else  { # if no additional columns things are simple
+            
+            vp.width=unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
+                                  forest.plot.params$col.gap,   forest.plot.params$effect.col.width)
+        
+            vp.layout <- grid.layout(num.rows , 2*length(additional.cols)+3,
+                              width=vp.width,
+                              height = unit(rep(1, num.rows)  , "lines"),
+                              just=just)
+    }
+    vp.layout 
+}
+
+########################################
+#      forest plot sizes               #
+######################################## 
+ calc.forest.plot.size <- function(forest.data){
+    # Calculates width and height for the output png file
+    show.study.col <- forest.data$options$show.study.col
+    study.col <- study.column(forest.data, "bold")
+    additional.cols <- c()
+    if (length(forest.data$additional.col.data)>0 ){
+        additional.cols <- additional.columns(forest.data, "bold")    
+    } 
+    effect.col <- effectsize.column(forest.data, box.sca=0.8)
+    # return the LL, ES, and UL and range of data to display
+    forest.plot.params <- create.plot.options(forest.data, gapSize = 3.2, plotWidth=5)
+
+    # these are calls to plotting functions
+    if (forest.data$types[length(forest.data$types)] != 0) {
+      # last row is a summary
+        extra.space <- sum(forest.data$types != 0) 
+    } else {
+      # add a little more space because last row is not a summary
+        extra.space <- sum(forest.data$types != 0) + 1 
+    }   
+    num.rows <- length(forest.data$types) + extra.space
+    # number of rows in plot
+    row.height <- convertY(unit(1, "lines") , "inches" , valueOnly=TRUE)
+    # height of each row in inches 
+    how.tall <- num.rows * row.height
   
     if (length(forest.data$additional.col.data)>0 )      {         # first if additional colums are present
         width.list <-vector("list")
@@ -985,42 +1051,21 @@ forest.plot <- function(forest.data, outpath) {
                       length(additional.cols)*   convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )   + 
                       convertX(forest.plot.params$effect.col.width, "inches" , valueOnly=TRUE )
         }
-        
-        #how.tall <- convertY(unit(rep(1, height)  , "lines"), "inches" , valueOnly=TRUE )
-        vp.width = unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
-                              forest.plot.params$col.gap,  width.list[[length(additional.cols)]]  ,  forest.plot.params$effect.col.width)
-        vp.layout <- grid.layout(height , 2*length(additional.cols)+3,
-                              width=vp.width,
-                              height = unit(rep(1, height)  , "lines"),
-                              just=just)
     }   else  { # if no additional columns things are simple
           how.wide <- convertX(max(unit(rep(1, length(forest.data$label)), 
                                    "grobwidth", study.col$content)), "inches" , valueOnly=TRUE  ) +
                       convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )  +
                       convertX(forest.plot.params$effect.col.width, "inches" , valueOnly=TRUE ) 
-        #how.tall <- convertY(unit(rep(1, height)  , "lines") , "inches" , valueOnly=TRUE ) 
-        vp.width=unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
-                                  forest.plot.params$col.gap,   forest.plot.params$effect.col.width)
-        
-        vp.layout <- grid.layout(height , 2*length(additional.cols)+3,
-                              width=vp.width,
-                              height = unit(rep(1, height)  , "lines"),
-                              just=just)
     }
-    vp.data <- list("how.wide"=how.wide, "height"=height,
-                          "vp.layout"=vp.layout)
+    plot.size <- list("how.wide"=how.wide, "how.tall"=how.tall)
 }
 
 #######################################
 #            draw forest plot         #
 ####################################### 
-draw.forest.plot <- function(forest.data, viewport.data){
-    # Draws forest plots using viewport data extracted by forest.plot.data
+draw.forest.plot <- function(forest.data){
+    # Draws forest plot
     show.study.col <- forest.data$options$show.study.col                             
-    how.wide <- viewport.data$how.wide
-    #how.tall <- vp.data$how.tall
-    height <- viewport.data$height
-    viewport.layout <- viewport.data$vp.layout
     # these are calls to data functions
     study.col <- study.column(forest.data, "bold")
     additional.cols <- c()
@@ -1060,38 +1105,40 @@ draw.forest.plot <- function(forest.data, viewport.data){
  
 two.forest.plots <- function(forest.data1, forest.data2, outpath) {
    # draw two forest plots side by side.
+  
    forest.data1 <- format.data.cols(forest.data1)
    forest.data2 <- format.data.cols(forest.data2)
-   viewport.data1 <- forest.plot.data(forest.data1, just="left")     
-   viewport.data2 <- forest.plot.data(forest.data2, just="right")
-   viewport.layout1 <- viewport.data1$vp.layout
-   viewport.layout2 <- viewport.data2$vp.layout
-   how.wide1 <- viewport.data1$how.wide
+   plot.size1 <- calc.forest.plot.size(forest.data1)
+   plot.size2 <- calc.forest.plot.size(forest.data2)
+   # calculate heights and widths of plots
+   viewport.layout1 <- calc.viewport.layout(forest.data1, just="left")     
+   viewport.layout2 <- calc.viewport.layout(forest.data2, just="right")
+   # calculate layouts of plots
+   how.wide1 <- plot.size1$how.wide
    if (forest.data2$options$show.study.col == TRUE) {
-     how.wide2 <- viewport.data2$how.wide + .75
+     how.wide2 <- plot.size2$how.wide + .75
      # add some more space if to the right graph if showing study cols.
    } else {
-     how.wide2 <- viewport.data2$how.wide
+     how.wide2 <- plot.size2$how.wide
    }
-   height1 <- viewport.data1$height
-   height2 <- viewport.data2$height
-   height <- max(height1, height2)
-   how.tall <- convertY(unit(rep(1, height)  , "lines") , "inches" , valueOnly=TRUE )
+   how.tall1 <- plot.size1$how.tall
+   how.tall2 <- plot.size2$how.tall
+   how.tall <- max(how.tall1, how.tall2)
+
    pushViewport(viewport(layout=grid.layout(1,2), width=how.wide1 + how.wide2))               
-   
 
    if (length(grep(".png", outpath)) != 0){
-      png(file=outpath, width = how.wide1 + how.wide2, height = height*how.tall+1 , units = "in", res = 144) 
+      png(file=outpath, width = how.wide1 + how.wide2, height = how.tall+1 , units = "in", res = 144) 
    }
    else{
-      pdf(file=outpath, width = how.wide1 + how.wide2 + 1, height = height*how.tall+2) 
+      pdf(file=outpath, width = how.wide1 + how.wide2 + 1, height = how.tall+2) 
    }
                                     
    pushViewport(viewport(layout=viewport.layout1, layout.pos.col=1))
-   draw.forest.plot(forest.data1, viewport.data1)   
+   draw.forest.plot(forest.data1)   
    popViewport()
    pushViewport(viewport(layout=viewport.layout2,layout.pos.col=2))
-   draw.forest.plot(forest.data2, viewport.data2)
+   draw.forest.plot(forest.data2)
    popViewport()
    
    graphics.off()
