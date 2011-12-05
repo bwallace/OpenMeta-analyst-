@@ -1,28 +1,37 @@
-<link href="help.css" 
+<link href="css/help.css" 
 type=text/css rel=stylesheet>
-<h2>Entering Data</a></h2>  
+<h2><a name="top">Entering and Saving Data</a></h2>  
   <p>You can enter data into a new data set in either of the following ways:</p>
   <ul>
-  <li>Copy and paste data from an existing spreadsheet, such as an Excel spreadheet.</li>
-  <li>Type the data directly into the fields in the Open Meta-Analyst window.</li>
+    <li>Enter the data directly into the fields in the Open Meta-Analyst window.</li>
+    <li>Copy and paste data from an existing spreadsheet.</li>
   </ul>
-  <h3>Copying and Pasting Data</h3>
-  <p>To copy and paste data:</p>
-    <ol>
-      <li>Select a set of columns in the spreadsheet, corresponding to a contiguous set of columns in Open Meta-Analyst. Do <em>not</em> include column labels. 
-       </li>
-      <li>Right-click the column in Open Meta-Analyst corresponding to the first column of data you selected in the spreadsheet.</li>
-      <li>Select <b>paste</b> in the drop-down menu.</li> 
-    </ol>  
-    <p><b>Note:</b> If there is a missing column in the spreadsheet data - for example, if the study year is not present - add an empty column, corresponding to
-      the missing column, before copying.</p>
-    <h3>Entering Data Directly</h3>
   <p>To enter data directly into open Meta-Analyst:</p>
   <ol>
-  <li>Click the study name field and type a name for the first study. As an option, you can also add the year of the study.</li>
-  <li>Enter data in the fields to the right of "year".</li> 
+  <li>Click the study name field and type a name for the first study. As an option, you can also enter the year of the study. When you click anywhere outside the study name field, a new row is added to the table for the next study.</li>
+  <li>Enter data in the fields to the right of "year". For binary data, the following fields are displayed:</li> 
+ <ul>
+    <li>tx An - Number of events in the treatment group</li>
+    <li>tx AN - Number of subjects in the treatment group</li>
+    <li>tx Bn - Number of events in the control group</li>
+    <li>tx BN - Number of subjects in the control group</li>
+  </ul> 
   </ol>
-  <p>An example is shown below:</p>
+  <p>An example for binary data is shown below:</p>
   <p><img src="images/entering_data_new_row.png"></p>
+  <p>The yellow columns, which are automatically calculated from the data, display the effect sizes and bounds for the confidence intervals:</p>
+  <ul> 
+	  <li>OR - The effect size - For binary data, the odds ratio is displayed by default. </li>
+  	  <li>lower -  The lower bound of the confidence interval </li>
+  	  <li>upper -  The upper bound of the confidence interval </li>
+  </ul>
+  <h3>Saving Your Data</h3>
+  <p>After you have finished entering data, you can save the data set as follows:</p>
+  <ol>
+    <li>In the <b>File</b> menu, select <b>save as</b>.</li>
+    <li>In the Save File dialog, enter a name for the file in the File name field. By default, the name you entered when you created the data set is displayed, but you can change the name if you wish.</li>
+    <li>Click <b>Save</b>.</li>
+ </ol>
+ <p>The file is saved with the extension "oma."</p>
+  <table id="nav" cellspacing="0"><tr valign="center"><td align="left" width="20"><a href="create_dataset.html#top"><img src="images/b_prev.gif" border="0"></td><td align="left">Creating a New Data Set</td></a><td>&nbsp;</td><td align="right">Opening an Existing Data Set</td><td align="right" width="20"><a href="example.html#top"><img src="images/b_next.gif" border="0"></a></td></tr></table>
   
- 

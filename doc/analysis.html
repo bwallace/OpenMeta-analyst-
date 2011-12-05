@@ -1,23 +1,34 @@
-<link href="help.css" 
+<link href="css/help.css" 
 type=text/css rel=stylesheet>
- <h2>Runnning the Analysis</a></h2>
-  <p>To perform a meta-analysis on the data, select <b>meta-analysis</b> from the 
-  <b>Analysis</b> menu. This opens the Methods &amp; Parameters dialog, as shown 
-  below.</p><img src="images/analysis_parameters_dialog.png"></img> 
-  <p>You can select a method for the analysis in the analysis method field. The default method
-  is Binary Random, which uses the DerSimonian-Laird method to fit a random-effects model. Other options in the dialog are 
-  described in 
-  <a href="analysis_options.html">Analysis Options</a>.  </p>
-  
-  <p>Click <b>OK</b> to 
-  perform the analysis. The following results are displayed in the results/analysis window:</p>
+ <h2><a name="top">Example - Performing a Meta-Analysis</a></h2>
+  <p>This section provides an example that illustrates how to perform a meta-analysis. 
+  To run the analysis, first open the sample data set amino.oma, described in <a href="example.html#top">Opening an Existing Data Set</a>.
+  Then do the following steps:</p>
+  <ol>
+    <li>Select the studies you want to include in the analysis, using the check boxes in the "include" column. In this example,
+        all studies are selected.</li>
+    <li>Click the <b>Analysis</b> menu  
+         and select <b>metric > two-arm</b>.</li>
+    <li>Select a metric for the analysis, such as <b>RR</b> (risk ratio), as shown below.
+         <p><img src="images/analysis_menu.png"></p>
+        <p>See <a href="metric_options.html#top">Metric Options</a> for a complete description of the available metrics.</p> </li>
+    <li>To perform a basic analysis,
+        select <b>meta-analysis</b> on the <b>Analysis</b> menu.
+       This opens the Methods &amp; Parameters dialog, as shown 
+     below.</li>
+    <p><img src="images/analysis_parameters_dialog.png"></p><li>
+    <li>Click the analysis method field and select a method for the analysis, such as <b>Binary Fixed-effect Mantel Haensael</b>.
+   <p><img src="images/select_method.png"></p>
+  <p>See
+  <a href="analysis_options.html#top">Analysis Options</a> for a complete description of the available methods and options shown in the dialog.</p></li>
+   <li>Click <b>OK</b> to 
+  perform the analysis. </li>
+  </ol>
+  <p>The results are displayed in the results/analysis window, as shown below:</p>
   <ul>
-<li>The summary contains the overall numerical results of the meta-analysis, including the summary estimate, confidence interval, and heterogeneity statistics.</li>
-<li>The forest plot provides a graphical display of the point estimates and confidence intervals for each study, as well as the overall estimate.</li>
+<li>The Summary contains the overall numerical results of the meta-analysis, including the summary estimate, confidence interval, and heterogeneity statistics.</li>
+<li>The Forest Plot provides a graphical display of the point estimates and confidence intervals for each study, as well as the overall estimate.</li>
 </ul>
-<p>The results are shown below.</p>
-<p><img 
-  src="images/ma_standard_summary.png"></img></p>
-<p>  <img 
-  src="images/ma_standard_forest_small.png"></img>&nbsp;</img></p> 
- 
+<p><img src="images/ma_standard_summary.png"></p>
+
+ <table id="nav" cellspacing="0"><tr valign="center"><td align="left" width="20"><a href="example.html#top"><img src="images/b_prev.gif" border="0"></td><td align="left">Opening an Existing Data Set</td></a><td>&nbsp;</td><td align="right"></td><td align="right" width="20"></a></td></tr></table>

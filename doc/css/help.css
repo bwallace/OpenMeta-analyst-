@@ -6,24 +6,20 @@ body {
 }
 
 p {
-  PADDING-RIGHT: 10px; PADDING-LEFT: 10px; PADDING-BOTTOM: 10px; MARGIN: 0px; PADDING-TOP: 10px;
+  PADDING-RIGHT: 10px; PADDING-LEFT: 10px; PADDING-BOTTOM: 5px; MARGIN: 0px; PADDING-TOP: 5px;
   width: 700px;
 }
 
 img { 
-  PADDING-RIGHT: 10px; PADDING-LEFT: 10px; PADDING-BOTTOM: 20px; MARGIN: 0px; PADDING-TOP: 20px;
+  PADDING-RIGHT: 10px; PADDING-LEFT: 10px; PADDING-BOTTOM: 10px; MARGIN: 0px; PADDING-TOP: 10px;
   text-align: center;
 }
-
-li { 
- PADDING-BOTTOM: 10px
- }
 
 h1 {
 	font-size: 26px;
 	text-align: center;
 	color: white;
-	background-color: #3366FF;
+	background-color: #0066CC;
 	padding-top: 5px;
 	padding-bottom: 5px;
 	padding-left: 0px;
@@ -35,16 +31,19 @@ h1 {
 h2 {
   font-size:22px;
   text-align: left;
-	color: #3366FF;
+	color: #0066CC;
 }
+
 h3 {
  font-size:18px;
- color: #1c94c4;
- 
 }
 
 h1, h2, h3, h3, h5, h6 {
   font-familty: arial, Helvetica, Geneva, SunSans-Regular, sans-serif;
+}
+
+li {
+  padding-bottom: 5px;
 }
 
 a{
@@ -54,4 +53,11 @@ a{
 a:hover{
  color:#ef8c08;
  text-decoration:underline;
+}
+
+table#nav {
+    background-color:#E0E0E0;
+    border: "0";
+    width: 700px;
+    height: 5px;
 }

@@ -12,17 +12,34 @@
 .ui-accordion .ui-accordion-header { cursor: pointer; position: relative; margin-top: 1px; zoom: 1; }
 .ui-accordion .ui-accordion-li-fix { display: inline; }
 .ui-accordion .ui-accordion-header-active { border-bottom: 0 !important; }
-.ui-accordion .ui-accordion-header a { display: block; font-size: 1em; padding: .5em .5em .5em .7em; }
+.ui-accordion .ui-accordion-header a { display: block; font-size: .5em; padding: .5em .5em .5em .7em; }
 .ui-accordion-icons .ui-accordion-header a { padding-left: 2.2em; }
 .ui-accordion .ui-accordion-header .ui-icon { position: absolute; left: .5em; top: 50%; margin-top: -8px; }
-.ui-accordion .ui-accordion-content { padding: 0em 0em; border-top: 0; margin-top: -10px; position: relative; top: 1px; margin-bottom: 2px; overflow: auto; display: none; font-size: .5em; }
+.ui-accordion .ui-accordion-content { padding: 0em 0em; border-top: 0; margin-top: -10px; position: relative; top: 1px; margin-bottom: 2px; overflow: auto; display: none; font-size: .5em}
 .ui-accordion .ui-accordion-content-active { display: block; }
+
+h2{
+  color:#0066cc;
+  text-align:center;
+}
+
+h3{
+  color:#CC3300;
+}
 
 a{
   text-decoration:none;
 }
 
+a:link {
+  color:#0066CC;
+}
+
 a:hover{
  color:#ef8c08;
  text-decoration:underline;
+}
+
+ul{
+  list-style-type:none
 }
