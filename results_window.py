@@ -43,16 +43,18 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
         QObject.connect(self.nav_tree, SIGNAL("itemClicked(QTreeWidgetItem*, int)"),
                                        self.item_clicked)
-                         
+
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()                         
         self.psuedo_console.blockSignals(False)              
-        QObject.connect(self.psuedo_console, SIGNAL("returnPressed()"),
+        QObject.connect(self.psuedo_console, SIGNAL("returnPressed(void)"),
                                        self.process_console_input)
         QObject.connect(self.psuedo_console, SIGNAL("upArrowPressed()"),
                                        self.f)
         QObject.connect(self.psuedo_console, SIGNAL("downArrowPressed()"),
                                        self.f)
                                        
-                                       
+                              
         self.nav_tree.setHeaderLabels(["results"])
         self.nav_tree.setItemsExpandable(True)
         self.x_coord = 5
@@ -192,7 +194,7 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
     def process_console_input(self):
         res = meta_py_r.evaluate_in_r(self.current_line())
-      
+
         # echo the result
         self.psuedo_console.append(QString(res))
         self.psuedo_console.append(">> ")

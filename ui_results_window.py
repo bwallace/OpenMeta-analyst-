@@ -8,6 +8,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
+import qconsole
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -48,7 +49,8 @@ class Ui_ResultsWindow(object):
         self.graphics_view.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
         self.graphics_view.setObjectName(_fromUtf8("graphics_view"))
         self.gridLayout.addWidget(self.graphics_view, 0, 1, 1, 1)
-        self.psuedo_console = QtGui.QTextEdit(self.splitter)
+        #self.psuedo_console = QtGui.QTextEdit(self.splitter)
+        self.psuedo_console = qconsole.QConsole(self.splitter)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
