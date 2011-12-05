@@ -2,19 +2,18 @@
 
 # Form implementation generated from reading ui file 'meta.ui'
 #
-# Created: Mon Oct 17 11:11:28 2011
+# Created: Mon Dec 05 15:38:21 2011
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
+import ma_data_table_view
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
     _fromUtf8 = lambda s: s
-
-import ma_data_table_view
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -49,7 +48,6 @@ class Ui_MainWindow(object):
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setContentsMargins(-1, -1, -1, 0)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
-        #self.tableView = QtGui.QTableView(self.nav_frame)
         self.tableView = ma_data_table_view.MADataTable(self.nav_frame)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -177,6 +175,9 @@ class Ui_MainWindow(object):
         self.menu_file.setFont(font)
         self.menu_file.setTitle(QtGui.QApplication.translate("MainWindow", "File", None, QtGui.QApplication.UnicodeUTF8))
         self.menu_file.setObjectName(_fromUtf8("menu_file"))
+        self.action_open_recent_2 = QtGui.QMenu(self.menu_file)
+        self.action_open_recent_2.setTitle(QtGui.QApplication.translate("MainWindow", "open recent...", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_open_recent_2.setObjectName(_fromUtf8("action_open_recent_2"))
         self.menuAnalysis = QtGui.QMenu(self.menu_bar)
         self.menuAnalysis.setTitle(QtGui.QApplication.translate("MainWindow", "Analysis", None, QtGui.QApplication.UnicodeUTF8))
         self.menuAnalysis.setObjectName(_fromUtf8("menuAnalysis"))
@@ -259,9 +260,14 @@ class Ui_MainWindow(object):
         self.action_save_as = QtGui.QAction(MainWindow)
         self.action_save_as.setText(QtGui.QApplication.translate("MainWindow", "save as...", None, QtGui.QApplication.UnicodeUTF8))
         self.action_save_as.setObjectName(_fromUtf8("action_save_as"))
+        self.actionDfsf = QtGui.QAction(MainWindow)
+        self.actionDfsf.setText(QtGui.QApplication.translate("MainWindow", "(none)", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionDfsf.setObjectName(_fromUtf8("actionDfsf"))
+        self.action_open_recent_2.addAction(self.actionDfsf)
         self.menu_file.addAction(self.action_save)
         self.menu_file.addAction(self.action_save_as)
         self.menu_file.addAction(self.action_open)
+        self.menu_file.addAction(self.action_open_recent_2.menuAction())
         self.menu_file.addAction(self.action_quit)
         self.menuAnalysis.addAction(self.menuMetric.menuAction())
         self.menuAnalysis.addSeparator()

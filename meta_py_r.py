@@ -575,7 +575,6 @@ def _to_R_params(params):
 def run_diagnostic_multi(function_names, list_of_params, res_name="result", diag_data_name="tmp_obj"):
     r_params_str = "list(%s)" % ",".join([_to_R_params(p) for p in list_of_params])
 
-  
     ro.r("list.of.params <- %s" % r_params_str)
     ro.r("f.names <- c(%s)" % ",".join(["'%s'" % f_name for f_name in function_names]))
 

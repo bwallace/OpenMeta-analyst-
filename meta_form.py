@@ -116,6 +116,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 start_up_window.setFocus()
                 start_up_window.dataset_name_le.setFocus()
       
+            self.populate_open_recent_menu()
 
     def closeEvent(self, event):
         if self.current_data_unsaved:
@@ -205,6 +206,24 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.tableView.setCurrentIndex(index)
         self.tableView.edit(index)
          
+    def populate_open_recent_menu(self):
+        recent_datasets = self.user_prefs['recent datasets']
+        recent_datasets.reverse() # most-recent first
+        # qt designer inexplicably forcing the _2. not sure why; 
+        # gave up struggling with it. grr.
+        self.action_open_recent_2.clear()
+        for dataset in recent_datasets:
+            action_item = QAction(QString(dataset), self.action_open_recent_2)
+            self.action_open_recent_2.addAction(action_item)
+            QObject.connect(action_item, SIGNAL("triggered()"), self.dataset_selected) 
+                
+        
+        
+
+    def dataset_selected(self):
+        dataset_path = QObject.sender(self).text()
+        self.open(file_path=dataset_path)
+
     def _setup_connections(self, menu_actions=True):
         ''' Signals & slots '''
         QObject.connect(self.tableView.model(), SIGNAL("pyCellContentChanged(PyQt_PyObject, PyQt_PyObject, PyQt_PyObject, PyQt_PyObject)"),
