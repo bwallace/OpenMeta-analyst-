@@ -69,6 +69,7 @@ class Dataset:
         if (outcome is None and follow_up is not None) or (follow_up is None and outcome is not None):
             raise Exception, "dataset -- change_group_name -- either both outcome and follow_up should be None, \
                                             or else neither should."
+        
             
         for study in self.studies:
             if outcome is None and follow_up is None:
@@ -641,7 +642,7 @@ class MetaAnalyticUnit:
         # i.e., issue #112
         keys_to_pop = [] # keep track of antiquated group names to be removed
         for effect in list(self.effects_dict.keys()):
-            for group_str in self.effects_dict[effect]:
+            for group_str in list(self.effects_dict[effect]):
                 if old_name in group_str:
                     str_changed = False
                     cur_group_names = group_str.split("-")
@@ -658,14 +659,15 @@ class MetaAnalyticUnit:
                     # the old version and add the new
                     if str_changed:
                         new_str = "-".join(updated_group_strs)
-                        self.effects_dict[new_str] = self.effects_dict[effect][group_str]
-                          
+                        self.effects_dict[effect][new_str] = self.effects_dict[effect][group_str]
+                        keys_to_pop.append(group_str)
+
             # now remove any antiquated group names from the effects dictionary
             for old_group_name in keys_to_pop:
-                self.effects_dict[effect].pop(old_group_name)
+                if old_group_name in self.effects_dict[effect]:
+                    self.effects_dict[effect].pop(old_group_name)                         
 
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
+
         
     def get_raw_data_for_group(self, group_name):
         return self.tx_groups[group_name].raw_data
