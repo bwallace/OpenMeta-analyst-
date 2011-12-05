@@ -805,7 +805,16 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         redo_f = lambda : self._remove_study(study)
         delete_command = CommandGenericDo(redo_f, undo_f)
         self.tableView.undoStack.push(delete_command)
-        
+    
+    def delete_covariate(self, covariate):
+        cov_vals_d = self.model.dataset.get_values_for_cov(covariate.name)
+        undo_f = lambda : \
+                    self.model.add_covariate(covariate.name, \
+                                COV_INTS_TO_STRS[covariate.data_type], \
+                                cov_values=cov_vals_d)
+        redo_f = lambda : self.model.remove_covariate(covariate)
+        delete_command = CommandGenericDo(redo_f, undo_f)
+        self.tableView.undoStack.push(delete_command)  
 
     def _add_study(self, study, study_index=None):
         print "adding study: %s" % study.name

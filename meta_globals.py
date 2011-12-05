@@ -49,6 +49,9 @@ BINARY, CONTINUOUS, DIAGNOSTIC, OTHER = range(4)
 # and just define factor here.
 FACTOR = 4
 
+# making life easier
+COV_INTS_TO_STRS = {4:"Factor", 1:"Continuous"}
+
 STR_TO_TYPE_DICT = {u"binary":BINARY, u"continuous":CONTINUOUS, 
                                     u"diagnostic":DIAGNOSTIC, u"OTHER":OTHER}
 TYPE_TO_STR_DICT = {BINARY:u"binary", CONTINUOUS:u"continuous", DIAGNOSTIC:u"diagnostic", 

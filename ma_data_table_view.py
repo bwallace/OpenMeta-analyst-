@@ -91,6 +91,8 @@ class MADataTable(QtGui.QTableView):
 
     def header_context_menu(self, pos):
         column_clicked = self.columnAt(pos.x())
+        covariate_columns = self.get_covariate_columns()
+
         print "right click @ column: %s" % column_clicked
         if column_clicked == 0:
             # option to (de-)select / include all studies
@@ -110,7 +112,14 @@ class MADataTable(QtGui.QTableView):
             context_menu.addAction(action)
 
             context_menu.popup(self.mapToGlobal(pos))
-            
+        elif column_clicked in covariate_columns:
+            context_menu = QMenu(self)
+            cov = self.model().get_cov(column_clicked)
+            action = QAction("delete covariate %s" % cov.name, self)
+            QObject.connect(action, SIGNAL("triggered()"), \
+                        lambda : self.main_gui.delete_covariate(cov))
+            context_menu.addAction(action)
+            context_menu.popup(self.mapToGlobal(pos))
 
     def include_all_studies(self):
         self.model().include_all_studies()
@@ -264,11 +273,14 @@ class MADataTable(QtGui.QTableView):
         cur_effect = self.model().current_effect
 
 
+    def get_covariate_columns(self):
+        return range(self.model().OUTCOMES[-1]+1, self.model().columnCount())
+
     def header_clicked(self, column):
         can_sort_by = [self.model().NAME, self.model().YEAR]
         ## plus we can sort by any covariates, which correspond to those columns that are
         # beyond the last outcome
-        covariate_columns = range(self.model().OUTCOMES[-1]+1, self.model().columnCount())
+        covariate_columns = self.get_covariate_columns()
         # if a covariate column was clicked, it may not yet have an entry in the
         # reverse_column_sorts dictionary; thus we insert one here
         if not self.reverse_column_sorts.has_key(column):
