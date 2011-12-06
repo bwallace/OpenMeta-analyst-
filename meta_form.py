@@ -1074,6 +1074,7 @@ def _gen_some_data():
     
     return dataset
 
+
 def _setup_app():
     app = QtGui.QApplication(sys.argv)
     meta = MetaForm()
@@ -1084,14 +1085,24 @@ def _setup_app():
 def _tear_down_app(app):
     sys.exit(app.exec_())
 
+
+def binary_meta_analysis_test():
+    meta, app = _setup_app()
+    meta.open(os.path.join("test_data", "amino.oma"))
+
+    ####
+    # TODO -- run through all metrics here
+
 def copy_paste_test():
     meta, app = _setup_app()
 
     # generate some faux data, set up the
     # tableview model
-    data_model = _gen_some_data()
-    test_model = DatasetModel(dataset=data_model)
-    meta.tableView.setModel(test_model)
+    #data_model = _gen_some_data()
+    meta.open(os.path.join("test_data", "amino.oma"))
+
+    #test_model = DatasetModel(dataset=data_model)
+    #meta.tableView.setModel(test_model)
 
     upper_left_index = meta.tableView.model().createIndex(0, 1)
     lower_right_index = meta.tableView.model().createIndex(1, 2)
