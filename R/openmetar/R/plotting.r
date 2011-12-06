@@ -963,10 +963,7 @@ calc.viewport.layout <- function(forest.data, just){
     }   
     num.rows <- length(forest.data$types) + extra.space
     # number of rows in plot
-    row.height <- convertY(unit(1, "lines") , "inches" , valueOnly=TRUE)
-    # height of each row in inches 
-    how.tall <- num.rows * row.height
-  
+     
     if (length(forest.data$additional.col.data)>0 )      {         # first if additional colums are present
         width.list <-vector("list")
         width.list[[1]] <- unit.c(max(unit(rep(1, length(forest.data$label)), 
@@ -1216,6 +1213,8 @@ sroc.plot <- function(plot.data, outpath,
     TPR <- plot.data$TPR
     FPR <- plot.data$FPR
     s.range <- plot.data$s.range
+    xlabel <- plot.data$plot.options$xlabel
+    ylabel <- plot.data$plot.options$ylabel
     
     png(file=outpath, width=5 , height=5, units="in", res=144)
     if (weighted == TRUE) {
@@ -1226,11 +1225,11 @@ sroc.plot <- function(plot.data, outpath,
         # ratio of radii of largest circle to smallest circle
         radii <- calculate.radii(inv.var, max.symbol.size, max.ratio)
         symbols(y = plot.data$TPR, x = plot.data$FPR, circles = symSize*radii, inches=FALSE,
-              xlab = "FPR", ylab = "TPR", xlim = c(0,1), ylim = c(0,1), bty = plotregion, fg = mcolor)
+              xlab = xlabel, ylab = label, xlim = c(0,1), ylim = c(0,1), bty = plotregion, fg = mcolor)
     } else {
         radii <- .01*rep(1, length(TPR))
         symbols(y = plot.data$TPR, x = plot.data$FPR, squares = radii, inches=FALSE,
-              xlab = "FPR", ylab = "TPR", xlim = c(0,1), ylim = c(0,1), bty = plotregion, fg = mcolor)     
+              xlab = xlabel, ylab = ylabel, xlim = c(0,1), ylim = c(0,1), bty = plotregion, fg = mcolor)     
     }
     # create regression line values
     s.vals <- seq(from = s.range$min, to = s.range$max, by=.001)

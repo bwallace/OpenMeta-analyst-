@@ -219,12 +219,14 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         params.list[[sens.index]]$create.plot <- FALSE
         params.list[[spec.index]]$create.plot <- FALSE
         # Don't create individual forest plots for sens and spec if both are checked.
-        
+        results.sens.spec <- NULL
         results.sens.spec <- side.by.side.plots(diagnostic.data, fname.left=fnames[sens.index], 
-                                                                 params.left=params.list[[sens.index]], 
+                                                                 params.left=params.list[[sens.index]],
                                                                  fname.right=fnames[spec.index],
                                                                  params.right=params.list[[spec.index]])
+        # create side-by-side plot
         # At present, fname.left is always the same as fname.right, and params.left is the same as params.right, except for measure.
+        # 
         images.tmp <- results.sens.spec$images
         names(images.tmp) <- "Sensitivity and Specificity Forest Plot"
         images <- c(images, images.tmp)
@@ -233,7 +235,11 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
         plot.names <- c(plot.names, results.sens.spec$plot_names)
         
-        results.sroc <- diagnostic.sroc(diagnostic.data, params.left)
+        params.sroc <- params.list[[sens.index]]
+        params.sroc$fp_xlabel <- "True Negative Ratio"
+        params.sroc$fp_ylabel <- "True Positive Ratio"                                       
+        results.sroc <- diagnostic.sroc(diagnostic.data, params=params.sroc)
+        # create SROC plot
         images.tmp <- results.sroc$images
         names(images.tmp) <- "Sensitivity / Specificity SROC"
         images <- c(images, images.tmp)
@@ -244,7 +250,10 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
     }
     
     if (("NLR" %in% metrics) || ("PLR" %in% metrics)) {
-        # At present, either both NLR and PLR are in metrics or neither, so the second condition is superfluous.
+        params.list[[nlr.index]]$create.plot <- FALSE
+        params.list[[plr.index]]$create.plot <- FALSE
+        # Don't create individual forest plots for sens and spec if both are checked.
+       
         results.plr.nlr <- NULL
         results.plr.nlr <- side.by.side.plots(diagnostic.data, fname.left=fnames[nlr.index], 
                                                                params.left=params.list[[nlr.index]], 
@@ -269,18 +278,20 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         diagnostic.data.tmp <- compute.diag.point.estimates(diagnostic.data, params.list[[count]])
         results.tmp <- eval(call(fnames[count], diagnostic.data.tmp, params.list[[count]]))
 
-        if (params.list[[count]]$create.plot==TRUE) {
-          images.tmp <- results.tmp$images
+        if (is.null(params.list[[count]]$create.plot)) {
+          # create plot
+          images.tmp <- results.tmp$image
           names(images.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
           images <- c(images, images.tmp)
           plot.params.paths.tmp <- results.tmp$plot_params_paths
           names(plot.params.paths.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$", params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
           plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
+          plot.names <- c(plot.names, results.tmp$plot_names)
         }
         summary.tmp <- list("Summary"=results.tmp$Summary)
         names(summary.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Summary", sep="")
         results <- c(results, summary.tmp)
-        plot.names <- c(plot.names, results.tmp$plot_names)
+
     }
     results$images <- images
     results$plot_names <- plot.names
@@ -624,7 +635,10 @@ diagnostic.sroc <- function(diagnostic.data, params){
     fitted.line <- list(intercept=res$coefficients[1], slope=res$coefficients[2])
     #sroc.path <- paste(params$fp_outpath, sep="")
     sroc.path <- "./r_tmp/sroc.png"
-    plot.data <- list("fitted.line" = fitted.line, "TPR"=TPR, "FPR"=FPR, "inv.var" = inv.var, "s.range" = s.range, "weighted"=params$sroc.weighted)
+    plot.options <- list()
+    plot.options$xlabel <- params$fp_xlabel
+    plot.options$ylabel <- params$fp_ylabel
+    plot.data <- list("fitted.line" = fitted.line, "TPR"=TPR, "FPR"=FPR, "inv.var" = inv.var, "s.range" = s.range, "weighted"=params$sroc.weighted, "plot.options"=plot.options)
     sroc.plot(plot.data, outpath=sroc.path)
 
     images <- c("SROC"=sroc.path)
