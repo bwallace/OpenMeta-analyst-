@@ -41,7 +41,7 @@ class MetaRegForm(QDialog, ui_meta_reg.Ui_cov_reg_dialog):
                 studies.append(study)
 
         result = meta_py_r.run_meta_regression(self.model.dataset, studies,\
-                                                 selected_covariates)
+                                                 selected_covariates, self.model.current_effect)
         if isinstance(result, str):
             # then there was an error!
             QMessageBox.critical(self,

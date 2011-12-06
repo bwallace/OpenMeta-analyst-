@@ -742,10 +742,11 @@ def list_of_cov_value_objects_str(dataset, study_names, cov_list=None):
 
     return r_cov_str
 
-def run_meta_regression(dataset, study_names, cov_list, data_name="tmp_obj", \
-                            results_name="results_obj"):    
+def run_meta_regression(dataset, study_names, cov_list, metric_name,\
+                        data_name="tmp_obj", results_name="results_obj"):    
     # @TODO conf.level, digits should be user-specified
-    params = {"conf.level":95, "digits":3, "method":"FE", "rm.method":"ML"}
+    params = {"conf.level":95, "digits":3, "method":"FE", 
+                "rm.method":"ML", "metric":metric_name}
     params_df = ro.r['data.frame'](**params)
 
     # create a lit of covariate objects on the R side
