@@ -12,13 +12,14 @@ library(metafor)
 meta.regression <- function(reg.data, params) {
    cov.data <- extract.cov.data(reg.data)
    cov.array <- cov.data$cov.array
-
    # check whether method is fixed-effect or random effect
    if (params$method == "FE") {
      method <- "FE"
    } else {
      method <- params$rm.method
    }
+   metric <- as.character(params$measure)
+   y.label <- pretty.metric.name(metric)
    res<-try(rma.uni(yi=reg.data@y, sei=reg.data@SE, slab=reg.data@study.names,
                                 level=params$conf.level, digits=params$digits, method=method, 
                                 mods=cov.array))
@@ -34,7 +35,7 @@ meta.regression <- function(reg.data, params) {
             plot.data <- create.plot.data.reg(reg.data, params, fitted.line)
             meta.regression.plot(plot.data, outpath=plot.path, symSize=1,
                                   lcol = "darkred",
-                                  y.axis.label = "Effect size",
+                                  ylabel = y.label,
                                   xlabel= reg.data@covariates[[1]]@cov.name,
                                   lweight = 3,
                                   lpatern = "dotted",

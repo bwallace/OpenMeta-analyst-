@@ -498,7 +498,7 @@ set.plot.options <- function(params) {
 }    
 
 pretty.metric.name <- function(metric) {
-  # labels for x-axis of forest plot
+  # labels for plot axes
   metric.name <- switch(metric,
         OR = "Odds Ratio",
         RD = "Risk Difference",
@@ -1145,12 +1145,12 @@ two.forest.plots <- function(forest.data1, forest.data2, outpath) {
 meta.regression.plot <- function(plot.data, outpath,
                                   symSize=1,
                                   lcol = "darkred",
-                                  y.axis.label = "Effect size",
-                                  xlabel= plot.data$covariate$varname,
+                                  ylabel,
+                                  xlabel,
                                   lweight = 3,
                                   lpatern = "dotted",
                                   plotregion = "n",
-                                  mcolor = "darkgreen",
+                                  mcolor = "blue",
                                   regline = TRUE) {
 
 
@@ -1163,25 +1163,25 @@ meta.regression.plot <- function(plot.data, outpath,
     # calculate radii of circles
     se <- plot.data$effects$se
     inv.var <- 1 / se^2
-    max.symbol.size <- (max(cov.values) - min(cov.values)) / 10
+    max.symbol.size <- 1
     # radius of the largest circle
-    max.ratio <- 10
+    max.ratio <- 5
     # ratio of radii of largest circle to smallest circle
     radii <- calculate.radii(inv.var, max.symbol.size, max.ratio)
     # radii are scaled by a function of the form C x^exp, where 
     # exp = 1 if the ratio of the maximum of inv.var to the minimum of inv.var is
     # less than max.ratio. Otherwise, exp < 1 and C are calculated from 
     # max.ratio and the max and min of inv.var. 
-    png(file=outpath, width=5 , height=5, units="in", res=144)
+    png(file=outpath, width=10 , height=5, units="in", res=144)
     
     #depends on whether these are natural or log
     if (plot.data$scale == "standard"){
         symbols(y = data.reg$ES, x = cov.values, circles = symSize*radii , inches=FALSE,
-              xlab = xlabel, ylab = y.axis.label, bty = plotregion, fg = mcolor)
+              xlab = xlabel, ylab = ylabel, bty = plotregion, fg = mcolor)
     }
     else{ 
         symbols(y = data.reg$ES, x = cov.values, circles = symSize*radii , inches = FALSE,
-              xlab = xlabel, ylab = y.axis.label, bty = plotregion, fg = mcolor)
+              xlab = xlabel, ylab = ylabel, bty = plotregion, fg = mcolor)
     }
     # note that i am assuming you have
     #the untransformed coefficient from the meta-reg
@@ -1213,9 +1213,9 @@ sroc.plot <- function(plot.data, outpath,
     TPR <- plot.data$TPR
     FPR <- plot.data$FPR
     s.range <- plot.data$s.range
-    xlabel <- plot.data$plot.options$xlabel
-    ylabel <- plot.data$plot.options$ylabel
-    
+    xlabel <- plot.data$plot.options$roc.xlabel
+    ylabel <- plot.data$plot.options$roc.ylabel
+    title <- plot.data$plot.options$roc.title
     png(file=outpath, width=5 , height=5, units="in", res=144)
     if (weighted == TRUE) {
         inv.var <- plot.data$inv.var    
@@ -1225,11 +1225,11 @@ sroc.plot <- function(plot.data, outpath,
         # ratio of radii of largest circle to smallest circle
         radii <- calculate.radii(inv.var, max.symbol.size, max.ratio)
         symbols(y = plot.data$TPR, x = plot.data$FPR, circles = symSize*radii, inches=FALSE,
-              xlab = xlabel, ylab = label, xlim = c(0,1), ylim = c(0,1), bty = plotregion, fg = mcolor)
+              xlab = xlabel, ylab = label, main=title, xlim = c(0,1), ylim = c(0,1), bty = plotregion, fg = mcolor)
     } else {
         radii <- .01*rep(1, length(TPR))
         symbols(y = plot.data$TPR, x = plot.data$FPR, squares = radii, inches=FALSE,
-              xlab = xlabel, ylab = ylabel, xlim = c(0,1), ylim = c(0,1), bty = plotregion, fg = mcolor)     
+              xlab = xlabel, ylab = ylabel, main=title, xlim = c(0,1), ylim = c(0,1), bty = plotregion, fg = mcolor)     
     }
     # create regression line values
     s.vals <- seq(from = s.range$min, to = s.range$max, by=.001)
@@ -1432,13 +1432,13 @@ check.label <- function(label, split.str) {
        label.info$end.string.length <- nchar(split.label[[1]][split.label.length])
     }
     label.info
-}
-
+}  
+    
 calculate.radii <- function(inv.var, max.symbol.size, max.ratio) {
     # calculates radii of symbols for a meta-regression plot
     # using a scaling function f(x) = C * x^e.
     # inv.var is a vector of inverse variances,
-    # max.symbol.size is the maximum size for a plot, and max.ratio is the maximum ratio of symbol sizes.
+    # max.symbol.size is the maximum size for a symbol, and max.ratio is the maximum ratio of symbol sizes.
 
     inv.var.max <- max(inv.var)
     inv.var.min <- min(inv.var)
@@ -1451,6 +1451,4 @@ calculate.radii <- function(inv.var, max.symbol.size, max.ratio) {
         C <- max.symbol.size / (inv.var.max)^exponent
     }
     radii <- C * inv.var^exponent
-}     
-    
-     
+}    
