@@ -305,7 +305,7 @@ binary.fixed.peto <- function(binary.data, params){
         # Create list to display summary of results
         #
         metric.name <- pretty.metric.name(as.character(params$measure))
-        model.title <- paste("Binary Fixed-effect Model - Peto\n\nMetric: ", metric.name, sep="")
+        model.title <- "Binary Fixed-effect Model - Peto\n\nMetric: Odds Ratio"
         data.type <- "binary"
         summary.disp <- create.summary.disp(res, params, model.title, data.type)
         #
