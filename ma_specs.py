@@ -248,14 +248,12 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         # but a more conservative/correct thing to do would be to pass in the *most restrictive*
         # metric to the _get_available_methods_routine
         ###
+        metric = self.model.current_effect 
         if self.data_type == "diagnostic":
             metric = "Sens" if self.sens_spec else "DOR"      
-            self.available_method_d = meta_py_r.get_available_methods(for_data_type=self.data_type,\
+
+        self.available_method_d = meta_py_r.get_available_methods(for_data_type=self.data_type,\
                                          data_obj_name=tmp_obj_name, metric=metric)
-            
-        else:
-            self.available_method_d = meta_py_r.get_available_methods(for_data_type=self.data_type,\
-                                         data_obj_name=tmp_obj_name)
 
         print "\n\navailable %s methods: %s" % (self.data_type, ", ".join(self.available_method_d.keys()))
 

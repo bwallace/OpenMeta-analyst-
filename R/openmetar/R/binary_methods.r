@@ -268,8 +268,10 @@ binary.fixed.mh.pretty.names <- function() {
                           )
 }
 
-binary.fixed.mh.is.feasible <- function(binary.data){
+
+binary.fixed.mh.is.feasible <- function(binary.data, metric){
     # only feasible if we have raw (2x2) data for all studies
+    # in this case the metric is ignored
     length(binary.data@g1O1)==length(binary.data@g1O2) &&
     length(binary.data@g1O2)==length(binary.data@g2O1) &&
     length(binary.data@g2O1)==length(binary.data@g2O2) &&
@@ -371,8 +373,10 @@ binary.fixed.peto.pretty.names <- function() {
                          )
 }
 
-binary.fixed.peto.is.feasible <- function(binary.data){
+binary.fixed.peto.is.feasible <- function(binary.data, metric){
     # only feasible if we have raw (2x2) data for all studies
+    # and the metric is `OR'
+    metric == "OR" &&
     length(binary.data@g1O1)==length(binary.data@g1O2) &&
     length(binary.data@g1O2)==length(binary.data@g2O1) &&
     length(binary.data@g2O1)==length(binary.data@g2O2) &&

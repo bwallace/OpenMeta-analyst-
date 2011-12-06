@@ -176,6 +176,12 @@ def get_available_methods(for_data_type=None, data_obj_name=None, metric=None):
     (if one is given). Excludes "*.parameters" methods
     '''
     method_list = ro.r("lsf.str('package:openmetar')")
+
+    # the following constitute 'special' or 'reserved' function
+    # names that are used by meta-analyst to parse out available
+    # methods and their parameters. we exclude these from the list
+    # of available meta-analytic routines.
+    # 
     # by convention, the methods available for a data type (e.g., binary)
     # start with the name of the data type. furthermore, the parameters
     # for those methods are returned by a method with a name
@@ -199,14 +205,16 @@ def get_available_methods(for_data_type=None, data_obj_name=None, metric=None):
         feasible_methods = {}
         for method in all_methods:
             is_feasible = True
+            # we check if the author of this method has provided an is.feasible
+            # routine; if so, we will call it. otherwise, we assume that we can
+            # invoke the corresponding routine (i.e., we assume it's feasible)
             is_feas_f = "%s.is.feasible" % method
             if is_feas_f in method_list:
-                # in the case of diagnostic data, we need to pass along the metric
-                # along with the data object to assess if a given method is feasible
-                if for_data_type == "diagnostic":
-                    is_feasible = ro.r("%s(%s, '%s')" % (is_feas_f, data_obj_name, metric))[0]
-                else:
-                    is_feasible = ro.r("%s(%s)" % (is_feas_f, data_obj_name))[0]
+                # we need to pass along the metric along with the data 
+                # object to assess if a given method is feasible (e.g,.
+                # PETO for binary data only makes sense for 'OR')
+                is_feasible = ro.r("%s(%s, '%s')" % (is_feas_f, data_obj_name, metric))[0]
+ 
             if is_feasible:
                 # do we have a pretty name?
                 pretty_names_f = "%s.pretty.names" % method
