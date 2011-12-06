@@ -36,6 +36,9 @@ from ui_continuous_data_form import Ui_ContinuousDataForm
 NUM_DIGITS = 4 
 default_col_width = 65
 
+# because the output from R is a string ("TRUE"/"FALSE")
+_is_true = lambda x: x == "TRUE"
+
 class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm):
     def __init__(self, ma_unit, cur_txs, cur_group_str, cur_effect, parent=None):
         super(ContinuousDataForm, self).__init__(parent)
@@ -50,7 +53,8 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.cur_effect = cur_effect
         self.group_str = cur_group_str
         self.alpha = .05
-        self.correlation = 0
+        self.correlation = 0.0
+        self.correlation_changed= False
         
         ##
         # set the table headers to reflect the group names
@@ -72,7 +76,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                                             self._cell_changed)
         QObject.connect(self.alpha_edit, SIGNAL("textChanged (QString)"), 
                                             self.update_alpha)                    
-        QObject.connect(self.correlation_simple, SIGNAL("textChanged (QString)"), 
+        QObject.connect(self.correlation_pre_post, SIGNAL("textChanged (QString)"), 
                                             self.update_correlation)          
         QObject.connect(self.g1_pre_post_table, SIGNAL("cellChanged (int, int)"),
                                             lambda: self.impute_pre_post_data(self.g1_pre_post_table, 0))
@@ -93,12 +97,23 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
     def update_correlation(self):
         success = False
         try:
-            val = float(self.correlation_simple.text())
-            if val > 0.0 and val < 1.0:
+            val = float(self.correlation_pre_post.text())
+            if val >= 0.0 and val <= 1.0:
                 self.correlation = val
                 success = True
+                self.correlation_changed = True
         except:
             pass
+
+        if not success:
+            print "invalid correlation entered! %s" % val
+            return None
+
+        print "ok -- correlation set to %s" % self.correlation
+        # otherwise recompute the estimates
+        self.impute_pre_post_data(self.g1_pre_post_table, 0)
+        self.impute_pre_post_data(self.g2_pre_post_table, 1)
+        
         
     def update_alpha(self):
         success = False
@@ -118,7 +133,8 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
 
 
     def _populate_effect_data(self):
-        q_effects = sorted([QString(effect_str) for effect_str in self.ma_unit.effects_dict.keys()])
+        q_effects = sorted([QString(effect_str) for \
+                             effect_str in self.ma_unit.effects_dict.keys()])
         self.effect_cbo_box.blockSignals(True)
         self.effect_cbo_box.addItems(q_effects)
         self.effect_cbo_box.blockSignals(False)
@@ -213,12 +229,16 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             # now pass off what we have for this study to the
             # imputation routine
             results_from_r = meta_py_r.impute_cont_data(cur_dict, self.alpha)
+            print "results from R (imputation): %s" % results_from_r
             print results_from_r
-            if results_from_r["succeeded"]:
+
+
+            if _is_true(results_from_r["succeeded"]):
                 computed_vals = results_from_r["output"]
                 # and then iterate over the columns again, 
                 # populating the table with any available
                 # computed fields
+            
                 self.simple_table.blockSignals(True)
                 for var_index, var_name in enumerate(var_names):
                     float_str = self.float_to_str(float(computed_vals[var_name]))
@@ -240,7 +260,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         being modified.
         '''
         group_name = self.cur_groups[group_index]
-        var_names = self.get_column_header_strs()
+        var_names = self.get_column_header_strs_pre_post()
         params_dict = {}
         # A, B correspond to pre, post
         for a_b_index, a_b_name in enumerate(["A", "B"]):
@@ -249,17 +269,23 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                 var_value = self._get_float(a_b_index, var_index, table)
                 if var_value is not None:
                     params_dict["%s.%s" % (var_name, a_b_name)] = var_value
-                    
+
         # now pass off what we have for this study to the
         # imputation routine
         results_from_r = meta_py_r.impute_pre_post_cont_data(params_dict, self.correlation, self.alpha)
  
-        if results_from_r["succeeded"]:
+        print "imputation results from R: %s" % results_from_r
+
+        #if self.correlation_changed:
+        #    pyqtRemoveInputHook()
+        #    pdb.set_trace()
+
+        if _is_true(results_from_r["succeeded"]):
             ### 
             # first update the simple table
             computed_vals = results_from_r["output"]
             self.simple_table.blockSignals(True)
-            for var_index, var_name in enumerate(var_names):
+            for var_index, var_name in enumerate(self.get_column_header_strs()):
                 float_str = self.float_to_str(float(computed_vals[var_name]))
 
                 self.simple_table.setItem(group_index, var_index, QTableWidgetItem(QString(float_str)))
@@ -292,11 +318,18 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             float_str = str(round(float_val, 4))
         return float_str     
                     
-    def get_column_header_strs(self):
+    def get_column_header_strs(self, table=None):
+        if table is None:
+            table = self.simple_table
+
         return [str(h_item.text()) for h_item in \
-                                [self.simple_table.horizontalHeaderItem(col) for col in \
-                                    range(self.simple_table.columnCount())]]
-            
+                                [table.horizontalHeaderItem(col) for col in \
+                                    range(table.columnCount())]]
+        
+    def get_column_header_strs_pre_post(self):
+        return self.get_column_header_strs(table=self.g1_pre_post_table)
+        
+
     def _is_empty(self, i, j, table):
         val = table.item(i,j)
         return val is None or val.text() == ""

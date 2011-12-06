@@ -18,6 +18,10 @@
   <property name="windowTitle">
    <string>Binary Data</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="images/icons.qrc">
+    <normaloff>:/images/meta.png</normaloff>:/images/meta.png</iconset>
+  </property>
   <widget class="QWidget" name="layoutWidget_5">
    <property name="geometry">
     <rect>
@@ -496,7 +500,9 @@
    <layout class="QVBoxLayout" name="verticalLayout_4"/>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="images/icons.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>
