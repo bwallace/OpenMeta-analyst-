@@ -666,6 +666,9 @@ def regenerate_plot_data(om_data_name="om.data", res_name="res",
                             (om_data_name, plot_params_name, res_name))
 
 
+def generate_reg_plot(file_path, params_name="plot.data"):
+    ro.r("meta.regression.plot(%s, '%s')" % (params_name, file_path))
+
 def generate_forest_plot(file_path, side_by_side=False, params_name="plot.data"):
     if side_by_side:
         print "side-by-side!"
@@ -755,7 +758,11 @@ def run_meta_regression(dataset, study_names, cov_list, metric_name,\
 
     print "\n\n(run_meta_regression): executing:\n %s\n" % r_str
 
-    ### to do -- this is hacky
+
+    #pyqtRemoveInputHook()
+    #pdb.set_trace()
+
+    ### TODO -- this is hacky
     ro.r(r_str)
     result = ro.r("%s" % results_name)
 

@@ -1181,7 +1181,11 @@ meta.regression.plot <- function(plot.data, outpath) {
     # exp = 1 if the ratio of the maximum of inv.var to the minimum of inv.var is
     # less than max.ratio. Otherwise, exp < 1 and C are calculated from 
     # max.ratio and the max and min of inv.var. 
-    png(file=outpath, width=10 , height=5, units="in", res=144)
+    if (length(grep(".png", outpath)) != 0){
+        png(file=outpath, width=10 , height=5, units="in", res=144)
+    } else {
+        pdf(file=outpath, width=10 , height=5)
+   }
     
     #depends on whether these are natural or log
     if (plot.data$scale == "standard"){
@@ -1204,6 +1208,7 @@ meta.regression.plot <- function(plot.data, outpath) {
                 max(cov.values)*plot.data$fitted.line$slope)
        lines(x, y, col=plot.data$lcol, lwd=plot.data$lweight, lty=plot.data$lpattern)
     }
+    # write the plot data out to disk
     graphics.off()
 }
 

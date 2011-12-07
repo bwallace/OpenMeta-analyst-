@@ -40,9 +40,19 @@ meta.regression <- function(reg.data, params) {
             
             meta.regression.plot(plot.data, plot.path)
             
+            # write the plot data to disk so we can save it
+            # @TODO will want to write the params data, too,
+            # eventually
+            plot.data.path <- save.plot.data(plot.data)
+
             images <- c("Regression Plot"=plot.path)
             plot.names <- c("reg.plot"="reg.plot")
-            results <- list("images"=images, "Summary"=reg.disp, "plot_names"=plot.names)
+            reg.plot.params.path <- save.plot.data(plot.data)
+            plot.params.paths <- c("Regression Plot"=plot.data.path)
+
+            results <- list("images"=images, "Summary"=reg.disp, "plot_names"=plot.names,
+                              "plot_params_paths"=plot.params.paths)
+
         } else {
             results <- list("Summary"=reg.disp)
         }

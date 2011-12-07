@@ -186,16 +186,17 @@ create.summary.disp <- function(res, params, model.title, data.type) {
     summary.disp
 }
 
-
-save.plot.data <- function(plot.data, forest.plot.params.path=NULL) {
+# @TODO should merge this with below
+save.plot.data <- function(plot.data, out.path=NULL) {
     # saves plot data to the r_tmp directory
-    if (is.null(forest.plot.params.path)){
+    if (is.null(out.path)){
       # by default, we use thecurrent system time as a 'unique enough' filename
-      forest.plot.params.path <- paste("r_tmp/", 
+      out.path <- paste("r_tmp/", 
                                 as.character(as.numeric(Sys.time())), sep="")
     }
-    save(plot.data, file=forest.plot.params.path)
-    forest.plot.params.path
+    ### save plot data *only*
+    save(plot.data, file=paste(out.path, ".plotdata", sep=""))
+    out.path
 }
 
 save.data <- function(om.data, res, params, plot.data, out.path=NULL) {
