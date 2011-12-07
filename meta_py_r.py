@@ -666,7 +666,7 @@ def regenerate_plot_data(om_data_name="om.data", res_name="res",
                             (om_data_name, plot_params_name, res_name))
 
 
-def generate_reg_plot(file_path, params_name="plot.data"):
+def generate_reg_plot(file_path, params_name="plot.data"): 
     ro.r("meta.regression.plot(%s, '%s')" % (params_name, file_path))
 
 def generate_forest_plot(file_path, side_by_side=False, params_name="plot.data"):
