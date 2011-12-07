@@ -43,9 +43,7 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
         QObject.connect(self.nav_tree, SIGNAL("itemClicked(QTreeWidgetItem*, int)"),
                                        self.item_clicked)
-
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()                         
+                       
         self.psuedo_console.blockSignals(False)              
         QObject.connect(self.psuedo_console, SIGNAL("returnPressed(void)"),
                                        self.process_console_input)
@@ -203,6 +201,21 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         last_line = self.psuedo_console.toPlainText().split("\n")[-1]
         return str(last_line.replace(">>", "")).strip()
 
+    def _get_plot_type(self, title):
+        # at present we use the *title* as the type --
+        # this is currently _not_ set by the user, so it's
+        # 'safe', but it's not exactly elegant. probably
+        # we should return a type directly from R.
+        # on other hand, this couples R + Python even
+        # more...
+        plot_type = None
+        tmp_title = title.lower()
+        if "forest" in tmp_title:
+            plot_type = "forest"
+        elif "regression" in tmp_title:
+            plot_type = "regression"
+        return plot_type
+
     def create_pixmap_item(self, pixmap, position, title, image_path,\
                              params_path=None, matrix=QMatrix()):
         item = QGraphicsPixmapItem(pixmap)
@@ -223,28 +236,38 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         self.scene.addItem(item)
         item.setPos(position)
         
+        # for now we're inferring the plot type (e.g., 'forest'
+        # from the title of the plot (see in-line comments, above)
+        plot_type = self._get_plot_type(title)
+
         # attach event handler for mouse-clicks, i.e., to handle
         # user right-clicks
         if params_path is not None:
             item.contextMenuEvent = self._make_context_menu(\
-                            params_path, title, image_path, item)
+                            params_path, title, image_path, item,
+                            plot_type=plot_type)
 
         return (item.boundingRect().size(), position, item)
 
 
-    def _make_context_menu(self, params_path, title, png_path, qpixmap_item):
+    def _make_context_menu(self, params_path, title, png_path, 
+                                qpixmap_item, plot_type="forest"):
         def _graphics_item_context_menu(event):
             action = QAction("save image as...", self)
             QObject.connect(action, SIGNAL("triggered()"), \
-                        lambda : self.save_image_as(params_path, title))
+                        lambda : self.save_image_as(params_path, title, 
+                                        plot_type=plot_type))
             context_menu = QMenu(self)
             context_menu.addAction(action)
 
-            action = QAction("edit plot...", self)
-            QObject.connect(action, SIGNAL("triggered()"), \
-                        lambda : self.edit_image(\
-                                   params_path, title, png_path, qpixmap_item))
-            context_menu.addAction(action)
+            # only know how to edit *simple* (i.e., _not_ side-by-side, as 
+            # in sens and spec plotted on the same canvass) forest plots for now
+            if plot_type == "forest" and not self._is_side_by_side_fp(title):
+                action = QAction("edit plot...", self)
+                QObject.connect(action, SIGNAL("triggered()"), \
+                            lambda : self.edit_image(\
+                                       params_path, title, png_path, qpixmap_item))
+                context_menu.addAction(action)
 
             pos = event.screenPos()
             context_menu.popup(pos)
@@ -252,27 +275,36 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
         return _graphics_item_context_menu
 
-    def save_image_as(self, params_path, title):
+
+    def _is_side_by_side_fp(self, title):
+        return any([side_by_side in title for side_by_side in SIDE_BY_SIDE_FOREST_PLOTS])
+
+    def save_image_as(self, params_path, title, plot_type="forest"):
         # note that the params object will, by convention,
         # have the (generic) name 'plot.data' -- after this
         # call, this object will be in the namespace
         meta_py_r.load_in_R("%s.plotdata" % params_path)
 
- 
+        default_path = \
+            {"forest":"forest_plot.pdf", \
+             "regression":"regression.pdf"}[plot_type]
+
         # where to save the graphic?
-        file_path = unicode(QFileDialog.getSaveFileName(self, "OpenMeta[Analyst] -- save plot as", 
-                                                        "forest_plot.pdf"))
+        file_path = unicode(QFileDialog.getSaveFileName(self, 
+                                                        "OpenMeta[Analyst] -- save plot as", 
+                                                        default_path))
 
         # now we re-generate it, unless they cancled, of course
         if file_path != "":
-            ##
-            # convert the file path to R-friendly path
-            # joiners (only relevant on Windows, I believe)
-            #file_path = os.path.normpath(file_path)
-            if any([side_by_side in title for side_by_side in SIDE_BY_SIDE_FOREST_PLOTS]):
-                meta_py_r.generate_forest_plot(file_path, side_by_side=True)
+            if plot_type == "forest":
+                if self._is_side_by_side_fp(title):
+                    meta_py_r.generate_forest_plot(file_path, side_by_side=True)
+                else:
+                    meta_py_r.generate_forest_plot(file_path)
+            elif plot_type == "regression":
+                meta_py_r.generate_reg_plot(file_path)
             else:
-                meta_py_r.generate_forest_plot(file_path)
+                print "sorry -- I don't know how to draw %s plots!" % plot_type
 
     def edit_image(self, params_path, title, png_path, pixmap_item):
         plot_editor_window = edit_forest_plot_form.EditPlotWindow(\
