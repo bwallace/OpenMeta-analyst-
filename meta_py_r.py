@@ -671,7 +671,7 @@ def generate_reg_plot(file_path, params_name="plot.data"):
 
 def generate_forest_plot(file_path, side_by_side=False, params_name="plot.data"):
     if side_by_side:
-        print "side-by-side!"
+        print "generating a side-by-side forest plot"
         ##
         # a bit hacky, or at least, could be made clearer: the
         # side.by.side* method pulls the output path out of the

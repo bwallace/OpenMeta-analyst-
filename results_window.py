@@ -201,6 +201,21 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         last_line = self.psuedo_console.toPlainText().split("\n")[-1]
         return str(last_line.replace(">>", "")).strip()
 
+    def _get_plot_type(self, title):
+        # at present we use the *title* as the type --
+        # this is currently _not_ set by the user, so it's
+        # 'safe', but it's not exactly elegant. probably
+        # we should return a type directly from R.
+        # on other hand, this couples R + Python even
+        # more...
+        plot_type = None
+        tmp_title = title.lower()
+        if "forest" in tmp_title:
+            plot_type = "forest"
+        elif "regression" in tmp_title:
+            plot_type = "regression"
+        return plot_type
+
     def create_pixmap_item(self, pixmap, position, title, image_path,\
                              params_path=None, matrix=QMatrix()):
         item = QGraphicsPixmapItem(pixmap)
@@ -221,23 +236,9 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         self.scene.addItem(item)
         item.setPos(position)
         
-        # at present we use the *title* as the type --
-        # this is currently _not_ set by the user, so it's
-        # 'safe', but it's not exactly elegant. probably
-        # we should return a type directly from R.
-        # on other hand, this couples R + Python even
-        # more...
-        plot_type = None
-        tmp_title = title.lower()
-
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
-
-        if "forest" in tmp_title:
-            plot_type = "forest"
-        elif "regression" in tmp_title:
-            plot_type = "regression"
-
+        # for now we're inferring the plot type (e.g., 'forest'
+        # from the title of the plot (see in-line comments, above)
+        plot_type = self._get_plot_type(title)
 
         # attach event handler for mouse-clicks, i.e., to handle
         # user right-clicks
@@ -259,8 +260,9 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
             context_menu = QMenu(self)
             context_menu.addAction(action)
 
-            # only know how to edit forest plots for now
-            if plot_type == "forest":
+            # only know how to edit *simple* (i.e., _not_ side-by-side, as 
+            # in sens and spec plotted on the same canvass) forest plots for now
+            if plot_type == "forest" and not self._is_side_by_side_fp(title):
                 action = QAction("edit plot...", self)
                 QObject.connect(action, SIGNAL("triggered()"), \
                             lambda : self.edit_image(\
@@ -272,6 +274,10 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
             event.accept()
 
         return _graphics_item_context_menu
+
+
+    def _is_side_by_side_fp(self, title):
+        return any([side_by_side in title for side_by_side in SIDE_BY_SIDE_FOREST_PLOTS])
 
     def save_image_as(self, params_path, title, plot_type="forest"):
         # note that the params object will, by convention,
@@ -291,14 +297,14 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         # now we re-generate it, unless they cancled, of course
         if file_path != "":
             if plot_type == "forest":
-                if any([side_by_side in title for side_by_side in SIDE_BY_SIDE_FOREST_PLOTS]):
+                if self._is_side_by_side_fp(title):
                     meta_py_r.generate_forest_plot(file_path, side_by_side=True)
                 else:
                     meta_py_r.generate_forest_plot(file_path)
             elif plot_type == "regression":
                 meta_py_r.generate_reg_plot(file_path)
             else:
-                print "uh... sorry -- don't know how to draw %s plots!" % plot_type
+                print "sorry -- I don't know how to draw %s plots!" % plot_type
 
     def edit_image(self, params_path, title, png_path, pixmap_item):
         plot_editor_window = edit_forest_plot_form.EditPlotWindow(\
