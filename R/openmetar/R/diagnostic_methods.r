@@ -623,14 +623,15 @@ diagnostic.sroc <- function(diagnostic.data, params){
     D <- logit(TPR) - logit(FPR)
     s.range <- list("max"=max(S), "min"=min(S))
     params$sroc.weighted <- FALSE
+
     # remove if this is added in the GUI as a parameter.
     inv.var <- data.adj$TP + data.adj$FN + data.adj$FP + data.adj$TN
-    if (params$sroc.weighted == TRUE) {
+    if (params$sroc.weighted) {
+      # weighted linear regression
       res <- lm(D ~ S, weights=inv.var)
-       # weighted linear regression
     } else {
+      # unweighted regression 
       res <- lm(D~S)
-       # unweighted regression 
     }
     summary.disp <- "SROC Plot"
     # Create list to display summary of results
@@ -650,7 +651,7 @@ diagnostic.sroc <- function(diagnostic.data, params){
     # we use the system time as our unique-enough string to store
     # the params object
     forest.plot.params.path <- save.plot.data(plot.data)
-    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+    plot.params.paths <- c("SROC Plot"=forest.plot.params.path)
     results <- list("images"=images, "Summary"=summary.disp, 
                     "plot_names"=plot.names, 
                     "plot_params_paths"=plot.params.paths)
