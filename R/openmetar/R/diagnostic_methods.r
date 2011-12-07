@@ -610,6 +610,7 @@ diagnostic.random.overall <- function(results) {
 #            diagnostic SROC                      #
 ###################################################
 diagnostic.sroc <- function(diagnostic.data, params){
+    # creates a ROC plot
     # assert that the argument is the correct type
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
 
@@ -687,9 +688,9 @@ diagnostic.sroc.pretty.names <- function() {
 }
 
 
-diagnostic.sroc.is.feasible <- function(diagnostic.data, metric){
-    metric %in% c("Sens", "Spec") # really only if we're doing this jointly, of course...      
-}
+#diagnostic.sroc.is.feasible <- function(diagnostic.data, metric){
+#    metric %in% c("Sens", "Spec") # really only if we're doing this jointly, of course...      
+#}
 
 
 ###################################################
