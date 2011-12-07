@@ -433,6 +433,18 @@ create.plot.data.reg <- function(reg.data, params, fitted.line) {
      effects <- list(ES = y,
                     se = se)
      plot.data$effects <- effects
+
+     ###
+     # @TODO; these need to be set by the user,
+     # will probably be placed on the params object
+     plot.data$sym.size <- 1
+     plot.data$lcol <- "darkred"
+     plot.data$lweight <- 3
+     plot.data$lpattern <- "dotted"
+     plot.data$plotregion <- "n"
+     plot.data$mcolor <- "darkgreen"
+     plot.data$regline <- TRUE
+
      plot.data
 }
 
@@ -1149,19 +1161,10 @@ two.forest.plots <- function(forest.data1, forest.data2, outpath) {
 #######################################
 #       meta-regression scatter       #
 #######################################
-meta.regression.plot <- function(plot.data, outpath,
-                                  xlabel, ylabel,
-                                  symSize=1,
-                                  lcol = "darkred",
-                                  lweight = 3,
-                                  lpatern = "dotted",
-                                  plotregion = "n",
-                                  mcolor = "blue",
-                                  regline = TRUE) {
-
+meta.regression.plot <- function(plot.data, outpath) {
 
     # make the data data.frame
-    data.reg <- data.frame(plot.data$effects, types = plot.data$types)
+    data.reg <- data.frame(plot.data$effects, types=plot.data$types)
     # data for plot (only keep the studies - not the summaries)
     data.reg <- subset(data.reg, types==0)
     cov.name <- plot.data$covariate$varname
@@ -1182,22 +1185,24 @@ meta.regression.plot <- function(plot.data, outpath,
     
     #depends on whether these are natural or log
     if (plot.data$scale == "standard"){
-        symbols(y = data.reg$ES, x = cov.values, circles = symSize*radii , inches=FALSE,
-              xlab = xlabel, ylab = ylabel, bty = plotregion, fg = mcolor)
+        symbols(y = data.reg$ES, x=cov.values, circles=plot.data$sym.size*radii,
+                inches=FALSE, xlab=plot.data$xlabel, ylab=plot.data$ylabel, 
+                bty=plot.data$plotregion, fg=plot.data$mcolor)
     }
     else{ 
-        symbols(y = data.reg$ES, x = cov.values, circles = symSize*radii , inches = FALSE,
-              xlab = xlabel, ylab = ylabel, bty = plotregion, fg = mcolor)
+        symbols(y=data.reg$ES, x = cov.values, circles = plot.data$sym.size*radii, 
+                inches=FALSE, xlab=plot.data$xlabel, ylab=plot.data$ylabel, 
+                bty=plot.data$plotregion, fg=plot.data$mcolor)
     }
     # note that i am assuming you have
-    #the untransformed coefficient from the meta-reg
+    # the untransformed coefficient from the meta-reg
     # so i am doing no transformation
-    if (regline == TRUE)  {
+    if (plot.data$regline)  {
        x<-c(min(cov.values), max(cov.values))
        y<-c (plot.data$fitted.line$intercept + 
                 min(cov.values)*plot.data$fitted.line$slope, plot.data$fitted.line$intercept + 
                 max(cov.values)*plot.data$fitted.line$slope)
-       lines(x, y, col = lcol, lwd = lweight, lty = lpatern)
+       lines(x, y, col=plot.data$lcol, lwd=plot.data$lweight, lty=plot.data$lpattern)
     }
     graphics.off()
 }
@@ -1219,8 +1224,8 @@ sroc.plot <- function(plot.data, outpath,
     TPR <- plot.data$TPR
     FPR <- plot.data$FPR
     s.range <- plot.data$s.range
-    xlabel <- plot.data$plot.options$roc.xlabel
-    ylabel <- plot.data$plot.options$roc.ylabel
+    xlabel <- plot.data$plot.options$xlabel
+    ylabel <- plot.data$plot.options$ylabel
     title <- plot.data$plot.options$roc.title
     png(file=outpath, width=5 , height=5, units="in", res=144)
     if (weighted == TRUE) {

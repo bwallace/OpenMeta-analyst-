@@ -27,23 +27,19 @@ meta.regression <- function(reg.data, params) {
        reg.disp <- create.regression.display(res, params, display.data)
    
        if (length(display.data$n.cont.covs)==1 & length(display.data$factor.n.levels)==0) {
-        # if just 1 covariate, create reg. plot
+            # if only 1 covariate, create reg. plot
             betas <- res$b
             fitted.line <- list(intercept=betas[1], slope=betas[2])
             plot.path <- "./r_tmp/reg.png"
             plot.data <- create.plot.data.reg(reg.data, params, fitted.line)
+
+            # @TODO x and y labels ought to be passed in, probably
+            plot.data$xlabel <- reg.data@covariates[[1]]@cov.name
             ylabel <- as.character(params$measure)
-            ylabel <- pretty.metric.name(ylabel)
-            meta.regression.plot(plot.data, plot.path, 
-                                  reg.data@covariates[[1]]@cov.name,
-                                  ylabel,
-                                  symSize=1,
-                                  lcol = "darkred",
-                                  lweight = 3,
-                                  lpatern = "dotted",
-                                  plotregion = "n",
-                                  mcolor = "darkgreen",
-                                  regline = TRUE)   
+            plot.data$ylabel <- pretty.metric.name(ylabel)
+            
+            meta.regression.plot(plot.data, plot.path)
+            
             images <- c("Regression Plot"=plot.path)
             plot.names <- c("reg.plot"="reg.plot")
             results <- list("images"=images, "Summary"=reg.disp, "plot_names"=plot.names)
@@ -109,7 +105,7 @@ extract.cov.data <- function(reg.data) {
 
 binary.fixed.meta.regression <- function(reg.data, params){
   # meta regression for numerical covariates
-  cov.data <- array(dim=c(length(reg.data@y), length(cov.names)), dimnames=list(NULL, cov.names))  
+    cov.data <- array(dim=c(length(reg.data@y), length(cov.names)), dimnames=list(NULL, cov.names))  
     for (cov.name in cov.names) {
       # extract matrix of covariates
        cov.val.str <- paste("reg.data@covariates$", cov.name, sep="")
