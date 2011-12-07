@@ -236,15 +236,17 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         plot.names <- c(plot.names, results.sens.spec$plot_names)
         
         params.sroc <- params.list[[sens.index]]
-        params.sroc$fp_xlabel <- "True Negative Ratio"
-        params.sroc$fp_ylabel <- "True Positive Ratio"                                       
+        params.sroc$roc_xlabel <- "True Negative Ratio"
+        params.sroc$roc_ylabel <- "True Positive Ratio"   
+        params.sroc$roc_title <- ""
+        # slot for a title if desired in future
         results.sroc <- diagnostic.sroc(diagnostic.data, params=params.sroc)
         # create SROC plot
         images.tmp <- results.sroc$images
-        names(images.tmp) <- "Sensitivity / Specificity SROC"
+        names(images.tmp) <- "ROC Curve"
         images <- c(images, images.tmp)
         plot.params.paths.tmp <- results.sroc$plot_params_paths
-        names(plot.params.paths.tmp) <- "Sensitivity / Specificity SROC"
+        names(plot.params.paths.tmp) <- "ROC Curve"
         plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
         plot.names <- c(plot.names, results.sroc$plot_names)
     }
@@ -634,10 +636,11 @@ diagnostic.sroc <- function(diagnostic.data, params){
     # Create list to display summary of results
     fitted.line <- list(intercept=res$coefficients[1], slope=res$coefficients[2])
     #sroc.path <- paste(params$fp_outpath, sep="")
-    sroc.path <- "./r_tmp/sroc.png"
+    sroc.path <- "./r_tmp/roc.png"
     plot.options <- list()
-    plot.options$xlabel <- params$fp_xlabel
-    plot.options$ylabel <- params$fp_ylabel
+    plot.options$roc.xlabel <- params$roc_xlabel
+    plot.options$roc.ylabel <- params$roc_ylabel
+    plot.options$roc.title <- params$roc_title
     plot.data <- list("fitted.line" = fitted.line, "TPR"=TPR, "FPR"=FPR, "inv.var" = inv.var, "s.range" = s.range, "weighted"=params$sroc.weighted, "plot.options"=plot.options)
     sroc.plot(plot.data, outpath=sroc.path)
 
