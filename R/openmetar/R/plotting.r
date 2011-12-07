@@ -423,8 +423,7 @@ create.plot.data.reg <- function(reg.data, params, fitted.line) {
      plot.data <- list("fitted.line" = fitted.line,
                       types = c(rep(0, length(reg.data@study.names))),
                       scale = scale.str,
-                      covariate = list(varname = cov.name, values = cov.vals)
-                       )
+                      covariate = list(varname = cov.name, values = cov.vals))
      alpha <- 1.0-(params$conf.level/100.0)
      mult <- abs(qnorm(alpha/2.0))
     
@@ -498,34 +497,42 @@ set.plot.options <- function(params) {
 }    
 
 pretty.metric.name <- function(metric) {
+  # sub out the space in TX Mean
+  metric <- gsub(" ", ".", metric)
+
   # labels for plot axes
-  metric.name <- switch(metric,
-        OR = "Odds Ratio",
-        RD = "Risk Difference",
-        RR = "Risk Ratio",
-        AS = "Arcsine Risk Difference",
-        PR = "Proportion",
-        PLN = "Log Proportion",  
-        PLO = "Logit Proportion",
-        PAS = "Arcsine of Square Root Proportion",
-        PET  = "Freeman-Tukey Double Arcsine Proportion",                
-        PETO = "Peto",
-        YUQ = "Yule's Q",
-        YUY = "Yules Y",
-        Sens = "Sensitivity", 
-        Spec = "Specificity",
-        # pos. predictive value
-        PPV =  "Pos. predictive value",
-        #neg. predictive value
-        NPV =  "Neg. predictive value",
-        # accuracy
-        Acc = "Accuracy",
-        # positive likelihood ratio
-        PLR = "Pos. likelihood ratio", 
-        # negative likelihood ratio
-        NLR = "Neg. likelihood ratio",
-        # diagnostic odds ratio
-        DOR = "Diagnostic odds ratio")
+  metric.name <- list(
+    OR = "Odds Ratio",
+    RD = "Risk Difference",
+    MD = "Mean Difference",
+    RR = "Risk Ratio",
+    AS = "Arcsine Risk Difference",
+    PR = "Proportion",
+    PLN = "Log Proportion",  
+    PLO = "Logit Proportion",
+    PAS = "Arcsine of Square Root Proportion",
+    PET  = "Freeman-Tukey Double Arcsine Proportion",                
+    PETO = "Peto",
+    YUQ = "Yule's Q",
+    YUY = "Yules Y",
+    Sens = "Sensitivity", 
+    Spec = "Specificity",
+    # pos. predictive value
+    PPV =  "Pos. predictive value",
+    #neg. predictive value
+    NPV =  "Neg. predictive value",
+    # accuracy
+    Acc = "Accuracy",
+    # positive likelihood ratio
+    PLR = "Pos. likelihood ratio", 
+    # negative likelihood ratio
+    NLR = "Neg. likelihood ratio",
+    # diagnostic odds ratio
+    DOR = "Diagnostic odds ratio",
+    # tx mean is already pretty.
+    TX.Mean = "TX Mean")[[metric]]
+
+  metric.name
 }
 
 ###################################
@@ -1143,10 +1150,9 @@ two.forest.plots <- function(forest.data1, forest.data2, outpath) {
 #       meta-regression scatter       #
 #######################################
 meta.regression.plot <- function(plot.data, outpath,
+                                  xlabel, ylabel,
                                   symSize=1,
                                   lcol = "darkred",
-                                  ylabel,
-                                  xlabel,
                                   lweight = 3,
                                   lpatern = "dotted",
                                   plotregion = "n",

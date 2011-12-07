@@ -18,8 +18,7 @@ meta.regression <- function(reg.data, params) {
    } else {
      method <- params$rm.method
    }
-   metric <- as.character(params$measure)
-   y.label <- pretty.metric.name(metric)
+
    res<-try(rma.uni(yi=reg.data@y, sei=reg.data@SE, slab=reg.data@study.names,
                                 level=params$conf.level, digits=params$digits, method=method, 
                                 mods=cov.array))
@@ -33,17 +32,20 @@ meta.regression <- function(reg.data, params) {
             fitted.line <- list(intercept=betas[1], slope=betas[2])
             plot.path <- "./r_tmp/reg.png"
             plot.data <- create.plot.data.reg(reg.data, params, fitted.line)
-            meta.regression.plot(plot.data, outpath=plot.path, symSize=1,
+            ylabel <- as.character(params$measure)
+            ylabel <- pretty.metric.name(ylabel)
+            meta.regression.plot(plot.data, plot.path, 
+                                  reg.data@covariates[[1]]@cov.name,
+                                  ylabel,
+                                  symSize=1,
                                   lcol = "darkred",
-                                  ylabel = y.label,
-                                  xlabel= reg.data@covariates[[1]]@cov.name,
                                   lweight = 3,
                                   lpatern = "dotted",
                                   plotregion = "n",
                                   mcolor = "darkgreen",
                                   regline = TRUE)   
             images <- c("Regression Plot"=plot.path)
-            plot.names <- c("forest plot"="reg.plot")
+            plot.names <- c("reg.plot"="reg.plot")
             results <- list("images"=images, "Summary"=reg.disp, "plot_names"=plot.names)
         } else {
             results <- list("Summary"=reg.disp)
