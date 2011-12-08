@@ -2,19 +2,21 @@
 type=text/css rel=stylesheet>
 <h2><Meta-Analysis Options</a></h2>
   <p>The following analysis options are available in the Methods & Parameters dialog.</p>
-  <h3>Common Options</h2>
+   <p><img src="images/analysis_parameters_dialog.png"></p>
   <ul>
-  		<li>conf.level - The confidence level for the estimate.</li><br>
-  		<li>digits - The number of digits after the decimal point to be displayed in results.</li>
-  	</ul>
-  	<h3>Fixed-Effect Models</h3>
-  	<ul>
-  		<li>adjust - Number added to the data for tx An, tx AN, tx Bn, and tx BN, according to the
-  		the value of the <b>to</b> parameter.</li><br>
-  		<li>to - Can take one of the following values:<br>
+      <li>analysis method - The method for the meta-analysis</li>
+      <li>Random method (
+  		<li>Confidence level - The confidence level for the estimate</li>
+  		<li>Number of digits - The number of digits after the decimal point to be displayed in results.</li>
+  </ul>
+  <h3>Binary and Continuous Data Only</h3>
+  <ul>
+  		<li>Correction factor - Number added to the data when there are studies that have zero counts. The correction is added according to the
+  		the value of the <b>Add correction factor to</b> parameter.</li><br>
+  		<li>Add correction factor to - Can take one of the following values:<br>
   				<ul>
-  						<li>only0 - The value of adjust is only added to the data when at least one of tx An, tx AN, tx Bn, and tx BN equals 0 or NA.</li><br>
-  						<li>all - The value of adjust is always add to the data.</li>
+  						<li>only0 - The correction factor is only added to the data for studies that have zero counts.</li><br>
+  						<li>all - When at least one study has a zero count, the correction factor is added to the data for all studies.</li>
   				</ul>
   	</ul>
   	<h3>Random-Effect Models</h3>

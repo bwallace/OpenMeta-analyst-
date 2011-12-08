@@ -290,9 +290,6 @@ binary.fixed.peto <- function(binary.data, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.") 
     
-    params$measure <- "PETO"
-    # use metric PETO to compute point estimates for studies 
-
     if (length(binary.data@g1O1) == 1){
         res <- get.res.for.one.binary.study(binary.data, params)
          # Package res for use by overall method.

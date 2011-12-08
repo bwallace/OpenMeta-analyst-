@@ -1172,7 +1172,7 @@ meta.regression.plot <- function(plot.data, outpath) {
     # calculate radii of circles
     se <- plot.data$effects$se
     inv.var <- 1 / se^2
-    max.symbol.size <- 1
+    max.symbol.size <- .5
     # radius of the largest circle
     max.ratio <- 5 
     # ratio of radii of largest circle to smallest circle
@@ -1216,21 +1216,20 @@ meta.regression.plot <- function(plot.data, outpath) {
 #       Diagnostic SROC               #
 #######################################
 
-sroc.plot <- function(plot.data, outpath,
-                      symSize=1,
-                      lcol = "darkred",
-                      lweight = 3,
-                      lpatern = "dotted",
-                      plotregion = "n",
-                      mcolor = "darkgreen") {
- 
+sroc.plot <- function(plot.data, outpath){
+    symSize <- 1
+    lcol = "darkred"
+    lweight = 3
+    lpatern = "dotted"
+    plotregion = "n"
+    mcolor = "blue"
     fitted.line <- plot.data$fitted.line
     weighted <- plot.data$weighted
     TPR <- plot.data$TPR
     FPR <- plot.data$FPR
     s.range <- plot.data$s.range
-    xlabel <- plot.data$plot.options$xlabel
-    ylabel <- plot.data$plot.options$ylabel
+    xlabel <- plot.data$plot.options$roc.xlabel
+    ylabel <- plot.data$plot.options$roc.ylabel
     title <- plot.data$plot.options$roc.title
     png(file=outpath, width=5 , height=5, units="in", res=144)
     if (weighted == TRUE) {

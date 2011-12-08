@@ -220,13 +220,14 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         params.list[[spec.index]]$create.plot <- FALSE
         # Don't create individual forest plots for sens and spec if both are checked.
         results.sens.spec <- NULL
+        # create side-by-side plot
+        # At present, fname.left is always the same as fname.right, and params.left is the same as params.right, except for measure.
+        #
         results.sens.spec <- side.by.side.plots(diagnostic.data, fname.left=fnames[sens.index], 
                                                                  params.left=params.list[[sens.index]],
                                                                  fname.right=fnames[spec.index],
                                                                  params.right=params.list[[spec.index]])
-        # create side-by-side plot
-        # At present, fname.left is always the same as fname.right, and params.left is the same as params.right, except for measure.
-        # 
+        
         images.tmp <- results.sens.spec$images
         names(images.tmp) <- "Sensitivity and Specificity Forest Plot"
         images <- c(images, images.tmp)
@@ -236,15 +237,17 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         plot.names <- c(plot.names, results.sens.spec$plot_names)
         
         params.sroc <- params.list[[sens.index]]
-        params.sroc$fp_xlabel <- "True Negative Ratio"
-        params.sroc$fp_ylabel <- "True Positive Ratio"                                       
-        results.sroc <- diagnostic.sroc(diagnostic.data, params=params.sroc)
+        params.sroc$roc_xlabel <- "1 - Specificity"
+        params.sroc$roc_ylabel <- "Sensitivity"   
+        params.sroc$roc_title <- ""
+        # slot for a title if desired in future
+        results.sroc <- create.sroc.plot(diagnostic.data, params=params.sroc)
         # create SROC plot
         images.tmp <- results.sroc$images
-        names(images.tmp) <- "Sensitivity / Specificity SROC"
+        names(images.tmp) <- "ROC Curve"
         images <- c(images, images.tmp)
         plot.params.paths.tmp <- results.sroc$plot_params_paths
-        names(plot.params.paths.tmp) <- "Sensitivity / Specificity SROC"
+        names(plot.params.paths.tmp) <- "ROC Curve"
         plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
         plot.names <- c(plot.names, results.sroc$plot_names)
     }
@@ -604,10 +607,14 @@ diagnostic.random.overall <- function(results) {
     res <- results$Summary$MAResults
 }
 
-###################################################
-#            diagnostic SROC                      #
-###################################################
-diagnostic.sroc <- function(diagnostic.data, params){
+##################################
+#            SROC Plot           #
+##################################
+create.sroc.plot <- function(diagnostic.data, params){
+    # creates a ROC plot
+    # TODO: This function should just return the sroc plot data - sroc.plot should
+    # be called from multiple.diagnostic. Same for side-by-side plots?
+  
     # assert that the argument is the correct type
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
 
@@ -635,13 +642,12 @@ diagnostic.sroc <- function(diagnostic.data, params){
     # Create list to display summary of results
     fitted.line <- list(intercept=res$coefficients[1], slope=res$coefficients[2])
     #sroc.path <- paste(params$fp_outpath, sep="")
-    sroc.path <- "./r_tmp/sroc.png"
+    sroc.path <- "./r_tmp/roc.png"
     plot.options <- list()
-    plot.options$xlabel <- "False Positive Rate (FPR)"
-    plot.options$ylabel <- "True Positive Rate (TPR)"
-    plot.data <- list("fitted.line" = fitted.line, "TPR"=TPR, "FPR"=FPR, 
-                      "inv.var" = inv.var, "s.range" = s.range, 
-                      "weighted"=params$sroc.weighted, "plot.options"=plot.options)
+    plot.options$roc.xlabel <- params$roc_xlabel
+    plot.options$roc.ylabel <- params$roc_ylabel
+    plot.options$roc.title <- params$roc_title
+    plot.data <- list("fitted.line" = fitted.line, "TPR"=TPR, "FPR"=FPR, "inv.var" = inv.var, "s.range" = s.range, "weighted"=params$sroc.weighted, "plot.options"=plot.options)
     sroc.plot(plot.data, outpath=sroc.path)
 
     images <- c("SROC"=sroc.path)
@@ -656,40 +662,6 @@ diagnostic.sroc <- function(diagnostic.data, params){
                     "plot_params_paths"=plot.params.paths)
     results
 }
-
-diagnostic.sroc.parameters <- function(){
-    # parameters
-    apply_adjustment_to = c("only0", "all")
-    sroc.weighted <- c("weighted", "unweighted")
-
-    params <- list("conf.level"="float", "digits"="float",
-                            "adjust"="float", "to"=apply_adjustment_to, "sroc.weighted"=sroc.weighted)
-
-    # default values
-    defaults <- list("conf.level"=95, "digits"=3, "adjust"=.5, "to"="all", "sroc.weighted"="weighted")
-
-    var_order = c("conf.level", "digits", "adjust", "to", "sroc.weighted")
-
-    parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
-}
-
-diagnostic.sroc.pretty.names <- function() {
-    pretty.names <- list("pretty.name"="Diagnostic Fixed SROC", 
-                         "description" = "Plots diagonostic SROC.",
-                         "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
-                         "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
-                         "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
-                         "to"=list("pretty.name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
-                                   is added to all cells of each two-by-two table that contains at leason one zero. When set to \"all\", the correction factor
-                                   is added to all two-by-two tables if at least one table contains a zero.")
-                          )
-}
-
-
-diagnostic.sroc.is.feasible <- function(diagnostic.data, metric){
-    metric %in% c("Sens", "Spec") # really only if we're doing this jointly, of course...      
-}
-
 
 ###################################################
 #            create side-by-side forest.plots     #
