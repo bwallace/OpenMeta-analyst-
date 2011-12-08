@@ -1174,7 +1174,7 @@ meta.regression.plot <- function(plot.data, outpath) {
     inv.var <- 1 / se^2
     max.symbol.size <- 1
     # radius of the largest circle
-    max.ratio <- 5
+    max.ratio <- 5 
     # ratio of radii of largest circle to smallest circle
     radii <- calculate.radii(inv.var, max.symbol.size, max.ratio)
     # radii are scaled by a function of the form C x^exp, where 
