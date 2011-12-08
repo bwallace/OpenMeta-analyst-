@@ -1216,14 +1216,13 @@ meta.regression.plot <- function(plot.data, outpath) {
 #       Diagnostic SROC               #
 #######################################
 
-sroc.plot <- function(plot.data, outpath,
-                      symSize=1,
-                      lcol = "darkred",
-                      lweight = 3,
-                      lpatern = "dotted",
-                      plotregion = "n",
-                      mcolor = "darkgreen") {
- 
+sroc.plot <- function(plot.data, outpath){
+    symSize <- 1
+    lcol = "darkred"
+    lweight = 3
+    lpatern = "dotted"
+    plotregion = "n"
+    mcolor = "blue"
     fitted.line <- plot.data$fitted.line
     weighted <- plot.data$weighted
     TPR <- plot.data$TPR
