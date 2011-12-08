@@ -144,6 +144,7 @@ class DatasetModel(QAbstractTableModel):
         # It is extremely important that these are updated as necessary
         # from the view side of things
         current_data_type = self.get_current_outcome_type()
+
         # offset corresonds to the first three columns, which 
         # are include study, name, and year.
         offset = 3
@@ -158,6 +159,8 @@ class DatasetModel(QAbstractTableModel):
             self.RAW_DATA = [col+offset for col in range(4)]
             # sensitivity & specificity? 
             self.OUTCOMES = [7, 8, 9, 10, 11, 12]
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
             
     def data(self, index, role=Qt.DisplayRole):
         '''
@@ -209,7 +212,7 @@ class DatasetModel(QAbstractTableModel):
                         outcome_val = est_and_ci[outcome_index]
                     except:
                         print self.OUTCOMES
-                        print "! %s" % self.get_current_outcome_type()
+                        print "! error getting data ! %s" % self.get_current_outcome_type()
                     if outcome_val is None:
                         return QVariant("")
                     outcome_val = est_and_ci[outcome_index]
@@ -824,19 +827,50 @@ class DatasetModel(QAbstractTableModel):
         ''' Returns the type of the currently displayed (or 'active') outcome (e.g., binary).  '''
         return self.dataset.get_outcome_type(self.current_outcome, get_string=get_str)
 
-    def get_stateful_dict(self):
-        '''
-        This captures the state of the model view; things like the current outcome
-        and column indices that are on the QT side of the data table model.
-        '''
-        d = {}
 
+    def _set_standard_cols(self, d):
+        ''' these are immutable '''
         # column indices
         d["NAME"] = self.NAME
         d["YEAR"] = self.YEAR
         d["RAW_DATA"] = self.RAW_DATA
         d["OUTCOMES"] = self.OUTCOMES
         d["HEADERS"] = self.headers
+        return d
+
+    def make_reasonable_stateful_dict(self, data_model):
+        d = {}
+        d = self._set_standard_cols(d)
+
+        # now take guesses/pick randomly for the remaining
+        # fields
+        d["current_outcome"] = data_model.get_outcome_names()[0] 
+        d["current_time_point"] = data_model.get_follow_up_names()[0]
+        all_txs = data_model.get_group_names()
+        d["current_txs"] = [all_txs[0], all_txs[1]]
+
+        # just pick a reasonable current effect,
+        # given the outcome data type
+        data_type = data_model.get_outcome_type(d["current_outcome"])
+        effect = None # this is ignored for diagnostic
+        if data_type == BINARY:
+            effect = "OR"
+        elif data_type == CONTINUOUS:
+            effect = "SMD"
+        # make sure you call change_metric_if_appropriate
+        # after setting this as the state_dict
+        d["current_effect"] = effect
+        d["study_auto_added"] = False # hmm ?
+        return d
+
+
+    def get_stateful_dict(self):
+        '''
+        This captures the state of the model view; things like the current outcome
+        and column indices that are on the QT side of the data table model.
+        '''
+        d = {}
+        d = self._set_standard_cols(d)
 
         # currently displayed outcome, etc
         d["current_outcome"] = self.current_outcome

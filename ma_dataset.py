@@ -65,6 +65,7 @@ class Dataset:
 
         return list(set(all_group_names))
         
+
     def change_group_name(self, old_group_name, new_group_name, outcome=None, follow_up=None):
         if (outcome is None and follow_up is not None) or (follow_up is None and outcome is not None):
             raise Exception, "dataset -- change_group_name -- either both outcome and follow_up should be None, \
@@ -299,8 +300,8 @@ class Dataset:
         ''' returns *all* known follow-up names '''
         follow_up_names = []
         ## iterate over each outcome
-        for outcome in self.outcome_names_to_follow_ups.keys():
-            follow_up_names.extend(outcome.values())
+        for outcome_d in self.outcome_names_to_follow_ups.values():
+            follow_up_names.extend(outcome_d.values())
         return list(set(follow_up_names))
         
     def get_study_names(self):

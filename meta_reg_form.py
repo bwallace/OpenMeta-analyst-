@@ -36,7 +36,7 @@ class MetaRegForm(QDialog, ui_meta_reg.Ui_cov_reg_dialog):
                                                      covs_to_include=selected_covariates)
 
         studies = []
-        for study in [study.name for study in self.model.dataset.studies]:
+        for study in [study.name for study in self.model.get_studies(only_if_included=True)]:
             if study != '' and cov_d[study] is not None and cov_d[study] != '':
                 studies.append(study)
 
