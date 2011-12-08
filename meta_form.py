@@ -777,18 +777,22 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.out_path = file_path
         
         state_dict = None
+        check_for_appropriate_metric = False # only if we guess at the current state
         try:
             state_dict = pickle.load(open(file_path + ".state"))
             print "found state dictionary: \n%s" % state_dict
         except:
-            print "no state dictionary found!"
-
+            print "no state dictionary found -- using 'reasonable' defaults"
+            state_dict = self.tableView.model().make_reasonable_stateful_dict(data_model)
+            print "made state dictionary: \n%s" % state_dict
+            check_for_appropriate_metric = True
 
         prev_dataset = self.model.dataset.copy()
         
         undo_f = lambda : self.undo_set_model(prev_out_path, prev_state_dict, \
                                                 prev_dataset)
-        redo_f = lambda : self.set_model(data_model, state_dict)
+        redo_f = lambda : self.set_model(data_model, state_dict, \
+                                            check_for_appropriate_metric=True)
         
         open_command = CommandGenericDo(redo_f, undo_f)
         self.tableView.undoStack.push(open_command)
@@ -828,7 +832,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.model.reset()
         self.data_dirtied()
 
-    def set_model(self, data_model, state_dict=None):
+    def set_model(self, data_model, state_dict=None, check_for_appropriate_metric=False):
         ##
         # we explicitly append a blank study to the
         # dataset iff there is fewer than 1 study 
@@ -846,23 +850,22 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         
         self.tableView.setModel(self.model)
 
-        #self.model_updated()
-        ## moving the statefuleness 
+        ## moving the statefulendess 
         # update below the model swap-out
         # to fix issue #62
         if state_dict is not None:
             self.model.set_state(state_dict)
+        else:
+            # default 
+            pass
 
+        self.tableView.model().update_column_indices()
         self.tableView.resizeColumnsToContents()
         self.model_updated()
-        '''
-        self.tableView.model().set_current_metric(metric_name)
-        self.model.try_to_update_outcomes()    
-        self.model.reset()
-        
-        
-        '''
-        #self.model.current_effect = state_dict['current_effect']
+     
+        if check_for_appropriate_metric:
+            self.tableView.change_metric_if_appropriate()
+
         print "ok -- model set."
         
         
