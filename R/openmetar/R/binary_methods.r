@@ -10,7 +10,8 @@
 
 library(metafor)
 
-binary.log.metrics <- c("OR", "RR")
+binary.logit.metrics <- c("PLO")
+binary.log.metrics <- c("OR", "RR", "PLN")
 
 compute.for.one.bin.study <- function(binary.data, params){
     res <- escalc(params$measure, ai=binary.data@g1O1, bi=binary.data@g1O2, 
