@@ -110,7 +110,7 @@ metric.is.log.scale <- function(metric){
 }
 
 metric.is.logit.scale <- function(metric) {
-    metric %in% c(diagnostic.logit.metrics)
+    metric %in% c(binary.logit.metrics, diagnostic.logit.metrics)
 }    
 
 create.plot.data.binary <- function(binary.data, params, res, selected.cov = NULL){
