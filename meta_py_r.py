@@ -273,9 +273,7 @@ def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj", \
     # grab the study names. note: the list is pulled out in reverse order from the 
     # model, so we, er, reverse it.
     studies = table_model.get_studies()
-
     study_names = ", ".join(["'" + study.name + "'" for study in studies])
-    studies.reverse()
     
     ests, SEs = table_model.get_cur_ests_and_SEs()
     ests_str = ", ".join(_to_strs(ests))
@@ -348,8 +346,8 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj",
     # grab the study names. note: the list is pulled out in reverse order from the 
     # model, so we, er, reverse it.
     studies = table_model.get_studies(only_if_included=True)
+    
     study_names = ", ".join(["'" + study.name + "'" for study in studies])
-    studies.reverse()
     
     ests, SEs = table_model.get_cur_ests_and_SEs(only_if_included=True)
     ests_str = ", ".join(_to_strs(ests))
@@ -396,13 +394,13 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj",
                             y=c(%s), SE=c(%s), study.names=c(%s), covariates=%s)" % \
                             (var_name, g1O1_str, g1O2_str, g2O1_str, g2O2_str, \
                              ests_str, SEs_str, study_names, cov_str)
-        
+
     elif table_model.included_studies_have_point_estimates():
         print "not sufficient raw data, but studies have point estimates..."
 
         r_str = "%s <- new('BinaryData', y=c(%s), SE=c(%s), study.names=c(%s),  covariates=%s)" \
                             % (var_name, ests_str, SEs_str, study_names, cov_str)
-                            
+               
     else:
         print "there is neither sufficient raw data nor entered effects/CIs. I cannot run an analysis."
         # @TODO complain to the user here
@@ -437,8 +435,6 @@ def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", \
     studies = table_model.get_studies(only_if_included=True)
 
     study_names = ", ".join(["'" + study.name + "'" for study in studies])
-    # I'm still uncomfortable that we do this.
-    studies.reverse()
 
     y_ests, y_SEs = table_model.get_cur_ests_and_SEs(only_if_included=True, effect=metric)
     y_ests_str = ", ".join(_to_strs(y_ests))
@@ -488,21 +484,6 @@ def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", \
     ro.r(r_str)
     print "ok."
     return r_str
-    
-def gen_cov_str(dataset, studies):
-    # add covariates, if any
-    cov_str = "list("
-    if len(dataset.covariates) > 0:
-        study_order = [study.name for study in studies]
-        ## notice again that we reverse the studies here;
-        # why are they backwards???
-        study_order.reverse()
-        cov_strs = []
-        for cov in dataset.covariates:
-            cov_strs.append(cov_to_str(cov, study_order, dataset))
-        cov_str += ", ".join(cov_strs)
-    cov_str += ")"
-    return cov_str
 
 
 def cov_to_str(cov, study_names, dataset, named_list=True, return_cov_vals=False):
@@ -721,7 +702,7 @@ def run_binary_fixed_meta_regression(selected_cov, bin_data_name="tmp_obj", \
     result = ro.r("%s" % res_name)
     return parse_out_results(result)
     
-def _gen_cov_vals_obj_str(cov, study_names, dataset):
+def _gen_cov_vals_obj_str(cov, study_names, dataset): 
     values_str, cov_vals = cov_to_str(cov, study_names, dataset, \
                             named_list=False, return_cov_vals=True)
     ref_var = cov_vals[0].replace("'", "") # arbitrary
