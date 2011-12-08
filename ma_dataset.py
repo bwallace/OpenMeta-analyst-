@@ -175,7 +175,13 @@ class Dataset:
                     study.covariate_dict[covariate.name] = None
         
             
-    def get_values_for_cov(self, covariate):
+    def ids_to_study_names(self):
+        ids_to_names = {}
+        for study in self.studies:
+            ids_to_names[study.id] = study.name
+        return ids_to_names
+
+    def get_values_for_cov(self, covariate, ids_for_keys=False):
         ''' returns a dictionary mapping study names to values for the given covariate '''
         cov_name = covariate
         if isinstance(covariate, Covariate):
@@ -184,7 +190,10 @@ class Dataset:
         for study in self.studies:  
             if study.covariate_dict.has_key(cov_name) and \
                     study.covariate_dict[cov_name] is not None:
-                cov_d[study.name] = study.covariate_dict[cov_name]
+                if ids_for_keys:
+                    cov_d[study.id] = study.covariate_dict[cov_name]
+                else:
+                    cov_d[study.name] = study.covariate_dict[cov_name]
         return cov_d
         
     def get_cov_names(self):
@@ -395,13 +404,6 @@ class Study:
         self.id = id
         self.year = year
         self.name= name
-      
-        '''
-        if name != "":
-            self.name = name
-        else:
-            self.name = "study %s" % (id+1)
-        '''
 
         self.N = None
         self.notes = ""

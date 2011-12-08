@@ -14,7 +14,7 @@
 import math
 import os
 import pdb
-from pdb import set_trace
+
 from PyQt4.QtCore import pyqtRemoveInputHook
 
 from meta_globals import *
@@ -266,6 +266,7 @@ def draw_network(edge_list, unconnected_vertices, network_path = '"./r_tmp/netwo
     ro.r("dev.off()")
     return "r_tmp/network.png"
     
+
 def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj", \
                                                 covs_to_include=None):
     r_str = None
@@ -273,20 +274,22 @@ def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj", \
     # grab the study names. note: the list is pulled out in reverse order from the 
     # model, so we, er, reverse it.
     studies = table_model.get_studies()
+    # the study_ids preserve the ordering
+    study_ids = [study.id for study in studies]
     study_names = ", ".join(["'" + study.name + "'" for study in studies])
-    
+
     ests, SEs = table_model.get_cur_ests_and_SEs()
     ests_str = ", ".join(_to_strs(ests))
     SEs_str = ", ".join(_to_strs(SEs))
     
     cov_str = list_of_cov_value_objects_str(table_model.dataset,\
-                                                [study.name for study in studies],\
+                                                study_ids,\
                                                 cov_list=covs_to_include)
 
 
     # first try and construct an object with raw data
     if table_model.included_studies_have_raw_data():
-        print "we have raw data... parsing"
+        print "we have raw data... parsing, parsing, parsing"
             
         raw_data = table_model.get_cur_raw_data()
         Ns1_str = _get_str(raw_data, 0)
@@ -352,10 +355,13 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj",
     ests, SEs = table_model.get_cur_ests_and_SEs(only_if_included=True)
     ests_str = ", ".join(_to_strs(ests))
     SEs_str = ", ".join(_to_strs(SEs))
-                
+        
+    # for internal consumption; the ids preserve the order
+    study_ids = [study.id for study in studies]
+            
     # generate the covariate string
     cov_str = list_of_cov_value_objects_str(table_model.dataset,\
-                                                [study.name for study in studies],\
+                                                study_ids,\
                                                 cov_list=covs_to_include)
     # first try and construct an object with raw data
     if include_raw_data and table_model.included_studies_have_raw_data():
@@ -400,11 +406,13 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj",
 
         r_str = "%s <- new('BinaryData', y=c(%s), SE=c(%s), study.names=c(%s),  covariates=%s)" \
                             % (var_name, ests_str, SEs_str, study_names, cov_str)
+        
                
     else:
         print "there is neither sufficient raw data nor entered effects/CIs. I cannot run an analysis."
         # @TODO complain to the user here
     
+
     ###
     # ok, it seems R uses latin-1 for its unicode encodings,
     # whereas QT uses UTF8. this can cause situations where
@@ -433,6 +441,7 @@ def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", \
     # grab the study names. note: the list is pulled out in reverse order from the 
     # model, so we, er, reverse it.
     studies = table_model.get_studies(only_if_included=True)
+    study_ids = [study.id for study in studies]
 
     study_names = ", ".join(["'" + study.name + "'" for study in studies])
 
@@ -442,7 +451,7 @@ def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", \
                
     # generate the covariate string
     cov_str = list_of_cov_value_objects_str(table_model.dataset,\
-                                            [study.name for study in studies],
+                                            study_ids, \
                                             cov_list=covs_to_include)
     
     # first try and construct an object with raw data
@@ -486,7 +495,8 @@ def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", \
     return r_str
 
 
-def cov_to_str(cov, study_names, dataset, named_list=True, return_cov_vals=False):
+def cov_to_str(cov, study_ids, dataset, \
+                named_list=True, return_cov_vals=False):
     '''
     The string is constructured so that the covariate
     values are in the same order as the 'study_names'
@@ -498,18 +508,21 @@ def cov_to_str(cov, study_names, dataset, named_list=True, return_cov_vals=False
     else:
         cov_str = "c("
 
-    cov_value_d = dataset.get_values_for_cov(cov.name)
+    cov_value_d = dataset.get_values_for_cov(cov.name, ids_for_keys=True)
+    
+    # get the study ids in the same order as the names
     cov_values = []
-    for study in study_names:
+   
+    for study_id in study_ids:
         if cov.data_type == CONTINUOUS:
-            if cov_value_d.has_key(study):
-                cov_values.append("%s" % cov_value_d[study])
+            if cov_value_d.has_key(study_id):
+                cov_values.append("%s" % cov_value_d[study_id])
             else:
                 cov_values.append("NA")
         else:
-            if cov_value_d.has_key(study):
+            if cov_value_d.has_key(study_id):
                 # factor; note the string.
-                cov_values.append("'%s'" % unicode(cov_value_d[study].toLatin1(), "latin1"))
+                cov_values.append("'%s'" % unicode(cov_value_d[study_id].toLatin1(), "latin1"))
             else:
                 cov_values.append("NA")
     cov_str += ",".join(cov_values) + ")"
@@ -702,8 +715,8 @@ def run_binary_fixed_meta_regression(selected_cov, bin_data_name="tmp_obj", \
     result = ro.r("%s" % res_name)
     return parse_out_results(result)
     
-def _gen_cov_vals_obj_str(cov, study_names, dataset): 
-    values_str, cov_vals = cov_to_str(cov, study_names, dataset, \
+def _gen_cov_vals_obj_str(cov, study_ids, dataset): 
+    values_str, cov_vals = cov_to_str(cov, study_ids, dataset, \
                             named_list=False, return_cov_vals=True)
     ref_var = cov_vals[0].replace("'", "") # arbitrary
 
@@ -715,13 +728,13 @@ def _gen_cov_vals_obj_str(cov, study_names, dataset):
     return r_str
 
 
-def list_of_cov_value_objects_str(dataset, study_names, cov_list=None):
+def list_of_cov_value_objects_str(dataset, study_ids, cov_list=None):
     r_cov_str = []
     if cov_list is None:
         # then use all covariates that belong to the dataset
         cov_list = dataset.covariates
     for cov in cov_list:
-        r_cov_str.append(_gen_cov_vals_obj_str(cov, study_names, dataset))
+        r_cov_str.append(_gen_cov_vals_obj_str(cov, study_ids, dataset))
     r_cov_str = "list(" + ",".join(r_cov_str) + ")"
 
     return r_cov_str
@@ -737,11 +750,9 @@ def run_meta_regression(dataset, study_names, cov_list, metric_name,\
     r_str = "%s<- meta.regression(%s, %s)" % \
                             (results_name, data_name, params_df.r_repr())
 
+
     print "\n\n(run_meta_regression): executing:\n %s\n" % r_str
 
-
-    #pyqtRemoveInputHook()
-    #pdb.set_trace()
 
     ### TODO -- this is hacky
     ro.r(r_str)

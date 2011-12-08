@@ -37,9 +37,10 @@ class MetaRegForm(QDialog, ui_meta_reg.Ui_cov_reg_dialog):
 
         studies = []
         for study in [study.name for study in self.model.get_studies(only_if_included=True)]:
-            if study != '' and cov_d[study] is not None and cov_d[study] != '':
+            if study != '' and cov_d[study] is not None:
                 studies.append(study)
-
+    
+    
         result = meta_py_r.run_meta_regression(self.model.dataset, studies,\
                                                  selected_covariates, self.model.current_effect)
         if isinstance(result, str):
@@ -67,6 +68,7 @@ class MetaRegForm(QDialog, ui_meta_reg.Ui_cov_reg_dialog):
         chk_box_layout = QGridLayout()
         for cov in self.model.dataset.covariates:
             cov_vals = [study.covariate_dict[cov.name] for study in studies]
+            # note that we're *allowing* empty strings
             if not None in cov_vals:
                 chk_box = QCheckBox(cov.name)
                 if len(self.covs_and_check_boxes)==0:
