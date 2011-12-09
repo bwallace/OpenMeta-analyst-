@@ -230,7 +230,7 @@ create.regression.display <- function(res, params, display.data) {
     n.rows <- length(cov.display.col) + 1
     # extra row for col. labels
     
-    col.labels <- c("Covariate", "Level", "Estimate", "Std. error", "p-Value", "Z-Value", "Lower bound", "Upper bound")
+    col.labels <- c("Covariate", "Level", "Coefficients", "Std. error", "p-Value", "Z-Value", "Lower bound", "Upper bound")
     reg.array <- array(dim=c(length(cov.display.col)+1, length(col.labels)), dimnames=list(NULL, col.labels))
     reg.array[1,] <- col.labels
     coeffs <- round(res$b, digits=params$digits)
@@ -265,14 +265,17 @@ create.regression.display <- function(res, params, display.data) {
     # add data to array
     reg.array[2:n.rows,"Covariate"] <- cov.display.col
     reg.array[2:n.rows, "Level"] <- levels.display.col
-    reg.array[2:n.rows,"Estimate"] <- coeffs.tmp 
+    reg.array[2:n.rows,"Coefficients"] <- coeffs.tmp 
     reg.array[2:n.rows,"Std. error"] <- se.tmp
     reg.array[2:n.rows, "p-Value"] <- pvals.tmp
     reg.array[2:n.rows,"Z-Value"] <- zvals.tmp
     reg.array[2:n.rows, "Lower bound"] <- lbs.tmp
     reg.array[2:n.rows, "Upper bound"] <- ubs.tmp
     arrays <- list(arr1=reg.array)
-    reg.disp <- list("model.title" = "Meta-Regression", "table.titles" = c("Model Results"), "arrays" = arrays)
+    
+    metric.name <- pretty.metric.name(as.character(params$measure)) 
+    model.title <- paste("Meta-Regression\n\nMetric: ", metric.name, sep="")
+    reg.disp <- list("model.title" = model.title, "table.titles" = c("Model Results"), "arrays" = arrays)
 
     class(reg.disp) <-  "summary.display"
     return(reg.disp)

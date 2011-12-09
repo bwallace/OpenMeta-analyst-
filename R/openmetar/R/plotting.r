@@ -480,7 +480,8 @@ set.plot.options <- function(params) {
        plot.options$col3.str <- as.character(params$fp_col3_str)
     }
     
-    if (params$fp_show_col4=='TRUE') {
+    if ((params$fp_show_col4=='TRUE') && (!as.character(params$measure) %in% c("PR", "PLN", "PLO", "PAS", "PFT"))) {
+      # don't show col. 4 if metric is one-arm.
       plot.options$show.col4 <- TRUE
     } else {
       plot.options$show.col4 <- FALSE
