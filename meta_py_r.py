@@ -383,15 +383,17 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj",
         g1O2 = [(total_i-event_i) for total_i, event_i in zip(g1_totals, g1_events)]
         g1O2_str = ", ".join(_to_strs(g1O2))
     
-        # now, for group 2
-        g2_events = _get_col(raw_data, 2)
-        
-        g2O1_str = ", ".join(_to_strs(g2_events))
-        g2_totals = _get_col(raw_data, 3)
-        
-        g2O2 = [(total_i-event_i) for total_i, event_i in zip(g2_totals, g2_events)]
-        g2O2_str = ", ".join(_to_strs(g2O2))
-                
+        # now, for group 2; we only set up the string
+        # for group two if we have a two-arm metric
+        g2O1_str, g2O2_str = "0", "0" # the 0s are just to satisfy R; not used
+        if table_model.current_effect in TWO_ARM_METRICS:  
+            g2_events = _get_col(raw_data, 2)
+            g2O1_str = ", ".join(_to_strs(g2_events))
+
+            g2_totals = _get_col(raw_data, 3)
+            g2O2 = [(total_i-event_i) for total_i, event_i in zip(g2_totals, g2_events)]
+            g2O2_str = ", ".join(_to_strs(g2O2))
+                    
         # actually creating a new object on the R side seems the path of least resistance here.
         # the alternative would be to try and create a representation of the R object on the 
         # python side, but this would require more work and I'm not sure what the benefits

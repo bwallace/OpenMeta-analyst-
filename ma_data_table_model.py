@@ -1046,11 +1046,19 @@ class DatasetModel(QAbstractTableModel):
         ''' 
         True iff all _included_ studies have all raw data (e.g., 2x2 for binary) for the currently
         selected outcome and tx groups.
+
+        Note that if the current metric is a *one-arm* metric, we only check the first
+        arm; i.e., a study is considered to have raw data in this case if the active arm
+        has data.
         '''
+
+        one_arm_data = self.current_effect in ONE_ARM_METRICS
+
         # the -1 is again accounting for the last (empty) appended study
         for study_index in range(len(self.dataset.studies)-1):
             if self.dataset.studies[study_index].include:
-                if not self.raw_data_is_complete_for_study(study_index):
+                if not self.raw_data_is_complete_for_study(study_index,\
+                                                            first_arm_only=one_arm_data):
                     return False
         return True
 
