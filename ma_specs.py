@@ -70,7 +70,14 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             
         if self.data_type != "binary":
             self.disable_bin_only_fields()
-            
+        
+        # disable second arm display for one-arm analyses
+        if self.model.current_effect in ONE_ARM_METRICS:
+            self.setup_fields_for_one_arm()    
+        
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
+
         self.current_widgets = []
         self.current_method = None
         self.current_params = None
@@ -209,7 +216,16 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
     def disable_bin_only_fields(self):
         self.col3_str_edit.setEnabled(False)
         self.col4_str_edit.setEnabled(False)
-         
+        self.show_3.setChecked(False)
+        self.show_3.setEnabled(False)
+        self.show_4.setChecked(False)
+        self.show_4.setEnabled(False)
+
+
+    def setup_fields_for_one_arm(self):
+        self.show_4.setChecked(False)
+        self.show_4.setEnabled(False)
+
     def method_changed(self):
         self.clear_param_ui()
         self.current_widgets= []
