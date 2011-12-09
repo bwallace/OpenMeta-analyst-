@@ -27,7 +27,7 @@ meta.regression <- function(reg.data, params) {
        reg.disp <- create.regression.display(res, params, display.data)
    
        if (length(display.data$n.cont.covs)==1 & length(display.data$factor.n.levels)==0) {
-            # if only 1 covariate, create reg. plot
+            # if only 1 continuous covariate, create reg. plot
             betas <- res$b
             fitted.line <- list(intercept=betas[1], slope=betas[2])
             plot.path <- "./r_tmp/reg.png"
@@ -75,8 +75,9 @@ extract.cov.data <- function(reg.data) {
   # initialize names of continuous covariates to empty list
   cont.cov.names <- c()
 
-  for (cov in reg.data@covariates) {
+  for (n.covs in 1:length(reg.data@covariates)) {
     # put covariate data into two arrays, for continuous and factor covariates.
+    cov <- reg.data@covariates[[n.covs]]
     cov.name <- cov@cov.name
     cov.vals <- cov@cov.vals
     cov.type <- cov@cov.type
@@ -92,12 +93,12 @@ extract.cov.data <- function(reg.data) {
       levels <- unique(cov.vals)
       levels.minus.one <- setdiff(levels, ref.var)
       # levels except for reference variable
-      cov.cols <- array(dim=c(length(reg.data@y), length(levels.minus.one)), dimnames=list(NULL, levels.minus.one))
-      for (level in levels.minus.one) {
-           cov.cols[,level] <- as.numeric(cov.vals==level)
+      cov.cols <- array(dim=c(length(reg.data@y), length(levels.minus.one)))
+      for (col.index in 1:length(levels.minus.one)) {
+           level <- levels.minus.one[col.index]
+           cov.cols[,col.index] <- as.numeric(cov.vals==level)
       }
       factor.cov.array <- cbind(factor.cov.array, cov.cols)
-      #factor.cov.names <- c(factor.cov.names, cov.name)
       factor.n.levels <- c(factor.n.levels, length(levels))
       factor.cov.display.col <- c(factor.cov.display.col, cov.name, rep("",length(levels.minus.one)))
       levels.display.col <- c(levels.display.col, ref.var, levels.minus.one)

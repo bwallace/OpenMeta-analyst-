@@ -254,10 +254,10 @@ create.regression.display <- function(res, params, display.data) {
         n.levels <- factor.n.levels[count] 
         coeffs.tmp <- c(coeffs.tmp,"", coeffs[insert.row:(insert.row + n.levels - 2)])
         se.tmp <- c(se.tmp,"", se[insert.row:(insert.row + n.levels - 2)])
-        pvals.tmp <- c(pvals.tmp,"",coeffs[insert.row:(insert.row + n.levels - 2)])
-        zvals.tmp <- c(zvals.tmp,"",coeffs[insert.row:(insert.row + n.levels - 2)])
-        lbs.tmp <- c(lbs.tmp,"",coeffs[insert.row:(insert.row + n.levels - 2)])
-        ubs.tmp <- c(ubs.tmp,"",coeffs[insert.row:(insert.row + n.levels - 2)])
+        pvals.tmp <- c(pvals.tmp,"",pvals[insert.row:(insert.row + n.levels - 2)])
+        zvals.tmp <- c(zvals.tmp,"",zvals[insert.row:(insert.row + n.levels - 2)])
+        lbs.tmp <- c(lbs.tmp,"",lbs[insert.row:(insert.row + n.levels - 2)])
+        ubs.tmp <- c(ubs.tmp,"",ubs[insert.row:(insert.row + n.levels - 2)])
         insert.row <- insert.row + n.levels
       }   
     }
