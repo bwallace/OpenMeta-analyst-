@@ -1,0 +1,37 @@
+<link href="css/help.css" 
+type=text/css rel=stylesheet>
+<h2><a name="top">Subgroup Meta-Analysis</a></h2>
+  <p>This section provides an example that illustrates how to perform a subgroup meta-analysis. The example uses the same data set, meantime.oma, as described in the preceeding section. <p>
+  <p>First, create a new factor covariate to define the subgroups of studies as follows: </p>
+  <ol>
+     <li>Select <b>add covariate</b> from the <b>Dataset</b> menu.</li>
+     <li>In the <b>add a new covariate</b> dialog, type "treatment group" in the covariate name field.
+     <li>Select <b>Factor</b> in the type of covariate field.</li>
+    <p><img src="images/add_factor_covariate.png"></img></p> </li>
+     <li>Click <b>OK</b>.</li>
+  </ol>
+  </p>There are 4 treatment groups, which based on the time to treatment:</p>
+  <ul>
+     <li>Group 1: 0 - 3 hours</li>
+     <li>Group 2: 3.1 - 5 hours</li>
+     <li>Group 3: 5.1 - 9.5 hours</li>
+     <li>Group 4: 9.6 - 22 hours</li>
+  </ul>
+  <p>Enter 1, 2, 3, or 4 in the "treatment group" column, according to the time to treatment.</p>
+   <p>To perform a subgroup meta-analysis:</p> 
+  <ol>
+    <li>Select <b>subgroup meta-analysis</b> from the <b>Analysis</b> menu. </li>
+    <li>In the <b>select covariate</b> dialog, select <b>treatment group</b>.</li>
+    <li>In the Method & Parameters dialog, select the method and parameters for the analysis.</li>
+    <li>Click <b>OK</b>.</li> 
+  </ul>   
+ <p>This displays the subgroup summary and plot, as shown
+  below.</p>
+ <p>
+<img 
+  src="images/subgroup_summary.png">
+ <img 
+  src="images/subgroup_forest_plots_1-2.png">
+  <img 
+  src="images/subgroup_forest_plots_3-4.png"> </p> 
+ <table id="nav" cellspacing="0"><tr valign="center"><td align="left" width="20"><a href="regression.html#top"><img src="images/b_prev.gif" border="0"></td><td align="left">Performing a Meta-Regression</td></a><td>&nbsp;</td><td align="right"></td><td align="right" width="20"></a></td></tr></table>

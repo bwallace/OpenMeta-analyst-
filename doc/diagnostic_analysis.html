@@ -1,8 +1,8 @@
 <link href="css/help.css" 
 type=text/css rel=stylesheet>
- <h2><a name="top">Performing a Meta-Analysis of Diagnostic Data</a></h2>
-  <p>This section provides an example that illustrates how to perform a meta-analysis. 
-  To run the analysis, first open the sample data set lymph.oma, as described in <a href="example.html#top">Opening an Existing Data Set</a>.
+ <h2><a name="top">Example - Meta-Analysis of Diagnostic Data</a></h2>
+  <p>This section provides an example that illustrates how to perform a meta-analysis of diagnostic data. 
+  To run the analysis, first open the sample data set lymph.oma. To learn how to open a data set, see <a href="example.html#top">Opening an Existing Data Set</a>.
   Then do the following:</p>
   <ol>
    
@@ -10,14 +10,19 @@ type=text/css rel=stylesheet>
     <li>Select the file lymph.oma. </li>
     <li>Click <b>Open</b></li>
     <li>In the <b>Analysis</b> menu,
-        select <b>meta-analysis</b> .
-       <p>This opens the Diagnostic Metrics dialog, in which you can select the metrics that you want to use in the analysis. A separate analysis is performed for each selected metric.</p>
-    <p><img src="images/diagnostic_metrics_dialog.png"></p></li>
-    <li>Click <b>next</b>. This opens the Method & Parameters for Sens./Spec. dialog, in which you can choose a method and parameters for the sensitivity/specifiity analysis. 
+        select <b>meta-analysis</b> . This opens the Diagnostic Metrics dialog, in which you can select the metrics that you want to use in the analysis.</p>
+       <p><img src="images/diagnostic_metrics_dialog.png"></p></li>      
+    <li>Click <b>next</b>.  If <b>sensitivity</b> or <b>specificity</b> is selected, this opens the Method & Parameters for Sens./Spec. dialog, in which you can choose a method and parameters for both the sensitivity and specificity analyses. 
     <p><img src="images/method_dialog_sens_spec.png"></p></li>
-     <li>After making your selections, click <b>next</b> to open the Method & Parameters for DOR/LR dialog, where you can choose a method and paramaters for the diagnostic odds ratio and likelihood ratios analysis.</li>
+    <li>After making your selections, click <b>next</b>. This opens the Method & Parameters for DOR/LR dialog, where you can choose a method and parameters for the diagnostic odds ratio and likelihood ratios analysis.
+    <p><img src="images/method_dialog_dor-lr.png"></p></li>
     <li>Click <b>OK</b> to run the analysis.</li>
     </ol>
+  <p><b>Notes:</b> 
+    <ul>
+      <li>If neither <b>sensitivity</b> nor <b>specificity</b> are selected in the Diagnostics Metrics dialog, the Method & Parameters for Sens./Spec. dialog will not be displayed.</li>
+      <li>If neither <b>likelihood ratio</b> nor <b>diagnostic odds ratio</b> are selected, the Method & Parameters for DOR/LR dialog will not be displayed.</li>
+    </ul>
   <p>The results are displayed in the results/analysis window, as shown below:</p>
   <ul>
 <li>The Summary contains the overall numerical results of the meta-analysis, including the summary estimate, confidence interval, and heterogeneity statistics.</li>
@@ -25,4 +30,4 @@ type=text/css rel=stylesheet>
 </ul>
 <p><img src="images/ma_standard_summary.png"></p>
 
- <table id="nav" cellspacing="0"><tr valign="center"><td align="left" width="20"><a href="example.html#top"><img src="images/b_prev.gif" border="0"></td><td align="left">Opening an Existing Data Set</td></a><td>&nbsp;</td><td align="right"></td><td align="right" width="20"></a></td></tr></table>
+ <table id="nav" cellspacing="0"><tr valign="center"><td align="left" width="20"><a href="analysis.html#top"><img src="images/b_prev.gif" border="0"></td><td align="left">Example - Meta-Analysis of Binary Data</td></a><td>&nbsp;</td><td align="right"></td><td align="right" width="20"></a></td></tr></table>
