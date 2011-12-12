@@ -1350,12 +1350,9 @@ format.data.cols <- function(plot.data) {
 format.effect.sizes <- function(y, lb, ub, options) {
   # format column by padding entries with spaces for alignment
   digits <- options$digits
-  y.display <- round(y, digits)
-  y.display <- sprintf(paste("%.", digits,"f", sep=""), y.display)
-  lb.display <- round(lb, digits)
-  lb.display <- sprintf(paste("%.", digits,"f", sep=""), lb.display)
-  ub.display <- round(ub, digits)
-  ub.display <- sprintf(paste("%.", digits,"f", sep=""), ub.display)
+  y.display <- sprintf(paste("%.", digits,"f", sep=""), y)
+  lb.display <- sprintf(paste("%.", digits,"f", sep=""), lb)
+  ub.display <- sprintf(paste("%.", digits,"f", sep=""), ub)
                        
   # for ub, add an extra space to positive numbers for alignment (negative numbers display minus sign)
   if (length(ub.display[ub.display >= 0])) {

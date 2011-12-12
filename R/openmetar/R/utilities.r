@@ -101,14 +101,17 @@ create.repeat.string <- function(symbol, num.repeats) {
  
 round.display <- function(x, digits) {
     # Prints "< 10^(-digits)" if x.rounded == 0 or "x" otherwise
+    digits.str <- paste("%.", digits, "f", sep="")
     x.rounded <- round(x, digits)
     cutoff <- sprintf(paste("%.", digits,"f", sep=""), 10^(-digits))
     x.rounded[x.rounded == 0] <- paste("< ", cutoff, sep = "", collapse = "")
+    x.rounded[x.rounded != 0] <- sprintf(digits.str, x)
     x.rounded
 }
 
 create.summary.disp <- function(res, params, model.title, data.type) {
     # create table for diplaying summary of ma results
+    digits.str <- paste("%.", params$digits, "f", sep="")
     if (data.type == "continuous") {
         transform.name <- "continuous.transform.f"
     } else if (data.type == "diagnostic") {
@@ -122,13 +125,13 @@ create.summary.disp <- function(res, params, model.title, data.type) {
     } else if (metric.is.logit.scale(params$measure)) {
         scale.str <- "logit"
     }
-    tau2 <- round(res$tau2, digits=params$digits)
+    tau2 <- sprintf(digits.str, res$tau2)
     degf <- res$k - 1
     QLabel =  paste("Q(df=", degf, ")", sep="")
     if (!is.null(res$QE)) {
       I2 <- max(0, (res$QE - degf)/res$QE)
       I2 <- paste(100 * round(I2, digits = 2), "%")
-      QE <- round(res$QE, digits=params$digits)
+      QE <- sprintf(digits.str, res$QE)
     } else {
       I2 <- "NA"
       QE <- "NA"
@@ -150,10 +153,10 @@ create.summary.disp <- function(res, params, model.title, data.type) {
     }
     
     res.title <- "  Model Results"
-    y.disp <- round(eval(call(transform.name, params$measure))$display.scale(res$b), digits=params$digits)
-    lb.disp <- round(eval(call(transform.name, params$measure))$display.scale(res$ci.lb), digits=params$digits)
-    ub.disp <- round(eval(call(transform.name, params$measure))$display.scale(res$ci.ub), digits=params$digits)
-    se <- round(res$se, digits=params$digits)
+    y.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$b))
+    lb.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$ci.lb))
+    ub.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$ci.ub))
+    se <- sprintf(digits.str, res$se)
    
     res.array <- array(c("Estimate", y.disp, "Lower bound", lb.disp,
                      "Upper bound", ub.disp, "Std. error", se, "p-Value", pVal, "Z-Value", zVal),  
@@ -168,9 +171,9 @@ create.summary.disp <- function(res, params, model.title, data.type) {
    
     if (scale.str == "log" || scale.str == "logit") {
          # display and calculation scales are different - create two tables for results
-         estCalc <- round(res$b, digits=params$digits)
-         lbCalc <- round(res$ci.lb, digits=params$digits)
-         ubCalc <- round(res$ci.ub, digits=params$digits)
+         estCalc <- sprintf(digits.str, res$b)
+         lbCalc <- sprintf(digits.str, res$ci.lb)
+         ubCalc <- sprintf(digits.str, res$ci.ub)
          alt.array <- array(c("Estimate", estCalc, "Lower bound", lbCalc, "Upper bound", ubCalc), dim=c(2,3))
          alt.title <- paste("  Results (", scale.str, " scale)", sep="")
          arrays <- list(arr1=res.array, arr2=het.array, arr3=alt.array)
@@ -233,7 +236,8 @@ create.regression.display <- function(res, params, display.data) {
     col.labels <- c("Covariate", "Level", "Coefficients", "Std. error", "p-Value", "Z-Value", "Lower bound", "Upper bound")
     reg.array <- array(dim=c(length(cov.display.col)+1, length(col.labels)), dimnames=list(NULL, col.labels))
     reg.array[1,] <- col.labels
-    coeffs <- round(res$b, digits=params$digits)
+    digits.str <- paste("%.", params$digits, "f", sep="")
+    coeffs <- sprintf(digits.str, res$b)
     se <- round.display(res$se, digits=params$digits)
     pvals <- round.display(res$pval, digits=params$digits)
     zvals <- round.display(res$zval, digits=params$digits)
@@ -314,15 +318,16 @@ create.overall.display <- function(res, study.names, params, model.title, data.t
       lb <- res[[count]]$ci.lb
       ub <- res[[count]]$ci.ub
       se <- res[[count]]$se
-      y.disp <- round(eval(call(transform.name, params$measure))$display.scale(y), digits=params$digits)
-      lb.disp <- round(eval(call(transform.name, params$measure))$display.scale(lb), digits=params$digits)
-      ub.disp <- round(eval(call(transform.name, params$measure))$display.scale(ub), digits=params$digits)
-      se.disp <- round(se, digits=params$digits)
+      digits.str <- paste("%.", params$digits, "f", sep="")
+      y.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(y))
+      lb.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(lb))
+      ub.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(ub))
+      se.disp <- sprintf(digits.str, se)
       if (!is.null(res[[count]]$QE)) {
         degf <- res[[count]]$k - 1
         I2 <- max(0, (res[[count]]$QE - degf)/res[[count]]$QE)
         I2 <- paste(100 * round(I2, digits = 2), "%")
-        QE <- round(res[[count]]$QE, digits=params$digits)
+        QE <- sprintf(digits.str, res[[count]]$QE)
         QE <- paste(QE, " (", degf,")", sep="")
       } else {
         I2 <- "NA"
@@ -346,9 +351,9 @@ create.overall.display <- function(res, study.names, params, model.title, data.t
       overall.array[count+1,] <- c(study.names[count], y.disp, lb.disp, ub.disp, se.disp, pVal, zVal, QE, QEp, I2)
       if (scale.str == "log" || scale.str == "logit") {
         # create data for second table for point estimates in calc scale.
-        y.calc <- round(y, digits=params$digits)
-        lb.calc <- round(lb, digits=params$digits)
-        ub.calc <- round(ub, digits=params$digits)
+        y.calc <- sprintf(digits.str, y)
+        lb.calc <- sprintf(digits.str, lb)
+        ub.calc <- sprintf(digits.str, ub)
         overall.array.calc[count+1, ] <- c(study.names[count], y.calc, lb.calc, ub.calc)
       }
     }

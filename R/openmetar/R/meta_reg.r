@@ -12,12 +12,10 @@ library(metafor)
 meta.regression <- function(reg.data, params) {
    cov.data <- extract.cov.data(reg.data)
    cov.array <- cov.data$cov.array
-   # check whether method is fixed-effect or random effect
-   if (params$method == "FE") {
-     method <- "FE"
-   } else {
-     method <- params$rm.method
-   }
+   
+   params$rm.method <- "DL"
+   # remove when and if method dialog is added
+   method <- params$rm.method
 
    res<-try(rma.uni(yi=reg.data@y, sei=reg.data@SE, slab=reg.data@study.names,
                                 level=params$conf.level, digits=params$digits, method=method, 
