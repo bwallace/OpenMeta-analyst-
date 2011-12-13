@@ -100,13 +100,14 @@ create.repeat.string <- function(symbol, num.repeats) {
 }
  
 round.display <- function(x, digits) {
-    # Prints "< 10^(-digits)" if x.rounded == 0 or "x" otherwise
+    # Prints "< 0.5 * 10^(-digits)" if x < 0.5 * 10^(-digits) or rounds x otherwise
     digits.str <- paste("%.", digits, "f", sep="")
-    x.rounded <- round(x, digits)
-    cutoff <- sprintf(paste("%.", digits,"f", sep=""), 10^(-digits))
-    x.rounded[x.rounded == 0] <- paste("< ", cutoff, sep = "", collapse = "")
-    x.rounded[x.rounded != 0] <- sprintf(digits.str, x)
-    x.rounded
+    cutoff <- sprintf(paste("%.", digits+1,"f", sep=""), 0.5*10^(-digits))
+    x.disp <- c()
+    x.disp[x < 0.5 * 10^(-digits)] <- paste("< ", cutoff, sep = "", collapse = "")
+    x.disp[x == 0.5 * 10^(-digits)] <- sprintf(digits.str, 10^(-digits))
+    x.disp[x > 0.5 * 10^(-digits)] <- sprintf(digits.str, x)
+    x.disp
 }
 
 create.summary.disp <- function(res, params, model.title, data.type) {
