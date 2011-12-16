@@ -70,13 +70,13 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             
         if self.data_type != "binary":
             self.disable_bin_only_fields()
-        
+            if self.data_type == "diagnostic":
+                self.enable_diagnostic_fields()
+
         # disable second arm display for one-arm analyses
         if self.model.current_effect in ONE_ARM_METRICS:
             self.setup_fields_for_one_arm()    
         
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
 
         self.current_widgets = []
         self.current_method = None
@@ -213,6 +213,12 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.parent().analysis(result)
         self.accept()
 
+    def enable_diagnostic_fields(self):
+        #self.col3_str_edit.setEnabled(True)
+        self.col3_str_edit.setText("[default]")
+        self.show_3.setEnabled(True)
+        self.show_3.setChecked(True)
+
     def disable_bin_only_fields(self):
         self.col3_str_edit.setEnabled(False)
         self.col4_str_edit.setEnabled(False)
@@ -220,7 +226,6 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.show_3.setEnabled(False)
         self.show_4.setChecked(False)
         self.show_4.setEnabled(False)
-
 
     def setup_fields_for_one_arm(self):
         self.show_4.setChecked(False)

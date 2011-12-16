@@ -312,6 +312,8 @@ class DatasetModel(QAbstractTableModel):
                         # the new outcome in its meta-analytic unit object -- need to check
                         # for this at runtime as we do with follow-up and outcome
                         new_study = Study(self.max_study_id()+1)
+                        # issue #133 fix; exclude newly added studies by default
+                        new_study.include=False
                         self.dataset.add_study(new_study)
                         self.study_auto_added = int(new_study.id)
                         study_added_due_to_edit = int(new_study.id)
@@ -1079,6 +1081,9 @@ class DatasetModel(QAbstractTableModel):
         effect = effect or self.current_effect
         
         est = cur_ma_unit.effects_dict[effect][group_str]["est"] 
+        
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
         lower, upper = cur_ma_unit.effects_dict[effect][group_str]["lower"], \
                                 cur_ma_unit.effects_dict[effect][group_str]["upper"]
                                 
