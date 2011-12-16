@@ -122,6 +122,9 @@ class OutcomesModel(QAbstractTableModel):
             return False
             
         self.dataset.change_outcome_name(old_outcome_name, new_outcome_name)
+        # issue #130: if we change an outcome name, set the current outcome
+        # to said outcome
+        self.current_outcome = new_outcome_name
         return True
                 
     def flags(self, index):

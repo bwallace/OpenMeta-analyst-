@@ -530,7 +530,6 @@ class DatasetModel(QAbstractTableModel):
                     outcome_index = section - self.OUTCOMES[0]
                     outcome_headers = ["sens.", "lower", "upper", "spec.", "lower", "upper"]
                     return QVariant(outcome_headers[outcome_index])
-
             elif self.current_outcome is not None:
                 # then the column is to the right of the outcomes, and must
                 # be a covariate.

@@ -246,8 +246,6 @@ class EditDialog(QDialog, ui_edit_dialog.Ui_edit_dialog):
             self.covariate_list.model().update_covariates_list()
         
     def remove_covariate(self):
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
         cov_obj = self.get_selected_covariate()
         self.covariate_list.model().dataset.remove_covariate(cov_obj)
         self.covariate_list.model().update_covariates_list()

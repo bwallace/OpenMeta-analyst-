@@ -352,8 +352,17 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             # update the new state dict to reflect the currently selected
             # outcomes, etc.
             new_state_dict["current_outcome"] = old_state_dict["current_outcome"]
+
             if edit_window.outcome_list.model().current_outcome is not None:
                 new_state_dict["current_outcome"] = edit_window.outcome_list.model().current_outcome
+            # fix for issue #130: if the current outcome no longer exists, pick a different one.
+            elif new_state_dict["current_outcome"] not in \
+                            edit_window.outcome_list.model().outcome_list:
+                # then just show a random outcome
+                new_state_dict["current_outcome"] = edit_window.outcome_list.model().outcome_list[0]
+
+            #pyqtRemoveInputHook()
+            #pdb.set_trace()
             new_state_dict["current_time_point"] =  max(edit_window.follow_up_list.currentIndex().row(), 0)
             grp_list = edit_window.group_list.model().group_list
 

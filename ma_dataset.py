@@ -92,8 +92,10 @@ class Dataset:
             for outcome in study.outcomes:
                 if outcome.name == old_outcome_name:
                     outcome.name = new_outcome_name
-                    break
-                
+        
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()        
+
     def delete_group(self, group_name):
         study = self.studies[0]
         for study in self.studies:
