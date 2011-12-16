@@ -384,8 +384,145 @@ fillin.cont.AminusB <- function(
 
 }
 
+################################ 
+# Diagnostic data calculation  #
+################################
+impute.diagnostic.data <- function(diag.data, metric){
+    # this function imputes diagnostic data (i.e., 2x2 tables) from the fields
+    # available in the diagnostic.data data frame parameter.
+    #
+    if (metric=="Sens") {
+      ci.data <- list(estimate=diag.data$sens, lb=diag.data$sens.lb, ub=diag.data$sens.ub, conf.level=diag.data$conf.level)
+      est.var <- calc.est.var(ci.data)
+      # fill in estimate, ci.lb, ci.ub
+      diag.data$sens <- est.var$estimate
+      diag.data$sens.var <- est.var$var
+      diag.data <- calc.sens.data(diag.data)
+    } else if (metric=="Spec") {
+      ci.data <- list(estimate=diag.data$spec, lb=diag.data$spec.lb, ub=diag.data$spec.ub, conf.level=diag.data$conf.level)
+      est.var <- calc.est.var(ci.data)
+      # fill in estimate, ci.lb, ci.ub
+      diag.data$spec <- est.var$estimate
+      diag.data$cpec.var <- est.var$var
+      diag.data <- calc.spec.data(diag.data)
+    }  
+    diag.data 
+}
 
+calc.est.var <- function(ci.data) {
+  # calculate estimate and variance given any two of the following: estimate, ci lower bound, ci upper bound.
+  #
+  est.var <- list()
+  alpha <- 1.0-(ci.data$conf.level/100.0)
+  mult <- abs(qnorm(alpha/2.0))
+  if (isnt.null(ci.data$estimate)) {
+    # if estimate is there, use it.
+    if (isnt.null(ci.data$lb)) {
+    est.var$estimate <- ci.data$estimate
+    var <- ((ci.data$estimate - ci.data$lb) / mult)^2
+    est.var$var <- var
+    } else if (isnt.null(ci.data$ub)) {
+    est.var$estimate <- ci.data$estimate
+    var <- ((ci.data$ub - ci.data$estimate) / mult)^2
+    est.var$var <- var
+    } 
+  } else if (isnt.null(ci.data$lb) & isnt.null(ci.data$ub)) {
+    # estimate isn't there.
+    radius <- (ci.data$ub - ci.data$lb) / 2
+    estimate <- ci.data$lb + radius
+    est.var$estimate <- estimate
+    var <- (radius / mult)^2
+    est.var$var <- var
+  }
+  est.var
+}
 
+calc.sens.data <- function(diag.data) {
+  # back-calculate TP, FN, sens, var from any two known values
+  # Notes:  TP = 1 / (( 1-sens) * var)
+  #         FN = 1 / (sens * var)
+  #         TP / FN = sens / (1-sens)
+  #         FN / TP = (1-sens) / sens
+  #
+  TP<-NULL; FN<-NULL; TN<-NULL; FP<-NULL; sens<-NULL; sens.var<-NULL
+  
+    
+  if (isnt.null(diag.data$sens) & isnt.null(diag.data$sens.var)) {
+    sens <- diag.data$sens
+    sens.var <- diag.data$sens.var
+    diag.data$TP <- round(1 / ((1-sens) * sens.var), digits=0)
+    diag.data$FN <- round(1 / (sens * sens.var), digits=0)
+  } else if (isnt.null(diag.data$sens) & isnt.null(diag.data$TP)) {
+    sens <- diag.data$sens 
+    TP <- diag.data$TP
+    diag.data$FN <- round(((1 - sens) / sens) * TP, digits=0)
+    diag.data$sens.var <- 1 / ((1 - sens) * TP)
+  } else if (isnt.null(diag.data$sens) & isnt.null(diag.data$FN)) {
+    sens <- diag.data$sens 
+    FN <- diag.data$FN
+    diag.data$TP <- round((sens / (1 - sens)) * FN, digits=0)
+    diag.data$sens.var <- 1 / (sens * FN)
+  } else if (isnt.null(diag.data$sens.var) & isnt.null(diag.data$TP)) {
+    sens.var <- diag.data$sens.var 
+    TP <- diag.data$TP
+    sens <- 1 - 1/(TP * sens.var)
+    diag.data$sens <- sens
+    diag.data$FN <- round(1 / (sens * sens.var), digits=0)
+  } else if (isnt.null(diag.data$sens.var) & isnt.null(diag.data$FN)) {
+    sens.var <- diag.data$sens.var 
+    FN <- diag.data$FN
+    sens <- 1 / (FN * sens.var)
+    diag.data$sens <- sens
+    diag.data$TP <- round(1 / ((1-sens) * sens.var), digits=0)
+  }     
+  diag.data
+}
 
+calc.spec.data <- function(diag.data) {
+  # back-calculate TN, FP, spec, var from any two known values
+  # Note: This function is identical to calc.sens.data with the following substitutions:
+  # sens -> spec
+  # TP -> TN
+  # FN -> FP
+  # Could combine into one function, but it would be less readable. 
+  #
+  # Notes:  TN = 1 / (( 1-spec) * var)
+  #         FP = 1 / (spec * var)
+  #         TN / FP = spec / (1-spec)
+  #         FP / TN = (1-spec) / spec
+  #
+  TN<-NULL; FP<-NULL; TN<-NULL; FP<-NULL; spec<-NULL; spec.var<-NULL
+  
+    
+  if (isnt.null(diag.data$spec) & isnt.null(diag.data$SE)) {
+    spec <- diag.data$spec
+    spec.var <- diag.data$spec.var
+    diag.data$TN <- 1 / ((1-spec) * spec.var)
+    diag.data$FP <- 1 / (spec * spec.var)
+  } else if (isnt.null(diag.data$spec) & isnt.null(diag.data$TN)) {
+    spec <- diag.data$spec 
+    TN <- diag.data$TN
+    diag.data$FP <- round(((1 - spec) / spec) * TN, digits=0)
+    diag.data$spec.var <- 1 / ((1 - spec) * TN)
+  } else if (isnt.null(diag.data$spec) & isnt.null(diag.data$FP)) {
+    spec <- diag.data$spec 
+    FP <- diag.data$FP
+    diag.data$TN <- round((spec / (1 - spec)) * FP, digits=0)
+    diag.data$spec.var <- 1 / (spec * FP)
+  } else if (isnt.null(diag.data$spec.var) & isnt.null(diag.data$TN)) {
+    spec.var <- diag.data$spec.var 
+    TN <- diag.data$TN
+    spec <- 1 - 1/(TN * spec.var)
+    diag.data$spec <- spec
+    diag.data$FP <- round(1 / (spec * spec.var), digits=0)
+  } else if (isnt.null(diag.data$spec.var) & isnt.null(diag.data$FP)) {
+    spec.var <- diag.data$spec.var 
+    FP <- diag.data$FP
+    spec <- 1 / (FP * spec.var)
+    diag.data$spec <- spec
+    diag.data$TN <- round(1 / ((1-spec) * spec.var), digits=0)
+  }          
+  diag.data
+}
 
 
