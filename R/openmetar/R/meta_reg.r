@@ -13,13 +13,12 @@ meta.regression <- function(reg.data, params) {
    cov.data <- extract.cov.data(reg.data)
    cov.array <- cov.data$cov.array
    
-   params$rm.method <- "DL"
    # remove when and if method dialog is added
-   method <- params$rm.method
+   method <- params$method
 
    res<-try(rma.uni(yi=reg.data@y, sei=reg.data@SE, slab=reg.data@study.names,
-                                level=params$conf.level, digits=params$digits, method=method, 
-                                mods=cov.array))
+                                level=params$conf.level, digits=params$digits,
+                                method=method, mods=cov.array))
    if (class(res)[1] != "try-error") {
        display.data <- cov.data$display.data
        reg.disp <- create.regression.display(res, params, display.data)

@@ -30,19 +30,25 @@ class MetaRegForm(QDialog, ui_meta_reg.Ui_cov_reg_dialog):
             # for all of the selected covariates
             cov_d = self.model.dataset.get_values_for_cov(cov.name)
 
+
         # note that we create a 'binary' data object (regardless
         # of the data type) -- any variant of OMData will due here 
         meta_py_r.ma_dataset_to_simple_binary_robj(self.model, include_raw_data=False,\
-                                                     covs_to_include=selected_covariates)
+                                                    covs_to_include=selected_covariates)
 
         studies = []
         for study in [study.name for study in self.model.get_studies(only_if_included=True)]:
             if study != '' and cov_d[study] is not None:
                 studies.append(study)
     
-    
+        # fixed or random effects meta-regression?
+        fixed_effects = False
+        if self.fixed_effects_radio.isChecked():
+            fixed_effects = True
+      
         result = meta_py_r.run_meta_regression(self.model.dataset, studies,\
-                                                 selected_covariates, self.model.current_effect)
+                                                 selected_covariates, self.model.current_effect,
+                                                 fixed_effects=fixed_effects)
         if isinstance(result, str):
             # then there was an error!
             QMessageBox.critical(self,

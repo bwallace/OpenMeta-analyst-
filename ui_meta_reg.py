@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'cov_reg_dlg2.ui'
 #
-# Created: Thu Nov 10 13:24:44 2011
+# Created: Fri Dec 16 09:54:32 2011
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_cov_reg_dialog(object):
     def setupUi(self, cov_reg_dialog):
         cov_reg_dialog.setObjectName(_fromUtf8("cov_reg_dialog"))
-        cov_reg_dialog.resize(398, 201)
+        cov_reg_dialog.resize(401, 267)
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Verdana"))
         cov_reg_dialog.setFont(font)
@@ -34,8 +34,24 @@ class Ui_cov_reg_dialog(object):
         self.cov_grp_box.setTitle(QtGui.QApplication.translate("cov_reg_dialog", "available covariates", None, QtGui.QApplication.UnicodeUTF8))
         self.cov_grp_box.setObjectName(_fromUtf8("cov_grp_box"))
         self.verticalLayout.addWidget(self.cov_grp_box)
-        spacerItem1 = QtGui.QSpacerItem(20, 60, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        spacerItem1 = QtGui.QSpacerItem(20, 30, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem1)
+        self.groupBox = QtGui.QGroupBox(cov_reg_dialog)
+        self.groupBox.setMinimumSize(QtCore.QSize(0, 50))
+        self.groupBox.setTitle(QtGui.QApplication.translate("cov_reg_dialog", "model type", None, QtGui.QApplication.UnicodeUTF8))
+        self.groupBox.setObjectName(_fromUtf8("groupBox"))
+        self.verticalLayout_2 = QtGui.QVBoxLayout(self.groupBox)
+        self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
+        self.random_effects_radio = QtGui.QRadioButton(self.groupBox)
+        self.random_effects_radio.setText(QtGui.QApplication.translate("cov_reg_dialog", "random effects", None, QtGui.QApplication.UnicodeUTF8))
+        self.random_effects_radio.setChecked(True)
+        self.random_effects_radio.setObjectName(_fromUtf8("random_effects_radio"))
+        self.verticalLayout_2.addWidget(self.random_effects_radio)
+        self.fixed_effects_radio = QtGui.QRadioButton(self.groupBox)
+        self.fixed_effects_radio.setText(QtGui.QApplication.translate("cov_reg_dialog", "fixed effects", None, QtGui.QApplication.UnicodeUTF8))
+        self.fixed_effects_radio.setObjectName(_fromUtf8("fixed_effects_radio"))
+        self.verticalLayout_2.addWidget(self.fixed_effects_radio)
+        self.verticalLayout.addWidget(self.groupBox)
         self.buttonBox = QtGui.QDialogButtonBox(cov_reg_dialog)
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Verdana"))

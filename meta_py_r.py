@@ -706,9 +706,10 @@ def parse_out_results(result):
                 
                                        
 def run_binary_fixed_meta_regression(selected_cov, bin_data_name="tmp_obj", \
-                                                res_name="result"):
+                                        res_name="result"):
+    method_str = "FE"                                        
     # equiavlent to params <- list(conf.level=95, digits=3)
-    params = {"conf.level":95, "digits":3, "method":"RE"}
+    params = {"conf.level":95, "digits":3, "method":method_str}
     params_df = ro.r['data.frame'](**params)
     r_str = "%s<-binary.fixed.meta.regression(%s, %s, %s)" % \
             (res_name, bin_data_name, params_df.r_repr(), "'"+ selected_cov + "'")
@@ -742,9 +743,13 @@ def list_of_cov_value_objects_str(dataset, study_ids, cov_list=None):
     return r_cov_str
 
 def run_meta_regression(dataset, study_names, cov_list, metric_name,\
-                        data_name="tmp_obj", results_name="results_obj"):    
+                        data_name="tmp_obj", results_name="results_obj",\
+                        fixed_effects=False): 
+                        
+    method_str = "FE" if fixed_effects else "DL"    
+
     # @TODO conf.level, digits should be user-specified
-    params = {"conf.level":95, "digits":3, "method":"FE", 
+    params = {"conf.level":95, "digits":3, "method":method_str, 
                 "rm.method":"ML", "measure":metric_name}
     params_df = ro.r['data.frame'](**params)
 
