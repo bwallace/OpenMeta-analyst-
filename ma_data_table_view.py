@@ -15,6 +15,7 @@ from PyQt4.Qt import *
 
 import binary_data_form
 import continuous_data_form
+import diagnostic_data_form
 
 # it's a questionable practice to import the
 # underlying model into the view, but sometimes
@@ -198,7 +199,6 @@ class MADataTable(QtGui.QTableView):
                 
             form = binary_data_form.BinaryDataForm2(ma_unit, cur_txs, cur_group_str, cur_effect, parent=self)
             if form.exec_():
-                ### TODO do the same for continuous data!
                 # push the edit even
                 #raw_data_edit = CommandEditRawData(ma_unit, self.model(), copy.deepcopy(cur_raw_data_dict), form.raw_data_d)
                 ma_edit = CommandEditMAUnit(self, study_index, ma_unit, old_ma_unit)
@@ -212,7 +212,17 @@ class MADataTable(QtGui.QTableView):
             form = continuous_data_form.ContinuousDataForm(ma_unit, cur_txs, cur_group_str, cur_effect, parent=self)
             if form.exec_():
                 # update the model; push this event onto the stack
-                ### TODO need to update to using CommandEditMAUnit!
+                ma_edit = CommandEditMAUnit(self, study_index, ma_unit, old_ma_unit)
+                self.undoStack.push(ma_edit)
+        else:
+            # then this is diagnostic data
+            cur_raw_data_dict = {}
+            for group in cur_txs:
+                cur_raw_data_dict[group] = list(ma_unit.get_raw_data_for_group(group))
+
+            
+            form = diagnostic_data_form.DiagnosticDataForm(ma_unit, cur_txs, cur_group_str, parent=self)
+            if form.exec_():
                 ma_edit = CommandEditMAUnit(self, study_index, ma_unit, old_ma_unit)
                 self.undoStack.push(ma_edit)
 
@@ -695,6 +705,7 @@ class CommandEditMAUnit(QUndoCommand):
         self.new_ma_unit = new_ma_unit
         self.table_view = table_view
         self.study_index = study_index
+        self.ma_data_table_view = table_view
         
     def undo(self):
         self.model.set_current_ma_unit_for_study(self.study_index, self.old_ma_unit)

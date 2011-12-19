@@ -418,13 +418,13 @@ calc.est.var <- function(ci.data) {
   if (isnt.null(ci.data$estimate)) {
     # if estimate is there, use it.
     if (isnt.null(ci.data$lb)) {
-    est.var$estimate <- ci.data$estimate
-    var <- ((ci.data$estimate - ci.data$lb) / mult)^2
-    est.var$var <- var
+        est.var$estimate <- ci.data$estimate
+        var <- ((ci.data$estimate - ci.data$lb) / mult)^2
+        est.var$var <- var
     } else if (isnt.null(ci.data$ub)) {
-    est.var$estimate <- ci.data$estimate
-    var <- ((ci.data$ub - ci.data$estimate) / mult)^2
-    est.var$var <- var
+        est.var$estimate <- ci.data$estimate
+        var <- ((ci.data$ub - ci.data$estimate) / mult)^2
+        est.var$var <- var
     } 
   } else if (isnt.null(ci.data$lb) & isnt.null(ci.data$ub)) {
     # estimate isn't there.

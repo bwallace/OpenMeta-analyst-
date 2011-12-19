@@ -361,8 +361,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 # then just show a random outcome
                 new_state_dict["current_outcome"] = edit_window.outcome_list.model().outcome_list[0]
 
-            #pyqtRemoveInputHook()
-            #pdb.set_trace()
             new_state_dict["current_time_point"] =  max(edit_window.follow_up_list.currentIndex().row(), 0)
             grp_list = edit_window.group_list.model().group_list
 

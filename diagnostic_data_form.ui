@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Dialog</class>
- <widget class="QDialog" name="Dialog">
+ <class>DiagnosticDataForm</class>
+ <widget class="QDialog" name="DiagnosticDataForm">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>368</width>
-    <height>264</height>
+    <width>318</width>
+    <height>250</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="QTableWidget" name="simple_table">
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTableWidget" name="two_by_two_table">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -24,13 +24,13 @@
      </property>
      <property name="minimumSize">
       <size>
-       <width>300</width>
+       <width>260</width>
        <height>80</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>300</width>
+       <width>260</width>
        <height>80</height>
       </size>
      </property>
@@ -65,40 +65,68 @@
      </property>
      <row>
       <property name="text">
-       <string>(predicted) +</string>
+       <string>(test) +</string>
       </property>
      </row>
      <row>
       <property name="text">
-       <string>(predicted) -</string>
+       <string>(test) -</string>
       </property>
      </row>
      <column>
       <property name="text">
-       <string>+</string>
+       <string>(disease) +</string>
       </property>
      </column>
      <column>
       <property name="text">
-       <string>-</string>
+       <string>(disease) -</string>
       </property>
      </column>
     </widget>
    </item>
-   <item row="1" column="0">
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::MinimumExpanding</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>25</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
       <widget class="QLabel" name="label_13">
+       <property name="minimumSize">
+        <size>
+         <width>50</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>50</width>
+         <height>20</height>
+        </size>
+       </property>
        <property name="font">
         <font>
          <family>Verdana</family>
         </font>
        </property>
        <property name="text">
-        <string>effect</string>
+        <string>metric</string>
        </property>
        <property name="alignment">
-        <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+        <set>Qt::AlignBottom|Qt::AlignHCenter</set>
        </property>
       </widget>
      </item>
@@ -106,7 +134,7 @@
       <widget class="QComboBox" name="effect_cbo_box">
        <property name="minimumSize">
         <size>
-         <width>76</width>
+         <width>100</width>
          <height>20</height>
         </size>
        </property>
@@ -118,9 +146,22 @@
        </property>
       </widget>
      </item>
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
     </layout>
    </item>
-   <item row="2" column="0">
+   <item>
     <layout class="QGridLayout" name="gridLayout_3">
      <item row="0" column="0">
       <widget class="QLabel" name="label_14">
@@ -241,7 +282,7 @@
      </item>
     </layout>
    </item>
-   <item row="3" column="0">
+   <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QLabel" name="label_2">
@@ -294,7 +335,7 @@
      </item>
     </layout>
    </item>
-   <item row="4" column="0">
+   <item>
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -311,7 +352,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>Dialog</receiver>
+   <receiver>DiagnosticDataForm</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -327,7 +368,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>Dialog</receiver>
+   <receiver>DiagnosticDataForm</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

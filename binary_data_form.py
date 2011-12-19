@@ -53,9 +53,9 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         
     def _setup_signals_and_slots(self):
         QObject.connect(self.raw_data_table, SIGNAL("cellChanged (int, int)"), 
-                                                                                self._cell_changed)
+                                                    self._cell_changed)
         QObject.connect(self.effect_cbo_box, SIGNAL("currentIndexChanged(QString)"),
-                                                                                self.effect_changed) 
+                                                    self.effect_changed) 
                                                                                 
         QObject.connect(self.effect_txt_box, SIGNAL("textChanged(QString)"), lambda new_text : self.val_edit("est", new_text))
         QObject.connect(self.low_txt_box, SIGNAL("textChanged(QString)"), lambda new_text : self.val_edit("lower", new_text))
@@ -230,10 +230,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                     self._color_row(row)
                     
     def check_that_cols_sum(self):
-        #for col in range93):
-        #    col_sum = 0
-        #    for row in range(2):
-        #        col_sum += self._get_int(row, col)
+        # TODO
         pass
         
     def _color_all(self, color=ERROR_COLOR):
