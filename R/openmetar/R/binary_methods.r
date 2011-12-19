@@ -34,8 +34,13 @@ binary.transform.f <- function(metric.str){
             exp(x)
         }
         else {
-        	# identity function
-            x
+            if (metric.str %in% binary.logit.metrics){
+                invlogit(x)
+            }
+            else {
+                # identity function
+                x
+            }
         }
     }
     
@@ -44,9 +49,14 @@ binary.transform.f <- function(metric.str){
             log(x)
         }
         else {
-        	# identity function
-            x
-        }    
+          if (metric.str %in% binary.logit.metrics){
+                logit(x)
+            }
+            else {
+                # identity function
+                x
+            }
+         }
     }
     list(display.scale = display.scale, calc.scale = calc.scale)
 }
@@ -118,7 +128,7 @@ binary.fixed.inv.var <- function(binary.data, params){
         model.title <- paste("Binary Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="")
         data.type <- "binary"
         summary.disp <- create.summary.disp(res, params, model.title, data.type)
-        # genreate forest plot 
+        # generate forest plot 
         if ((is.null(params$create.plot)) || params$create.plot == TRUE) {
             forest.path <- paste(params$fp_outpath, sep="")
             plot.data <- create.plot.data.binary(binary.data, params, res)
