@@ -63,6 +63,22 @@ def impute_two_by_two(bin_data_dict):
     two_by_two = ro.r('impute.bin.data(bin.data=%s)' % dataf.r_repr())
     print two_by_two
 
+def impute_diag_data(diag_data_dict, metric):
+    print "computing 2x2 table via R..."
+    print diag_data_dict
+
+    # rpy2 doesn't know how to handle None types.
+    # we can just remove them from the dictionary.
+    for param, val in diag_data_dict.items():
+        if val is None:
+            diag_data_dict.pop(param)
+
+    dataf = ro.r['data.frame'](**diag_data_dict)
+    two_by_two = ro.r("impute.diagnostic.data(%s, '%s')" % \
+                        (dataf.r_repr(), metric))
+
+    return _rls_to_pyd(two_by_two)
+
 
 def fillin_2x2(table_data_dict):
     r_str = ["fillin.2x2.simple("]

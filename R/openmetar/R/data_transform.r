@@ -425,7 +425,7 @@ calc.est.var <- function(ci.data) {
     est.var$estimate <- ci.data$estimate
     var <- ((logit(ci.data$ub) - logit(ci.data$estimate)) / mult)^2
     est.var$var <- var
-    } 
+    }
   } else if (isnt.null(ci.data$lb) & isnt.null(ci.data$ub)) {
     # estimate isn't there.
     radius <- (logit(ci.data$ub) - logit(ci.data$lb)) / 2

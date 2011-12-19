@@ -159,9 +159,7 @@ class DatasetModel(QAbstractTableModel):
             self.RAW_DATA = [col+offset for col in range(4)]
             # sensitivity & specificity? 
             self.OUTCOMES = [7, 8, 9, 10, 11, 12]
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
-            
+      
     def data(self, index, role=Qt.DisplayRole):
         '''
         Implements the required QTTableModel data method. There is a lot of switching on 
@@ -1081,9 +1079,7 @@ class DatasetModel(QAbstractTableModel):
         effect = effect or self.current_effect
         
         est = cur_ma_unit.effects_dict[effect][group_str]["est"] 
-        
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
+
         lower, upper = cur_ma_unit.effects_dict[effect][group_str]["lower"], \
                                 cur_ma_unit.effects_dict[effect][group_str]["upper"]
                                 

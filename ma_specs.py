@@ -271,8 +271,11 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         ###
         metric = self.model.current_effect 
         if self.data_type == "diagnostic":
-            metric = "Sens" if self.sens_spec else "DOR"      
-
+            if self.meta_f_str is None:
+                metric = "Sens" if self.sens_spec else "DOR"
+            else:
+                metric = "Sens"
+        
         self.available_method_d = meta_py_r.get_available_methods(for_data_type=self.data_type,\
                                          data_obj_name=tmp_obj_name, metric=metric)
 
