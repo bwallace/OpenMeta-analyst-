@@ -845,12 +845,19 @@ class DatasetModel(QAbstractTableModel):
         # fields
         d["current_outcome"] = data_model.get_outcome_names()[0] 
         d["current_time_point"] = data_model.get_follow_up_names()[0]
-        all_txs = data_model.get_group_names()
-        d["current_txs"] = [all_txs[0], all_txs[1]]
+
 
         # just pick a reasonable current effect,
         # given the outcome data type
         data_type = data_model.get_outcome_type(d["current_outcome"])
+
+        all_txs = data_model.get_group_names()
+
+        if data_type == DIAGNOSTIC:
+            d["current_txs"] = [all_txs[0]]
+        else:
+            d["current_txs"] = [all_txs[0], all_txs[1]]
+
         effect = None # this is ignored for diagnostic
         if data_type == BINARY:
             effect = "OR"
