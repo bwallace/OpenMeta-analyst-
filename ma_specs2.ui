@@ -22,7 +22,7 @@
    <string>Method &amp; Parameters</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="images/icons.qrc">
+   <iconset>
     <normaloff>:/images/meta.png</normaloff>:/images/meta.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -143,7 +143,7 @@
             <item row="1" column="1">
              <widget class="QLineEdit" name="col2_str_edit">
               <property name="text">
-               <string>Estimate (Conf. Int.)</string>
+               <string>[default]</string>
               </property>
              </widget>
             </item>
