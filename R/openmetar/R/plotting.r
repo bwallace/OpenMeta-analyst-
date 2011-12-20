@@ -57,7 +57,7 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
         plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(plot.ub)
     } 
     
-    plot.data <- list(label = c(paste(params$fp_col1_str, sep = ""), om.data@study.names, "Overall"),
+    plot.data <- list(label = c(paste(params$fp_col1_str, sep = ""), paste(om.data@study.names, om.data@years, sep=" "), "Overall"),
                       types = c(3, rep(0, length(om.data@study.names)), 2),
                       scale = scale.str,
                       options = plot.options)         
@@ -453,7 +453,7 @@ set.plot.options <- function(params) {
     plot.options <- list()
     # xticks is a vector of tick marks for the x-axis
     if (params$fp_xticks == "[default]") {
-        params$fp_xticks <- NULL
+        plot.options$xticks <- NULL
     } else {
         plot.options$xticks <- eval(parse(text=paste("c(", params$fp_xticks, ")", sep="")))
     }
@@ -469,8 +469,12 @@ set.plot.options <- function(params) {
     } else {
       plot.options$show.col2 <- FALSE
     }
-    plot.options$col2.str <- as.character(params$fp_col2_str)
-    
+    if (params$fp_col2_str == "[default]") {
+        plot.options$col2.str <- paste("Estimate (", params$conf.level, "% C.I.)", sep="")
+    } else {
+        plot.options$col2.str <- as.character(params$fp_col2_str)
+    }
+
     if (params$fp_show_col3=='TRUE') {
       plot.options$show.col3 <- TRUE
     } else {
@@ -496,6 +500,11 @@ set.plot.options <- function(params) {
     } else {
         plot.options$xlabel <- as.character(params$fp_xlabel)
     }
+    
+    # fp.title is the title for forest plot
+    # In future, this should be user option
+    plot.options$fp.title <- ""
+    
     # if show.summary.line is TRUE, a vertical dashed line is displayed at the
     # overall summary.
     if (params$fp_show_summary_line=='TRUE') {  
@@ -531,17 +540,17 @@ pretty.metric.name <- function(metric) {
     Sens = "Sensitivity", 
     Spec = "Specificity",
     # pos. predictive value
-    PPV =  "Pos. predictive value",
+    PPV =  "Positive Predictive Value",
     #neg. predictive value
-    NPV =  "Neg. predictive value",
+    NPV =  "Negative Predictive value",
     # accuracy
     Acc = "Accuracy",
     # positive likelihood ratio
-    PLR = "Pos. likelihood ratio", 
+    PLR = "Positive Likelihood Ratio", 
     # negative likelihood ratio
-    NLR = "Neg. likelihood ratio",
+    NLR = "Negative Likelihood Ratio",
     # diagnostic odds ratio
-    DOR = "Diagnostic odds ratio",
+    DOR = "Diagnostic Odds Ratio",
     # tx mean is already pretty.
     TX.Mean = "TX Mean")[[metric]]
 
@@ -845,7 +854,9 @@ draw.summary.CI <- function(LL, ES, UL, size, color, diam.height) {
 draw.data.col <- function(forest.data, col, j, color.overall = "black",
                           color.subgroup = "black", summary.line.col = "darkred",
                           summary.line.pat = "dashed",
-                          x.axis.label, diam.size=1,
+                          x.axis.label, 
+                          fp.title,
+                          diam.size=1,
                           user.ticks,
                           show.y.axis) {
   pushViewport(viewport(layout.pos.col=j, xscale=col$range))
@@ -907,6 +918,8 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
   } 
         
   grid.text(x.axis.label, y=unit(-2, "lines"), gp=gpar(cex=0.8))
+  n.rows <- length(forest.data$label)
+  grid.text(fp.title, y=unit(n.rows+3, "lines"), gp=gpar(cex=1))
   popViewport()
   for (i in 1:length(col$rows)) {
     pushViewport(viewport(layout.pos.row=col$rows[i], layout.pos.col=j,
@@ -1109,6 +1122,7 @@ draw.forest.plot <- function(forest.data){
                              summary.line.col= "red",
                              summary.line.pat = "dashed",
                              x.axis.label = forest.data$options$xlabel,
+                             fp.title = forest.data$options$fp.title,
                              diam.size = 1.2,
                              user.ticks = xticks,
                              show.y.axis = forest.data$options$show.y.axis)
@@ -1414,13 +1428,13 @@ format.raw.data.col <- function(nums, denoms, label, types) {
     # only sum over types==0 (individual studies)
     max.chars <- nchar(denoms.total) + 1
     # add 1 because a space is added before each denom.
-    overall.row <- paste(nums.total, " / ", denoms.total, sep = "")
+    overall.row <- paste(nums.total, "/", denoms.total, sep = "")
     label.info <- check.label(label, split.str = "/")
     if (label.info$contains.symbol == TRUE) {
         # pad label or denoms.total to align "/"
         # we're assuming that there is a single space after "/".
         end.string.length <- label.info$end.string.length
-        label.padded <- pad.with.spaces(label, begin.num=0, end.num = max.chars - end.string.length)
+        label.padded <- pad.with.spaces(label, begin.num=0, end.num = max.chars - end.string.length - 1)
         overall.row <- pad.with.spaces(overall.row, begin.num=0, end.num = end.string.length - max.chars)
         max.chars <- max(max.chars, end.string.length)    
     }  else {
@@ -1430,7 +1444,7 @@ format.raw.data.col <- function(nums, denoms, label, types) {
     # pad data row to align forward slashes
     denoms <- mapply(pad.with.spaces, denoms, begin.num=0, end.num = max.chars - (nchar(denoms) + 1))
     # add 1 to nchar(denoms) because a space is added before each denom
-    data.column = c(label.padded, paste(nums, " / ", denoms, sep = ""), overall.row)
+    data.column = c(label.padded, paste(nums, "/", denoms, sep = ""), overall.row)
     data.column
 }
 
