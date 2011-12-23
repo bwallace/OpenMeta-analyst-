@@ -561,8 +561,249 @@ pretty.metric.name <- function(metric) {
 #   functions for creating plots  #
 ###################################
 
-# get data for the study column
+#######################################
+#            forest plot              #
+####################################### 
+forest.plot <- function(forest.data, outpath) {
+  # calculates plot sizes and layout, and then calls draw.forest.plot.
+  forest.data <- format.data.cols(forest.data)
+  # format the text of the data columns displayed on forest plot
+  forest.data <- create.grobs(forest.data)
+  # create graphical objects for study and data columns.
+
+  plot.size <- calc.forest.plot.size(forest.data)
+  # calculate height and width of output file
+  forest.data$data.col.width <- plot.size$data.col.width
+  how.wide <- plot.size$how.wide
+  # width of output file
+  how.tall <- plot.size$how.tall
+  # height of output file
+  viewport.layout <- calc.viewport.layout(forest.data, just="left")
+  # calculate the layout of the viewport
+  
+  # so here we're just going to use the relatively hacky 
+  # strategy of (R-)grepping for the literal ".png"
+  # note that this means that, technically, if someone tries 
+  # to save an iamge to my.pngimg.pdf, it will save it instead
+  # as a png. on the other hand, why would someone do that?
+  if (length(grep(".png", outpath)) != 0){
+      png(file=outpath, width = how.wide+1, height = how.tall+2 , units = "in", res = 144) 
+  }
+  else{
+      pdf(file=outpath, width = how.wide+1, height = how.tall+2) 
+  }
+                        
+  pushViewport(viewport(layout=viewport.layout))
+  draw.forest.plot(forest.data)
+  
+  graphics.off()
+}
+
+#############################################################
+#   functions for creating graphical objects and viewports  #
+#############################################################
+
+create.grobs <- function(forest.data) {
+    # create graphical objects for study and data cols.
+    # and add them to forest.data
+    show.study.col <- forest.data$options$show.study.col                             
+    
+    additional.cols.grob <- c()
+    # create graphical object for data columns.
+    if (length(forest.data$additional.col.data)>0 ){
+         additional.cols.grob <- additional.columns(forest.data, "bold")
+         forest.data$additional.cols.grob <- additional.cols.grob
+    }
+    if (show.study.col==TRUE) {
+        study.col.grob <- study.column(forest.data, "bold")
+        # create graphical object for study column
+        forest.data$study.col.grob <- study.col.grob
+    } 
+    forest.data
+}
+
+calc.viewport.layout <- function(forest.data, just){
+    # Calculates layout for forest plot viewport
+    if (length(forest.data$additional.col.data)>0 ){
+        num.additional.cols <- length(forest.data$additional.cols.grob)    
+    } else {
+        num.additional.cols <- 0
+    }
+    forest.plot.params <- create.plot.options(forest.data, gapSize = 3.2, plotWidth=5)
+
+    if (forest.data$types[length(forest.data$types)] != 0) {
+      # last row is a summary
+        extra.space <- sum(forest.data$types != 0) 
+    } else {
+      # add a little more space because last row is not a summary
+        extra.space <- sum(forest.data$types != 0) + 1 
+    }   
+    num.rows <- length(forest.data$types) + extra.space
+    # number of rows in plot
+    width.list <- calc.width.list(forest.data)
+    num.cols <- length(width.list) + 1
+    # 1 more for the plot itself
+
+    if (length(width.list) > 0) {
+        vp.width <- unit.c(width.list,  forest.plot.params$effect.col.width)
+    } else {
+        vp.width <- unit.c(forest.plot.params$effect.col.width)
+    }
+    vp.layout <- grid.layout(num.rows , num.cols,
+                             width=vp.width,
+                             height = unit(rep(1, num.rows)  , "lines"),
+                             just=just)
+}
+
+calc.forest.plot.size <- function(forest.data){
+    # Calculates width and height for the output png file
+    show.study.col <- forest.data$options$show.study.col
+    if (length(forest.data$additional.col.data)>0 ){
+        num.additional.cols <- length(forest.data$additional.cols.grob)    
+    } else {
+        num.additional.cols <- 0
+    }
+    forest.plot.params <- create.plot.options(forest.data, gapSize = 3.2, plotWidth=5)
+
+    if (forest.data$types[length(forest.data$types)] != 0) {
+      # last row is a summary
+        extra.space <- sum(forest.data$types != 0) 
+    } else {
+      # add a little more space because last row is not a summary
+        extra.space <- sum(forest.data$types != 0) + 1 
+    }   
+    num.rows <- length(forest.data$types) + extra.space
+    # number of rows in plot
+    row.height <- convertY(unit(1, "lines") , "inches" , valueOnly=TRUE)
+    # height of each row in inches 
+    how.tall <- num.rows * row.height
+    width.list <- calc.width.list(forest.data)
+    if (show.study.col==TRUE) {
+        if (num.additional.cols > 0) {
+            data.col.width <- sum( convertX(   unit.c(width.list[3:length(width.list)]) , "inches" , valueOnly=TRUE ) )  + 
+                      (num.additional.cols - 1) * convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )
+        } else {
+            data.col.width <- 0
+        }
+        
+    } else {
+        if (num.additional.cols > 0) {
+            data.col.width <- sum( convertX(   unit.c(width.list) , "inches" , valueOnly=TRUE ) )  + 
+                      (num.additional.cols - 1) * convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )
+        } else {
+            data.col.width <- 0  
+        }
+    } 
+        
+    if (length(width.list) > 0) {
+        how.wide <- sum(convertX(unit.c(width.list) , "inches" , valueOnly=TRUE ) )  + 
+                    length(width.list)*   convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )   + 
+                    convertX(forest.plot.params$effect.col.width, "inches" , valueOnly=TRUE ) 
+    } else {
+        how.wide <- convertX(forest.plot.params$effect.col.width, "inches" , valueOnly=TRUE )
+    }
+    plot.size <- list("how.wide"=how.wide, "how.tall"=how.tall, "data.col.width"=data.col.width)
+}
+    
+calc.width.list <- function(forest.data) {
+    # calculate widths of study column and data columns.
+    show.study.col <- forest.data$options$show.study.col
+    forest.plot.params <- create.plot.options(forest.data, gapSize = 3.2, plotWidth=5)
+    width.list <-vector("list")
+    if (show.study.col==TRUE) {
+        study.col.grob <- forest.data$study.col.grob
+        width.list[[1]] <- unit.c(max(unit(rep(1, length(forest.data$label)), 
+                                "grobwidth", study.col.grob$content)), forest.plot.params$col.gap)
+        if (length(forest.data$additional.col.data)>0 ) {
+            additional.cols.grob <- forest.data$additional.cols.grob 
+            for (i in 1:length(additional.cols.grob))  {
+                width.list[[i+1]] <- unit.c(width.list[[i]], max(unit(rep(1, length(forest.data$label)), 
+                                   "grobwidth", additional.cols.grob[[i]]$content)), forest.plot.params$col.gap) 
+            }
+        }
+    } else {
+        if (length(forest.data$additional.col.data)>0 ) {
+            additional.cols.grob <- forest.data$additional.cols.grob
+            width.list[[1]] <- unit.c(max(unit(rep(1, length(forest.data$label)), 
+                                   "grobwidth", additional.cols.grob[[1]]$content)), forest.plot.params$col.gap)
+            if (length(forest.data$additional.col.data)>1) {
+                for (i in 2:length(additional.cols.grob))  {
+                    width.list[[i]] <- unit.c(width.list[[i-1]], max(unit(rep(1, length(forest.data$label)), 
+                                   "grobwidth", additional.cols.grob[[i]]$content)), forest.plot.params$col.gap)
+                }
+            }
+        }  
+    }
+    if (length(width.list) > 0) {
+        width.list <- width.list[[length(width.list)]]
+    }
+    width.list
+}
+
+#############################################
+#   functions for drawing the forest plot   #
+#############################################
+
+draw.forest.plot <- function(forest.data){
+    # Draws forest plot
+    show.study.col <- forest.data$options$show.study.col                             
+    
+    #additional.cols.grob <- c()
+    # create graphical object for data columns.
+    if (length(forest.data$additional.col.data)>0 ){
+         additional.cols.grob <- forest.data$additional.cols.grob
+         num.additional.cols <- length(additional.cols.grob)
+    } else {
+         num.additional.cols <- 0
+    }
+    effect.col <- effectsize.column(forest.data, box.sca=0.8)
+    # return the LL, ES, and UL and range of data to display
+    forest.plot.params <- create.plot.options(forest.data, gapSize = 3.2, plotWidth=5)
+
+    # Draw the text in study col and additional cols
+    if (show.study.col==TRUE) {
+      study.col.grob <- forest.data$study.col.grob
+      #graphical object for study column
+      draw.label.col(study.col.grob, 1)
+      # first two cols. are study col. and gap 1
+      if (num.additional.cols > 0 )  {
+          for (i in 1:num.additional.cols){
+               draw.label.col(additional.cols.grob[[i]], 2*i+1)
+               # Note: col indices start at 3
+          }
+      }
+    } else {
+          # study col. and gap 1 not displayed
+      if (num.additional.cols>0 )  {
+          for (i in 1:num.additional.cols){
+               draw.label.col(additional.cols.grob[[i]], 2*i-1)
+               # col. indices start at 1
+          }
+      }
+    }  
+
+    xticks <- forest.data$options$xticks
+    if (forest.data$options$show.study.col==TRUE) {
+      layout.pos.col <- 2*num.additional.cols + 3
+    } else {
+      layout.pos.col <- 2*num.additional.cols + 1
+      # not displaying study col. or first gap.
+    }
+    draw.data.col(forest.data, effect.col, j=layout.pos.col,
+                             color.overall = "lightblue",
+                             color.subgroup = "yellow",
+                             summary.line.col= "red",
+                             summary.line.pat = "dashed",
+                             x.axis.label = forest.data$options$xlabel,
+                             fp.title = forest.data$options$fp.title,
+                             diam.size = 1.2,
+                             user.ticks = xticks,
+                             show.y.axis = forest.data$options$show.y.axis)
+}
+
 study.column <- function(forest.data, title.font="bold") {
+    # Gets data for the study name column
+    # called by draw.forest.plot
     content<-rep(NA, length(forest.data$label))
     for (i in 1:length(forest.data$label)){
       if (forest.data$types[i] !=  0)
@@ -588,14 +829,13 @@ study.column <- function(forest.data, title.font="bold") {
     }
     
     study.column.list <- list(content = content, rows = rows)
-    
     study.column.list
 }
 
-# additional columns
 additional.columns <- function(forest.data, font = "bold") {
-    #  first get the number of columns
-    #additional.data <- length(forest.data$additional.col.data)
+    # Gets data for effect sizes column (col 2) and raw data (cols 3 and 4),
+    # if user has chosen to display them.
+    # called by draw.forest.plot  
     additional.columns <- vector("list", length(forest.data$additional.col.data))
     
     for (j in 1:length(forest.data$additional.col.data)){
@@ -631,7 +871,9 @@ additional.columns <- function(forest.data, font = "bold") {
 }
 
 effectsize.column <- function(forest.data, box.sca = 1) {
-    # calculate range of data to display
+    # Calculates sizes for boxes in forest plot and range of data to display.
+    # TODO: rename this function, as it sounds too much like the name of the previous function.
+    # called by draw.forest.plot
     rows<-c(1, rep(NA, (length(forest.data$effects$ES)) ) )
     for (i in 1:(length(forest.data$effects$ES))){
       if (forest.data$types[i] == 3  &&  forest.data$types[i+1] == 0)
@@ -770,20 +1012,10 @@ effectsize.column <- function(forest.data, box.sca = 1) {
                   sizes = effect.col.sizes)
 }
 
-create.plot.options <- function(forest.data, gapSize=3, plotWidth = 4) {
-    
-    effect.col.width <- unit(plotWidth, "inches")
-    # width of the forest plot
-    forest.params = list(
-        col.gap = unit(gapSize, "mm"),
-        effect.col.width = effect.col.width
-    )
-    forest.params
-}
-
 # Function to draw a cell in a text column
 draw.label.col <- function(col, j) {
   # Insert data columns from forest.data$additional.col.data into the plot
+  # called by draw.forest.plot
   for (i in 1:length(col$rows)) {
     pushViewport(viewport(layout.pos.row=col$rows[i], layout.pos.col=j))
     # Labels are grobs containing their location so just
@@ -793,8 +1025,99 @@ draw.label.col <- function(col, j) {
   }
 }
 
-# Function to draw a non-summary rect-plus-CI
+draw.data.col <- function(forest.data, col, j, color.overall = "black",
+                          color.subgroup = "black", summary.line.col = "darkred",
+                          summary.line.pat = "dashed",
+                          x.axis.label, 
+                          fp.title,
+                          diam.size=1,
+                          user.ticks,
+                          show.y.axis) {
+  # Draws the actual forest plot graph
+  # called by draw.forest.plot
+  # TODO: rename this function!
+  pushViewport(viewport(layout.pos.col=j, xscale=col$range))
+
+# This is the "null" line
+# "ifs" left in as we will possibly expand this when new metrics become available
+# note that if the line extends outside the xscale bounds, it will be 
+# truncated and replaced with a left or right arrow (or both).
+  if (show.y.axis == TRUE) {
+    if (forest.data$scale == "log" && min(col$range)<0 && max(col$range)>0 ) {
+      grid.lines(x=unit(0, "native"), y=0:1)
+    }
+    if (forest.data$scale == "standard" && min(col$range)<0 && max(col$range)>0 ) { 
+      grid.lines(x=unit(0, "native"), y=0:1)
+    }
+    if (forest.data$scale == "logit" && min(col$range)<0 && max(col$range)>0 ) { 
+        grid.lines(x=unit(0, "native"), y=0:1)
+    }
+  }
+  
+  if (!is.null(forest.data$options$show.summary.line)) {
+    if (forest.data$options$show.summary.line == TRUE) {
+          # draw vertical line for summary
+        grid.lines(x=unit(col$ES[length(col$ES)], "native"),
+             y=0:1, gp=gpar(lty = summary.line.pat, col= summary.line.col))
+    }
+  }  
+  
+  if  (forest.data$scale == "standard") {
+    if (length(user.ticks) == 0) {
+      grid.xaxis(gp=gpar(cex=0.6))
+    } else {+6
+        grid.xaxis(at = user.ticks , label = user.ticks, gp=gpar(cex=0.6))
+      }
+    }
+    
+  if (forest.data$scale == "log")  {
+    if (length(user.ticks) == 0) { # some cheap tricks to make the axis ticks look nice (in most cases)...
+            to.make.ticks <- range(exp(col$range))
+            ticks <- axTicks(1, axp=c(to.make.ticks, 3), usr=c(-100, 100), log=TRUE)
+            log.ticks <- log(ticks)
+		        log.ticks <- log.ticks[log.ticks > min(col$range) - 0.5]    # remember it is additive on this scale
+            log.ticks <- log.ticks[log.ticks < max(col$range) + 0.5]
+            ticks <- exp(log.ticks)
+    } else {
+		        ticks <- user.ticks
+            log.ticks <- log(user.ticks)
+    }
+        grid.xaxis(at = log.ticks , label = round(ticks, 3), gp=gpar(cex=0.6))          
+  } 
+  if (forest.data$scale == "logit")  {
+        if (length(user.ticks) == 0) { # some cheap tricks to make the axis ticks look nice (in most cases)...
+            ticks <- c(0, .25, .5, .75, 1)
+        } else {
+		        ticks <- user.ticks
+        }
+        
+        grid.xaxis(at = ticks , label = ticks, gp=gpar(cex=0.6))          
+  } 
+        
+  grid.text(x.axis.label, y=unit(-2, "lines"), gp=gpar(cex=0.8))
+  data.col.width <- forest.data$data.col.width
+  # width of data cols., not including study column or forest plot.
+  n.rows <- length(forest.data$label)
+  grid.text(fp.title, x=unit(-data.col.width, "inches"), y=unit(n.rows + 3, "lines"), gp=gpar(cex=1.0), just="left")
+  popViewport()
+  for (i in 1:length(col$rows)) {
+    pushViewport(viewport(layout.pos.row=col$rows[i], layout.pos.col=j,
+                          xscale=col$range))   
+    if (col$types[i] == 0){
+       draw.normal.CI(col$LL[i], col$ES[i], col$UL[i], col$sizes[i])
+    }
+    else if (col$types[i] == 1){
+       draw.summary.CI(col$LL[i], col$ES[i], col$UL[i], col$sizes[i], color.subgroup, diam.size )
+    }
+    else if (col$types[i] == 2){
+       draw.summary.CI(col$LL[i], col$ES[i], col$UL[i], col$sizes[i], color.overall, diam.size )
+    }
+    popViewport()
+  }
+}
+ 
 draw.normal.CI <- function(LL, ES, UL, size) {
+  # draws a non-summary rect-plus-CI
   # "native" units to position relative to
   # the x-axis scale, and "snpc" units to size relative to
   # the height of the row
@@ -802,6 +1125,7 @@ draw.normal.CI <- function(LL, ES, UL, size) {
   #  which means that the value is calculated as a proportion
   #  of the width and height of the current viewport and the
   #  physically smaller of these is used)
+     # called by draw.forest.plot
   grid.rect(x=unit(ES, "native"),
             width=unit(size, "snpc"), height=unit(size, "snpc"),
             gp=gpar(fill="black"))
@@ -848,285 +1172,21 @@ draw.summary.CI <- function(LL, ES, UL, size, color, diam.height) {
                y=unit(0.5 + c(0, 0.25*diam.height*size, 0, -0.25*diam.height*size), "npc"), gp=gpar(fill=color))
 }
 
-###########################################
-# Function to draw the forest plot graphs #
-########################################### 
-draw.data.col <- function(forest.data, col, j, color.overall = "black",
-                          color.subgroup = "black", summary.line.col = "darkred",
-                          summary.line.pat = "dashed",
-                          x.axis.label, 
-                          fp.title,
-                          diam.size=1,
-                          user.ticks,
-                          show.y.axis) {
-  pushViewport(viewport(layout.pos.col=j, xscale=col$range))
-
-# This is the "null" line
-# "ifs" left in as we will possibly expand this when new metrics become available
-# note that if the line extends outside the xscale bounds, it will be 
-# truncated and replaced with a left or right arrow (or both).
-  if (show.y.axis == TRUE) {
-    if (forest.data$scale == "log" && min(col$range)<0 && max(col$range)>0 ) {
-      grid.lines(x=unit(0, "native"), y=0:1)
-    }
-    if (forest.data$scale == "standard" && min(col$range)<0 && max(col$range)>0 ) { 
-      grid.lines(x=unit(0, "native"), y=0:1)
-    }
-    if (forest.data$scale == "logit" && min(col$range)<0 && max(col$range)>0 ) { 
-        grid.lines(x=unit(0, "native"), y=0:1)
-    }
-  }
-  
-  if (!is.null(forest.data$options$show.summary.line)) {
-    if (forest.data$options$show.summary.line == TRUE) {
-          # draw vertical line for summary
-        grid.lines(x=unit(col$ES[length(col$ES)], "native"),
-             y=0:1, gp=gpar(lty = summary.line.pat, col= summary.line.col))
-    }
-  }  
-  
-  if  (forest.data$scale == "standard") {
-    if (length(user.ticks) == 0) {
-      grid.xaxis(gp=gpar(cex=0.6))
-    } else {+6
-        grid.xaxis(at = user.ticks , label = user.ticks, gp=gpar(cex=0.6))
-      }
-    }
-    
-  if (forest.data$scale == "log")  {
-    if (length(user.ticks) == 0) { # some cheap tricks to make the axis ticks look nice (in most cases)...
-            to.make.ticks <- range(exp(col$range))
-            ticks <- axTicks(1, axp=c(to.make.ticks, 3), usr=c(-100, 100), log=TRUE)
-  	        log.ticks <- log(ticks)
-		        log.ticks <- log.ticks[log.ticks > min(col$range) - 0.5]    # remember it is additive on this scale
-            log.ticks <- log.ticks[log.ticks < max(col$range) + 0.5]
-            ticks <- exp(log.ticks)
-    } else {
-		        ticks <- user.ticks
-            log.ticks <- log(user.ticks)
-    }
-        grid.xaxis(at = log.ticks , label = round(ticks, 3), gp=gpar(cex=0.6))          
-  } 
-  if (forest.data$scale == "logit")  {
-        if (length(user.ticks) == 0) { # some cheap tricks to make the axis ticks look nice (in most cases)...
-            ticks <- c(0, .25, .5, .75, 1)
-        } else {
-		        ticks <- user.ticks
-        }
-        
-        grid.xaxis(at = ticks , label = ticks, gp=gpar(cex=0.6))          
-  } 
-        
-  grid.text(x.axis.label, y=unit(-2, "lines"), gp=gpar(cex=0.8))
-  n.rows <- length(forest.data$label)
-  grid.text(fp.title, y=unit(n.rows+3, "lines"), gp=gpar(cex=1))
-  popViewport()
-  for (i in 1:length(col$rows)) {
-    pushViewport(viewport(layout.pos.row=col$rows[i], layout.pos.col=j,
-                          xscale=col$range))   
-    if (col$types[i] == 0){
-       draw.normal.CI(col$LL[i], col$ES[i], col$UL[i], col$sizes[i])
-    }
-    else if (col$types[i] == 1){
-       draw.summary.CI(col$LL[i], col$ES[i], col$UL[i], col$sizes[i], color.subgroup, diam.size )
-    }
-    else if (col$types[i] == 2){
-       draw.summary.CI(col$LL[i], col$ES[i], col$UL[i], col$sizes[i], color.overall, diam.size )
-    }
-    popViewport()
-  }
-}
- 
-#######################################
-#            forest plot              #
-####################################### 
-forest.plot <- function(forest.data, outpath) {
-  forest.data <- format.data.cols(forest.data)
-  # format the data columns displayed on forest plot
-  show.study.col <- forest.data$options$show.study.col
-  plot.size <- calc.forest.plot.size(forest.data)
-  # calculate height and width of output file
-  how.wide <- plot.size$how.wide
-  # width of output file
-  how.tall <- plot.size$how.tall
-  # height of output file
-  viewport.layout <- calc.viewport.layout(forest.data, just="left")
-  # calculate the layout of the viewport
-  
-  # so here we're just going to use the relatively hacky 
-  # strategy of (R-)grepping for the literal ".png"
-  # note that this means that, technically, if someone tries 
-  # to save an iamge to my.pngimg.pdf, it will save it instead
-  # as a png. on the other hand, why would someone do that?
-  if (length(grep(".png", outpath)) != 0){
-      png(file=outpath, width = how.wide+1, height = how.tall+2 , units = "in", res = 144) 
-  }
-  else{
-      pdf(file=outpath, width = how.wide+1, height = how.tall+2) 
-  }
-                        
-  pushViewport(viewport(layout=viewport.layout))
-  draw.forest.plot(forest.data)
-  
-  graphics.off()
-}
- 
-#######################################
-#      calc viewport layout           #
-####################################### 
-calc.viewport.layout <- function(forest.data, just){
-    # Calculates layout for forest plot viewport
-    show.study.col <- forest.data$options$show.study.col
-    study.col <- study.column(forest.data, "bold")
-    additional.cols <- c()
-    if (length(forest.data$additional.col.data)>0 ){
-        additional.cols <- additional.columns(forest.data, "bold")    
-    } 
-    effect.col <- effectsize.column(forest.data, box.sca=0.8)
-    # return the LL, ES, and UL and range of data to display
-    forest.plot.params <- create.plot.options(forest.data, gapSize = 3.2, plotWidth=5)
-
-    # these are calls to plotting functions
-    if (forest.data$types[length(forest.data$types)] != 0) {
-      # last row is a summary
-        extra.space <- sum(forest.data$types != 0) 
-    } else {
-      # add a little more space because last row is not a summary
-        extra.space <- sum(forest.data$types != 0) + 1 
-    }   
-    num.rows <- length(forest.data$types) + extra.space
-    # number of rows in plot
-     
-    if (length(forest.data$additional.col.data)>0 )      {         # first if additional colums are present
-        width.list <-vector("list")
-        width.list[[1]] <- unit.c(max(unit(rep(1, length(forest.data$label)), 
-                               "grobwidth", additional.cols[[1]]$content)), forest.plot.params$col.gap)
-        if  (length(forest.data$additional.col.data)>1 )  {   
-            for (i in 2:length(additional.cols))  {
-            width.list[[i]] <- unit.c(width.list[[i-1]], max(unit(rep(1, length(forest.data$label)), 
-                                   "grobwidth", additional.cols[[i]]$content)), forest.plot.params$col.gap) 
-                 }
-        }
-       
-        vp.width <- unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
-                          forest.plot.params$col.gap,  width.list[[length(additional.cols)]]  ,  forest.plot.params$effect.col.width)
-        vp.layout <- grid.layout(num.rows , 2*length(additional.cols)+3,
-                                 width=vp.width,
-                                 height = unit(rep(1, num.rows)  , "lines"),
-                                 just=just)
-    }   else  { # if no additional columns things are simple
-            
-        vp.width <- unit.c(max(unit(rep(1, length(forest.data$label)), "grobwidth", study.col$content)),
-                        forest.plot.params$col.gap,   forest.plot.params$effect.col.width)
-        
-        vp.layout <- grid.layout(num.rows , 2*length(additional.cols)+3,
-                                 width=vp.width,
-                                 height = unit(rep(1, num.rows)  , "lines"),
-                                 just=just)
-    }
-    vp.layout 
+create.plot.options <- function(forest.data, gapSize=3, plotWidth = 4) {
+    # this function has nothing to do with the user options that are passed in
+    # via forest.data$options. It just specifies gapSize (space between columns) and plotWidth (width of effect size col.).
+    # This function is only called by calc.viewport.layout and calc.forest.plot.size.
+    # TODO: figure out why plotWidth is arbitrarily set to 4, instead of the first entry of calc.viewport.layout$widths.
+    effect.col.width <- unit(plotWidth, "inches")
+    # width of the forest plot
+    forest.params = list(
+        col.gap = unit(gapSize, "mm"),
+        effect.col.width = effect.col.width
+    )
+    forest.params
 }
 
-########################################
-#      forest plot sizes               #
-######################################## 
- calc.forest.plot.size <- function(forest.data){
-    # Calculates width and height for the output png file
-    show.study.col <- forest.data$options$show.study.col
-    study.col <- study.column(forest.data, "bold")
-    additional.cols <- c()
-    if (length(forest.data$additional.col.data)>0 ){
-        additional.cols <- additional.columns(forest.data, "bold")    
-    } 
-    effect.col <- effectsize.column(forest.data, box.sca=0.8)
-    # return the LL, ES, and UL and range of data to display
-    forest.plot.params <- create.plot.options(forest.data, gapSize = 3.2, plotWidth=5)
 
-    # these are calls to plotting functions
-    if (forest.data$types[length(forest.data$types)] != 0) {
-      # last row is a summary
-        extra.space <- sum(forest.data$types != 0) 
-    } else {
-      # add a little more space because last row is not a summary
-        extra.space <- sum(forest.data$types != 0) + 1 
-    }   
-    num.rows <- length(forest.data$types) + extra.space
-    # number of rows in plot
-    row.height <- convertY(unit(1, "lines") , "inches" , valueOnly=TRUE)
-    # height of each row in inches 
-    how.tall <- num.rows * row.height
-  
-    if (length(forest.data$additional.col.data)>0 )      {         # first if additional colums are present
-        width.list <-vector("list")
-        width.list[[1]] <- unit.c(max(unit(rep(1, length(forest.data$label)), 
-                               "grobwidth", additional.cols[[1]]$content)), forest.plot.params$col.gap)
-        if  (length(forest.data$additional.col.data)>1 )  {   
-            for (i in 2:length(additional.cols))  {
-            width.list[[i]] <- unit.c(width.list[[i-1]], max(unit(rep(1, length(forest.data$label)), 
-                                   "grobwidth", additional.cols[[i]]$content)), forest.plot.params$col.gap) 
-                 }
-        }
-        if (show.study.col==TRUE) {
-          how.wide <- convertX(max(unit(rep(1, length(forest.data$label)), 
-                          "grobwidth", study.col$content)), "inches" , valueOnly=TRUE  ) +
-                      convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )  +
-                      sum( convertX(   unit.c(width.list[[length(additional.cols)]]) , "inches" , valueOnly=TRUE ) )  + 
-                      length(additional.cols)*   convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )   + 
-                      convertX(forest.plot.params$effect.col.width, "inches" , valueOnly=TRUE ) 
-        } else {  
-          how.wide <- convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )  +
-                      sum( convertX(   unit.c(width.list[[2:length(additional.cols)]]) , "inches" , valueOnly=TRUE ) )  + 
-                      length(additional.cols)*   convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )   + 
-                      convertX(forest.plot.params$effect.col.width, "inches" , valueOnly=TRUE )
-        }
-    }   else  { # if no additional columns things are simple
-          how.wide <- convertX(max(unit(rep(1, length(forest.data$label)), 
-                                   "grobwidth", study.col$content)), "inches" , valueOnly=TRUE  ) +
-                      convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )  +
-                      convertX(forest.plot.params$effect.col.width, "inches" , valueOnly=TRUE ) 
-    }
-    plot.size <- list("how.wide"=how.wide, "how.tall"=how.tall)
-}
-
-#######################################
-#            draw forest plot         #
-####################################### 
-draw.forest.plot <- function(forest.data){
-    # Draws forest plot
-    show.study.col <- forest.data$options$show.study.col                             
-    # these are calls to data functions
-    study.col <- study.column(forest.data, "bold")
-    additional.cols <- c()
-    if (length(forest.data$additional.col.data)>0 ){
-        additional.cols <- additional.columns(forest.data, "bold")    
-    } 
-    effect.col <- effectsize.column(forest.data, box.sca=0.8)
-    # return the LL, ES, and UL and range of data to display
-    forest.plot.params <- create.plot.options(forest.data, gapSize = 3.2, plotWidth=5)
-    
-    # Draw the text in study col and additional cols
-    if (show.study.col==TRUE) {
-      draw.label.col(study.col, 1)
-    }
-    if (length(additional.cols)>0 )  {
-      for (i in 1:length(additional.cols)){
-               draw.label.col(additional.cols[[i]], 1+2*i)
-      }
-    }  
-   
-    xticks <- forest.data$options$xticks
-      
-    draw.data.col(forest.data, effect.col, 2*length(additional.cols)+3,
-                             color.overall = "lightblue",
-                             color.subgroup = "yellow",
-                             summary.line.col= "red",
-                             summary.line.pat = "dashed",
-                             x.axis.label = forest.data$options$xlabel,
-                             fp.title = forest.data$options$fp.title,
-                             diam.size = 1.2,
-                             user.ticks = xticks,
-                             show.y.axis = forest.data$options$show.y.axis)
-}
 
 #######################################
 #            two forest plots         #
@@ -1134,11 +1194,16 @@ draw.forest.plot <- function(forest.data){
  
 two.forest.plots <- function(forest.data1, forest.data2, outpath) {
    # draw two forest plots side by side.
-  
+   # see forest.plot
    forest.data1 <- format.data.cols(forest.data1)
+   forest.data1 <- create.grobs(forest.data1)
    forest.data2 <- format.data.cols(forest.data2)
+   forest.data2 <- create.grobs(forest.data2)
+  # create graphical objects for study and data columns.
    plot.size1 <- calc.forest.plot.size(forest.data1)
+   forest.data1$data.col.width <- plot.size1$data.col.width
    plot.size2 <- calc.forest.plot.size(forest.data2)
+   forest.data2$data.col.width <- plot.size2$data.col.width
    # calculate heights and widths of plots
    viewport.layout1 <- calc.viewport.layout(forest.data1, just="left")     
    viewport.layout2 <- calc.viewport.layout(forest.data2, just="right")
