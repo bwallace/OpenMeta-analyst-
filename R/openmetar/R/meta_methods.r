@@ -80,12 +80,13 @@ cum.ma.binary <- function(fname, binary.data, params){
     }
     cum.disp <- create.overall.display(res=cum.results, study.names, params, model.title, data.type="binary")
     forest.path <- paste(params$fp_outpath, sep="")
-
-    params$fp_col1_str <- "Cumulative Studies"
-    # label for the cumulative (right-hand) plot
-    plot.data.cum <- create.plot.data.overall(res=cum.results, study.names, params, data.type="binary", addRow1Space=TRUE)
-
-    two.forest.plots(plot.data, plot.data.cum, outpath=forest.path)
+    
+    params.cum <- params
+    params.cum$fp_col1_str <- "Cumulative Studies"
+    params.cum$fp_col2_str <- "Cumulative Estimate"
+    # column labels for the cumulative (right-hand) plot
+    plot.data.cum <- create.plot.data.overall(res=cum.results, study.names, params.cum, data.type="binary", addRow1Space=TRUE)
+    two.forest.plots(forest.data1=plot.data, forest.data2=plot.data.cum, outpath=forest.path)
 
     # Now we package the results in a dictionary (technically, a named 
     # vector). In particular, there are two fields that must be returned; 
