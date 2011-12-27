@@ -116,10 +116,19 @@ class MADataTable(QtGui.QTableView):
         elif column_clicked in covariate_columns:
             context_menu = QMenu(self)
             cov = self.model().get_cov(column_clicked)
-            action = QAction("delete covariate %s" % cov.name, self)
-            QObject.connect(action, SIGNAL("triggered()"), \
+
+            # allow deletion of covariate
+            action_del = QAction("delete covariate %s" % cov.name, self)
+            QObject.connect(action_del, SIGNAL("triggered()"), \
                         lambda : self.main_gui.delete_covariate(cov))
-            context_menu.addAction(action)
+            context_menu.addAction(action_del)
+
+            # and for sorting (issue #142)
+            action_sort = QAction("sort studies by %s" % cov.name, self)
+            QObject.connect(action_sort, SIGNAL("triggered()"), \
+                        lambda : self.sort_by_col(column_clicked))
+            context_menu.addAction(action_sort)
+
             context_menu.popup(self.mapToGlobal(pos))
 
     def include_all_studies(self):
@@ -291,17 +300,27 @@ class MADataTable(QtGui.QTableView):
         ## plus we can sort by any covariates, which correspond to those columns that are
         # beyond the last outcome
         covariate_columns = self.get_covariate_columns()
+        can_sort_by.extend(covariate_columns)
+
         # if a covariate column was clicked, it may not yet have an entry in the
         # reverse_column_sorts dictionary; thus we insert one here
+        '''
+        if column in can_sort_by:
+            self.sort_by_col(column)
+        '''
+        
+    def sort_by_col(self, column):
+        # if a covariate column was clicked, it may not yet have an entry in the
+        # reverse_column_sorts dictionary; thus we insert one here
+        #
+        # TODO this should *not* use the column nubmer as the key!
+        # rather, it should use the name -- the column number of a given
+        # covariate might change (e.g., if another covariate is deleted)
         if not self.reverse_column_sorts.has_key(column):
             self.reverse_column_sorts[column] = False
-        can_sort_by.extend(covariate_columns)
-        if column in can_sort_by:
-            sort_command = CommandSort(self.model(), column, self.reverse_column_sorts[column])
-            self.undoStack.push(sort_command)
-            self.reverse_column_sorts[column] = not self.reverse_column_sorts[column]
-
-
+        sort_command = CommandSort(self.model(), column, self.reverse_column_sorts[column])
+        self.undoStack.push(sort_command)
+        self.reverse_column_sorts[column] = not self.reverse_column_sorts[column]
 
     def _data_for_only_one_of_two_arms(self):
         cur_txs = self.model().current_txs
