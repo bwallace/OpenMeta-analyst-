@@ -216,6 +216,7 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
     plot.names <- c()
     plot.params.paths <- c()
     if (("Sens" %in% metrics) & ("Spec" %in% metrics)) {
+        # create side-by-side forest plots for sens and spec.
         params.list[[sens.index]]$create.plot <- FALSE
         params.list[[spec.index]]$create.plot <- FALSE
         # Don't create individual forest plots for sens and spec if both are checked.
@@ -253,6 +254,7 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
     }
     
     if (("NLR" %in% metrics) || ("PLR" %in% metrics)) {
+        # create side-by-side forest plots for NLR and PLR.
         params.list[[nlr.index]]$create.plot <- FALSE
         params.list[[plr.index]]$create.plot <- FALSE
         # Don't create individual forest plots for sens and spec if both are checked.
@@ -277,6 +279,7 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
     
     results <- list()
     for (count in 1:length(params.list)) {
+        # create ma summaries and single (not side-by-side) forest plots.
         pretty.names <- eval(call(paste(fnames[count],".pretty.names",sep="")))
         diagnostic.data.tmp <- compute.diag.point.estimates(diagnostic.data, params.list[[count]])
         results.tmp <- eval(call(fnames[count], diagnostic.data.tmp, params.list[[count]]))
