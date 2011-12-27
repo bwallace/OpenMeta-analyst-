@@ -293,6 +293,8 @@ def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj", \
     # the study_ids preserve the ordering
     study_ids = [study.id for study in studies]
     study_names = ", ".join(["'" + study.name + "'" for study in studies])
+    # issue #139 -- also grab the years
+    study_years = ", ".join(["as.integer(%s)" % study.year for study in studies])
 
     ests, SEs = table_model.get_cur_ests_and_SEs()
     ests_str = ", ".join(_to_strs(ests))
@@ -303,8 +305,10 @@ def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj", \
                                                 cov_list=covs_to_include)
 
 
-    # first try and construct an object with raw data
-    if table_model.included_studies_have_raw_data():
+    # first try and construct an object with raw data -- note that if
+    # we're using a one-armed metric for cont. data, we just use y/SE
+    if (not table_model.current_effect in ONE_ARM_METRICS) and \
+                         table_model.included_studies_have_raw_data():
         print "we have raw data... parsing, parsing, parsing"
             
         raw_data = table_model.get_cur_raw_data()
@@ -319,18 +323,19 @@ def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj", \
                                      N1=c(%s), mean1=c(%s), sd1=c(%s), \
                                      N2=c(%s), mean2=c(%s), sd2=c(%s), \
                                      y=c(%s), SE=c(%s), study.names=c(%s),\
-                                    covariates=%s)" \
+                                    years=c(%s), covariates=%s)" \
                         % (var_name, Ns1_str, means1_str, SDs1_str, \
                             Ns2_str, means2_str, SDs2_str, \
-                            ests_str, SEs_str, study_names, cov_str)
+                            ests_str, SEs_str, study_names, study_years, cov_str)
          
     else:
-        print "no raw data... using effects"
+        print "no raw data (or one-arm)... using effects"
         r_str = "%s <- new('ContinuousData', \
                             y=c(%s), SE=c(%s), study.names=c(%s),\
-                            covariates=%s)" \
-                            % (var_name, ests_str, SEs_str, study_names, cov_str)
-    
+                            years=c(%s), covariates=%s)" \
+                            % (var_name, ests_str, SEs_str, \
+                                study_names, study_years, cov_str)
+        
     # character encodings for R
     r_str = _sanitize_for_R(r_str)
     print "executing: %s" % r_str
@@ -366,6 +371,9 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj",
     # model, so we, er, reverse it.
     studies = table_model.get_studies(only_if_included=True)
     
+    # issue #139 -- also grab the years
+    study_years = ", ".join(["as.integer(%s)" % study.year for study in studies])
+
     study_names = ", ".join(["'" + study.name + "'" for study in studies])
     
     ests, SEs = table_model.get_cur_ests_and_SEs(only_if_included=True)
@@ -415,15 +423,15 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj",
         # python side, but this would require more work and I'm not sure what the benefits
         # would be
         r_str = "%s <- new('BinaryData', g1O1=c(%s), g1O2=c(%s), g2O1=c(%s), g2O2=c(%s), \
-                            y=c(%s), SE=c(%s), study.names=c(%s), covariates=%s)" % \
+                            y=c(%s), SE=c(%s), study.names=c(%s), years=c(%s), covariates=%s)" % \
                             (var_name, g1O1_str, g1O2_str, g2O1_str, g2O2_str, \
-                             ests_str, SEs_str, study_names, cov_str)
+                             ests_str, SEs_str, study_names, study_years, cov_str)
 
     elif table_model.included_studies_have_point_estimates():
         print "not sufficient raw data, but studies have point estimates..."
 
-        r_str = "%s <- new('BinaryData', y=c(%s), SE=c(%s), study.names=c(%s),  covariates=%s)" \
-                            % (var_name, ests_str, SEs_str, study_names, cov_str)
+        r_str = "%s <- new('BinaryData', y=c(%s), SE=c(%s), study.names=c(%s), years=c(%s), covariates=%s)" \
+                            % (var_name, ests_str, SEs_str, study_names, study_years, cov_str)
         
                
     else:
@@ -462,6 +470,8 @@ def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", \
     study_ids = [study.id for study in studies]
 
     study_names = ", ".join(["'" + study.name + "'" for study in studies])
+    # issue #139 -- also grab the years
+    study_years = ", ".join(["as.integer(%s)" % study.year for study in studies])
 
     y_ests, y_SEs = table_model.get_cur_ests_and_SEs(only_if_included=True, effect=metric)
     y_ests_str = ", ".join(_to_strs(y_ests))
@@ -491,15 +501,16 @@ def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", \
         # python side, but this would require more work and I'm not sure what the benefits
         # would be
         r_str = "%s <- new('DiagnosticData', TP=c(%s), FN=c(%s), TN=c(%s), FP=c(%s), \
-                            y=c(%s), SE=c(%s), study.names=c(%s), covariates=%s)" % \
+                            y=c(%s), SE=c(%s), study.names=c(%s), years=c(%s), covariates=%s)" % \
                             (var_name, tps_str, fns_str, tns_str, fps_str, \
-                             y_ests_str, y_SEs_str, study_names, cov_str)
+                             y_ests_str, y_SEs_str, study_names, study_years, cov_str)
         
     elif table_model.included_studies_have_point_estimates(effect=metric):
         print "not sufficient raw data, but studies have point estimates..."
 
-        r_str = "%s <- new('DiagnosticData', y=c(%s), SE=c(%s), study.names=c(%s),  covariates=%s)" \
-                            % (var_name, y_ests_str, y_SEs_str, study_names, cov_str)
+        r_str = "%s <- new('DiagnosticData', y=c(%s), SE=c(%s), study.names=c(%s), \
+                                    years=c(%s), covariates=%s)" \
+                            % (var_name, y_ests_str, y_SEs_str, study_names, study_years, cov_str)
                             
     else:
         print "there is neither sufficient raw data nor entered effects/CIs. I cannot run an analysis."

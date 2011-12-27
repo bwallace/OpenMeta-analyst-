@@ -1126,7 +1126,7 @@ class DatasetModel(QAbstractTableModel):
         # the last study (presumed to be blank). this is not necessary! 
         # we already check if it's included...
         return list(included_studies)      
-        
+
     def get_cur_raw_data_for_study(self, study_index):
         return self.get_current_ma_unit_for_study(study_index).get_raw_data_for_groups(self.current_txs)
 
