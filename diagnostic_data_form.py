@@ -167,7 +167,8 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self.impute_data()  
 
     def effect_changed(self):
-        pass
+        self.cur_effect = str(self.effect_cbo_box.currentText()) 
+        self.set_current_effect()
 
     def _update_raw_data(self):
         ''' populates the 2x2 table with whatever parametric data was provided '''
@@ -201,10 +202,12 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         effect_dict = self.ma_unit.effects_dict[self.cur_effect][self.group_str]
         for s, txt_box in zip(['display_est', 'display_lower', 'display_upper'], \
                               [self.effect_txt_box, self.low_txt_box, self.high_txt_box]):
+            txt_box.blockSignals(True)
             if effect_dict[s] is not None:
                 txt_box.setText(QString("%s" % round(effect_dict[s], NUM_DIGITS)))
             else:
                 txt_box.setText(QString(""))
+            txt_box.blockSignals(False)
 
     def _update_data_table(self):
         pass

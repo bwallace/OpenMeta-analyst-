@@ -163,47 +163,52 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                 # get meta!
                 result = meta_py_r.run_meta_method(self.meta_f_str, self.current_method, self.current_param_vals)
         elif self.data_type == "diagnostic":
-            if self.meta_f_str is None:
-            
-                # add the current metrics (e.g., PLR, etc.) to the method/params
-                # dictionary
+            # add the current metrics (e.g., PLR, etc.) to the method/params
+            # dictionary
+            self.add_cur_analysis_details()
+        
+            method_names, list_of_param_vals = [], []
+
+            if len(self.diag_metrics_to_analysis_details) == 0:
                 self.add_cur_analysis_details()
-            
-                method_names, list_of_param_vals = [], []
-
-                if len(self.diag_metrics_to_analysis_details) == 0:
-                    self.add_cur_analysis_details()
 
 
-                ordered_metrics = ["Sens", "Spec", "NLR", "PLR", "DOR"]
-                for diag_metric in \
-                      [metric for metric in ordered_metrics if metric in self.diag_metrics_to_analysis_details]:
-                    # pull out the method and parameters object specified for this
-                    # metric.
-                    method, param_vals = self.diag_metrics_to_analysis_details[diag_metric]
-                    param_vals = copy.deepcopy(param_vals)
+            ordered_metrics = ["Sens", "Spec", "NLR", "PLR", "DOR"]
+            for diag_metric in \
+                  [metric for metric in ordered_metrics \
+                    if metric in self.diag_metrics_to_analysis_details]:
+                # pull out the method and parameters object specified for this
+                # metric.
+                # NOTE for the case of meta-methods, it's highly likely that 
+                # only *one* method/parms will be defined
+                method, param_vals = self.diag_metrics_to_analysis_details[diag_metric]
+                param_vals = copy.deepcopy(param_vals)
 
-                    # update the forest plot path
-                    split_fp_path = self.current_param_vals["fp_outpath"].split(".")
-                    new_str = split_fp_path[0] if len(split_fp_path) == 1 else \
-                              ".".join(split_fp_path[:-1])
-                    new_str = new_str + "_%s" % diag_metric.lower() + ".png"
-                    param_vals["fp_outpath"] = new_str
+                # update the forest plot path
+                split_fp_path = self.current_param_vals["fp_outpath"].split(".")
+                new_str = split_fp_path[0] if len(split_fp_path) == 1 else \
+                          ".".join(split_fp_path[:-1])
+                new_str = new_str + "_%s" % diag_metric.lower() + ".png"
+                param_vals["fp_outpath"] = new_str
 
-                    # update the metric 
-                    param_vals["measure"] = diag_metric
-                    
-                    method_names.append(method)
-                    list_of_param_vals.append(param_vals)
+                # update the metric 
+                param_vals["measure"] = diag_metric
                 
-                # create the DiagnosticData object on the R side -- this is going 
-                # to be the same for all analyses
-                meta_py_r.ma_dataset_to_simple_diagnostic_robj(self.model)
-                result = meta_py_r.run_diagnostic_multi(method_names, list_of_param_vals)
+                method_names.append(method)
+                list_of_param_vals.append(param_vals)
+            
+            # create the DiagnosticData object on the R side -- this is going 
+            # to be the same for all analyses
+            meta_py_r.ma_dataset_to_simple_diagnostic_robj(self.model)
 
+            if self.meta_f_str is None:
+                # regular meta-analysis
+                result = meta_py_r.run_diagnostic_multi(method_names, list_of_param_vals)
             else:
-                # TODO -- meta methods for diagnostic data
-                pass
+                # in the case of diagnostic, we pass in lists
+                # of param values to the meta_method 
+                result = meta_py_r.run_meta_method(\
+                            self.meta_f_str, method_names, list_of_param_vals)
 
         # update the user_preferences object for the selected method
         # with the values selected for this run
