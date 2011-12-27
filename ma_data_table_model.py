@@ -568,6 +568,11 @@ class DatasetModel(QAbstractTableModel):
     def get_covariate_names(self):
         return [cov.name for cov in self.dataset.covariates]
 
+    def rename_covariate(self, old_cov_name, new_cov_name):
+        old_cov_obj = self.dataset.get_cov_obj_from_name(old_cov_name)
+        self.dataset.change_covariate_name(old_cov_obj, new_cov_name)
+        self.reset()
+
     def _get_col_count(self):
         '''
         Calculate how many columns to display; this is contingent on the data type,

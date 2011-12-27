@@ -836,6 +836,32 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         delete_command = CommandGenericDo(redo_f, undo_f)
         self.tableView.undoStack.push(delete_command)
     
+
+    def rename_covariate(self, covariate):
+        orig_cov_name = copy.copy(covariate.name)
+        # TODO need to rename edit_group_name_form to something more general...
+        edit_cov_form = edit_group_name_form.EditCovariateName(orig_cov_name, parent=self)
+        if edit_cov_form.exec_():
+            # the field names are also poorly named, in this case. here we mean the 
+            # **covariate name**, of course.
+            new_cov = unicode(edit_cov_form.group_name_le.text().toUtf8(), "utf-8")
+            
+            # make sure the group name doesn't already exist
+            if new_cov in self.model.dataset.get_cov_names():
+                QMessageBox.warning(self,
+                            "whoops.",
+                            "%s is already a covariate name -- pick something else, please" % new_cov)
+            
+            else:
+                ###
+                # TODO implement rename_covariate!
+                redo_f = lambda: self.model.rename_covariate(orig_cov_name, new_cov)
+                undo_f = lambda: self.model.rename_covariate(new_cov, orig_cov_name)
+
+                rename_cov_command = CommandGenericDo(redo_f, undo_f)
+                self.tableView.undoStack.push(rename_cov_command)
+
+
     def delete_covariate(self, covariate):
         cov_vals_d = self.model.dataset.get_values_for_cov(covariate.name)
         undo_f = lambda : \

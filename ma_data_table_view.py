@@ -136,17 +136,23 @@ class MADataTable(QtGui.QTableView):
         elif column_clicked in covariate_columns:
             cov = self.model().get_cov(column_clicked)
 
+            # and for sorting (issue #142)
+            action_sort = QAction("sort studies by %s" % cov.name, self)
+            QObject.connect(action_sort, SIGNAL("triggered()"), \
+                        lambda : self.sort_by_col(column_clicked))
+            context_menu.addAction(action_sort)
+
+            action_ren = QAction("rename covariate %s" % cov.name, self)
+            QObject.connect(action_ren, SIGNAL("triggered()"), \
+                        lambda : self.main_gui.rename_covariate(cov))
+            context_menu.addAction(action_ren)
+
             # allow deletion of covariate
             action_del = QAction("delete covariate %s" % cov.name, self)
             QObject.connect(action_del, SIGNAL("triggered()"), \
                         lambda : self.main_gui.delete_covariate(cov))
             context_menu.addAction(action_del)
 
-            # and for sorting (issue #142)
-            action_sort = QAction("sort studies by %s" % cov.name, self)
-            QObject.connect(action_sort, SIGNAL("triggered()"), \
-                        lambda : self.sort_by_col(column_clicked))
-            context_menu.addAction(action_sort)
 
         context_menu.popup(self.mapToGlobal(pos))
 

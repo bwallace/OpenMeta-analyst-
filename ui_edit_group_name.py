@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'change_group_name_dlg.ui'
 #
-# Created: Tue Dec 27 13:52:26 2011
+# Created: Tue Dec 27 17:03:06 2011
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -32,14 +32,14 @@ class Ui_group_name_dialog(object):
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.gridLayout = QtGui.QGridLayout()
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
-        self.label_2 = QtGui.QLabel(group_name_dialog)
+        self.field_lbl = QtGui.QLabel(group_name_dialog)
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Verdana"))
         font.setPointSize(10)
-        self.label_2.setFont(font)
-        self.label_2.setText(QtGui.QApplication.translate("group_name_dialog", "group name:", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_2.setObjectName(_fromUtf8("label_2"))
-        self.gridLayout.addWidget(self.label_2, 0, 0, 1, 1)
+        self.field_lbl.setFont(font)
+        self.field_lbl.setText(QtGui.QApplication.translate("group_name_dialog", "group name:", None, QtGui.QApplication.UnicodeUTF8))
+        self.field_lbl.setObjectName(_fromUtf8("field_lbl"))
+        self.gridLayout.addWidget(self.field_lbl, 0, 0, 1, 1)
         self.group_name_le = QtGui.QLineEdit(group_name_dialog)
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Verdana"))

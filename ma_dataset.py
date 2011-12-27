@@ -86,15 +86,13 @@ class Dataset:
         
                             
     def change_outcome_name(self, old_outcome_name, new_outcome_name):
-        self.outcome_names_to_follow_ups[new_outcome_name] = self.outcome_names_to_follow_ups.pop(old_outcome_name)
+        self.outcome_names_to_follow_ups[new_outcome_name] = \
+                self.outcome_names_to_follow_ups.pop(old_outcome_name)
         for study in self.studies:
             study.outcomes_to_follow_ups[new_outcome_name] = study.outcomes_to_follow_ups.pop(old_outcome_name)
             for outcome in study.outcomes:
                 if outcome.name == old_outcome_name:
                     outcome.name = new_outcome_name
-        
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()        
 
     def delete_group(self, group_name):
         study = self.studies[0]
@@ -176,7 +174,23 @@ class Dataset:
                 else:
                     study.covariate_dict[covariate.name] = None
         
-            
+          
+    def change_covariate_name(self, old_covariate, new_covariate_name):
+        # get the values for this covariate for all studies
+        cov_val_dict = copy.deepcopy(self.get_values_for_cov(old_covariate.name))
+        self.remove_covariate(old_covariate)
+        # now add a covariate with the same values, but new name
+        self.add_covariate(Covariate(new_covariate_name, TYPE_TO_STR_DICT[old_covariate.data_type]),\
+                                cov_values=cov_val_dict)
+        
+
+        
+    def get_cov_obj_from_name(self, cov_name):
+        for cov in self.covariates:
+            if cov.name == cov_name:
+                return cov
+        
+          
     def ids_to_study_names(self):
         ids_to_names = {}
         for study in self.studies:
@@ -714,15 +728,18 @@ class Outcome:
         self.links = links
        
 class Covariate:
-	''' Meta-data about covariates. '''
-	def __init__(self, name, data_type):
-		if not data_type in ("Factor", "Continuous"):
-			raise Exception, \
-				"covariates need to have associated type Factor or Continuous; %s was given" % data_type
-		self.name = name
-		self.data_type = CONTINUOUS if data_type == "Continuous" else FACTOR
-		
-	
+    ''' Meta-data about covariates. '''
+    def __init__(self, name, data_type):
+        # annoying case converstion
+        data_type = data_type.capitalize()
+
+        if not data_type in ("Factor", "Continuous"):
+            raise Exception, \
+                "covariates need to have associated type Factor or Continuous; %s was given" % data_type
+        self.name = name
+        self.data_type = CONTINUOUS if data_type == "Continuous" else FACTOR
+        
+    
 class Link:
     pass
     
