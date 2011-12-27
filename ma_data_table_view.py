@@ -91,15 +91,21 @@ class MADataTable(QtGui.QTableView):
         return _context_menu
 
     def header_context_menu(self, pos):
+        '''
+        here is where the context menus for column header
+        right-clicks are built.
+        '''
         column_clicked = self.columnAt(pos.x())
         covariate_columns = self.get_covariate_columns()
+        raw_data_columns = self.model().RAW_DATA
+
+        data_type = self.model().get_current_outcome_type()
 
         print "right click @ column: %s" % column_clicked
+        context_menu = QMenu(self)
         if column_clicked == 0:
             # option to (de-)select / include all studies
             # per Ethan (issue #100)
-            context_menu = QMenu(self)
-
             action = QAction("include all", self)
             QObject.connect(action, SIGNAL("triggered()"), self.include_all_studies)
             if self.model().all_studies_are_included():
@@ -113,8 +119,21 @@ class MADataTable(QtGui.QTableView):
             context_menu.addAction(action)
 
             context_menu.popup(self.mapToGlobal(pos))
+        elif column_clicked in raw_data_columns and not data_type == "diagnostic":
+            corresponding_tx_group = self.model().current_txs[0]
+            if data_type == "binary":
+                if column_clicked in raw_data_columns[2:]:
+                    corresponding_tx_group = self.model().current_txs[1]
+            elif data_type == "continuous":
+                if column_clicked in raw_data_columns[3:]:
+                    corresponding_tx_group = self.model().current_txs[1]
+            
+            action_rename = QAction("rename group %s..." % corresponding_tx_group, self)
+            QObject.connect(action_rename, SIGNAL("triggered()"), \
+                        lambda : self.main_gui.edit_group_name(corresponding_tx_group))
+            context_menu.addAction(action_rename)
+
         elif column_clicked in covariate_columns:
-            context_menu = QMenu(self)
             cov = self.model().get_cov(column_clicked)
 
             # allow deletion of covariate
@@ -129,7 +148,7 @@ class MADataTable(QtGui.QTableView):
                         lambda : self.sort_by_col(column_clicked))
             context_menu.addAction(action_sort)
 
-            context_menu.popup(self.mapToGlobal(pos))
+        context_menu.popup(self.mapToGlobal(pos))
 
     def include_all_studies(self):
         self.model().include_all_studies()
@@ -284,7 +303,6 @@ class MADataTable(QtGui.QTableView):
         return (False,  original_metric)
 
     def _data_for_only_one_group(self):
-
         study_index = row
         ma_unit = self.model().get_current_ma_unit_for_study(study_index)
         old_ma_unit = copy.deepcopy(ma_unit)
@@ -308,7 +326,7 @@ class MADataTable(QtGui.QTableView):
         if column in can_sort_by:
             self.sort_by_col(column)
         '''
-        
+
     def sort_by_col(self, column):
         # if a covariate column was clicked, it may not yet have an entry in the
         # reverse_column_sorts dictionary; thus we insert one here

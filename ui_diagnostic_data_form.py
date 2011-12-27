@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'diagnostic_data_form.ui'
 #
-# Created: Mon Dec 19 10:22:37 2011
+# Created: Tue Dec 27 13:43:58 2011
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -19,6 +19,9 @@ class Ui_DiagnosticDataForm(object):
         DiagnosticDataForm.setObjectName(_fromUtf8("DiagnosticDataForm"))
         DiagnosticDataForm.resize(318, 250)
         DiagnosticDataForm.setWindowTitle(QtGui.QApplication.translate("DiagnosticDataForm", "Dialog", None, QtGui.QApplication.UnicodeUTF8))
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/images/meta.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        DiagnosticDataForm.setWindowIcon(icon)
         self.verticalLayout = QtGui.QVBoxLayout(DiagnosticDataForm)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.two_by_two_table = QtGui.QTableWidget(DiagnosticDataForm)
@@ -164,3 +167,4 @@ class Ui_DiagnosticDataForm(object):
         item = self.two_by_two_table.horizontalHeaderItem(0)
         item = self.two_by_two_table.horizontalHeaderItem(1)
 
+import icons_rc

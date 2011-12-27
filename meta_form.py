@@ -41,6 +41,7 @@ import diag_metrics
 import meta_reg_form
 import meta_subgroup_form
 import edit_dialog
+import edit_group_name_form
 import network_view
 import meta_globals 
 import start_up_dialog
@@ -486,8 +487,28 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         form = results_window.ResultsWindow(results, parent=self)
         form.show()
 
+
+    def edit_group_name(self, cur_group_name):
+        orig_group_name = copy.copy(cur_group_name)
+        edit_group_form = edit_group_name_form.EditGroupName(cur_group_name, parent=self)
+        if edit_group_form.exec_():
+            new_group_name = unicode(edit_group_form.group_name_le.text().toUtf8(), "utf-8")
+            
+            # make sure the group name doesn't already exist
+            if new_group_name in self.model.dataset.get_group_names():
+                QMessageBox.warning(self,
+                            "whoops.",
+                            "%s is already a group name -- pick something else, please" % new_group_name)
+            
+            else:
+                redo_f = lambda: self.model.rename_group(orig_group_name, new_group_name)
+                undo_f = lambda: self.model.rename_group(new_group_name, orig_group_name)
+
+                rename_group_command = CommandGenericDo(redo_f, undo_f)
+                self.tableView.undoStack.push(rename_group_command)
+            
     def add_covariate(self):
-        form =  add_new_dialogs.AddNewCovariateForm(self)
+        form = add_new_dialogs.AddNewCovariateForm(self)
         form.covariate_name_le.setFocus()
         if form.exec_():
             # then the user clicked 'ok'.
@@ -501,8 +522,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                             "whoops.",
                             "you've already entered a covariate with the name %s; please pick another name." % \
                                     new_covariate_name)
-                self.add_covariate()
-                
             else:
                 redo_f = lambda: self._add_new_covariate(new_covariate_name, new_covariate_type)
                 undo_f = lambda: self._undo_add_new_covariate(new_covariate_name)

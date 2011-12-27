@@ -271,14 +271,10 @@ class DatasetModel(QAbstractTableModel):
         #    tx A-tx B
         # if we have a one group outcome, the string is just:
         #    tx A
-        #print "\n--get_cur_group_str. current effect is: %s. one arm metrics are: %s" %\
-        #                (self.current_effect, ONE_ARM_METRICS)
-        #print self.current_effect in ONE_ARM_METRICS
         if self.current_effect in ONE_ARM_METRICS:
             group_str = self.current_txs[0] 
         else:
             group_str = "-".join(self.current_txs)
-        #print "GRUOP STR: %s" % group_str
         return group_str
         
     def setData(self, index, value, role=Qt.EditRole):
@@ -607,6 +603,15 @@ class DatasetModel(QAbstractTableModel):
     def remove_group(self, group_name):
         self.dataset.remove_group(group_name)
     
+    def rename_group(self, old_group_name, new_group_name):
+        self.dataset.change_group_name(old_group_name, new_group_name)
+        if old_group_name in self.current_txs:
+            group_index = self.current_txs.index(old_group_name)
+            # now remove the old group from the list of current groups
+            self.current_txs.pop(group_index)
+            self.current_txs.insert(group_index, new_group_name)
+        self.reset()
+
     def add_follow_up_to_current_outcome(self, follow_up_name):
         self.dataset.add_follow_up_to_outcome(self.current_outcome, follow_up_name)
         

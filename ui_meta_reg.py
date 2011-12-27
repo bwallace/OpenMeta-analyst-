@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'cov_reg_dlg2.ui'
 #
-# Created: Fri Dec 16 09:54:32 2011
+# Created: Tue Dec 27 13:46:19 2011
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -22,6 +22,9 @@ class Ui_cov_reg_dialog(object):
         font.setFamily(_fromUtf8("Verdana"))
         cov_reg_dialog.setFont(font)
         cov_reg_dialog.setWindowTitle(QtGui.QApplication.translate("cov_reg_dialog", "select covariates", None, QtGui.QApplication.UnicodeUTF8))
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/images/meta.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        cov_reg_dialog.setWindowIcon(icon)
         self.verticalLayout = QtGui.QVBoxLayout(cov_reg_dialog)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.label = QtGui.QLabel(cov_reg_dialog)
@@ -67,3 +70,4 @@ class Ui_cov_reg_dialog(object):
     def retranslateUi(self, cov_reg_dialog):
         pass
 
+import icons_rc
