@@ -234,7 +234,6 @@ class MADataTable(QtGui.QTableView):
             form = binary_data_form.BinaryDataForm2(ma_unit, cur_txs, cur_group_str, cur_effect, parent=self)
             if form.exec_():
                 # push the edit even
-                #raw_data_edit = CommandEditRawData(ma_unit, self.model(), copy.deepcopy(cur_raw_data_dict), form.raw_data_d)
                 ma_edit = CommandEditMAUnit(self, study_index, ma_unit, old_ma_unit)
                 self.undoStack.push(ma_edit)
         elif data_type == "continuous":

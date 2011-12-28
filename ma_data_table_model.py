@@ -159,7 +159,15 @@ class DatasetModel(QAbstractTableModel):
             self.RAW_DATA = [col+offset for col in range(4)]
             # sensitivity & specificity? 
             self.OUTCOMES = [7, 8, 9, 10, 11, 12]
-      
+    
+
+    def format_float(self, float_var):
+        formatted_str = "'%." + str(self.NUM_DIGITS) + "f'" 
+        # kind of hacky; I can't find a better way to make the
+        # number of digits in the formatting parametric. oh well.
+        return eval(formatted_str + "% float_var")
+
+
     def data(self, index, role=Qt.DisplayRole):
         '''
         Implements the required QTTableModel data method. There is a lot of switching on 
@@ -169,6 +177,7 @@ class DatasetModel(QAbstractTableModel):
         if not index.isValid() or not (0 <= index.row() < len(self.dataset)):
             return QVariant()
         study = self.dataset.studies[index.row()]
+        current_data_type = self.dataset.get_outcome_type(self.current_outcome)
         column = index.column()
         if role == Qt.DisplayRole:
             if column == self.NAME:
@@ -188,7 +197,11 @@ class DatasetModel(QAbstractTableModel):
                         if val == "" or val is None:
                             return QVariant(val)
                         try:
-                            return QVariant(round(val, self.NUM_DIGITS))
+                            # issue #31 -- make sure digits are consistent
+                            if current_data_type == CONTINUOUS:
+                                return QVariant(self.format_float(val))
+                            else:
+                                return QVariant(round(val, self.NUM_DIGITS))
                         except:
                             pyqtRemoveInputHook()
                             pdb.set_trace()
@@ -214,7 +227,7 @@ class DatasetModel(QAbstractTableModel):
                     if outcome_val is None:
                         return QVariant("")
                     outcome_val = est_and_ci[outcome_index]
-                    return QVariant(round(outcome_val, self.NUM_DIGITS))
+                    return QVariant(self.format_float(outcome_val))  # issue #31
                 else:
                     study_index = index.row()
                     # note that we do things quite differently in the diagnostic case,
@@ -231,17 +244,23 @@ class DatasetModel(QAbstractTableModel):
                     outcome_val = est_and_ci[outcome_index % 3]
                     if outcome_val is None:
                         return QVariant("")
-                    return QVariant(round(outcome_val, self.NUM_DIGITS)) 
+                    return QVariant(self.format_float(outcome_val)) # issue #31
                 
             elif column != self.INCLUDE_STUDY:
                 # here the column is to the right of the outcomes (and not the 0th, or
                 # 'include study' column, and thus must corrrespond to a covariate.
-                cov_name = self.get_cov(column).name
+                cov_obj = self.get_cov(column)
+                cov_name = cov_obj.name
                 cov_value = study.covariate_dict[cov_name] if \
                     study.covariate_dict.has_key(cov_name) else None
                 if cov_value is None:
                     cov_value = ""
-                return QVariant(cov_value)
+                
+                if cov_value != "" and cov_obj.data_type == CONTINUOUS:
+                    return QVariant(self.format_float(cov_value))
+                else:
+                    # factor
+                    return QVariant(cov_value)
                 
         elif role == Qt.TextAlignmentRole:
             return QVariant(int(Qt.AlignLeft|Qt.AlignVCenter))
