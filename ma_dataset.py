@@ -730,7 +730,8 @@ class Outcome:
 class Covariate:
     ''' Meta-data about covariates. '''
     def __init__(self, name, data_type):
-        # annoying case converstion
+        # annoying case converstion -- you see we 
+        # assume the first letter is capitalized (below)
         data_type = data_type.capitalize()
 
         if not data_type in ("Factor", "Continuous"):
@@ -749,4 +750,3 @@ class Link:
         
     
             
-        

@@ -270,11 +270,12 @@ class CovariatesModel(QAbstractTableModel):
 
         ###
         # we don't allow empty strings for group names; just pass
-        # if this happens (typically this will be an accident on the user's part)
-        if new_name == "":
+        # if this happens (typically this will be an accident on the user's part).
+        # nor do we allow covariates to have the same name.
+        if new_name == "" or new_name in self.dataset.get_cov_names():
             return False
         
-        cov_object.name = new_name
+        self.dataset.change_covariate_name(cov_object, new_name)
         self.update_covariates_list()
         return True
         
