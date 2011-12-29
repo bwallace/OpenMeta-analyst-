@@ -25,7 +25,7 @@ import ui_ma_specs
 import ma_specs
 import meta_py_r
 from meta_globals import *
-
+import diagnostic_explain
 
 ###
 # ack.. string encoding messiness
@@ -504,6 +504,17 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             # user for parameters regarding the second
             QObject.disconnect(self.buttonBox, SIGNAL("accepted()"), self.run_ma)
             QObject.connect(self.buttonBox, SIGNAL("accepted()"), self.diag_next)
+
+            # in the case that both 'families' of metrics are selected,
+            # we prompt the user for two different methods (because different
+            # methods are available for these). this is confusing, so
+            # we'll here tell the user what's up (issue #83, issue #115)
+            # (but we only show it if they haven't disabled this)
+
+            if not ("explain_diag" in self.parent().user_prefs) or \
+                    self.parent().user_prefs["explain_diag"]:
+                diag_explain_window = diagnostic_explain.DiagnosticExplain(parent=self)
+                diag_explain_window.show()
 
         window_title = ""
         if self.sens_spec:
