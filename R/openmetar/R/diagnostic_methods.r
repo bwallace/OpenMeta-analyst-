@@ -695,9 +695,9 @@ side.by.side.plots <- function(diagnostic.data, fname.left, params.left, fname.r
         
         forest.path <- paste(params.left$fp_outpath, sep="")
         plot.data.left <- create.plot.data.diagnostic(diagnostic.data.left, params.left, res.left)
-        plot.data.left$options$fp.title <- paste(pretty.metric.name(as.character(params.left$measure)), " Forest Plot",sep="")
+        plot.data.left$options$fp.title <- pretty.metric.name(as.character(params.left$measure))
         plot.data.right <- create.plot.data.diagnostic(diagnostic.data.right, params.right, res.right)
-        plot.data.right$options$fp.title <- paste(pretty.metric.name(as.character(params.right$measure)), " Forest Plot",sep="")
+        plot.data.right$options$fp.title <- pretty.metric.name(as.character(params.right$measure))
         two.forest.plots(plot.data.left, plot.data.right, outpath=forest.path)
 
         # combine plot.data.left and plot.data.right into single list to save
