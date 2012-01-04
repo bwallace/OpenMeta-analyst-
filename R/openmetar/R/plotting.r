@@ -146,21 +146,21 @@ create.plot.data.diagnostic <- function(diagnostic.data, params, res, selected.c
         # create label for column 3 based on metric
         label <- switch(metric,
         # sensitivity
-        Sens = "TP / (TP + FN)", 
+        Sens = "TP/(TP + FN)", 
         # specificity
-        Spec = "TN / (FP + TN)",
+        Spec = "TN/(FP + TN)",
         # pos. predictive value
-        PPV =  "TP / (TP + FP)",
+        PPV =  "TP/(TP + FP)",
         #neg. predictive value
-        NPV =  "TN / (TN + FN)",
+        NPV =  "TN/(TN + FN)",
         # accuracy
-        Acc = "(TP + TN) / Tot",
+        Acc = "(TP + TN)/Tot",
         # positive likelihood ratio
-        PLR = "(TP * Di-) / (FP * Di+)", 
+        PLR = "(TP * Di-)/(FP * Di+)", 
         # negative likelihood ratio
-        NLR = "(FN * Di-) / (TN * Di+)",
+        NLR = "(FN * Di-)/(TN * Di+)",
         # diagnostic odds ratio
-        DOR = "(TP * TN) / (FP * FN)")
+        DOR = "(TP * TN)/(FP * FN)")
         #data.col <- format.raw.data.col(nums = terms$numerator, denoms = terms$denominator, label = label) 
         #plot.data$additional.col.data$cases = data.col
         plot.data$options$col3.str <- label
@@ -222,8 +222,7 @@ create.plot.data.overall <- function(res, study.names, params, data.type, addRow
     }
 
     plot.data <- list( label = c(as.character(params$fp_col1_str), study.names),  
-                       # add blank line to study.names to align with Overall row
-                       types = c(3, rep(0, length(study.names)), 2),
+                       types = c(3, rep(0, length(study.names))),
                        scale = scale.str,
                        options = plot.options)
     # unpack data
