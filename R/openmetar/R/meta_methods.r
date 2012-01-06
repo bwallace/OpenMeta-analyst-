@@ -1203,7 +1203,7 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
             diag.data.tmp <- grouped.data[[cov.index]]
             cov.val <- cov.list[cov.index]
             col <- colors[cov.index]
-            sroc.plot.data <- create.subgroup.sroc.plot.data(diag.data.tmp, col, cov.val, cov.index, params=params.sroc)
+            sroc.plot.data <- create.sroc.plot.data(diag.data.tmp, params=params.sroc)
             subgroup.sroc.plot(sroc.plot.data, col, cov.val, cov.index)
         }
         legend("bottomright", cov.list, pch=1:length(cov.list), pt.bg="white", bty="n", col = colors)
@@ -1263,7 +1263,6 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
     results$images <- images
     results$plot_names <- plot.names
     results$plot_params_paths <- plot.params.paths
-    
     results
 }
 
@@ -1318,45 +1317,4 @@ subgroup.side.by.side.plots <- function(diagnostic.data, fname, params.left, par
                         "plot_params_paths"=plot.params.paths)
     }
     results
-}
-
-create.subgroup.sroc.plot.data <- function(diagnostic.data, col, cov.val, cov.index, params){
-    # creates a ROC plot
-    # TODO: This function should just return the sroc plot data - sroc.plot should
-    # be called from multiple.diagnostic. Same for side-by-side plots?
-  
-    # assert that the argument is the correct type
-    if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
-
-    # add constant to zero cells
-    data.adj <- adjust.raw.data(diagnostic.data,params)
-    # compute true positive ratio = sensitivity 
-    TPR <- data.adj$TP / (data.adj$TP + data.adj$FN)
-    # compute false positive ratio = 1 - specificity
-    FPR <- data.adj$FP / (data.adj$TN + data.adj$FP)
-    S <- logit(TPR) + logit(FPR)
-    D <- logit(TPR) - logit(FPR)
-    s.range <- list("max"=max(S), "min"=min(S))
-    params$sroc.weighted <- FALSE
-
-    # remove if this is added in the GUI as a parameter.
-    inv.var <- data.adj$TP + data.adj$FN + data.adj$FP + data.adj$TN
-    if (params$sroc.weighted) {
-      # weighted linear regression
-      res <- lm(D ~ S, weights=inv.var)
-    } else {
-      # unweighted regression 
-      res <- lm(D~S)
-    }
-    summary.disp <- "SROC Plot"
-    # Create list to display summary of results
-    fitted.line <- list(intercept=res$coefficients[1], slope=res$coefficients[2])
-    cov.val <- cov.val
-    # covariate value corresponding to diagnostic data.
-    plot.options <- list()
-    plot.options$roc.xlabel <- params$roc_xlabel
-    plot.options$roc.ylabel <- params$roc_ylabel
-    plot.options$roc.title <- params$roc_title
-    plot.data <- list("fitted.line" = fitted.line, "TPR"=TPR, "FPR"=FPR, "inv.var" = inv.var, "s.range" = s.range, "weighted"=params$sroc.weighted, "plot.options"=plot.options, "cov.val"=cov.val)
-    plot.data
 }
