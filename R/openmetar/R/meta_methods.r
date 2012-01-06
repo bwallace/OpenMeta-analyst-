@@ -87,6 +87,7 @@ cum.ma.binary <- function(fname, binary.data, params){
     params.cum$fp_col2_str <- "Cumulative Estimate"
     # column labels for the cumulative (right-hand) plot
     plot.data.cum <- create.plot.data.overall(res=cum.results, study.names, params.cum, data.type="binary", addRow1Space=TRUE)
+    plot.data.cum$add.sp
     two.forest.plots(forest.data1=plot.data, forest.data2=plot.data.cum, outpath=forest.path)
 
     # Now we package the results in a dictionary (technically, a named 
@@ -743,7 +744,7 @@ subgroup.ma.diagnostic <- function(fname, diagnostic.data, params){
                     "plot_names"=plot.names, 
                     "plot_params_paths"=plot.params.paths)
     } else {
-        results <- list("plot.data"=plot.data)
+        results <- list("plot.data"=plot.data, "grouped.data"=grouped.data, "cov.list"=subgroup.list)
     }
     results
 }
@@ -1090,12 +1091,8 @@ loo.side.by.side.plots <- function(diagnostic.data, fname.left, params.left, fna
         # only show study names on the left plot
         diagnostic.data.left <- compute.diag.point.estimates(diagnostic.data, params.left)
         diagnostic.data.right <- compute.diag.point.estimates(diagnostic.data, params.right)
-        fnames <- c(fname.left, fname.right)
-        params.list <- list(params.left, params.right)
-        
+      
         res.left <- loo.ma.diagnostic(fname.left, diagnostic.data.left, params.left)
-        
-  
         res.right <- loo.ma.diagnostic(fname.right, diagnostic.data.right, params.right)
         
         forest.path <- paste(params.left$fp_outpath, sep="")
@@ -1167,11 +1164,10 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
         # create side-by-side plot
         # At present, fname.left is always the same as fname.right, and params.left is the same as params.right, except for measure.
         #
-        results.sens.spec <- subgroup.side.by.side.plots(diagnostic.data, fname.left=fnames[sens.index], 
+        fname <- fnames[sens.index]
+        results.sens.spec <- subgroup.side.by.side.plots(diagnostic.data, fname=fname, 
                                                                  params.left=params.list[[sens.index]],
-                                                                 fname.right=fnames[spec.index],
                                                                  params.right=params.list[[spec.index]])
-        
         images.tmp <- results.sens.spec$images
         names(images.tmp) <- "Sensitivity and Specificity Forest Plot"
         images <- c(images, images.tmp)
@@ -1181,12 +1177,33 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
         plot.names <- c(plot.names, results.sens.spec$plot_names)
         
         params.sroc <- params.list[[sens.index]]
-        params.sroc$roc_xlabel <- "1 - Specificity"
-        params.sroc$roc_ylabel <- "Sensitivity"   
-        params.sroc$roc_title <- ""
+        #params.sroc$roc_xlabel <- "1 - Specificity"
+        #params.sroc$roc_ylabel <- "Sensitivity"   
+        #params.sroc$roc_title <- ""
         # slot for a title if desired in future
-        results.sroc <- create.sroc.plot(diagnostic.data, params=params.sroc)
+        # res <- subgroup.ma.diagnostic(fname.left, diagnostic.data, params.left)
+        #
         # create SROC plot
+        res <- subgroup.ma.diagnostic(fname, diagnostic.data, params.sroc)
+        grouped.data <- res$grouped.data
+        cov.list <- res$cov.list
+        colors <- rainbow(length(grouped.data)-1)
+        
+        outpath <- "./r_tmp/roc.png"
+        png(file=outpath, width=5 , height=5, units="in", res=144)
+        plot.new()
+        axis(1, xlab="1 - Specificity")
+        axis(2)
+        title(xlab="1 - Specificity", ylab="Sensitivity") 
+        for (cov.index in 1:(length(cov.list))) {
+            diag.data.tmp <- grouped.data[[cov.index]]
+            cov.val <- cov.list[cov.index]
+            col <- colors[cov.index]
+            results.sroc <- create.subgroup.sroc.plot(diag.data.tmp, col, cov.val, cov.index, params=params.sroc)
+        }
+        legend("bottomright", cov.list, pch=1:length(cov.list), pt.bg="white", bty="n", col = colors)
+        graphics.off()
+
         images.tmp <- results.sroc$images
         names(images.tmp) <- "ROC Curve"
         images <- c(images, images.tmp)
@@ -1203,9 +1220,8 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
         # Don't create individual forest plots for sens and spec if both are checked.
        
         results.plr.nlr <- NULL
-        results.plr.nlr <- subgroup.side.by.side.plots(diagnostic.data, fname.left=fnames[nlr.index], 
+        results.plr.nlr <- subgroup.side.by.side.plots(diagnostic.data, fname=fnames[nlr.index], 
                                                                params.left=params.list[[nlr.index]], 
-                                                               fname.right=fnames[plr.index],
                                                                params.right=params.list[[plr.index]])
         # At present, fname.left is always the same as fname.right, and params.left is the same as params.right, except for measure.
         images.tmp <- results.plr.nlr$images
@@ -1246,13 +1262,13 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
     results
 }
 
-subgroup.side.by.side.plots <- function(diagnostic.data, fname.left, params.left, fname.right, params.right){
+subgroup.side.by.side.plots <- function(diagnostic.data, fname, params.left, params.right){
     # creates two side-by-side forest plots
     # assert that the argument is the correct type
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
     results <- NULL
     if (length(diagnostic.data@TP) == 1){
-        res <- get.res.for.one.diag.study(diagnostic.data, params.left)
+        res <- get.res.for.one.diag.study(diagnostic.data, params)
         # Package res for use by overall method.
         summary.disp <- list("MAResults" = res) 
         results <- list("Summary"=summary.disp)
@@ -1264,11 +1280,11 @@ subgroup.side.by.side.plots <- function(diagnostic.data, fname.left, params.left
         # only show study names on the left plot
         diagnostic.data.left <- compute.diag.point.estimates(diagnostic.data, params.left)
         diagnostic.data.right <- compute.diag.point.estimates(diagnostic.data, params.right)
-        fnames <- c(fname.left, fname.right)
-        params.list <- list(params.left, params.right)
+        #fnames <- c(fname.left, fname.right)
+        #params.list <- list(params.left, params.right)
         
-        res.left <- subgroup.ma.diagnostic(fname.left, diagnostic.data.left, params.left)
-        res.right <- subgroup.ma.diagnostic(fname.right, diagnostic.data.right, params.right)
+        res.left <- subgroup.ma.diagnostic(fname, diagnostic.data.left, params.left)
+        res.right <- subgroup.ma.diagnostic(fname, diagnostic.data.right, params.right)
         
         forest.path <- paste(params.left$fp_outpath, sep="")
         plot.data.left <- res.left$plot.data
@@ -1284,8 +1300,8 @@ subgroup.side.by.side.plots <- function(diagnostic.data, fname.left, params.left
         names(plot.data.right) <- paste(params.right$measure, " data", sep="")
 
         plot.data <- list("diagnostic.data"=diagnostic.data, 
-                          "fname.left"=fname.left, "params.left"=params.left,
-                          "fname.right"=fname.right, "params.right"=params.right)
+                          "fname.left"=fname, "params.left"=params.left,
+                          "fname.right"=fname, "params.right"=params.right)
 
         images <- c("Forest Plot"=forest.path)
         plot.names <- c("forest plot"="forest_plot")
@@ -1296,5 +1312,58 @@ subgroup.side.by.side.plots <- function(diagnostic.data, fname.left, params.left
                         "plot_names"=plot.names, 
                         "plot_params_paths"=plot.params.paths)
     }
+    results
+}
+
+create.subgroup.sroc.plot <- function(diagnostic.data, col, cov.val, cov.index, params){
+    # creates a ROC plot
+    # TODO: This function should just return the sroc plot data - sroc.plot should
+    # be called from multiple.diagnostic. Same for side-by-side plots?
+  
+    # assert that the argument is the correct type
+    if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
+
+    # add constant to zero cells
+    data.adj <- adjust.raw.data(diagnostic.data,params)
+    # compute true positive ratio = sensitivity 
+    TPR <- data.adj$TP / (data.adj$TP + data.adj$FN)
+    # compute false positive ratio = 1 - specificity
+    FPR <- data.adj$FP / (data.adj$TN + data.adj$FP)
+    S <- logit(TPR) + logit(FPR)
+    D <- logit(TPR) - logit(FPR)
+    s.range <- list("max"=max(S), "min"=min(S))
+    params$sroc.weighted <- FALSE
+
+    # remove if this is added in the GUI as a parameter.
+    inv.var <- data.adj$TP + data.adj$FN + data.adj$FP + data.adj$TN
+    if (params$sroc.weighted) {
+      # weighted linear regression
+      res <- lm(D ~ S, weights=inv.var)
+    } else {
+      # unweighted regression 
+      res <- lm(D~S)
+    }
+    summary.disp <- "SROC Plot"
+    # Create list to display summary of results
+    fitted.line <- list(intercept=res$coefficients[1], slope=res$coefficients[2])
+    cov.val <- cov.val
+    # covariate value corresponding to diagnostic data.
+    plot.options <- list()
+    plot.options$roc.xlabel <- params$roc_xlabel
+    plot.options$roc.ylabel <- params$roc_ylabel
+    plot.options$roc.title <- params$roc_title
+    plot.data <- list("fitted.line" = fitted.line, "TPR"=TPR, "FPR"=FPR, "inv.var" = inv.var, "s.range" = s.range, "weighted"=params$sroc.weighted, "plot.options"=plot.options, "cov.val"=cov.val)
+    subgroup.sroc.plot(plot.data, col, cov.val, cov.index)
+
+    images <- c("SROC"=sroc.path)
+    plot.names <- c("sroc"="sroc")
+    
+    # we use the system time as our unique-enough string to store
+    # the params object
+    forest.plot.params.path <- save.plot.data(plot.data)
+    plot.params.paths <- c("SROC Plot"=forest.plot.params.path)
+    results <- list("images"=images, "Summary"=summary.disp, 
+                    "plot_names"=plot.names, 
+                    "plot_params_paths"=plot.params.paths)
     results
 }
