@@ -242,15 +242,19 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         params.sroc$roc_ylabel <- "Sensitivity"   
         params.sroc$roc_title <- ""
         # slot for a title if desired in future
-        results.sroc <- create.sroc.plot(diagnostic.data, params=params.sroc)
+        
         # create SROC plot
-        images.tmp <- results.sroc$images
-        names(images.tmp) <- "ROC Curve"
-        images <- c(images, images.tmp)
-        plot.params.paths.tmp <- results.sroc$plot_params_paths
-        names(plot.params.paths.tmp) <- "ROC Curve"
+        sroc.path <- "./r_tmp/roc.png"
+        sroc.plot.data <- create.sroc.plot.data(diagnostic.data, params=params.sroc)
+        sroc.plot(sroc.plot.data, outpath=sroc.path)
+ 
+        # we use the system time as our unique-enough string to store
+        # the params object
+        sroc.plot.params.path <- save.plot.data(sroc.plot.data)
+        plot.params.paths.tmp <- c("SROC Plot"=sroc.plot.params.path)
+        images <- c(images, c("SROC"=sroc.path))
         plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
-        plot.names <- c(plot.names, results.sroc$plot_names)
+        plot.names <- c(plot.names, c("sroc"="sroc"))
     }
     
     if (("NLR" %in% metrics) || ("PLR" %in% metrics)) {
@@ -613,10 +617,8 @@ diagnostic.random.overall <- function(results) {
 ##################################
 #            SROC Plot           #
 ##################################
-create.sroc.plot <- function(diagnostic.data, params){
-    # creates a ROC plot
-    # TODO: This function should just return the sroc plot data - sroc.plot should
-    # be called from multiple.diagnostic. Same for side-by-side plots?
+create.sroc.plot.data <- function(diagnostic.data, params){
+    # create plot data for an ROC plot.
   
     # assert that the argument is the correct type
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
@@ -631,8 +633,8 @@ create.sroc.plot <- function(diagnostic.data, params){
     D <- logit(TPR) - logit(FPR)
     s.range <- list("max"=max(S), "min"=min(S))
     params$sroc.weighted <- FALSE
-
     # remove if this is added in the GUI as a parameter.
+    
     inv.var <- data.adj$TP + data.adj$FN + data.adj$FP + data.adj$TN
     if (params$sroc.weighted) {
       # weighted linear regression
@@ -641,29 +643,13 @@ create.sroc.plot <- function(diagnostic.data, params){
       # unweighted regression 
       res <- lm(D~S)
     }
-    summary.disp <- "SROC Plot"
-    # Create list to display summary of results
     fitted.line <- list(intercept=res$coefficients[1], slope=res$coefficients[2])
-    #sroc.path <- paste(params$fp_outpath, sep="")
-    sroc.path <- "./r_tmp/roc.png"
+    
     plot.options <- list()
     plot.options$roc.xlabel <- params$roc_xlabel
     plot.options$roc.ylabel <- params$roc_ylabel
     plot.options$roc.title <- params$roc_title
     plot.data <- list("fitted.line" = fitted.line, "TPR"=TPR, "FPR"=FPR, "inv.var" = inv.var, "s.range" = s.range, "weighted"=params$sroc.weighted, "plot.options"=plot.options)
-    sroc.plot(plot.data, outpath=sroc.path)
-
-    images <- c("SROC"=sroc.path)
-    plot.names <- c("sroc"="sroc")
-    
-    # we use the system time as our unique-enough string to store
-    # the params object
-    forest.plot.params.path <- save.plot.data(plot.data)
-    plot.params.paths <- c("SROC Plot"=forest.plot.params.path)
-    results <- list("images"=images, "Summary"=summary.disp, 
-                    "plot_names"=plot.names, 
-                    "plot_params_paths"=plot.params.paths)
-    results
 }
 
 ###################################################

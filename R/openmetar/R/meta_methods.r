@@ -1012,15 +1012,19 @@ multiple.loo.diagnostic <- function(fnames, params.list, diagnostic.data) {
         params.sroc$roc_ylabel <- "Sensitivity"   
         params.sroc$roc_title <- ""
         # slot for a title if desired in future
-        results.sroc <- create.sroc.plot(diagnostic.data, params=params.sroc)
+        
         # create SROC plot
-        images.tmp <- results.sroc$images
-        names(images.tmp) <- "ROC Curve"
-        images <- c(images, images.tmp)
-        plot.params.paths.tmp <- results.sroc$plot_params_paths
-        names(plot.params.paths.tmp) <- "ROC Curve"
+        sroc.path <- "./r_tmp/roc.png"
+        sroc.plot.data <- create.sroc.plot.data(diagnostic.data, params=params.sroc)
+        sroc.plot(sroc.plot.data, outpath=sroc.path)
+ 
+        # we use the system time as our unique-enough string to store
+        # the params object
+        sroc.plot.params.path <- save.plot.data(sroc.plot.data)
+        plot.params.paths.tmp <- c("SROC Plot"=sroc.plot.params.path)
+        images <- c(images, c("SROC"=sroc.path))
         plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
-        plot.names <- c(plot.names, results.sroc$plot_names)
+        plot.names <- c(plot.names, c("sroc"="sroc"))
     }
     
     if (("NLR" %in% metrics) || ("PLR" %in% metrics)) {
