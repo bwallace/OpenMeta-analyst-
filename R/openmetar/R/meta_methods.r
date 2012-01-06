@@ -1203,18 +1203,19 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
             diag.data.tmp <- grouped.data[[cov.index]]
             cov.val <- cov.list[cov.index]
             col <- colors[cov.index]
-            results.sroc <- create.subgroup.sroc.plot(diag.data.tmp, col, cov.val, cov.index, params=params.sroc)
+            sroc.plot.data <- create.subgroup.sroc.plot.data(diag.data.tmp, col, cov.val, cov.index, params=params.sroc)
+            subgroup.sroc.plot(sroc.plot.data, col, cov.val, cov.index)
         }
         legend("bottomright", cov.list, pch=1:length(cov.list), pt.bg="white", bty="n", col = colors)
         graphics.off()
-
-        images.tmp <- results.sroc$images
-        names(images.tmp) <- "ROC Curve"
-        images <- c(images, images.tmp)
-        plot.params.paths.tmp <- results.sroc$plot_params_paths
-        names(plot.params.paths.tmp) <- "ROC Curve"
+        
+       # we use the system time as our unique-enough string to store
+        # the params object
+        sroc.plot.params.path <- save.plot.data(sroc.plot.data)
+        plot.params.paths.tmp <- c("SROC Plot"=sroc.plot.params.path)
+        images <- c(images, c("SROC"=sroc.path))
         plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
-        plot.names <- c(plot.names, results.sroc$plot_names)
+        plot.names <- c(plot.names, c("sroc"="sroc"))      
     }
     
     if (("NLR" %in% metrics) || ("PLR" %in% metrics)) {
@@ -1319,7 +1320,7 @@ subgroup.side.by.side.plots <- function(diagnostic.data, fname, params.left, par
     results
 }
 
-create.subgroup.sroc.plot <- function(diagnostic.data, col, cov.val, cov.index, params){
+create.subgroup.sroc.plot.data <- function(diagnostic.data, col, cov.val, cov.index, params){
     # creates a ROC plot
     # TODO: This function should just return the sroc plot data - sroc.plot should
     # be called from multiple.diagnostic. Same for side-by-side plots?
@@ -1357,17 +1358,5 @@ create.subgroup.sroc.plot <- function(diagnostic.data, col, cov.val, cov.index, 
     plot.options$roc.ylabel <- params$roc_ylabel
     plot.options$roc.title <- params$roc_title
     plot.data <- list("fitted.line" = fitted.line, "TPR"=TPR, "FPR"=FPR, "inv.var" = inv.var, "s.range" = s.range, "weighted"=params$sroc.weighted, "plot.options"=plot.options, "cov.val"=cov.val)
-    subgroup.sroc.plot(plot.data, col, cov.val, cov.index)
-
-    images <- c("SROC"=sroc.path)
-    plot.names <- c("sroc"="sroc")
-    
-    # we use the system time as our unique-enough string to store
-    # the params object
-    forest.plot.params.path <- save.plot.data(plot.data)
-    plot.params.paths <- c("SROC Plot"=forest.plot.params.path)
-    results <- list("images"=images, "Summary"=summary.disp, 
-                    "plot_names"=plot.names, 
-                    "plot_params_paths"=plot.params.paths)
-    results
+    plot.data
 }
