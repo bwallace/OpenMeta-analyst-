@@ -238,16 +238,22 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         plot.names <- c(plot.names, results.sens.spec$plot_names)
         
         params.sroc <- params.list[[sens.index]]
-        params.sroc$roc_xlabel <- "1 - Specificity"
-        params.sroc$roc_ylabel <- "Sensitivity"   
-        params.sroc$roc_title <- ""
+        #params.sroc$roc_xlabel <- "1 - Specificity"
+        #params.sroc$roc_ylabel <- "Sensitivity"   
+        #params.sroc$roc_title <- ""
         # slot for a title if desired in future
         
         # create SROC plot
         sroc.path <- "./r_tmp/roc.png"
+        png(file=sroc.path, width=5 , height=5, units="in", res=144)
         sroc.plot.data <- create.sroc.plot.data(diagnostic.data, params=params.sroc)
-        sroc.plot(sroc.plot.data, outpath=sroc.path)
- 
+        plot.new()
+        axis(1, pos=c(0,0))
+        axis(2, pos=c(0,0))
+        title(xlab="1 - Specificity", ylab="Sensitivity")
+        #sroc.plot(sroc.plot.data, outpath=sroc.path)
+        subgroup.sroc.plot(sroc.plot.data, color="blue", sym.index=1)
+        graphics.off()
         # we use the system time as our unique-enough string to store
         # the params object
         sroc.plot.params.path <- save.plot.data(sroc.plot.data)
@@ -649,6 +655,7 @@ create.sroc.plot.data <- function(diagnostic.data, params){
     plot.options$roc.xlabel <- params$roc_xlabel
     plot.options$roc.ylabel <- params$roc_ylabel
     plot.options$roc.title <- params$roc_title
+    # for future use as options from GUI
     plot.data <- list("fitted.line" = fitted.line, "TPR"=TPR, "FPR"=FPR, "inv.var" = inv.var, "s.range" = s.range, "weighted"=params$sroc.weighted, "plot.options"=plot.options)
 }
 

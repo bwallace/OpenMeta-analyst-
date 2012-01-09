@@ -200,90 +200,6 @@ loo.ma.binary <- function(fname, binary.data, params){
 }
 
 ##################################
-#  diagnostic cumulative MA      #
-##################################
-cum.ma.diagnostic <- function(fname, diagnostic.data, params){
-    # assert that the argument is the correct type
-    if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
-    
-    res<-rma.uni(yi=diagnostic.data@y, sei=diagnostic.data@SE, slab=diagnostic.data@study.names,
-                                level=params$conf.level, digits=params$digits, method="FE", add=params$adjust,
-                                to=params$to)
-    
-    plot.data <- create.plot.data.diagnostic(diagnostic.data, params, res)
-    
-    # iterate over the diagnosticData elements, adding one study at a time
-    cum.results <- array(list(NULL), dim=c(length(diagnostic.data@study.names)))
-    params$create.plot <- FALSE
-    for (i in 1:length(diagnostic.data@study.names)){
-        # build a DiagnosticData object including studies
-        # 1 through i
-        y.tmp <- diagnostic.data@y[1:i]
-        SE.tmp <- diagnostic.data@SE[1:i]
-        names.tmp <- diagnostic.data@study.names[1:i]
-        diag.data.tmp <- NULL
-        if (length(diagnostic.data@TP) > 0){
-            # if we have group level data for 
-            # group 1, outcome 1, then we assume
-            # we have it for all groups
-            TP.tmp <- diagnostic.data@TP[1:i]
-            FN.tmp <- diagnostic.data@FN[1:i]
-            TN.tmp <- diagnostic.data@TN[1:i]
-            FP.tmp <- diagnostic.data@FP[1:i]
-            diag.data.tmp <- new('DiagnosticData', TP=TP.tmp, 
-                               FN=FN.tmp , TN=TN.tmp, 
-                               FP=FP.tmp, y=y.tmp, SE=SE.tmp, study.names=names.tmp)
-        } else {
-            diag.data.tmp <- new('DiagnosticData', y=y.tmp, SE=SE.tmp, study.names=names.tmp)
-        }
-        # call the parametric function by name, passing along the 
-        # data and parameters. Notice that this method knows
-        # neither what method its calling nor what parameters
-        # it's passing!
-        cur.res <- eval(call(fname, diag.data.tmp, params))
-        cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
-        cum.results[[i]] <- cur.overall
-    }
-    study.names <- diagnostic.data@study.names[1] 
-    for (count in 2:length(diagnostic.data@study.names)) {
-        study.names <- c(study.names, paste("+ ",diagnostic.data@study.names[count], sep=""))
-    }
-    metric.name <- pretty.metric.name(as.character(params$measure))
-    model.title <- ""
-    if (fname == "diagnostic.fixed") {
-        model.title <- paste("Diagnostic Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
-    } else if (fname == "diagnostic.random") {
-        model.title <- paste("Diagnostic Random-Effects Model\n\nMetric: ", metric.name, sep="")
-    }
-    
-    cum.disp <- create.overall.display(res=cum.results, study.names, params, model.title, data.type="diagnostic")
-    forest.path <- paste(params$fp_outpath, sep="")
-    params$fp_col1_str <- "Cumulative Studies"
-    # label for the cumulative (right-hand) plot
-    plot.data.cum <- create.plot.data.overall(res=cum.results, study.names, params, data.type="diagnostic", addRow1Space=TRUE)
-    two.forest.plots(plot.data, plot.data.cum, outpath=forest.path)
-
-    # Now we package the results in a dictionary (technically, a named 
-    # vector). In particular, there are two fields that must be returned; 
-    # a dictionary of images (mapping titles to image paths) and a list of texts
-    # (mapping titles to pretty-printed text). In this case we have only one 
-    # of each. 
-    #     
-    images <- c("Cumulative Forest Plot"=forest.path)
-    plot.names <- c("cumulative forest plot"="cumulative_forest_plot")
-    
-    # we use the system time as our unique-enough string to store
-    # the params object
-    forest.plot.params.path <- save.plot.data(plot.data)
-    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
-    results <- list("images"=images, "Cumulative Summary"=cum.disp, 
-                    "plot_names"=plot.names, 
-                    "plot_params_paths"=plot.params.paths)
-    results
-}
-
-
-##################################
 #  diagnostic leave-one-out MA   #
 ##################################
 loo.ma.diagnostic <- function(fname, diagnostic.data, params){
@@ -1013,10 +929,17 @@ multiple.loo.diagnostic <- function(fnames, params.list, diagnostic.data) {
         params.sroc$roc_title <- ""
         # slot for a title if desired in future
         
-        # create SROC plot
-        sroc.path <- "./r_tmp/roc.png"
-        sroc.plot.data <- create.sroc.plot.data(diagnostic.data, params=params.sroc)
-        sroc.plot(sroc.plot.data, outpath=sroc.path)
+        # create SROC plot - in future implementation
+        #sroc.path <- "./r_tmp/roc.png"
+        #png(file=sroc.path, width=5 , height=5, units="in", res=144)
+        #sroc.plot.data <- create.sroc.plot.data(diagnostic.data, params=params.sroc)
+        #plot.new()
+        #axis(1, pos=c(0,0))
+        #axis(2, pos=c(0,0))
+        #title(xlab="1 - Specificity", ylab="Sensitivity")
+        #sroc.plot(sroc.plot.data, outpath=sroc.path)
+        #subgroup.sroc.plot(sroc.plot.data, color="blue", sym.index=1)
+        #graphics.off()
  
         # we use the system time as our unique-enough string to store
         # the params object
@@ -1193,18 +1116,17 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
         cov.list <- res$cov.list
         colors <- rainbow(length(grouped.data)-1)
         
-        outpath <- "./r_tmp/roc.png"
-        png(file=outpath, width=5 , height=5, units="in", res=144)
+        sroc.path <- "./r_tmp/roc.png"
+        png(file=sroc.path, width=5 , height=5, units="in", res=144)
         plot.new()
-        axis(1, xlab="1 - Specificity")
-        axis(2)
+        axis(1, pos=c(0,0))
+        axis(2, pos=c(0,0))
         title(xlab="1 - Specificity", ylab="Sensitivity") 
-        for (cov.index in 1:(length(cov.list))) {
-            diag.data.tmp <- grouped.data[[cov.index]]
-            cov.val <- cov.list[cov.index]
-            col <- colors[cov.index]
+        for (count in 1:(length(cov.list))) {
+            diag.data.tmp <- grouped.data[[count]]
+            color <- colors[count]
             sroc.plot.data <- create.sroc.plot.data(diag.data.tmp, params=params.sroc)
-            subgroup.sroc.plot(sroc.plot.data, col, cov.val, cov.index)
+            subgroup.sroc.plot(sroc.plot.data, color, sym.index=count)
         }
         legend("bottomright", cov.list, pch=1:length(cov.list), pt.bg="white", bty="n", col = colors)
         graphics.off()

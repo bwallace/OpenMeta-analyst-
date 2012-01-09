@@ -8,7 +8,7 @@
 #  (And more?)                     #
 #                                  #
 # This code due mostly to Issa     #
-#   Dahabreh and Paul Trow       #    
+#   Dahabreh and Paul Trow         #    
 ####################################
 
 # largely a generalization based on an example by
@@ -57,7 +57,12 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
         plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(plot.ub)
     } 
     
-    plot.data <- list(label = c(paste(params$fp_col1_str, sep = ""), paste(om.data@study.names, om.data@years, sep=" "), "Overall"),
+    # append years to study names unless year equals 0 (0 is passed to R when year is empty).
+
+    study.names <- om.data@study.names
+    years <- om.data@years
+    study.names[years != 0] <- paste(study.names[years != 0], years[years != 0], sep=" ")
+    plot.data <- list(label = c(paste(params$fp_col1_str, sep = ""), study.names, "Overall"),
                       types = c(3, rep(0, length(om.data@study.names)), 2),
                       scale = scale.str,
                       options = plot.options)         
@@ -379,8 +384,6 @@ create.subgroup.plot.data.diagnostic <- function(subgroup.data, params) {
     grouped.data <- subgroup.data$grouped.data
     plot.data <- create.subgroup.plot.data.generic(subgroup.data, params, data.type="diagnostic") 
     if (length(grouped.data[[1]]@TP) > 0) {
-        raw.data <- list("TP"=diagnostic.data@TP, "FN"=diagnostic.data@FN, "TN"=diagnostic.data@TN, "FP"=diagnostic.data@FP)
-        terms <- compute.diagnostic.terms(raw.data, params)
         plot.data$col3 <- list(nums = subgroup.data$col3.nums, denoms = subgroup.data$col3.denoms)
         
         metric <- params$measure
@@ -1324,8 +1327,13 @@ sroc.plot <- function(plot.data, outpath){
 #######################################
 #      Subgroup Diagnostic SROC       #
 #######################################
-
-subgroup.sroc.plot <- function(plot.data, col, cov.val, cov.index){
+#
+## TO DO - combine this with sroc plot - only difference is extra params.
+#
+subgroup.sroc.plot <- function(plot.data, color, sym.index){
+    # draw an SROC plot.
+    # color - rgb color for the points and lines
+    # sym.index - integer specifying symbols for points by pch=sym.index 
     symSize <- 1
     #lcol = "darkred"
     lweight = 1
@@ -1336,7 +1344,6 @@ subgroup.sroc.plot <- function(plot.data, col, cov.val, cov.index){
     TPR <- plot.data$TPR
     FPR <- plot.data$FPR
     s.range <- plot.data$s.range
-    cov.val <- plot.data$cov.val
    
     if (weighted == TRUE) {
         inv.var <- plot.data$inv.var    
@@ -1346,11 +1353,11 @@ subgroup.sroc.plot <- function(plot.data, col, cov.val, cov.index){
         # ratio of radii of largest circle to smallest circle
         radii <- calculate.radii(inv.var, max.symbol.size, max.ratio)
         symbols(y = plot.data$TPR, x = plot.data$FPR, circles = symSize*radii, inches=FALSE,
-              xlab = xlabel, ylab = ylabel, main=title, xlim = c(0,1), ylim = c(0,1), bty = plotregion, fg = col)
+              xlab = xlabel, ylab = ylabel, main=title, xlim = c(0,1), ylim = c(0,1), bty = plotregion, fg = color)
     } else {
         radii <- .01*rep(1, length(TPR))
         points(y = plot.data$TPR, x = plot.data$FPR,
-              xlim = c(0,1), ylim = c(0,1), bty = plotregion, col = col, pch=cov.index)     
+              xlim = c(0,1), ylim = c(0,1), bty = plotregion, col = color, pch=sym.index)     
     }
     # create regression line values
     s.vals <- seq(from = s.range$min, to = s.range$max, by=.001)
@@ -1358,7 +1365,7 @@ subgroup.sroc.plot <- function(plot.data, col, cov.val, cov.index){
     # transform regression line coords to TPR by 1 - FPR coords
     tpr.vals <- invlogit((s.vals + d.vals) / 2)
     fpr.vals <- invlogit((s.vals - d.vals) / 2)
-    lines(fpr.vals, tpr.vals, col = col, lwd = lweight, lty = lpatern)
+    lines(fpr.vals, tpr.vals, col = color, lwd = lweight, lty = lpatern)
 }
 
 ################################################
