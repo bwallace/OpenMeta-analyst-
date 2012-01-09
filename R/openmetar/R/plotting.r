@@ -145,21 +145,21 @@ create.plot.data.diagnostic <- function(diagnostic.data, params, res, selected.c
         # create label for column 3 based on metric
         label <- switch(metric,
         # sensitivity
-        Sens = "TP / (TP + FN)", 
+        Sens = "TP/(TP + FN)", 
         # specificity
-        Spec = "TN / (FP + TN)",
+        Spec = "TN/(FP + TN)",
         # pos. predictive value
-        PPV =  "TP / (TP + FP)",
+        PPV =  "TP/(TP + FP)",
         #neg. predictive value
-        NPV =  "TN / (TN + FN)",
+        NPV =  "TN/(TN + FN)",
         # accuracy
-        Acc = "(TP + TN) / Tot",
+        Acc = "(TP + TN)/Tot",
         # positive likelihood ratio
-        PLR = "(TP * Di-) / (FP * Di+)", 
+        PLR = "(TP * Di-)/(FP * Di+)", 
         # negative likelihood ratio
-        NLR = "(FN * Di-) / (TN * Di+)",
+        NLR = "(FN * Di-)/(TN * Di+)",
         # diagnostic odds ratio
-        DOR = "(TP * TN) / (FP * FN)")
+        DOR = "(TP * TN)/(FP * FN)")
         #data.col <- format.raw.data.col(nums = terms$numerator, denoms = terms$denominator, label = label) 
         #plot.data$additional.col.data$cases = data.col
         plot.data$options$col3.str <- label
@@ -221,8 +221,7 @@ create.plot.data.overall <- function(res, study.names, params, data.type, addRow
     }
 
     plot.data <- list( label = c(as.character(params$fp_col1_str), study.names),  
-                       # add blank line to study.names to align with Overall row
-                       types = c(3, rep(0, length(study.names)), 2),
+                       types = c(3, rep(0, length(study.names))),
                        scale = scale.str,
                        options = plot.options)
     # unpack data
@@ -502,7 +501,11 @@ set.plot.options <- function(params) {
     
     # fp.title is the title for forest plot
     # In future, this should be user option
-    plot.options$fp.title <- ""
+    if (is.null(params$fp.title)) {
+         plot.options$fp.title <- ""
+    } else {
+         plot.options$fp.title <- params$fp.title
+    }
     
     # if show.summary.line is TRUE, a vertical dashed line is displayed at the
     # overall summary.
@@ -567,9 +570,15 @@ forest.plot <- function(forest.data, outpath) {
   # calculates plot sizes and layout, and then calls draw.forest.plot.
   forest.data <- format.data.cols(forest.data)
   # format the text of the data columns displayed on forest plot
+  types <- forest.data$types
+  num.labels <- length(forest.data$label)
+  rows <- assign.rows(types, num.labels)
+  # row numbers of forest plot including blank rows (after summary rows)
+  forest.data$rows <- rows
+  
   forest.data <- create.grobs(forest.data)
   # create graphical objects for study and data columns.
-
+   
   plot.size <- calc.forest.plot.size(forest.data)
   # calculate height and width of output file
   forest.data$data.col.width <- plot.size$data.col.width
@@ -630,15 +639,9 @@ calc.viewport.layout <- function(forest.data, just){
     }
     forest.plot.params <- create.plot.options(forest.data, gapSize = 3.2, plotWidth=5)
 
-    if (forest.data$types[length(forest.data$types)] != 0) {
-      # last row is a summary
-        extra.space <- sum(forest.data$types != 0) 
-    } else {
-      # add a little more space because last row is not a summary
-        extra.space <- sum(forest.data$types != 0) + 1 
-    }   
-    num.rows <- length(forest.data$types) + extra.space
-    # number of rows in plot
+    rows <- forest.data$rows
+    num.rows <- rows[length(rows)]
+    # number of rows including blank rows
     width.list <- calc.width.list(forest.data)
     num.cols <- length(width.list) + 1
     # 1 more for the plot itself
@@ -648,7 +651,7 @@ calc.viewport.layout <- function(forest.data, just){
     } else {
         vp.width <- unit.c(forest.plot.params$effect.col.width)
     }
-    vp.layout <- grid.layout(num.rows , num.cols,
+    vp.layout <- grid.layout(num.rows+1, num.cols,
                              width=vp.width,
                              height = unit(rep(1, num.rows)  , "lines"),
                              just=just)
@@ -663,16 +666,9 @@ calc.forest.plot.size <- function(forest.data){
         num.additional.cols <- 0
     }
     forest.plot.params <- create.plot.options(forest.data, gapSize = 3.2, plotWidth=5)
-
-    if (forest.data$types[length(forest.data$types)] != 0) {
-      # last row is a summary
-        extra.space <- sum(forest.data$types != 0) 
-    } else {
-      # add a little more space because last row is not a summary
-        extra.space <- sum(forest.data$types != 0) + 1 
-    }   
-    num.rows <- length(forest.data$types) + extra.space
-    # number of rows in plot
+    rows <- forest.data$rows
+    num.rows <- rows[length(rows)]
+    
     row.height <- convertY(unit(1, "lines") , "inches" , valueOnly=TRUE)
     # height of each row in inches 
     how.tall <- num.rows * row.height
@@ -739,6 +735,26 @@ calc.width.list <- function(forest.data) {
     width.list
 }
 
+assign.rows <- function(types, num.labels) {
+    # assign row numbers for plot data, skipping blank rows after rows of type 1,2, or 3
+    rows<-c(1, rep(NA, (num.labels-1) ) )
+    for (i in 1:(num.labels-1)){
+        if (types[i] == 3  &&  types[i+1] == 0 )
+            rows[i+1] <- rows[i] + 2
+        else if (types[i] == 0  &&  types[i+1] == 2 )
+            rows[i+1] <- rows[i]  + 2
+        else if (types[i] == 0  &&  types[i+1] == 1 )
+            rows[i+1] <- rows[i] + 1
+        else if (types[i] == 1  &&  types[i+1] == 0 )
+            rows[i+1] <- rows[i] + 2
+        else if (types[i] == 1  &&  types[i+1] == 2 )
+            rows[i+1] <- rows[i] + 2
+        else
+           rows[i+1] <- rows[i] + 1
+    }
+    rows
+}
+
 #############################################
 #   functions for drawing the forest plot   #
 #############################################
@@ -758,16 +774,16 @@ draw.forest.plot <- function(forest.data){
     effect.col <- effectsize.column(forest.data, box.sca=0.8)
     # return the LL, ES, and UL and range of data to display
     forest.plot.params <- create.plot.options(forest.data, gapSize = 3.2, plotWidth=5)
-
+    rows <- forest.data$rows
     # Draw the text in study col and additional cols
     if (show.study.col==TRUE) {
       study.col.grob <- forest.data$study.col.grob
       #graphical object for study column
-      draw.label.col(study.col.grob, 1)
+      draw.label.col(study.col.grob, 1, rows)
       # first two cols. are study col. and gap 1
       if (num.additional.cols > 0 )  {
           for (i in 1:num.additional.cols){
-               draw.label.col(additional.cols.grob[[i]], 2*i+1)
+               draw.label.col(additional.cols.grob[[i]], 2*i+1, rows)
                # Note: col indices start at 3
           }
       }
@@ -775,7 +791,7 @@ draw.forest.plot <- function(forest.data){
           # study col. and gap 1 not displayed
       if (num.additional.cols>0 )  {
           for (i in 1:num.additional.cols){
-               draw.label.col(additional.cols.grob[[i]], 2*i-1)
+               draw.label.col(additional.cols.grob[[i]], 2*i-1, rows)
                # col. indices start at 1
           }
       }
@@ -810,24 +826,8 @@ study.column <- function(forest.data, title.font="bold") {
       else
         content[i] <- list(textGrob(forest.data$label[i], x=0, just = "left", gp = gpar(fontface = "plain", fontsize="10")))
     }
-    
-    rows<-c(1, rep(NA, (length(forest.data$label)-1) ) )
-    for (i in 1:(length(forest.data$label) -1)){
-      if (forest.data$types[i] == 3  &&  forest.data$types[i+1] == 0 )
-        rows[i+1] <- rows[i] + 2
-      else if (forest.data$types[i] == 0  &&  forest.data$types[i+1] == 2 )
-        rows[i+1] <- rows[i]  + 1
-      else if (forest.data$types[i] == 0  &&  forest.data$types[i+1] == 1 )
-        rows[i+1] <- rows[i] + 1
-      else if (forest.data$types[i] == 1  &&  forest.data$types[i+1] == 0 )
-        rows[i+1] <- rows[i] + 2
-      else if (forest.data$types[i] == 1  &&  forest.data$types[i+1] == 2 )
-        rows[i+1] <- rows[i] + 2
-      else
-       rows[i+1] <- rows[i] + 1
-    }
-    
-    study.column.list <- list(content = content, rows = rows)
+        
+    study.column.list <- list(content = content)
     study.column.list
 }
 
@@ -848,22 +848,7 @@ additional.columns <- function(forest.data, font = "bold") {
             content[i] <- list(textGrob(forest.data$additional.col.data[[j]][[i]], 
                       x=1, just = "right", gp = gpar(fontface = "plain", fontfamily="mono", fontsize="10")))
         }
-        
-        rows<-c(1, rep(NA, (length(forest.data$label)-1)))
-        for (i in 1:(length(forest.data$label)-1)){
-          if (forest.data$types[i] == 3  &&  forest.data$types[i+1] == 0 )
-            rows[i+1] <- rows[i] + 2
-          else if (forest.data$types[i] == 0  &&  forest.data$types[i+1] == 2 )
-            rows[i+1] <- rows[i] + 1
-          else if (forest.data$types[i] == 0  &&  forest.data$types[i+1] == 1 )
-            rows[i+1] <- rows[i] + 1
-          else if (forest.data$types[i] == 1  &&  forest.data$types[i+1] == 0 )
-            rows[i+1] <- rows[i] + 2
-          else if (forest.data$types[i] == 1  &&  forest.data$types[i+1] == 2 )
-            rows[i+1] <- rows[i] + 2
-          else
-            rows[i+1] <- rows[i] + 1
-        }
+        rows <- forest.data$rows
         additional.columns[[j]] <-list(content = content, rows = rows)
     }
     additional.columns
@@ -873,21 +858,9 @@ effectsize.column <- function(forest.data, box.sca = 1) {
     # Calculates sizes for boxes in forest plot and range of data to display.
     # TODO: rename this function, as it sounds too much like the name of the previous function.
     # called by draw.forest.plot
-    rows<-c(1, rep(NA, (length(forest.data$effects$ES)) ) )
-    for (i in 1:(length(forest.data$effects$ES))){
-      if (forest.data$types[i] == 3  &&  forest.data$types[i+1] == 0)
-        rows[i+1] <- rows[i] + 2
-      else if (forest.data$types[i] == 0  &&  forest.data$types[i+1] == 2)
-        rows[i+1] <- rows[i]  + 1
-      else if (forest.data$types[i] == 0  &&  forest.data$types[i+1] == 1)
-        rows[i+1] <- rows[i] + 1
-      else if (forest.data$types[i] == 1  &&  forest.data$types[i+1] == 0)
-        rows[i+1] <- rows[i] + 2
-      else if (forest.data$types[i] == 1  &&  forest.data$types[i+1] == 2)
-        rows[i+1] <- rows[i] + 2
-      else
-        rows[i+1] <- rows[i] + 1
-    }
+   
+    rows <- forest.data$rows
+    
     # weights for the boxes
     # note that 1.96 is a convention [not necessary for the scaling]
     # the analysis functions determine the CI width (e.g. 95% or 99%)
@@ -1012,11 +985,12 @@ effectsize.column <- function(forest.data, box.sca = 1) {
 }
 
 # Function to draw a cell in a text column
-draw.label.col <- function(col, j) {
+draw.label.col <- function(col, j, rows) {
   # Insert data columns from forest.data$additional.col.data into the plot
   # called by draw.forest.plot
-  for (i in 1:length(col$rows)) {
-    pushViewport(viewport(layout.pos.row=col$rows[i], layout.pos.col=j))
+
+  for (i in 1:length(rows)) {
+    pushViewport(viewport(layout.pos.row=rows[i], layout.pos.col=j))
     # Labels are grobs containing their location so just
     # have to grid.draw() them
     grid.draw(col$content[[i]])
@@ -1034,7 +1008,6 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
                           show.y.axis) {
   # Draws the actual forest plot graph
   # called by draw.forest.plot
-  # TODO: rename this function!
   pushViewport(viewport(layout.pos.col=j, xscale=col$range))
 
 # This is the "null" line
@@ -1096,8 +1069,9 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
   grid.text(x.axis.label, y=unit(-2, "lines"), gp=gpar(cex=0.8))
   data.col.width <- forest.data$data.col.width
   # width of data cols., not including study column or forest plot.
-  n.rows <- length(forest.data$label)
-  grid.text(fp.title, x=unit(-data.col.width, "inches"), y=unit(n.rows + 3, "lines"), gp=gpar(cex=1.0), just="left")
+  rows <- forest.data$rows
+  num.rows <- rows[length(rows)]
+  grid.text(fp.title, x=unit(-data.col.width, "inches"), y=unit(num.rows + 2, "lines"), gp=gpar(cex=1.0), just="left")
   popViewport()
   for (i in 1:length(col$rows)) {
     pushViewport(viewport(layout.pos.row=col$rows[i], layout.pos.col=j,
@@ -1195,8 +1169,19 @@ two.forest.plots <- function(forest.data1, forest.data2, outpath) {
    # draw two forest plots side by side.
    # see forest.plot
    forest.data1 <- format.data.cols(forest.data1)
+   types1 <- forest.data1$types
+   num.labels1 <- length(forest.data1$label)
+   rows1 <- assign.rows(types1, num.labels1)
+   # row numbers of forest plot including blank rows (after summary rows)
+   forest.data1$rows <- rows1
    forest.data1 <- create.grobs(forest.data1)
+  
    forest.data2 <- format.data.cols(forest.data2)
+   types2 <- forest.data2$types
+   num.labels2 <- length(forest.data2$label)
+   rows2 <- assign.rows(types2, num.labels2)
+   # row numbers of forest plot including blank rows (after summary rows)
+   forest.data2$rows <- rows2
    forest.data2 <- create.grobs(forest.data2)
   # create graphical objects for study and data columns.
    plot.size1 <- calc.forest.plot.size(forest.data1)
@@ -1297,9 +1282,9 @@ meta.regression.plot <- function(plot.data, outpath) {
 
 sroc.plot <- function(plot.data, outpath){
     symSize <- 1
-    lcol = "darkred"
-    lweight = 3
-    lpatern = "dotted"
+    lcol = "blue"
+    lweight = 1
+    lpatern = "solid"
     plotregion = "n"
     mcolor = "blue"
     fitted.line <- plot.data$fitted.line
@@ -1322,7 +1307,7 @@ sroc.plot <- function(plot.data, outpath){
               xlab = xlabel, ylab = label, main=title, xlim = c(0,1), ylim = c(0,1), bty = plotregion, fg = mcolor)
     } else {
         radii <- .01*rep(1, length(TPR))
-        symbols(y = plot.data$TPR, x = plot.data$FPR, squares = radii, inches=FALSE,
+        symbols(y = plot.data$TPR, x = plot.data$FPR, circles = radii, inches=FALSE,
               xlab = xlabel, ylab = ylabel, main=title, xlim = c(0,1), ylim = c(0,1), bty = plotregion, fg = mcolor)     
     }
     # create regression line values
@@ -1333,6 +1318,46 @@ sroc.plot <- function(plot.data, outpath){
     fpr.vals <- invlogit((s.vals - d.vals) / 2)
     lines(fpr.vals, tpr.vals, col = lcol, lwd = lweight, lty = lpatern)
     graphics.off()
+}
+
+#######################################
+#      Subgroup Diagnostic SROC       #
+#######################################
+
+subgroup.sroc.plot <- function(plot.data, col, cov.val, cov.index){
+    symSize <- 1
+    #lcol = "darkred"
+    lweight = 1
+    lpatern = "solid"
+    plotregion = "n"
+    fitted.line <- plot.data$fitted.line
+    weighted <- plot.data$weighted
+    TPR <- plot.data$TPR
+    FPR <- plot.data$FPR
+    s.range <- plot.data$s.range
+    cov.val <- plot.data$cov.val
+   
+    if (weighted == TRUE) {
+        inv.var <- plot.data$inv.var    
+        max.symbol.size <- .05
+        # radius of the largest circle
+        max.ratio <- 10
+        # ratio of radii of largest circle to smallest circle
+        radii <- calculate.radii(inv.var, max.symbol.size, max.ratio)
+        symbols(y = plot.data$TPR, x = plot.data$FPR, circles = symSize*radii, inches=FALSE,
+              xlab = xlabel, ylab = ylabel, main=title, xlim = c(0,1), ylim = c(0,1), bty = plotregion, fg = col)
+    } else {
+        radii <- .01*rep(1, length(TPR))
+        points(y = plot.data$TPR, x = plot.data$FPR,
+              xlim = c(0,1), ylim = c(0,1), bty = plotregion, col = col, pch=cov.index)     
+    }
+    # create regression line values
+    s.vals <- seq(from = s.range$min, to = s.range$max, by=.001)
+    d.vals <- fitted.line$intercept + fitted.line$slope * s.vals
+    # transform regression line coords to TPR by 1 - FPR coords
+    tpr.vals <- invlogit((s.vals + d.vals) / 2)
+    fpr.vals <- invlogit((s.vals - d.vals) / 2)
+    lines(fpr.vals, tpr.vals, col = col, lwd = lweight, lty = lpatern)
 }
 
 ################################################
@@ -1542,4 +1567,4 @@ calculate.radii <- function(inv.var, max.symbol.size, max.ratio) {
         C <- max.symbol.size / (inv.var.max)^exponent
     }
     radii <- C * inv.var^exponent
-}    
+} 
