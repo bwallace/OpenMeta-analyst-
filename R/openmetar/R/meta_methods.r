@@ -929,10 +929,17 @@ multiple.loo.diagnostic <- function(fnames, params.list, diagnostic.data) {
         params.sroc$roc_title <- ""
         # slot for a title if desired in future
         
-        # create SROC plot
-        sroc.path <- "./r_tmp/roc.png"
-        sroc.plot.data <- create.sroc.plot.data(diagnostic.data, params=params.sroc)
-        sroc.plot(sroc.plot.data, outpath=sroc.path)
+        # create SROC plot - in future implementation
+        #sroc.path <- "./r_tmp/roc.png"
+        #png(file=sroc.path, width=5 , height=5, units="in", res=144)
+        #sroc.plot.data <- create.sroc.plot.data(diagnostic.data, params=params.sroc)
+        #plot.new()
+        #axis(1, pos=c(0,0))
+        #axis(2, pos=c(0,0))
+        #title(xlab="1 - Specificity", ylab="Sensitivity")
+        #sroc.plot(sroc.plot.data, outpath=sroc.path)
+        #subgroup.sroc.plot(sroc.plot.data, color="blue", sym.index=1)
+        #graphics.off()
  
         # we use the system time as our unique-enough string to store
         # the params object
@@ -1109,18 +1116,17 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
         cov.list <- res$cov.list
         colors <- rainbow(length(grouped.data)-1)
         
-        outpath <- "./r_tmp/roc.png"
-        png(file=outpath, width=5 , height=5, units="in", res=144)
+        sroc.path <- "./r_tmp/roc.png"
+        png(file=sroc.path, width=5 , height=5, units="in", res=144)
         plot.new()
-        axis(1, xlab="1 - Specificity")
-        axis(2)
+        axis(1, pos=c(0,0))
+        axis(2, pos=c(0,0))
         title(xlab="1 - Specificity", ylab="Sensitivity") 
-        for (cov.index in 1:(length(cov.list))) {
-            diag.data.tmp <- grouped.data[[cov.index]]
-            cov.val <- cov.list[cov.index]
-            col <- colors[cov.index]
+        for (count in 1:(length(cov.list))) {
+            diag.data.tmp <- grouped.data[[count]]
+            color <- colors[count]
             sroc.plot.data <- create.sroc.plot.data(diag.data.tmp, params=params.sroc)
-            subgroup.sroc.plot(sroc.plot.data, col, cov.val, cov.index)
+            subgroup.sroc.plot(sroc.plot.data, color, sym.index=count)
         }
         legend("bottomright", cov.list, pch=1:length(cov.list), pt.bg="white", bty="n", col = colors)
         graphics.off()
