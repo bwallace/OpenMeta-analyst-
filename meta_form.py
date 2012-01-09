@@ -151,8 +151,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.disable_menu_options_that_require_dataset()
         # set the out_path to None; this (new) dataset is unsaved.
         self.out_path = None
-        #self.current_data_unsaved = True
-        #self._notify_user_that_data_is_unsaved()
+
 
     def _notify_user_that_data_is_unsaved(self):
         if self.out_path is None:
@@ -314,20 +313,54 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     # implementation.
     ### TODO pull out meta methods auto-magically via introspection.
     def cum_ma(self):
-        print "gettin' meta -- cumulative meta-analysis"
+        # NOTE that we do not allow cumulative meta-analysis on
+        # diagnostic data -- this method should never be invoked
+        # if we're dealing with diag data.
+        form = None
+        # note that the spec form gets *this* form as a parameter.
+        # this allows the spec form to callback to this
+        # module when specifications have been provided.
         form =  ma_specs.MA_Specs(self.model, meta_f_str="cum.ma", parent=self)
         form.show()
         
     def loo_ma(self):
-        print "gettin' meta -- leave-one-out meta-analysis"
-        form =  ma_specs.MA_Specs(self.model, meta_f_str="loo.ma", parent=self)
+        form = None
+        if self.model.get_current_outcome_type() != "diagnostic":
+            # in the binary and continuous case, we go straight 
+            # to selecting the metric/parameters here.
+            #
+            # note that the spec form gets *this* form as a parameter.
+            # this allows the spec form to callback to this
+            # module when specifications have been provided.
+            form =  ma_specs.MA_Specs(self.model, meta_f_str="loo.ma", parent=self)
+        else:
+            # diagnostic data; we first have the user select metric(s),
+            # and only then the model, &etc.
+            form = diag_metrics.Diag_Metrics(self.model, meta_f_str="loo.ma", \
+                                                parent=self)
+
         form.show()
+
         
     def meta_subgroup(self, selected_cov):
-        print "gettin' meta -- sub-group meta-analysis"
-        form = ma_specs.MA_Specs(self.model, meta_f_str="subgroup.ma", 
-                                  parent=self, 
+        form = None
+        if self.model.get_current_outcome_type() != "diagnostic":
+            # in the binary and continuous case, we go straight 
+            # to selecting the metric/parameters here.
+            #
+            # note that the spec form gets *this* form as a parameter.
+            # this allows the spec form to callback to this
+            # module when specifications have been provided.
+            form = ma_specs.MA_Specs(self.model, meta_f_str="subgroup.ma", 
+                                  parent=self, \
                                   external_params={"cov_name":selected_cov})
+        else:
+            # diagnostic data; we first have the user select metric(s),
+            # and only then the model, &etc.
+            form = diag_metrics.Diag_Metrics(self.model, meta_f_str="subgroup.ma", \
+                                                parent=self,\
+                                                external_params={"cov_name":selected_cov})
+
         form.show()
     
     def undo(self):
@@ -918,6 +951,12 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         if check_for_appropriate_metric:
             self.tableView.change_metric_if_appropriate()
 
+
+        if self.model.get_current_outcome_type() == "diagnostic":
+            # no cumulative MA for diagnostic data
+            self.action_cum_ma.setEnabled(False)
+        else:
+            self.action_cum_ma.setEnabled(True)
         print "ok -- model set."
         
         

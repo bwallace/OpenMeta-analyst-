@@ -387,6 +387,8 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj",
     cov_str = list_of_cov_value_objects_str(table_model.dataset,\
                                                 study_ids,\
                                                 cov_list=covs_to_include)
+    
+
     # first try and construct an object with raw data
     if include_raw_data and table_model.included_studies_have_raw_data():
         print "ok; raw data has been entered for all included studies"
@@ -482,6 +484,7 @@ def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", \
                                             study_ids, \
                                             cov_list=covs_to_include)
     
+
     # first try and construct an object with raw data
     if table_model.included_studies_have_raw_data():
         print "ok; raw data has been entered for all included studies"
@@ -605,7 +608,6 @@ def _to_R_params(params):
 
 def run_diagnostic_multi(function_names, list_of_params, res_name="result", diag_data_name="tmp_obj"):
     r_params_str = "list(%s)" % ",".join([_to_R_params(p) for p in list_of_params])
-
     ro.r("list.of.params <- %s" % r_params_str)
     ro.r("f.names <- c(%s)" % ",".join(["'%s'" % f_name for f_name in function_names]))
 
@@ -800,7 +802,22 @@ def run_meta_regression(dataset, study_names, cov_list, metric_name,\
 
     return parsed_results
   
+def run_meta_method_diag(meta_function_name, function_names, list_of_params,\
+                            res_name="result", diag_data_name="tmp_obj"):
+    # list of parameter objects
+    r_params_str = "list(%s)" % ",".join([_to_R_params(p) for p in list_of_params])
+    ro.r("list.of.params <- %s" % r_params_str)
+    # list of function names
+    ro.r("f.names <- c(%s)" % ",".join(["'%s'" % f_name for f_name in function_names]))
+
+    multi_meta_function_name = \
+        {"loo.ma.diagnostic":"multiple.loo.diagnostic",\
+         "subgroup.ma.diagnostic":"multiple.subgroup.diagnostic"}[meta_function_name]
+    result = ro.r("%s(f.names, list.of.params, %s)" % (multi_meta_function_name, diag_data_name))
     
+    return parse_out_results(result)
+        
+
 def run_meta_method(meta_function_name, function_name, params, \
                         res_name="result", data_name="tmp_obj"):
     '''

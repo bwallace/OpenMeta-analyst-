@@ -46,7 +46,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.setupUi(self)
 
         self.current_param_vals = external_params or {}
-
+        
         self.model = model
 
         # if not none, we assume we're running a meta
@@ -179,11 +179,10 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                     if metric in self.diag_metrics_to_analysis_details]:
                 # pull out the method and parameters object specified for this
                 # metric.
-                # NOTE for the case of meta-methods, it's highly likely that 
-                # only *one* method/parms will be defined
                 method, param_vals = self.diag_metrics_to_analysis_details[diag_metric]
                 param_vals = copy.deepcopy(param_vals)
 
+                
                 # update the forest plot path
                 split_fp_path = self.current_param_vals["fp_outpath"].split(".")
                 new_str = split_fp_path[0] if len(split_fp_path) == 1 else \
@@ -207,7 +206,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             else:
                 # in the case of diagnostic, we pass in lists
                 # of param values to the meta_method 
-                result = meta_py_r.run_meta_method(\
+                result = meta_py_r.run_meta_method_diag(\
                             self.meta_f_str, method_names, list_of_param_vals)
 
         # update the user_preferences object for the selected method
@@ -447,6 +446,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         # in the diag_metrics* dictionary.
         form =  MA_Specs(self.model, parent=self.parent(),\
                     diag_metrics=("lr", "dor"), \
+                    meta_f_str = self.meta_f_str,\
                     diag_metrics_to_analysis_details_d=self.diag_metrics_to_analysis_details)
         form.show()
         self.hide()
