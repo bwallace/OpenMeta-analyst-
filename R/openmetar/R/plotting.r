@@ -13,7 +13,6 @@
 
 # largely a generalization based on an example by
 # Murrell P., "R graphics", Chapman & Hall
-
 library("grid")
 
 #################################################################
