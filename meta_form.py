@@ -42,6 +42,7 @@ import meta_reg_form
 import meta_subgroup_form
 import edit_dialog
 import edit_group_name_form
+import change_cov_type_form
 import network_view
 import meta_globals 
 import start_up_dialog
@@ -869,6 +870,21 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         delete_command = CommandGenericDo(redo_f, undo_f)
         self.tableView.undoStack.push(delete_command)
     
+
+    def change_cov_type(self, covariate):
+        cur_dataset = copy.deepcopy(self.model.dataset)
+        change_type_form = \
+            change_cov_type_form.ChangeCovTypeForm(cur_dataset, covariate, parent=self)
+        
+        if change_type_form.exec_():
+            modified_dataset = change_type_form.dataset
+            
+            redo_f = lambda : self.set_model(modified_dataset)
+            original_dataset = copy.deepcopy(self.model.dataset)
+            undo_f = lambda : self.set_model(original_dataset, old_state_dict) 
+            edit_command = CommandGenericDo(redo_f, undo_f)
+            self.tableView.undoStack.push(edit_command)
+            
 
     def rename_covariate(self, covariate):
         orig_cov_name = copy.copy(covariate.name)

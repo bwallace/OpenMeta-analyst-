@@ -437,6 +437,9 @@ class Study:
         self.covariate_dict = {}
         self.manually_excluded = False
         
+    def __str__(self):
+        return self.name
+        
     def add_outcome(self, outcome, follow_up_name="first", group_names=None):
         ''' Adds a new, blank outcome (i.e., no raw data) '''
         if outcome.name in self.outcomes_to_follow_ups.keys():

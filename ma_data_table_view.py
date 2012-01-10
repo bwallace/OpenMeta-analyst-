@@ -153,6 +153,15 @@ class MADataTable(QtGui.QTableView):
                         lambda : self.main_gui.delete_covariate(cov))
             context_menu.addAction(action_del)
 
+            convert_to_str = "*continuous*"
+            if cov.data_type == CONTINUOUS:
+                convert_to_str = "*factor*"
+
+            action_change = QAction("create a %s copy of %s" % (convert_to_str, cov.name), self)
+            QObject.connect(action_change, SIGNAL("triggered()"), \
+                        lambda : self.main_gui.change_cov_type(cov))
+            context_menu.addAction(action_change)
+            
 
         context_menu.popup(self.mapToGlobal(pos))
 
@@ -325,12 +334,6 @@ class MADataTable(QtGui.QTableView):
         covariate_columns = self.get_covariate_columns()
         can_sort_by.extend(covariate_columns)
 
-        # if a covariate column was clicked, it may not yet have an entry in the
-        # reverse_column_sorts dictionary; thus we insert one here
-        '''
-        if column in can_sort_by:
-            self.sort_by_col(column)
-        '''
 
     def sort_by_col(self, column):
         # if a covariate column was clicked, it may not yet have an entry in the
