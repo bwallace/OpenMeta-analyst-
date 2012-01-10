@@ -87,8 +87,8 @@ cum.ma.binary <- function(fname, binary.data, params){
     params.cum$fp_col2_str <- "Cumulative Estimate"
     # column labels for the cumulative (right-hand) plot
     plot.data.cum <- create.plot.data.overall(res=cum.results, study.names, params.cum, data.type="binary", addRow1Space=TRUE)
-    plot.data.cum$add.sp
-    two.forest.plots(forest.data1=plot.data, forest.data2=plot.data.cum, outpath=forest.path)
+    plot.data <- list("left"=plot.data, "right"=plot.data.cum)
+    two.forest.plots(plot.data, outpath=forest.path)
 
     # Now we package the results in a dictionary (technically, a named 
     # vector). In particular, there are two fields that must be returned; 
@@ -370,7 +370,8 @@ cum.ma.continuous <- function(fname, cont.data, params){
     params$fp_col1_str <- "Cumulative Studies"
     # label for the cumulative (right-hand) plot
     plot.data.cum <- create.plot.data.overall(res=cum.results, study.names, params, data.type="continuous", addRow1Space=TRUE)
-    two.forest.plots(plot.data, plot.data.cum, outpath=forest.path)
+    plot.data <- list("left"=plot.data, "right"=plot.data.cum)
+    two.forest.plots(plot.data, outpath=forest.path)
     
     #
     # Now we package the results in a dictionary (technically, a named 
@@ -1027,7 +1028,8 @@ loo.side.by.side.plots <- function(diagnostic.data, fname.left, params.left, fna
         plot.data.left$options$fp.title <- pretty.metric.name(as.character(params.left$measure))
         plot.data.right <- res.right$plot.data
         plot.data.right$options$fp.title <- pretty.metric.name(as.character(params.right$measure))
-        two.forest.plots(plot.data.left, plot.data.right, outpath=forest.path)
+        plot.data <- list("left"=plot.data.left, "right"=plot.data.right)
+        two.forest.plots(plot.data, outpath=forest.path)
 
         # combine plot.data.left and plot.data.right into single list to save
         plot.data.left <- list("name.tmp"=plot.data.left)
@@ -1217,7 +1219,8 @@ subgroup.side.by.side.plots <- function(diagnostic.data, fname, params.left, par
         plot.data.left$options$fp.title <- pretty.metric.name(as.character(params.left$measure))
         plot.data.right <- res.right$plot.data
         plot.data.right$options$fp.title <- pretty.metric.name(as.character(params.right$measure))
-        two.forest.plots(plot.data.left, plot.data.right, outpath=forest.path)
+        plot.data <- list("left"=plot.data.left, "right"=plot.data.right)
+        two.forest.plots(plot.data, outpath=forest.path)
 
         # combine plot.data.left and plot.data.right into single list to save
         plot.data.left <- list("name.tmp"=plot.data.left)

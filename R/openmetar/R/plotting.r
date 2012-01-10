@@ -1168,9 +1168,11 @@ create.plot.options <- function(forest.data, gapSize=3, plotWidth = 4) {
 #            two forest plots         #
 #######################################
  
-two.forest.plots <- function(forest.data1, forest.data2, outpath) {
+two.forest.plots <- function(forest.data, outpath) {
    # draw two forest plots side by side.
    # see forest.plot
+   forest.data1 <- forest.data$left
+   forest.data2 <- forest.data$right
    forest.data1 <- format.data.cols(forest.data1)
    types1 <- forest.data1$types
    num.labels1 <- length(forest.data1$label)
@@ -1196,12 +1198,8 @@ two.forest.plots <- function(forest.data1, forest.data2, outpath) {
    viewport.layout2 <- calc.viewport.layout(forest.data2, just="right")
    # calculate layouts of plots
    how.wide1 <- plot.size1$how.wide
-   if (forest.data2$options$show.study.col == TRUE) {
-     how.wide2 <- plot.size2$how.wide + .75
-     # add some more space if to the right graph if showing study cols.
-   } else {
-     how.wide2 <- plot.size2$how.wide
-   }
+   how.wide2 <- plot.size2$how.wide
+  
    how.tall1 <- plot.size1$how.tall
    how.tall2 <- plot.size2$how.tall
    how.tall <- max(how.tall1, how.tall2)
