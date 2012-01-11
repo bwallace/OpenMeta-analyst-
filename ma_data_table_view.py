@@ -119,6 +119,14 @@ class MADataTable(QtGui.QTableView):
             context_menu.addAction(action)
 
             context_menu.popup(self.mapToGlobal(pos))
+        elif column_clicked in (1,2):
+            col_name = {1:"study name", 2:"year"}[column_clicked]
+            action_sort = QAction("sort studies by %s" % col_name, self)
+            
+            QObject.connect(action_sort, SIGNAL("triggered()"), \
+                        lambda : self.sort_by_col(column_clicked))
+            context_menu.addAction(action_sort)
+
         elif column_clicked in raw_data_columns and not data_type == "diagnostic":
             corresponding_tx_group = self.model().current_txs[0]
             if data_type == "binary":

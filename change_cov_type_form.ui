@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>664</width>
-    <height>555</height>
+    <width>484</width>
+    <height>428</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>550</width>
+    <width>400</width>
     <height>0</height>
    </size>
   </property>
@@ -38,11 +38,18 @@
    <item>
     <widget class="QGroupBox" name="grp_box_preview">
      <property name="title">
-      <string>covariate assignment</string>
+      <string>values for new covariate</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <widget class="QTableView" name="cov_prev_table"/>
+       <widget class="QTableView" name="cov_prev_table">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

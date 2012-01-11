@@ -30,6 +30,7 @@ class CovModel(QAbstractTableModel):
         super(CovModel, self).__init__()
         self.dataset = dataset
         studies = self.dataset.studies
+
         self.covariate = covariate
         
         # now we add a covariate with the new type
@@ -152,14 +153,36 @@ class CovModel(QAbstractTableModel):
 
 
     def rowCount(self, index=QModelIndex()):
-        return len(self.dataset.studies)
+        return len(self.included_studies) # don't show blank study!
         
     def columnCount(self, index=QModelIndex()):
         return 3 # study, orig_val, new_val
         
     def setData(self, index, value, role=Qt.EditRole):
+        # don't allow users to mess with the original
+        # covariate.
+        if index.isValid() and 0 <= index.row() < len(self.dataset):
+            column = index.column()
+
+            if column == self.NEW_VAL:
+                # then a (new) covariate value has been edited.
+                #pyqtRemoveInputHook()
+                #pdb.set_trace()
+                study = self.included_studies[index.row()] # associated study
+                cov_name = self.new_covariate.name
+                new_value = None
+                if self.new_covariate.data_type == FACTOR:
+                    new_value = value.toString()
+                else:
+                    # continuous
+                    new_value, converted_ok = value.toDouble()
+                    if not converted_ok: 
+                        print "whoops! can't convert %s to a number." % val
+                        new_value = None
+                study.covariate_dict[cov_name] = new_value
+                self.refresh_cov_values()
+                return True
         return False
-        
         
     def flags(self, index):
         if not index.isValid():

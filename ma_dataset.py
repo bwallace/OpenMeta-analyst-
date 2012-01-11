@@ -361,20 +361,39 @@ class Dataset:
                 return False
         return True
         
-    def cmp_studies(self, compare_by="name", reverse=True):
+    def cmp_studies(self, compare_by="name", reverse=True, ordered_list=None):
+        '''
+        compare studies in various ways -- pass the returned function
+        to the (built-in) sort function.
+
+        compare_by is either 'name', 'year' or 'ordered list'; if it's anything else,
+        we assume it's a covariate and sort by that. ordered_list allows
+        you to sort arbitrarily in the order specified by the list.
+        '''
         if compare_by == "name":
             return lambda study_a, study_b : self._meta_cmp_wrapper(study_a, study_b,\
                                                             study_a.name, study_b.name, reverse)
         elif compare_by == "year":
             return lambda study_a, study_b : self._meta_cmp_wrapper(study_a, study_b, study_a.year, \
                                                                     study_b.year, reverse)
+        elif compare_by == "ordered_list":
+            # then just use the list order
+            return lambda study_a, study_b : self._meta_cmp_wrapper(study_a, study_b, \
+                                                    ordered_list.index(study_a.name), \
+                                                    ordered_list.index(study_b.name), \
+                                                    reverse=False)
         else:
             # then we assume that we're sorting by a covariate
+
+            # always want missing values at the 'bottom'
+            missing_val = float("-infinity") if reverse else float("infinity")
+            missing_to_zero = lambda d, s : d[s] if s in d else missing_val
+
             return lambda study_a, study_b : self._meta_cmp_wrapper(study_a,\
-                                                               study_b,\
-                                                               study_a.covariate_dict[compare_by], \
-                                                               study_b.covariate_dict[compare_by], \
-                                                               reverse)
+                                                study_b,\
+                                                missing_to_zero(study_a.covariate_dict, compare_by), \
+                                                missing_to_zero(study_b.covariate_dict, compare_by), \
+                                                reverse)
     
     def _both_empty(self, a, b):
         return a in EMPTY_VALS and b in EMPTY_VALS
@@ -439,7 +458,7 @@ class Study:
         
     def __str__(self):
         return self.name
-        
+
     def add_outcome(self, outcome, follow_up_name="first", group_names=None):
         ''' Adds a new, blank outcome (i.e., no raw data) '''
         if outcome.name in self.outcomes_to_follow_ups.keys():

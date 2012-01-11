@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'change_cov_type_form.ui'
 #
-# Created: Tue Jan 10 13:05:53 2012
+# Created: Wed Jan 11 09:50:10 2012
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,8 +17,8 @@ except AttributeError:
 class Ui_ChangeCovTypeForm(object):
     def setupUi(self, ChangeCovTypeForm):
         ChangeCovTypeForm.setObjectName(_fromUtf8("ChangeCovTypeForm"))
-        ChangeCovTypeForm.resize(664, 555)
-        ChangeCovTypeForm.setMinimumSize(QtCore.QSize(550, 0))
+        ChangeCovTypeForm.resize(484, 428)
+        ChangeCovTypeForm.setMinimumSize(QtCore.QSize(400, 0))
         ChangeCovTypeForm.setMaximumSize(QtCore.QSize(100000, 555))
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Verdana"))
@@ -30,11 +30,12 @@ class Ui_ChangeCovTypeForm(object):
         self.verticalLayout_2 = QtGui.QVBoxLayout(ChangeCovTypeForm)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
         self.grp_box_preview = QtGui.QGroupBox(ChangeCovTypeForm)
-        self.grp_box_preview.setTitle(QtGui.QApplication.translate("ChangeCovTypeForm", "covariate assignment", None, QtGui.QApplication.UnicodeUTF8))
+        self.grp_box_preview.setTitle(QtGui.QApplication.translate("ChangeCovTypeForm", "values for new covariate", None, QtGui.QApplication.UnicodeUTF8))
         self.grp_box_preview.setObjectName(_fromUtf8("grp_box_preview"))
         self.verticalLayout = QtGui.QVBoxLayout(self.grp_box_preview)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.cov_prev_table = QtGui.QTableView(self.grp_box_preview)
+        self.cov_prev_table.setMaximumSize(QtCore.QSize(16777215, 16777215))
         self.cov_prev_table.setObjectName(_fromUtf8("cov_prev_table"))
         self.verticalLayout.addWidget(self.cov_prev_table)
         self.verticalLayout_2.addWidget(self.grp_box_preview)
