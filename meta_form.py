@@ -42,6 +42,7 @@ import meta_reg_form
 import meta_subgroup_form
 import edit_dialog
 import edit_group_name_form
+import change_cov_type_form
 import network_view
 import meta_globals 
 import start_up_dialog
@@ -870,6 +871,36 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.tableView.undoStack.push(delete_command)
     
 
+    def change_cov_type(self, covariate):
+        cur_dataset = copy.deepcopy(self.model.dataset)
+        # keep the current study order, because we're going to sort the studies
+        # on the change_cov_form but we want to revert to the ordering
+        # they came in with when we're done.
+        original_study_order = \
+                [study.name for study in self.model.dataset.studies]
+
+        change_type_form = \
+            change_cov_type_form.ChangeCovTypeForm(cur_dataset, covariate, parent=self)
+        
+        if change_type_form.exec_():
+            modified_dataset = change_type_form.dataset
+            # revert to original study ordering
+            modified_dataset.studies.sort(\
+                    cmp=modified_dataset.cmp_studies(compare_by="ordered_list",\
+                                        ordered_list=original_study_order))
+            
+
+            ### use the same state dict as before.
+            old_state_dict = self.tableView.model().get_stateful_dict()
+            new_state_dict = copy.deepcopy(old_state_dict)
+
+            redo_f = lambda : self.set_model(modified_dataset, new_state_dict)
+            original_dataset = copy.deepcopy(self.model.dataset)
+            undo_f = lambda : self.set_model(original_dataset, old_state_dict) 
+            edit_command = CommandGenericDo(redo_f, undo_f)
+            self.tableView.undoStack.push(edit_command)
+            
+
     def rename_covariate(self, covariate):
         orig_cov_name = copy.copy(covariate.name)
         # TODO need to rename edit_group_name_form to something more general...
@@ -940,9 +971,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # to fix issue #62
         if state_dict is not None:
             self.model.set_state(state_dict)
-        else:
-            # default 
-            pass
 
         self.tableView.model().update_column_indices()
         self.tableView.resizeColumnsToContents()
@@ -957,6 +985,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.action_cum_ma.setEnabled(False)
         else:
             self.action_cum_ma.setEnabled(True)
+
+        self.data_dirtied()
         print "ok -- model set."
         
         

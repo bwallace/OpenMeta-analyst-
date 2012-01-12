@@ -201,6 +201,7 @@ loo.ma.binary <- function(fname, binary.data, params){
     results
 }
 
+
 ##################################
 #  diagnostic leave-one-out MA   #
 ##################################
@@ -871,7 +872,6 @@ update.plot.data.multiple <- function(binary.data, params, results) {
 ###################################################
 #     multiple diagnostic methods                 #
 ###################################################
-
 multiple.loo.diagnostic <- function(fnames, params.list, diagnostic.data) {
 
     # wrapper for applying multiple diagnostic functions and metrics    

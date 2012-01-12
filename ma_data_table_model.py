@@ -796,6 +796,8 @@ class DatasetModel(QAbstractTableModel):
             self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by="name", reverse=reverse), reverse=reverse)
         elif col == self.YEAR:
             self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by="year", reverse=reverse), reverse=reverse)
+        # covariates -- note that we assume anything to the right of the outcomes
+        # is a covariate
         elif col > self.OUTCOMES[-1]:
             cov = self.get_cov(col)
             self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by=cov.name, reverse=reverse), reverse=reverse)
