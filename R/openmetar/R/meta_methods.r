@@ -201,98 +201,6 @@ loo.ma.binary <- function(fname, binary.data, params){
     results
 }
 
-
-##################################
-#  diagnostic leave-one-out MA   #
-##################################
-loo.ma.diagnostic <- function(fname, diagnostic.data, params){
-    # assert that the argument is the correct type
-    if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
-    
-    loo.results <- array(list(NULL), dim=c(length(diagnostic.data@study.names)))
-    params.tmp <- params
-    params.tmp$create.plot <- FALSE
-    N <- length(diagnostic.data@study.names)
-    for (i in 1:N){
-        # get a list of indices, i.e., the subset
-        # that is 1:N with i left out
-        index.ls <- setdiff(1:N, i)
-        
-        # build a DiagnosticData object with the 
-        # ith study removed.  
-        y.tmp <- diagnostic.data@y[index.ls]
-        SE.tmp <- diagnostic.data@SE[index.ls]
-        names.tmp <- diagnostic.data@study.names[index.ls]
-        diag.data.tmp <- NULL
-        
-        if (length(diagnostic.data@TP) > 0){
-            # if we have group level data for 
-            # group 1, outcome 1, then we assume
-            # we have it for all groups
-            TP.tmp <- diagnostic.data@TP[index.ls]
-            FN.tmp <- diagnostic.data@FN[index.ls]
-            TN.tmp <- diagnostic.data@TN[index.ls]
-            FP.tmp <- diagnostic.data@FP[index.ls]
-            diag.data.tmp <- new('DiagnosticData', TP=TP.tmp, 
-                               FN=FN.tmp , TN=TN.tmp, 
-                               FP=FP.tmp, y=y.tmp, SE=SE.tmp, study.names=names.tmp)
-        } else{
-            diag.data.tmp <- new('DiagnosticData', y=y.tmp, SE=SE.tmp, study.names=names.tmp)
-        }
-        # call the parametric function by name, passing along the 
-        # data and parameters. Notice that this method knows
-        # neither what method its calling nor what parameters
-        # it's passing!
-        cur.res <- eval(call(fname, diag.data.tmp, params.tmp))
-        cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
-        loo.results[[i]] <- cur.overall
-    }
-    study.names <- c()
-    for (count in 1:length(diagnostic.data@study.names)) {
-        study.names <- c(study.names, paste("- ",diagnostic.data@study.names[count], sep=""))
-    }
-    diagnostic.data@study.names <- study.names
-    
-    metric.name <- pretty.metric.name(as.character(params$measure))
-    model.title <- ""
-    if (fname == "diagnostic.fixed") {
-        model.title <- paste("Diagnostic Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
-    } else if (fname == "diagnostic.random") {
-        model.title <- paste("Diagnostic Random-Effects Model\n\nMetric: ", metric.name, sep="")
-    }
-    
-    loo.disp <- create.overall.display(res=loo.results, study.names, params, model.title, data.type="diagnostic")
-        
-    if (is.null(params$create.plot)) {
-        plot.data <- create.plot.data.overall(diagnostic.data, params, res=loo.results)
-        forest.path <- paste(params$fp_outpath, sep="")
-        forest.plot(forest.data=plot.data, outpath=forest.path)
-
-    #
-    # Now we package the results in a dictionary (technically, a named 
-    # vector). In particular, there are two fields that must be returned; 
-    # a dictionary of images (mapping titles to image paths) and a list of texts
-    # (mapping titles to pretty-printed text). In this case we have only one 
-    # of each. 
-    #     
-
-        images <- c("Leave-one-out Forest plot"=forest.path)
-        plot.names <- c("loo forest plot"="loo_forest_plot")
-    
-        # we use the system time as our unique-enough string to store
-        # the params object
-        forest.plot.params.path <- save.plot.data(plot.data)
-        plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
-        results <- list("images"=images, "Summary"=loo.disp, 
-                        "plot_names"=plot.names, 
-                        "plot_params_paths"=plot.params.paths,
-                        "study.names"=study.names)
-    } else {
-        results <- list(res=loo.results, Summary=loo.disp, study.names=study.names) 
-    }  
-    results
-}
-
 ##################################
 #  continuous cumulative MA      #
 ##################################
@@ -593,106 +501,6 @@ get.subgroup.data.binary <- function(binary.data, cov.val, cov.vals) {
   subgroup.data
 }
 
-############################
-#  diagnostic subgroup MA  #
-############################
-
-subgroup.ma.diagnostic <- function(fname, diagnostic.data, params){
-    if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
-    cov.name <- as.character(params$cov_name)
-    selected.cov <- get.cov(diagnostic.data, cov.name)
-    cov.vals <- selected.cov@cov.vals
-    params.tmp <- params
-    params.tmp$create.plot <- FALSE
-    subgroup.list <- unique(cov.vals)
-    grouped.data <- array(list(NULL),c(length(subgroup.list) + 1))
-    subgroup.results <- array(list(NULL), c(length(subgroup.list) + 1))
-    col3.nums <- NULL
-    col3.denoms <- NULL
-    col4.nums <- NULL
-    col4.denoms <- NULL
-    count <- 1
-    for (i in subgroup.list){
-      # build a DiagnosticData object 
-      diag.data.tmp <- get.subgroup.data.diagnostic(diagnostic.data, i, cov.vals)
-      grouped.data[[count]] <- diag.data.tmp
-      # collect raw data columns
-      raw.data <- list("TP"=diag.data.tmp@TP, "FN"=diag.data.tmp@FN, "TN"=diag.data.tmp@TN, "FP"=diag.data.tmp@FP)
-      terms <- compute.diagnostic.terms(raw.data, params.tmp)
-      col3.nums <- c(col3.nums, terms$numerator, sum(terms$numerator))
-      col3.denoms <- c(col3.denoms, terms$denominator, sum(terms$denominator))
-      cur.res <- eval(call(fname, diag.data.tmp, params.tmp))
-      cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
-      subgroup.results[[count]] <- cur.overall
-      count <- count + 1
-    }
-    res <- eval(call(fname, diagnostic.data, params.tmp))
-    res.overall <- eval(call(paste(fname, ".overall", sep=""), res))
-    grouped.data[[count]] <- diagnostic.data
-    subgroup.results[[count]] <- res.overall
-    subgroup.names <- paste("Subgroup ", subgroup.list, sep="")
-    subgroup.names <- c(subgroup.names, "Overall")
-    
-    metric.name <- pretty.metric.name(params.tmp$measure)
-    model.title <- ""
-    if (fname == "diagnostic.fixed") {
-        model.title <- paste("Diagnostic Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
-    } else if (fname == "diagnostic.random") {
-        model.title <- paste("Diagnostic Random-Effects Model\n\nMetric: ", metric.name, sep="")
-    }
-    
-    subgroup.disp <- create.overall.display(subgroup.results, subgroup.names, params, model.title, data.type="diagnostic")
-    forest.path <- paste(params$fp_outpath, sep="")
-    # pack up the data for forest plot.
-    subgroup.data <- list("subgroup.list"=subgroup.list, "grouped.data"=grouped.data, "results"=subgroup.results, 
-                          "col3.nums"=col3.nums, "col3.denoms"=col3.denoms, "col4.nums"=col4.nums, "col4.denoms"=col4.denoms)
-    if (is.null(params$create.plot)) {
-        plot.data <- create.subgroup.plot.data.diagnostic(subgroup.data, params)
-        forest.path <- paste(params$fp_outpath, sep="")
-        forest.plot(forest.data=plot.data, outpath=forest.path)
-    # Now we package the results in a dictionary (technically, a named 
-    # vector). In particular, there are two fields that must be returned; 
-    # a dictionary of images (mapping titles to image paths) and a list of texts
-    # (mapping titles to pretty-printed text). In this case we have only one 
-    # of each. 
-    #     
-        images <- c("Subgroups Forest Plot"=forest.path)
-        plot.names <- c("subgroups forest plot"="subgroups_forest_plot")
-    
-    # we use the system time as our unique-enough string to store
-    # the params object
-        forest.plot.params.path <- save.plot.data(plot.data)
-        plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
-        results <- list("images"=images, "Summary"=subgroup.disp, 
-                    "plot_names"=plot.names, 
-                    "plot_params_paths"=plot.params.paths)
-    } else {
-        results <- list(subgroup.data=subgroup.data, Summary=subgroup.disp, "cov.list"=subgroup.list)
-    }
-    results
-}
-
-get.subgroup.data.diagnostic <- function(diagnostic.data, cov.val, cov.vals) {
-  # returns the subgroup data corresponding to a categorical covariant cov.name
-  # and value cov.val
-  if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
-  y.tmp <- diagnostic.data@y[cov.vals == cov.val]
-  SE.tmp <- diagnostic.data@SE[cov.vals == cov.val]
-  names.tmp <- diagnostic.data@study.names[cov.vals == cov.val]
-  if (length(diagnostic.data@TP) > 0){
-    TP.tmp <- diagnostic.data@TP[cov.vals==cov.val]
-    FN.tmp <- diagnostic.data@FN[cov.vals==cov.val]
-    TN.tmp <- diagnostic.data@TN[cov.vals==cov.val]
-    FP.tmp <- diagnostic.data@FP[cov.vals==cov.val]
-    subgroup.data <- new('DiagnosticData', TP=TP.tmp, 
-                          FN=FN.tmp , TN=TN.tmp, 
-                          FP=FP.tmp, y=y.tmp, SE=SE.tmp, study.names=names.tmp)
-  } else {
-    subgroup.data <- new('DiagnosticData', y=y.tmp, SE=SE.tmp, study.names=names.tmp)
-  }
-  subgroup.data
-}
-
 #############################
 #  continuous subgroup MA  #
 #############################
@@ -874,11 +682,11 @@ update.plot.data.multiple <- function(binary.data, params, results) {
 }
     
 ###################################################
-#     multiple diagnostic methods                 #
+#     leave-one-out diagnostic methods            #
 ###################################################
 multiple.loo.diagnostic <- function(fnames, params.list, diagnostic.data) {
 
-    # wrapper for applying multiple diagnostic functions and metrics    
+    # wrapper for applying leave-one-out method to multiple diagnostic functions and metrics    
 
     ####
     # fnames -- names of diagnostic meta-analytic functions to call
@@ -1048,8 +856,97 @@ multiple.loo.diagnostic <- function(fnames, params.list, diagnostic.data) {
     results
 }
 
+loo.ma.diagnostic <- function(fname, diagnostic.data, params){
+    # performs a single leave-one-out meta-analysis for diagnostic.data
+    # assert that the argument is the correct type
+    if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
+    
+    loo.results <- array(list(NULL), dim=c(length(diagnostic.data@study.names)))
+    params.tmp <- params
+    params.tmp$create.plot <- FALSE
+    N <- length(diagnostic.data@study.names)
+    for (i in 1:N){
+        # get a list of indices, i.e., the subset
+        # that is 1:N with i left out
+        index.ls <- setdiff(1:N, i)
+        
+        # build a DiagnosticData object with the 
+        # ith study removed.  
+        y.tmp <- diagnostic.data@y[index.ls]
+        SE.tmp <- diagnostic.data@SE[index.ls]
+        names.tmp <- diagnostic.data@study.names[index.ls]
+        diag.data.tmp <- NULL
+        
+        if (length(diagnostic.data@TP) > 0){
+            # if we have group level data for 
+            # group 1, outcome 1, then we assume
+            # we have it for all groups
+            TP.tmp <- diagnostic.data@TP[index.ls]
+            FN.tmp <- diagnostic.data@FN[index.ls]
+            TN.tmp <- diagnostic.data@TN[index.ls]
+            FP.tmp <- diagnostic.data@FP[index.ls]
+            diag.data.tmp <- new('DiagnosticData', TP=TP.tmp, 
+                               FN=FN.tmp , TN=TN.tmp, 
+                               FP=FP.tmp, y=y.tmp, SE=SE.tmp, study.names=names.tmp)
+        } else{
+            diag.data.tmp <- new('DiagnosticData', y=y.tmp, SE=SE.tmp, study.names=names.tmp)
+        }
+        # call the parametric function by name, passing along the 
+        # data and parameters. Notice that this method knows
+        # neither what method its calling nor what parameters
+        # it's passing!
+        cur.res <- eval(call(fname, diag.data.tmp, params.tmp))
+        cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
+        loo.results[[i]] <- cur.overall
+    }
+    study.names <- c()
+    for (count in 1:length(diagnostic.data@study.names)) {
+        study.names <- c(study.names, paste("- ",diagnostic.data@study.names[count], sep=""))
+    }
+    diagnostic.data@study.names <- study.names
+    
+    metric.name <- pretty.metric.name(as.character(params$measure))
+    model.title <- ""
+    if (fname == "diagnostic.fixed") {
+        model.title <- paste("Diagnostic Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
+    } else if (fname == "diagnostic.random") {
+        model.title <- paste("Diagnostic Random-Effects Model\n\nMetric: ", metric.name, sep="")
+    }
+    
+    loo.disp <- create.overall.display(res=loo.results, study.names, params, model.title, data.type="diagnostic")
+        
+    if (is.null(params$create.plot)) {
+        plot.data <- create.plot.data.overall(diagnostic.data, params, res=loo.results)
+        forest.path <- paste(params$fp_outpath, sep="")
+        forest.plot(forest.data=plot.data, outpath=forest.path)
+
+    #
+    # Now we package the results in a dictionary (technically, a named 
+    # vector). In particular, there are two fields that must be returned; 
+    # a dictionary of images (mapping titles to image paths) and a list of texts
+    # (mapping titles to pretty-printed text). In this case we have only one 
+    # of each. 
+    #     
+
+        images <- c("Leave-one-out Forest plot"=forest.path)
+        plot.names <- c("loo forest plot"="loo_forest_plot")
+    
+        # we use the system time as our unique-enough string to store
+        # the params object
+        forest.plot.params.path <- save.plot.data(plot.data)
+        plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+        results <- list("images"=images, "Summary"=loo.disp, 
+                        "plot_names"=plot.names, 
+                        "plot_params_paths"=plot.params.paths,
+                        "study.names"=study.names)
+    } else {
+        results <- list(res=loo.results, Summary=loo.disp, study.names=study.names) 
+    }  
+    results
+}
+
 create.loo.side.by.side.plot.data <- function(diagnostic.data, res, params) {    
-    # creates data for two side-by-side forest plots
+    # creates data for two side-by-side leave-one-out forest plots
     params.left <- params$left
     params.right <- params$right
     params.left$fp_show_col1 <- 'TRUE'
@@ -1070,9 +967,13 @@ create.loo.side.by.side.plot.data <- function(diagnostic.data, res, params) {
     plot.data
 }
 
+#################################
+#  subgroup diagnostic methods  #
+#################################
+
 multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
 
-    # wrapper for applying multiple diagnostic functions and metrics    
+    # wrapper for applying subgroup method to multiple diagnostic functions and metrics    
 
     ####
     # fnames -- names of diagnostic meta-analytic functions to call
@@ -1241,6 +1142,103 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
     results
 }
 
+subgroup.ma.diagnostic <- function(fname, diagnostic.data, params){
+    # performs a single subgroup meta-analysis for diagnostic.data
+    if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
+    cov.name <- as.character(params$cov_name)
+    selected.cov <- get.cov(diagnostic.data, cov.name)
+    cov.vals <- selected.cov@cov.vals
+    params.tmp <- params
+    params.tmp$create.plot <- FALSE
+    subgroup.list <- unique(cov.vals)
+    grouped.data <- array(list(NULL),c(length(subgroup.list) + 1))
+    subgroup.results <- array(list(NULL), c(length(subgroup.list) + 1))
+    col3.nums <- NULL
+    col3.denoms <- NULL
+    col4.nums <- NULL
+    col4.denoms <- NULL
+    count <- 1
+    for (i in subgroup.list){
+      # build a DiagnosticData object 
+      diag.data.tmp <- get.subgroup.data.diagnostic(diagnostic.data, i, cov.vals)
+      grouped.data[[count]] <- diag.data.tmp
+      # collect raw data columns
+      raw.data <- list("TP"=diag.data.tmp@TP, "FN"=diag.data.tmp@FN, "TN"=diag.data.tmp@TN, "FP"=diag.data.tmp@FP)
+      terms <- compute.diagnostic.terms(raw.data, params.tmp)
+      col3.nums <- c(col3.nums, terms$numerator, sum(terms$numerator))
+      col3.denoms <- c(col3.denoms, terms$denominator, sum(terms$denominator))
+      cur.res <- eval(call(fname, diag.data.tmp, params.tmp))
+      cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
+      subgroup.results[[count]] <- cur.overall
+      count <- count + 1
+    }
+    res <- eval(call(fname, diagnostic.data, params.tmp))
+    res.overall <- eval(call(paste(fname, ".overall", sep=""), res))
+    grouped.data[[count]] <- diagnostic.data
+    subgroup.results[[count]] <- res.overall
+    subgroup.names <- paste("Subgroup ", subgroup.list, sep="")
+    subgroup.names <- c(subgroup.names, "Overall")
+    
+    metric.name <- pretty.metric.name(params.tmp$measure)
+    model.title <- ""
+    if (fname == "diagnostic.fixed") {
+        model.title <- paste("Diagnostic Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
+    } else if (fname == "diagnostic.random") {
+        model.title <- paste("Diagnostic Random-Effects Model\n\nMetric: ", metric.name, sep="")
+    }
+    
+    subgroup.disp <- create.overall.display(subgroup.results, subgroup.names, params, model.title, data.type="diagnostic")
+    forest.path <- paste(params$fp_outpath, sep="")
+    # pack up the data for forest plot.
+    subgroup.data <- list("subgroup.list"=subgroup.list, "grouped.data"=grouped.data, "results"=subgroup.results, 
+                          "col3.nums"=col3.nums, "col3.denoms"=col3.denoms, "col4.nums"=col4.nums, "col4.denoms"=col4.denoms)
+    if (is.null(params$create.plot)) {
+        plot.data <- create.subgroup.plot.data.diagnostic(subgroup.data, params)
+        forest.path <- paste(params$fp_outpath, sep="")
+        forest.plot(forest.data=plot.data, outpath=forest.path)
+    # Now we package the results in a dictionary (technically, a named 
+    # vector). In particular, there are two fields that must be returned; 
+    # a dictionary of images (mapping titles to image paths) and a list of texts
+    # (mapping titles to pretty-printed text). In this case we have only one 
+    # of each. 
+    #     
+        images <- c("Subgroups Forest Plot"=forest.path)
+        plot.names <- c("subgroups forest plot"="subgroups_forest_plot")
+    
+    # we use the system time as our unique-enough string to store
+    # the params object
+        forest.plot.params.path <- save.plot.data(plot.data)
+        plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+        results <- list("images"=images, "Summary"=subgroup.disp, 
+                    "plot_names"=plot.names, 
+                    "plot_params_paths"=plot.params.paths)
+    } else {
+        results <- list(subgroup.data=subgroup.data, Summary=subgroup.disp, "cov.list"=subgroup.list)
+    }
+    results
+}
+
+get.subgroup.data.diagnostic <- function(diagnostic.data, cov.val, cov.vals) {
+  # returns the subgroup data corresponding to a categorical covariant cov.name
+  # and value cov.val
+  if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
+  y.tmp <- diagnostic.data@y[cov.vals == cov.val]
+  SE.tmp <- diagnostic.data@SE[cov.vals == cov.val]
+  names.tmp <- diagnostic.data@study.names[cov.vals == cov.val]
+  if (length(diagnostic.data@TP) > 0){
+    TP.tmp <- diagnostic.data@TP[cov.vals==cov.val]
+    FN.tmp <- diagnostic.data@FN[cov.vals==cov.val]
+    TN.tmp <- diagnostic.data@TN[cov.vals==cov.val]
+    FP.tmp <- diagnostic.data@FP[cov.vals==cov.val]
+    subgroup.data <- new('DiagnosticData', TP=TP.tmp, 
+                          FN=FN.tmp , TN=TN.tmp, 
+                          FP=FP.tmp, y=y.tmp, SE=SE.tmp, study.names=names.tmp)
+  } else {
+    subgroup.data <- new('DiagnosticData', y=y.tmp, SE=SE.tmp, study.names=names.tmp)
+  }
+  subgroup.data
+}
+
 create.subgroup.side.by.side.plot.data <- function(subgroup.data, params) {    
     # creates data for two side-by-side forest plots
     params.left <- params$left
@@ -1261,201 +1259,4 @@ create.subgroup.side.by.side.plot.data <- function(subgroup.data, params) {
     
     plot.data <- list("left"=plot.data.left, "right"=plot.data.right)
     plot.data
-}
-
-
-
-
-
-multiple.subgroup.diagnostic.old <- function(fnames, params.list, diagnostic.data) {
-
-    # wrapper for applying multiple diagnostic functions and metrics    
-
-    ####
-    # fnames -- names of diagnostic meta-analytic functions to call
-    # params.list -- parameter lists to be passed along to the functions in
-    #              fnames
-    # diagnostic.data -- the (diagnostic data) that is to be analyzed 
-    ###
-    metrics <- c()
-    results <- list()
-    for (count in 1:length(params.list)) {
-        metrics <- c(metrics, params.list[[count]]$measure)
-        if (params.list[[count]]$measure=="Sens") {
-            sens.index <- count
-        }
-        if (params.list[[count]]$measure=="Spec") {
-            spec.index <- count
-        }
-        if (params.list[[count]]$measure=="PLR") {
-            plr.index <- count
-        }
-        if (params.list[[count]]$measure=="NLR") {
-            nlr.index <- count
-        }
-    }
-    
-    images <- c()
-    plot.names <- c()
-    plot.params.paths <- c()
-    if (("Sens" %in% metrics) & ("Spec" %in% metrics)) {
-        # create side-by-side forest plots for sens and spec.
-        params.list[[sens.index]]$create.plot <- FALSE
-        params.list[[spec.index]]$create.plot <- FALSE
-        # Don't create individual forest plots for sens and spec if both are checked.
-        results.sens.spec <- NULL
-        # create side-by-side plot
-        # At present, fname.left is always the same as fname.right, and params.left is the same as params.right, except for measure.
-        #
-        fname <- fnames[sens.index]
-        results.sens.spec <- subgroup.side.by.side.plots(diagnostic.data, fname=fname, 
-                                                                 params.left=params.list[[sens.index]],
-                                                                 params.right=params.list[[spec.index]])
-        images.tmp <- results.sens.spec$images
-        names(images.tmp) <- "Sensitivity and Specificity Forest Plot"
-        images <- c(images, images.tmp)
-        plot.params.paths.tmp <- results.sens.spec$plot_params_paths
-        names(plot.params.paths.tmp) <- "Sensitivity and Specificity Forest Plot"
-        plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
-        plot.names <- c(plot.names, results.sens.spec$plot.names)
-        
-        params.sroc <- params.list[[sens.index]]
-        #params.sroc$roc_xlabel <- "1 - Specificity"
-        #params.sroc$roc_ylabel <- "Sensitivity"   
-        #params.sroc$roc_title <- ""
-        # slot for a title if desired in future
-        # res <- subgroup.ma.diagnostic(fname.left, diagnostic.data, params.left)
-        #
-        # create SROC plot
-        res <- subgroup.ma.diagnostic(fname, diagnostic.data, params.sroc)
-        grouped.data <- res$grouped.data
-        cov.list <- res$cov.list
-        colors <- rainbow(length(grouped.data)-1)
-        
-        sroc.path <- "./r_tmp/roc.png"
-        png(file=sroc.path, width=5 , height=5, units="in", res=144)
-        plot.new()
-        axis(1, pos=c(0,0))
-        axis(2, pos=c(0,0))
-        title(xlab="1 - Specificity", ylab="Sensitivity") 
-        for (count in 1:(length(cov.list))) {
-            diag.data.tmp <- grouped.data[[count]]
-            color <- colors[count]
-            sroc.plot.data <- create.sroc.plot.data(diag.data.tmp, params=params.sroc)
-            subgroup.sroc.plot(sroc.plot.data, color, sym.index=count)
-        }
-        legend("bottomright", cov.list, pch=1:length(cov.list), pt.bg="white", bty="n", col = colors)
-        graphics.off()
-        
-       # we use the system time as our unique-enough string to store
-        # the params object
-        sroc.plot.params.path <- save.plot.data(sroc.plot.data)
-        plot.params.paths.tmp <- c("SROC Plot"=sroc.plot.params.path)
-        images <- c(images, c("SROC"=sroc.path))
-        plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
-        plot.names <- c(plot.names, c("sroc"="sroc"))      
-    }
-    
-    if (("NLR" %in% metrics) & ("PLR" %in% metrics)) {
-        # create side-by-side forest plots for NLR and PLR.
-        params.list[[nlr.index]]$create.plot <- FALSE
-        params.list[[plr.index]]$create.plot <- FALSE
-        # Don't create individual forest plots for sens and spec if both are checked.
-       
-        results.plr.nlr <- NULL
-        results.plr.nlr <- subgroup.side.by.side.plots(diagnostic.data, fname=fnames[nlr.index], 
-                                                               params.left=params.list[[nlr.index]], 
-                                                               params.right=params.list[[plr.index]])
-        # At present, fname.left is always the same as fname.right, and params.left is the same as params.right, except for measure.
-        images.tmp <- results.plr.nlr$images
-        names(images.tmp) <- "Likelihood Ratios Forest Plot"
-        images <- c(images, images.tmp)
-        plot.params.paths.tmp <- results.plr.nlr$plot_params_paths
-        names(plot.params.paths.tmp) <- "Likelihood Ratios Forest Plot"
-        plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
-        plot.names <- c(plot.names, results.plr.nlr$plot.names)
-    }
-    
-    results <- list()
-    for (count in 1:length(params.list)) {
-        # create ma summaries and single (not side-by-side) forest plots.
-        pretty.names <- eval(call(paste(fnames[count],".pretty.names",sep="")))
-        diagnostic.data.tmp <- compute.diag.point.estimates(diagnostic.data, params.list[[count]])
-        results.tmp <- subgroup.ma.diagnostic(fnames[count], diagnostic.data.tmp, params.list[[count]])
-
-        if (is.null(params.list[[count]]$create.plot)) {
-          # create plot
-          images.tmp <- results.tmp$images
-          names(images.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
-          images <- c(images, images.tmp)
-          plot.params.paths.tmp <- results.tmp$plot_params_paths
-          names(plot.params.paths.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$", params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
-          plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
-          plot.names <- c(plot.names, results.tmp$plot.names)
-        }
-        summary.tmp <- list("Summary"=results.tmp$Summary)
-        names(summary.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Summary", sep="")
-        results <- c(results, summary.tmp)
-
-    }
-    results <- c(results, list("images"=images, "plot_names"=plot.names, 
-                               "plot_params_paths"=plot.params.paths))
-    #results$images <- images
-    #results$plot.names <- plot.names
-    #results$plot.params.paths <- plot.params.paths
-    results
-}
-
-subgroup.side.by.side.plots <- function(subgroup.data, params){
-    # creates two side-by-side forest plots
-    # assert that the argument is the correct type
-    if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
-    results <- NULL
-    if (length(diagnostic.data@TP) == 1){
-        res <- get.res.for.one.diag.study(diagnostic.data, params)
-        # Package res for use by overall method.
-        summary.disp <- list("MAResults" = res) 
-        results <- list("Summary"=summary.disp)
-    } else {
-        params.left$fp_show_col1 <- 'TRUE'
-        params.left$create.plot <- FALSE
-        params.right$fp_show_col1 <- 'FALSE'
-        params.right$create.plot <- FALSE
-        # only show study names on the left plot
-        diagnostic.data.left <- compute.diag.point.estimates(diagnostic.data, params.left)
-        diagnostic.data.right <- compute.diag.point.estimates(diagnostic.data, params.right)
-        #fnames <- c(fname.left, fname.right)
-        #params.list <- list(params.left, params.right)
-        
-        res.left <- subgroup.ma.diagnostic(fname, diagnostic.data.left, params.left)
-        res.right <- subgroup.ma.diagnostic(fname, diagnostic.data.right, params.right)
-        
-        forest.path <- paste(params.left$fp_outpath, sep="")
-        plot.data.left <- res.left$plot.data
-        plot.data.left$options$fp.title <- pretty.metric.name(as.character(params.left$measure))
-        plot.data.right <- res.right$plot.data
-        plot.data.right$options$fp.title <- pretty.metric.name(as.character(params.right$measure))
-        plot.data <- list("left"=plot.data.left, "right"=plot.data.right)
-        two.forest.plots(plot.data, outpath=forest.path)
-
-        # combine plot.data.left and plot.data.right into single list to save
-        plot.data.left <- list("name.tmp"=plot.data.left)
-        names(plot.data.left) <- paste(params.left$measure, " data", sep="")
-        plot.data.right <- list("name.tmp"=plot.data.right)
-        names(plot.data.right) <- paste(params.right$measure, " data", sep="")
-
-        plot.data <- list("diagnostic.data"=diagnostic.data, 
-                          "fname.left"=fname, "params.left"=params.left,
-                          "fname.right"=fname, "params.right"=params.right)
-
-        images <- c("Forest Plot"=forest.path)
-        plot.names <- c("forest plot"="forest_plot")
-     
-        forest.plot.params.path <- save.plot.data(plot.data)
-        plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
-        results <- list("images"=images,
-                        "plot_names"=plot.names, 
-                        "plot_params_paths"=plot.params.paths)
-    }
-    results
 }
