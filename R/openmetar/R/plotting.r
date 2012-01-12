@@ -179,7 +179,7 @@ create.plot.data.continuous <- function(cont.data, params, res, selected.cov = N
     plot.data
 }
 
-create.plot.data.overall <- function(res, study.names, params, data.type, addRow1Space){
+create.plot.data.overall <- function(om.data, params, res){
     scale.str <- "standard"
     if (metric.is.log.scale(params$measure)){
         scale.str <- "log" 
@@ -187,13 +187,15 @@ create.plot.data.overall <- function(res, study.names, params, data.type, addRow
         scale.str <- "logit"
     }
     ## TO DO - don't really nead three transforms - the transform only depends on the measure.
-    if (data.type == "continuous") {
-      transform.name <- "continuous.transform.f"
-    } else if (data.type == "diagnostic") {
-      transform.name <- "diagnostic.transform.f"
-    }  else if (data.type == "binary") {
-      transform.name <- "binary.transform.f"
+
+    if ("ContinuousData" %in% class(om.data)) {
+        transform.name <-"continuous.transform.f"
+    } else if ("DiagnosticData" %in% class(om.data)) {
+        transform.name <- "diagnostic.transform.f"
+    }  else if ("BinaryData" %in% class(om.data)) {
+        transform.name <- "binary.transform.f"
     }
+    
     plot.options <- set.plot.options(params)
     plot.options$show.col3 <- FALSE
     plot.options$show.col4 <- FALSE
@@ -220,11 +222,11 @@ create.plot.data.overall <- function(res, study.names, params, data.type, addRow
     } else {
         plot.options$show.y.axis <- TRUE
     }    
-    if (addRow1Space == TRUE) {
+    #if (addRow1Space == TRUE) {
         # Add space to row 1 for cumulative ma to align study names.
-        study.names[1] <- paste("   ", study.names[1], sep="")
-    }
-
+    #    study.names[1] <- paste("   ", study.names[1], sep="")
+    #}
+    study.names <- om.data@study.names
     plot.data <- list( label = c(as.character(params$fp_col1_str), study.names),  
                        types = c(3, rep(0, length(study.names))),
                        scale = scale.str,
@@ -846,7 +848,7 @@ additional.columns <- function(forest.data, font = "bold") {
         for (i in 1:length(forest.data$label)){
           if (forest.data$types[i] != 0)
             content[i] <- list(textGrob(forest.data$additional.col.data[[j]][[i]], 
-                      x=1, just = "right", gp = gpar(fontface = font, fontfamily="mono", fontsize="10")))
+                      x=1, just = "right", gp = gpar(fontface = "bold", fontfamily="mono", fontsize="10")))
           else
             content[i] <- list(textGrob(forest.data$additional.col.data[[j]][[i]], 
                       x=1, just = "right", gp = gpar(fontface = "plain", fontfamily="mono", fontsize="10")))

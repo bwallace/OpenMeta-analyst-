@@ -197,19 +197,30 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
     metrics <- c()
     results <- list()
     pretty.names <- diagnostic.fixed.inv.var.pretty.names()
+    sens.spec.outpath <- c()
     for (count in 1:length(params.list)) {
         metrics <- c(metrics, params.list[[count]]$measure)
         if (params.list[[count]]$measure=="Sens") {
             sens.index <- count
+            #sens.spec.outpath <- params.list[[count]]$fp_outpath
         }
         if (params.list[[count]]$measure=="Spec") {
-            spec.index <- count
+            sens.spec.outpath <- params.list[[count]]$fp_outpath
         }
         if (params.list[[count]]$measure=="PLR") {
             plr.index <- count
+            #if (params.list[[count]]$fp_outpath==sens.spec.outpath) {
+            # for future use - check that path names are distinct.    
+            #    params.list[[count]]$fp_outpath <- paste(sub(".png","",sens.spec.outpath), "1.png", sep="")   
+                # if fp_outpath is the same as for sens or spec, append a 1.
+            #}
         }
         if (params.list[[count]]$measure=="NLR") {
             nlr.index <- count
+            #if (params.list[[count]]$fp_outpath==sens.spec.outpath) {
+            #    params.list[[count]]$fp_outpath <- paste(sub(".png","",sens.spec.outpath), "1.png", sep="")   
+            #    # if fp_outpath is the same as for sens or spec, append a 1.
+            #}
         }
     }
     
@@ -244,7 +255,7 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         res.spec <- results.spec$Summary$MAResults
         res <- list("left"=res.sens, "right"=res.spec)
         
-        plot.data <- create.side.by.side.plot.data(diagnostic.data.all, res=res, params.tmp)
+        plot.data <- create.side.by.side.plot.data(diagnostic.data.all, params=params.tmp, res=res)
         
         forest.path <- paste(params.sens$fp_outpath, sep="")
         two.forest.plots(plot.data, outpath=forest.path)
@@ -702,19 +713,7 @@ create.sroc.plot.data <- function(diagnostic.data, params){
 #            create side-by-side forest.plots     #
 ###################################################
 
-compute.side.by.side.results <- function(fname, diagnostic.data.left, params.left, diagnostic.data.right, params.right){
-   
-    if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
-
-    res.tmp <- eval(call(fname, diagnostic.data.left, params.left))
-    res.left <- eval(call(paste(fname, ".overall", sep=""), res.tmp))
-  
-    res.tmp <- eval(call(fname, diagnostic.data.right, params.right))
-    res.right <- eval(call(paste(fname, ".overall", sep=""), res.tmp))
-    res <- list("res.left"=res.left, "res.right"=res.right)
-}
-
-create.side.by.side.plot.data <- function(diagnostic.data, res, params) {    
+create.side.by.side.plot.data <- function(diagnostic.data, params, res) {    
     # creates data for two side-by-side forest plots
     params.left <- params$left
     params.right <- params$right
