@@ -663,7 +663,7 @@ subgroup.ma.diagnostic <- function(fname, diagnostic.data, params){
     # the params object
         forest.plot.params.path <- save.plot.data(plot.data)
         plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
-        results <- list("images"=images, "Subgroup Summary"=subgroup.disp, 
+        results <- list("images"=images, "Summary"=subgroup.disp, 
                     "plot_names"=plot.names, 
                     "plot_params_paths"=plot.params.paths)
     } else {
@@ -1175,11 +1175,11 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
         diagnostic.data.nlr <- compute.diag.point.estimates(diagnostic.data, params.nlr)
         diagnostic.data.plr <- compute.diag.point.estimates(diagnostic.data, params.plr)
         
-        results.sens <- subgroup.ma.diagnostic(fname, diagnostic.data.sens, params.sens)
-        results.spec <- subgroup.ma.diagnostic(fname, diagnostic.data.spec, params.spec)
-        subgroup.data.sens <- results.sens$subgroup.data
-        subgroup.data.spec <- results.spec$subgroup.data
-        subgroup.data.all <- list("left"=subgroup.data.sens, "right"=subgroup.data.spec)
+        results.nlr <- subgroup.ma.diagnostic(fname, diagnostic.data.nlr, params.nlr)
+        results.plr <- subgroup.ma.diagnostic(fname, diagnostic.data.plr, params.plr)
+        subgroup.data.nlr <- results.nlr$subgroup.data
+        subgroup.data.plr <- results.plr$subgroup.data
+        subgroup.data.all <- list("left"=subgroup.data.nlr, "right"=subgroup.data.plr)
         
         summary.nlr <- list("Summary"=results.nlr$Summary)
         names(summary.nlr) <- paste(eval(parse(text=paste("pretty.names$measure$", params.nlr$measure,sep=""))), " Summary", sep="")
@@ -1226,7 +1226,7 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
               plot.params.paths.tmp <- results.tmp$plot_params_paths
               names(plot.params.paths.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$", params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
               plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
-              plot.names <- c(plot.names, results.tmp$plot.names)
+              plot.names <- c(plot.names, results.tmp$plot_names)
             }
             summary.tmp <- list("Summary"=results.tmp$Summary)
             names(summary.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Summary", sep="")
