@@ -205,7 +205,8 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
             #sens.spec.outpath <- params.list[[count]]$fp_outpath
         }
         if (params.list[[count]]$measure=="Spec") {
-            sens.spec.outpath <- params.list[[count]]$fp_outpath
+            spec.index <- count
+            #sens.spec.outpath <- params.list[[count]]$fp_outpath
         }
         if (params.list[[count]]$measure=="PLR") {
             plr.index <- count
@@ -348,7 +349,7 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
               images.tmp <- results.tmp$image
               names(images.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
               images <- c(images, images.tmp)
-              plot.params.paths.tmp <- results.tmp$plot.params.paths
+              plot.params.paths.tmp <- results.tmp$plot_params_paths
               names(plot.params.paths.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$", params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
               plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
               plot.names <- c(plot.names, results.tmp$plot_names)
@@ -360,8 +361,8 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
     }
     
     results$images <- images
-    results$plot_names <- plot.names
-    results$plot_params_paths <- plot.params.paths
+    results$plot.names <- plot.names
+    results$plot.params.paths <- plot.params.paths
     results
 }
 
@@ -415,7 +416,7 @@ diagnostic.fixed.inv.var <- function(diagnostic.data, params){
           names(plot.params.paths) <- paste(params$measure, "Forest Plot", sep=" ")
           results <- list("images"=images, "Summary"=summary.disp, 
                           "plot_names"=plot.names, 
-                          "plot.params.paths"=plot.params.paths)
+                          "plot_params_paths"=plot.params.paths)
        }
         else {
           results <- list("Summary"=summary.disp)
@@ -528,7 +529,7 @@ diagnostic.fixed.mh <- function(diagnostic.data, params){
             plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
             results <- list("images"=images, "Summary"=summary.disp, 
                             "plot_names"=plot.names, 
-                            "plot.params.paths"=plot.params.paths)
+                            "plot_params_paths"=plot.params.paths)
         }
         else {
             results <- list("Summary"=summary.disp)
@@ -624,7 +625,7 @@ diagnostic.random <- function(diagnostic.data, params){
             plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
             results <- list("images"=images, "Summary"=summary.disp, 
                             "plot_names"=plot.names, 
-                            "plot.params.paths"=plot.params.paths)
+                            "plot_params_paths"=plot.params.paths)
         }
         else {
             results <- list("Summary"=summary.disp)

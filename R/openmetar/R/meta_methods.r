@@ -283,12 +283,12 @@ loo.ma.diagnostic <- function(fname, diagnostic.data, params){
         # the params object
         forest.plot.params.path <- save.plot.data(plot.data)
         plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
-        results <- list("images"=images, "Leave-one-out Summary"=loo.disp, 
+        results <- list("images"=images, "Summary"=loo.disp, 
                         "plot_names"=plot.names, 
                         "plot_params_paths"=plot.params.paths,
                         "study.names"=study.names)
     } else {
-        results <- list(res=loo.results, "study.names"=study.names) 
+        results <- list(res=loo.results, study.names=study.names) 
     }  
     results
 }
@@ -948,7 +948,7 @@ multiple.loo.diagnostic <- function(fnames, params.list, diagnostic.data) {
         res.spec <- results.spec$res
         res <- list("left"=res.sens, "right"=res.spec)
         
-        plot.data <- create.loo.plot.data.diagnostic(diagnostic.data.all, res=res, params.tmp)
+        plot.data <- create.loo.side.by.side.plot.data(diagnostic.data.all, res=res, params.tmp)
         
         forest.path <- paste(params.sens$fp_outpath, sep="")
         two.forest.plots(plot.data, outpath=forest.path)
@@ -962,25 +962,7 @@ multiple.loo.diagnostic <- function(fnames, params.list, diagnostic.data) {
         
         plot.names.tmp <- c("forest plot"="forest.plot")
         plot.names <- c(plot.names, plot.names.tmp)
-        
-        # create SROC plot
-        sroc.path <- "./r_tmp/roc.png"
-        png(file=sroc.path, width=5 , height=5, units="in", res=144)
-        sroc.plot.data <- create.sroc.plot.data(diagnostic.data, params=params.sens)
-        plot.new()
-        axis(1, pos=c(0,0))
-        axis(2, pos=c(0,0))
-        title(xlab="1 - Specificity", ylab="Sensitivity")
-        #sroc.plot(sroc.plot.data, outpath=sroc.path)
-        subgroup.sroc.plot(sroc.plot.data, color="blue", sym.index=1)
-        graphics.off()
-        # we use the system time as our unique-enough string to store
-        # the params object
-        sroc.plot.params.path <- save.plot.data(sroc.plot.data)
-        plot.params.paths.tmp <- c("SROC Plot"=sroc.plot.params.path)
-        images <- c(images, c("SROC"=sroc.path))
-        plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
-        plot.names <- c(plot.names, c("sroc"="sroc"))
+     
         remove.indices <- c(sens.index, spec.index)
     }
     
@@ -1010,7 +992,7 @@ multiple.loo.diagnostic <- function(fnames, params.list, diagnostic.data) {
         res.plr <- results.plr$Summary$MAResults
         res <- list("left"=res.nlr, "right"=res.plr)
         
-        plot.data <- create.loo.plot.data.diagnostic(diagnostic.data.all, res=res, params.tmp)
+        plot.data <- create.loo.side.by.side.plot.data(diagnostic.data.all, res=res, params.tmp)
         
         forest.path <- paste(params.nlr$fp_outpath, sep="")
         two.forest.plots(plot.data, outpath=forest.path)
@@ -1036,16 +1018,16 @@ multiple.loo.diagnostic <- function(fnames, params.list, diagnostic.data) {
         for (count in 1:length(params.list)) {
             # create ma summaries and single (not side-by-side) forest plots.
             #pretty.names <- eval(call(paste(fnames[count],".pretty.names",sep="")))
-            results.tmp <- eval(call(fnames[count], diagnostic.data, params.list[[count]]))
+            results.tmp <- loo.ma.diagnostic(fnames[[count]], diagnostic.data, params.list[[count]])
             if (is.null(params.list[[count]]$create.plot)) {
                # create plot
               images.tmp <- results.tmp$image
               names(images.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
               images <- c(images, images.tmp)
-              plot.params.paths.tmp <- results.tmp$plot.params.paths
+              plot.params.paths.tmp <- results.tmp$plot_params_paths
               names(plot.params.paths.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$", params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
               plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
-              plot.names <- c(plot.names, results.tmp$plot_names)
+              plot.names <- c(plot.names, results.tmp$plot.names)
             }
             summary.tmp <- list("Summary"=results.tmp$Summary)
             names(summary.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Summary", sep="")
@@ -1054,12 +1036,12 @@ multiple.loo.diagnostic <- function(fnames, params.list, diagnostic.data) {
     }
     
     results$images <- images
-    results$plot_names <- plot.names
-    results$plot_params_paths <- plot.params.paths
+    results$plot.names <- plot.names
+    results$plot.params.paths <- plot.params.paths
     results
 }
 
-create.loo.plot.data.diagnostic <- function(diagnostic.data, res, params) {    
+create.loo.side.by.side.plot.data <- function(diagnostic.data, res, params) {    
     # creates data for two side-by-side forest plots
     params.left <- params$left
     params.right <- params$right
@@ -1081,187 +1063,7 @@ create.loo.plot.data.diagnostic <- function(diagnostic.data, res, params) {
     plot.data
 }
 
-multiple.loo.diagnostic.old <- function(fnames, params.list, diagnostic.data) {
 
-    # wrapper for applying multiple diagnostic functions and metrics    
-
-    ####
-    # fnames -- names of diagnostic meta-analytic functions to call
-    # params.list -- parameter lists to be passed along to the functions in
-    #              fnames
-    # diagnostic.data -- the (diagnostic data) that is to be analyzed 
-    ###
-    metrics <- c()
-    results <- list()
-    for (count in 1:length(params.list)) {
-        metrics <- c(metrics, params.list[[count]]$measure)
-        if (params.list[[count]]$measure=="Sens") {
-            sens.index <- count
-        }
-        if (params.list[[count]]$measure=="Spec") {
-            spec.index <- count
-        }
-        if (params.list[[count]]$measure=="PLR") {
-            plr.index <- count
-        }
-        if (params.list[[count]]$measure=="NLR") {
-            nlr.index <- count
-        }
-    }
-    
-    images <- c()
-    plot.names <- c()
-    plot.params.paths <- c()
-    if (("Sens" %in% metrics) & ("Spec" %in% metrics)) {
-        # create side-by-side forest plots for sens and spec.
-        params.list[[sens.index]]$create.plot <- FALSE
-        params.list[[spec.index]]$create.plot <- FALSE
-        # Don't create individual forest plots for sens and spec if both are checked.
-        results.sens.spec <- NULL
-        # create side-by-side plot
-        # At present, fname.left is always the same as fname.right, and params.left is the same as params.right, except for measure.
-        #
-        results.sens.spec <- loo.side.by.side.plots(diagnostic.data, fname.left=fnames[sens.index], 
-                                                                 params.left=params.list[[sens.index]],
-                                                                 fname.right=fnames[spec.index],
-                                                                 params.right=params.list[[spec.index]])
-        
-        images.tmp <- results.sens.spec$images
-        names(images.tmp) <- "Sensitivity and Specificity Forest Plot"
-        images <- c(images, images.tmp)
-        plot.params.paths.tmp <- results.sens.spec$plot_params_paths
-        names(plot.params.paths.tmp) <- "Sensitivity and Specificity Forest Plot"
-        plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
-        plot.names <- c(plot.names, results.sens.spec$plot_names)
-        
-        params.sroc <- params.list[[sens.index]]
-        params.sroc$roc_xlabel <- "1 - Specificity"
-        params.sroc$roc_ylabel <- "Sensitivity"   
-        params.sroc$roc_title <- ""
-        # slot for a title if desired in future
-        
-        # create SROC plot - in future implementation
-        #sroc.path <- "./r_tmp/roc.png"
-        #png(file=sroc.path, width=5 , height=5, units="in", res=144)
-        #sroc.plot.data <- create.sroc.plot.data(diagnostic.data, params=params.sroc)
-        #plot.new()
-        #axis(1, pos=c(0,0))
-        #axis(2, pos=c(0,0))
-        #title(xlab="1 - Specificity", ylab="Sensitivity")
-        #sroc.plot(sroc.plot.data, outpath=sroc.path)
-        #subgroup.sroc.plot(sroc.plot.data, color="blue", sym.index=1)
-        #graphics.off()
- 
-        # we use the system time as our unique-enough string to store
-        # the params object
-        #sroc.plot.params.path <- save.plot.data(sroc.plot.data)
-        #plot.params.paths.tmp <- c("SROC Plot"=sroc.plot.params.path)
-        #images <- c(images, c("SROC"=sroc.path))
-        #plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
-        #plot.names <- c(plot.names, c("sroc"="sroc"))
-    }
-    
-    if (("NLR" %in% metrics) || ("PLR" %in% metrics)) {
-        # create side-by-side forest plots for NLR and PLR.
-        params.list[[nlr.index]]$create.plot <- FALSE
-        params.list[[plr.index]]$create.plot <- FALSE
-        # Don't create individual forest plots for sens and spec if both are checked.
-       
-        results.plr.nlr <- NULL
-        results.plr.nlr <- loo.side.by.side.plots(diagnostic.data, fname.left=fnames[nlr.index], 
-                                                               params.left=params.list[[nlr.index]], 
-                                                               fname.right=fnames[plr.index],
-                                                               params.right=params.list[[plr.index]])
-        # At present, fname.left is always the same as fname.right, and params.left is the same as params.right, except for measure.
-        images.tmp <- results.plr.nlr$images
-        names(images.tmp) <- "Likelihood Ratios Forest Plot"
-        images <- c(images, images.tmp)
-        plot.params.paths.tmp <- results.plr.nlr$plot_params_paths
-        names(plot.params.paths.tmp) <- "Likelihood Ratios Forest Plot"
-        plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
-        plot.names <- c(plot.names, results.plr.nlr$plot_names)
-    }
-    
-    results <- list()
-    for (count in 1:length(params.list)) {
-        # create ma summaries and single (not side-by-side) forest plots.
-        pretty.names <- eval(call(paste(fnames[count],".pretty.names",sep="")))
-        diagnostic.data.tmp <- compute.diag.point.estimates(diagnostic.data, params.list[[count]])
-        results.tmp <- eval(call(fnames[count], diagnostic.data.tmp, params.list[[count]]))
-
-        if (is.null(params.list[[count]]$create.plot)) {
-          # create plot
-          images.tmp <- results.tmp$image
-          names(images.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
-          images <- c(images, images.tmp)
-          plot.params.paths.tmp <- results.tmp$plot_params_paths
-          names(plot.params.paths.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$", params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
-          plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
-          plot.names <- c(plot.names, results.tmp$plot_names)
-        }
-        summary.tmp <- list("Summary"=results.tmp$Summary)
-        names(summary.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Summary", sep="")
-        results <- c(results, summary.tmp)
-
-    }
-    results$images <- images
-    results$plot_names <- plot.names
-    results$plot_params_paths <- plot.params.paths
-    
-    results
-}
-
-loo.side.by.side.plots <- function(diagnostic.data, fname.left, params.left, fname.right, params.right){
-    # creates two side-by-side forest plots
-    # assert that the argument is the correct type
-    if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
-    results <- NULL
-    if (length(diagnostic.data@TP) == 1){
-        res <- get.res.for.one.diag.study(diagnostic.data, params.left)
-        # Package res for use by overall method.
-        summary.disp <- list("MAResults" = res) 
-        results <- list("Summary"=summary.disp)
-    } else {
-        params.left$fp_show_col1 <- 'TRUE'
-        params.left$create.plot <- FALSE
-        params.right$fp_show_col1 <- 'FALSE'
-        params.right$create.plot <- FALSE
-        # only show study names on the left plot
-        diagnostic.data.left <- compute.diag.point.estimates(diagnostic.data, params.left)
-        diagnostic.data.right <- compute.diag.point.estimates(diagnostic.data, params.right)
-      
-        res.left <- loo.ma.diagnostic(fname.left, diagnostic.data.left, params.left)
-        res.right <- loo.ma.diagnostic(fname.right, diagnostic.data.right, params.right)
-        
-        forest.path <- paste(params.left$fp_outpath, sep="")
-        plot.data.left <- res.left$plot.data
-        plot.data.left$options$fp.title <- pretty.metric.name(as.character(params.left$measure))
-        plot.data.right <- res.right$plot.data
-        plot.data.right$options$fp.title <- pretty.metric.name(as.character(params.right$measure))
-        plot.data <- list("left"=plot.data.left, "right"=plot.data.right)
-        two.forest.plots(plot.data, outpath=forest.path)
-
-        # combine plot.data.left and plot.data.right into single list to save
-        plot.data.left <- list("name.tmp"=plot.data.left)
-        names(plot.data.left) <- paste(params.left$measure, " data", sep="")
-        plot.data.right <- list("name.tmp"=plot.data.right)
-        names(plot.data.right) <- paste(params.right$measure, " data", sep="")
-
-        plot.data <- list("diagnostic.data"=diagnostic.data, 
-                          "fname.left"=fname.left, "params.left"=params.left,
-                          "fname.right"=fname.right, "params.right"=params.right)
-
-        images <- c("Forest Plot"=forest.path)
-        plot.names <- c("forest plot"="forest_plot")
-     
-        forest.plot.params.path <- save.plot.data(plot.data)
-        plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
-        results <- list("images"=images,
-                        "plot_names"=plot.names, 
-                        "plot_params_paths"=plot.params.paths)
-    }
-    results
-}
 
 multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
 
@@ -1310,10 +1112,10 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
         images.tmp <- results.sens.spec$images
         names(images.tmp) <- "Sensitivity and Specificity Forest Plot"
         images <- c(images, images.tmp)
-        plot.params.paths.tmp <- results.sens.spec$plot_params_paths
+        plot.params.paths.tmp <- results.sens.spec$plot.params.paths
         names(plot.params.paths.tmp) <- "Sensitivity and Specificity Forest Plot"
         plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
-        plot.names <- c(plot.names, results.sens.spec$plot_names)
+        plot.names <- c(plot.names, results.sens.spec$plot.names)
         
         params.sroc <- params.list[[sens.index]]
         #params.sroc$roc_xlabel <- "1 - Specificity"
@@ -1366,10 +1168,10 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
         images.tmp <- results.plr.nlr$images
         names(images.tmp) <- "Likelihood Ratios Forest Plot"
         images <- c(images, images.tmp)
-        plot.params.paths.tmp <- results.plr.nlr$plot_params_paths
+        plot.params.paths.tmp <- results.plr.nlr$plot.params.paths
         names(plot.params.paths.tmp) <- "Likelihood Ratios Forest Plot"
         plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
-        plot.names <- c(plot.names, results.plr.nlr$plot_names)
+        plot.names <- c(plot.names, results.plr.nlr$plot.names)
     }
     
     results <- list()
@@ -1384,10 +1186,10 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
           images.tmp <- results.tmp$image
           names(images.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
           images <- c(images, images.tmp)
-          plot.params.paths.tmp <- results.tmp$plot_params_paths
+          plot.params.paths.tmp <- results.tmp$plot.params.paths
           names(plot.params.paths.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$", params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
           plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
-          plot.names <- c(plot.names, results.tmp$plot_names)
+          plot.names <- c(plot.names, results.tmp$plot.names)
         }
         summary.tmp <- list("Summary"=results.tmp$Summary)
         names(summary.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Summary", sep="")
@@ -1395,8 +1197,8 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
 
     }
     results$images <- images
-    results$plot_names <- plot.names
-    results$plot_params_paths <- plot.params.paths
+    results$plot.names <- plot.names
+    results$plot.params.paths <- plot.params.paths
     results
 }
 
