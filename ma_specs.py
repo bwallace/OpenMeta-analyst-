@@ -65,9 +65,10 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             # we pre-prend the data type to the meta-method function
             # name. thus the caller (meta_form) needn't worry about
             # the data type, only about the method name (e.g., cumulative)
-            self.meta_f_str = ".".join((self.meta_f_str, self.data_type))
+            if not self.meta_f_str.endswith(self.data_type): 
+                self.meta_f_str = ".".join((self.meta_f_str, self.data_type))
             
-            
+        
         if self.data_type != "binary":
             self.disable_bin_only_fields()
             if self.data_type == "diagnostic":
