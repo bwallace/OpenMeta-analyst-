@@ -292,7 +292,7 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         remove.indices <- c(sens.index, spec.index)
     }
     
-    if (("NLR" %in% metrics) || ("PLR" %in% metrics)) {
+    if (("NLR" %in% metrics) & ("PLR" %in% metrics)) {
         # create side-by-side forest plots for NLR and PLR.
         params.nlr <- params.list[[nlr.index]]
         params.plr <- params.list[[plr.index]]
