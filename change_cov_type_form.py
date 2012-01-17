@@ -76,6 +76,7 @@ class CovModel(QAbstractTableModel):
 
     def vals_to_new_vals(self, cov_d):
         unique_values = list(set(cov_d.values()))
+        unique_values.sort()
         mapping = {}
         for i,val in enumerate(unique_values):
             if self.new_data_type == FACTOR:
