@@ -161,10 +161,11 @@ class DatasetModel(QAbstractTableModel):
             self.OUTCOMES = [7, 8, 9, 10, 11, 12]
     
 
-    def format_float(self, float_var):
+    def format_float(self, float_var, num_digits=None):
         ''' this method assumes the input can be cast to a float! '''
         float_var = float(float_var)
-        formatted_str = "'%." + str(self.NUM_DIGITS) + "f'" 
+        precision = num_digits or self.NUM_DIGITS
+        formatted_str = "'%." + str(precision) + "f'" 
         # kind of hacky; I can't find a better way to make the
         # number of digits in the formatting parametric. oh well.
         return eval(formatted_str + "% float_var")
@@ -177,12 +178,22 @@ class DatasetModel(QAbstractTableModel):
         role/index/datatype here, but this seems consistent with the QT paradigm (see 
         Summerfield's book)
         '''
+
+        # number of digits to show in edit mode. this, I think, is enough.
+        NUM_DIGITS_PRECISE = 12 
+        # by default, we'll use the global NUM_DIGITS; this is the default
+        # used by the format_float method unless num_digits is set to 
+        # something else, i.e., NUM_DIGITS_PRECISE in the case of editing
+        num_digits = None
+
         if not index.isValid() or not (0 <= index.row() < len(self.dataset)):
             return QVariant()
         study = self.dataset.studies[index.row()]
         current_data_type = self.dataset.get_outcome_type(self.current_outcome)
         column = index.column()
-        if role == Qt.DisplayRole:
+
+        if role in (Qt.DisplayRole, Qt.EditRole):
+        #if role == Qt.DisplayRole:
             if column == self.NAME:
                 return QVariant(study.name)
             elif column == self.YEAR:
@@ -200,9 +211,17 @@ class DatasetModel(QAbstractTableModel):
                         if val == "" or val is None:
                             return QVariant(val)
                         try:
+                            # these are the continuous columns containing sample
+                            # size; they will be integers, presumably
+                            N_columns = (self.RAW_DATA[0], self.RAW_DATA[3])
+
                             # issue #31 -- make sure digits are consistent
-                            if current_data_type == CONTINUOUS:
-                                return QVariant(self.format_float(val))
+                            if current_data_type == CONTINUOUS and not column in N_columns:
+                                # issue #151 -- show greater precision on double-click
+                                if role == Qt.EditRole:
+                                    # then we're editing, so show greater precision
+                                    num_digits = NUM_DIGITS_PRECISE 
+                                return QVariant(self.format_float(val, num_digits=num_digits))
                             else:
                                 return QVariant(round(val, self.NUM_DIGITS))
                         except:
@@ -213,6 +232,11 @@ class DatasetModel(QAbstractTableModel):
                 else:
                     return QVariant("")
             elif column in self.OUTCOMES:
+                # more precision in edit moe -- issue #151
+                if role == Qt.EditRole:
+                    # then we're editing, so show greater precision
+                    num_digits = NUM_DIGITS_PRECISE 
+
                 group_str = self.get_cur_group_str()
                 # either the point estimate, or the lower/upper
                 # confidence interval
@@ -230,7 +254,8 @@ class DatasetModel(QAbstractTableModel):
                     if outcome_val is None:
                         return QVariant("")
                     outcome_val = est_and_ci[outcome_index]
-                    return QVariant(self.format_float(outcome_val))  # issue #31
+
+                    return QVariant(self.format_float(outcome_val, num_digits=num_digits))  # issue #31
                 else:
                     study_index = index.row()
                     # note that we do things quite differently in the diagnostic case,
@@ -247,11 +272,12 @@ class DatasetModel(QAbstractTableModel):
                     outcome_val = est_and_ci[outcome_index % 3]
                     if outcome_val is None:
                         return QVariant("")
-                    return QVariant(self.format_float(outcome_val)) # issue #31
+         
+                    return QVariant(self.format_float(outcome_val, num_digits=num_digits)) # issue #31
                 
             elif column != self.INCLUDE_STUDY:
                 # here the column is to the right of the outcomes (and not the 0th, or
-                # 'include study' column, and thus must corrrespond to a covariate.
+                # 'include study' column), and thus must corrrespond to a covariate.
                 cov_obj = self.get_cov(column)
                 cov_name = cov_obj.name
                 cov_value = study.covariate_dict[cov_name] if \
@@ -260,12 +286,10 @@ class DatasetModel(QAbstractTableModel):
                     cov_value = ""
                 
                 if cov_value != "" and cov_obj.data_type == CONTINUOUS:
-
-                    return QVariant(self.format_float(cov_value))
+                    return QVariant(self.format_float(cov_value, num_digits=num_digits))
                 else:
                     # factor
                     return QVariant(cov_value)
-                
         elif role == Qt.TextAlignmentRole:
             return QVariant(int(Qt.AlignLeft|Qt.AlignVCenter))
         elif role == Qt.CheckStateRole:
@@ -283,7 +307,7 @@ class DatasetModel(QAbstractTableModel):
                 return QVariant(QColor(Qt.gray))
             else:
                 return QVariant(QColor(Qt.white))
-        return QVariant()
+        #return QVariant()
 
 
     def get_cur_group_str(self):
@@ -460,12 +484,10 @@ class DatasetModel(QAbstractTableModel):
                     # if any of the effect values are empty, we cannot include this study in the analysis, so it
                     # is automatically excluded.
                     if any([val is None for val in [effect_d[effect_key] for effect_key in ("upper", "lower", "est")]]):
-                        print "game over\n\n"
                         study.include = False
                     # if the study has not been explicitly excluded by the user, then we automatically
                     # include it once it has sufficient data.
                     elif not study.manually_excluded:
-                        print "okey@\n\n"
                         study.include = True
 
             return True

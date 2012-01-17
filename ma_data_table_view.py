@@ -62,6 +62,7 @@ class MADataTable(QtGui.QTableView):
         headers.customContextMenuRequested.connect(self.header_context_menu)
 
 
+    
     def _make_context_menu(self):
         def _context_menu(event):
             context_menu = QMenu(self)
@@ -819,5 +820,6 @@ class StudyDelegate(QItemDelegate):
         super(StudyDelegate, self).__init__(parent)
 
       def setEditorData(self, editor, index):
-        text = index.model().data(index, Qt.DisplayRole).toString()
+        # used to be Qt.DisplayRole
+        text = index.model().data(index, Qt.EditRole).toString()
         editor.setText(text)
