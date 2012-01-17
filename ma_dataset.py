@@ -137,27 +137,33 @@ class Dataset:
         return max([study.id for study in self.studies])
 
     def remove_covariate(self, covariate):
+        cov_index = None # keep record of the remvoed covariate's index.
         # first remove the covariate from the list of 
         # covariate objects for this dataset
-        for cov in self.covariates:
+        for i,cov in enumerate(self.covariates):
             if cov.name == covariate.name:
                 self.covariates.remove(cov)
+                cov_index = i
                 break
         # now remove the covariate from all of the studies
         # in the dataset
         for study in self.studies:
             if covariate.name in study.covariate_dict:
                 study.covariate_dict.pop(covariate.name)
-        
+        return cov_index
             
-    def add_covariate(self, covariate, cov_values=None):
+    def add_covariate(self, covariate, cov_values=None, cov_index=None):
         ''' 
         adds the parametric covariate to: 1) the list of covariate objects
         associated with this dataset and 2) the covariate dictionaries of each
         of the studies this dataset contains. Note: the covariate argument
         needs to be a Covariate object (not a string)!
         '''
-        self.covariates.append(covariate)
+        if cov_index is None:
+            self.covariates.append(covariate)
+        else:
+            self.covariates.insert(cov_index, covariate)
+
         if cov_values is None:
             for study in self.studies:
                 study.covariate_dict[covariate.name] = None
@@ -178,10 +184,12 @@ class Dataset:
     def change_covariate_name(self, old_covariate, new_covariate_name):
         # get the values for this covariate for all studies
         cov_val_dict = copy.deepcopy(self.get_values_for_cov(old_covariate.name))
-        self.remove_covariate(old_covariate)
+        cov_index = self.remove_covariate(old_covariate)
         # now add a covariate with the same values, but new name
+        # note that we also insert the covariate into the same place that
+        # it previously occupied!
         self.add_covariate(Covariate(new_covariate_name, TYPE_TO_STR_DICT[old_covariate.data_type]),\
-                                cov_values=cov_val_dict)
+                                cov_values=cov_val_dict, cov_index=cov_index)
         
 
         

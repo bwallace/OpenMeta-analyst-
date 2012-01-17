@@ -162,10 +162,13 @@ class DatasetModel(QAbstractTableModel):
     
 
     def format_float(self, float_var):
+        ''' this method assumes the input can be cast to a float! '''
+        float_var = float(float_var)
         formatted_str = "'%." + str(self.NUM_DIGITS) + "f'" 
         # kind of hacky; I can't find a better way to make the
         # number of digits in the formatting parametric. oh well.
         return eval(formatted_str + "% float_var")
+
 
 
     def data(self, index, role=Qt.DisplayRole):
@@ -257,6 +260,7 @@ class DatasetModel(QAbstractTableModel):
                     cov_value = ""
                 
                 if cov_value != "" and cov_obj.data_type == CONTINUOUS:
+
                     return QVariant(self.format_float(cov_value))
                 else:
                     # factor
@@ -577,7 +581,7 @@ class DatasetModel(QAbstractTableModel):
 
     def get_cov(self, table_col_index):
         # we map (ie, adjust) the table column index to the covariate
-        # index. if there is currently an outcome, this means we are
+        # index. if there is currently an outcome, this means we
         # subtract off the indices up to the last outcomes column; otherwise
         # we just subtract the include, study name and year columns (giving 3)
         cov_index = table_col_index - (self.OUTCOMES[-1]+1) if \
