@@ -222,22 +222,15 @@ create.plot.data.overall <- function(om.data, params, res){
     } else {
         plot.options$show.y.axis <- TRUE
     }    
-    #if (addRow1Space == TRUE) {
-        # Add space to row 1 for cumulative ma to align study names.
-    #    study.names[1] <- paste("   ", study.names[1], sep="")
-    #}
-    study.names <- om.data@study.names
-    plot.data <- list( label = c(as.character(params$fp_col1_str), study.names),  
-                       types = c(3, rep(0, length(study.names))),
-                       scale = scale.str,
+
+    plot.data <- list( scale = scale.str,
                        options = plot.options)
     # unpack data
     y <- NULL
     lb <- NULL
     ub <- NULL
     
-    for (count in 1:length(study.names)) {
-      # subtract because of blank line for overall
+    for (count in 1:length(om.data@study.names)) {
       y <- c(y, res[[count]]$b)
       lb <- c(lb, res[[count]]$ci.lb)
       ub <- c(ub, res[[count]]$ci.ub)
@@ -260,6 +253,35 @@ create.plot.data.overall <- function(om.data, params, res){
                     LL = lb,
                     UL = ub) 
     plot.data$effects <- effects
+    plot.data
+}
+
+create.plot.data.cum <- function(om.data, params, res) {
+    # wrapper for creating leave-one-out plot.data
+    params$show_col1 <- 'FALSE'
+    # don't show study names for right-hand plot
+    plot.data <- create.plot.data.overall(om.data, params, res)
+    
+    study.names <- c()
+    study.names <- paste("  ", om.data@study.names[1], sep="") 
+    for (count in 2:length(om.data@study.names)) {
+        study.names <- c(study.names, paste("+ ",om.data@study.names[count], sep=""))
+    }
+    plot.data$label <- c(as.character(params$fp_col1_str), study.names)  
+    plot.data$types <- c(3, rep(0, length(study.names)))
+    plot.data
+}
+
+create.plot.data.loo <- function(om.data, params, res) {
+    # wrapper for creating leave-one-out plot.data
+    plot.data <- create.plot.data.overall(om.data, params, res)
+    
+    study.names <- c()
+    for (count in 1:length(om.data@study.names)) {
+        study.names <- c(study.names, paste("- ",om.data@study.names[count], sep=""))
+    }
+    plot.data$label <- c(as.character(params$fp_col1_str), study.names)
+    plot.data$types <- c(3, rep(0, length(study.names)))
     plot.data
 }
 
@@ -911,12 +933,12 @@ effectsize.column <- function(forest.data, box.sca = 1) {
     if (is.null(user.lb) || is.null(user.ub)) {
     # if user has not supplied both lower and upper bounds (that meet the requirements), compute them
     # heuristically as effect.col.range.
-      if (forest.data$scale == "logit") { 
-        effect.col.range <- c(0, 1)
+      #if (forest.data$scale == "logit") { 
+      #  effect.col.range <- c(0, 1)
         # this is in standard scale.
         #effect.col.range <- c(min(effect.col$LL), max(effect.col$UL))
-      }
-      else {
+      #}
+      #else {
           
         # left.distance <- mean(effect.col$ES) - min(effect.col$LL)
         #if (min(effect.col$LL)>0 && max(effect.col$UL)>0) {
@@ -958,7 +980,7 @@ effectsize.column <- function(forest.data, box.sca = 1) {
         #} else if (min(effect.col$LL)<=0 && max(effect.col$UL)<0) { 
         #   effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(0.10*max(effect.col$ES) , max(effect.col$UL)))
         #}
-      }
+      #}
       # this is an ugly solution to an uncommon problem
         
         merge.data <- data.frame(x = forest.data$types[-1][1:length(forest.data$effects$ES)], y = effect.col$LL, z = effect.col$UL)
@@ -1052,8 +1074,19 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
             to.make.ticks <- range(exp(col$range))
             ticks <- axTicks(1, axp=c(to.make.ticks, 3), usr=c(-100, 100), log=TRUE)
             log.ticks <- log(ticks)
-		        log.ticks <- log.ticks[log.ticks > min(col$range) - 0.5]    # remember it is additive on this scale
-            log.ticks <- log.ticks[log.ticks < max(col$range) + 0.5]
+            
+            lower.bound <- min(col$range)
+            upper.bound <- max(col$range)
+            # find the largest tick mark less than the lower bound of col$range, if there is one.
+            if (log.ticks[1] <= lower.bound) {
+                min.tick <- max(log.ticks[log.ticks <= lower.bound])
+            }
+            # find the smallest tick mark greater than the upper bound of col$range, if there is one.
+            if (log.ticks[length(log.ticks)] >= upper.bound) {
+                max.tick <- min(log.ticks[log.ticks >= upper.bound])
+            }
+		        log.ticks <- log.ticks[log.ticks >= min.tick]    # remember it is additive on this scale
+            log.ticks <- log.ticks[log.ticks <= max.tick]
             ticks <- exp(log.ticks)
     } else {
 		        ticks <- user.ticks
@@ -1062,12 +1095,22 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
         grid.xaxis(at = log.ticks , label = round(ticks, 3), gp=gpar(cex=0.6))          
   } 
   if (forest.data$scale == "logit")  {
-        if (length(user.ticks) == 0) { # some cheap tricks to make the axis ticks look nice (in most cases)...
-            ticks <- c(0, .25, .5, .75, 1)
+        if (length(user.ticks) == 0) { 
+          lb <- min(col$range)
+          ub <- max(col$range)
+          width <- ub - lb
+          exp <- find.exp(width)
+          # number of places to right of decimal point before first non-zero digit
+          lb.floor <- floor(10^exp * lb) / 10^exp
+          # floor of lb to exp dec. places
+          ub.ceil <- ceiling(10^exp * ub) / 10^exp
+          # ceiling of ub to exp dec. places
+          to.make.ticks <- c(lb.floor, ub.ceil)
+          ticks <- axTicks(1, axp=c(to.make.ticks, 4))
+          #ticks <- c(0, .25, .5, .75, 1)
         } else {
 		        ticks <- user.ticks
         }
-        
         grid.xaxis(at = ticks , label = ticks, gp=gpar(cex=0.6))          
   } 
         
@@ -1575,3 +1618,15 @@ calculate.radii <- function(inv.var, max.symbol.size, max.ratio) {
     }
     radii <- C * inv.var^exponent
 } 
+
+find.exp <- function(x) {
+  # for a number in (0, 1], find the abs. value of the exponent of x in scientific notation. 
+  # 
+  exp <- 0
+  if ((x > 0) & (x <= 1)) {
+    while (10^(-exp) > x) {
+      exp <- exp + 1
+    }   
+  }
+  exp
+}
