@@ -56,12 +56,31 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
         plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(plot.ub)
     } 
     
+    digits.str <- paste("%.", params$digits, "f", sep="")
+    # heterogeity data
+    tau2 <- sprintf(digits.str, res$tau2)
+    degf <- res$k - 1
+    QLabel =  paste("Q(df=", degf, ")", sep="")
+    if (!is.null(res$QE)) {
+      I2 <- max(0, (res$QE - degf)/res$QE)
+      I2 <- paste(100 * round(I2, digits = 2), "%", sep="")
+      QE <- sprintf(digits.str, res$QE)
+    } else {
+      I2 <- "NA"
+      QE <- "NA"
+    }
+    if (!is.null(res$QEp)) {
+      QEp <- sprintf(digits.str, res$QEp)
+    } else {
+      QEp <- "NA"
+    } 
+    
+    overall <- paste("Overall (I^2=", I2, " , P=", QEp, ")", sep="")
     # append years to study names unless year equals 0 (0 is passed to R when year is empty).
-
     study.names <- om.data@study.names
     years <- om.data@years
     study.names[years != 0] <- paste(study.names[years != 0], years[years != 0], sep=" ")
-    plot.data <- list(label = c(paste(params$fp_col1_str, sep = ""), study.names, "Overall"),
+    plot.data <- list(label = c(paste(params$fp_col1_str, sep = ""), study.names, overall),
                       types = c(3, rep(0, length(om.data@study.names)), 2),
                       scale = scale.str,
                       options = plot.options)         
@@ -312,6 +331,8 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, 
     types <- NULL
     alpha <- 1.0-(params$conf.level/100.0)
     mult <- abs(qnorm(alpha/2.0))
+    digits.str <- paste("%.", params$digits, "f", sep="")
+    
     for (i in 1:length(subgroup.list)){
         # create plot data for each subgroup and concatenate results
         cur.res <- res[[i]]
@@ -324,9 +345,27 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, 
         cur.ub <- cur.y + mult*grouped.data[[i]]@SE
         y <- c(y, cur.y, cur.y.overall)
         lb <- c(lb, cur.lb, cur.lb.overall)
-        ub <- c(ub, cur.ub, cur.ub.overall) 
+        ub <- c(ub, cur.ub, cur.ub.overall)
+        
+         # heterogeneity data
+        degf <- cur.res$k - 1
+        if (!is.null(cur.res$QE)) {
+            I2 <- max(0, (cur.res$QE - degf)/cur.res$QE)
+            I2 <- paste(100 * round(I2, digits = 2), "%", sep="")
+            QE <- sprintf(digits.str, cur.res$QE)
+        } else {
+            I2 <- "NA"
+            QE <- "NA"
+        }
+        if (!is.null(cur.res$QEp)) {
+            QEp <- sprintf(digits.str, cur.res$QEp)
+        } else {
+            QEp <- "NA"
+        } 
+    
+        overall <- paste(" (I^2=", I2, " , P=", QEp, ")", sep="")
         types <- c(types, rep(0, length(grouped.data[[i]]@study.names)), 1)
-        label.col <-c(label.col, grouped.data[[i]]@study.names, paste("Subgroup ", subgroup.list[i], sep=""))
+        label.col <-c(label.col, grouped.data[[i]]@study.names, paste("Subgroup ", subgroup.list[i], overall, sep=""))
     } 
     cur.res <- res[[length(subgroup.list) + 1]]
     cur.y.overall <- cur.res$b[1]
@@ -336,7 +375,23 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, 
     lb <- c(lb, cur.lb.overall)
     ub <- c(ub, cur.ub.overall)
     types <- c(3,types, 2)
-    label.col <- c(as.character(params$fp_col1_str), label.col, "Overall")
+     # heterogeneity data
+    degf <- cur.res$k - 1
+    if (!is.null(cur.res$QE)) {
+        I2 <- max(0, (cur.res$QE - degf)/cur.res$QE)
+        I2 <- paste(100 * round(I2, digits = 2), "%", sep="")
+        QE <- sprintf(digits.str, cur.res$QE)
+    } else {
+        I2 <- "NA"
+        QE <- "NA"
+    }
+    if (!is.null(cur.res$QEp)) {
+        QEp <- sprintf(digits.str, cur.res$QEp)
+    } else {
+        QEp <- "NA"
+    } 
+    overall <- paste(" (I^2=", I2, " , P=", QEp, ")", sep="")
+    label.col <- c(as.character(params$fp_col1_str), label.col, paste("Overall", overall, sep=""))
     plot.options <- set.plot.options(params)
     if (params$fp_plot_lb == "[default]") {
         plot.options$plot.lb <- NULL
@@ -1006,7 +1061,7 @@ effectsize.column <- function(forest.data, box.sca = 1) {
     }
 
    list(ES = forest.data$effects$ES, LL = forest.data$effects$LL, 
-                  UL = forest.data$effects$UL, rows = rows[-1], types = forest.data$types[-1][1:length(forest.data$effects$ES)],
+                  UL = forest.data$effects$UL, rows = rows[-1], types = forest.data$types[-1][1:(length(forest.data$types)-1)],
                   range = effect.col.range,
                   sizes = effect.col.sizes)
 }
@@ -1506,7 +1561,8 @@ format.effect.sizes <- function(y, lb, ub, options) {
   y.display <- sprintf(paste("%.", digits,"f", sep=""), y)
   lb.display <- sprintf(paste("%.", digits,"f", sep=""), lb)
   ub.display <- sprintf(paste("%.", digits,"f", sep=""), ub)
-                       
+  # add extra space for het. stats row
+  #y.display <- c(y.display,)
   # for ub, add an extra space to positive numbers for alignment (negative numbers display minus sign)
   if (length(ub.display[ub.display >= 0])) {
     ub.display[ub.display >= 0] <- mapply(pad.with.spaces, ub.display[ub.display >= 0], begin.num=1, end.num=0)
