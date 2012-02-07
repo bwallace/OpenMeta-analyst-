@@ -517,14 +517,18 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                 diag_explain_window = diagnostic_explain.DiagnosticExplain(parent=self)
                 diag_explain_window.show()
 
-        window_title = ""
+        # change some UI elements to refelct the current method
+        window_title, method_label = "", ""
         if self.sens_spec:
             window_title = "Method & Parameters for Sens./Spec."
+            method_label = "analysis method for sens./spec."
         else:
             window_title = "Method & Parameters for DOR/LR"
+            method_label = "analysis method for DOR/LR"
 
         self.setWindowTitle(QtGui.QApplication.translate("Dialog", window_title, \
                 None, QtGui.QApplication.UnicodeUTF8))
+        self.method_lbl.setText(method_label)
         
 ###
 # the following methods are defined statically because

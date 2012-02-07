@@ -818,6 +818,7 @@ class DatasetModel(QAbstractTableModel):
         print "\ncurrent tx group index a, b: %s, %s" % (self.tx_index_a, self.tx_index_b)
 
     def sort_studies(self, col, reverse):
+        ''' @TODO sort on raw data/outcomes '''
         if col == self.NAME:
             self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by="name", reverse=reverse), reverse=reverse)
         elif col == self.YEAR:
@@ -826,8 +827,9 @@ class DatasetModel(QAbstractTableModel):
         # is a covariate
         elif col > self.OUTCOMES[-1]:
             cov = self.get_cov(col)
-            self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by=cov.name, reverse=reverse), reverse=reverse)
-            
+            self.dataset.studies.sort(cmp = self.dataset.cmp_studies(\
+                                        compare_by=cov.name, reverse=reverse), reverse=reverse)
+
         self.reset()
 
     def order_studies(self, ids):
