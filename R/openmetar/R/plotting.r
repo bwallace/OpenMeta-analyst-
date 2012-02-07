@@ -56,12 +56,31 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
         plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(plot.ub)
     } 
     
+    digits.str <- paste("%.", params$digits, "f", sep="")
+    # heterogeity data
+    tau2 <- sprintf(digits.str, res$tau2)
+    degf <- res$k - 1
+    QLabel =  paste("Q(df=", degf, ")", sep="")
+    if (!is.null(res$QE)) {
+      I2 <- max(0, (res$QE - degf)/res$QE)
+      I2 <- paste(100 * round(I2, digits = 2), "%", sep="")
+      QE <- sprintf(digits.str, res$QE)
+    } else {
+      I2 <- "NA"
+      QE <- "NA"
+    }
+    if (!is.null(res$QEp)) {
+      QEp <- sprintf(digits.str, res$QEp)
+    } else {
+      QEp <- "NA"
+    } 
+    
+    overall <- paste("Overall (I^2=", I2, " , P=", QEp, ")", sep="")
     # append years to study names unless year equals 0 (0 is passed to R when year is empty).
-
     study.names <- om.data@study.names
     years <- om.data@years
     study.names[years != 0] <- paste(study.names[years != 0], years[years != 0], sep=" ")
-    plot.data <- list(label = c(paste(params$fp_col1_str, sep = ""), study.names, "Overall"),
+    plot.data <- list(label = c(paste(params$fp_col1_str, sep = ""), study.names, overall),
                       types = c(3, rep(0, length(om.data@study.names)), 2),
                       scale = scale.str,
                       options = plot.options)         
@@ -222,22 +241,15 @@ create.plot.data.overall <- function(om.data, params, res){
     } else {
         plot.options$show.y.axis <- TRUE
     }    
-    #if (addRow1Space == TRUE) {
-        # Add space to row 1 for cumulative ma to align study names.
-    #    study.names[1] <- paste("   ", study.names[1], sep="")
-    #}
-    study.names <- om.data@study.names
-    plot.data <- list( label = c(as.character(params$fp_col1_str), study.names),  
-                       types = c(3, rep(0, length(study.names))),
-                       scale = scale.str,
+
+    plot.data <- list( scale = scale.str,
                        options = plot.options)
     # unpack data
     y <- NULL
     lb <- NULL
     ub <- NULL
     
-    for (count in 1:length(study.names)) {
-      # subtract because of blank line for overall
+    for (count in 1:length(om.data@study.names)) {
       y <- c(y, res[[count]]$b)
       lb <- c(lb, res[[count]]$ci.lb)
       ub <- c(ub, res[[count]]$ci.ub)
@@ -260,6 +272,35 @@ create.plot.data.overall <- function(om.data, params, res){
                     LL = lb,
                     UL = ub) 
     plot.data$effects <- effects
+    plot.data
+}
+
+create.plot.data.cum <- function(om.data, params, res) {
+    # wrapper for creating leave-one-out plot.data
+    params$show_col1 <- 'FALSE'
+    # don't show study names for right-hand plot
+    plot.data <- create.plot.data.overall(om.data, params, res)
+    
+    study.names <- c()
+    study.names <- paste("  ", om.data@study.names[1], sep="") 
+    for (count in 2:length(om.data@study.names)) {
+        study.names <- c(study.names, paste("+ ",om.data@study.names[count], sep=""))
+    }
+    plot.data$label <- c(as.character(params$fp_col1_str), study.names)  
+    plot.data$types <- c(3, rep(0, length(study.names)))
+    plot.data
+}
+
+create.plot.data.loo <- function(om.data, params, res) {
+    # wrapper for creating leave-one-out plot.data
+    plot.data <- create.plot.data.overall(om.data, params, res)
+    
+    study.names <- c()
+    for (count in 1:length(om.data@study.names)) {
+        study.names <- c(study.names, paste("- ",om.data@study.names[count], sep=""))
+    }
+    plot.data$label <- c(as.character(params$fp_col1_str), study.names)
+    plot.data$types <- c(3, rep(0, length(study.names)))
     plot.data
 }
 
@@ -290,6 +331,8 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, 
     types <- NULL
     alpha <- 1.0-(params$conf.level/100.0)
     mult <- abs(qnorm(alpha/2.0))
+    digits.str <- paste("%.", params$digits, "f", sep="")
+    
     for (i in 1:length(subgroup.list)){
         # create plot data for each subgroup and concatenate results
         cur.res <- res[[i]]
@@ -302,9 +345,27 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, 
         cur.ub <- cur.y + mult*grouped.data[[i]]@SE
         y <- c(y, cur.y, cur.y.overall)
         lb <- c(lb, cur.lb, cur.lb.overall)
-        ub <- c(ub, cur.ub, cur.ub.overall) 
+        ub <- c(ub, cur.ub, cur.ub.overall)
+        
+         # heterogeneity data
+        degf <- cur.res$k - 1
+        if (!is.null(cur.res$QE)) {
+            I2 <- max(0, (cur.res$QE - degf)/cur.res$QE)
+            I2 <- paste(100 * round(I2, digits = 2), "%", sep="")
+            QE <- sprintf(digits.str, cur.res$QE)
+        } else {
+            I2 <- "NA"
+            QE <- "NA"
+        }
+        if (!is.null(cur.res$QEp)) {
+            QEp <- sprintf(digits.str, cur.res$QEp)
+        } else {
+            QEp <- "NA"
+        } 
+    
+        overall <- paste(" (I^2=", I2, " , P=", QEp, ")", sep="")
         types <- c(types, rep(0, length(grouped.data[[i]]@study.names)), 1)
-        label.col <-c(label.col, grouped.data[[i]]@study.names, paste("Subgroup ", subgroup.list[i], sep=""))
+        label.col <-c(label.col, grouped.data[[i]]@study.names, paste("Subgroup ", subgroup.list[i], overall, sep=""))
     } 
     cur.res <- res[[length(subgroup.list) + 1]]
     cur.y.overall <- cur.res$b[1]
@@ -314,7 +375,23 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, 
     lb <- c(lb, cur.lb.overall)
     ub <- c(ub, cur.ub.overall)
     types <- c(3,types, 2)
-    label.col <- c(as.character(params$fp_col1_str), label.col, "Overall")
+     # heterogeneity data
+    degf <- cur.res$k - 1
+    if (!is.null(cur.res$QE)) {
+        I2 <- max(0, (cur.res$QE - degf)/cur.res$QE)
+        I2 <- paste(100 * round(I2, digits = 2), "%", sep="")
+        QE <- sprintf(digits.str, cur.res$QE)
+    } else {
+        I2 <- "NA"
+        QE <- "NA"
+    }
+    if (!is.null(cur.res$QEp)) {
+        QEp <- sprintf(digits.str, cur.res$QEp)
+    } else {
+        QEp <- "NA"
+    } 
+    overall <- paste(" (I^2=", I2, " , P=", QEp, ")", sep="")
+    label.col <- c(as.character(params$fp_col1_str), label.col, paste("Overall", overall, sep=""))
     plot.options <- set.plot.options(params)
     if (params$fp_plot_lb == "[default]") {
         plot.options$plot.lb <- NULL
@@ -911,12 +988,12 @@ effectsize.column <- function(forest.data, box.sca = 1) {
     if (is.null(user.lb) || is.null(user.ub)) {
     # if user has not supplied both lower and upper bounds (that meet the requirements), compute them
     # heuristically as effect.col.range.
-      if (forest.data$scale == "logit") { 
-        effect.col.range <- c(0, 1)
+      #if (forest.data$scale == "logit") { 
+      #  effect.col.range <- c(0, 1)
         # this is in standard scale.
         #effect.col.range <- c(min(effect.col$LL), max(effect.col$UL))
-      }
-      else {
+      #}
+      #else {
           
         # left.distance <- mean(effect.col$ES) - min(effect.col$LL)
         #if (min(effect.col$LL)>0 && max(effect.col$UL)>0) {
@@ -958,7 +1035,7 @@ effectsize.column <- function(forest.data, box.sca = 1) {
         #} else if (min(effect.col$LL)<=0 && max(effect.col$UL)<0) { 
         #   effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(0.10*max(effect.col$ES) , max(effect.col$UL)))
         #}
-      }
+      #}
       # this is an ugly solution to an uncommon problem
         
         merge.data <- data.frame(x = forest.data$types[-1][1:length(forest.data$effects$ES)], y = effect.col$LL, z = effect.col$UL)
@@ -984,7 +1061,7 @@ effectsize.column <- function(forest.data, box.sca = 1) {
     }
 
    list(ES = forest.data$effects$ES, LL = forest.data$effects$LL, 
-                  UL = forest.data$effects$UL, rows = rows[-1], types = forest.data$types[-1][1:length(forest.data$effects$ES)],
+                  UL = forest.data$effects$UL, rows = rows[-1], types = forest.data$types[-1][1:(length(forest.data$types)-1)],
                   range = effect.col.range,
                   sizes = effect.col.sizes)
 }
@@ -1052,8 +1129,19 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
             to.make.ticks <- range(exp(col$range))
             ticks <- axTicks(1, axp=c(to.make.ticks, 3), usr=c(-100, 100), log=TRUE)
             log.ticks <- log(ticks)
-		        log.ticks <- log.ticks[log.ticks > min(col$range) - 0.5]    # remember it is additive on this scale
-            log.ticks <- log.ticks[log.ticks < max(col$range) + 0.5]
+            
+            lower.bound <- min(col$range)
+            upper.bound <- max(col$range)
+            # find the largest tick mark less than the lower bound of col$range, if there is one.
+            if (log.ticks[1] <= lower.bound) {
+                min.tick <- max(log.ticks[log.ticks <= lower.bound])
+            }
+            # find the smallest tick mark greater than the upper bound of col$range, if there is one.
+            if (log.ticks[length(log.ticks)] >= upper.bound) {
+                max.tick <- min(log.ticks[log.ticks >= upper.bound])
+            }
+		        log.ticks <- log.ticks[log.ticks >= min.tick]    # remember it is additive on this scale
+            log.ticks <- log.ticks[log.ticks <= max.tick]
             ticks <- exp(log.ticks)
     } else {
 		        ticks <- user.ticks
@@ -1062,12 +1150,22 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
         grid.xaxis(at = log.ticks , label = round(ticks, 3), gp=gpar(cex=0.6))          
   } 
   if (forest.data$scale == "logit")  {
-        if (length(user.ticks) == 0) { # some cheap tricks to make the axis ticks look nice (in most cases)...
-            ticks <- c(0, .25, .5, .75, 1)
+        if (length(user.ticks) == 0) { 
+          lb <- min(col$range)
+          ub <- max(col$range)
+          width <- ub - lb
+          exp <- find.exp(width)
+          # number of places to right of decimal point before first non-zero digit
+          lb.floor <- floor(10^exp * lb) / 10^exp
+          # floor of lb to exp dec. places
+          ub.ceil <- ceiling(10^exp * ub) / 10^exp
+          # ceiling of ub to exp dec. places
+          to.make.ticks <- c(lb.floor, ub.ceil)
+          ticks <- axTicks(1, axp=c(to.make.ticks, 4))
+          #ticks <- c(0, .25, .5, .75, 1)
         } else {
 		        ticks <- user.ticks
         }
-        
         grid.xaxis(at = ticks , label = ticks, gp=gpar(cex=0.6))          
   } 
         
@@ -1463,7 +1561,8 @@ format.effect.sizes <- function(y, lb, ub, options) {
   y.display <- sprintf(paste("%.", digits,"f", sep=""), y)
   lb.display <- sprintf(paste("%.", digits,"f", sep=""), lb)
   ub.display <- sprintf(paste("%.", digits,"f", sep=""), ub)
-                       
+  # add extra space for het. stats row
+  #y.display <- c(y.display,)
   # for ub, add an extra space to positive numbers for alignment (negative numbers display minus sign)
   if (length(ub.display[ub.display >= 0])) {
     ub.display[ub.display >= 0] <- mapply(pad.with.spaces, ub.display[ub.display >= 0], begin.num=1, end.num=0)
@@ -1575,3 +1674,15 @@ calculate.radii <- function(inv.var, max.symbol.size, max.ratio) {
     }
     radii <- C * inv.var^exponent
 } 
+
+find.exp <- function(x) {
+  # for a number in (0, 1], find the abs. value of the exponent of x in scientific notation. 
+  # 
+  exp <- 0
+  if ((x > 0) & (x <= 1)) {
+    while (10^(-exp) > x) {
+      exp <- exp + 1
+    }   
+  }
+  exp
+}

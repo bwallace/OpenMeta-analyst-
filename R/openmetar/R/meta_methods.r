@@ -67,8 +67,6 @@ cum.ma.binary <- function(fname, binary.data, params){
     for (count in 2:length(binary.data@study.names)) {
         study.names <- c(study.names, paste("+ ",binary.data@study.names[count], sep=""))
     }
-    binary.data@study.names <- study.names
-    
     metric.name <- pretty.metric.name(as.character(params$measure))
     model.title <- ""
     if (fname == "binary.fixed.inv.var") {
@@ -87,7 +85,7 @@ cum.ma.binary <- function(fname, binary.data, params){
     params.cum$fp_col1_str <- "Cumulative Studies"
     params.cum$fp_col2_str <- "Cumulative Estimate"
     # column labels for the cumulative (right-hand) plot
-    plot.data.cum <- create.plot.data.overall(binary.data, params, res=cum.results)
+    plot.data.cum <- create.plot.data.cum(om.data=binary.data, params.cum, res=cum.results)
     plot.data <- list("left"=plot.data, "right"=plot.data.cum)
     two.forest.plots(plot.data, outpath=forest.path)
 
@@ -161,7 +159,7 @@ loo.ma.binary <- function(fname, binary.data, params){
     for (count in 1:length(binary.data@study.names)) {
         study.names <- c(study.names, paste("- ",binary.data@study.names[count], sep=""))
     }
-    binary.data@study.names <- study.names
+    
     metric.name <- pretty.metric.name(as.character(params$measure))
     model.title <- ""
     if (fname == "binary.fixed.inv.var") {
@@ -177,7 +175,7 @@ loo.ma.binary <- function(fname, binary.data, params){
     loo.disp <- create.overall.display(res=loo.results, study.names, params, model.title, data.type="binary")
     forest.path <- paste(params$fp_outpath, sep="")
     
-    plot.data <- create.plot.data.overall(binary.data, params, res=loo.results)
+    plot.data <- create.plot.data.loo(binary.data, params, res=loo.results)
     forest.plot(forest.data=plot.data, outpath=forest.path)
 
     #
@@ -263,8 +261,7 @@ cum.ma.continuous <- function(fname, cont.data, params){
     for (count in 2:length(cont.data@study.names)) {
         study.names <- c(study.names, paste("+ ",cont.data@study.names[count], sep=""))
     }
-    cont.data@study.names <- study.names
-    params$data.type <- "continuous"
+
     metric.name <- pretty.metric.name(as.character(params$measure))
     model.title <- ""
     if (fname == "continuous.fixed") {
@@ -276,7 +273,7 @@ cum.ma.continuous <- function(fname, cont.data, params){
     forest.path <- paste(params$fp_outpath, sep="")
     params$fp_col1_str <- "Cumulative Studies"
     # label for the cumulative (right-hand) plot
-    plot.data.cum <- create.plot.data.overall(cont.data, params, res=cum.results)
+    plot.data.cum <- create.plot.data.cum(om.data=cont.data, params, res=cum.results)
     plot.data <- list("left"=plot.data, "right"=plot.data.cum)
     two.forest.plots(plot.data, outpath=forest.path)
     
@@ -378,7 +375,7 @@ loo.ma.continuous <- function(fname, cont.data, params){
 
     forest.path <- paste(params$fp_outpath, sep="")
 
-    plot.data <- create.plot.data.overall(cont.data, params, res=loo.results)
+    plot.data <- create.plot.data.loo(cont.data, params, res=loo.results)
     forest.plot(forest.data=plot.data, outpath=forest.path)
     
     #
@@ -745,9 +742,7 @@ multiple.loo.diagnostic <- function(fnames, params.list, diagnostic.data) {
         
         results.sens <- loo.ma.diagnostic(fname, diagnostic.data.sens, params.sens)
         results.spec <- loo.ma.diagnostic(fname, diagnostic.data.spec, params.spec)
-        diagnostic.data.sens@study.names <- results.sens$study.names
-        diagnostic.data.spec@study.names <- results.spec$study.names
-        # study names with " -" prepended
+
         diagnostic.data.all <- list("left"=diagnostic.data.sens, "right"=diagnostic.data.spec)
         
         summary.sens <- list("Summary"=results.sens$Summary)
@@ -791,9 +786,6 @@ multiple.loo.diagnostic <- function(fnames, params.list, diagnostic.data) {
         diagnostic.data.plr <- compute.diag.point.estimates(diagnostic.data, params.plr)
         results.nlr <- loo.ma.diagnostic(fname, diagnostic.data.nlr, params.nlr)
         results.plr <- loo.ma.diagnostic(fname, diagnostic.data.plr, params.plr)
-        diagnostic.data.nlr@study.names <- results.nlr$study.names
-        diagnostic.data.plr@study.names <- results.plr$study.names
-        # study names with " -" prepended       
         diagnostic.data.all <- list("left"=diagnostic.data.nlr, "right"=diagnostic.data.plr)
         
         summary.nlr <- list("Summary"=results.nlr$Summary)
@@ -903,7 +895,6 @@ loo.ma.diagnostic <- function(fname, diagnostic.data, params){
     for (count in 1:length(diagnostic.data@study.names)) {
         study.names <- c(study.names, paste("- ",diagnostic.data@study.names[count], sep=""))
     }
-    diagnostic.data@study.names <- study.names
     
     metric.name <- pretty.metric.name(as.character(params$measure))
     model.title <- ""
@@ -916,7 +907,7 @@ loo.ma.diagnostic <- function(fname, diagnostic.data, params){
     loo.disp <- create.overall.display(res=loo.results, study.names, params, model.title, data.type="diagnostic")
         
     if (is.null(params$create.plot)) {
-        plot.data <- create.plot.data.overall(diagnostic.data, params, res=loo.results)
+        plot.data <- create.plot.data.loo(diagnostic.data, params, res=loo.results)
         forest.path <- paste(params$fp_outpath, sep="")
         forest.plot(forest.data=plot.data, outpath=forest.path)
 
@@ -937,10 +928,9 @@ loo.ma.diagnostic <- function(fname, diagnostic.data, params){
         plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
         results <- list("images"=images, "Summary"=loo.disp, 
                         "plot_names"=plot.names, 
-                        "plot_params_paths"=plot.params.paths,
-                        "study.names"=study.names)
+                        "plot_params_paths"=plot.params.paths)
     } else {
-        results <- list(res=loo.results, Summary=loo.disp, study.names=study.names) 
+        results <- list(res=loo.results, Summary=loo.disp) 
     }  
     results
 }
@@ -957,10 +947,10 @@ create.loo.side.by.side.plot.data <- function(diagnostic.data, res, params) {
     diagnostic.data.left <- diagnostic.data$left
     diagnostic.data.right <- diagnostic.data$right
     
-    plot.data.left <- create.plot.data.overall(diagnostic.data.left, params.left, res.left)
+    plot.data.left <- create.plot.data.loo(diagnostic.data.left, params.left, res.left)
     plot.data.left$options$fp.title <- pretty.metric.name(as.character(params.left$measure))
       
-    plot.data.right <- create.plot.data.overall(diagnostic.data.right, params.right, res.right)
+    plot.data.right <- create.plot.data.loo(diagnostic.data.right, params.right, res.right)
     plot.data.right$options$fp.title <- pretty.metric.name(as.character(params.right$measure))
     
     plot.data <- list("left"=plot.data.left, "right"=plot.data.right)
