@@ -116,7 +116,8 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
                     LL = lb,
                     UL = ub) 
     plot.data$effects <- effects
-     
+    plot.range <- calc.plot.range(effects, plot.options)  
+    plot.data$plot.range <- plot.range
      # covariates
     if (!is.null(selected.cov)){
         cov.val.str <- paste("om.data@covariates$", selected.cov, sep="")
@@ -272,6 +273,9 @@ create.plot.data.overall <- function(om.data, params, res){
                     LL = lb,
                     UL = ub) 
     plot.data$effects <- effects
+    plot.data$effects <- effects
+    plot.range <- calc.plot.range(effects, plot.options)  
+    plot.data$plot.range <- plot.range
     plot.data
 }
 
@@ -431,7 +435,8 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, 
                     UL = ub)
    
     plot.data$effects <- effects
-    
+    plot.range <- calc.plot.range(effects, plot.options)  
+    plot.data$plot.range <- plot.range
     # covariates
     if (!is.null(selected.cov)){
         cov.val.str <- paste("om.data@covariates$", selected.cov, sep="")
@@ -601,6 +606,73 @@ set.plot.options <- function(params) {
     plot.options$digits <- params$digits
     plot.options
 }    
+
+calc.plot.range <- function(effects, plot.options) {
+     # Check whether user input's for plot lower and upper bounds are OK.
+    plot.lb.max <- min(effects$ES)
+    # smallest value for which we accept user's input for plot lower bound.
+    # User's lower bound must be less thant all effect sizes.
+    plot.ub.min <- max(effects$ES) 
+    # largest user input for plot upper bound. All effect sizes must be less than this value.
+    user.lb <- NULL
+    user.ub <- NULL
+    if (!is.null(plot.options$plot.lb)) {
+        # user specifies the lower bound for the display range, so use it if not too large.
+        if (plot.options$plot.lb < plot.lb.max) {
+          user.lb <- plot.options$plot.lb
+        }
+    } 
+    if (!is.null(plot.options$plot.ub)) {
+        # user specifies just the upper bound for the display range, so use it if not too small
+        if (plot.options$plot.ub > plot.ub.min) {
+          user.ub <- plot.options$plot.ub
+        }
+    }
+    
+    if (is.null(plot.options$user.lb) || is.null(plot.options$user.ub)) {
+    # if user has not supplied both lower and upper bounds (that meet the requirements), compute them
+    # heuristically as effect.col.range.
+              
+        # When scale is log or standard, this is a heuristic to determine a reasonable range for the displayed values - 
+        # confidence intervals that exceed this range are truncated and left or right arrows are displayed instead of the full CI.
+        effect.size.max <- max(effects$ES) 
+        effect.size.min <- min(effects$ES)
+        effect.size.width <- effect.size.max - effect.size.min
+        
+        effects.max <- max(effects$UL)
+        effects.min <- min(effects$LL)
+        arrow.factor <- 2
+        # confidence intervals extend at most arrow.factor times effect.size.width beyond (effect.size.min, effect.size.max)
+        plot.ub <- min(effects.max, effect.size.max + arrow.factor * effect.size.width)
+        plot.lb <- max(effects.min, effect.size.min - arrow.factor * effect.size.width)
+        
+        plot.range <- c(plot.lb, plot.ub)
+       
+      # this is an ugly solution to an uncommon problem
+        
+        #merge.data <- data.frame(x = plot.data$types[-1][1:length(effects$ES)], y = effects$LL, z = effects$UL)
+        #merge.data <- subset(merge.data, x>0)
+        #if (length(merge.data$y) > 0) {
+        #  if (min(effects.range) >= min(merge.data$y)) { 
+        #    effects.range[1] <- min(merge.data$y)
+        #  }
+        #}
+        #if (length(merge.data$z) > 0) {
+        #  if (max(effects.range) <= max(merge.data$z)) { 
+        #    effects.range[2] <- max(merge.data$z)
+        #  }
+       # }
+    }
+    if (!is.null(user.lb)) {
+      # if the user's lb input is OK, set lower bound of range equal it.
+      plot.range[1] <- user.lb
+    }
+    if (!is.null(user.ub)) {
+      # if the user's ub input is OK, set upper bound of range equal it.
+      plot.range[2] <- user.ub
+    }
+    plot.range
+}
 
 pretty.metric.name <- function(metric) {
   # sub out the space in TX Mean
@@ -853,7 +925,7 @@ draw.forest.plot <- function(forest.data){
     } else {
          num.additional.cols <- 0
     }
-    effect.col <- effectsize.column(forest.data, box.sca=0.8)
+    box.sizes <- calc.box.sizes(forest.data, box.sca=0.8)
     # return the LL, ES, and UL and range of data to display
     forest.plot.params <- create.plot.options(forest.data, gapSize = 3.2, plotWidth=5)
     rows <- forest.data$rows
@@ -886,7 +958,7 @@ draw.forest.plot <- function(forest.data){
       layout.pos.col <- 2*num.additional.cols + 1
       # not displaying study col. or first gap.
     }
-    draw.data.col(forest.data, effect.col, j=layout.pos.col,
+    draw.data.col(forest.data, box.sizes, j=layout.pos.col,
                              color.overall = "lightblue",
                              color.subgroup = "yellow",
                              summary.line.col= "red",
@@ -936,134 +1008,32 @@ additional.columns <- function(forest.data, font = "bold") {
     additional.columns
 }
 
-effectsize.column <- function(forest.data, box.sca = 1) {
+calc.box.sizes <- function(forest.data, box.sca = 1) {
     # Calculates sizes for boxes in forest plot and range of data to display.
     # TODO: rename this function, as it sounds too much like the name of the previous function.
     # called by draw.forest.plot
    
-    rows <- forest.data$rows
-    
     # weights for the boxes
     # note that 1.96 is a convention [not necessary for the scaling]
     # the analysis functions determine the CI width (e.g. 95% or 99%)
     # this is just scaling the boxes according to the SE
     precision <- NULL
-    effect.col.range <- NULL
     user.lb <- NULL
     user.ub <- NULL
-    effect.col<-forest.data$effects
+    effects <- forest.data$effects
     # i have kept the "ifs" below: when we decide to include more metrics
     # these will be expanded
     
     if (forest.data$scale == "log"){
-           precision <- sqrt(1 / ((effect.col$UL - effect.col$LL)/(2*1.96)))
+           precision <- sqrt(1 / ((effects$UL - effects$LL)/(2*1.96)))
     } else if (forest.data$scale == "standard") {
-          precision <- sqrt(1 / ((effect.col$UL - effect.col$LL)/(2*1.96)))
+          precision <- sqrt(1 / ((effects$UL - effects$LL)/(2*1.96)))
     } else if (forest.data$scale == "logit") {
-          precision <- sqrt(1 / ((effect.col$UL - effect.col$LL)/(2*1.96)))
+          precision <- sqrt(1 / ((effects$UL - effects$LL)/(2*1.96)))
     }
     
-    effect.col.sizes <- box.sca * precision/max(precision)
+   box.sizes <- box.sca * precision/max(precision)
     # sizes of the boxes in the forest plot - proportional to width of CI
-    
-    # Check whether user input's for plot lower and upper bounds are OK.
-    plot.lb.max <- min(effect.col$ES)
-    # smallest value for which we accept user's input for plot lower bound.
-    # User's lower bound must be less thant all effect sizes.
-    plot.ub.min <- max(effect.col$ES) 
-    # largest user input for plot upper bound. All effect sizes must be less than this value.
-    if (!is.null(forest.data$options$plot.lb)) {
-        # user specifies the lower bound for the display range, so use it if not too large.
-        if (forest.data$options$plot.lb < plot.lb.max) {
-          user.lb <- forest.data$options$plot.lb
-        }
-    } 
-    if (!is.null(forest.data$options$plot.ub)) {
-        # user specifies just the upper bound for the display range, so use it if not too small
-        if (forest.data$options$plot.ub > plot.ub.min) {
-          user.ub <- forest.data$options$plot.ub
-        }
-    }
-    
-    if (is.null(user.lb) || is.null(user.ub)) {
-    # if user has not supplied both lower and upper bounds (that meet the requirements), compute them
-    # heuristically as effect.col.range.
-      #if (forest.data$scale == "logit") { 
-      #  effect.col.range <- c(0, 1)
-        # this is in standard scale.
-        #effect.col.range <- c(min(effect.col$LL), max(effect.col$UL))
-      #}
-      #else {
-          
-        # left.distance <- mean(effect.col$ES) - min(effect.col$LL)
-        #if (min(effect.col$LL)>0 && max(effect.col$UL)>0) {
-        #  effect.col.range <- c(max(0.5*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) + 0.3, max(effect.col$UL)))
-        #} else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)<=0) { 
-        #   effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(-1.5*max(effect.col$ES) + 0.3, max(effect.col$UL)))
-           # if 
-        #} else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)>0) { 
-       #     effect.col.range <- c(max(5*min(effect.col$ES) , min(effect.col$LL)), min(5*max(effect.col$ES), max(effect.col$UL)))
-       # } else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)>0 && max(effect.col$ES)>0) { 
-        #   effect.col.range <- c(max(-2*min(effect.col$ES) , min(effect.col$LL)), min(1.5*max(effect.col$ES) + 0.3, max(effect.col$UL)))
-        #} else if (min(effect.col$LL)<=0 && max(effect.col$UL)<0) { 
-        #   effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(0.10*max(effect.col$ES) , max(effect.col$UL)))
-        #} 
-        
-        # When scale is log or standard, this is a heuristic to determine a reasonable range for the displayed values - 
-        # confidence intervals that exceed this range are truncated and left or right arrows are displayed instead of the full CI.
-        effect.size.max <- max(effect.col$ES) 
-        effect.size.min <- min(effect.col$ES)
-        effect.size.width <- effect.size.max - effect.size.min
-        
-        effect.col.max <- max(effect.col$UL)
-        effect.col.min <- min(effect.col$LL)
-        arrow.factor <- 2
-        # confidence intervals extend at most arrow.factor times effect.size.width beyond (effect.size.min, effect.size.max)
-        effect.col.range.max <- min(effect.col.max, effect.size.max + arrow.factor * effect.size.width)
-        effect.col.range.min <- max(effect.col.min, effect.size.min - arrow.factor * effect.size.width)
-        
-        effect.col.range <- c(effect.col.range.min, effect.col.range.max)
-        # Origninal heuristics
-        #if (min(effect.col$LL)>0 && max(effect.col$UL)>0) {
-        #  effect.col.range <- c(max(0.5*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
-        #} else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)<=0) { 
-        #   effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(-1.5*max(effect.col$ES) , max(effect.col$UL)))
-        #} else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)<=0 && max(effect.col$ES)>0) { 
-        #   effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(2*max(effect.col$ES) , max(effect.col$UL)))
-        #} else if (min(effect.col$LL)<=0 && max(effect.col$UL)>=0 && min(effect.col$ES)>0 && max(effect.col$ES)>0) { 
-        #   effect.col.range <- c(max(-2*min(effect.col$ES) , min(effect.col$LL)), min(1.5*max(effect.col$ES) , max(effect.col$UL)))
-        #} else if (min(effect.col$LL)<=0 && max(effect.col$UL)<0) { 
-        #   effect.col.range <- c(max(2*min(effect.col$ES) , min(effect.col$LL)), min(0.10*max(effect.col$ES) , max(effect.col$UL)))
-        #}
-      #}
-      # this is an ugly solution to an uncommon problem
-        
-        merge.data <- data.frame(x = forest.data$types[-1][1:length(forest.data$effects$ES)], y = effect.col$LL, z = effect.col$UL)
-        merge.data <- subset(merge.data, x>0)
-        if (length(merge.data$y) > 0) {
-          if (min(effect.col.range) >= min(merge.data$y)) { 
-            effect.col.range[1] <- min(merge.data$y)
-          }
-        }
-        if (length(merge.data$z) > 0) {
-          if (max(effect.col.range) <= max(merge.data$z)) { 
-            effect.col.range[2] <- max(merge.data$z)
-          }
-        }
-    }
-    if (! is.null(user.lb)) {
-      # if the user's lb input is OK, set lower bound of range equal it.
-      effect.col.range[1] <- user.lb
-    }
-    if (! is.null(user.ub)) {
-      # if the user's ub input is OK, set upper bound of range equal it.
-      effect.col.range[2] <- user.ub
-    }
-
-   list(ES = forest.data$effects$ES, LL = forest.data$effects$LL, 
-                  UL = forest.data$effects$UL, rows = rows[-1], types = forest.data$types[-1][1:(length(forest.data$types)-1)],
-                  range = effect.col.range,
-                  sizes = effect.col.sizes)
 }
 
 # Function to draw a cell in a text column
@@ -1080,7 +1050,7 @@ draw.label.col <- function(col, j, rows) {
   }
 }
 
-draw.data.col <- function(forest.data, col, j, color.overall = "black",
+draw.data.col <- function(forest.data, box.sizes, j, color.overall = "black",
                           color.subgroup = "black", summary.line.col = "darkred",
                           summary.line.pat = "dashed",
                           x.axis.label, 
@@ -1090,20 +1060,23 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
                           show.y.axis) {
   # Draws the actual forest plot graph
   # called by draw.forest.plot
-  pushViewport(viewport(layout.pos.col=j, xscale=col$range))
+  effects <- forest.data$effects
+  plot.range <- forest.data$plot.range
+
+  pushViewport(viewport(layout.pos.col=j, xscale=forest.data$plot.range))
 
 # This is the "null" line
 # "ifs" left in as we will possibly expand this when new metrics become available
 # note that if the line extends outside the xscale bounds, it will be 
 # truncated and replaced with a left or right arrow (or both).
   if (show.y.axis == TRUE) {
-    if (forest.data$scale == "log" && min(col$range)<0 && max(col$range)>0 ) {
+    if (forest.data$scale == "log" && min(forest.data$plot.range)<0 && max(forest.data$plot.range)>0 ) {
       grid.lines(x=unit(0, "native"), y=0:1)
     }
-    if (forest.data$scale == "standard" && min(col$range)<0 && max(col$range)>0 ) { 
+    if (forest.data$scale == "standard" && min(forest.data$plot.range)<0 && max(forest.data$plot.range)>0 ) { 
       grid.lines(x=unit(0, "native"), y=0:1)
     }
-    if (forest.data$scale == "logit" && min(col$range)<0 && max(col$range)>0 ) { 
+    if (forest.data$scale == "logit" && min(forest.data$plot.range)<0 && max(forest.data$plot.range)>0 ) { 
         grid.lines(x=unit(0, "native"), y=0:1)
     }
   }
@@ -1111,7 +1084,7 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
   if (!is.null(forest.data$options$show.summary.line)) {
     if (forest.data$options$show.summary.line == TRUE) {
           # draw vertical line for summary
-        grid.lines(x=unit(col$ES[length(col$ES)], "native"),
+        grid.lines(x=unit(effects$ES[length(effects$ES)], "native"),
              y=0:1, gp=gpar(lty = summary.line.pat, col= summary.line.col))
     }
   }  
@@ -1126,17 +1099,17 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
     
   if (forest.data$scale == "log")  {
     if (length(user.ticks) == 0) { # some cheap tricks to make the axis ticks look nice (in most cases)...
-            to.make.ticks <- range(exp(col$range))
+            to.make.ticks <- range(exp(forest.data$plot.range))
             ticks <- axTicks(1, axp=c(to.make.ticks, 3), usr=c(-100, 100), log=TRUE)
             log.ticks <- log(ticks)
             
-            lower.bound <- min(col$range)
-            upper.bound <- max(col$range)
-            # find the largest tick mark less than the lower bound of col$range, if there is one.
+            lower.bound <- min(forest.data$plot.range)
+            upper.bound <- max(forest.data$plot.range)
+            # find the largest tick mark less than the lower bound of forest.data$plot.range, if there is one.
             if (log.ticks[1] <= lower.bound) {
                 min.tick <- max(log.ticks[log.ticks <= lower.bound])
             }
-            # find the smallest tick mark greater than the upper bound of col$range, if there is one.
+            # find the smallest tick mark greater than the upper bound of forest.data$plot.range, if there is one.
             if (log.ticks[length(log.ticks)] >= upper.bound) {
                 max.tick <- min(log.ticks[log.ticks >= upper.bound])
             }
@@ -1151,8 +1124,8 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
   } 
   if (forest.data$scale == "logit")  {
         if (length(user.ticks) == 0) { 
-          lb <- min(col$range)
-          ub <- max(col$range)
+          lb <- min(forest.data$plot.range)
+          ub <- max(forest.data$plot.range)
           width <- ub - lb
           exp <- find.exp(width)
           # number of places to right of decimal point before first non-zero digit
@@ -1172,21 +1145,22 @@ draw.data.col <- function(forest.data, col, j, color.overall = "black",
   grid.text(x.axis.label, y=unit(-2, "lines"), gp=gpar(cex=0.8))
   data.col.width <- forest.data$data.col.width
   # width of data cols., not including study column or forest plot.
-  rows <- forest.data$rows
+  rows <- forest.data$rows[-1]
+  types <- forest.data$types[-1]
   num.rows <- rows[length(rows)]
   grid.text(fp.title, x=unit(-data.col.width, "inches"), y=unit(num.rows + 2, "lines"), gp=gpar(cex=1.0), just="left")
   popViewport()
-  for (i in 1:length(col$rows)) {
-    pushViewport(viewport(layout.pos.row=col$rows[i], layout.pos.col=j,
-                          xscale=col$range))   
-    if (col$types[i] == 0){
-       draw.normal.CI(col$LL[i], col$ES[i], col$UL[i], col$sizes[i])
+  for (i in 1:length(rows)) {
+    pushViewport(viewport(layout.pos.row=rows[i], layout.pos.col=j,
+                          xscale=forest.data$plot.range))   
+    if (types[i] == 0){
+       draw.normal.CI(effects$LL[i], effects$ES[i], effects$UL[i], box.sizes[i])
     }
-    else if (col$types[i] == 1){
-       draw.summary.CI(col$LL[i], col$ES[i], col$UL[i], col$sizes[i], color.subgroup, diam.size )
+    else if (types[i] == 1){
+       draw.summary.CI(effects$LL[i], effects$ES[i], effects$UL[i], box.sizes[i], color.subgroup, diam.size )
     }
-    else if (col$types[i] == 2){
-       draw.summary.CI(col$LL[i], col$ES[i], col$UL[i], col$sizes[i], color.overall, diam.size )
+    else if (types[i] == 2){
+       draw.summary.CI(effects$LL[i], effects$ES[i], effects$UL[i], box.sizes[i], color.overall, diam.size )
     }
     popViewport()
   }
@@ -1261,8 +1235,6 @@ create.plot.options <- function(forest.data, gapSize=3, plotWidth = 4) {
     )
     forest.params
 }
-
-
 
 #######################################
 #            two forest plots         #
