@@ -286,7 +286,13 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
         print "\n\navailable %s methods: %s" % (self.data_type, ", ".join(self.available_method_d.keys()))
 
-        for method in self.available_method_d.keys():
+        # issue #110 -- this is NOT a general/good/flexible solution
+        # -- we sort here in reverse because this will put .random
+        # first. otherwise, the default is that R provides the functions
+        # in alphabetical (ascending). 
+        method_names = self.available_method_d.keys()
+        method_names.sort(reverse=True)
+        for method in method_names:
             cbo_box.addItem(method)
         self.current_method = self.available_method_d[str(cbo_box.currentText())]
         self.setup_params()

@@ -208,8 +208,7 @@ def get_available_methods(for_data_type=None, data_obj_name=None, metric=None):
     all_methods = [method for method in method_list if not is_special(method)]
     if for_data_type is not None:
         all_methods = [method for method in all_methods if method.startswith(for_data_type)]
-    
-    feasible_methods = dict(zip(all_methods, all_methods))
+
 
     # now, if a data object handle was provided, check which methods are feasible
     if data_obj_name is not None:
