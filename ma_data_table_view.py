@@ -104,6 +104,8 @@ class MADataTable(QtGui.QTableView):
 
         print "right click @ column: %s" % column_clicked
         context_menu = QMenu(self)
+
+        # add a covariate anywhere
         if column_clicked == 0:
             # option to (de-)select / include all studies
             # per Ethan (issue #100)
