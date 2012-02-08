@@ -174,7 +174,6 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
     def item_clicked(self, item, column):
         print self.items_to_coords[item]
-        #self.graphics_view.ensureVisible(self.items_to_coords[item])
         self.graphics_view.centerOn(self.items_to_coords[item])
 
     def create_text_item(self, text, position):
@@ -182,10 +181,14 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         txt_item.setFont(QFont("courier", 8))
         txt_item.setTextInteractionFlags(Qt.TextEditable)
         self.scene.addItem(txt_item)
-        self.y_coord +=txt_item.boundingRect().size().height()
+        # fix for issue #149; was formerly txt_item.boundingRect().size().height()
+        ROW_HEIGHT = 15 # by trial-and-error; seems to work very well
+        self.y_coord += ROW_HEIGHT*text.count("\n")
         self.scene.setSceneRect(0, 0, max(self.scene.width(), \
                                           txt_item.boundingRect().size().width()),\
                                           self.y_coord+padding)
+        
+
         txt_item.setPos(position)
         return (txt_item.boundingRect(), position)
 
