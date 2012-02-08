@@ -104,6 +104,8 @@ class MADataTable(QtGui.QTableView):
 
         print "right click @ column: %s" % column_clicked
         context_menu = QMenu(self)
+
+        # add a covariate anywhere
         if column_clicked == 0:
             # option to (de-)select / include all studies
             # per Ethan (issue #100)
@@ -141,6 +143,12 @@ class MADataTable(QtGui.QTableView):
             QObject.connect(action_rename, SIGNAL("triggered()"), \
                         lambda : self.main_gui.edit_group_name(corresponding_tx_group))
             context_menu.addAction(action_rename)
+
+            col_name = self.model().headerData(column_clicked, Qt.Horizontal).toString()
+            action_sort = QAction("sort studies by %s" % col_name, self)
+            QObject.connect(action_sort, SIGNAL("triggered()"), \
+                        lambda : self.sort_by_col(column_clicked))
+            context_menu.addAction(action_sort)
 
         elif column_clicked in covariate_columns:
             cov = self.model().get_cov(column_clicked)

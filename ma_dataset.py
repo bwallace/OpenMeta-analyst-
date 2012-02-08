@@ -89,7 +89,8 @@ class Dataset:
         self.outcome_names_to_follow_ups[new_outcome_name] = \
                 self.outcome_names_to_follow_ups.pop(old_outcome_name)
         for study in self.studies:
-            study.outcomes_to_follow_ups[new_outcome_name] = study.outcomes_to_follow_ups.pop(old_outcome_name)
+            study.outcomes_to_follow_ups[new_outcome_name] = \
+                    study.outcomes_to_follow_ups.pop(old_outcome_name)
             for outcome in study.outcomes:
                 if outcome.name == old_outcome_name:
                     outcome.name = new_outcome_name
@@ -392,7 +393,6 @@ class Dataset:
                                                     reverse=False)
         else:
             # then we assume that we're sorting by a covariate
-
             # always want missing values at the 'bottom'
             missing_val = float("-infinity") if reverse else float("infinity")
             missing_to_zero = lambda d, s : d[s] if s in d else missing_val
@@ -403,6 +403,7 @@ class Dataset:
                                                 missing_to_zero(study_b.covariate_dict, compare_by), \
                                                 reverse)
     
+
     def _both_empty(self, a, b):
         return a in EMPTY_VALS and b in EMPTY_VALS
         
@@ -770,7 +771,9 @@ class Covariate:
         self.name = name
         self.data_type = CONTINUOUS if data_type == "Continuous" else FACTOR
         
-    
+    def get_type_str(self):
+        return {CONTINUOUS:"Continuous", FACTOR:"Factor"}[self.data_type]
+
 class Link:
     pass
     

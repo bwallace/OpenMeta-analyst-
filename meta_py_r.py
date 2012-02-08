@@ -208,8 +208,7 @@ def get_available_methods(for_data_type=None, data_obj_name=None, metric=None):
     all_methods = [method for method in method_list if not is_special(method)]
     if for_data_type is not None:
         all_methods = [method for method in all_methods if method.startswith(for_data_type)]
-    
-    feasible_methods = dict(zip(all_methods, all_methods))
+
 
     # now, if a data object handle was provided, check which methods are feasible
     if data_obj_name is not None:
@@ -679,7 +678,6 @@ def regenerate_plot_data(om_data_name="om.data", res_name="res",
     ####
     data_type = str(ro.r("class(%s)" % om_data_name))
 
-
     if "BinaryData" in data_type:
         ro.r("plot.data<-create.plot.data.binary(%s, %s, %s)" % \
                             (om_data_name, plot_params_name, res_name))
@@ -696,17 +694,8 @@ def generate_reg_plot(file_path, params_name="plot.data"):
 
 def generate_forest_plot(file_path, side_by_side=False, params_name="plot.data"):
     if side_by_side:
-        print "generating a side-by-side forest plot"
-        ##
-        # a bit hacky, or at least, could be made clearer: the
-        # side.by.side* method pulls the output path out of the
-        # params.left object, so we change this here to the
-        # user-selected output path
-        ro.r("%s$params.left$fp_outpath <- '%s'" % (params_name, file_path))
-        ro.r("side.by.side.plots(%s$diagnostic.data, \
-                                    %s$fname.left, %s$params.left,\
-                                    %s$fname.right, %s$params.right)" % 
-                    (params_name, params_name, params_name, params_name, params_name))
+        print "generating a side-by-side forest plot..."
+        ro.r("two.forest.plots(%s, '%s')" % (params_name, file_path))
     else:
         ro.r("forest.plot(%s, '%s')" % (params_name, file_path))
 

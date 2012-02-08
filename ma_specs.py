@@ -286,7 +286,13 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
         print "\n\navailable %s methods: %s" % (self.data_type, ", ".join(self.available_method_d.keys()))
 
-        for method in self.available_method_d.keys():
+        # issue #110 -- this is NOT a general/good/flexible solution
+        # -- we sort here in reverse because this will put .random
+        # first. otherwise, the default is that R provides the functions
+        # in alphabetical (ascending). 
+        method_names = self.available_method_d.keys()
+        method_names.sort(reverse=True)
+        for method in method_names:
             cbo_box.addItem(method)
         self.current_method = self.available_method_d[str(cbo_box.currentText())]
         self.setup_params()
@@ -517,14 +523,18 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                 diag_explain_window = diagnostic_explain.DiagnosticExplain(parent=self)
                 diag_explain_window.show()
 
-        window_title = ""
+        # change some UI elements to refelct the current method
+        window_title, method_label = "", ""
         if self.sens_spec:
             window_title = "Method & Parameters for Sens./Spec."
+            method_label = "analysis method for sens./spec."
         else:
             window_title = "Method & Parameters for DOR/LR"
+            method_label = "analysis method for DOR/LR"
 
         self.setWindowTitle(QtGui.QApplication.translate("Dialog", window_title, \
                 None, QtGui.QApplication.UnicodeUTF8))
+        self.method_lbl.setText(method_label)
         
 ###
 # the following methods are defined statically because

@@ -193,7 +193,6 @@ class DatasetModel(QAbstractTableModel):
         column = index.column()
 
         if role in (Qt.DisplayRole, Qt.EditRole):
-        #if role == Qt.DisplayRole:
             if column == self.NAME:
                 return QVariant(study.name)
             elif column == self.YEAR:
@@ -307,7 +306,6 @@ class DatasetModel(QAbstractTableModel):
                 return QVariant(QColor(Qt.gray))
             else:
                 return QVariant(QColor(Qt.white))
-        #return QVariant()
 
 
     def get_cur_group_str(self):
@@ -574,8 +572,14 @@ class DatasetModel(QAbstractTableModel):
             elif self.current_outcome is not None:
                 # then the column is to the right of the outcomes, and must
                 # be a covariate.
-                cov_name = self.get_cov(section).name
-                return QVariant(cov_name)
+                ### issue #156 -- always show covariate type
+                cur_cov = self.get_cov(section)
+                cov_name = cur_cov.name
+                cov_type = cur_cov.get_type_str()
+                # note that I'm only returning the *first* letter
+                # of the type (c or f) because the whole thing
+                # is too long..
+                return QVariant("%s (%s)" % (cov_name, cov_type[0]))
             else:
                 # pass, basically
                 return QVariant("")
@@ -818,6 +822,7 @@ class DatasetModel(QAbstractTableModel):
         print "\ncurrent tx group index a, b: %s, %s" % (self.tx_index_a, self.tx_index_b)
 
     def sort_studies(self, col, reverse):
+        ''' @TODO sort on raw data/outcomes '''
         if col == self.NAME:
             self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by="name", reverse=reverse), reverse=reverse)
         elif col == self.YEAR:
@@ -826,8 +831,9 @@ class DatasetModel(QAbstractTableModel):
         # is a covariate
         elif col > self.OUTCOMES[-1]:
             cov = self.get_cov(col)
-            self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by=cov.name, reverse=reverse), reverse=reverse)
-            
+            self.dataset.studies.sort(cmp = self.dataset.cmp_studies(\
+                                        compare_by=cov.name, reverse=reverse), reverse=reverse)
+
         self.reset()
 
     def order_studies(self, ids):

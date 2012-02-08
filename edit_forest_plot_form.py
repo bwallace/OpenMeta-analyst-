@@ -79,6 +79,14 @@ class EditPlotWindow(QDialog, ui_edit_forest_plot.Ui_edit_forest_plot_dlg):
 
         self.show_summary_line.setChecked(_to_bool(self.params_d["fp_show_summary_line"]))
 
+        ###
+        # TODO fix issue #153 -- Paul is going to edit the R routine
+        #       so that it overwrites the params '[default]' values
+        #       with the generated values used in practice -- we'll
+        #       just need to write them out here.
+        pyqtRemoveInputHook()
+        pdb.set_trace()       
+
 
     def populate_params(self):
         '''
@@ -112,7 +120,6 @@ class EditPlotWindow(QDialog, ui_edit_forest_plot.Ui_edit_forest_plot_dlg):
     
         self.current_param_vals["fp_show_summary_line"] = \
                                 self.show_summary_line.isChecked()
-
 
 
     def swap_graphic(self):
