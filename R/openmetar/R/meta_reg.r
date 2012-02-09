@@ -172,9 +172,9 @@ random.meta.regression <- function(reg.data, params, cov.name){
                                   y.axis.label = "Effect size",
                                   xlabel= cov.name,
                                   lweight = 3,
-                                  lpatern = "dotted",
+                                  lpatern = "solid",
                                   plotregion = "n",
-                                  mcolor = "darkgreen",
+                                  mcolor = "black",
                                   regline = TRUE)   
     images <- c("Regression Plot"=plot.path)
     plot.names <- c("forest plot"="reg.plot")

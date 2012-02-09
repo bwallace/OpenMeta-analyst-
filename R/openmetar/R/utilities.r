@@ -54,14 +54,20 @@ print.summary.data <- function(table.data) {
     # Build table
     cat(top.line)
     cat("\n")
+
     for (row.index in 1:num.rows) {
         table.row <- "|"
         for (col.index in 1:num.cols) {
             col.width <- col.widths[col.index]
             entry <- table.data[row.index,col.index]
             # pad entries with spaces to align columns.
+            end.num <- ceiling((col.width - nchar(entry))/2)
+            if ((row.index>1) & (regexpr("-", entry)!=1) & (regexpr("<", entry)!=1)) {
+                 # entry is a positive number so add extra space to align decimal sign.
+                 entry <- paste(" ", entry, sep="")
+            } 
             begin.num <- floor((col.width - nchar(entry))/2)
-            end.num <- ceiling((col.width - nchar(entry))/2) 
+            end.num <- col.width - begin.num - nchar(entry)
             padded.entry <- pad.with.spaces(entry, begin.num, end.num)
             table.row <- paste(table.row, padded.entry, "|", sep="")
         }
@@ -102,11 +108,10 @@ create.repeat.string <- function(symbol, num.repeats) {
 round.display <- function(x, digits) {
     # Prints "< 0.5 * 10^(-digits)" if x < 0.5 * 10^(-digits) or rounds x otherwise
     digits.str <- paste("%.", digits, "f", sep="")
-    cutoff <- sprintf(paste("%.", digits+1,"f", sep=""), 0.5*10^(-digits))
+    #cutoff <- sprintf(paste("%.", digits+1,"f", sep=""), 10^(-digits))
     x.disp <- c()
-    x.disp[x < 0.5 * 10^(-digits)] <- paste("< ", cutoff, sep = "", collapse = "")
-    x.disp[x == 0.5 * 10^(-digits)] <- sprintf(digits.str, 10^(-digits))
-    x.disp[x > 0.5 * 10^(-digits)] <- sprintf(digits.str, x)
+    x.disp[x < 10^(-digits)] <- paste("< ", 10^(-digits), sep="")
+    x.disp[x >= 10^(-digits)] <- sprintf(digits.str, x[x>=10^(-digits)])
     x.disp
 }
 
@@ -131,7 +136,7 @@ create.summary.disp <- function(res, params, model.title, data.type) {
     QLabel =  paste("Q(df=", degf, ")", sep="")
     if (!is.null(res$QE)) {
       I2 <- max(0, (res$QE - degf)/res$QE)
-      I2 <- paste(100 * round(I2, digits = 2), "%")
+      I2 <- paste(100 * round(I2, digits = 2), "%", sep="")
       QE <- sprintf(digits.str, res$QE)
     } else {
       I2 <- "NA"
@@ -147,40 +152,45 @@ create.summary.disp <- function(res, params, model.title, data.type) {
     } else {
       pVal <- "NA"
     }
-    if (!is.null(res$zval)) {
-      zVal <- round.display(res$zval, digits=params$digits)
-    } else {
-      zVal <- "NA"
-    }
-    
+        
     res.title <- "  Model Results"
     y.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$b))
     lb.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$ci.lb))
     ub.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$ci.ub))
     se <- sprintf(digits.str, res$se)
    
-    res.array <- array(c("Estimate", y.disp, "Lower bound", lb.disp,
-                     "Upper bound", ub.disp, "Std. error", se, "p-Value", pVal, "Z-Value", zVal),  
-                     dim=c(2,6))
+    
     if (res$method=="FE") {
-        het.array <-  array(c(QLabel, QE, "Het. p-Value", QEp, "I^2", I2), dim=c(2,3)) 
+        het.col.labels <- c(QLabel, "Het. p-Value", "I^2")
+        het.col.vals <-  c(QE, QEp, I2)
+        het.array <- rbind(het.col.labels, het.col.vals)
     } else {    
-        het.array <-  array(c("tau^2", tau2, QLabel, QE, "Het. p-Value", QEp, "I^2", I2), dim=c(2,4))
+        het.col.labels <- c("tau^2", QLabel, "Het. p-Value", "I^2")
+        het.col.vals <-  c(tau2, QE, QEp, I2)
+        het.array <- rbind(het.col.labels, het.col.vals)
     }
     class(het.array) <- "summary.data"
     het.title <- "  Heterogeneity"
    
     if (scale.str == "log" || scale.str == "logit") {
          # display and calculation scales are different - create two tables for results
+         res.col.labels <- c("Estimate", "Lower bound", "Upper bound","p-Value")
+         res.col.vals <- c(y.disp, lb.disp, ub.disp, pVal)
+         res.array <- rbind(res.col.labels, res.col.vals)
          estCalc <- sprintf(digits.str, res$b)
          lbCalc <- sprintf(digits.str, res$ci.lb)
          ubCalc <- sprintf(digits.str, res$ci.ub)
-         alt.array <- array(c("Estimate", estCalc, "Lower bound", lbCalc, "Upper bound", ubCalc), dim=c(2,3))
+         alt.col.labels <- c("Estimate", "Lower bound", "Upper bound", "Std. error")
+         alt.col.vals <- c(estCalc, lbCalc, ubCalc, se)
+         alt.array <- rbind(alt.col.labels, alt.col.vals)
          alt.title <- paste("  Results (", scale.str, " scale)", sep="")
          arrays <- list(arr1=res.array, arr2=het.array, arr3=alt.array)
          table.titles <- c(res.title, het.title, alt.title)
     } else {
         # display and calculation scales are the same - create one table for results
+        col.labels <- c("Estimate", "Lower bound", "Upper bound", "Std. error", "p-Value")
+        col.vals <- c(y.disp, lb.disp, ub.disp, se, pVal)
+        res.array <- rbind(col.labels, col.vals)
         arrays = list(arr1=res.array, arr2=het.array)
         table.titles <- c(res.title, het.title)
     }
@@ -234,22 +244,20 @@ create.regression.display <- function(res, params, display.data) {
     n.rows <- length(cov.display.col) + 1
     # extra row for col. labels
     
-    col.labels <- c("Covariate", "Level", "Coefficients", "Std. error", "p-Value", "Z-Value", "Lower bound", "Upper bound")
+    col.labels <- c("Covariate", "Level", "Coefficients", "Lower bound", "Upper bound", "Std. error", "p-Value")
     reg.array <- array(dim=c(length(cov.display.col)+1, length(col.labels)), dimnames=list(NULL, col.labels))
     reg.array[1,] <- col.labels
     digits.str <- paste("%.", params$digits, "f", sep="")
-    coeffs <- sprintf(digits.str, res$b)
+    coeffs <- sprintf(digits.str, c(res$b[1],res$b[2]))
     se <- round.display(res$se, digits=params$digits)
     pvals <- round.display(res$pval, digits=params$digits)
-    zvals <- round.display(res$zval, digits=params$digits)
-    lbs <- round(res$ci.lb, digits=params$digits)
-    ubs <- round(res$ci.ub, digits=params$digits)
+    lbs <- sprintf(digits.str, res$ci.lb)
+    ubs <- sprintf(digits.str, res$ci.ub)
     
     coeffs.tmp <- coeffs[1:n.cont.rows]
     # extra row for intercept
     se.tmp <- se[1:n.cont.rows]
     pvals.tmp <- pvals[1:n.cont.rows]
-    zvals.tmp <- zvals[1:n.cont.rows]
     lbs.tmp <- lbs[1:n.cont.rows]
     ubs.tmp <- ubs[1:n.cont.rows]
     if (n.factor.covs > 0) {
@@ -260,7 +268,6 @@ create.regression.display <- function(res, params, display.data) {
         coeffs.tmp <- c(coeffs.tmp,"", coeffs[insert.row:(insert.row + n.levels - 2)])
         se.tmp <- c(se.tmp,"", se[insert.row:(insert.row + n.levels - 2)])
         pvals.tmp <- c(pvals.tmp,"",pvals[insert.row:(insert.row + n.levels - 2)])
-        zvals.tmp <- c(zvals.tmp,"",zvals[insert.row:(insert.row + n.levels - 2)])
         lbs.tmp <- c(lbs.tmp,"",lbs[insert.row:(insert.row + n.levels - 2)])
         ubs.tmp <- c(ubs.tmp,"",ubs[insert.row:(insert.row + n.levels - 2)])
         insert.row <- insert.row + n.levels
@@ -273,7 +280,6 @@ create.regression.display <- function(res, params, display.data) {
     reg.array[2:n.rows,"Coefficients"] <- coeffs.tmp 
     reg.array[2:n.rows,"Std. error"] <- se.tmp
     reg.array[2:n.rows, "p-Value"] <- pvals.tmp
-    reg.array[2:n.rows,"Z-Value"] <- zvals.tmp
     reg.array[2:n.rows, "Lower bound"] <- lbs.tmp
     reg.array[2:n.rows, "Upper bound"] <- ubs.tmp
     arrays <- list(arr1=reg.array)
@@ -301,20 +307,93 @@ create.overall.display <- function(res, study.names, params, model.title, data.t
     } else if (metric.is.logit.scale(params$measure)) {
         scale.str <- "logit"
     }
-    overall.array <- array(dim=c(length(study.names) + 1, 10))
+    overall.array <- array(dim=c(length(study.names) + 1, 6))
+        #QLabel =  paste("Q(df = ", degf, ")", sep="")
     
-    #QLabel =  paste("Q(df = ", degf, ")", sep="")
+    overall.array[1,] <- c("Studies", "Estimate", "Lower bound", "Upper bound", "Std. error", "p-Val")
     
-    overall.array[1,] <- c("Studies", "Estimate", "Lower bound", "Upper bound", 
-                           "Std. error", "p-Val", "Z-Val", "Q (df)",
-                           "Het. p-Val", "I^2")
-    if (scale.str == "log" || scale.str == "logit") {
+    #if (scale.str == "log" || scale.str == "logit") {
         # display and calculation scales are different - create second table for point estimates in calc scale. 
-        overall.array.calc <- array(dim=c(length(study.names) + 1, 4))
-        overall.array.calc[1,] <- c("Studies", "Estimate", "Lower bound", "Upper bound")
-    }
+    #    overall.array.calc <- array(dim=c(length(study.names) + 1, 4))
+    #    overall.array.calc[1,] <- c("Studies", "Estimate", "Lower bound", "Upper bound")
+    #}
     # unpack the data
     for (count in 1:length(study.names)) {
+      y <- res[[count]]$b
+      lb <- res[[count]]$ci.lb
+      ub <- res[[count]]$ci.ub
+      se <- res[[count]]$se
+      digits.str <- paste("%.", params$digits, "f", sep="")
+      y.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(y))
+      lb.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(lb))
+      ub.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(ub))
+      se.disp <- sprintf(digits.str, se)
+      
+      if (!is.null(res[[count]]$pval)) {
+        pVal <- round.display(res[[count]]$pval, digits=params$digits)
+      } else {
+        pVal <- "NA"
+      }
+      
+      overall.array[count+1,] <- c(study.names[count], y.disp, lb.disp, ub.disp, se.disp, pVal)
+      
+      #if (scale.str == "log" || scale.str == "logit") {
+        # create data for second table for point estimates in calc scale.
+        #y.calc <- sprintf(digits.str, y)
+        #lb.calc <- sprintf(digits.str, lb)
+        #ub.calc <- sprintf(digits.str, ub)
+        #overall.array.calc[count+1, ] <- c(study.names[count], y.calc, lb.calc, ub.calc)
+      #}
+    }
+    
+    
+    
+    #if (scale.str == "log" || scale.str == "logit") {
+        # display and calculation scales are different - create second table data    
+    #   table.titles <- c("  Model Results", paste("  Results (", scale.str, " scale)", sep=""))
+     #  arrays <- list(arr1=overall.array, arr2=overall.array.calc)
+       
+    #} else {
+       # only one table
+    table.titles <- c("  Model Results")
+    arrays <- list(arr1=overall.array)
+    #}
+    overall.disp <- list("model.title" = model.title, "table.titles" = table.titles, "arrays" = arrays,
+                         "MAResults" = res )
+    class(overall.disp) <- "summary.display"
+    overall.disp
+}
+
+create.subgroup.display <- function(res, study.names, params, model.title, data.type) {
+    # create table for diplaying summary of overall ma results
+    if (data.type == "continuous") {
+        transform.name <- "continuous.transform.f"
+    } else if (data.type == "diagnostic") {
+        transform.name <- "diagnostic.transform.f"
+    }  else {  
+        transform.name <- "binary.transform.f"
+    }
+    scale.str <- "standard"
+    if (metric.is.log.scale(params$measure)){
+        scale.str <- "log" 
+    } else if (metric.is.logit.scale(params$measure)) {
+        scale.str <- "logit"
+    }
+    subgroup.array <- array(dim=c(length(study.names) + 1, 7))
+    het.array <- array(dim=c(length(study.names) + 1, 4))
+    #QLabel =  paste("Q(df = ", degf, ")", sep="")
+    
+    subgroup.array[1,] <- c("Subgroups", "Studies", "Estimate", "Lower bound", "Upper bound", "Std. error", "p-Val")
+    het.array[1,] <- c("Studies", "Q (df)",
+                           "Het. p-Val", "I^2")
+    #if (scale.str == "log" || scale.str == "logit") {
+        # display and calculation scales are different - create second table for point estimates in calc scale. 
+    #    subgroup.array.calc <- array(dim=c(length(study.names) + 1, 4))
+    #    subgroup.array.calc[1,] <- c("Studies", "Estimate", "Lower bound", "Upper bound")
+    #}
+    # unpack the data
+    for (count in 1:length(study.names)) {
+      num.studies <- res[[count]]$k
       y <- res[[count]]$b
       lb <- res[[count]]$ci.lb
       ub <- res[[count]]$ci.ub
@@ -349,30 +428,33 @@ create.overall.display <- function(res, study.names, params, model.title, data.t
       } else {
         zVal <- "NA"
       }
-      overall.array[count+1,] <- c(study.names[count], y.disp, lb.disp, ub.disp, se.disp, pVal, zVal, QE, QEp, I2)
-      if (scale.str == "log" || scale.str == "logit") {
+      subgroup.array[count+1,] <- c(study.names[count], num.studies, y.disp, lb.disp, ub.disp, se.disp, pVal)
+      het.array[count+1,] <- c(study.names[count], QE, QEp, I2)
+      #if (scale.str == "log" || scale.str == "logit") {
         # create data for second table for point estimates in calc scale.
-        y.calc <- sprintf(digits.str, y)
-        lb.calc <- sprintf(digits.str, lb)
-        ub.calc <- sprintf(digits.str, ub)
-        overall.array.calc[count+1, ] <- c(study.names[count], y.calc, lb.calc, ub.calc)
-      }
+        #y.calc <- sprintf(digits.str, y)
+        #lb.calc <- sprintf(digits.str, lb)
+        #ub.calc <- sprintf(digits.str, ub)
+        #subgroup.array.calc[count+1, ] <- c(study.names[count], y.calc, lb.calc, ub.calc)
+      #}
     }
     
-    if (scale.str == "log" || scale.str == "logit") {
+    
+    
+    #if (scale.str == "log" || scale.str == "logit") {
         # display and calculation scales are different - create second table data    
-       table.titles <- c("  Model Results", paste("  Results (", scale.str, " scale)", sep=""))
-       arrays <- list(arr1=overall.array, arr2=overall.array.calc)
+    #   table.titles <- c("  Model Results", paste("  Results (", scale.str, " scale)", sep=""))
+     #  arrays <- list(arr1=subgroup.array, arr2=subgroup.array.calc)
        
-    } else {
+    #} else {
        # only one table
-       table.titles <- c("  Model Results")
-       arrays <- list(arr1=overall.array)
-    }
-    overall.disp <- list("model.title" = model.title, "table.titles" = table.titles, "arrays" = arrays,
+    table.titles <- c("  Model Results", "  Heterogeneity")
+    arrays <- list(arr1=subgroup.array, arr2=het.array)
+    #}
+    subgroup.disp <- list("model.title" = model.title, "table.titles" = table.titles, "arrays" = arrays,
                          "MAResults" = res )
-    class(overall.disp) <- "summary.display"
-    overall.disp
+    class(subgroup.disp) <- "summary.display"
+    subgroup.disp
 }
 
 

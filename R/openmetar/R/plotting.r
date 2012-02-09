@@ -1300,6 +1300,9 @@ two.forest.plots <- function(forest.data, outpath) {
 #######################################
 meta.regression.plot <- function(plot.data, outpath) {
 
+    lweight = 1
+    lpattern = "solid"
+    lcol = "blue"
     # make the data data.frame
     data.reg <- data.frame(plot.data$effects, types=plot.data$types)
     # data for plot (only keep the studies - not the summaries)
@@ -1322,18 +1325,19 @@ meta.regression.plot <- function(plot.data, outpath) {
         png(file=outpath, width=10 , height=5, units="in", res=144)
     } else {
         pdf(file=outpath, width=10 , height=5)
-   }
+    }
     
     #depends on whether these are natural or log
+    plot(y = data.reg$ES, x=cov.values, xlab=plot.data$xlabel, ylab=plot.data$ylabel, type='n')
     if (plot.data$scale == "standard"){
         symbols(y = data.reg$ES, x=cov.values, circles=plot.data$sym.size*radii,
-                inches=FALSE, xlab=plot.data$xlabel, ylab=plot.data$ylabel, 
-                bty=plot.data$plotregion, fg=plot.data$mcolor)
+                inches=FALSE, 
+                bty=plot.data$plotregion, add=TRUE)
     }
     else{ 
         symbols(y=data.reg$ES, x = cov.values, circles = plot.data$sym.size*radii, 
-                inches=FALSE, xlab=plot.data$xlabel, ylab=plot.data$ylabel, 
-                bty=plot.data$plotregion, fg=plot.data$mcolor)
+                inches=FALSE,
+                bty=plot.data$plotregion, add=TRUE)
     }
     # note that i am assuming you have
     # the untransformed coefficient from the meta-reg
@@ -1343,7 +1347,7 @@ meta.regression.plot <- function(plot.data, outpath) {
        y<-c (plot.data$fitted.line$intercept + 
                 min(cov.values)*plot.data$fitted.line$slope, plot.data$fitted.line$intercept + 
                 max(cov.values)*plot.data$fitted.line$slope)
-       lines(x, y, col=plot.data$lcol, lwd=plot.data$lweight, lty=plot.data$lpattern)
+       lines(x, y, col=lcol, lwd=lweight, lty=lpattern)
     }
     # write the plot data out to disk
     graphics.off()
@@ -1357,7 +1361,7 @@ sroc.plot <- function(plot.data, outpath){
     symSize <- 1
     lcol = "blue"
     lweight = 1
-    lpatern = "solid"
+    lpattern = "solid"
     plotregion = "n"
     mcolor = "blue"
     fitted.line <- plot.data$fitted.line
@@ -1389,7 +1393,7 @@ sroc.plot <- function(plot.data, outpath){
     # transform regression line coords to TPR by 1 - FPR coords
     tpr.vals <- invlogit((s.vals + d.vals) / 2)
     fpr.vals <- invlogit((s.vals - d.vals) / 2)
-    lines(fpr.vals, tpr.vals, col = lcol, lwd = lweight, lty = lpatern)
+    lines(fpr.vals, tpr.vals, col = lcol, lwd = lweight, lty = lpattern)
     graphics.off()
 }
 
