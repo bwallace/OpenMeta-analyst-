@@ -572,19 +572,3 @@ def add_plot_params(specs_form):
     specs_form.current_param_vals["fp_show_summary_line"] = specs_form.show_summary_line.isChecked()
 
 
-def seems_sane(xticks):
-    num_list = xticks.split(",")
-    if len(num_list) == 1:
-        return False
-    try:
-        num_list = [eval(x) for x in num_list]
-    except:
-        return False
-    return True
-    
-def check_plot_bound(bound):
-    try:
-        return float(bound)
-    except:
-        return False
-    

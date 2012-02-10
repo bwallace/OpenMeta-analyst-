@@ -7,7 +7,7 @@ from PyQt4 import QtGui
 import ui_edit_forest_plot
 import ma_specs
 import meta_py_r
-
+from meta_globals import *
 
 class EditPlotWindow(QDialog, ui_edit_forest_plot.Ui_edit_forest_plot_dlg):
 
@@ -84,8 +84,8 @@ class EditPlotWindow(QDialog, ui_edit_forest_plot.Ui_edit_forest_plot_dlg):
         #       so that it overwrites the params '[default]' values
         #       with the generated values used in practice -- we'll
         #       just need to write them out here.
-        pyqtRemoveInputHook()
-        pdb.set_trace()       
+       # pyqtRemoveInputHook()
+        #pdb.set_trace()       
 
 
     def populate_params(self):

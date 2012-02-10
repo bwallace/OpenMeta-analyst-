@@ -81,3 +81,26 @@ DIAG_METRIC_NAMES_D = {
                       }
 
 DIAG_FIELDS_TO_RAW_INDICES = {"TP":0, "FN":1, "FP":2, "TN":3}
+
+
+
+'''
+some useful static methods
+'''
+
+def seems_sane(xticks):
+    num_list = xticks.split(",")
+    if len(num_list) == 1:
+        return False
+    try:
+        num_list = [eval(x) for x in num_list]
+    except:
+        return False
+    return True
+    
+def check_plot_bound(bound):
+    try:
+        return float(bound)
+    except:
+        return False
+    
