@@ -88,8 +88,14 @@ continuous.fixed <- function(cont.data, params){
     if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
         forest.path <- paste(params$fp_outpath, sep="")
         plot.data <- create.plot.data.continuous(cont.data, params, res)
-        forest.plot(plot.data, outpath=forest.path)
-    
+        changed.params <- plot.data$changed.params
+        # list of changed params values
+        params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
+        changed.params <- c(changed.params, params.changed.in.forest.plot)
+        params[names(changed.params)] <- changed.params
+        # dump the forest plot params to disk; return path to
+        # this .Rdata for later use
+        forest.plot.params.path <- save.data(cont.data, res, params, plot.data)
         #
         # Now we package the results in a dictionary (technically, a named 
         # vector). In particular, there are two fields that must be returned; 
@@ -97,16 +103,6 @@ continuous.fixed <- function(cont.data, params){
         # (mapping titles to pretty-printed text). In this case we have only one 
         # of each. 
         #     
-        
-        plot.range <- plot.data$plot.range
-            # plot range are values of params$fp_plot_lb and params$fp_plot_ub
-            # if user has supplied them - otherwise they are calculated from data
-            params$fp_plot_lb <- plot.range[1]
-            params$fp_plot_ub <- plot.range[2]
-        # dump the forest plot params to disk; return path to
-        # this .Rdata for later use
- 
-        forest.plot.params.path <- save.data(cont.data, res, params, plot.data)
         plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
         images <- c("Forest Plot"=forest.path)
         plot.names <- c("forest plot"="forest_plot")
@@ -178,8 +174,14 @@ continuous.random <- function(cont.data, params){
     if ((is.null(params$create.plot)) || params$create.plot) {
         forest.path <- paste(params$fp_outpath, sep="")
         plot.data <- create.plot.data.continuous(cont.data, params, res)
-        forest.plot(plot.data, outpath=forest.path)
-    
+        changed.params <- plot.data$changed.params
+        # list of changed params values
+        params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
+        changed.params <- c(changed.params, params.changed.in.forest.plot)
+        params[names(changed.params)] <- changed.params
+        # dump the forest plot params to disk; return path to
+        # this .Rdata for later use
+        forest.plot.params.path <- save.data(cont.data, res, params, plot.data)
         #
         # Now we package the results in a dictionary (technically, a named 
         # vector). In particular, there are two fields that must be returned; 
@@ -187,15 +189,6 @@ continuous.random <- function(cont.data, params){
         # (mapping titles to pretty-printed text). In this case we have only one 
         # of each. 
         #     
-        plot.range <- plot.data$plot.range
-        # plot range are values of params$fp_plot_lb and params$fp_plot_ub
-        # if user has supplied them - otherwise they are calculated from data
-        params$fp_plot_lb <- plot.range[1]
-        params$fp_plot_ub <- plot.range[2]
-        
-        # dump the forest plot params to disk; return path to
-        # this .Rdata for later use
-        forest.plot.params.path <- save.data(cont.data, res, params, plot.data)
         plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
         images <- c("Forest Plot"=forest.path)
         plot.names <- c("forest plot"="forest_plot")
