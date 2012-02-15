@@ -86,8 +86,8 @@ cum.ma.binary <- function(fname, binary.data, params){
     params.cum$fp_col2_str <- "Cumulative Estimate"
     # column labels for the cumulative (right-hand) plot
     plot.data.cum <- create.plot.data.cum(om.data=binary.data, params.cum, res=cum.results)
-    plot.data <- list("left"=plot.data, "right"=plot.data.cum)
-    two.forest.plots(plot.data, outpath=forest.path)
+    two.plot.data <- list("left"=plot.data, "right"=plot.data.cum)
+    two.forest.plots(two.plot.data, outpath=forest.path)
 
     # Now we package the results in a dictionary (technically, a named 
     # vector). In particular, there are two fields that must be returned; 
@@ -449,7 +449,7 @@ subgroup.ma.binary <- function(fname, binary.data, params){
     } else if (fname == "binary.random") {
         model.title <- paste("Binary Random-Effects Model\n\nMetric: ", metric.name, sep="")
     }
-    subgroup.disp <- create.overall.display(subgroup.results, subgroup.names, params, model.title, data.type="binary")
+    subgroup.disp <- create.subgroup.display(subgroup.results, subgroup.names, params, model.title, data.type="binary")
     forest.path <- paste(params$fp_outpath, sep="")
     # pack up the data for forest plot.
     subgroup.data <- list("subgroup.list"=subgroup.list, "grouped.data"=grouped.data, "results"=subgroup.results, 

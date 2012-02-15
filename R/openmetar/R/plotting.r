@@ -914,7 +914,6 @@ draw.forest.plot <- function(forest.data){
       }
     }  
 
-    #xticks <- forest.data$options$xticks
     if (forest.data$options$show.study.col==TRUE) {
       layout.pos.col <- 2*num.additional.cols + 3
     } else {
@@ -1074,20 +1073,13 @@ draw.data.col <- function(forest.data, j, color.overall = "black",
         if (is.na(user.ticks)) { 
           lb <- min(plot.range)
           ub <- max(plot.range)
-          width <- ub - lb
-          exp <- find.exp(width)
-          # number of places to right of decimal point before first non-zero digit
-          lb.floor <- floor(10^exp * lb) / 10^exp
-          # floor of lb to exp dec. places
-          ub.ceil <- ceiling(10^exp * ub) / 10^exp
-          # ceiling of ub to exp dec. places
-          to.make.ticks <- c(lb.floor, ub.ceil)
+          to.make.ticks <- c(lb, ub)
           ticks <- axTicks(1, axp=c(to.make.ticks, 4))
           changed.params$fp_xticks <- ticks
         } else {
 		        ticks <- user.ticks
         }
-        grid.xaxis(at = ticks , label = ticks, gp=gpar(cex=0.6))          
+        grid.xaxis(at = ticks , label = round(ticks, 3), gp=gpar(cex=0.6))          
   } 
     
   grid.text(x.axis.label, y=unit(-2, "lines"), gp=gpar(cex=0.8))
@@ -1308,7 +1300,7 @@ two.forest.plots <- function(forest.data, outpath) {
    # row numbers of forest plot including blank rows (after summary rows)
    forest.data2$rows <- rows2
    forest.data2 <- create.grobs(forest.data2)
-  # create graphical objects for study and data columns.
+   # create graphical objects for study and data columns.
    plot.size1 <- calc.forest.plot.size(forest.data1)
    forest.data1$data.col.width <- plot.size1$data.col.width
    plot.size2 <- calc.forest.plot.size(forest.data2)

@@ -68,6 +68,7 @@ extract.cov.data <- function(reg.data) {
   factor.n.levels <- NULL # vector containing number of levels for each factor covariate
   factor.cov.display.col <- NULL
   levels.display.col <- NULL
+  studies.display.col <- NULL
   
   # initialize names of continuous covariates to empty list
   cont.cov.names <- c()
@@ -91,22 +92,26 @@ extract.cov.data <- function(reg.data) {
       levels.minus.one <- setdiff(levels, ref.var)
       # levels except for reference variable
       cov.cols <- array(dim=c(length(reg.data@y), length(levels.minus.one)))
+      studies.col <- c(sum(cov.vals==ref.var))
       for (col.index in 1:length(levels.minus.one)) {
            level <- levels.minus.one[col.index]
            cov.cols[,col.index] <- as.numeric(cov.vals==level)
+           studies.col <- c(studies.col, sum(cov.vals==level)) 
       }
       factor.cov.array <- cbind(factor.cov.array, cov.cols)
       factor.n.levels <- c(factor.n.levels, length(levels))
       factor.cov.display.col <- c(factor.cov.display.col, cov.name, rep("",length(levels.minus.one)))
+      factor.studies.display.col <- c() 
       levels.display.col <- c(levels.display.col, ref.var, levels.minus.one)
-    }
+      studies.display.col <- c(studies.display.col, studies.col)
+      }
   }
   cov.array <- cbind(cont.cov.array, factor.cov.array)
   cov.display.col <- c("Intercept", cont.cov.names, factor.cov.display.col)
   levels.display.col <- c(rep("",length(cont.cov.names) + 1), levels.display.col)
-  
+  studies.display.col <- c(rep("",length(cont.cov.names) + 1), studies.display.col)
   display.data <- list(cov.display.col=cov.display.col, levels.display.col=levels.display.col,
-                       factor.n.levels=factor.n.levels, n.cont.covs=n.cont.covs)
+                       studies.display.col=studies.display.col, factor.n.levels=factor.n.levels, n.cont.covs=n.cont.covs)
   cov.data <- list(cov.array=cov.array, display.data=display.data)
                    
 }
