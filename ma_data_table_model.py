@@ -220,7 +220,7 @@ class DatasetModel(QAbstractTableModel):
                                 if role == Qt.EditRole:
                                     # then we're editing, so show greater precision
                                     num_digits = NUM_DIGITS_PRECISE 
-                                return QVariant(self.format_float(val, num_digits=num_digits))
+                                return QVariant(str(self.format_float(val, num_digits=num_digits)))
                             else:
                                 return QVariant(round(val, self.NUM_DIGITS))
                         except:
