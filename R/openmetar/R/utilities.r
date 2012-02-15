@@ -236,6 +236,7 @@ create.regression.display <- function(res, params, display.data) {
     # create table for diplaying summary of regression ma results
     cov.display.col <- display.data$cov.display.col
     levels.display.col <- display.data$levels.display.col
+    studies.display.col <- display.data$studies.display.col
     # first two columns of table
     factor.n.levels <- display.data$factor.n.levels
     n.cont.covs <- display.data$n.cont.covs
@@ -243,12 +244,16 @@ create.regression.display <- function(res, params, display.data) {
     n.factor.covs <- length(factor.n.levels)
     n.rows <- length(cov.display.col) + 1
     # extra row for col. labels
-    
-    col.labels <- c("Covariate", "Level", "Coefficients", "Lower bound", "Upper bound", "Std. error", "p-Value")
+    if (n.factor.covs==0) {
+        col.labels <- c("Covariate", "Coefficients", "Lower bound", "Upper bound", "Std. error", "p-Value")
+    } else {
+        col.labels <- c("Covariate", "Level", "Studies", "Coefficients", "Lower bound", "Upper bound", "Std. error", "p-Value")
+    }
+        
     reg.array <- array(dim=c(length(cov.display.col)+1, length(col.labels)), dimnames=list(NULL, col.labels))
     reg.array[1,] <- col.labels
     digits.str <- paste("%.", params$digits, "f", sep="")
-    coeffs <- sprintf(digits.str, c(res$b[1],res$b[2]))
+    coeffs <- sprintf(digits.str, res$b)
     se <- round.display(res$se, digits=params$digits)
     pvals <- round.display(res$pval, digits=params$digits)
     lbs <- sprintf(digits.str, res$ci.lb)
@@ -272,16 +277,18 @@ create.regression.display <- function(res, params, display.data) {
         ubs.tmp <- c(ubs.tmp,"",ubs[insert.row:(insert.row + n.levels - 2)])
         insert.row <- insert.row + n.levels
       }   
+      reg.array[2:n.rows, "Level"] <- levels.display.col
+      reg.array[2:n.rows, "Studies"] <- studies.display.col
     }
 
     # add data to array
     reg.array[2:n.rows,"Covariate"] <- cov.display.col
-    reg.array[2:n.rows, "Level"] <- levels.display.col
     reg.array[2:n.rows,"Coefficients"] <- coeffs.tmp 
     reg.array[2:n.rows,"Std. error"] <- se.tmp
     reg.array[2:n.rows, "p-Value"] <- pvals.tmp
     reg.array[2:n.rows, "Lower bound"] <- lbs.tmp
     reg.array[2:n.rows, "Upper bound"] <- ubs.tmp
+    
     arrays <- list(arr1=reg.array)
     
     metric.name <- pretty.metric.name(as.character(params$measure)) 
