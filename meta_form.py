@@ -15,7 +15,7 @@ import pdb
 import pickle
 from PyQt4 import QtCore, QtGui, Qt
 from PyQt4.Qt import *
-import nose # for unit tests
+#import nose # for unit tests
 import copy
 
 #
@@ -95,6 +95,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.tableView.resizeColumnsToContents()
         self.out_path = None
         self.metric_menu_is_set_for = None
+        self.raise_()
 
         if len(sys.argv)>1 and sys.argv[-1]=="--toy-data":
             # toy data for now
@@ -113,12 +114,20 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             if self.user_prefs["splash"]:
                 start_up_window =  start_up_dialog.StartUp(parent=self, \
                             recent_datasets=self.user_prefs['recent datasets'])
-                start_up_window.show()
+                
+                ###
+                # fix for issue #158
+                # formerly .show()
+                start_up_window.exec_()
+
                 ## arg -- this won't work!
                 start_up_window.setFocus()
                 start_up_window.dataset_name_le.setFocus()
+                start_up_window.raise_()
+                start_up_window.activateWindow()
       
             self.populate_open_recent_menu()
+            
 
     def closeEvent(self, event):
         if self.current_data_unsaved:
@@ -1304,11 +1313,7 @@ b	1785
 
 
 
-#
-# to launch:
-#   >python meta_form.py
-#
-if __name__ == "__main__":
+def start():
     welcome_str = "** welcome to OpenMeta; version %s **" % meta_globals.VERSION
     print "".join(["*" for x in range(len(welcome_str))])
     print welcome_str
@@ -1318,3 +1323,11 @@ if __name__ == "__main__":
     meta = MetaForm()
     meta.show()
     sys.exit(app.exec_())
+    
+#
+# to launch:
+#   >python meta_form.py
+#
+if __name__ == "__main__":
+    start()
+
