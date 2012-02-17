@@ -396,11 +396,18 @@ diagnostic.fixed.inv.var <- function(diagnostic.data, params){
         }
         
         if ((is.null(params$create.plot)) || params$create.plot == TRUE) {
-          # A forest plot will be created unless
-          # params.create.plot is set to FALSE.
-          forest.path <- paste(params$fp_outpath, sep="")
-          plot.data <- create.plot.data.diagnostic(diagnostic.data, params, res)
-          forest.plot(plot.data, outpath=forest.path)
+            # A forest plot will be created unless
+            # params.create.plot is set to FALSE.
+            forest.path <- paste(params$fp_outpath, sep="")
+            plot.data <- create.plot.data.diagnostic(diagnostic.data, params, res)
+            changed.params <- plot.data$changed.params
+            # list of changed params values
+            params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
+            changed.params <- c(changed.params, params.changed.in.forest.plot)
+            params[names(changed.params)] <- changed.params
+            # dump the forest plot params to disk; return path to
+            # this .Rdata for later use
+            forest.plot.params.path <- save.data(diagnostic.data, res, params, plot.data)
           #
           # Now we package the results in a dictionary (technically, a named
           # vector). In particular, there are two fields that must be returned;
@@ -408,13 +415,10 @@ diagnostic.fixed.inv.var <- function(diagnostic.data, params){
           # (mapping titles to pretty-printed text). In this case we have only one
           # of each.
           #
+          plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
           images <- c("Forest Plot"=forest.path)
           plot.names <- c("forest plot"="forest_plot")
-          
-          # we use the system time as our unique-enough string to store
-          # the params object
-          plot.params.paths <- save.data(diagnostic.data, res, params, plot.data)
-          names(plot.params.paths) <- paste(params$measure, "Forest Plot", sep=" ")
+          #names(plot.params.paths) <- paste(params$measure, "Forest Plot", sep=" ")
           results <- list("images"=images, "Summary"=summary.disp, 
                           "plot_names"=plot.names, 
                           "plot_params_paths"=plot.params.paths)
@@ -519,15 +523,18 @@ diagnostic.fixed.mh <- function(diagnostic.data, params){
             }
             forest.path <- paste(params$fp_outpath, sep="")
             plot.data <- create.plot.data.diagnostic(diagnostic.data, params, res)
-            forest.plot(forest.data=plot.data, outpath=forest.path)
-    
+            changed.params <- plot.data$changed.params
+            # list of changed params values
+            params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
+            changed.params <- c(changed.params, params.changed.in.forest.plot)
+            params[names(changed.params)] <- changed.params
+            # dump the forest plot params to disk; return path to
+            # this .Rdata for later use
+            forest.plot.params.path <- save.data(diagnostic.data, res, params, plot.data)
+            
+            plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
             images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
-            
-            # we use the system time as our unique-enough string to store
-            # the params object
-            forest.plot.params.path <- save.data(diagnostic.data, res, params, plot.data)
-            plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
             results <- list("images"=images, "Summary"=summary.disp, 
                             "plot_names"=plot.names, 
                             "plot_params_paths"=plot.params.paths)
@@ -615,15 +622,19 @@ diagnostic.random <- function(diagnostic.data, params){
         if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
             forest.path <- paste(params$fp_outpath, sep="")
             plot.data <- create.plot.data.diagnostic(diagnostic.data, params, res)
-            forest.plot(plot.data, outpath=forest.path)
-        
-            images <- c("Forest Plot"=forest.path)
-            plot.names <- c("forest plot"="forest_plot")
-            
+            changed.params <- plot.data$changed.params
+            # list of changed params values
+            params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
+            changed.params <- c(changed.params, params.changed.in.forest.plot)
+            params[names(changed.params)] <- changed.params
+            # update params values
             # we use the system time as our unique-enough string to store
             # the params object
             forest.plot.params.path <- save.data(diagnostic.data, res, params, plot.data)
+            
             plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+            images <- c("Forest Plot"=forest.path)
+            plot.names <- c("forest plot"="forest_plot")
             results <- list("images"=images, "Summary"=summary.disp, 
                             "plot_names"=plot.names, 
                             "plot_params_paths"=plot.params.paths)
