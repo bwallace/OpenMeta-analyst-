@@ -23,17 +23,17 @@ cum.ma.binary <- function(fname, binary.data, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
     
-    res<-rma.uni(yi=binary.data@y, sei=binary.data@SE, slab=binary.data@study.names,
-                                level=params$conf.level, digits=params$digits, method="FE", add=params$adjust,
-                                to=params$to)
-    
-    plot.data <- create.plot.data.binary(binary.data, params, res)
+    params.tmp <- params
+    params.tmp$create.plot <- FALSE
+    res <- eval(call(fname, binary.data, params.tmp))
+    res.overall <- eval(call(paste(fname, ".overall", sep=""), res))
+    # parse out the overall estimate
+    plot.data <- create.plot.data.binary(binary.data, params, res=res.overall)
     # data for standard forest plot
     
     # iterate over the binaryData elements, adding one study at a time
     cum.results <- array(list(NULL), dim=c(length(binary.data@study.names)))
-    params.tmp <- params
-    params.tmp$create.plot <- FALSE
+    
     for (i in 1:length(binary.data@study.names)){
         # build a BinaryData object including studies
         # 1 through i
@@ -67,7 +67,7 @@ cum.ma.binary <- function(fname, binary.data, params){
     for (count in 2:length(binary.data@study.names)) {
         study.names <- c(study.names, paste("+ ",binary.data@study.names[count], sep=""))
     }
-    metric.name <- pretty.metric.name(as.character(params$measure))
+    metric.name <- pretty.metric.name(as.character(params.tmp$measure))
     model.title <- ""
     if (fname == "binary.fixed.inv.var") {
         model.title <- paste("Binary Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
@@ -206,11 +206,13 @@ cum.ma.continuous <- function(fname, cont.data, params){
     # assert that the argument is the correct type
     if (!("ContinuousData" %in% class(cont.data))) stop("Continuous data expected.")
     
-    res<-rma.uni(yi=cont.data@y, sei=cont.data@SE, slab=cont.data@study.names,
-                                level=params$conf.level, digits=params$digits, method="FE", add=params$adjust,
-                                to=params$to)
-    
-    plot.data <- create.plot.data.continuous(cont.data, params, res)
+    params.tmp <- params
+    params.tmp$create.plot <- FALSE
+    res <- eval(call(fname, binary.data, params.tmp))
+    res.overall <- eval(call(paste(fname, ".overall", sep=""), res))
+    # parse out the overall estimate
+    plot.data <- create.plot.data.binary(binary.data, params, res=res.overall)
+    # data for standard forest plot
     
     params$fp_show_col3 <- FALSE
     params$fp_show_col4 <- FALSE
@@ -271,9 +273,13 @@ cum.ma.continuous <- function(fname, cont.data, params){
     }
     cum.disp <- create.overall.display(res=cum.results, study.names, params, model.title, data.type="continuous")
     forest.path <- paste(params$fp_outpath, sep="")
-    params$fp_col1_str <- "Cumulative Studies"
-    # label for the cumulative (right-hand) plot
-    plot.data.cum <- create.plot.data.cum(om.data=cont.data, params, res=cum.results)
+    params.cum <- params
+    params.cum$fp_col1_str <- "Cumulative Studies"
+    params.cum$fp_col2_str <- "Cumulative Estimate"
+    params.cum$fp_plot_lb <- plot.data$plot.range[1]
+    params.cum$fp_plot_lb <- plot.data$plot.range[1]
+    plot.data.cum <- create.plot.data.cum(om.data=cont.data, params.cum, res=cum.results)
+    plot.data.cum$plot.range <- plot.data$plot.range
     plot.data <- list("left"=plot.data, "right"=plot.data.cum)
     two.forest.plots(plot.data, outpath=forest.path)
     
@@ -1001,7 +1007,8 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
             #}
         }
     }
-    
+    cov.name <- as.character(params.list[[1]]$cov_name)
+    selected.cov <- get.cov(diagnostic.data, cov.name)
     images <- c()
     plot.names <- c()
     plot.params.paths <- c()
@@ -1020,8 +1027,8 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
         diagnostic.data.sens <- compute.diag.point.estimates(diagnostic.data, params.sens)
         diagnostic.data.spec <- compute.diag.point.estimates(diagnostic.data, params.spec)
         
-        results.sens <- subgroup.ma.diagnostic(fname, diagnostic.data.sens, params.sens)
-        results.spec <- subgroup.ma.diagnostic(fname, diagnostic.data.spec, params.spec)
+        results.sens <- subgroup.ma.diagnostic(fname, diagnostic.data.sens, params.sens, selected.cov)
+        results.spec <- subgroup.ma.diagnostic(fname, diagnostic.data.spec, params.spec, selected.cov)
         subgroup.data.sens <- results.sens$subgroup.data
         subgroup.data.spec <- results.spec$subgroup.data
         subgroup.data.all <- list("left"=subgroup.data.sens, "right"=subgroup.data.spec)
@@ -1066,8 +1073,8 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
         diagnostic.data.nlr <- compute.diag.point.estimates(diagnostic.data, params.nlr)
         diagnostic.data.plr <- compute.diag.point.estimates(diagnostic.data, params.plr)
         
-        results.nlr <- subgroup.ma.diagnostic(fname, diagnostic.data.nlr, params.nlr)
-        results.plr <- subgroup.ma.diagnostic(fname, diagnostic.data.plr, params.plr)
+        results.nlr <- subgroup.ma.diagnostic(fname, diagnostic.data.nlr, params.nlr, selected.cov)
+        results.plr <- subgroup.ma.diagnostic(fname, diagnostic.data.plr, params.plr, selected.cov)
         subgroup.data.nlr <- results.nlr$subgroup.data
         subgroup.data.plr <- results.plr$subgroup.data
         subgroup.data.all <- list("left"=subgroup.data.nlr, "right"=subgroup.data.plr)
@@ -1108,7 +1115,7 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
         for (count in 1:length(params.list)) {
             # create ma summaries and single (not side-by-side) forest plots.
             #pretty.names <- eval(call(paste(fnames[count],".pretty.names",sep="")))
-            results.tmp <- subgroup.ma.diagnostic(fnames[[count]], diagnostic.data, params.list[[count]])
+            results.tmp <- subgroup.ma.diagnostic(fnames[[count]], diagnostic.data, params.list[[count]], selected.cov)
             if (is.null(params.list[[count]]$create.plot)) {
                # create plot
               images.tmp <- results.tmp$images
@@ -1132,11 +1139,11 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
     results
 }
 
-subgroup.ma.diagnostic <- function(fname, diagnostic.data, params){
+subgroup.ma.diagnostic <- function(fname, diagnostic.data, params, selected.cov){
     # performs a single subgroup meta-analysis for diagnostic.data
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
-    cov.name <- as.character(params$cov_name)
-    selected.cov <- get.cov(diagnostic.data, cov.name)
+    #cov.name <- as.character(params$cov_name)
+    #selected.cov <- get.cov(diagnostic.data, cov.name)
     cov.vals <- selected.cov@cov.vals
     params.tmp <- params
     params.tmp$create.plot <- FALSE

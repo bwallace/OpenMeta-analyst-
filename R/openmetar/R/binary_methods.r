@@ -446,22 +446,22 @@ binary.random <- function(binary.data, params){
             # dump the forest plot params to disk; return path to
             # this .Rdata for later use
             forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
-           #
-           # Now we package the results in a dictionary (technically, a named 
-           # vector). In particular, there are two fields that must be returned; 
-           # a dictionary of images (mapping titles to image paths) and a list of texts
-           # (mapping titles to pretty-printed text). In this case we have only one 
-           # of each. 
-           #     
-           forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
-           plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
-           images <- c("Forest Plot"=forest.path)
-           plot.names <- c("forest plot"="forest_plot")
-           results <- list("images"=images, "Summary"=summary.disp, 
+            #
+            # Now we package the results in a dictionary (technically, a named 
+            # vector). In particular, there are two fields that must be returned; 
+            # a dictionary of images (mapping titles to image paths) and a list of texts
+            # (mapping titles to pretty-printed text). In this case we have only one 
+            # of each. 
+            #     
+           
+            plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+            images <- c("Forest Plot"=forest.path)
+            plot.names <- c("forest plot"="forest_plot")
+            results <- list("images"=images, "Summary"=summary.disp, 
                         "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)
         }
         else {
-           results <- list("Summary"=summary.disp)
+            results <- list("Summary"=summary.disp)
         }  
     }
     results

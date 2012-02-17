@@ -36,19 +36,16 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
         transform.name <- "binary.transform.f"
     }
     plot.options <- set.plot.options(params)
-    #changed.params <- plot.options$changed.params
     
     if (params$fp_plot_lb == "[default]") {
-        # value can be set to string  [default] by the GUI or can be NULL 
-        # if the function is called at the command line
-        plot.options$plot.lb <- NA
+        plot.options$plot.lb <- params$fp_plot_lb
     } else {
         plot.lb <- eval(parse(text=paste("c(", params$fp_plot_lb, ")", sep="")))
         plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(plot.lb)
     } 
     
     if (params$fp_plot_ub == "[default]")  {
-        plot.options$plot.ub <- NA
+        plot.options$plot.ub <- params$fp_plot_ub
     } else {
         plot.ub <- eval(parse(text=paste("c(", params$fp_plot_ub, ")", sep="")))
         if (scale.str == "logit") {
@@ -117,6 +114,19 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
                     LL = lb,
                     UL = ub) 
     plot.data$effects <- effects
+    plot.range <- calc.plot.range(effects, plot.options)
+    plot.data$plot.range <- plot.range
+    # Put plot range in display scale to update params.
+    plot.range.disp.lower <- eval(call(transform.name, params$measure))$display.scale(plot.range[1])
+    plot.range.disp.upper <- eval(call(transform.name, params$measure))$display.scale(plot.range[2])
+    changed.params <- plot.options$changed.params
+    if (plot.options$plot.lb != plot.range.disp.lower) {
+        changed.params$fp_plot_lb <- plot.range.disp.lower  
+    }
+    if (plot.options$plot.ub != plot.range.disp.upper) {
+        changed.params$fp_plot_ub <- plot.range.disp.upper  
+    }
+    plot.data$changed.params <- changed.params
     
     if (!is.null(selected.cov)){
         cov.val.str <- paste("om.data@covariates$", selected.cov, sep="")
@@ -196,7 +206,7 @@ create.plot.data.diagnostic <- function(diagnostic.data, params, res, selected.c
 create.plot.data.continuous <- function(cont.data, params, res, selected.cov = NULL){
     # Creates a data structure that can be passed to forest.plot
     # res is the output of a call to the Metafor function rma
-    plot.data <- create.plot.data.generic  (cont.data, params, res, selected.cov=selected.cov)
+    plot.data <- create.plot.data.generic(cont.data, params, res, selected.cov=selected.cov)
     plot.data
 }
 
@@ -223,13 +233,13 @@ create.plot.data.overall <- function(om.data, params, res){
     # currently not displaying raw data cols. for overall plots
 
     if (params$fp_plot_lb == "[default]") {
-        plot.options$plot.lb <- NA
+        plot.options$plot.lb <- params$fp_plot_lb
     } else {
         plot.lb <- eval(parse(text=paste("c(", params$fp_plot_lb, ")", sep="")))
         plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(plot.lb)
     }
     if (params$fp_plot_ub == "[default]") {
-        plot.options$plot.ub <- NA
+        plot.options$plot.ub <- params$fp_plot_ub
     } else {
         plot.ub <- eval(parse(text=paste("c(", params$fp_plot_ub, ")", sep="")))
         plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(plot.ub)
@@ -274,11 +284,24 @@ create.plot.data.overall <- function(om.data, params, res){
                     LL = lb,
                     UL = ub) 
     plot.data$effects <- effects
+    plot.range <- calc.plot.range(effects, plot.options)
+    plot.data$plot.range <- plot.range
+    # Put plot range in display scale to update params.
+    plot.range.disp.lower <- eval(call(transform.name, params$measure))$display.scale(plot.range[1])
+    plot.range.disp.upper <- eval(call(transform.name, params$measure))$display.scale(plot.range[2])
+    changed.params <- plot.options$changed.params
+    if (plot.options$plot.lb != plot.range.disp.lower) {
+        changed.params$fp_plot_lb <- plot.range.disp.lower  
+    }
+    if (plot.options$plot.ub != plot.range.disp.upper) {
+        changed.params$fp_plot_ub <- plot.range.disp.upper  
+    }
+    plot.data$changed.params <- changed.params
     plot.data
 }
 
 create.plot.data.cum <- function(om.data, params, res) {
-    # wrapper for creating leave-one-out plot.data
+    # Wrapper for creating leave-one-out plot.data
     params$show_col1 <- 'FALSE'
     # don't show study names for right-hand plot
     plot.data <- create.plot.data.overall(om.data, params, res)
@@ -424,13 +447,13 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, 
     label.col <- c(as.character(params$fp_col1_str), label.col, paste("Overall", overall, sep=""))
     plot.options <- set.plot.options(params)
     if (params$fp_plot_lb == "[default]") {
-        plot.options$plot.lb <- NA
+        plot.options$plot.lb <- params$fp_plot_lb
     } else {
         plot.lb <- eval(parse(text=paste("c(", params$fp_plot_lb, ")", sep="")))
         plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(plot.lb)
     }
     if (params$fp_plot_ub == "[default]") {
-        plot.options$plot.ub <- NA
+        plot.options$plot.ub <- params$fp_plot_ub
     } else {
         plot.ub <- eval(parse(text=paste("c(", params$fp_plot_ub, ")", sep="")))
         plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(plot.ub)
@@ -461,6 +484,19 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, 
                     UL = ub)
    
     plot.data$effects <- effects
+    plot.range <- calc.plot.range(effects, plot.options)
+    plot.data$plot.range <- plot.range
+    # Put plot range in display scale to update params.
+    plot.range.disp.lower <- eval(call(transform.name, params$measure))$display.scale(plot.range[1])
+    plot.range.disp.upper <- eval(call(transform.name, params$measure))$display.scale(plot.range[2])
+    changed.params <- plot.options$changed.params
+    if (plot.options$plot.lb != plot.range.disp.lower) {
+        changed.params$fp_plot_lb <- plot.range.disp.lower  
+    }
+    if (plot.options$plot.ub != plot.range.disp.upper) {
+        changed.params$fp_plot_ub <- plot.range.disp.upper  
+    }
+    plot.data$changed.params <- changed.params
 
     if (!is.null(selected.cov)){
         cov.val.str <- paste("om.data@covariates$", selected.cov, sep="")
@@ -562,7 +598,7 @@ set.plot.options <- function(params) {
     plot.options <- list()
     changed.params <- list()
     # xticks is a vector of tick marks for the x-axis
-    if (params$fp_xticks == '[default]') {
+    if (params$fp_xticks[1] == '[default]') {
         plot.options$xticks <- NA
     } else {
         plot.options$xticks <- eval(parse(text=paste("c(", params$fp_xticks, ")", sep="")))
@@ -635,7 +671,78 @@ set.plot.options <- function(params) {
     plot.options$digits <- params$digits
     plot.options$changed.params <- changed.params
     plot.options
-}    
+}   
+
+calc.plot.range <- function(effects, plot.options) {
+    # Calculate lower and upper bounds for x-values of plotted data
+    # if user has not supplied them (or user's bounds don't include all effect sizes).
+    plot.lb.max <- min(effects$ES)
+    # Smallest value for which we accept user's input for plot lower bound.
+    # User's lower bound must be less than all effect sizes.
+    plot.ub.min <- max(effects$ES) 
+    # Largest user input for plot upper bound. All effect sizes must be less than this value.
+    user.lb <- plot.options$plot.lb
+    user.ub <- plot.options$plot.ub
+    if (user.lb != "[default]") {
+        # Check whether user's lb is OK
+        if (user.lb > plot.lb.max) {
+          # not OK
+          user.lb <- "[default]"
+        }
+    } 
+    if (user.ub != "[default]") {
+        # Check whether user's lb is OK
+        if (plot.options$plot.ub < plot.ub.min) {
+          # not OK
+          user.ub <- "[default]"
+        }
+    }
+    plot.range <- c()
+    if (user.lb == "[default]" || user.ub == "[default]") {
+        # If user has not supplied both lower and upper bounds (that meet the requirements), compute bounds.
+        # This is a heuristic to determine a reasonable range for the displayed values - 
+        # confidence intervals that exceed this range are truncated and left or right arrows are displayed instead of the full CI.
+        effect.size.max <- max(effects$ES) 
+        effect.size.min <- min(effects$ES)
+        effect.size.width <- effect.size.max - effect.size.min
+        
+        effects.max <- max(effects$UL)
+        effects.min <- min(effects$LL)
+        arrow.factor <- 2
+        # Confidence intervals extend at most arrow.factor times effect.size.width beyond (effect.size.min, effect.size.max)
+        plot.ub <- min(effects.max, effect.size.max + arrow.factor * effect.size.width)
+        plot.lb <- max(effects.min, effect.size.min - arrow.factor * effect.size.width)
+        
+        plot.range <- c(plot.lb, plot.ub)
+      
+        # TODO: Issa created the code below. I'm not sure what the "uncommon problem" is and
+        # I haven't observed it, so I commented out the code. I'm leaving it in case the problem arises in future. PT
+        #
+        
+        # this is an ugly solution to an uncommon problem
+        #merge.data <- data.frame(x = plot.data$types[-1][1:length(effects$ES)], y = effects$LL, z = effects$UL)
+        #merge.data <- subset(merge.data, x>0)
+        #if (length(merge.data$y) > 0) {
+        #  if (min(effects.range) >= min(merge.data$y)) { 
+        #    effects.range[1] <- min(merge.data$y)
+        #  }
+        #}
+        #if (length(merge.data$z) > 0) {
+        #  if (max(effects.range) <= max(merge.data$z)) { 
+        #    effects.range[2] <- max(merge.data$z)
+        #  }
+        # }
+    }
+    if (user.lb != "[default]") {
+        # If the user's lb input is OK, set lower bound of range equal it.
+        plot.range[1] <- user.lb
+    }
+    if (user.ub != "[default]") {
+        # If the user's ub input is OK, set upper bound of range equal it.
+        plot.range[2] <- user.ub
+    }
+    plot.range
+}
 
 pretty.metric.name <- function(metric) {
   # sub out the space in TX Mean
@@ -770,8 +877,8 @@ calc.viewport.layout <- function(forest.data, just){
         vp.width <- unit.c(forest.plot.params$effect.col.width)
     }
     vp.layout <- grid.layout(num.rows+1, num.cols,
-                             width=vp.width,
-                             height = unit(rep(1, num.rows)  , "lines"),
+                             widths=vp.width,
+                             heights = unit(rep(1, num.rows)  , "lines"),
                              just=just)
 }
 
@@ -988,67 +1095,56 @@ draw.data.col <- function(forest.data, j, color.overall = "black",
                           summary.line.col = "darkred",
                           summary.line.pat = "dashed",
                           diam.size=1) {
-  # Draws the actual forest plot graph
-  # called by draw.forest.plot
-  effects <- forest.data$effects
-  plot.options <- forest.data$options
-  x.axis.label <- plot.options$xlabel
-  fp.title = plot.options$fp.title
-  user.ticks = plot.options$xticks
-  show.y.axis = plot.options$show.y.axis
-  plot.range <- calc.plot.range(effects, plot.options)
-  changed.params <- list()
-  # return params values that are modified in this function.
-  if (is.na(plot.options$plot.lb) || plot.options$plot.lb!=plot.range[1]) {
-        changed.params$fp_plot_lb <- plot.range[1]
-    }
-    if (is.na(plot.options$plot.ub) || plot.options$plot.ub!=plot.range[2]) {
-        changed.params$fp_plot_ub <- plot.range[2]
-    }
-  pushViewport(viewport(layout.pos.col=j, xscale=plot.range))
+    # Draws the actual forest plot graph (excluding data columns)
+    effects <- forest.data$effects
+    plot.options <- forest.data$options
+    plot.range <- forest.data$plot.range
+    x.axis.label <- plot.options$xlabel
+    fp.title = plot.options$fp.title
+    user.ticks = plot.options$xticks
+    show.y.axis = plot.options$show.y.axis
+    changed.params <- list()
+    pushViewport(viewport(layout.pos.col=j, xscale=plot.range))
 
-# This is the "null" line
-# "ifs" left in as we will possibly expand this when new metrics become available
-# note that if the line extends outside the xscale bounds, it will be 
-# truncated and replaced with a left or right arrow (or both).
-  if (show.y.axis == TRUE) {
-    if (forest.data$scale == "log" && min(plot.range)<0 && max(plot.range)>0 ) {
-      grid.lines(x=unit(0, "native"), y=0:1)
-    }
-    if (forest.data$scale == "standard" && min(plot.range)<0 && max(plot.range)>0 ) { 
-      grid.lines(x=unit(0, "native"), y=0:1)
-    }
-    if (forest.data$scale == "logit" && min(plot.range)<0 && max(plot.range)>0 ) { 
+    if (show.y.axis == TRUE) {
+        if (forest.data$scale == "log" && min(plot.range)<0 && max(plot.range)>0 ) {
         grid.lines(x=unit(0, "native"), y=0:1)
+        }
+        if (forest.data$scale == "standard" && min(plot.range)<0 && max(plot.range)>0 ) { 
+            grid.lines(x=unit(0, "native"), y=0:1)
+        }
+        if (forest.data$scale == "logit" && min(plot.range)<0 && max(plot.range)>0 ) { 
+            grid.lines(x=unit(0, "native"), y=0:1)
+        }
     }
-  }
   
-  if (!is.null(forest.data$options$show.summary.line)) {
-    if (forest.data$options$show.summary.line == TRUE) {
+    if (!is.null(forest.data$options$show.summary.line)) {
+        if (forest.data$options$show.summary.line == TRUE) {
           # draw vertical line for summary
-        grid.lines(x=unit(effects$ES[length(effects$ES)], "native"),
-             y=0:1, gp=gpar(lty = summary.line.pat, col= summary.line.col))
-    }
-  }  
+            grid.lines(x=unit(effects$ES[length(effects$ES)], "native"),
+            y=0:1, gp=gpar(lty = summary.line.pat, col= summary.line.col))
+        }
+    }  
   
-  if  (forest.data$scale == "standard") {
-    if (is.na(user.ticks)) {
-      grid.xaxis(gp=gpar(cex=0.6))
-      xaxp <- par("xaxp")
-      # get the x ticks
-      xticks <- seq(from=xaxp[1], to=xaxp[2], by=(xaxp[2] - xaxp[1]) / xaxp[3])
-      changed.params$fp_xticks <- xticks
-    } else {
-        grid.xaxis(at = user.ticks , label = user.ticks, gp=gpar(cex=0.6))
-      }
+    if  (forest.data$scale == "standard") {
+        if (is.na(user.ticks)) {
+            grid.xaxis(gp=gpar(cex=0.6))
+            xaxp <- par("xaxp")
+            # Get the x ticks
+            ticks <- seq(from=xaxp[1], to=xaxp[2], by=(xaxp[2] - xaxp[1]) / xaxp[3])
+        } else {
+            ticks <- user.ticks
+            grid.xaxis(at = user.ticks , label = user.ticks, gp=gpar(cex=0.6))
+        }
     }
     
-  if (forest.data$scale == "log")  {
-    if (is.na(user.ticks)) { # some cheap tricks to make the axis ticks look nice (in most cases)...
+    if (forest.data$scale == "log")  {
+        if (is.na(user.ticks)) { 
+            # Some cheap tricks to make the axis ticks look nice (in most cases)...
+            # Note that "at'' is in log scale but 'label'' is in standard scale
             to.make.ticks <- range(exp(plot.range))
             ticks <- axTicks(1, axp=c(to.make.ticks, 3), usr=c(-100, 100), log=TRUE)
             log.ticks <- log(ticks)
-            
             lower.bound <- min(plot.range)
             upper.bound <- max(plot.range)
             # find the largest tick mark less than the lower bound of plot.range, if there is one.
@@ -1063,13 +1159,14 @@ draw.data.col <- function(forest.data, j, color.overall = "black",
             log.ticks <- log.ticks[log.ticks <= max.tick]
             ticks <- exp(log.ticks)
             changed.params$fp_xticks <- ticks
-    } else {
+        } else {
 		        ticks <- user.ticks
             log.ticks <- log(user.ticks)
-    }
+        }
         grid.xaxis(at = log.ticks , label = round(ticks, 3), gp=gpar(cex=0.6))          
-  } 
-  if (forest.data$scale == "logit")  {
+    }
+   
+    if (forest.data$scale == "logit")  {
         if (is.na(user.ticks)) { 
           lb <- min(plot.range)
           ub <- max(plot.range)
@@ -1079,109 +1176,89 @@ draw.data.col <- function(forest.data, j, color.overall = "black",
         } else {
 		        ticks <- user.ticks
         }
-        grid.xaxis(at = ticks , label = round(ticks, 3), gp=gpar(cex=0.6))          
-  } 
+        grid.xaxis(at = ticks , label = round(ticks, 3), gp=gpar(cex=0.6))
+    } 
     
-  grid.text(x.axis.label, y=unit(-2, "lines"), gp=gpar(cex=0.8))
-  data.col.width <- forest.data$data.col.width
-  # width of data cols., not including study column or forest plot.
-  rows <- forest.data$rows[-1]
-  types <- forest.data$types[-1]
-  num.rows <- rows[length(rows)]
-  grid.text(fp.title, x=unit(-data.col.width, "inches"), y=unit(num.rows + 2, "lines"), gp=gpar(cex=1.0), just="left")
-  popViewport()
-  box.sizes <- calc.box.sizes(forest.data, box.sca=0.8)
-  # sizes of boxes (or diamonds) in plot
-  for (i in 1:length(rows)) {
-    pushViewport(viewport(layout.pos.row=rows[i], layout.pos.col=j,
-                          xscale=plot.range))   
-    if (types[i] == 0){
-       draw.normal.CI(effects$LL[i], effects$ES[i], effects$UL[i], box.sizes[i])
-    }
-    else if (types[i] == 1){
-       draw.summary.CI(effects$LL[i], effects$ES[i], effects$UL[i], box.sizes[i], color.subgroup, diam.size )
-    }
-    else if (types[i] == 2){
-       draw.summary.CI(effects$LL[i], effects$ES[i], effects$UL[i], box.sizes[i], color.overall, diam.size )
-    }
+    grid.text(x.axis.label, y=unit(-2, "lines"), gp=gpar(cex=0.8))
+    data.col.width <- forest.data$data.col.width
+    # Width of data cols., not including study column or forest plot.
+    rows <- forest.data$rows[-1]
+    types <- forest.data$types[-1]
+    num.rows <- rows[length(rows)]
+    grid.text(fp.title, x=unit(-data.col.width, "inches"), y=unit(num.rows + 2, "lines"), gp=gpar(cex=1.0), just="left")
     popViewport()
-  }
-  changed.params
+    box.sizes <- calc.box.sizes(forest.data, box.sca=0.8)
+    # Sizes of boxes (or diamonds) in plot
+    for (i in 1:length(rows)) {
+        pushViewport(viewport(layout.pos.row=rows[i], layout.pos.col=j,
+                          xscale=plot.range))   
+        if (types[i] == 0){
+            draw.normal.CI(effects$LL[i], effects$ES[i], effects$UL[i], box.sizes[i])
+        }
+        else if (types[i] == 1){
+            draw.summary.CI(effects$LL[i], effects$ES[i], effects$UL[i], box.sizes[i], color.subgroup, diam.size )
+        }
+        else if (types[i] == 2){
+            draw.summary.CI(effects$LL[i], effects$ES[i], effects$UL[i], box.sizes[i], color.overall, diam.size )
+        }
+        popViewport()
+    }
+    # Save ticks as char string to update params.
+    ticks.str <- as.character(ticks[1])
+    for (count in 2:length(ticks)) {
+        ticks.str <- paste(ticks.str, ",", as.character(ticks[count]), sep="")
+    }
+    changed.params <- list("fp_xticks"=ticks.str)
+ 
+    changed.params
 }
 
-calc.plot.range <- function(effects, plot.options) {
-    # calculate lower and upper bounds for x-values of plotted data
-    # if user has not supplied them (or user's bounds don't include all effect sizes).
-    
-    plot.lb.max <- min(effects$ES)
-    # smallest value for which we accept user's input for plot lower bound.
-    # User's lower bound must be less thant all effect sizes.
-    plot.ub.min <- max(effects$ES) 
-    # largest user input for plot upper bound. All effect sizes must be less than this value.
-    user.lb <- plot.options$plot.lb
-    user.ub <- plot.options$plot.ub
-    if (!is.na(user.lb)) {
-        # check whether user's lb is OK
-        if (user.lb > plot.lb.max) {
-          # not OK
-          user.lb <- NA
+calc.tick.marks <- function(plot.range, scale) {
+    if (scale == "log")  {
+        if (is.na(user.ticks)) { 
+            # some cheap tricks to make the axis ticks look nice (in most cases)...
+            # Note that at is in log scale but label is in standard scale
+            to.make.ticks <- range(exp(plot.range))
+            ticks <- axTicks(1, axp=c(to.make.ticks, 3), usr=c(-100, 100), log=TRUE)
+            calc.ticks <- log(ticks)
+            
+            lower.bound <- min(plot.range)
+            upper.bound <- max(plot.range)
+            # find the largest tick mark less than the lower bound of plot.range, if there is one.
+            if (calc.ticks[1] <= lower.bound) {
+                min.tick <- max(calc.ticks[calc.ticks <= lower.bound])
+            }
+            # find the smallest tick mark greater than the upper bound of plot.range, if there is one.
+            if (calc.ticks[length(calc.ticks)] >= upper.bound) {
+                max.tick <- min(calc.ticks[calc.ticks >= upper.bound])
+            }
+  	        calc.ticks <- calc.ticks[calc.ticks >= min.tick]    # remember it is additive on this scale
+            calc.ticks <- calc.ticks[calc.ticks <= max.tick]
+            ticks <- exp(calc.ticks)
+            changed.params$fp_xticks <- ticks
+    } else {
+		        ticks <- user.ticks
+            calc.ticks <- log(user.ticks)
+    }
+        grid.xaxis(at = calc.ticks , label = round(ticks, 3), gp=gpar(cex=0.6))          
+  } 
+  if (scale == "logit")  {
+        if (is.na(user.ticks)) { 
+          lb <- min(plot.range)
+          ub <- max(plot.range)
+          to.make.ticks <- c(lb, ub)
+          calc.ticks <- axTicks(1, axp=c(to.make.ticks, 4))
+          changed.params$fp_xticks <- calc.ticks
+        } else {
+		        calc.ticks <- user.ticks
         }
-    } 
-    if (!is.na(user.ub)) {
-        # user specifies just the upper bound for the display range, so use it if not too small
-        if (plot.options$plot.ub < plot.ub.min) {
-          # not OK
-          user.ub <- NA
-        }
-    }
-    
-    if (is.na(user.lb) || is.na(user.ub)) {
-    # if user has not supplied both lower and upper bounds (that meet the requirements), compute them
-    # heuristically.
-              
-        # When scale is log or standard, this is a heuristic to determine a reasonable range for the displayed values - 
-        # confidence intervals that exceed this range are truncated and left or right arrows are displayed instead of the full CI.
-        effect.size.max <- max(effects$ES) 
-        effect.size.min <- min(effects$ES)
-        effect.size.width <- effect.size.max - effect.size.min
-        
-        effects.max <- max(effects$UL)
-        effects.min <- min(effects$LL)
-        arrow.factor <- 2
-        # confidence intervals extend at most arrow.factor times effect.size.width beyond (effect.size.min, effect.size.max)
-        plot.ub <- min(effects.max, effect.size.max + arrow.factor * effect.size.width)
-        plot.lb <- max(effects.min, effect.size.min - arrow.factor * effect.size.width)
-        
-        plot.range <- c(plot.lb, plot.ub)
-       
-      # this is an ugly solution to an uncommon problem
-        
-        #merge.data <- data.frame(x = plot.data$types[-1][1:length(effects$ES)], y = effects$LL, z = effects$UL)
-        #merge.data <- subset(merge.data, x>0)
-        #if (length(merge.data$y) > 0) {
-        #  if (min(effects.range) >= min(merge.data$y)) { 
-        #    effects.range[1] <- min(merge.data$y)
-        #  }
-        #}
-        #if (length(merge.data$z) > 0) {
-        #  if (max(effects.range) <= max(merge.data$z)) { 
-        #    effects.range[2] <- max(merge.data$z)
-        #  }
-       # }
-    }
-    if (!is.na(user.lb)) {
-      # if the user's lb input is OK, set lower bound of range equal it.
-      plot.range[1] <- user.lb
-    }
-    if (!is.na(user.ub)) {
-      # if the user's ub input is OK, set upper bound of range equal it.
-      plot.range[2] <- user.ub
-    }
-    plot.range
+        grid.xaxis(at = ticks , label = round(ticks, 3), gp=gpar(cex=0.6))
+  }      
+  calc.ticks
 }
 
 calc.box.sizes <- function(forest.data, box.sca = 1) {
-    # Calculates sizes for c.i. boxes in forest plot.
+    # Calculates sizes for c.i. boxes and diamonds in forest plot.
    
     # weights for the boxes
     # note that 1.96 is a convention [not necessary for the scaling]
@@ -1248,7 +1325,7 @@ draw.normal.CI <- function(LL, ES, UL, size) {
                              "native", valueOnly=TRUE) < LL))
       "white"
     else
-       # this line is just right - Goldilocks
+       # this line is just right
       "black"
     grid.lines(x=unit(c(LL, UL), "native"), y=0.5,
                gp=gpar(col=line.col))
@@ -1257,16 +1334,15 @@ draw.normal.CI <- function(LL, ES, UL, size) {
 
 # Function to draw a summary "diamond"
 draw.summary.CI <- function(LL, ES, UL, size, color, diam.height) {
-  # for diamonds: using half the height of the equivalent rect
-  grid.polygon(x=unit(c(LL, ES, UL, ES), "native"),
+    # for diamonds: using half the height of the equivalent rect
+    grid.polygon(x=unit(c(LL, ES, UL, ES), "native"),
                y=unit(0.5 + c(0, 0.25*diam.height*size, 0, -0.25*diam.height*size), "npc"), gp=gpar(fill=color))
 }
 
-create.plot.options <- function(forest.data, gapSize=3, plotWidth = 4) {
-    # this function has nothing to do with the user options that are passed in
+create.plot.options <- function(forest.data, gapSize, plotWidth) {
+    # This function has nothing to do with the user options that are passed in
     # via forest.data$options. It just specifies gapSize (space between columns) and plotWidth (width of effect size col.).
-    # This function is only called by calc.viewport.layout and calc.forest.plot.size.
-    # TODO: figure out why plotWidth is arbitrarily set to 4, instead of the first entry of calc.viewport.layout$widths.
+    # This function is only called by calc.viewport.layout and calc.forest.plot.size.    
     effect.col.width <- unit(plotWidth, "inches")
     # width of the forest plot
     forest.params = list(
@@ -1282,7 +1358,7 @@ create.plot.options <- function(forest.data, gapSize=3, plotWidth = 4) {
  
 two.forest.plots <- function(forest.data, outpath) {
    # draw two forest plots side by side.
-   # see forest.plot
+   
    forest.data1 <- forest.data$left
    forest.data2 <- forest.data$right
    forest.data1 <- format.data.cols(forest.data1)
@@ -1292,7 +1368,6 @@ two.forest.plots <- function(forest.data, outpath) {
    # row numbers of forest plot including blank rows (after summary rows)
    forest.data1$rows <- rows1
    forest.data1 <- create.grobs(forest.data1)
-  
    forest.data2 <- format.data.cols(forest.data2)
    types2 <- forest.data2$types
    num.labels2 <- length(forest.data2$label)
@@ -1315,20 +1390,22 @@ two.forest.plots <- function(forest.data, outpath) {
    how.tall1 <- plot.size1$how.tall
    how.tall2 <- plot.size2$how.tall
    how.tall <- max(how.tall1, how.tall2)
-
-   pushViewport(viewport(layout=grid.layout(1,2), width=how.wide1 + how.wide2))               
-
    if (length(grep(".png", outpath)) != 0){
       png(file=outpath, width = how.wide1 + how.wide2, height = how.tall+1 , units = "in", res = 144) 
    }
    else{
       pdf(file=outpath, width = how.wide1 + how.wide2 + 1, height = how.tall+2) 
    }
-                                    
+   #pushViewport(viewport(layout=grid.layout(1,2)))
+   #pushViewport(viewport(layout=grid.layout(1,2), width=how.wide1 + how.wide2))
+   pushViewport(viewport(layout=grid.layout(1,2, widths=c(how.wide1,how.wide2))))
+   
    pushViewport(viewport(layout=viewport.layout1, layout.pos.col=1))
+   #pushViewport(viewport(layout.pos.col=1))
    draw.forest.plot(forest.data1)   
    popViewport()
    pushViewport(viewport(layout=viewport.layout2,layout.pos.col=2))
+   #pushViewport(viewport(layout.pos.col=2))
    draw.forest.plot(forest.data2)
    popViewport()
    
@@ -1534,8 +1611,6 @@ plot.ppv.npv.by.prev <- function(diagnostic.data, params) {
   ppv.overall <- compute.ppv(sens.overall, spec.overall, prev.overall)
   lines(prev.overall, npv.overall, col=3)
   lines(prev.overall, ppv.overall, col=4)
-  
- 
 }
 #######################################################
 #  Functions for formatting data for display in plots #
@@ -1605,8 +1680,7 @@ format.effect.sizes <- function(y, lb, ub, options) {
 }
 
 create.effect.size.label <- function(effect.sizes, options) {
-   # add label to effect.size.column and align
-   # The purpose of this code is to align the comma if the label
+   # Add label to effect.size.column and align the comma if the label
    # is of the form ES(LL, UL), with the data entries below it. Since the default label
    # is no longer of that form, this function could be removed.
    col2.label <- as.character(options$col2.str)
@@ -1615,7 +1689,7 @@ create.effect.size.label <- function(effect.sizes, options) {
    max.chars <- max(nchar(effect.sizes$ub.display)) + 1
    # add 1 because a space is added before each ub entry.
    if (label.info$contains.symbol == TRUE) {
-     # label contains "," so pad label to align ","
+     # Label contains "," so pad label to align ","
      # we're assuming that there is a single space after ","
      col2.label.padded <- pad.with.spaces(col2.label, begin.num=0, end.num = max.chars - label.info$end.string.length) 
    } else {
