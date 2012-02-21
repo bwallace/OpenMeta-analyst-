@@ -80,28 +80,32 @@ cum.ma.binary <- function(fname, binary.data, params){
     }
     cum.disp <- create.overall.display(res=cum.results, study.names, params, model.title, data.type="binary")
     forest.path <- paste(params$fp_outpath, sep="")
-    
     params.cum <- params
     params.cum$fp_col1_str <- "Cumulative Studies"
     params.cum$fp_col2_str <- "Cumulative Estimate"
     # column labels for the cumulative (right-hand) plot
     plot.data.cum <- create.plot.data.cum(om.data=binary.data, params.cum, res=cum.results)
     two.plot.data <- list("left"=plot.data, "right"=plot.data.cum)
-    two.forest.plots(two.plot.data, outpath=forest.path)
-
+    changed.params <- plot.data$changed.params
+    # List of changed params values for standard (left) plot - not cumulative plot!
+    # Currently plot edit can't handle two sets of params values for xticks or plot bounds.
+    # Could be changed in future.
+    params.changed.in.forest.plot <- two.forest.plots(two.plot.data, outpath=forest.path)
+    changed.params <- c(changed.params, params.changed.in.forest.plot)
+    # Update params changed in two.forest.plots
+    params[names(changed.params)] <- changed.params
+    # we use the system time as our unique-enough string to store
+    # the params object
+    forest.plot.params.path <- save.data(binary.data, res, params, two.plot.data)
     # Now we package the results in a dictionary (technically, a named 
     # vector). In particular, there are two fields that must be returned; 
     # a dictionary of images (mapping titles to image paths) and a list of texts
     # (mapping titles to pretty-printed text). In this case we have only one 
     # of each. 
-    #     
+    #    
+    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
     images <- c("Cumulative Forest Plot"=forest.path)
     plot.names <- c("cumulative forest plot"="cumulative_forest_plot")
-    
-    # we use the system time as our unique-enough string to store
-    # the params object
-    forest.plot.params.path <- save.plot.data(plot.data)
-    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
     results <- list("images"=images, "Cumulative Summary"=cum.disp, 
                     "plot_names"=plot.names, 
                     "plot_params_paths"=plot.params.paths)
@@ -120,6 +124,8 @@ loo.ma.binary <- function(fname, binary.data, params){
     params.tmp <- params
     params.tmp$create.plot <- FALSE
     # don't create plots when calling individual binary methods
+    res <- eval(call(fname, binary.data, params.tmp))
+    res.overall <- eval(call(paste(fname, ".overall", sep=""), res))
     N <- length(binary.data@study.names)
     for (i in 1:N){
         # get a list of indices, i.e., the subset
@@ -174,10 +180,17 @@ loo.ma.binary <- function(fname, binary.data, params){
     
     loo.disp <- create.overall.display(res=loo.results, study.names, params, model.title, data.type="binary")
     forest.path <- paste(params$fp_outpath, sep="")
-    
     plot.data <- create.plot.data.loo(binary.data, params, res=loo.results)
-    forest.plot(forest.data=plot.data, outpath=forest.path)
-
+    plot.data$summary.est <- res.overall$b[1]
+    changed.params <- plot.data$changed.params
+    # list of changed params values
+    params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
+    changed.params <- c(changed.params, params.changed.in.forest.plot)
+    params[names(changed.params)] <- changed.params
+    # update params values
+     # we use the system time as our unique-enough string to store
+    # the params object
+    forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
     #
     # Now we package the results in a dictionary (technically, a named 
     # vector). In particular, there are two fields that must be returned; 
@@ -185,14 +198,9 @@ loo.ma.binary <- function(fname, binary.data, params){
     # (mapping titles to pretty-printed text). In this case we have only one 
     # of each. 
     #     
-
+    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
     images <- c("Leave-one-out Forest plot"=forest.path)
     plot.names <- c("loo forest plot"="loo_forest_plot")
-    
-    # we use the system time as our unique-enough string to store
-    # the params object
-    forest.plot.params.path <- save.plot.data(plot.data)
-    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
     results <- list("images"=images, "Leave-one-out Summary"=loo.disp, 
                     "plot_names"=plot.names, 
                     "plot_params_paths"=plot.params.paths)
@@ -263,7 +271,7 @@ cum.ma.continuous <- function(fname, cont.data, params){
     for (count in 2:length(cont.data@study.names)) {
         study.names <- c(study.names, paste("+ ",cont.data@study.names[count], sep=""))
     }
-
+    
     metric.name <- pretty.metric.name(as.character(params$measure))
     model.title <- ""
     if (fname == "continuous.fixed") {
@@ -276,13 +284,19 @@ cum.ma.continuous <- function(fname, cont.data, params){
     params.cum <- params
     params.cum$fp_col1_str <- "Cumulative Studies"
     params.cum$fp_col2_str <- "Cumulative Estimate"
-    params.cum$fp_plot_lb <- plot.data$plot.range[1]
-    params.cum$fp_plot_lb <- plot.data$plot.range[1]
     plot.data.cum <- create.plot.data.cum(om.data=cont.data, params.cum, res=cum.results)
-    plot.data.cum$plot.range <- plot.data$plot.range
-    plot.data <- list("left"=plot.data, "right"=plot.data.cum)
-    two.forest.plots(plot.data, outpath=forest.path)
-    
+    two.plot.data <- list("left"=plot.data, "right"=plot.data.cum)
+    changed.params <- plot.data$changed.params
+    # List of changed params values for standard (left) plot - not cumulative plot!
+    # Currently plot edit can't handle two sets of params values for xticks or plot bounds.
+    # Could be changed in future.
+    params.changed.in.forest.plot <- two.forest.plots(two.plot.data, outpath=forest.path)
+    changed.params <- c(changed.params, params.changed.in.forest.plot)
+    # Update params changed in two.forest.plots
+    params[names(changed.params)] <- changed.params
+    # we use the system time as our unique-enough string to store
+    # the params object
+    forest.plot.params.path <- save.data(binary.data, res, params, two.plot.data)
     #
     # Now we package the results in a dictionary (technically, a named 
     # vector). In particular, there are two fields that must be returned; 
@@ -290,13 +304,9 @@ cum.ma.continuous <- function(fname, cont.data, params){
     # (mapping titles to pretty-printed text). In this case we have only one 
     # of each. 
     #     
+    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
     images <- c("Cumulative Forest Plot"=forest.path)
     plot.names <- c("cumulative forest plot"="cumulative forest_plot")
-    
-    # we use the system time as our unique-enough string to store
-    # the params object
-    forest.plot.params.path <- save.plot.data(plot.data)
-    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
     results <- list("images"=images, "Cumulative Summary"=cum.disp, 
                     "plot_names"=plot.names, 
                     "plot_params_paths"=plot.params.paths)
@@ -311,7 +321,10 @@ loo.ma.continuous <- function(fname, cont.data, params){
     if (!("ContinuousData" %in% class(cont.data))) stop("Continuous data expected.")
     
     loo.results <- array(list(NULL), dim=c(length(cont.data@study.names)))
-    params$create.plot <- FALSE
+    params.tmp <- params
+    params.tmp$create.plot <- FALSE
+    res <- eval(call(fname, cont.data, params.tmp))
+    res.overall <- eval(call(paste(fname, ".overall", sep=""), res))
     N <- length(cont.data@study.names)
     for (i in 1:N){
         # get a list of indices, i.e., the subset
@@ -359,7 +372,7 @@ loo.ma.continuous <- function(fname, cont.data, params){
         # data and parameters. Notice that this method knows
         # neither what method its calling nor what parameters
         # it's passing!
-        cur.res <- eval(call(fname, cont.data.tmp, params))
+        cur.res <- eval(call(fname, cont.data.tmp, params.tmp))
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
         loo.results[[i]] <- cur.overall
     }
@@ -378,12 +391,17 @@ loo.ma.continuous <- function(fname, cont.data, params){
         model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", metric.name, sep="")
     }
     loo.disp <- create.overall.display(res=loo.results, study.names, params, model.title, data.type="continuous")
-
     forest.path <- paste(params$fp_outpath, sep="")
-
     plot.data <- create.plot.data.loo(cont.data, params, res=loo.results)
-    forest.plot(forest.data=plot.data, outpath=forest.path)
-    
+    changed.params <- plot.data$changed.params
+    # list of changed params values
+    params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
+    changed.params <- c(changed.params, params.changed.in.forest.plot)
+    params[names(changed.params)] <- changed.params
+    # update params values
+     # we use the system time as our unique-enough string to store
+    # the params object
+    forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
     #
     # Now we package the results in a dictionary (technically, a named 
     # vector). In particular, there are two fields that must be returned; 
@@ -391,13 +409,9 @@ loo.ma.continuous <- function(fname, cont.data, params){
     # (mapping titles to pretty-printed text). In this case we have only one 
     # of each. 
     #     
+    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
     images <- c("Leave-one-out Forest Plot"=forest.path)
     plot.names <- c("loo forest plot"="loo_forest_plot")
-    
-    # we use the system time as our unique-enough string to store
-    # the params object
-    forest.plot.params.path <- save.plot.data(plot.data)
-    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
     results <- list("images"=images, "Leave-one-out Summary"=loo.disp, 
                     "plot_names"=plot.names, 
                     "plot_params_paths"=plot.params.paths)
@@ -461,22 +475,24 @@ subgroup.ma.binary <- function(fname, binary.data, params){
     subgroup.data <- list("subgroup.list"=subgroup.list, "grouped.data"=grouped.data, "results"=subgroup.results, 
                           "col3.nums"=col3.nums, "col3.denoms"=col3.denoms, "col4.nums"=col4.nums, "col4.denoms"=col4.denoms)
     plot.data <- create.subgroup.plot.data.binary(subgroup.data, params)
-    
-    forest.plot(forest.data=plot.data, outpath=forest.path)
-
+    changed.params <- plot.data$changed.params
+    # list of changed params values
+    params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
+    changed.params <- c(changed.params, params.changed.in.forest.plot)
+    params[names(changed.params)] <- changed.params
+    # update params values
+    # we use the system time as our unique-enough string to store
+    # the params object
+    forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
     # Now we package the results in a dictionary (technically, a named 
     # vector). In particular, there are two fields that must be returned; 
     # a dictionary of images (mapping titles to image paths) and a list of texts
     # (mapping titles to pretty-printed text). In this case we have only one 
     # of each. 
     #     
+    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
     images <- c("Subgroup Forest Plot"=forest.path)
     plot.names <- c("subgroups forest plot"="subgroups_forest_plot")
-    
-    # we use the system time as our unique-enough string to store
-    # the params object
-    forest.plot.params.path <- save.plot.data(plot.data)
-    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
     results <- list("images"=images, "Subgroup Summary"=subgroup.disp, 
                     "plot_names"=plot.names, 
                     "plot_params_paths"=plot.params.paths)
@@ -550,20 +566,24 @@ subgroup.ma.continuous <- function(fname, cont.data, params){
     subgroup.data <- list("subgroup.list"=subgroup.list, "grouped.data"=grouped.data, "results"=subgroup.results, 
                           "col3.nums"=col3.nums, "col3.denoms"=col3.denoms, "col4.nums"=col4.nums, "col4.denoms"=col4.denoms)
     plot.data <- create.subgroup.plot.data.cont(subgroup.data, params)
-    forest.plot(forest.data=plot.data, outpath=forest.path)
+    changed.params <- plot.data$changed.params
+    # list of changed params values
+    params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
+    changed.params <- c(changed.params, params.changed.in.forest.plot)
+    params[names(changed.params)] <- changed.params
+    # update params values
+    # we use the system time as our unique-enough string to store
+    # the params object
+    forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
     # Now we package the results in a dictionary (technically, a named 
     # vector). In particular, there are two fields that must be returned; 
     # a dictionary of images (mapping titles to image paths) and a list of texts
     # (mapping titles to pretty-printed text). In this case we have only one 
     # of each. 
-    #     
+    #    
+    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
     images <- c("Subgroups Forest Plot"=forest.path)
     plot.names <- c("subgroups forest plot"="subgroups_forest_plot")
-    
-    # we use the system time as our unique-enough string to store
-    # the params object
-    forest.plot.params.path <- save.plot.data(plot.data)
-    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
     results <- list("images"=images, "Subgroup Summary"=subgroup.disp, 
                     "plot_names"=plot.names, 
                     "plot_params_paths"=plot.params.paths)
@@ -862,6 +882,8 @@ loo.ma.diagnostic <- function(fname, diagnostic.data, params){
     loo.results <- array(list(NULL), dim=c(length(diagnostic.data@study.names)))
     params.tmp <- params
     params.tmp$create.plot <- FALSE
+    params.tmp <- params
+    params.tmp$create.plot <- FALSE
     N <- length(diagnostic.data@study.names)
     for (i in 1:N){
         # get a list of indices, i.e., the subset
@@ -915,23 +937,25 @@ loo.ma.diagnostic <- function(fname, diagnostic.data, params){
     if (is.null(params$create.plot)) {
         plot.data <- create.plot.data.loo(diagnostic.data, params, res=loo.results)
         forest.path <- paste(params$fp_outpath, sep="")
-        forest.plot(forest.data=plot.data, outpath=forest.path)
-
-    #
-    # Now we package the results in a dictionary (technically, a named 
-    # vector). In particular, there are two fields that must be returned; 
-    # a dictionary of images (mapping titles to image paths) and a list of texts
-    # (mapping titles to pretty-printed text). In this case we have only one 
-    # of each. 
-    #     
-
-        images <- c("Leave-one-out Forest plot"=forest.path)
-        plot.names <- c("loo forest plot"="loo_forest_plot")
-    
+        changed.params <- plot.data$changed.params
+        # list of changed params values
+        params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
+        changed.params <- c(changed.params, params.changed.in.forest.plot)
+        params[names(changed.params)] <- changed.params
+        # update params values
         # we use the system time as our unique-enough string to store
         # the params object
-        forest.plot.params.path <- save.plot.data(plot.data)
+        forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
+        #
+        # Now we package the results in a dictionary (technically, a named 
+        # vector). In particular, there are two fields that must be returned; 
+        # a dictionary of images (mapping titles to image paths) and a list of texts
+        # (mapping titles to pretty-printed text). In this case we have only one 
+        # of each. 
+        #     
         plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+        images <- c("Leave-one-out Forest plot"=forest.path)
+        plot.names <- c("loo forest plot"="loo_forest_plot")
         results <- list("images"=images, "Summary"=loo.disp, 
                         "plot_names"=plot.names, 
                         "plot_params_paths"=plot.params.paths)
@@ -1184,28 +1208,31 @@ subgroup.ma.diagnostic <- function(fname, diagnostic.data, params, selected.cov)
         model.title <- paste("Diagnostic Random-Effects Model\n\nMetric: ", metric.name, sep="")
     }
     
-    subgroup.disp <- create.overall.display(subgroup.results, subgroup.names, params, model.title, data.type="diagnostic")
+    subgroup.disp <- create.subgroup.display(subgroup.results, subgroup.names, params, model.title, data.type="diagnostic")
     forest.path <- paste(params$fp_outpath, sep="")
     # pack up the data for forest plot.
     subgroup.data <- list("subgroup.list"=subgroup.list, "grouped.data"=grouped.data, "results"=subgroup.results, 
                           "col3.nums"=col3.nums, "col3.denoms"=col3.denoms, "col4.nums"=col4.nums, "col4.denoms"=col4.denoms)
     if (is.null(params$create.plot)) {
         plot.data <- create.subgroup.plot.data.diagnostic(subgroup.data, params)
-        forest.path <- paste(params$fp_outpath, sep="")
-        forest.plot(forest.data=plot.data, outpath=forest.path)
-    # Now we package the results in a dictionary (technically, a named 
-    # vector). In particular, there are two fields that must be returned; 
-    # a dictionary of images (mapping titles to image paths) and a list of texts
-    # (mapping titles to pretty-printed text). In this case we have only one 
-    # of each. 
-    #     
+        changed.params <- plot.data$changed.params
+        # list of changed params values
+        params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
+        changed.params <- c(changed.params, params.changed.in.forest.plot)
+        params[names(changed.params)] <- changed.params
+        # update params values
+        # we use the system time as our unique-enough string to store
+        # the params object
+        forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
+        # Now we package the results in a dictionary (technically, a named 
+        # vector). In particular, there are two fields that must be returned; 
+        # a dictionary of images (mapping titles to image paths) and a list of texts
+        # (mapping titles to pretty-printed text). In this case we have only one 
+        # of each. 
+        #    
+        plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
         images <- c("Subgroups Forest Plot"=forest.path)
         plot.names <- c("subgroups forest plot"="subgroups_forest_plot")
-    
-    # we use the system time as our unique-enough string to store
-    # the params object
-        forest.plot.params.path <- save.plot.data(plot.data)
-        plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
         results <- list("images"=images, "Summary"=subgroup.disp, 
                     "plot_names"=plot.names, 
                     "plot_params_paths"=plot.params.paths)

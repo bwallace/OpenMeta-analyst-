@@ -730,8 +730,8 @@ create.side.by.side.plot.data <- function(diagnostic.data, params, res) {
     # creates data for two side-by-side forest plots
     params.left <- params$left
     params.right <- params$right
-    params.left$fp_show_col1 <- 'TRUE'
-    params.right$fp_show_col1 <- 'FALSE'
+    #params.left$fp_show_col1 <- 'TRUE'
+    #params.right$fp_show_col1 <- 'FALSE'
     # only show study names on the left plot
     res.left <- res$left
     res.right <- res$right    

@@ -68,12 +68,18 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
       QE <- "NA"
     }
     if (!is.null(res$QEp)) {
-      QEp <- sprintf(digits.str, res$QEp)
+      if (res$QEp < 10^(-params$digits)) {
+          PLabel <- "P"  
+      } else {
+          PLabel <- "P="
+      }
+      #QEp <- sprintf(digits.str, res$QEp)
+      QEp <- round.display(res$QEp, params$digits)
     } else {
       QEp <- "NA"
     } 
     
-    overall <- paste("Overall (I^2=", I2, " , P=", QEp, ")", sep="")
+    overall <- paste("Overall (I^2=", I2, " , ", PLabel, QEp, ")", sep="")
     # append years to study names unless year equals 0 (0 is passed to R when year is empty).
     study.names <- om.data@study.names
     years <- om.data@years
@@ -631,7 +637,6 @@ set.plot.options <- function(params) {
     if (!is.null(params$fp_col3_str)) {
        plot.options$col3.str <- as.character(params$fp_col3_str)
     }
-    
     if ((params$fp_show_col4=='TRUE') && (!as.character(params$measure) %in% c("PR", "PLN", "PLO", "PAS", "PFT"))) {
       # don't show col. 4 if metric is one-arm.
       plot.options$show.col4 <- TRUE
@@ -645,6 +650,9 @@ set.plot.options <- function(params) {
     # xlabel is the label for the x-axis
     if (params$fp_xlabel == "[default]") {
         xlabel <- pretty.metric.name(as.character(params$measure))
+        if (metric.is.log.scale(params$measure)) {
+            xlabel <- paste(xlabel, " (log scale)", sep="")
+        }
         plot.options$xlabel <- xlabel
         changed.params$fp_xlabel <- xlabel
     } else {
@@ -1099,6 +1107,12 @@ draw.data.col <- function(forest.data, j, color.overall = "black",
     effects <- forest.data$effects
     plot.options <- forest.data$options
     plot.range <- forest.data$plot.range
+    if (!is.null(forest.data$summary.est)) {
+       # This is the summary estimate for loo plots.  
+       summary.est <- forest.data$summary.est    
+    } else {
+       summary.est <- effects$ES[length(effects$ES)]
+    }
     x.axis.label <- plot.options$xlabel
     fp.title = plot.options$fp.title
     user.ticks = plot.options$xticks
@@ -1121,7 +1135,7 @@ draw.data.col <- function(forest.data, j, color.overall = "black",
     if (!is.null(forest.data$options$show.summary.line)) {
         if (forest.data$options$show.summary.line == TRUE) {
           # draw vertical line for summary
-            grid.lines(x=unit(effects$ES[length(effects$ES)], "native"),
+            grid.lines(x=unit(summary.est, "native"),
             y=0:1, gp=gpar(lty = summary.line.pat, col= summary.line.col))
         }
     }  
@@ -1145,25 +1159,18 @@ draw.data.col <- function(forest.data, j, color.overall = "black",
             to.make.ticks <- range(exp(plot.range))
             ticks <- axTicks(1, axp=c(to.make.ticks, 3), usr=c(-100, 100), log=TRUE)
             log.ticks <- log(ticks)
+            log.ticks <- c(log.ticks, plot.range, summary.est)
             lower.bound <- min(plot.range)
             upper.bound <- max(plot.range)
-            # find the largest tick mark less than the lower bound of plot.range, if there is one.
-            if (log.ticks[1] <= lower.bound) {
-                min.tick <- max(log.ticks[log.ticks <= lower.bound])
-            }
-            # find the smallest tick mark greater than the upper bound of plot.range, if there is one.
-            if (log.ticks[length(log.ticks)] >= upper.bound) {
-                max.tick <- min(log.ticks[log.ticks >= upper.bound])
-            }
-		        log.ticks <- log.ticks[log.ticks >= min.tick]    # remember it is additive on this scale
-            log.ticks <- log.ticks[log.ticks <= max.tick]
+		        log.ticks <- log.ticks[log.ticks >= lower.bound]    # remember it is additive on this scale
+            log.ticks <- log.ticks[log.ticks <= upper.bound]
             ticks <- exp(log.ticks)
             changed.params$fp_xticks <- ticks
         } else {
 		        ticks <- user.ticks
             log.ticks <- log(user.ticks)
         }
-        grid.xaxis(at = log.ticks , label = round(ticks, 3), gp=gpar(cex=0.6))          
+        grid.xaxis(at = log.ticks , label = round(ticks, 2), gp=gpar(cex=0.6))          
     }
    
     if (forest.data$scale == "logit")  {
@@ -1176,7 +1183,7 @@ draw.data.col <- function(forest.data, j, color.overall = "black",
         } else {
 		        ticks <- user.ticks
         }
-        grid.xaxis(at = ticks , label = round(ticks, 3), gp=gpar(cex=0.6))
+        grid.xaxis(at = ticks , label = round(ticks, 2), gp=gpar(cex=0.6))
     } 
     
     grid.text(x.axis.label, y=unit(-2, "lines"), gp=gpar(cex=0.8))
@@ -1247,10 +1254,11 @@ calc.tick.marks <- function(plot.range, scale) {
           lb <- min(plot.range)
           ub <- max(plot.range)
           to.make.ticks <- c(lb, ub)
-          calc.ticks <- axTicks(1, axp=c(to.make.ticks, 4))
-          changed.params$fp_xticks <- calc.ticks
+          ticks <- axTicks(1, axp=c(to.make.ticks, 4))
+          ticks <- c(ticks, summary.est)
+          changed.params$fp_xticks <- ticks
         } else {
-		        calc.ticks <- user.ticks
+		        ticks <- user.ticks
         }
         grid.xaxis(at = ticks , label = round(ticks, 3), gp=gpar(cex=0.6))
   }      
@@ -1358,7 +1366,6 @@ create.plot.options <- function(forest.data, gapSize, plotWidth) {
  
 two.forest.plots <- function(forest.data, outpath) {
    # draw two forest plots side by side.
-   
    forest.data1 <- forest.data$left
    forest.data2 <- forest.data$right
    forest.data1 <- format.data.cols(forest.data1)
@@ -1396,20 +1403,23 @@ two.forest.plots <- function(forest.data, outpath) {
    else{
       pdf(file=outpath, width = how.wide1 + how.wide2 + 1, height = how.tall+2) 
    }
+   grid.newpage()
    #pushViewport(viewport(layout=grid.layout(1,2)))
    #pushViewport(viewport(layout=grid.layout(1,2), width=how.wide1 + how.wide2))
-   pushViewport(viewport(layout=grid.layout(1,2, widths=c(how.wide1,how.wide2))))
+   pushViewport(viewport(layout=grid.layout(nrow=1,ncol=2, widths=c(how.wide1,how.wide2))))
    
    pushViewport(viewport(layout=viewport.layout1, layout.pos.col=1))
    #pushViewport(viewport(layout.pos.col=1))
-   draw.forest.plot(forest.data1)   
+   changed.params <- draw.forest.plot(forest.data1) 
+   # Only saving params changes for the left forest plot, because currently plot edit
+   # can't handle two sets of params values for xticks or plot bounds.
+   # Could be changed in future.
    popViewport()
    pushViewport(viewport(layout=viewport.layout2,layout.pos.col=2))
-   #pushViewport(viewport(layout.pos.col=2))
    draw.forest.plot(forest.data2)
    popViewport()
-   
    graphics.off()
+   changed.params
 }
 
 #######################################
