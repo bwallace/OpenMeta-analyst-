@@ -279,8 +279,8 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         axis(1, pos=c(0,0))
         axis(2, pos=c(0,0))
         title(xlab="1 - Specificity", ylab="Sensitivity")
-        #sroc.plot(sroc.plot.data, outpath=sroc.path)
-        subgroup.sroc.plot(sroc.plot.data, color="blue", sym.index=1)
+        sroc.plot(sroc.plot.data, outpath=sroc.path)
+        #subgroup.sroc.plot(sroc.plot.data, color="blue", sym.index=1)
         graphics.off()
         # we use the system time as our unique-enough string to store
         # the params object
@@ -344,16 +344,15 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
             # create ma summaries and single (not side-by-side) forest plots.
             #pretty.names <- eval(call(paste(fnames[count],".pretty.names",sep="")))
             results.tmp <- eval(call(fnames[count], diagnostic.data, params.list[[count]]))
-            if (is.null(params.list[[count]]$create.plot)) {
-               # create plot
-              images.tmp <- results.tmp$image
-              names(images.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
-              images <- c(images, images.tmp)
-              plot.params.paths.tmp <- results.tmp$plot_params_paths
-              names(plot.params.paths.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$", params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
-              plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
-              plot.names <- c(plot.names, results.tmp$plot_names)
-            }
+            #if (is.null(params.list[[count]]$create.plot)) {
+            images.tmp <- results.tmp$image
+            names(images.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
+            images <- c(images, images.tmp)
+            plot.params.paths.tmp <- results.tmp$plot_params_paths
+            names(plot.params.paths.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$", params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
+            plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
+            plot.names <- c(plot.names, results.tmp$plot_names)
+            #}
             summary.tmp <- list("Summary"=results.tmp$Summary)
             names(summary.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Summary", sep="")
             results <- c(results, summary.tmp)

@@ -190,7 +190,7 @@ loo.ma.binary <- function(fname, binary.data, params){
     # update params values
      # we use the system time as our unique-enough string to store
     # the params object
-    forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
+    forest.plot.params.path <- save.data(binary.data, res=loo.results, params, plot.data)
     #
     # Now we package the results in a dictionary (technically, a named 
     # vector). In particular, there are two fields that must be returned; 
@@ -296,7 +296,7 @@ cum.ma.continuous <- function(fname, cont.data, params){
     params[names(changed.params)] <- changed.params
     # we use the system time as our unique-enough string to store
     # the params object
-    forest.plot.params.path <- save.data(binary.data, res, params, two.plot.data)
+    forest.plot.params.path <- save.data(cont.data, res=cum.results, params, two.plot.data)
     #
     # Now we package the results in a dictionary (technically, a named 
     # vector). In particular, there are two fields that must be returned; 
@@ -401,7 +401,7 @@ loo.ma.continuous <- function(fname, cont.data, params){
     # update params values
      # we use the system time as our unique-enough string to store
     # the params object
-    forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
+    forest.plot.params.path <- save.data(cont.data, res=loo.results, params, plot.data)
     #
     # Now we package the results in a dictionary (technically, a named 
     # vector). In particular, there are two fields that must be returned; 
@@ -574,7 +574,7 @@ subgroup.ma.continuous <- function(fname, cont.data, params){
     # update params values
     # we use the system time as our unique-enough string to store
     # the params object
-    forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
+    forest.plot.params.path <- save.data(cont.data, res, params, plot.data)
     # Now we package the results in a dictionary (technically, a named 
     # vector). In particular, there are two fields that must be returned; 
     # a dictionary of images (mapping titles to image paths) and a list of texts
@@ -851,7 +851,7 @@ multiple.loo.diagnostic <- function(fnames, params.list, diagnostic.data) {
             # create ma summaries and single (not side-by-side) forest plots.
             #pretty.names <- eval(call(paste(fnames[count],".pretty.names",sep="")))
             results.tmp <- loo.ma.diagnostic(fnames[[count]], diagnostic.data, params.list[[count]])
-            if (is.null(params.list[[count]]$create.plot)) {
+            #if (is.null(params.list[[count]]$create.plot)) {
                # create plot
               images.tmp <- results.tmp$images
               names(images.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
@@ -860,7 +860,7 @@ multiple.loo.diagnostic <- function(fnames, params.list, diagnostic.data) {
               names(plot.params.paths.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$", params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
               plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
               plot.names <- c(plot.names, results.tmp$plot.names)
-            }
+            #}
             summary.tmp <- list("Summary"=results.tmp$Summary)
             names(summary.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Summary", sep="")
             results <- c(results, summary.tmp)
@@ -945,7 +945,7 @@ loo.ma.diagnostic <- function(fname, diagnostic.data, params){
         # update params values
         # we use the system time as our unique-enough string to store
         # the params object
-        forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
+        forest.plot.params.path <- save.data(diagnostic.data, res=loo.results, params, plot.data)
         #
         # Now we package the results in a dictionary (technically, a named 
         # vector). In particular, there are two fields that must be returned; 
@@ -996,8 +996,8 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
     # wrapper for applying subgroup method to multiple diagnostic functions and metrics    
 
     ####
-    # fnames -- names of diagnostic meta-analytic functions to call
-    # params.list -- parameter lists to be passed along to the functions in
+    # fnames -- list of names of diagnostic meta-analytic functions to call
+    # params.list -- list parameter lists to be passed along to the functions in
     #              fnames
     # diagnostic.data -- the (diagnostic data) that is to be analyzed 
     ###
@@ -1223,7 +1223,7 @@ subgroup.ma.diagnostic <- function(fname, diagnostic.data, params, selected.cov)
         # update params values
         # we use the system time as our unique-enough string to store
         # the params object
-        forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
+        forest.plot.params.path <- save.data(diagnostic.data, res, params, plot.data)
         # Now we package the results in a dictionary (technically, a named 
         # vector). In particular, there are two fields that must be returned; 
         # a dictionary of images (mapping titles to image paths) and a list of texts
