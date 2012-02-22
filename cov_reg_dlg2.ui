@@ -19,7 +19,7 @@
    <string>select covariates</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="images/icons.qrc">
+   <iconset>
     <normaloff>:/images/meta.png</normaloff>:/images/meta.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -91,7 +91,7 @@
       <item>
        <widget class="QRadioButton" name="fixed_effects_radio">
         <property name="text">
-         <string>fixed effects</string>
+         <string>fixed effect</string>
         </property>
        </widget>
       </item>
@@ -119,7 +119,4 @@
   <include location="images/icons.qrc"/>
  </resources>
  <connections/>
- <buttongroups>
-  <buttongroup name="buttonGroup"/>
- </buttongroups>
 </ui>
