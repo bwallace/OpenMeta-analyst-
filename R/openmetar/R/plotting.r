@@ -827,7 +827,7 @@ forest.plot <- function(forest.data, outpath) {
   # to save an iamge to my.pngimg.pdf, it will save it instead
   # as a png. on the other hand, why would someone do that?
   if (length(grep(".png", outpath)) != 0){
-      png(file=outpath, width = how.wide+1, height = how.tall+2 , units = "in", res = 144) 
+      png(file=outpath, width = how.wide, height = how.tall+2 , units = "in", res = 144) 
   }
   else{
       pdf(file=outpath, width = how.wide+1, height = how.tall+2) 
@@ -863,6 +863,43 @@ create.grobs <- function(forest.data) {
     forest.data
 }
 
+additional.columns <- function(forest.data, font = "bold") {
+    # Gets data for effect sizes column (col 2) and raw data (cols 3 and 4),
+    # if user has chosen to display them.
+    additional.columns <- vector("list", length(forest.data$additional.col.data))
+    
+    for (j in 1:length(forest.data$additional.col.data)){
+        content<-rep(NA, length(forest.data$label))
+
+        for (i in 1:length(forest.data$label)){
+          if ((forest.data$types[i] == 1) || (forest.data$types[i] == 2))
+            content[i] <- list(textGrob(forest.data$additional.col.data[[j]][[i]], 
+                      x=1, just = "right", gp = gpar(fontface = "bold", fontfamily="mono", fontsize="10")))
+          else
+            content[i] <- list(textGrob(forest.data$additional.col.data[[j]][[i]], 
+                      x=1, just = "right", gp = gpar(fontface = "plain", fontfamily="mono", fontsize="10")))
+        }
+        rows <- forest.data$rows
+        additional.columns[[j]] <-list(content = content, rows = rows)
+    }
+    additional.columns
+}
+
+study.column <- function(forest.data, title.font="bold") {
+    # Gets data for the study name column
+    # called by draw.forest.plot
+    content<-rep(NA, length(forest.data$label))
+    for (i in 1:length(forest.data$label)){
+      if (forest.data$types[i] !=  0)
+        content[i] <- list(textGrob(forest.data$label[i], x=0, just = "left", gp = gpar(fontface = title.font, fontsize="10")))
+      else
+        content[i] <- list(textGrob(forest.data$label[i], x=0, just = "left", gp = gpar(fontface = "plain", fontsize="10")))
+    }
+        
+    study.column.list <- list(content = content)
+    study.column.list
+}
+
 calc.viewport.layout <- function(forest.data, just){
     # Calculates layout for forest plot viewport
     if (length(forest.data$additional.col.data)>0 ){
@@ -891,7 +928,7 @@ calc.viewport.layout <- function(forest.data, just){
 }
 
 calc.forest.plot.size <- function(forest.data){
-    # Calculates width and height for the output png file
+    # Calculates width and height or the plot.
     show.study.col <- forest.data$options$show.study.col
     if (length(forest.data$additional.col.data)>0 ){
         num.additional.cols <- length(forest.data$additional.cols.grob)    
@@ -925,10 +962,14 @@ calc.forest.plot.size <- function(forest.data){
         
     if (length(width.list) > 0) {
         how.wide <- sum(convertX(unit.c(width.list) , "inches" , valueOnly=TRUE ) )  + 
-                    length(width.list)*   convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )   + 
-                    convertX(forest.plot.params$effect.col.width, "inches" , valueOnly=TRUE ) 
+                    # width of data columns
+                    convertX(forest.plot.params$effect.col.width, "inches" , valueOnly=TRUE ) +
+                    # width of actual forest plot
+                    2 * convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )
+                    # two extra column gap widths for spaceing.
     } else {
-        how.wide <- convertX(forest.plot.params$effect.col.width, "inches" , valueOnly=TRUE )
+        how.wide <- convertX(forest.plot.params$effect.col.width, "inches" , valueOnly=TRUE ) +
+                    2 * convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )
     }
     plot.size <- list("how.wide"=how.wide, "how.tall"=how.tall, "data.col.width"=data.col.width)
 }
@@ -1044,45 +1085,6 @@ draw.forest.plot <- function(forest.data){
                              )
     changed.params
 }
-
-study.column <- function(forest.data, title.font="bold") {
-    # Gets data for the study name column
-    # called by draw.forest.plot
-    content<-rep(NA, length(forest.data$label))
-    for (i in 1:length(forest.data$label)){
-      if (forest.data$types[i] !=  0)
-        content[i] <- list(textGrob(forest.data$label[i], x=0, just = "left", gp = gpar(fontface = title.font, fontsize="10")))
-      else
-        content[i] <- list(textGrob(forest.data$label[i], x=0, just = "left", gp = gpar(fontface = "plain", fontsize="10")))
-    }
-        
-    study.column.list <- list(content = content)
-    study.column.list
-}
-
-additional.columns <- function(forest.data, font = "bold") {
-    # Gets data for effect sizes column (col 2) and raw data (cols 3 and 4),
-    # if user has chosen to display them.
-    # called by draw.forest.plot  
-    additional.columns <- vector("list", length(forest.data$additional.col.data))
-    
-    for (j in 1:length(forest.data$additional.col.data)){
-        content<-rep(NA, length(forest.data$label))
-
-        for (i in 1:length(forest.data$label)){
-          if ((forest.data$types[i] == 1) || (forest.data$types[i] == 2))
-            content[i] <- list(textGrob(forest.data$additional.col.data[[j]][[i]], 
-                      x=1, just = "right", gp = gpar(fontface = "bold", fontfamily="mono", fontsize="10")))
-          else
-            content[i] <- list(textGrob(forest.data$additional.col.data[[j]][[i]], 
-                      x=1, just = "right", gp = gpar(fontface = "plain", fontfamily="mono", fontsize="10")))
-        }
-        rows <- forest.data$rows
-        additional.columns[[j]] <-list(content = content, rows = rows)
-    }
-    additional.columns
-}
-
 
 # Function to draw a cell in a text column
 draw.label.col <- function(col, j, rows) {
@@ -1397,25 +1399,24 @@ two.forest.plots <- function(forest.data, outpath) {
    how.tall1 <- plot.size1$how.tall
    how.tall2 <- plot.size2$how.tall
    how.tall <- max(how.tall1, how.tall2)
+   pushViewport(viewport(layout=grid.layout(nrow=1,ncol=2, widths=c(how.wide1,how.wide2))))
+ 
    if (length(grep(".png", outpath)) != 0){
       png(file=outpath, width = how.wide1 + how.wide2, height = how.tall+1 , units = "in", res = 144) 
    }
    else{
       pdf(file=outpath, width = how.wide1 + how.wide2 + 1, height = how.tall+2) 
    }
-   grid.newpage()
-   #pushViewport(viewport(layout=grid.layout(1,2)))
-   #pushViewport(viewport(layout=grid.layout(1,2), width=how.wide1 + how.wide2))
-   pushViewport(viewport(layout=grid.layout(nrow=1,ncol=2, widths=c(how.wide1,how.wide2))))
-   
    pushViewport(viewport(layout=viewport.layout1, layout.pos.col=1))
-   #pushViewport(viewport(layout.pos.col=1))
    changed.params <- draw.forest.plot(forest.data1) 
    # Only saving params changes for the left forest plot, because currently plot edit
    # can't handle two sets of params values for xticks or plot bounds.
    # Could be changed in future.
    popViewport()
-   pushViewport(viewport(layout=viewport.layout2,layout.pos.col=2))
+   pushViewport(viewport(x=.49, layout=viewport.layout2,layout.pos.col=2))
+   # x=.49 moves the right plot a bit to the left so that the rightmost tick mark doesn't get cut off.
+   # Seems to be necessary because the right plot is right justified and the rightmost tick
+   # mark extends slightly to the right of plot range. No doubt there is a better way to do this.
    draw.forest.plot(forest.data2)
    popViewport()
    graphics.off()
@@ -1775,16 +1776,4 @@ calculate.radii <- function(inv.var, max.symbol.size, max.ratio) {
         C <- max.symbol.size / (inv.var.max)^exponent
     }
     radii <- C * inv.var^exponent
-} 
-
-find.exp <- function(x) {
-  # for a number in (0, 1], find the abs. value of the exponent of x in scientific notation. 
-  # 
-  exp <- 0
-  if ((x > 0) & (x <= 1)) {
-    while (10^(-exp) > x) {
-      exp <- exp + 1
-    }   
-  }
-  exp
 }
