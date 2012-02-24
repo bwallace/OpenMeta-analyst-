@@ -2,7 +2,7 @@ body {
   background: #ffffff;
   font-family: Georgia, "Times New Roman",
         Times, serif;
-  PADDING-RIGHT: 30px; PADDING-LEFT: 30px; PADDING-BOTTOM: 0px; MARGIN: 0px; COLOR: #564b47; PADDING-TOP: 20px; FONT-FAMILY: Verdana, Helvetica; BACKGROUND-COLOR: white;
+  PADDING-RIGHT: 30px; PADDING-LEFT: 20px; PADDING-BOTTOM: 0px; MARGIN: 0px; COLOR: #564b47; PADDING-TOP: 20px; FONT-FAMILY: Verdana, Helvetica; BACKGROUND-COLOR: white;
 }
 
 p {
@@ -11,8 +11,8 @@ p {
 }
 
 img { 
-  PADDING-RIGHT: 10px; PADDING-LEFT: 10px; PADDING-BOTTOM: 10px; MARGIN: 0px; PADDING-TOP: 10px;
-  text-align: center;
+  PADDING-RIGHT: 10px; PADDING-LEFT: 0px; PADDING-BOTTOM: 10px; MARGIN: 0px; PADDING-TOP: 10px;
+  text-align: left;
 }
 
 h1 {
