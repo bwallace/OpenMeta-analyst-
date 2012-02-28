@@ -22,11 +22,13 @@ library("grid")
 create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     # Creates a data structure that can be passed to forest.plot
     # res is the output of a call to the Metafor function rma
-    scale.str <- "standard"
+    
     if (metric.is.log.scale(params$measure)){
         scale.str <- "log" 
     } else if (metric.is.logit.scale(params$measure)) {
         scale.str <- "logit"
+    } else {
+        scale.str <- "standard"
     }
     if ("ContinuousData" %in% class(om.data)) {
         transform.name <-"continuous.transform.f"
@@ -568,7 +570,13 @@ create.subgroup.plot.data.cont <- function(subgroup.data, params) {
 
 # create regression plot data
 create.plot.data.reg <- function(reg.data, params, fitted.line) {
-     scale.str <- "standard"
+     if (metric.is.log.scale(params$measure)){
+        scale.str <- "log" 
+     } else if (metric.is.logit.scale(params$measure)) {
+        scale.str <- "logit"
+     } else {
+        scale.str <- "standard"
+     }
      cov.name <- reg.data@covariates[[1]]@cov.name
      cov.vals <- reg.data@covariates[[1]]@cov.vals
      plot.data <- list("fitted.line" = fitted.line,
@@ -1431,112 +1439,58 @@ meta.regression.plot <- function(plot.data, outpath) {
     lweight = 1
     lpattern = "solid"
     lcol = "blue"
+    ES <- plot.data$effects$ES
+    se <- plot.data$effects$se
     # make the data data.frame
     data.reg <- data.frame(plot.data$effects, types=plot.data$types)
     # data for plot (only keep the studies - not the summaries)
     data.reg <- subset(data.reg, types==0)
     cov.name <- plot.data$covariate$varname
     cov.values <- plot.data$covariate$values
-    # calculate radii of circles
-    se <- plot.data$effects$se
-    inv.var <- 1 / se^2
-    max.symbol.size <- .5
-    # radius of the largest circle
-    max.ratio <- 5 
-    # ratio of radii of largest circle to smallest circle
-    radii <- calculate.radii(inv.var, max.symbol.size, max.ratio)
-    # radii are scaled by a function of the form C x^exp, where 
-    # exp = 1 if the ratio of the maximum of inv.var to the minimum of inv.var is
-    # less than max.ratio. Otherwise, exp < 1 and C are calculated from 
-    # max.ratio and the max and min of inv.var. 
+    x.range.min <- min(cov.values)
+    x.range.max <- max(cov.values)
+    x.range <- x.range.max - x.range.min
+    x.min <- x.range.min - (x.range / 5)
+    x.max <- x.range.max + (x.range / 5)
+    y.range.min <- min(ES)
+    y.range.max <- max(ES)
+    y.range <- y.range.max - y.range.min
+    y.min <- y.range.min - (y.range / 5)
+    y.max <- y.range.max + (y.range / 5)
+
     if (length(grep(".png", outpath)) != 0){
         png(file=outpath, width=10 , height=5, units="in", res=144)
     } else {
         pdf(file=outpath, width=10 , height=5)
     }
-    
-    #depends on whether these are natural or log
-    plot(y = data.reg$ES, x=cov.values, xlab=plot.data$xlabel, ylab=plot.data$ylabel, type='n')
-    if (plot.data$scale == "standard"){
-        symbols(y = data.reg$ES, x=cov.values, circles=plot.data$sym.size*radii,
-                inches=FALSE, 
+
+    plot(y = data.reg$ES, x=cov.values,
+                          xlim=c(x.min, x.max),
+                          ylim=c(y.min, y.max),
+                          xlab=plot.data$xlabel, 
+                          ylab=plot.data$ylabel, type='n')
+    symbols(y = data.reg$ES, x=cov.values, 
+                circles = 1 / data.reg$se,
+                inches=.3, 
                 bty=plot.data$plotregion, add=TRUE)
-    }
-    else{ 
-        symbols(y=data.reg$ES, x = cov.values, circles = plot.data$sym.size*radii, 
-                inches=FALSE,
-                bty=plot.data$plotregion, add=TRUE)
-    }
-    # note that i am assuming you have
-    # the untransformed coefficient from the meta-reg
-    # so i am doing no transformation
     if (plot.data$regline)  {
-       x<-c(min(cov.values), max(cov.values))
+       x<-c(x.range.min, x.range.max)
        y<-c (plot.data$fitted.line$intercept + 
-                min(cov.values)*plot.data$fitted.line$slope, plot.data$fitted.line$intercept + 
-                max(cov.values)*plot.data$fitted.line$slope)
+                x.range.min*plot.data$fitted.line$slope, plot.data$fitted.line$intercept + 
+                x.range.max*plot.data$fitted.line$slope)
        lines(x, y, col=lcol, lwd=lweight, lty=lpattern)
     }
     # write the plot data out to disk
     graphics.off()
 }
 
-#######################################
-#       Diagnostic SROC               #
-#######################################
-
-sroc.plot <- function(plot.data, outpath){
-    symSize <- 1
-    lcol = "blue"
-    lweight = 1
-    lpattern = "solid"
-    plotregion = "n"
-    mcolor = "blue"
-    fitted.line <- plot.data$fitted.line
-    weighted <- plot.data$weighted
-    TPR <- plot.data$TPR
-    FPR <- plot.data$FPR
-    s.range <- plot.data$s.range
-    xlabel <- plot.data$plot.options$roc.xlabel
-    ylabel <- plot.data$plot.options$roc.ylabel
-    title <- plot.data$plot.options$roc.title
-    png(file=outpath, width=5 , height=5, units="in", res=144)
-    if (weighted == TRUE) {
-        inv.var <- plot.data$inv.var    
-        max.symbol.size <- .05
-        # radius of the largest circle
-        max.ratio <- 10
-        # ratio of radii of largest circle to smallest circle
-        radii <- calculate.radii(inv.var, max.symbol.size, max.ratio)
-        symbols(y = plot.data$TPR, x = plot.data$FPR, circles = symSize*radii, inches=FALSE,
-              xlab = xlabel, ylab = label, main=title, xlim = c(0,1), ylim = c(0,1), bty = plotregion, fg = mcolor)
-    } else {
-        radii <- .01*rep(1, length(TPR))
-        symbols(y = plot.data$TPR, x = plot.data$FPR, circles = radii, inches=FALSE,
-              xlab = xlabel, ylab = ylabel, main=title, xlim = c(0,1), ylim = c(0,1), bty = plotregion, fg = mcolor)     
-    }
-    # create regression line values
-    s.vals <- seq(from = s.range$min, to = s.range$max, by=.001)
-    d.vals <- fitted.line$intercept + fitted.line$slope * s.vals
-    # transform regression line coords to TPR by 1 - FPR coords
-    tpr.vals <- invlogit((s.vals + d.vals) / 2)
-    fpr.vals <- invlogit((s.vals - d.vals) / 2)
-    lines(fpr.vals, tpr.vals, col = lcol, lwd = lweight, lty = lpattern)
-    graphics.off()
-}
-
-#######################################
-#      Subgroup Diagnostic SROC       #
-#######################################
-#
-## TO DO - combine this with sroc plot - only difference is extra params.
-#
-subgroup.sroc.plot <- function(plot.data, color, sym.index){
+######################################
+#          Diagnostic SROC           #
+######################################
+sroc.plot <- function(plot.data){
     # draw an SROC plot.
-    # color - rgb color for the points and lines
-    # sym.index - integer specifying symbols for points by pch=sym.index 
-    symSize <- 1
-    #lcol = "darkred"
+    lcol <- "blue"
+    sym.size <- .03
     lweight = 1
     lpatern = "solid"
     plotregion = "n"
@@ -1544,29 +1498,31 @@ subgroup.sroc.plot <- function(plot.data, color, sym.index){
     weighted <- plot.data$weighted
     TPR <- plot.data$TPR
     FPR <- plot.data$FPR
+    xlab="1 - Specificity" 
+    ylab="Sensitivity"
     s.range <- plot.data$s.range
-   
-    if (weighted == TRUE) {
-        inv.var <- plot.data$inv.var    
-        max.symbol.size <- .05
-        # radius of the largest circle
-        max.ratio <- 10
-        # ratio of radii of largest circle to smallest circle
-        radii <- calculate.radii(inv.var, max.symbol.size, max.ratio)
-        symbols(y = plot.data$TPR, x = plot.data$FPR, circles = symSize*radii, inches=FALSE,
-              xlab = xlabel, ylab = ylabel, main=title, xlim = c(0,1), ylim = c(0,1), bty = plotregion, fg = color)
+    if (length(grep(".png", outpath)) != 0){
+        png(file=outpath, width=10 , height=5, units="in", res=144)
     } else {
-        radii <- .01*rep(1, length(TPR))
-        points(y = plot.data$TPR, x = plot.data$FPR,
-              xlim = c(0,1), ylim = c(0,1), bty = plotregion, col = color, pch=sym.index)     
+        pdf(file=outpath, width=10 , height=5)
     }
+    plot(y = NULL, x=NULL, xlim=c(0, 1),
+                           ylim=c(0, 1),
+                           xlab=xlab, 
+                           ylab=ylab, 
+                           asp=1,
+                           type='n')
+    
+    symbols(y = plot.data$TPR, x = plot.data$FPR,
+              bty = plotregion, circles=rep(1, length(TPR)), col = "black", inches=sym.size, add=TRUE)
+    
     # create regression line values
     s.vals <- seq(from = s.range$min, to = s.range$max, by=.001)
     d.vals <- fitted.line$intercept + fitted.line$slope * s.vals
     # transform regression line coords to TPR by 1 - FPR coords
     tpr.vals <- invlogit((s.vals + d.vals) / 2)
     fpr.vals <- invlogit((s.vals - d.vals) / 2)
-    lines(fpr.vals, tpr.vals, col = color, lwd = lweight, lty = lpatern)
+    lines(fpr.vals, tpr.vals, col = lcol, lwd = lweight, lty = lpatern)
 }
 
 ################################################
@@ -1759,21 +1715,36 @@ check.label <- function(label, split.str) {
     label.info
 }  
     
-calculate.radii <- function(inv.var, max.symbol.size, max.ratio) {
+calculate.radii <- function(plot.data, inv.var, max.symbol.size, max.ratio) {
     # calculates radii of symbols for a meta-regression plot
     # using a scaling function f(x) = C * x^e.
     # inv.var is a vector of inverse variances,
     # max.symbol.size is the maximum size for a symbol, and max.ratio is the maximum ratio of symbol sizes.
-
-    inv.var.max <- max(inv.var)
+    ES <- plot.data$effects$ES
+    inv.var <- (plot.data$effects$se)^2
+    cov.values <- plot.data$covariate$values
+    x.range.min <- min(cov.values)
+    x.range.max <- max(cov.values)
+    x.range <- x.range.max - x.range.min
+    y.range.min <- min(ES)
+    y.range.max <- max(ES)
+    y.range <- y.range.max - y.range.min
+    min.range <- min(x.range, y.range)
     inv.var.min <- min(inv.var)
-    if ((inv.var.max / inv.var.min) <= max.ratio) {
-        C <- max.symbol.size / inv.var.max
-        exponent <- 1
-    } else {
-        min.symbol.size <- max.symbol.size / max.ratio
-        exponent <- log(max.ratio)/log(inv.var.max / inv.var.min)
-        C <- max.symbol.size / (inv.var.max)^exponent
-    }
-    radii <- C * inv.var^exponent
+    inv.var.max <- max(inv.var)
+    inv.var.ratio <- inv.var.max / inv.var.min
+    radius.max <- min.range / 10
+    
+    
+    #inv.var.max <- max(inv.var)
+    #inv.var.min <- min(inv.var)
+    #if ((inv.var.max / inv.var.min) <= max.ratio) {
+    #    C <- max.symbol.size / inv.var.max
+    #    exponent <- 1
+    #} else {
+    #    min.symbol.size <- max.symbol.size / max.ratio
+    #    exponent <- log(max.ratio)/log(inv.var.max / inv.var.min)
+     #   C <- max.symbol.size / (inv.var.max)^exponent
+    #}
+    radii <- (radius.max / inv.var.max) * inv.var
 }

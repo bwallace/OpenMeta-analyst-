@@ -275,12 +275,7 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         sroc.path <- "./r_tmp/roc.png"
         png(file=sroc.path, width=5 , height=5, units="in", res=144)
         sroc.plot.data <- create.sroc.plot.data(diagnostic.data, params=params.sens)
-        plot.new()
-        axis(1, pos=c(0,0))
-        axis(2, pos=c(0,0))
-        title(xlab="1 - Specificity", ylab="Sensitivity")
-        sroc.plot(sroc.plot.data, outpath=sroc.path)
-        #subgroup.sroc.plot(sroc.plot.data, color="blue", sym.index=1)
+        sroc.plot(sroc.plot.data)
         graphics.off()
         # we use the system time as our unique-enough string to store
         # the params object

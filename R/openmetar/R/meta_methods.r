@@ -1270,8 +1270,6 @@ create.subgroup.side.by.side.plot.data <- function(subgroup.data, params) {
     params.left$fp_show_col1 <- 'TRUE'
     params.right$fp_show_col1 <- 'FALSE'
     # only show study names on the left plot
-    #res.left <- res$left
-    #res.right <- res$right    
     subgroup.data.left <- subgroup.data$left
     subgroup.data.right <- subgroup.data$right
     
