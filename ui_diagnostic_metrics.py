@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'diagnostic_metrics.ui'
 #
-# Created: Wed Feb 29 15:15:00 2012
+# Created: Wed Feb 29 15:20:36 2012
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -18,7 +18,7 @@ class Ui_diag_metric(object):
     def setupUi(self, diag_metric):
         diag_metric.setObjectName(_fromUtf8("diag_metric"))
         diag_metric.setWindowModality(QtCore.Qt.ApplicationModal)
-        diag_metric.resize(300, 147)
+        diag_metric.resize(348, 140)
         diag_metric.setMinimumSize(QtCore.QSize(250, 140))
         diag_metric.setMaximumSize(QtCore.QSize(10000, 10000))
         font = QtGui.QFont()
@@ -28,8 +28,8 @@ class Ui_diag_metric(object):
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/images/meta.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         diag_metric.setWindowIcon(icon)
-        self.formLayout = QtGui.QFormLayout(diag_metric)
-        self.formLayout.setObjectName(_fromUtf8("formLayout"))
+        self.gridLayout_2 = QtGui.QGridLayout(diag_metric)
+        self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
         self.metrics_grp_box = QtGui.QGroupBox(diag_metric)
         self.metrics_grp_box.setTitle(QtGui.QApplication.translate("diag_metric", "select metrics for analysis", None, QtGui.QApplication.UnicodeUTF8))
         self.metrics_grp_box.setObjectName(_fromUtf8("metrics_grp_box"))
@@ -60,7 +60,7 @@ class Ui_diag_metric(object):
         spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.gridLayout.addItem(spacerItem, 1, 0, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
-        self.formLayout.setWidget(0, QtGui.QFormLayout.LabelRole, self.metrics_grp_box)
+        self.gridLayout_2.addWidget(self.metrics_grp_box, 0, 0, 1, 1)
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         spacerItem1 = QtGui.QSpacerItem(200, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
@@ -70,7 +70,7 @@ class Ui_diag_metric(object):
         self.btn_ok.setText(QtGui.QApplication.translate("diag_metric", "next >", None, QtGui.QApplication.UnicodeUTF8))
         self.btn_ok.setObjectName(_fromUtf8("btn_ok"))
         self.horizontalLayout.addWidget(self.btn_ok)
-        self.formLayout.setLayout(1, QtGui.QFormLayout.LabelRole, self.horizontalLayout)
+        self.gridLayout_2.addLayout(self.horizontalLayout, 1, 0, 1, 1)
 
         self.retranslateUi(diag_metric)
         QtCore.QMetaObject.connectSlotsByName(diag_metric)
