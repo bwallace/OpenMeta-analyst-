@@ -21,8 +21,8 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>300</width>
-    <height>147</height>
+    <width>10000</width>
+    <height>10000</height>
    </size>
   </property>
   <property name="font">
@@ -37,7 +37,7 @@
    <iconset resource="images/icons.qrc">
     <normaloff>:/images/meta.png</normaloff>:/images/meta.png</iconset>
   </property>
-  <layout class="QFormLayout" name="formLayout_2">
+  <layout class="QFormLayout" name="formLayout">
    <item row="0" column="0">
     <widget class="QGroupBox" name="metrics_grp_box">
      <property name="title">
