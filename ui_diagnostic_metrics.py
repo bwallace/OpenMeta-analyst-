@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'diagnostic_metrics.ui'
 #
-# Created: Wed Feb 29 15:20:36 2012
+# Created: Wed Feb 29 15:22:42 2012
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -18,7 +18,7 @@ class Ui_diag_metric(object):
     def setupUi(self, diag_metric):
         diag_metric.setObjectName(_fromUtf8("diag_metric"))
         diag_metric.setWindowModality(QtCore.Qt.ApplicationModal)
-        diag_metric.resize(348, 140)
+        diag_metric.resize(348, 160)
         diag_metric.setMinimumSize(QtCore.QSize(250, 140))
         diag_metric.setMaximumSize(QtCore.QSize(10000, 10000))
         font = QtGui.QFont()
