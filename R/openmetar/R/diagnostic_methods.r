@@ -255,28 +255,22 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         res.sens <- results.sens$Summary$MAResults
         res.spec <- results.spec$Summary$MAResults
         res <- list("left"=res.sens, "right"=res.spec)
-        
         plot.data <- create.side.by.side.plot.data(diagnostic.data.all, params=params.tmp, res=res)
-        
         forest.path <- paste(params.sens$fp_outpath, sep="")
         two.forest.plots(plot.data, outpath=forest.path)
            
         forest.plot.params.path <- save.data(om.data=diagnostic.data.all, res, params=params.tmp, plot.data)
         plot.params.paths.tmp <- c("Sensitivity and Specificity Forest Plot"=forest.plot.params.path)
         plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
-               
         images.tmp <- c("Sensitivity and Specificity Forest Plot"=forest.path)
         images <- c(images, images.tmp)
-        
         plot.names.tmp <- c("forest plot"="forest.plot")
         plot.names <- c(plot.names, plot.names.tmp)
         
         # create SROC plot
         sroc.path <- "./r_tmp/roc.png"
-        png(file=sroc.path, width=5 , height=5, units="in", res=144)
         sroc.plot.data <- create.sroc.plot.data(diagnostic.data, params=params.sens)
-        sroc.plot(sroc.plot.data)
-        graphics.off()
+        sroc.plot(sroc.plot.data, sroc.path)
         # we use the system time as our unique-enough string to store
         # the params object
         sroc.plot.params.path <- save.plot.data(sroc.plot.data)
@@ -355,9 +349,6 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
     }
     results <- c(results, list("images"=images, "plot_names"=plot.names, 
                                "plot_params_paths"=plot.params.paths))
-    #results$images <- images
-   # results$plot.names <- plot.names
-   # results$plot.params.paths <- plot.params.paths
     results
 }
 
@@ -608,7 +599,7 @@ diagnostic.random <- function(diagnostic.data, params){
         pretty.names <- diagnostic.random.pretty.names()
         pretty.metric <- eval(parse(text=paste("pretty.names$measure$", params$measure,sep="")))
         for (count in 1:length(summary.disp$table.titles)) {
-          summary.disp$table.titles[count] <- paste(pretty.metric, " -", summary.disp$table.titles[count], sep="")
+            summary.disp$table.titles[count] <- paste(pretty.metric, " -", summary.disp$table.titles[count], sep="")
         }
         #
         # generate forest plot 
@@ -695,25 +686,15 @@ create.sroc.plot.data <- function(diagnostic.data, params){
     S <- logit(TPR) + logit(FPR)
     D <- logit(TPR) - logit(FPR)
     s.range <- list("max"=max(S), "min"=min(S))
-    params$sroc.weighted <- FALSE
-    # remove if this is added in the GUI as a parameter.
-    
     inv.var <- data.adj$TP + data.adj$FN + data.adj$FP + data.adj$TN
-    if (params$sroc.weighted) {
-      # weighted linear regression
-      res <- lm(D ~ S, weights=inv.var)
-    } else {
-      # unweighted regression 
-      res <- lm(D~S)
-    }
+    res <- lm(D~S)
     fitted.line <- list(intercept=res$coefficients[1], slope=res$coefficients[2])
-    
     plot.options <- list()
     plot.options$roc.xlabel <- params$roc_xlabel
     plot.options$roc.ylabel <- params$roc_ylabel
     plot.options$roc.title <- params$roc_title
     # for future use as options from GUI
-    plot.data <- list("fitted.line" = fitted.line, "TPR"=TPR, "FPR"=FPR, "inv.var" = inv.var, "s.range" = s.range, "weighted"=params$sroc.weighted, "plot.options"=plot.options)
+    plot.data <- list("fitted.line" = fitted.line, "TPR"=TPR, "FPR"=FPR, "inv.var" = inv.var, "s.range" = s.range, "plot.options"=plot.options)
 }
 
 ###################################################

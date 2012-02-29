@@ -1126,6 +1126,7 @@ draw.data.col <- function(forest.data, j, color.overall = "black",
     x.axis.label <- plot.options$xlabel
     fp.title = plot.options$fp.title
     user.ticks = plot.options$xticks
+    label <- c()
     show.y.axis = plot.options$show.y.axis
     changed.params <- list()
     pushViewport(viewport(layout.pos.col=j, xscale=plot.range))
@@ -1158,12 +1159,17 @@ draw.data.col <- function(forest.data, j, color.overall = "black",
             ticks <- seq(from=xaxp[1], to=xaxp[2], by=(xaxp[2] - xaxp[1]) / xaxp[3])
         } else {
             ticks <- user.ticks
+            axis.range <- c(min(plot.range[1], ticks), max(plot.range[2], ticks))
             grid.xaxis(at = user.ticks , label = user.ticks, gp=gpar(cex=0.6))
+            grid.xaxis(at = plot.range, label = FALSE)
+            # Second call to grid.xaxis extends the axis to the plot range if necessary.
+            # Surely there is a better way to do this.
         }
     }
     
     if (forest.data$scale == "log")  {
-        if (is.na(user.ticks)) { 
+        log.ticks <- c()
+        if (is.na(user.ticks[1])) { 
             # Some cheap tricks to make the axis ticks look nice (in most cases)...
             # Note that "at'' is in log scale but 'label'' is in standard scale
             to.make.ticks <- range(exp(plot.range))
@@ -1175,12 +1181,25 @@ draw.data.col <- function(forest.data, j, color.overall = "black",
 		        log.ticks <- log.ticks[log.ticks >= lower.bound]    # remember it is additive on this scale
             log.ticks <- log.ticks[log.ticks <= upper.bound]
             ticks <- exp(log.ticks)
+            label <- round(ticks, 2)
             changed.params$fp_xticks <- ticks
         } else {
-		        ticks <- user.ticks
-            log.ticks <- log(user.ticks)
+		        ticks <- user.ticks[user.ticks > 0]
+            # no negative tick marks in log scale
+            if (length(ticks) > 0) {
+                ticks <- unique(ticks)
+                log.ticks <- log(sort(ticks))
+                label = round(ticks, 2)
+                axis.range <- c(min(plot.range[1], log.ticks), max(plot.range[2], log.ticks))
+            } else {
+            # no valid tick marks so just plot axis.
+                log.ticks <- plot.range
+                label <- rep("", 2)
+            }
         }
-        grid.xaxis(at = log.ticks , label = round(ticks, 2), gp=gpar(cex=0.6))          
+        grid.xaxis(at = log.ticks, label = label, gp=gpar(cex=0.6))
+        grid.xaxis(at = plot.range, label = FALSE)
+        # Second call to grid.xaxis extends the axis to the plot range if necessary.
     }
    
     if (forest.data$scale == "logit")  {
@@ -1487,7 +1506,7 @@ meta.regression.plot <- function(plot.data, outpath) {
 ######################################
 #          Diagnostic SROC           #
 ######################################
-sroc.plot <- function(plot.data){
+sroc.plot <- function(plot.data, outpath){
     # draw an SROC plot.
     lcol <- "blue"
     sym.size <- .03
@@ -1502,9 +1521,9 @@ sroc.plot <- function(plot.data){
     ylab="Sensitivity"
     s.range <- plot.data$s.range
     if (length(grep(".png", outpath)) != 0){
-        png(file=outpath, width=10 , height=5, units="in", res=144)
+        png(file=outpath, height=5, width=5, units="in", res=144)
     } else {
-        pdf(file=outpath, width=10 , height=5)
+        pdf(file=outpath, height=5, width=5)
     }
     plot(y = NULL, x=NULL, xlim=c(0, 1),
                            ylim=c(0, 1),
@@ -1512,7 +1531,6 @@ sroc.plot <- function(plot.data){
                            ylab=ylab, 
                            asp=1,
                            type='n')
-    
     symbols(y = plot.data$TPR, x = plot.data$FPR,
               bty = plotregion, circles=rep(1, length(TPR)), col = "black", inches=sym.size, add=TRUE)
     
@@ -1523,6 +1541,7 @@ sroc.plot <- function(plot.data){
     tpr.vals <- invlogit((s.vals + d.vals) / 2)
     fpr.vals <- invlogit((s.vals - d.vals) / 2)
     lines(fpr.vals, tpr.vals, col = lcol, lwd = lweight, lty = lpatern)
+    graphics.off()
 }
 
 ################################################
