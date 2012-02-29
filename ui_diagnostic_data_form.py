@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'diagnostic_data_form.ui'
 #
-# Created: Tue Dec 27 13:43:58 2011
+# Created: Wed Feb 29 15:12:09 2012
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -22,8 +22,8 @@ class Ui_DiagnosticDataForm(object):
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/images/meta.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         DiagnosticDataForm.setWindowIcon(icon)
-        self.verticalLayout = QtGui.QVBoxLayout(DiagnosticDataForm)
-        self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
+        self.gridLayout = QtGui.QGridLayout(DiagnosticDataForm)
+        self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.two_by_two_table = QtGui.QTableWidget(DiagnosticDataForm)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -56,9 +56,9 @@ class Ui_DiagnosticDataForm(object):
         item = QtGui.QTableWidgetItem()
         item.setText(QtGui.QApplication.translate("DiagnosticDataForm", "(disease) -", None, QtGui.QApplication.UnicodeUTF8))
         self.two_by_two_table.setHorizontalHeaderItem(1, item)
-        self.verticalLayout.addWidget(self.two_by_two_table)
+        self.gridLayout.addWidget(self.two_by_two_table, 0, 0, 1, 1)
         spacerItem = QtGui.QSpacerItem(20, 25, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.MinimumExpanding)
-        self.verticalLayout.addItem(spacerItem)
+        self.gridLayout.addItem(spacerItem, 1, 0, 1, 1)
         self.horizontalLayout_2 = QtGui.QHBoxLayout()
         self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
         self.label_13 = QtGui.QLabel(DiagnosticDataForm)
@@ -78,7 +78,7 @@ class Ui_DiagnosticDataForm(object):
         self.horizontalLayout_2.addWidget(self.effect_cbo_box)
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem1)
-        self.verticalLayout.addLayout(self.horizontalLayout_2)
+        self.gridLayout.addLayout(self.horizontalLayout_2, 2, 0, 1, 1)
         self.gridLayout_3 = QtGui.QGridLayout()
         self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
         self.label_14 = QtGui.QLabel(DiagnosticDataForm)
@@ -124,7 +124,7 @@ class Ui_DiagnosticDataForm(object):
         self.high_txt_box.setMaximumSize(QtCore.QSize(50, 22))
         self.high_txt_box.setObjectName(_fromUtf8("high_txt_box"))
         self.gridLayout_3.addWidget(self.high_txt_box, 0, 5, 1, 1)
-        self.verticalLayout.addLayout(self.gridLayout_3)
+        self.gridLayout.addLayout(self.gridLayout_3, 3, 0, 1, 1)
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.label_2 = QtGui.QLabel(DiagnosticDataForm)
@@ -149,12 +149,12 @@ class Ui_DiagnosticDataForm(object):
         self.horizontalLayout.addWidget(self.ci_label)
         spacerItem2 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem2)
-        self.verticalLayout.addLayout(self.horizontalLayout)
+        self.gridLayout.addLayout(self.horizontalLayout, 4, 0, 1, 1)
         self.buttonBox = QtGui.QDialogButtonBox(DiagnosticDataForm)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
-        self.verticalLayout.addWidget(self.buttonBox)
+        self.gridLayout.addWidget(self.buttonBox, 5, 0, 1, 1)
 
         self.retranslateUi(DiagnosticDataForm)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), DiagnosticDataForm.accept)
