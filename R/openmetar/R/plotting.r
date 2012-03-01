@@ -936,7 +936,7 @@ calc.viewport.layout <- function(forest.data, just){
 }
 
 calc.forest.plot.size <- function(forest.data){
-    # Calculates width and height or the plot.
+    # Calculates width and height of the plot.
     show.study.col <- forest.data$options$show.study.col
     if (length(forest.data$additional.col.data)>0 ){
         num.additional.cols <- length(forest.data$additional.cols.grob)    
@@ -974,7 +974,7 @@ calc.forest.plot.size <- function(forest.data){
                     convertX(forest.plot.params$effect.col.width, "inches" , valueOnly=TRUE ) +
                     # width of actual forest plot
                     2 * convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )
-                    # two extra column gap widths for spaceing.
+                    # two extra column gap widths for spacing.
     } else {
         how.wide <- convertX(forest.plot.params$effect.col.width, "inches" , valueOnly=TRUE ) +
                     2 * convertX(forest.plot.params$col.gap, "inches" , valueOnly=TRUE )
@@ -1418,32 +1418,27 @@ two.forest.plots <- function(forest.data, outpath) {
    forest.data2$data.col.width <- plot.size2$data.col.width
    # calculate heights and widths of plots
    viewport.layout1 <- calc.viewport.layout(forest.data1, just="left")     
-   viewport.layout2 <- calc.viewport.layout(forest.data2, just="right")
+   viewport.layout2 <- calc.viewport.layout(forest.data2, just="left")
    # calculate layouts of plots
    how.wide1 <- plot.size1$how.wide
    how.wide2 <- plot.size2$how.wide
-  
+   width <- how.wide1 + how.wide2
    how.tall1 <- plot.size1$how.tall
    how.tall2 <- plot.size2$how.tall
    how.tall <- max(how.tall1, how.tall2)
-   pushViewport(viewport(layout=grid.layout(nrow=1,ncol=2, widths=c(how.wide1,how.wide2))))
- 
    if (length(grep(".png", outpath)) != 0){
       png(file=outpath, width = how.wide1 + how.wide2, height = how.tall+1 , units = "in", res = 144) 
    }
    else{
       pdf(file=outpath, width = how.wide1 + how.wide2 + 1, height = how.tall+2) 
    }
-   pushViewport(viewport(layout=viewport.layout1, layout.pos.col=1))
+   pushViewport(viewport(layout=viewport.layout1))
    changed.params <- draw.forest.plot(forest.data1) 
    # Only saving params changes for the left forest plot, because currently plot edit
    # can't handle two sets of params values for xticks or plot bounds.
    # Could be changed in future.
    popViewport()
-   pushViewport(viewport(x=.49, layout=viewport.layout2,layout.pos.col=2))
-   # x=.49 moves the right plot a bit to the left so that the rightmost tick mark doesn't get cut off.
-   # Seems to be necessary because the right plot is right justified and the rightmost tick
-   # mark extends slightly to the right of plot range. No doubt there is a better way to do this.
+   pushViewport(viewport(x=1 + (how.wide1 - how.wide2) / (4 * how.wide1), layout=viewport.layout2))
    draw.forest.plot(forest.data2)
    popViewport()
    graphics.off()
