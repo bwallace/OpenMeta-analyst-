@@ -1430,7 +1430,7 @@ two.forest.plots <- function(forest.data, outpath) {
    if (platform[[1]]=="Windows") {
        x.pos <- 1 + (how.wide1 - how.wide2) / (4 * how.wide1)
    } else {
-       x.pos <- 2
+       x.pos <- 1 + (how.wide1 - how.wide2) / how.wide1
    }
    if (length(grep(".png", outpath)) != 0){
       png(file=outpath, width = how.wide1 + how.wide2, height = how.tall+1 , units = "in", res = 144) 
