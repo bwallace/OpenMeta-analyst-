@@ -1426,6 +1426,12 @@ two.forest.plots <- function(forest.data, outpath) {
    how.tall1 <- plot.size1$how.tall
    how.tall2 <- plot.size2$how.tall
    how.tall <- max(how.tall1, how.tall2)
+   platform <- Sys.info()
+   if (platform[[1]]=="Windows") {
+       x.pos <- 1 + (how.wide1 - how.wide2) / (4 * how.wide1)
+   } else {
+       x.pos <- 2
+   }
    if (length(grep(".png", outpath)) != 0){
       png(file=outpath, width = how.wide1 + how.wide2, height = how.tall+1 , units = "in", res = 144) 
    }
@@ -1438,7 +1444,7 @@ two.forest.plots <- function(forest.data, outpath) {
    # can't handle two sets of params values for xticks or plot bounds.
    # Could be changed in future.
    popViewport()
-   pushViewport(viewport(x=1 + (how.wide1 - how.wide2) / (4 * how.wide1), layout=viewport.layout2))
+   pushViewport(viewport(x=x.pos, layout=viewport.layout2))
    draw.forest.plot(forest.data2)
    popViewport()
    graphics.off()
