@@ -7,6 +7,7 @@
 <link href="css/jquery.ui.accordion.css" type="text/css" rel="Stylesheet">
 <script type="text/javascript" src="js/jquery-1.5.1.min.js"></script>
 <script type="text/javascript" src="js/jquery-ui-1.8.11.custom.min.js"></script>
+<script type="text/javascript" srs="js/jquery-1.5.2.js"></script>
 <script>
 	$(function() {
 		$( "#accordion" ).accordion();
@@ -17,16 +18,17 @@ function calcHeight()
 {
   //find the height of the internal page
   var the_height=
-    document.getElementById('the_iframe').contentWindow.
+    document.getElementById('htmlIframe').contentWindow.
       document.body.scrollHeight;
 
   //change the height of the iframe
-  document.getElementById('the_iframe').height=
+  document.getElementById('htmlIframe').height=
       the_height;
 }
 </script>
+ 
+</script>
 </head>
-
 <body onload="frames['IFrameName'].location.href='introduction.html'">
 <table border="0" width=100% cellpadding="0">
 <tr><td align="left"><a href="http://tuftscaes.org/open_meta/">Open Meta-Analyst Home</a></td>
@@ -36,17 +38,16 @@ function calcHeight()
 <h1>Open Meta-Analyst Help</h1></td>
 </tr>
 <tr><td valign="top" align="left">
-<h2>Contents</h2>
 <div id="accordion">
 <h3><a href='#'>Getting Started</a></h3>
 <div>
   <ul align="left" style="list-style-image: url(images/orball_small.gif)">
-      <li><a href="#self" onclick="frames['IFrameName'].location.href='introduction.html'">Introducing Open Meta-Analyst</a></li>
+      <li><a href="#self"  onclick="frames['IFrameName'].location.href='introduction.html'">Introducing Open Meta-Analyst</a></li>
       <li><a href="#self" onclick="frames['IFrameName'].location.href='starting.html'">Starting Open Meta-Analyst</a></li>
       <li><a href="#self" onclick="frames['IFrameName'].location.href='create_dataset.html'">Creating a New Data Set</a></li>
       <li><a href="#self" onclick="frames['IFrameName'].location.href='entering_data.html'">Entering and Saving Data</a>
       <li><a href="#self" onclick="frames['IFrameName'].location.href='example.html'">Opening an Existing Data Set</a>
-      <li><a href="#self" onclick="frames['IFrameName'].location.href='analysis.html'">Example - Binary Data</a></li>
+      <li><a href="#self"  onclick="frames['IFrameName'].location.href='analysis.html'">Example - Binary Data</a></li>
       <li><a href="#self" onclick="frames['IFrameName'].location.href='diagnostic_analysis.html'">Example - Diagnostic Data</a></li> 
       <li><a href="#self" onclick="frames['IFrameName'].location.href='covariate.html'">Adding a Covariate</a></li>
       <li><a href="#self" onclick="frames['IFrameName'].location.href='regression.html'">Performing a Meta-Regression</a></li>
@@ -75,12 +76,10 @@ function calcHeight()
 </div>
 </div>
 </td>
-<td valign="top" width="75%">
+<td valign="top">
 
-<IFRAME name="IFrameName" frameborder="no"  width="1200" id="the_iframe" 
-	onLoad="calcHeight();" 
-  
-	scrolling="NO">
+<IFRAME name="IFrameName" frameborder="no" style="height:750px; width:1000px" id="htmlIframe"
+               scrolling="YES">
 </IFRAME>
  
 </td></tr>
