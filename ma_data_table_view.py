@@ -827,7 +827,14 @@ class StudyDelegate(QItemDelegate):
       def __init__(self, parent=None):
         super(StudyDelegate, self).__init__(parent)
 
+      #def createEditor(self, parent, option, index):
+      #  pyqtRemoveInputHook()
+      #  pdb.set_trace()
+
       def setEditorData(self, editor, index):
         # used to be Qt.DisplayRole
         text = index.model().data(index, Qt.EditRole).toString()
+
+        pyqtRemoveInputHook()
+        pdb.set_trace()
         editor.setText(text)
