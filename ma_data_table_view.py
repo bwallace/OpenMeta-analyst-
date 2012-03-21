@@ -827,7 +827,15 @@ class StudyDelegate(QItemDelegate):
       def __init__(self, parent=None):
         super(StudyDelegate, self).__init__(parent)
 
+
+      def createEditor(self, parent, *args):
+        le = QLineEdit(parent)
+        return le
+
       def setEditorData(self, editor, index):
         # used to be Qt.DisplayRole
-        text = index.model().data(index, Qt.EditRole).toString()
-        editor.setText(text)
+        if not "QLineEdit" in str(editor):
+            pyqtRemoveInputHook()
+            pdb.set_trace()
+        text = index.model().data(index, Qt.EditRole)
+        editor.setText(text.toString())
