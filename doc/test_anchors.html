@@ -1,0 +1,33 @@
+<html>
+<head>
+
+<script language="JavaScript">
+function calcHeight()
+{
+  //find the height of the internal page
+  var the_height=
+    document.getElementById('htmlIframe').contentWindow.
+      document.body.scrollHeight;
+
+  //change the height of the iframe
+  document.getElementById('htmlIframe').height=
+      the_height;
+}
+</script>
+
+<script>
+
+function gotoAnchor(id)
+{
+    var el = null;
+    el = window.frames['IFrameName'].document.getElementById(id);
+    window.frames['IFrameName'].scrollTo(0,el.offsetTop);
+}
+</script>
+</head>
+<body onload="frames['IFrameName'].location.href='analysis.html'">
+<h1>Here's an iframe:</h1>
+<iframe name="IFrameName" id="htmlIframe" style="width: 100%"
+             scrolling="YES"><p>Your browser does not support iframes.</p></iframe>
+</body>
+</html>
