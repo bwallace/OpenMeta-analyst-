@@ -1417,7 +1417,8 @@ two.forest.plots <- function(forest.data, outpath) {
    plot.size2 <- calc.forest.plot.size(forest.data2)
    forest.data2$data.col.width <- plot.size2$data.col.width
    # calculate heights and widths of plots
-   viewport.layout1 <- calc.viewport.layout(forest.data1, just="left")   
+   viewport.layout1 <- calc.viewport.layout(forest.data1, just="left")  
+   platform <- Sys.info()
    if (platform[[1]]=="Windows") {
        viewport.layout2 <- calc.viewport.layout(forest.data2, just="left")
    } else {
@@ -1430,7 +1431,7 @@ two.forest.plots <- function(forest.data, outpath) {
    how.tall1 <- plot.size1$how.tall
    how.tall2 <- plot.size2$how.tall
    how.tall <- max(how.tall1, how.tall2)
-   platform <- Sys.info()
+
    if (platform[[1]]=="Windows") {
        x.pos <- 1 + (how.wide1 - how.wide2) / (4 * how.wide1)
    } else {
