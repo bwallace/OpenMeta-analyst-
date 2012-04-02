@@ -1417,8 +1417,13 @@ two.forest.plots <- function(forest.data, outpath) {
    plot.size2 <- calc.forest.plot.size(forest.data2)
    forest.data2$data.col.width <- plot.size2$data.col.width
    # calculate heights and widths of plots
-   viewport.layout1 <- calc.viewport.layout(forest.data1, just="left")     
-   viewport.layout2 <- calc.viewport.layout(forest.data2, just="left")
+   viewport.layout1 <- calc.viewport.layout(forest.data1, just="left")  
+   platform <- Sys.info()
+   #if (platform[[1]]=="Windows") {
+       viewport.layout2 <- calc.viewport.layout(forest.data2, just="left")
+   #} else {
+   #    viewport.layout2 <- calc.viewport.layout(forest.data2, just="right")
+   #}
    # calculate layouts of plots
    how.wide1 <- plot.size1$how.wide
    how.wide2 <- plot.size2$how.wide
@@ -1426,7 +1431,7 @@ two.forest.plots <- function(forest.data, outpath) {
    how.tall1 <- plot.size1$how.tall
    how.tall2 <- plot.size2$how.tall
    how.tall <- max(how.tall1, how.tall2)
-   platform <- Sys.info()
+
    if (platform[[1]]=="Windows") {
        x.pos <- 1 + (how.wide1 - how.wide2) / (4 * how.wide1)
    } else {
@@ -1434,19 +1439,24 @@ two.forest.plots <- function(forest.data, outpath) {
    }
    if (length(grep(".png", outpath)) != 0){
       png(file=outpath, width = how.wide1 + how.wide2, height = how.tall+1 , units = "in", res = 144) 
-   }
-   else{
+   } else{
       pdf(file=outpath, width = how.wide1 + how.wide2 + 1, height = how.tall+2) 
    }
-   pushViewport(viewport(layout=viewport.layout1))
+   pushViewport(viewport(layout=grid.layout(1,2, widths=unit(c(how.wide1, how.wide2), c("in", "in")))))
+   pushViewport(viewport(layout=viewport.layout1, layout.pos.col=1))
    changed.params <- draw.forest.plot(forest.data1) 
    # Only saving params changes for the left forest plot, because currently plot edit
    # can't handle two sets of params values for xticks or plot bounds.
    # Could be changed in future.
    popViewport()
-   pushViewport(viewport(x=x.pos, layout=viewport.layout2))
+   #if (platform[[1]]=="Windows") {
+   #    x.pos <- 1 + (how.wide1 - how.wide2) / (4 * how.wide1)
+       pushViewport(viewport(layout=viewport.layout2, layout.pos.col=2))
+   #} else {
+   #    pushViewport(viewport(layout=viewport.layout2, layout.pos.col=2))
+   #}     
    draw.forest.plot(forest.data2)
-   popViewport()
+   popViewport(2)
    graphics.off()
    changed.params
 }
