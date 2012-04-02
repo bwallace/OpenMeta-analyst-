@@ -676,7 +676,7 @@ class CommandCellEdit(QUndoCommand):
         if self.metric_changed:
             #self.ma_data_table_view.model().set_current_metric(self.old_metric)
             self.ma_data_table_view.set_metric_in_ui(self.old_metric)
-            print "?????"
+
         model.blockSignals(False)
         self.ma_data_table_view.model().reset()
 
@@ -827,14 +827,13 @@ class StudyDelegate(QItemDelegate):
       def __init__(self, parent=None):
         super(StudyDelegate, self).__init__(parent)
 
-      #def createEditor(self, parent, option, index):
-      #  pyqtRemoveInputHook()
-      #  pdb.set_trace()
+
+      def createEditor(self, parent, *args):
+        le = QLineEdit(parent)
+        return le
 
       def setEditorData(self, editor, index):
         # used to be Qt.DisplayRole
-        text = index.model().data(index, Qt.EditRole).toString()
+        text = index.model().data(index, Qt.EditRole)
+        editor.setText(text.toString())
 
-        pyqtRemoveInputHook()
-        pdb.set_trace()
-        editor.setText(text)
