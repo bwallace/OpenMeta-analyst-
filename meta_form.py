@@ -47,6 +47,8 @@ import network_view
 import meta_globals 
 import start_up_dialog
 
+# for the help
+import webbrowser
 
 class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
@@ -285,6 +287,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             QObject.connect(self.action_meta_regression, SIGNAL("triggered()"), self.meta_reg)
             QObject.connect(self.action_subgroup_ma, SIGNAL("triggered()"), self.meta_subgroup_get_cov)
 
+            QObject.connect(self.action_open_help, SIGNAL("triggered()"), self.show_help)
 
     def go(self):
         form = None
@@ -351,7 +354,9 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
         form.show()
 
-        
+    def show_help(self):
+        webbrowser.open(PATH_TO_HELP)
+
     def meta_subgroup(self, selected_cov):
         form = None
         if self.model.get_current_outcome_type() != "diagnostic":

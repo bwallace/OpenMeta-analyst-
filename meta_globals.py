@@ -9,6 +9,8 @@
 #                                    # 
 ######################################
 
+import os
+
 # number of digits to display
 NUM_DIGITS = 3
 
@@ -82,7 +84,7 @@ DIAG_METRIC_NAMES_D = {
 
 DIAG_FIELDS_TO_RAW_INDICES = {"TP":0, "FN":1, "FP":2, "TN":3}
 
-
+PATH_TO_HELP = os.path.join("doc", "openMA_help.html")
 
 '''
 some useful static methods

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'meta.ui'
 #
-# Created: Mon Dec 05 15:38:21 2011
+# Created: Mon Apr 02 10:56:32 2012
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -190,6 +190,9 @@ class Ui_MainWindow(object):
         self.menuEdit = QtGui.QMenu(self.menu_bar)
         self.menuEdit.setTitle(QtGui.QApplication.translate("MainWindow", "Edit", None, QtGui.QApplication.UnicodeUTF8))
         self.menuEdit.setObjectName(_fromUtf8("menuEdit"))
+        self.menuHelp = QtGui.QMenu(self.menu_bar)
+        self.menuHelp.setTitle(QtGui.QApplication.translate("MainWindow", "Help", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuHelp.setObjectName(_fromUtf8("menuHelp"))
         MainWindow.setMenuBar(self.menu_bar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
@@ -263,6 +266,9 @@ class Ui_MainWindow(object):
         self.actionDfsf = QtGui.QAction(MainWindow)
         self.actionDfsf.setText(QtGui.QApplication.translate("MainWindow", "(none)", None, QtGui.QApplication.UnicodeUTF8))
         self.actionDfsf.setObjectName(_fromUtf8("actionDfsf"))
+        self.action_open_help = QtGui.QAction(MainWindow)
+        self.action_open_help.setText(QtGui.QApplication.translate("MainWindow", "open help", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_open_help.setObjectName(_fromUtf8("action_open_help"))
         self.action_open_recent_2.addAction(self.actionDfsf)
         self.menu_file.addAction(self.action_save)
         self.menu_file.addAction(self.action_save_as)
@@ -287,10 +293,12 @@ class Ui_MainWindow(object):
         self.menuEdit.addAction(self.action_redo)
         self.menuEdit.addAction(self.action_copy)
         self.menuEdit.addAction(self.action_paste)
+        self.menuHelp.addAction(self.action_open_help)
         self.menu_bar.addAction(self.menu_file.menuAction())
         self.menu_bar.addAction(self.menuEdit.menuAction())
         self.menu_bar.addAction(self.menuAnalysis.menuAction())
         self.menu_bar.addAction(self.menuDataset.menuAction())
+        self.menu_bar.addAction(self.menuHelp.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
