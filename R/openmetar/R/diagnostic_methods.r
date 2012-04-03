@@ -8,9 +8,12 @@
 #######################################
 
 library(metafor)
+library(HSROC)
+library(graphics)
 
 diagnostic.logit.metrics <- c("Sens", "Spec", "PPV", "NPV", "Acc")
 diagnostic.log.metrics <- c("PLR", "NLR", "DOR")
+bivariate.methods <- c("diagnostic.hsroc")
 
 adjust.raw.data <- function(diagnostic.data, params) {
     # adjust raw data by adding a constant to each entry   
@@ -19,26 +22,29 @@ adjust.raw.data <- function(diagnostic.data, params) {
     TN <- diagnostic.data@TN 
     FP <- diagnostic.data@FP
     
-    if (params$to == "all") {
-        TP <- TP + params$adjust
-        FN <- FN + params$adjust
-        TN <- TN + params$adjust
-        FP <- FP + params$adjust
-    } else if (params$to == "only0") {
-        product <- TP * FN * TN * FP
-        # product equals 0 if at least one entry in a row is 0
-        TP[product == 0] <- TP[product == 0] + params$adjust
-        FN[product == 0] <- FN[product == 0] + params$adjust
-        TN[product == 0] <- TN[product == 0] + params$adjust
-        FP[product == 0] <- FP[product == 0] + params$adjust
-    } else if (params$to == "if0all") {
-        if (any(c(TP,FN,TN,FP) == 0)) {
+    if ("to" %in% names(params)){
+        if (params$to == "all") {
             TP <- TP + params$adjust
             FN <- FN + params$adjust
             TN <- TN + params$adjust
-            FP <- FP + params$adjust    
+            FP <- FP + params$adjust
+        } else if (params$to == "only0") {
+            product <- TP * FN * TN * FP
+            # product equals 0 if at least one entry in a row is 0
+            TP[product == 0] <- TP[product == 0] + params$adjust
+            FN[product == 0] <- FN[product == 0] + params$adjust
+            TN[product == 0] <- TN[product == 0] + params$adjust
+            FP[product == 0] <- FP[product == 0] + params$adjust
+        } else if (params$to == "if0all") {
+            if (any(c(TP,FN,TN,FP) == 0)) {
+                TP <- TP + params$adjust
+                FN <- FN + params$adjust
+                TN <- TN + params$adjust
+                FP <- FP + params$adjust    
+            }
         }
     }
+
     data.adj <- list("TP"=TP, "FN"=FN, "TN"=TN, "FP"=FP)
 }
 
@@ -183,7 +189,6 @@ invlogit <- function(x) {
 ###################################################
 #     multiple diagnostic methods                 #
 ###################################################
-
 multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
 
     # wrapper for applying multiple diagnostic functions and metrics    
@@ -202,83 +207,86 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         metrics <- c(metrics, params.list[[count]]$measure)
         if (params.list[[count]]$measure=="Sens") {
             sens.index <- count
-            #sens.spec.outpath <- params.list[[count]]$fp_outpath
         }
         if (params.list[[count]]$measure=="Spec") {
             spec.index <- count
-            #sens.spec.outpath <- params.list[[count]]$fp_outpath
         }
         if (params.list[[count]]$measure=="PLR") {
             plr.index <- count
-            #if (params.list[[count]]$fp_outpath==sens.spec.outpath) {
-            # for future use - check that path names are distinct.    
-            #    params.list[[count]]$fp_outpath <- paste(sub(".png","",sens.spec.outpath), "1.png", sep="")   
-                # if fp_outpath is the same as for sens or spec, append a 1.
-            #}
         }
         if (params.list[[count]]$measure=="NLR") {
             nlr.index <- count
-            #if (params.list[[count]]$fp_outpath==sens.spec.outpath) {
-            #    params.list[[count]]$fp_outpath <- paste(sub(".png","",sens.spec.outpath), "1.png", sep="")   
-            #    # if fp_outpath is the same as for sens or spec, append a 1.
-            #}
         }
     }
     
     images <- c()
     plot.names <- c()
     plot.params.paths <- c()
+    plot.pdfs.paths <- c() # sometimes we want to just output pdfs at run-time
     remove.indices <- c()
 
     if (("Sens" %in% metrics) & ("Spec" %in% metrics)) {
-        # create side-by-side forest plots for sens and spec.
-       
-        params.sens <- params.list[[sens.index]]
-        params.spec <- params.list[[spec.index]]
-        params.sens$create.plot <- FALSE
-        params.spec$create.plot <- FALSE
-        params.tmp <- list("left"=params.sens, "right"=params.spec)
-        
+        ####
+        # we are running an analysis for sens *and* spec;
+        # has a bivariate method been selected??
         fname <- fnames[sens.index]
-        diagnostic.data.sens <- compute.diag.point.estimates(diagnostic.data, params.sens)
-        diagnostic.data.spec <- compute.diag.point.estimates(diagnostic.data, params.spec)
-        diagnostic.data.all <- list("left"=diagnostic.data.sens, "right"=diagnostic.data.spec)
-        
-        results.sens <- eval(call(fname, diagnostic.data.sens, params.sens))
-        results.spec <- eval(call(fname, diagnostic.data.spec, params.spec))
-        summary.sens <- list("Summary"=results.sens$Summary)
-        names(summary.sens) <- paste(eval(parse(text=paste("pretty.names$measure$", params.sens$measure,sep=""))), " Summary", sep="")
-        summary.spec <- list("Summary"=results.spec$Summary)
-        names(summary.spec) <- paste(eval(parse(text=paste("pretty.names$measure$", params.spec$measure,sep=""))), " Summary", sep="")
-        results <- c(results, summary.sens, summary.spec)
-        
-        res.sens <- results.sens$Summary$MAResults
-        res.spec <- results.spec$Summary$MAResults
-        res <- list("left"=res.sens, "right"=res.spec)
-        plot.data <- create.side.by.side.plot.data(diagnostic.data.all, params=params.tmp, res=res)
-        forest.path <- paste(params.sens$fp_outpath, sep="")
-        two.forest.plots(plot.data, outpath=forest.path)
-           
-        forest.plot.params.path <- save.data(om.data=diagnostic.data.all, res, params=params.tmp, plot.data)
-        plot.params.paths.tmp <- c("Sensitivity and Specificity Forest Plot"=forest.plot.params.path)
-        plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
-        images.tmp <- c("Sensitivity and Specificity Forest Plot"=forest.path)
-        images <- c(images, images.tmp)
-        plot.names.tmp <- c("forest plot"="forest.plot")
-        plot.names <- c(plot.names, plot.names.tmp)
-        
-        # create SROC plot
-        sroc.path <- "./r_tmp/roc.png"
-        sroc.plot.data <- create.sroc.plot.data(diagnostic.data, params=params.sens)
-        sroc.plot(sroc.plot.data, sroc.path)
-        # we use the system time as our unique-enough string to store
-        # the params object
-        sroc.plot.params.path <- save.plot.data(sroc.plot.data)
-        plot.params.paths.tmp <- c("SROC Plot"=sroc.plot.params.path)
-        images <- c(images, c("SROC"=sroc.path))
-        plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
-        plot.names <- c(plot.names, c("sroc"="sroc"))
-        remove.indices <- c(sens.index, spec.index)
+        if (fname %in% bivariate.methods){
+            params.sens <- params.list[[sens.index]] # we could pick either here
+            biv.results <- eval(call(fname, diagnostic.data, params.sens))
+            results <- c(results, biv.results$Summary)
+            images <- c(images, biv.results$images)
+            remove.indices <- c(sens.index, spec.index)
+
+        } else {
+            ###
+            # we're not running bivariate; proceed as usual
+            # create side-by-side forest plots for sens and spec.
+            params.sens <- params.list[[sens.index]]
+            params.spec <- params.list[[spec.index]]
+            params.sens$create.plot <- FALSE
+            params.spec$create.plot <- FALSE
+            params.tmp <- list("left"=params.sens, "right"=params.spec)
+            
+            diagnostic.data.sens <- compute.diag.point.estimates(diagnostic.data, params.sens)
+            diagnostic.data.spec <- compute.diag.point.estimates(diagnostic.data, params.spec)
+            diagnostic.data.all <- list("left"=diagnostic.data.sens, "right"=diagnostic.data.spec)
+            
+            results.sens <- eval(call(fname, diagnostic.data.sens, params.sens))
+            results.spec <- eval(call(fname, diagnostic.data.spec, params.spec))
+            summary.sens <- list("Summary"=results.sens$Summary)
+            names(summary.sens) <- paste(eval(parse(text=paste("pretty.names$measure$", params.sens$measure,sep=""))), " Summary", sep="")
+            summary.spec <- list("Summary"=results.spec$Summary)
+            names(summary.spec) <- paste(eval(parse(text=paste("pretty.names$measure$", params.spec$measure,sep=""))), " Summary", sep="")
+            results <- c(results, summary.sens, summary.spec)
+            
+            res.sens <- results.sens$Summary$MAResults
+            res.spec <- results.spec$Summary$MAResults
+            res <- list("left"=res.sens, "right"=res.spec)
+            plot.data <- create.side.by.side.plot.data(diagnostic.data.all, params=params.tmp, res=res)
+            forest.path <- paste(params.sens$fp_outpath, sep="")
+            two.forest.plots(plot.data, outpath=forest.path)
+               
+            forest.plot.params.path <- save.data(om.data=diagnostic.data.all, res, params=params.tmp, plot.data)
+            plot.params.paths.tmp <- c("Sensitivity and Specificity Forest Plot"=forest.plot.params.path)
+            plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
+            images.tmp <- c("Sensitivity and Specificity Forest Plot"=forest.path)
+            images <- c(images, images.tmp)
+            plot.names.tmp <- c("forest plot"="forest.plot")
+            plot.names <- c(plot.names, plot.names.tmp)
+            
+            # create SROC plot
+            sroc.path <- "./r_tmp/roc.png"
+            sroc.plot.data <- create.sroc.plot.data(diagnostic.data, params=params.sens)
+            sroc.plot(sroc.plot.data, sroc.path)
+            # we use the system time as our unique-enough string to store
+            # the params object
+            sroc.plot.params.path <- save.plot.data(sroc.plot.data)
+            plot.params.paths.tmp <- c("SROC Plot"=sroc.plot.params.path)
+            images <- c(images, c("SROC"=sroc.path))
+            plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
+            plot.names <- c(plot.names, c("sroc"="sroc"))
+            remove.indices <- c(sens.index, spec.index)
+        }
     }
     
     if (("NLR" %in% metrics) & ("PLR" %in% metrics)) {
@@ -333,7 +341,6 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
             # create ma summaries and single (not side-by-side) forest plots.
             #pretty.names <- eval(call(paste(fnames[count],".pretty.names",sep="")))
             results.tmp <- eval(call(fnames[count], diagnostic.data, params.list[[count]]))
-            #if (is.null(params.list[[count]]$create.plot)) {
             images.tmp <- results.tmp$image
             names(images.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
             images <- c(images, images.tmp)
@@ -341,12 +348,13 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
             names(plot.params.paths.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$", params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
             plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
             plot.names <- c(plot.names, results.tmp$plot_names)
-            #}
             summary.tmp <- list("Summary"=results.tmp$Summary)
             names(summary.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Summary", sep="")
             results <- c(results, summary.tmp)
         }
     }
+
+    graphics.off()
     results <- c(results, list("images"=images, "plot_names"=plot.names, 
                                "plot_params_paths"=plot.params.paths))
     results
@@ -667,6 +675,86 @@ diagnostic.random.overall <- function(results) {
     # this parses out the overall from the computed result
     res <- results$Summary$MAResults
 }
+
+##################################
+#       diagnostic hsroc         #
+##################################
+diagnostic.hsroc <- function(diagnostic.data, params){
+    library(HSROC)
+    prev.working.dir <- getwd()
+    ####
+    # first we create a unique directory
+    unique.name <- as.character(as.numeric(Sys.time()))
+    out.dir <- paste(getwd(), unique.name, sep="/")
+    dir.create(out.dir)
+
+    #### 
+    # convert the diagnostic data to a format consumable
+    # by the HSROC lib, this means a data frame
+    # with the following columns:
+    #    ++ +- -+  --
+    diag.data.frame <- 
+        data.frame(TP=diagnostic.data@TP, FP=diagnostic.data@FP, FN=diagnostic.data@FN, TN=diagnostic.data@TN)
+
+    ### set up and run the three chains
+    chain.out.dirs <- c()
+    for (chain.i in 1:3){
+        chain.out.dir <- paste(out.dir, "/chain_", chain.i, sep="")
+        dir.create(chain.out.dir)
+        setwd(chain.out.dir)
+        # TODO parameterize lambda, theta priors
+        HSROC(data=diag.data.frame, iter.num=params$num.iters, 
+                prior_LAMBDA=c(-2, 2), prior_THETA=c(-2, 2), 
+                path=chain.out.dir)
+        chain.out.dirs <- c(chain.out.dirs, chain.out.dir)
+        # go back up to ./r_tmp
+        setwd("../../")
+    }
+
+    hsroc.sum <- HSROCSummary(data=diag.data.frame , burn_in=params$burn.in, Thin=params$thin, print_plot=T ,
+             path=out.dir, chain=chain.out.dirs )
+
+    #### 
+    # pull out the summary
+    summary <- c(hsroc.sum[1], hsroc.sum[2])
+
+    ####
+    # and the images
+    images <- list()
+    image.list <- hsroc.sum$image.list
+    images <- c("Density Plots"=paste(out.dir, image.list$density_plots[1], sep="/"),
+                "Summary ROC"=paste(out.dir, image.list$summary_ROC[1], sep="/"))
+
+    # reset the working directory
+    setwd(prev.working.dir)
+
+    results <- list("images"=images, "Summary"=summary)
+
+}
+
+
+diagnostic.hsroc.parameters <- function(){
+    params <- list("num.iters"="float", "burn.in"="float", "thin"="float")
+    
+    # default values
+    defaults <- list("num.iters"=5000, "burn.in"=1000, "thin"=2)
+    
+    var.order <- c("num.iters", "burn.in", "thin")
+    parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var.order)
+}
+
+
+
+
+diagnostic.hsroc.pretty.names <- function() {
+    pretty.names <- list("pretty.name"="HSROC", 
+                         "description" = "Hierarchical regression analysis of diagnostic data (Rutter and Gatsonis, Statistics in Medicine, 2001).",
+                         "num.iters"=list("pretty.name"="Number of Iterations", "description"="Number of iterations to run."),
+                         "burn.in"=list("pretty.name"="Burn in", "description"="Number of draws to use for convergence."),
+                         "thin"=list("pretty.name"="Thin", "description"="Thinning.")  
+                    )
+}
+
 
 ##################################
 #            SROC Plot           #

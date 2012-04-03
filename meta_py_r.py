@@ -609,7 +609,8 @@ def run_diagnostic_multi(function_names, list_of_params, res_name="result", diag
     r_params_str = "list(%s)" % ",".join([_to_R_params(p) for p in list_of_params])
     ro.r("list.of.params <- %s" % r_params_str)
     ro.r("f.names <- c(%s)" % ",".join(["'%s'" % f_name for f_name in function_names]))
-
+    #pyqtRemoveInputHook()
+    #pdb.set_trace()
     result = ro.r("multiple.diagnostic(f.names, list.of.params, %s)" % diag_data_name)
     
     return parse_out_results(result)
@@ -705,6 +706,7 @@ def parse_out_results(result):
     # in R (for graphics manipulation).
     text_d = {}
     image_var_name_d, image_params_paths_d, image_path_d  = {}, {}, {}
+
     for text_n, text in zip(list(result.getnames()), list(result)):
         # some special cases, notably the plot names and the path for a forest
         # plot. TODO in the case of diagnostic data, we're probably going to 
@@ -712,13 +714,18 @@ def parse_out_results(result):
         if text_n == "images":
             image_path_d = _rls_to_pyd(text)
         elif text_n == "plot_names":
-            image_var_name_d = _rls_to_pyd(text)
+            if str(text) == "NULL":
+                image_var_name_d = {}
+            else:
+                image_var_name_d = _rls_to_pyd(text)
         elif text_n == "plot_params_paths":
-            image_params_paths_d = _rls_to_pyd(text)
+            if str(text) == "NULL":
+                image_params_paths_d = {}
+            else:
+                image_params_paths_d = _rls_to_pyd(text)
         else:
             text_d[text_n]=text
 
-    #if image_var_name_d is not None:
     return {"images":image_path_d, "image_var_names":image_var_name_d,
                         "texts":text_d, "image_params_paths":image_params_paths_d}
                 
@@ -832,7 +839,6 @@ def _rls_to_pyd(r_ls):
     # base case is that the type is a native python type, rather
     # than an Rvector
     d = {}
-
     for name, val in zip(r_ls.getnames(), r_ls):
         ###
         # I know we shouldn't wrap the whole thing in a (generic) try block,

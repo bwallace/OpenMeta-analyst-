@@ -291,6 +291,10 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         # first. otherwise, the default is that R provides the functions
         # in alphabetical (ascending). 
         method_names = self.available_method_d.keys()
+        # also removing HSROC if this isn't the sens/spec case
+        if metric != "Sens" and "HSROC" in method_names:
+            method_names.remove("HSROC")
+            
         method_names.sort(reverse=True)
         for method in method_names:
             cbo_box.addItem(method)
