@@ -609,10 +609,9 @@ def run_diagnostic_multi(function_names, list_of_params, res_name="result", diag
     r_params_str = "list(%s)" % ",".join([_to_R_params(p) for p in list_of_params])
     ro.r("list.of.params <- %s" % r_params_str)
     ro.r("f.names <- c(%s)" % ",".join(["'%s'" % f_name for f_name in function_names]))
-    #pyqtRemoveInputHook()
-    #pdb.set_trace()
+
     result = ro.r("multiple.diagnostic(f.names, list.of.params, %s)" % diag_data_name)
-    
+
     return parse_out_results(result)
 
 def run_diagnostic_ma(function_name, params, res_name="result", diag_data_name="tmp_obj"):

@@ -133,7 +133,32 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         else:
             self.image_path.setText(out_f)
         
+    def make_indefinite_progress_bar(self):
+        bar = QtGui.QProgressBar()
+        bar.setWindowTitle("running analysis...")
+        bar.setRange(0, 0) # makes it indefinite
+        specs_form_pos = self.pos()
+        specs_form_width, specs_form_height = self.width(), self.height()
+
+        bar_width = 250 # seems to look ok?
+        bar.setFixedWidth(bar_width)
+        center_width = specs_form_pos.x() + specs_form_width/2 - bar_width/2
+        center_height = specs_form_pos.y() + specs_form_height/2
+
+        bar.setAlignment(Qt.AlignCenter)
+        center_point = QPoint(center_width, center_height)
+        
+        bar.move(center_point)
+    
+        return bar
+        
+
     def run_ma(self):
+        ###
+        # first, let's fire up a progress bar
+        bar = self.make_indefinite_progress_bar()
+        bar.show()
+        bar.raise_()
         result = None
         
         # this method is defined statically, below
@@ -209,6 +234,8 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                 # of param values to the meta_method 
                 result = meta_py_r.run_meta_method_diag(\
                             self.meta_f_str, method_names, list_of_param_vals)
+
+        bar.close()
 
         # update the user_preferences object for the selected method
         # with the values selected for this run
@@ -348,6 +375,17 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                         self.add_param(self.parameter_grp_box.layout(), cur_grid_row, key, val)
                         cur_grid_row+=1
 
+        # do we need to set forest plot parameters? if not,
+        # e.g., in the case of HSROC or other methdos that
+        # don't use our forest plotting, we don't show the
+        # corresponding tab for forest plot params.
+        # @TODO this is hacky; plus, really we should keep
+        # a list of methods that *DO* take forest plot params
+        if self.current_method in METHODS_WITH_NO_FOREST_PLOT:
+            self.plot_tab.setEnabled(False)
+        else:
+            self.plot_tab.setEnabled(True)
+                        
     def add_param(self, layout, cur_grid_row, name, value):
         print "adding param. name: %s, value: %s" % (name, value)
         if isinstance(value, list):
