@@ -1,0 +1,66 @@
+<html>
+<head>
+<link href="css/help.css" 
+type=text/css rel=stylesheet>
+</head>
+<body>
+<h2><a name="top">Data Sets</a></h2>
+<p>An Open Meta-Analyst data set has three primary components:</p>
+<ul>
+     <li>Outcomes - Possible outcomes of a treatment or diagnostic test</li>
+     <li>Follow-ups - Results of the initial study and and follow-up studies. (Note that the initial study is labeled "first" be default.) </li>
+     <li>Groups -  
+          <ul>
+               <li>For binary or continuous data, a group corresponds to the data for a single treatment group (or study arm).</li>
+               <li>For diagnostic data, a group corresponds to the data for a single diagnostic test.</li>
+          </ul>
+</ul>
+<p>Each outcome in a data set can have one of the following data types:</p>
+<ul>
+    <li><a href="#binary">Binary</a></li>
+    <li><a href="#continuous">Continuous</a></li>
+    <li><a href="#diagnostic">Diagnostic</a></li>
+</ul>
+<h3><a name="binary">Binary Data</a></h3>
+<p>For a binary outcome, the Data Table displays the data for two treatment goups. An example is shown below.</p>
+<p><img src="images/binary_dataset.png"></p>
+<p>Binary data has the following data columns:</p>
+  <ul>
+    <li>tx An - Number of events in treatment group tx A</li>
+    <li>tx AN - Number of subjects in treatment group tx A</li>
+    <li>tx Bn - Number of events in treatment group tx B</li>
+    <li>tx BN - Number of subjects in treatment group tx B</li>
+</ul> <h3><a name="continuous">Continuous Data</a></h3>
+<p>For a continuous outcome, the Data Table displays the data for two treatment goups. An example is shown below.</p>
+<p><img src="images/cont_dataset.png"></p>
+<p>Continuous data has the following data columns:</p>
+<ul>
+    <li>tx AN - Number of subjects in treatment group tx A</li>
+    <li>tx A mean - Mean in treatment group tx A</li>
+    <li>tx A SD - Standard deviation in treatment group tx A</li>
+    <li>tx BN - Number of subjects in treatment group tx B</li>
+    <li>tx B mean - Mean in treatment group tx B</li>
+    <li>tx B SD - Standard deviation in treatment group tx B</li>
+</ul>    
+<h3><a name="diagnostic">Diagnostic Data</a></h3>
+<p>For a diagnostic outcome, the Data Table displays the data for a single diagnostic test. An example is shown below.</p>
+<p><img src="images/diagnostic_dataset.png"></p>
+<p>Diagnostic data has the following data columns:</p>
+  <ul>
+    <li>TP - Number of true positives</li>
+    <li>FN - Number of false negatives</li>
+    <li>FP - Number of false positives</li>
+    <li>TN - Number of true negatives</li>
+  </ul> 
+<p>You can create multiple instances for each of these components. To see the components of a data set, select <b>Edit</b> from the <b>Dataset</b> menu, as described in the next section.</p>
+
+<p><a href="#top">Back to top</a></p>
+<br>
+  <table id="nav" cellspacing="0"><tr valign="center"><td align="left" width="20"><a href="sort_data.html#top"><img src="images/b_prev.gif" border="0"></td><td align="left">Sorting Data</td></a><td>&nbsp;</td><td align="right">Navigating a Dataset</td><td align="right" width="20"><a href="navigate_data.html#top"><img src="images/b_next.gif" border="0"></td></a></td></tr></table>
+<br>
+</body>
+</html>
+    
+  
+  
+  
