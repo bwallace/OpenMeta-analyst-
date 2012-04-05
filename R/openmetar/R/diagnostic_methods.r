@@ -13,7 +13,7 @@ library(graphics)
 
 diagnostic.logit.metrics <- c("Sens", "Spec", "PPV", "NPV", "Acc")
 diagnostic.log.metrics <- c("PLR", "NLR", "DOR")
-bivariate.methods <- c("diagnostic.hsroc")
+bivariate.methods <- c("diagnostic.hsroc", "diagnostic.bivariate.ml")
 
 adjust.raw.data <- function(diagnostic.data, params) {
     # adjust raw data by adding a constant to each entry   
@@ -411,7 +411,7 @@ diagnostic.fixed.inv.var <- function(diagnostic.data, params){
           plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
           images <- c("Forest Plot"=forest.path)
           plot.names <- c("forest plot"="forest_plot")
-          #names(plot.params.paths) <- paste(params$measure, "Forest Plot", sep=" ")
+
           results <- list("images"=images, "Summary"=summary.disp, 
                           "plot_names"=plot.names, 
                           "plot_params_paths"=plot.params.paths)
@@ -682,6 +682,10 @@ diagnostic.random.overall <- function(results) {
 diagnostic.hsroc <- function(diagnostic.data, params){
     library(HSROC)
     prev.working.dir <- getwd()
+
+    # step into r_tmp
+    setwd("r_tmp")
+
     ####
     # first we create a unique directory
     unique.name <- as.character(as.numeric(Sys.time()))
@@ -748,12 +752,100 @@ diagnostic.hsroc.parameters <- function(){
 
 diagnostic.hsroc.pretty.names <- function() {
     pretty.names <- list("pretty.name"="HSROC", 
-                         "description" = "Hierarchical regression analysis of diagnostic data (Rutter and Gatsonis, Statistics in Medicine, 2001).",
+                         "description" = "Hierarchical regression analysis of diagnostic data\n (Rutter and Gatsonis, Statistics in Medicine, 2001).",
                          "num.iters"=list("pretty.name"="Number of Iterations", "description"="Number of iterations to run."),
                          "burn.in"=list("pretty.name"="Burn in", "description"="Number of draws to use for convergence."),
                          "thin"=list("pretty.name"="Thin", "description"="Thinning.")  
                     )
 }
+
+
+##################################
+#   diagnostic biviariate        #
+##################################
+diagnostic.bivariate.ml <- function(diagnostic.data, params){
+    library(boot)
+
+    adjusted.counts <- adjust.raw.data(diagnostic.data, params)
+
+    biv.results <- bivariate.dx.test(adjusted.counts$TP, adjusted.counts$FP, 
+                                    adjusted.counts$FN, adjusted.counts$TN)
+
+    #### 
+    # parse out results -- @TODO make this nicer.
+    logit_sens = biv.results[1,1]
+    logit_spec = biv.results[1,2]
+    se_logit_sens = biv.results[1,3]
+    se_logit_spec = biv.results[1,4]
+    correlation = biv.results[1,7]
+
+    digits = 4
+    sensitivity <- round(inv.logit(logit_sens), digits)
+    # hard-coding CI for now 
+    sens.low <- round(inv.logit(logit_sens - 1.96*se_logit_sens), digits)
+    sens.high <- round(inv.logit(logit_sens + 1.96*se_logit_sens), digits)
+
+    specificity <- round(inv.logit(logit_spec), digits)
+    spec.low <- round(inv.logit(logit_spec - 1.96*se_logit_spec), digits)
+    spec.high <- round(inv.logit(logit_spec + 1.96*se_logit_spec), digits)
+
+    r <- round(biv.results$correlation, digits)
+
+
+    # @TODO make this prettier
+    report.array <- array(c("sensitivity", "sens. (lower)", "sens. (upper)", 
+                                "specificity", "spec. (lower)", "spec. (upper)",
+                                "correlation", sensitivity, sens.low, sens.high,
+                                specificity, spec.low, spec.high, r), 
+                            dim=c(7,2))
+
+    # this makes it pretty-print?
+    class(report.array) <- "summary.data"
+
+
+    # generate the plot
+    path.to.roc.plot <- "./r_tmp/bivariate" # just hard-coding for now
+    plot.bivariate(biv.results, adjusted.counts$TP, adjusted.counts$FP, 
+                                 adjusted.counts$FN, adjusted.counts$TN,
+                                 filepath=path.to.roc.plot)
+
+    images <- c("ROC Plot"=path.to.roc.plot)
+
+
+    results <- list("images"=images, "Summary"=list("Bivariate Summary"=report.array))
+}
+
+
+diagnostic.bivariate.ml.parameters <- function(){
+    apply_adjustment_to = c("only0", "all")
+
+    params <- list("adjust"="float", "to"=apply_adjustment_to)
+
+    # default values
+    defaults <- list("adjust"=.5, "to"="only0")
+
+    var_order = c("adjust", "to")
+
+    parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
+}
+
+
+diagnostic.bivariate.ml.pretty.names <- function() {
+    pretty.names <- list("pretty.name"="Bivariate (Maximum Likelihood)", 
+                         "description" = "Bivariate analysis of sensitivity and specificity \n using maximum likelihood estimate.",
+                         "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
+                         "to"=list("pretty.name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
+                                   is added to all cells of each two-by-two table that contains at leason one zero. When set to \"all\", the correction factor
+                                   is added to all two-by-two tables if at least one table contains a zero.")
+                        )  
+                    
+}
+
+diagnostic.bivariate.ml.is.feasible <- function(diagnostic.data, metric){
+    # only estimable when we have >= 5 studies
+    length(diagnostic.data@TP) > 4
+}
+
 
 
 ##################################

@@ -34,7 +34,7 @@ print.summary.display <- function(summary.disp,...) {
    }
 }
 
-print.summary.data <- function(table.data) {
+print.summary.data <- function(table.data,...) {
     # Prints an array table.data with lines separating rows and columns.
     num.rows <- length(table.data[,1])
     num.cols <- length(table.data[1,])

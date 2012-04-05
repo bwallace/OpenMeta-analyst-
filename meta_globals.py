@@ -87,7 +87,7 @@ DIAG_FIELDS_TO_RAW_INDICES = {"TP":0, "FN":1, "FP":2, "TN":3}
 PATH_TO_HELP = os.path.join("doc", "openMA_help.html")
 
 # list of methods with no forest plot parameters
-METHODS_WITH_NO_FOREST_PLOT = ["diagnostic.hsroc"]
+METHODS_WITH_NO_FOREST_PLOT = ["diagnostic.hsroc", "diagnostic.bivariate.ml"]
 
 
 '''

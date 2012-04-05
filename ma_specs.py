@@ -307,6 +307,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                 metric = "Sens" if self.sens_spec else "DOR"
             else:
                 metric = "Sens"
+
         
         self.available_method_d = meta_py_r.get_available_methods(for_data_type=self.data_type,\
                                          data_obj_name=tmp_obj_name, metric=metric)
@@ -318,11 +319,25 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         # first. otherwise, the default is that R provides the functions
         # in alphabetical (ascending). 
         method_names = self.available_method_d.keys()
-        # also removing HSROC if this isn't the sens/spec case
-        if metric != "Sens" and "HSROC" in method_names:
-            method_names.remove("HSROC")
+       
+
+        ###
+        # removing bivariate (sens/spec) methods when it makes no sense
+        # @TODO handle this better
+        biv_ml_name = "Bivariate (Maximum Likelihood)"
+        for biv_method in (biv_ml_name, "HSROC"):
+            if metric != "Sens" and biv_method in method_names or self.meta_f_str is not None:
+                method_names.remove(biv_method)
             
+
         method_names.sort(reverse=True)
+
+        ###
+        # default to bivariate method for diagnostic
+        if self.data_type == "diagnostic" and biv_ml_name in method_names:
+            method_names.remove(biv_ml_name)
+            method_names.insert(0, biv_ml_name)
+ 
         for method in method_names:
             cbo_box.addItem(method)
         self.current_method = self.available_method_d[str(cbo_box.currentText())]
