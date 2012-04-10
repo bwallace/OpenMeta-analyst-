@@ -106,7 +106,6 @@ create.repeat.string <- function(symbol, num.repeats) {
 }
  
 round.display <- function(x, digits) {
-    # Prints "< 0.5 * 10^(-digits)" if x < 0.5 * 10^(-digits) or rounds x otherwise
     digits.str <- paste("%.", digits, "f", sep="")
     x.disp <- c()
     x.disp[x < 10^(-digits)] <- paste("< ", 10^(-digits), sep="")
@@ -117,7 +116,6 @@ round.display <- function(x, digits) {
 create.summary.disp <- function(om.data, params, res, model.title) {
     # create table for diplaying summary of ma results
     digits.str <- paste("%.", params$digits, "f", sep="")
-    
     if ("ContinuousData" %in% class(om.data)) {
       transform.name <-"continuous.transform.f"
       data.type <- "continuous"

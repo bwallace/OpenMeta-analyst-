@@ -86,8 +86,10 @@ get.res.for.one.binary.study <- function(binary.data, params){
 }
 
 create.binary.data.array <- function(binary.data, params){
-    # Extracts data from binary.data into an array and computes bounds on confidence intervals.
-    # Compute bounds on confidence intervals.
+    # Extracts data from binary.data and puts it into an array for the the first summary display table.
+    tx1.name <- "tx A"
+    tx2.name <- "tx B"
+    # TODO: these should be taken from the corresponding column labels in the GUI and passed in via params.
     alpha <- 1.0-(params$conf.level/100.0)
     mult <- abs(qnorm(alpha/2.0))
     digits.str <- paste("%.", params$digits, "f", sep="")
@@ -100,12 +102,16 @@ create.binary.data.array <- function(binary.data, params){
     weights <- sprintf(digits.str, weights)
     weights <- format(weights, justify="right")
     # Extract the data from binary.data and round
-    eventT <- format(binary.data@g1O1, justify="right")
-    subjectT <- format(binary.data@g1O1 + binary.data@g1O2, justify="right")
-    eventC <- format(binary.data@g2O1, justify="right")
-    subjectC <- format(binary.data@g2O1 + binary.data@g2O2, justify="right")
-    raw.data <- array(c("Study", binary.data@study.names, "Events (T)", eventT, "Subjects (T)", subjectT, "Events (C)", eventC, 
-                    "Subjects (C)", subjectC, effect.size.name, y, "Lower", LL, "Upper", UL, "Weight", weights), 
+    event.txA <- format(binary.data@g1O1, justify="right")
+    subject.txA <- format(binary.data@g1O1 + binary.data@g1O2, justify="right")
+    event.txB <- format(binary.data@g2O1, justify="right")
+    subject.txB <- format(binary.data@g2O1 + binary.data@g2O2, justify="right")
+    raw.data <- array(c("Study", binary.data@study.names, 
+                      paste(tx1.name, " Events", sep=""), event.txA, 
+                      paste(tx1.name, " Subjects", sep=""), subject.txA, 
+                      paste(tx2.name, " Events", sep=""), event.txB, 
+                      paste(tx2.name, " Subjects", sep=""), subject.txB, 
+                      effect.size.name, y, "Lower", LL, "Upper", UL, "Weight", weights), 
                     dim=c(length(binary.data@study.names) + 1, 9))
     class(raw.data) <- "summary.data" 
     return(raw.data)

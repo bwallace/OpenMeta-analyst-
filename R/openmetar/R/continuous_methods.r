@@ -58,8 +58,10 @@ get.res.for.one.cont.study <- function(cont.data, params){
 }
 
 create.cont.data.array <- function(cont.data, params){
-  # Extracts data from cont.data into an array and computes bounds on confidence intervals.
-  # Compute bounds on confidence intervals.
+  # Extracts data from cont.data and puts it into an array for the the first summary display table.
+  tx1.name <- "tx A"
+  tx2.name <- "tx B"
+  # TODO: these should be taken from the corresponding column labels in the GUI and passed in via params.
   alpha <- 1.0-(params$conf.level/100.0)
   mult <- abs(qnorm(alpha/2.0))
   digits.str <- paste("%.", params$digits, "f", sep="")
@@ -78,8 +80,13 @@ create.cont.data.array <- function(cont.data, params){
   N.txB <- format(cont.data@N2, justify="right")
   mean.txB <- sprintf(digits.str, cont.data@mean2)
   sd.txB <- sprintf(digits.str, cont.data@sd2)
-  raw.data <- array(c("Study", cont.data@study.names, "tx A N", N.txA, "tx A mean", mean.txA, "tx A SD", sd.txA, 
-                                                      "tx B N", N.txB, "tx B mean", mean.txB, "tx B SD", sd.txB,
+  raw.data <- array(c("Study", cont.data@study.names, 
+                    paste(tx1.name, " N", sep=""), N.txA, 
+                    paste(tx1.name, " Mean", sep=""), mean.txA, 
+                    paste(tx1.name, " SD", sep=""), sd.txA, 
+                    paste(tx2.name, " N", sep=""), N.txB,
+                    paste(tx2.name, " Mean", sep=""), mean.txB, 
+                    paste(tx2.name, " SD", sep=""), sd.txB,
                                                       effect.size.name, y, "Lower", LL, "Upper", UL, "Weight", weights), 
                     dim=c(length(cont.data@study.names) + 1, 11))
   class(raw.data) <- "summary.data" 
