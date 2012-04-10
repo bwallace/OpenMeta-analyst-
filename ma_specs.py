@@ -324,10 +324,11 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         ###
         # removing bivariate (sens/spec) methods when it makes no sense
         # @TODO handle this better
-        biv_ml_name = "Bivariate (Maximum Likelihood)"
-        for biv_method in (biv_ml_name, "HSROC"):
-            if metric != "Sens" and biv_method in method_names or self.meta_f_str is not None:
-                method_names.remove(biv_method)
+        if self.data_type == "diagnostic":
+            biv_ml_name = "Bivariate (Maximum Likelihood)"
+            for biv_method in (biv_ml_name, "HSROC"):
+                if metric != "Sens" and biv_method in method_names or self.meta_f_str is not None:
+                    method_names.remove(biv_method)
             
 
         method_names.sort(reverse=True)

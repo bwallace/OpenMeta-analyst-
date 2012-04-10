@@ -26,6 +26,10 @@ import ma_dataset
 from ma_dataset import *
 from meta_globals import *
 
+# for issue #169 -- normalizing new lines, e.g., for pasting
+# use QRegExp to manipulate QStrings (rather than re)
+_newlines_re  = QRegExp('(\r\n|\r|\r)')
+
 class MADataTable(QtGui.QTableView):
 
     def __init__(self, parent=None):
@@ -351,7 +355,6 @@ class MADataTable(QtGui.QTableView):
         covariate_columns = self.get_covariate_columns()
         can_sort_by.extend(covariate_columns)
 
-
     def sort_by_col(self, column):
         # if a covariate column was clicked, it may not yet have an entry in the
         # reverse_column_sorts dictionary; thus we insert one here
@@ -370,11 +373,23 @@ class MADataTable(QtGui.QTableView):
         for group in cur_txs:
             cur_raw_data_dict[group] = list(ma_unit.get_raw_data_for_group(group))
 
+    def _normalize_newlines(self, qstr_text):
+        return qstr_text.replace(_newlines_re, "\n")
+
     def paste_from_clipboard(self, upper_left_index):
         ''' pastes the data in the clipboard starting at the currently selected cell.'''
 
         clipboard = QApplication.clipboard()
-        new_content = self._str_to_matrix(clipboard.text())
+        clipboard_text = clipboard.text()
+
+        # fix for issue #169.
+        # excel for mac, insanely, appends \r instead of
+        # \n for new lines (rows).
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
+        clipboard_text = self._normalize_newlines(clipboard_text)
+
+        new_content = self._str_to_matrix(clipboard_text)
 
         # fix for issue #64. excel likes to append a blank row
         # to copied data -- we drop that here
@@ -409,6 +424,9 @@ class MADataTable(QtGui.QTableView):
                 (self._print_index(upper_left_index), self._print_index(lower_right_index))
         text_matrix = []
         # +1s are because range() is right interval exclusive
+        pyqtRemoveInputHook()
+        pdb.set_trace()
+
         for row in range(upper_left_index.row(), lower_right_index.row()+1):
             current_row = []
             for col in range(upper_left_index.column(), lower_right_index.column()+1):
