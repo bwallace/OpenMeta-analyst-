@@ -200,13 +200,16 @@ create.summary.disp <- function(om.data, params, res, model.title) {
     if (data.type == "binary") {
       # Add raw data title and array 
       raw.data.array <- create.binary.data.array(om.data, params)
+      table.titles <- c("  Study Data", table.titles)
+      raw.data.list <- list("arr0"=raw.data.array)
+      arrays <- c(raw.data.list, arrays)
     } else if (data.type == "continuous") {
       raw.data.array <- create.cont.data.array(om.data, params)
+      table.titles <- c("  Study Data", table.titles)
+      raw.data.list <- list("arr0"=raw.data.array)
+      arrays <- c(raw.data.list, arrays)
     }
-    table.titles <- c("  Study Data", table.titles)
-    raw.data.list <- list("arr0"=raw.data.array)
-    arrays <- c(raw.data.list, arrays)
-    
+  
     summary.disp <- list("model.title" = model.title, "table.titles" = table.titles, "arrays" = arrays,
                          "MAResults" = res)
     class(summary.disp) <- "summary.display"
