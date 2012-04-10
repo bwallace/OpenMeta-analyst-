@@ -8,7 +8,7 @@
 #######################################
 
 library(metafor)
-#library(HSROC)
+library(HSROC)
 library(graphics)
 
 diagnostic.logit.metrics <- c("Sens", "Spec", "PPV", "NPV", "Acc")
