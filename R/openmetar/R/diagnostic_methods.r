@@ -220,6 +220,7 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
     }
     
     images <- c()
+    image.order <- c()
     plot.names <- c()
     plot.params.paths <- c()
     plot.pdfs.paths <- c() # sometimes we want to just output pdfs at run-time
@@ -235,8 +236,8 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
             biv.results <- eval(call(fname, diagnostic.data, params.sens))
             results <- c(results, biv.results$Summary)
             images <- c(images, biv.results$images)
+            image.order <- append.image.order(image.order, biv.results)
             remove.indices <- c(sens.index, spec.index)
-
         } else {
             ###
             # we're not running bivariate; proceed as usual
@@ -271,6 +272,7 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
             plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
             images.tmp <- c("Sensitivity and Specificity Forest Plot"=forest.path)
             images <- c(images, images.tmp)
+            image.order <- c(image.order, "Sensitivity and Specificity Forest Plot")
             plot.names.tmp <- c("forest plot"="forest.plot")
             plot.names <- c(plot.names, plot.names.tmp)
             
@@ -324,6 +326,7 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
                
         images.tmp <- c("NLR and PLR Forest Plot"=forest.path)
+        image.order <- c(image.order, "NLR and PLR Forest Plot")
         images <- c(images, images.tmp)
         
         plot.names.tmp <- c("forest plot"="forest.plot")
@@ -341,9 +344,10 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
             # create ma summaries and single (not side-by-side) forest plots.
             #pretty.names <- eval(call(paste(fnames[count],".pretty.names",sep="")))
             results.tmp <- eval(call(fnames[count], diagnostic.data, params.list[[count]]))
-            images.tmp <- results.tmp$image
+            images.tmp <- results.tmp$images
             names(images.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
             images <- c(images, images.tmp)
+            image.order <- c(image.order, names(images.tmp))
             plot.params.paths.tmp <- results.tmp$plot_params_paths
             names(plot.params.paths.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$", params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
             plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
@@ -355,9 +359,19 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
     }
 
     graphics.off()
-    results <- c(results, list("images"=images, "plot_names"=plot.names, 
+    results <- c(results, list("images"=images, "image_order"=image.order, "plot_names"=plot.names, 
                                "plot_params_paths"=plot.params.paths))
     results
+}
+
+append.image.order <- function(image.order, results){
+    if ("image_order" %in% names(results)){
+        image.order <- c(image.order, results[["image_order"]])
+    } else{
+        # just keep the current order
+        image.order <- c(image.order, names(results$images))
+    }
+    image.order
 }
 
 ###################################################
@@ -401,23 +415,16 @@ diagnostic.fixed.inv.var <- function(diagnostic.data, params){
             # dump the forest plot params to disk; return path to
             # this .Rdata for later use
             forest.plot.params.path <- save.data(diagnostic.data, res, params, plot.data)
-          #
-          # Now we package the results in a dictionary (technically, a named
-          # vector). In particular, there are two fields that must be returned;
-          # a dictionary of images (mapping titles to image paths) and a list of texts
-          # (mapping titles to pretty-printed text). In this case we have only one
-          # of each.
-          #
-          plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
-          images <- c("Forest Plot"=forest.path)
-          plot.names <- c("forest plot"="forest_plot")
 
-          results <- list("images"=images, "Summary"=summary.disp, 
+            plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+            images <- c("Forest Plot"=forest.path)
+            plot.names <- c("forest plot"="forest_plot")
+
+            results <- list("images"=images, "Summary"=summary.disp, 
                           "plot_names"=plot.names, 
                           "plot_params_paths"=plot.params.paths)
-       }
-        else {
-          results <- list("Summary"=summary.disp)
+        } else {
+            results <- list("Summary"=summary.disp)
         } 
     }
     results
@@ -726,13 +733,23 @@ diagnostic.hsroc <- function(diagnostic.data, params){
     # and the images
     images <- list()
     image.list <- hsroc.sum$image.list
-    images <- c("Density Plots"=paste(out.dir, image.list$density_plots[1], sep="/"),
-                "Summary ROC"=paste(out.dir, image.list$summary_ROC[1], sep="/"))
+
+    for (img.name in names(image.list)){
+        cur.img.name <- image.list[[img.name]]
+        image.list[[img.name]] <- paste(out.dir, cur.img.name, sep="/")
+    }
+
+    images <- image.list
 
     # reset the working directory
     setwd(prev.working.dir)
 
-    results <- list("images"=images, "Summary"=summary)
+    # we don't want the SROC plot to be mixed in with 
+    # the density plots...
+    roc.plot.name <- "Summary ROC"
+    image.names <- names(images)
+    image.order <- append(roc.plot.name, image.names[image.names!=roc.plot.name])
+    results <- list("images"=images, "image_order"=image.order, "Summary"=summary)
 
 }
 
