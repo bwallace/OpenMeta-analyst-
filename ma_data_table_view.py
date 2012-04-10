@@ -409,6 +409,9 @@ class MADataTable(QtGui.QTableView):
                 (self._print_index(upper_left_index), self._print_index(lower_right_index))
         text_matrix = []
         # +1s are because range() is right interval exclusive
+        pyqtRemoveInputHook()
+        pdb.set_trace()
+
         for row in range(upper_left_index.row(), lower_right_index.row()+1):
             current_row = []
             for col in range(upper_left_index.column(), lower_right_index.column()+1):
