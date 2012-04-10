@@ -108,23 +108,27 @@ create.repeat.string <- function(symbol, num.repeats) {
 round.display <- function(x, digits) {
     # Prints "< 0.5 * 10^(-digits)" if x < 0.5 * 10^(-digits) or rounds x otherwise
     digits.str <- paste("%.", digits, "f", sep="")
-    #cutoff <- sprintf(paste("%.", digits+1,"f", sep=""), 10^(-digits))
     x.disp <- c()
     x.disp[x < 10^(-digits)] <- paste("< ", 10^(-digits), sep="")
     x.disp[x >= 10^(-digits)] <- sprintf(digits.str, x[x>=10^(-digits)])
     x.disp
 }
 
-create.summary.disp <- function(res, params, model.title, data.type) {
+create.summary.disp <- function(om.data, params, res, model.title) {
     # create table for diplaying summary of ma results
     digits.str <- paste("%.", params$digits, "f", sep="")
-    if (data.type == "continuous") {
-        transform.name <- "continuous.transform.f"
-    } else if (data.type == "diagnostic") {
-        transform.name <- "diagnostic.transform.f"
-    }  else {  
-        transform.name <- "binary.transform.f"
+    
+    if ("ContinuousData" %in% class(om.data)) {
+      transform.name <-"continuous.transform.f"
+      data.type <- "continuous"
+    } else if ("DiagnosticData" %in% class(om.data)) {
+      transform.name <- "diagnostic.transform.f"
+      data.type <- "diagnostic"
+    } else if ("BinaryData" %in% class(om.data)) {
+      transform.name <- "binary.transform.f"
+      data.type <- "binary"
     }
+    
     scale.str <- "standard"
     if (metric.is.log.scale(params$measure)){
         scale.str <- "log" 
@@ -194,6 +198,17 @@ create.summary.disp <- function(res, params, model.title, data.type) {
         arrays = list(arr1=res.array, arr2=het.array)
         table.titles <- c(res.title, het.title)
     }
+    
+    if (data.type == "binary") {
+      # Add raw data title and array 
+      raw.data.array <- create.binary.data.array(om.data, params)
+    } else if (data.type == "continuous") {
+      raw.data.array <- create.cont.data.array(om.data, params)
+    }
+    table.titles <- c("  Study Data", table.titles)
+    raw.data.list <- list("arr0"=raw.data.array)
+    arrays <- c(raw.data.list, arrays)
+    
     summary.disp <- list("model.title" = model.title, "table.titles" = table.titles, "arrays" = arrays,
                          "MAResults" = res)
     class(summary.disp) <- "summary.display"
@@ -319,11 +334,6 @@ create.overall.display <- function(res, study.names, params, model.title, data.t
     
     overall.array[1,] <- c("Studies", "Estimate", "Lower bound", "Upper bound", "Std. error", "p-Val")
     
-    #if (scale.str == "log" || scale.str == "logit") {
-        # display and calculation scales are different - create second table for point estimates in calc scale. 
-    #    overall.array.calc <- array(dim=c(length(study.names) + 1, 4))
-    #    overall.array.calc[1,] <- c("Studies", "Estimate", "Lower bound", "Upper bound")
-    #}
     # unpack the data
     for (count in 1:length(study.names)) {
       y <- res[[count]]$b
@@ -341,27 +351,9 @@ create.overall.display <- function(res, study.names, params, model.title, data.t
       } else {
         pVal <- "NA"
       }
-      
       overall.array[count+1,] <- c(study.names[count], y.disp, lb.disp, ub.disp, se.disp, pVal)
-      
-      #if (scale.str == "log" || scale.str == "logit") {
-        # create data for second table for point estimates in calc scale.
-        #y.calc <- sprintf(digits.str, y)
-        #lb.calc <- sprintf(digits.str, lb)
-        #ub.calc <- sprintf(digits.str, ub)
-        #overall.array.calc[count+1, ] <- c(study.names[count], y.calc, lb.calc, ub.calc)
-      #}
     }
-    
-    
-    
-    #if (scale.str == "log" || scale.str == "logit") {
-        # display and calculation scales are different - create second table data    
-    #   table.titles <- c("  Model Results", paste("  Results (", scale.str, " scale)", sep=""))
-     #  arrays <- list(arr1=overall.array, arr2=overall.array.calc)
-       
-    #} else {
-       # only one table
+
     table.titles <- c("  Model Results")
     arrays <- list(arr1=overall.array)
     #}
@@ -393,11 +385,6 @@ create.subgroup.display <- function(res, study.names, params, model.title, data.
     subgroup.array[1,] <- c("Subgroups", "Studies", "Estimate", "Lower bound", "Upper bound", "Std. error", "p-Val")
     het.array[1,] <- c("Studies", "Q (df)",
                            "Het. p-Val", "I^2")
-    #if (scale.str == "log" || scale.str == "logit") {
-        # display and calculation scales are different - create second table for point estimates in calc scale. 
-    #    subgroup.array.calc <- array(dim=c(length(study.names) + 1, 4))
-    #    subgroup.array.calc[1,] <- c("Studies", "Estimate", "Lower bound", "Upper bound")
-    #}
     # unpack the data
     for (count in 1:length(study.names)) {
       num.studies <- res[[count]]$k
@@ -437,24 +424,8 @@ create.subgroup.display <- function(res, study.names, params, model.title, data.
       }
       subgroup.array[count+1,] <- c(study.names[count], num.studies, y.disp, lb.disp, ub.disp, se.disp, pVal)
       het.array[count+1,] <- c(study.names[count], QE, QEp, I2)
-      #if (scale.str == "log" || scale.str == "logit") {
-        # create data for second table for point estimates in calc scale.
-        #y.calc <- sprintf(digits.str, y)
-        #lb.calc <- sprintf(digits.str, lb)
-        #ub.calc <- sprintf(digits.str, ub)
-        #subgroup.array.calc[count+1, ] <- c(study.names[count], y.calc, lb.calc, ub.calc)
-      #}
     }
-    
-    
-    
-    #if (scale.str == "log" || scale.str == "logit") {
-        # display and calculation scales are different - create second table data    
-    #   table.titles <- c("  Model Results", paste("  Results (", scale.str, " scale)", sep=""))
-     #  arrays <- list(arr1=subgroup.array, arr2=subgroup.array.calc)
-       
-    #} else {
-       # only one table
+
     table.titles <- c("  Model Results", "  Heterogeneity")
     arrays <- list(arr1=subgroup.array, arr2=het.array)
     #}
@@ -468,4 +439,4 @@ create.subgroup.display <- function(res, study.names, params, model.title, data.
 results.short.list <- function(res) {
     # extracts res$b, res$ci.lb, and res$ci.ub from res
     res.short <- list("b"=res$b[1], "ci.lb"=res$ci.lb, "ci.ub"=res$ci.ub)
-}    
+}

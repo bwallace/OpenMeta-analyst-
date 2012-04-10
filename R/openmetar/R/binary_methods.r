@@ -85,23 +85,29 @@ get.res.for.one.binary.study <- function(binary.data, params){
     res
 }
 
-extract.data <- function(binary.data, params){
+create.binary.data.array <- function(binary.data, params){
     # Extracts data from binary.data into an array and computes bounds on confidence intervals.
     # Compute bounds on confidence intervals.
     alpha <- 1.0-(params$conf.level/100.0)
     mult <- abs(qnorm(alpha/2.0))
-    LL <- round(exp(binary.data@y - mult*binary.data@SE), digits = params$digits)
-    UL <- round(exp(binary.data@y + mult*binary.data@SE), digits = params$digits)
+    digits.str <- paste("%.", params$digits, "f", sep="")
+    effect.size.name <- pretty.metric.name(as.character(params$measure))
+    y.disp <- binary.transform.f(params$measure)$display.scale(binary.data@y)
+    y <- sprintf(digits.str, y.disp)
+    LL <- sprintf(digits.str, (y.disp - mult*binary.data@SE))
+    UL <- sprintf(digits.str, (y.disp + mult*binary.data@SE))
+    weights <- (1 / binary.data@SE^2) / sum(1 / binary.data@SE^2)
+    weights <- sprintf(digits.str, weights)
+    weights <- format(weights, justify="right")
     # Extract the data from binary.data and round
-    eventT <- round(binary.data@g1O1, digits = params$digits)
-    subjectT <- round(binary.data@g1O1 + binary.data@g1O2, digits = params$digits)
-    eventC <- round(binary.data@g2O1, digits = params$digits)
-    subjectC <- round(binary.data@g2O1 + binary.data@g2O2, digits = params$digits)
-    y <- round(binary.data@y, digits = params$digits) 
+    eventT <- format(binary.data@g1O1, justify="right")
+    subjectT <- format(binary.data@g1O1 + binary.data@g1O2, justify="right")
+    eventC <- format(binary.data@g2O1, justify="right")
+    subjectC <- format(binary.data@g2O1 + binary.data@g2O2, justify="right")
     raw.data <- array(c("Study", binary.data@study.names, "Events (T)", eventT, "Subjects (T)", subjectT, "Events (C)", eventC, 
-                    "Subjects (C)", subjectC, "Effect size", y, "Lower bound", LL, "Upper bound", UL), 
-                    dim=c(length(binary.data@study.names) + 1, 8))
-    class(raw.data) <- "Table" 
+                    "Subjects (C)", subjectC, effect.size.name, y, "Lower", LL, "Upper", UL, "Weight", weights), 
+                    dim=c(length(binary.data@study.names) + 1, 9))
+    class(raw.data) <- "summary.data" 
     return(raw.data)
 }
 
@@ -126,8 +132,8 @@ binary.fixed.inv.var <- function(binary.data, params){
         # Create list to display summary of results
         metric.name <- pretty.metric.name(as.character(params$measure))
         model.title <- paste("Binary Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="")
-        data.type <- "binary"
-        summary.disp <- create.summary.disp(res, params, model.title, data.type)
+        summary.disp <- create.summary.disp(binary.data, params, res, model.title)
+        
         # generate forest plot 
         if ((is.null(params$create.plot)) || params$create.plot == TRUE) {
             forest.path <- paste(params$fp_outpath, sep="")
@@ -215,8 +221,7 @@ binary.fixed.mh <- function(binary.data, params){
         #
         metric.name <- pretty.metric.name(as.character(params$measure))
         model.title <- paste("Binary Fixed-effect Model - Mantel Haenszel\n\nMetric: ", metric.name, sep="")
-        data.type <- "binary"
-        summary.disp <- create.summary.disp(res, params, model.title, data.type)
+        summary.disp <- create.summary.disp(binary.data, params, res, model.title)
         #
         # generate forest plot
         #
@@ -320,8 +325,7 @@ binary.fixed.peto <- function(binary.data, params){
         #
         metric.name <- pretty.metric.name(as.character(params$measure))
         model.title <- "Binary Fixed-effect Model - Peto\n\nMetric: Odds Ratio"
-        data.type <- "binary"
-        summary.disp <- create.summary.disp(res, params, model.title, data.type)
+        summary.disp <- create.summary.disp(binary.data, params, res, model.title)
         #
         # generate forest plot 
         #
@@ -429,8 +433,7 @@ binary.random <- function(binary.data, params){
         #
         metric.name <- pretty.metric.name(as.character(params$measure))
         model.title <- paste("Binary Random-Effects Model\n\nMetric: ", metric.name, sep="")
-        data.type <- "binary"
-        summary.disp <- create.summary.disp(res, params, model.title, data.type)
+        summary.disp <- create.summary.disp(binary.data, params, res, model.title)
  
         #
         # generate forest plot 

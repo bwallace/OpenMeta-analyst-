@@ -8,7 +8,7 @@
 #######################################
 
 library(metafor)
-library(HSROC)
+#library(HSROC)
 library(graphics)
 
 diagnostic.logit.metrics <- c("Sens", "Spec", "PPV", "NPV", "Acc")
@@ -380,8 +380,7 @@ diagnostic.fixed.inv.var <- function(diagnostic.data, params){
                      digits=params$digits)
          # Create list to display summary of results
         model.title <- paste("Diagnostic Fixed-effect Model - Inverse Variance (k = ", res$k, ")", sep="")
-        data.type <- "diagnostic"
-        summary.disp <- create.summary.disp(res, params, model.title, data.type)
+        summary.disp <- create.summary.disp(diagnostic.data, params, res, model.title)
         pretty.names <- diagnostic.fixed.inv.var.pretty.names()
         pretty.metric <- eval(parse(text=paste("pretty.names$measure$", params$measure,sep="")))
         for (count in 1:length(summary.disp$table.titles)) {
@@ -476,7 +475,7 @@ diagnostic.fixed.mh <- function(diagnostic.data, params){
     } 
     else {
         res <- switch(params$measure,
-        
+
             "DOR" = rma.mh(ai=diagnostic.data@TP, bi=diagnostic.data@FN, 
                                 ci=diagnostic.data@FP, di=diagnostic.data@TN, slab=diagnostic.data@study.names,
                                 level=params$conf.level, digits=params$digits, measure="OR",
@@ -499,8 +498,7 @@ diagnostic.fixed.mh <- function(diagnostic.data, params){
         # Create list to display summary of results
         #
         model.title <- "Diagnostic Fixed-effect Model - Mantel Haenszel"
-        data.type <- "diagnostic"
-        summary.disp <- create.summary.disp(res, params, model.title, data.type)
+        summary.disp <- create.summary.disp(diagnostic.data, params, res, model.title)
         pretty.names <- diagnostic.fixed.mh.pretty.names()
         pretty.metric <- eval(parse(text=paste("pretty.names$measure$", params$measure,sep="")))
         for (count in 1:length(summary.disp$table.titles)) {
@@ -602,8 +600,7 @@ diagnostic.random <- function(diagnostic.data, params){
         #
 
         model.title <- paste("Diagnostic Random-Effects Model (k = ", res$k, ")", sep="")
-        data.type <- "diagnostic"
-        summary.disp <- create.summary.disp(res, params, model.title, data.type)
+        summary.disp <- create.summary.disp(diagnostic.data, params, res, model.title)
         pretty.names <- diagnostic.random.pretty.names()
         pretty.metric <- eval(parse(text=paste("pretty.names$measure$", params$measure,sep="")))
         for (count in 1:length(summary.disp$table.titles)) {

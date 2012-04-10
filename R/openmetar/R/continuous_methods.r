@@ -57,6 +57,35 @@ get.res.for.one.cont.study <- function(cont.data, params){
     res
 }
 
+create.cont.data.array <- function(cont.data, params){
+  # Extracts data from cont.data into an array and computes bounds on confidence intervals.
+  # Compute bounds on confidence intervals.
+  alpha <- 1.0-(params$conf.level/100.0)
+  mult <- abs(qnorm(alpha/2.0))
+  digits.str <- paste("%.", params$digits, "f", sep="")
+  effect.size.name <- pretty.metric.name(as.character(params$measure))
+  y.disp <- continuous.transform.f(params$measure)$display.scale(cont.data@y)
+  y <- sprintf(digits.str, y.disp)
+  LL <- sprintf(digits.str, (y.disp - mult*cont.data@SE))
+  UL <- sprintf(digits.str, (y.disp + mult*cont.data@SE))
+  weights <- (1 / cont.data@SE^2) / sum(1 / cont.data@SE^2)
+  weights <- sprintf(digits.str, weights)
+  weights <- format(weights, justify="right")
+  # Extract the data from cont.data and round
+  N.txA <- format(cont.data@N1, justify="right")
+  mean.txA <- sprintf(digits.str, cont.data@mean1)
+  sd.txA <- sprintf(digits.str, cont.data@sd1)
+  N.txB <- format(cont.data@N2, justify="right")
+  mean.txB <- sprintf(digits.str, cont.data@mean2)
+  sd.txB <- sprintf(digits.str, cont.data@sd2)
+  raw.data <- array(c("Study", cont.data@study.names, "tx A N", N.txA, "tx A mean", mean.txA, "tx A SD", sd.txA, 
+                                                      "tx B N", N.txB, "tx B mean", mean.txB, "tx B SD", sd.txB,
+                                                      effect.size.name, y, "Lower", LL, "Upper", UL, "Weight", weights), 
+                    dim=c(length(cont.data@study.names) + 1, 11))
+  class(raw.data) <- "summary.data" 
+  return(raw.data)
+}
+
 ###############################
 #  continuous fixed effects  #
 ###############################
@@ -79,8 +108,7 @@ continuous.fixed <- function(cont.data, params){
                      digits=params$digits)
         metric.name <- pretty.metric.name(as.character(params$measure))
         model.title <- paste("Continuous Fixed-effect Model\n\nMetric: ", metric.name, sep="")
-        data.type <- "cont"
-        summary.disp <- create.summary.disp(res, params, model.title, data.type)
+        summary.disp <- create.summary.disp(cont.data, params, res, model.title)
     }    
     #
     # generate forest plot 
@@ -165,8 +193,7 @@ continuous.random <- function(cont.data, params){
                      digits=params$digits)
         metric.name <- pretty.metric.name(as.character(params$measure))
         model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", metric.name, sep="")
-        data.type <- "cont"
-        summary.disp <- create.summary.disp(res, params, model.title, data.type)
+        summary.disp <- create.summary.disp(cont.data, params, res, model.title)
     }        
     #
     # generate forest plot 
