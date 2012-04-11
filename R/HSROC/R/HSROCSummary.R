@@ -2840,11 +2840,11 @@ function (data, burn_in = 0, iter.keep = NULL, Thin = 1, sub_rs = NULL,
                 dev.off()
                 image.list$trace_plots <- c(paste(plot.name, ".png", sep = ""), "")
             }
-            dens.plot.name <- "Density_plots_for_N="
+            dens.plot.name <- "Density_plots_for_N3="
             file.png3 = paste(dens.plot.name, round((iter.num * 
                 nb_chains - (burn_in) * nb_chains)/Thin, 0), 
                 ".png", sep="")
-            png(file.png3, width=1440, heigh=1440)#, paper = "a4", height = 20)
+            png(file.png3, width=1440, height=1440)#, paper = "a4", height = 20)
             param = c("theta", "alpha", "PI", "S1", "C1")
             Param = c("Capital Theta", "Capital Lambda", "beta", 
                 "~sigma[alpha]", "~sigma[theta]", "S Overall", 
@@ -4515,15 +4515,11 @@ function (data, burn_in = 0, iter.keep = NULL, Thin = 1, sub_rs = NULL,
                   }
                   dev.off()
                 }
-                density.plot.name <- "Density_plots_for_N="
-                file.png3 = paste(density.plot.name, round((iter.num * 
-                  nb_chains - (burn_in) * nb_chains)/Thin, 0), 
-                  ".png", sep="")
-                png(file.png3, width=1440, heigh=1440, pointsize=20)#, paper = "a4", height = 20)
-                make.density.plot(Parameters, Parameter, long, iter.num, 
-                                nb_chains, burn_in, no_chains, Thin, thin.interval, N)
-                dev.off()
 
+
+                density.plot.name <- "Density_plots_for_N_"
+
+                # build density pdfs
                 file.pdf3 = paste(density.plot.name, round((iter.num * 
                   nb_chains - (burn_in) * nb_chains)/Thin, 0), 
                   ".pdf", sep="")
@@ -4531,17 +4527,33 @@ function (data, burn_in = 0, iter.keep = NULL, Thin = 1, sub_rs = NULL,
                 make.density.plot(Parameters, Parameter, long, iter.num, 
                             nb_chains, burn_in, no_chains, Thin, thin.interval, N)
                 dev.off()
-                image.list$density_plots <- c(file.png3, file.pdf3)
+
+                #file.png3 = paste(density.plot.name, round((iter.num * 
+                #  nb_chains - (burn_in) * nb_chains)/Thin, 0), 
+                #  ".png", sep="")
+                #png(file.png3, width=1440, heigh=1440, pointsize=20)#, paper = "a4", height = 20)
+                
+                # for the kernel plots, we only generate PNGs for overalls
+                density.pngs <- make.density.plot(Parameters, Parameter, long, iter.num, 
+                                    nb_chains, burn_in, no_chains, Thin, thin.interval, N,
+                                    make.pngs=TRUE, base.file.name=density.plot.name)
+
+                image.list <- append(image.list, density.pngs)
+
+
+                
+                #image.list$density_plots <- c(file.png3, file.pdf3)
 
                 # possibly the worse variable naming of all time.
                 png("Summary_ROC_curve.png", width=1440, heigh=1440, pointsize=20)
                 make.sroc.plot(Parameters, Parameter, data)
                 dev.off()
+                
 
                 pdf("Summary_ROC_curve.pdf")
                 make.sroc.plot(Parameters, Parameter, data)
                 dev.off()
-                image.list$summary_ROC <- c("Summary_ROC_curve.png", "Summary_ROC_curve.pdf")
+                image.list[["Summary ROC"]] <- "Summary_ROC_curve.png"#c("Summary_ROC_curve.png", "Summary_ROC_curve.pdf")
 
             }
         }
@@ -4583,27 +4595,62 @@ make.sens.spec.density.plots <- function(refstd_Parameters, long, iter.num,
 }
 
 make.density.plot <- function(Parameters, Parameter, long, 
-            iter.num, nb_chains, burn_in, no_chains, Thin, thin.interval, N){
+            iter.num, nb_chains, burn_in, no_chains, Thin, thin.interval, N,
+            make.pngs=FALSE, base.file.name=NULL){
     param = c("theta", "alpha", "PI", "Sensitivity", "Specificity")
     Param = c("Capital Theta", "Capital Lambda", 
       "beta", "~sigma[alpha]", "~sigma[theta]", "Sensitivity (summary)", 
       "Specificity (summary)", "Sensitivity (new)", "Specificity (new)")
     par(mfcol = c(5, 2))
     longueur = 1:long
-    for (j in 1:5) {
-      for (i in 1:N) {
-        plot(density(Parameters[, i, j]), lwd = 4, 
-          type = "l", col = "grey", main = paste(param[j], 
-            " of study ", i, " \n Thinning interval = ", 
-            thin.interval, "\n Total samplesize kept = ", 
-            (iter.num * nb_chains - (burn_in) * nb_chains)/Thin))
-      }
+
+    if (!make.pngs){
+        for (j in 1:5) {
+            for (i in 1:N) {
+                # we're not making the PNGs, so just write to
+                # the open device (assumed to be a PDF)
+                plot(density(Parameters[, i, j]), lwd = 4, 
+                  type = "l", col = "grey", main = paste(param[j], 
+                    " of study ", i, " \n Thinning interval = ", 
+                    thin.interval, "\n Total samplesize kept = ", 
+                    (iter.num * nb_chains - (burn_in) * nb_chains)/Thin))
+          }
+        }
     }
+
+    # we'll return these
+    image.list <- c()            
+    image.names <- c()
+
+    # these, I believe, are the overall stats.
     for (j in 1:9) {
+      if (make.pngs){
+        file.png = paste(base.file.name, round((iter.num * 
+             nb_chains - (burn_in) * nb_chains)/Thin, 0), "_", Param[j],
+             ".png", sep="")
+        # open a device to write to.
+        png(file.png, width=480, heigh=480)#, pointsize=20)
+        
+        image.list <- c(image.list, file.png)
+        image.names <- c(image.names, Param[j])
+      }
+      
+      # no generate the density plot.
       plot(density(Parameter[, j]), lwd = 4, type = "l", 
         col = "grey", main = paste(Param[j], " \n Thinning interval = ", 
           thin.interval, "\n Total samplesize kept = ", 
           (iter.num * nb_chains - (burn_in) * nb_chains)/Thin))
+      
+      if (make.pngs){
+        # kill the current PNG
+        dev.off()
+      }
+    }
+
+    if (make.pngs){
+        image.list <- as.list(image.list)
+        names(image.list) <- image.names
+        image.list
     }
 
 }
