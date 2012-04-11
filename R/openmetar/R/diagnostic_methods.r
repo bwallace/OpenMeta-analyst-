@@ -706,13 +706,14 @@ diagnostic.hsroc <- function(diagnostic.data, params){
 
     ### set up and run the three chains
     chain.out.dirs <- c()
-    for (chain.i in 1:3){
+    for (chain.i in 1:params$num.chains){
         chain.out.dir <- paste(out.dir, "/chain_", chain.i, sep="")
         dir.create(chain.out.dir)
         setwd(chain.out.dir)
         # TODO parameterize lambda, theta priors
         HSROC(data=diag.data.frame, iter.num=params$num.iters, 
-                prior_LAMBDA=c(-2, 2), prior_THETA=c(-2, 2), 
+                prior_LAMBDA=c(params$lambda.lower, params$lambda.upper), 
+                prior_THETA=c(params$theta.lower, params$theta.upper), 
                 path=chain.out.dir)
         chain.out.dirs <- c(chain.out.dirs, chain.out.dir)
         # go back up to ./r_tmp
@@ -752,12 +753,20 @@ diagnostic.hsroc <- function(diagnostic.data, params){
 
 
 diagnostic.hsroc.parameters <- function(){
-    params <- list("num.iters"="float", "burn.in"="float", "thin"="float")
+    params <- list("num.iters"="float", "burn.in"="float", "thin"="float", 
+                        "theta.lower"="float", "theta.upper"="float",
+                        "lambda.lower"="float", "lambda.upper"="float",
+                        "num.chains"="float")
     
     # default values
-    defaults <- list("num.iters"=5000, "burn.in"=1000, "thin"=2)
+    defaults <- list("num.iters"=5000, "burn.in"=1000, "thin"=2, 
+                        "theta.lower"=-2, "theta.upper"=2,
+                        "lambda.lower"=-2, "lambda.upper"=2,
+                        "num.chains"=3)
     
-    var.order <- c("num.iters", "burn.in", "thin")
+    var.order <- c("num.iters", "burn.in", "thin", "num.chains", 
+                    "theta.lower", "theta.upper",
+                    "lambda.lower", "lambda.upper")
     parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var.order)
 }
 
@@ -769,7 +778,12 @@ diagnostic.hsroc.pretty.names <- function() {
                          "description" = "Hierarchical regression analysis of diagnostic data\n (Rutter and Gatsonis, Statistics in Medicine, 2001).",
                          "num.iters"=list("pretty.name"="Number of Iterations", "description"="Number of iterations to run."),
                          "burn.in"=list("pretty.name"="Burn in", "description"="Number of draws to use for convergence."),
-                         "thin"=list("pretty.name"="Thin", "description"="Thinning.")  
+                         "thin"=list("pretty.name"="Thin", "description"="Thinning."),
+                         "num.chains"=list("pretty.name"="Number of Chains", "description"="Number of MCMC chains."),
+                         "lambda.lower"=list("pretty.name"="prior on lambda (lower)", "description"="Lower value in (uniform) range over expected lambda values."),
+                         "lambda.upper"=list("pretty.name"="prior on lambda (upper)", "description"="Upper value in (uniform) range over expected lambda values."),
+                         "theta.lower"=list("pretty.name"="prior on theta (lower)", "description"="Lower value in (uniform) range over expected theta values."),
+                         "theta.upper"=list("pretty.name"="prior on theta (upper)", "description"="Upper value in (uniform) range over expected theta values.")
                     )
 }
 

@@ -426,6 +426,9 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             self.add_enum(layout, cur_grid_row, name, value)
         elif value.lower() == "float":
             self.add_float_box(layout, cur_grid_row, name)
+        # should we add an array type?
+        elif value.lower() == "string":
+            self.add_text_box(layout, cur_grid_row, name)
         else:
             print "unknown type! throwing up. bleccch."
             print "name:%s. value: %s" % (name, value)
@@ -471,6 +474,24 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                                  self.set_param_f(name, to_type=float))
         self.current_widgets.append(finput)
         layout.addWidget(finput, cur_grid_row, 1)
+
+    def add_text_box(self, layout, cur_grid_row, name):
+        self.add_label(layout, cur_grid_row, self.param_d[name]["pretty.name"],\
+                                tool_tip_text=self.param_d[name]["description"])
+        # now add the text
+        txt_input = QLineEdit()
+
+        # if a default value has been specified, use it
+        if self.current_defaults.has_key(name):
+            txt_input.setText(str(self.current_defaults[name]))
+            self.current_param_vals[name] = self.current_defaults[name]
+
+        txt_input.setMaximumWidth(200)
+        QObject.connect(txt_input, QtCore.SIGNAL("textChanged(QString)"),
+                                 self.set_param_f(name, to_type=float))
+        self.current_widgets.append(txt_input)
+        layout.addWidget(txt_input, cur_grid_row, 1)
+
 
     def set_param_f(self, name, to_type=str):
         '''
