@@ -25,6 +25,7 @@ SCALE_P = .5 # percent images are to be scaled
 # these are special forest plots, in that multiple parameters objects are
 # require to re-generate them (and we invoke a different method!)
 SIDE_BY_SIDE_FOREST_PLOTS = ("NLR and PLR Forest Plot", "Sensitivity and Specificity")
+ROW_HEIGHT = 15 # by trial-and-error; seems to work very well
 
 class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
@@ -62,6 +63,10 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
         self.images = results["images"]
         print "images returned from analytic routine: %s" % self.images
+        self.image_order = None
+        if "image_order" in results:
+            self.image_order = results["image_order"]
+            print "image display order: %s" % self.image_order
 
         self.params_paths = {}
         if "image_params_paths" in results:
@@ -72,8 +77,11 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         self.items_to_coords = {}
         self.texts = results["texts"]
 
+
         # first add the text to self.scene
         self.add_text()
+
+        self.y_coord += 2*ROW_HEIGHT
 
         # and now the images
         self.add_images()
@@ -97,7 +105,13 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
 
     def add_images(self):
-        for title, image in self.images.items():
+        # temporary fix!
+        image_order = self.images.keys()
+        if self.image_order is not None:
+            image_order = self.image_order
+
+        for title in image_order:
+            image = self.images[title]
             print "title: %s; image: %s" % (title, image)
             cur_y = max(0, self.y_coord)
             print "cur_y: %s" % cur_y
@@ -182,7 +196,7 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         txt_item.setTextInteractionFlags(Qt.TextEditable)
         self.scene.addItem(txt_item)
         # fix for issue #149; was formerly txt_item.boundingRect().size().height()
-        ROW_HEIGHT = 15 # by trial-and-error; seems to work very well
+        
         self.y_coord += ROW_HEIGHT*text.count("\n")
         self.scene.setSceneRect(0, 0, max(self.scene.width(), \
                                           txt_item.boundingRect().size().width()),\

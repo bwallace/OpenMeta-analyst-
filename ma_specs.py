@@ -134,21 +134,21 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             self.image_path.setText(out_f)
         
     def make_indefinite_progress_bar(self):
-        bar = QtGui.QProgressBar()
+        bar = QtGui.QProgressBar(parent=self)
         bar.setWindowTitle("running analysis...")
         bar.setRange(0, 0) # makes it indefinite
-        specs_form_pos = self.pos()
-        specs_form_width, specs_form_height = self.width(), self.height()
+        #specs_form_pos = self.pos()
+        #specs_form_width, specs_form_height = self.width(), self.height()
 
         bar_width = 250 # seems to look ok?
         bar.setFixedWidth(bar_width)
-        center_width = specs_form_pos.x() + specs_form_width/2 - bar_width/2
-        center_height = specs_form_pos.y() + specs_form_height/2
+        #center_width = specs_form_pos.x() + specs_form_width/2 - bar_width/2
+        #center_height = specs_form_pos.y() + specs_form_height/2
 
         bar.setAlignment(Qt.AlignCenter)
-        center_point = QPoint(center_width, center_height)
+        #center_point = QPoint(center_width, center_height)
         
-        bar.move(center_point)
+        #bar.move(center_point)
     
         return bar
         
@@ -156,9 +156,12 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
     def run_ma(self):
         ###
         # first, let's fire up a progress bar
-        bar = self.make_indefinite_progress_bar()
+        #bar = self.make_indefinite_progress_bar()
+        #bar.show()
+        #bar.raise_()
+        #bar = progress_bar.MetaProgress(self)
+        bar = MetaProgress(self)
         bar.show()
-        bar.raise_()
         result = None
         
         # this method is defined statically, below
@@ -235,7 +238,8 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                 result = meta_py_r.run_meta_method_diag(\
                             self.meta_f_str, method_names, list_of_param_vals)
 
-        bar.close()
+        #bar.close()
+        bar.hide()
 
         # update the user_preferences object for the selected method
         # with the values selected for this run
@@ -630,3 +634,13 @@ def add_plot_params(specs_form):
     specs_form.current_param_vals["fp_show_summary_line"] = specs_form.show_summary_line.isChecked()
 
 
+
+
+####
+# simple progress bar
+import ui_running
+class MetaProgress(QDialog, ui_running.Ui_running):
+    
+    def __init__(self, parent=None):
+        super(MetaProgress, self).__init__(parent)
+        self.setupUi(self)

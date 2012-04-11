@@ -705,13 +705,18 @@ def parse_out_results(result):
     # in R (for graphics manipulation).
     text_d = {}
     image_var_name_d, image_params_paths_d, image_path_d  = {}, {}, {}
+    image_order = None
 
     for text_n, text in zip(list(result.getnames()), list(result)):
         # some special cases, notably the plot names and the path for a forest
         # plot. TODO in the case of diagnostic data, we're probably going to 
         # need to parse out multiple forest plot param objects...
+        print text_n
+        print "\n--------\n"
         if text_n == "images":
             image_path_d = _rls_to_pyd(text)
+        elif text_n == "image_order":
+            image_order = [x for x in text]
         elif text_n == "plot_names":
             if str(text) == "NULL":
                 image_var_name_d = {}
@@ -726,7 +731,8 @@ def parse_out_results(result):
             text_d[text_n]=text
 
     return {"images":image_path_d, "image_var_names":image_var_name_d,
-                        "texts":text_d, "image_params_paths":image_params_paths_d}
+                        "texts":text_d, "image_params_paths":image_params_paths_d,
+                        "image_order":image_order}
                 
                                        
 def run_binary_fixed_meta_regression(selected_cov, bin_data_name="tmp_obj", \
