@@ -18,6 +18,7 @@
 from PyQt4 import QtCore, QtGui, Qt
 from PyQt4.Qt import *
 import pdb
+import sys
 import copy
 import sip
 
@@ -231,14 +232,26 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
             if self.meta_f_str is None:
                 # regular meta-analysis
-                result = meta_py_r.run_diagnostic_multi(method_names, list_of_param_vals)
+                try:
+                    result = meta_py_r.run_diagnostic_multi(method_names, list_of_param_vals)
+                except Exception, e:
+                    error_message = \
+                        "sorry, something has gone wrong with your analysis. here is a stack trace that probably won't be terribly useful.\n %s"  \
+                                            % e
+                
+                    QMessageBox.critical(self,
+                                "analysis failed",
+                                error_message)
+                    bar.hide()
+                    self.accept()
+
             else:
                 # in the case of diagnostic, we pass in lists
                 # of param values to the meta_method 
                 result = meta_py_r.run_meta_method_diag(\
-                            self.meta_f_str, method_names, list_of_param_vals)
+                                self.meta_f_str, method_names, list_of_param_vals)
 
-        #bar.close()
+
         bar.hide()
 
         # update the user_preferences object for the selected method
@@ -589,10 +602,10 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         window_title, method_label = "", ""
         if self.sens_spec:
             window_title = "Method & Parameters for Sens./Spec."
-            method_label = "analysis method for sens./spec."
+            method_label = "method for sens./spec."
         else:
             window_title = "Method & Parameters for DOR/LR"
-            method_label = "analysis method for DOR/LR"
+            method_label = "method for DOR/LR"
 
         self.setWindowTitle(QtGui.QApplication.translate("Dialog", window_title, \
                 None, QtGui.QApplication.UnicodeUTF8))
