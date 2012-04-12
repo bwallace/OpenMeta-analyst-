@@ -393,7 +393,7 @@ diagnostic.fixed.inv.var <- function(diagnostic.data, params){
                      method="FE", level=params$conf.level,
                      digits=params$digits)
          # Create list to display summary of results
-        model.title <- paste("Diagnostic Fixed-effect Model - Inverse Variance (k = ", res$k, ")", sep="")
+        model.title <- paste("Diagnostic Fixed-Effect Model - Inverse Variance (k = ", res$k, ")", sep="")
         summary.disp <- create.summary.disp(diagnostic.data, params, res, model.title)
         pretty.names <- diagnostic.fixed.inv.var.pretty.names()
         pretty.metric <- eval(parse(text=paste("pretty.names$measure$", params$measure,sep="")))
@@ -445,7 +445,7 @@ diagnostic.fixed.inv.var.parameters <- function(){
 }
 
 diagnostic.fixed.inv.var.pretty.names <- function() {
-    pretty.names <- list("pretty.name"="Diagnostic Fixed-effect Inverse Variance", 
+    pretty.names <- list("pretty.name"="Diagnostic Fixed-Effect Inverse Variance", 
                          "description" = "Performs fixed-effect meta-analysis with inverse variance weighting.",
                          "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
                          "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
@@ -504,7 +504,7 @@ diagnostic.fixed.mh <- function(diagnostic.data, params){
         #                        
         # Create list to display summary of results
         #
-        model.title <- "Diagnostic Fixed-effect Model - Mantel Haenszel"
+        model.title <- "Diagnostic Fixed-Effect Model - Mantel Haenszel"
         summary.disp <- create.summary.disp(diagnostic.data, params, res, model.title)
         pretty.names <- diagnostic.fixed.mh.pretty.names()
         pretty.metric <- eval(parse(text=paste("pretty.names$measure$", params$measure,sep="")))
@@ -561,7 +561,7 @@ diagnostic.fixed.mh.parameters <- function(){
 }
 
 diagnostic.fixed.mh.pretty.names <- function() {
-    pretty.names <- list("pretty.name"="Diagnostic Fixed-effect Mantel Haenszel", 
+    pretty.names <- list("pretty.name"="Diagnostic Fixed-Effect Mantel Haenszel", 
                          "description" = "Performs fixed-effect meta-analysis using the Mantel Haenszel method.",
                          "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
                          "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
