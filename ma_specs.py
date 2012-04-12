@@ -18,6 +18,7 @@
 from PyQt4 import QtCore, QtGui, Qt
 from PyQt4.Qt import *
 import pdb
+import sys
 import copy
 import sip
 
@@ -134,21 +135,21 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             self.image_path.setText(out_f)
         
     def make_indefinite_progress_bar(self):
-        bar = QtGui.QProgressBar()
+        bar = QtGui.QProgressBar(parent=self)
         bar.setWindowTitle("running analysis...")
         bar.setRange(0, 0) # makes it indefinite
-        specs_form_pos = self.pos()
-        specs_form_width, specs_form_height = self.width(), self.height()
+        #specs_form_pos = self.pos()
+        #specs_form_width, specs_form_height = self.width(), self.height()
 
         bar_width = 250 # seems to look ok?
         bar.setFixedWidth(bar_width)
-        center_width = specs_form_pos.x() + specs_form_width/2 - bar_width/2
-        center_height = specs_form_pos.y() + specs_form_height/2
+        #center_width = specs_form_pos.x() + specs_form_width/2 - bar_width/2
+        #center_height = specs_form_pos.y() + specs_form_height/2
 
         bar.setAlignment(Qt.AlignCenter)
-        center_point = QPoint(center_width, center_height)
+        #center_point = QPoint(center_width, center_height)
         
-        bar.move(center_point)
+        #bar.move(center_point)
     
         return bar
         
@@ -156,9 +157,12 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
     def run_ma(self):
         ###
         # first, let's fire up a progress bar
-        bar = self.make_indefinite_progress_bar()
+        #bar = self.make_indefinite_progress_bar()
+        #bar.show()
+        #bar.raise_()
+        #bar = progress_bar.MetaProgress(self)
+        bar = MetaProgress(self)
         bar.show()
-        bar.raise_()
         result = None
         
         # this method is defined statically, below
@@ -228,14 +232,27 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
             if self.meta_f_str is None:
                 # regular meta-analysis
-                result = meta_py_r.run_diagnostic_multi(method_names, list_of_param_vals)
+                try:
+                    result = meta_py_r.run_diagnostic_multi(method_names, list_of_param_vals)
+                except Exception, e:
+                    error_message = \
+                        "sorry, something has gone wrong with your analysis. here is a stack trace that probably won't be terribly useful.\n %s"  \
+                                            % e
+                
+                    QMessageBox.critical(self,
+                                "analysis failed",
+                                error_message)
+                    bar.hide()
+                    self.accept()
+
             else:
                 # in the case of diagnostic, we pass in lists
                 # of param values to the meta_method 
                 result = meta_py_r.run_meta_method_diag(\
-                            self.meta_f_str, method_names, list_of_param_vals)
+                                self.meta_f_str, method_names, list_of_param_vals)
 
-        bar.close()
+
+        bar.hide()
 
         # update the user_preferences object for the selected method
         # with the values selected for this run
@@ -409,6 +426,9 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             self.add_enum(layout, cur_grid_row, name, value)
         elif value.lower() == "float":
             self.add_float_box(layout, cur_grid_row, name)
+        # should we add an array type?
+        elif value.lower() == "string":
+            self.add_text_box(layout, cur_grid_row, name)
         else:
             print "unknown type! throwing up. bleccch."
             print "name:%s. value: %s" % (name, value)
@@ -454,6 +474,24 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                                  self.set_param_f(name, to_type=float))
         self.current_widgets.append(finput)
         layout.addWidget(finput, cur_grid_row, 1)
+
+    def add_text_box(self, layout, cur_grid_row, name):
+        self.add_label(layout, cur_grid_row, self.param_d[name]["pretty.name"],\
+                                tool_tip_text=self.param_d[name]["description"])
+        # now add the text
+        txt_input = QLineEdit()
+
+        # if a default value has been specified, use it
+        if self.current_defaults.has_key(name):
+            txt_input.setText(str(self.current_defaults[name]))
+            self.current_param_vals[name] = self.current_defaults[name]
+
+        txt_input.setMaximumWidth(200)
+        QObject.connect(txt_input, QtCore.SIGNAL("textChanged(QString)"),
+                                 self.set_param_f(name, to_type=float))
+        self.current_widgets.append(txt_input)
+        layout.addWidget(txt_input, cur_grid_row, 1)
+
 
     def set_param_f(self, name, to_type=str):
         '''
@@ -585,10 +623,10 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         window_title, method_label = "", ""
         if self.sens_spec:
             window_title = "Method & Parameters for Sens./Spec."
-            method_label = "analysis method for sens./spec."
+            method_label = "method for sens./spec."
         else:
             window_title = "Method & Parameters for DOR/LR"
-            method_label = "analysis method for DOR/LR"
+            method_label = "method for DOR/LR"
 
         self.setWindowTitle(QtGui.QApplication.translate("Dialog", window_title, \
                 None, QtGui.QApplication.UnicodeUTF8))
@@ -630,3 +668,13 @@ def add_plot_params(specs_form):
     specs_form.current_param_vals["fp_show_summary_line"] = specs_form.show_summary_line.isChecked()
 
 
+
+
+####
+# simple progress bar
+import ui_running
+class MetaProgress(QDialog, ui_running.Ui_running):
+    
+    def __init__(self, parent=None):
+        super(MetaProgress, self).__init__(parent)
+        self.setupUi(self)
