@@ -57,8 +57,12 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         self.nav_tree.setHeaderLabels(["results"])
         self.nav_tree.setItemsExpandable(True)
         self.x_coord = 5
-        self.splitter.setSizes([400, 100])
         self.y_coord = 5
+
+        # set (default) splitter sizes
+        self.splitter.setSizes([400, 100])
+        self.results_nav_splitter.setSizes([200,500])
+
         self.scene = QGraphicsScene(self)
 
         self.images = results["images"]
