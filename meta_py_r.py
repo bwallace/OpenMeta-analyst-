@@ -49,6 +49,9 @@ try:
 except:
     raise Exception, "unable to create temporary directory for R results! make sure you have sufficient permissions."
 
+def reset_Rs_working_dir():
+    ro.r("setwd(%s)") % os.getcwd()
+
 def impute_two_by_two(bin_data_dict):
     print "computing 2x2 table via R..."
     print bin_data_dict
