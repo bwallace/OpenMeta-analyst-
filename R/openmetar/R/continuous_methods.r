@@ -57,7 +57,7 @@ get.res.for.one.cont.study <- function(cont.data, params){
     res
 }
 
-create.cont.data.array <- function(cont.data, params){
+create.cont.data.array <- function(cont.data, params, res){
   # Extracts data from cont.data and puts it into an array for the the first summary display table.
   tx1.name <- "tx A"
   tx2.name <- "tx B"
@@ -70,9 +70,9 @@ create.cont.data.array <- function(cont.data, params){
   y <- sprintf(digits.str, y.disp)
   LL <- sprintf(digits.str, (y.disp - mult*cont.data@SE))
   UL <- sprintf(digits.str, (y.disp + mult*cont.data@SE))
-  weights <- (1 / cont.data@SE^2) / sum(1 / cont.data@SE^2)
-  weights <- sprintf(digits.str, weights)
-  weights <- format(weights, justify="right")
+  weights.normal <- res$weights / sum(res$weights)
+  weights.normal <- sprintf(digits.str, weights.normal)
+  weights.normal <- format(weights.normal, justify="right")
   # Extract the data from cont.data and round
   N.txA <- format(cont.data@N1, justify="right")
   mean.txA <- sprintf(digits.str, cont.data@mean1)
@@ -113,8 +113,12 @@ continuous.fixed <- function(cont.data, params){
                      slab=cont.data@study.names,
                      method="FE", level=params$conf.level,
                      digits=params$digits)
+        # Weights assigned to each study
+        weights <- 1 / res$vi
+        res$weights <- weights
+        
         metric.name <- pretty.metric.name(as.character(params$measure))
-        model.title <- paste("Continuous Fixed-effect Model\n\nMetric: ", metric.name, sep="")
+        model.title <- paste("Continuous Fixed-Effect Model\n\nMetric: ", metric.name, sep="")
         summary.disp <- create.summary.disp(cont.data, params, res, model.title)
     }    
     #
@@ -162,7 +166,7 @@ continuous.fixed.parameters <- function(){
 }
 
 continuous.fixed.pretty.names <- function() {
-    pretty.names <- list("pretty.name"="Continuous Fixed-effect Inverse Variance", 
+    pretty.names <- list("pretty.name"="Continuous Fixed-Effect Inverse Variance", 
                          "description" = "Performs fixed-effect meta-analysis with inverse variance weighting.",
                          "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
                          "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
@@ -198,6 +202,10 @@ continuous.random <- function(cont.data, params){
                      slab=cont.data@study.names,
                      method=params$rm.method, level=params$conf.level,
                      digits=params$digits)
+        # Weights assigned to each study
+        weights <- 1 / (res$vi + res$tau2)
+        res$weights <- weights
+        
         metric.name <- pretty.metric.name(as.character(params$measure))
         model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", metric.name, sep="")
         summary.disp <- create.summary.disp(cont.data, params, res, model.title)

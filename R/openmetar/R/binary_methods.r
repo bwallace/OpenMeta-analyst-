@@ -85,7 +85,7 @@ get.res.for.one.binary.study <- function(binary.data, params){
     res
 }
 
-create.binary.data.array <- function(binary.data, params){
+create.binary.data.array <- function(binary.data, params, res){
     # Extracts data from binary.data and puts it into an array for the the first summary display table.
     tx1.name <- "tx A"
     tx2.name <- "tx B"
@@ -98,9 +98,9 @@ create.binary.data.array <- function(binary.data, params){
     y <- sprintf(digits.str, y.disp)
     LL <- sprintf(digits.str, (y.disp - mult*binary.data@SE))
     UL <- sprintf(digits.str, (y.disp + mult*binary.data@SE))
-    weights <- (1 / binary.data@SE^2) / sum(1 / binary.data@SE^2)
-    weights <- sprintf(digits.str, weights)
-    weights <- format(weights, justify="right")
+    weights.normal <- res$weights / sum(res$weights)
+    weights.normal <- sprintf(digits.str, weights.normal)
+    weights.normal <- format(weights.normal, justify="right")
     # Extract the data from binary.data and round
     event.txA <- format(binary.data@g1O1, justify="right")
     subject.txA <- format(binary.data@g1O1 + binary.data@g1O2, justify="right")
@@ -111,7 +111,7 @@ create.binary.data.array <- function(binary.data, params){
                       paste(tx1.name, " Subjects", sep=""), subject.txA, 
                       paste(tx2.name, " Events", sep=""), event.txB, 
                       paste(tx2.name, " Subjects", sep=""), subject.txB, 
-                      effect.size.name, y, "Lower", LL, "Upper", UL, "Weight", weights), 
+                      effect.size.name, y, "Lower", LL, "Upper", UL, "Weight", weights.normal), 
                     dim=c(length(binary.data@study.names) + 1, 9))
     class(raw.data) <- "summary.data" 
     return(raw.data)
@@ -135,9 +135,12 @@ binary.fixed.inv.var <- function(binary.data, params){
         res<-rma.uni(yi=binary.data@y, sei=binary.data@SE, slab=binary.data@study.names,
                                 level=params$conf.level, digits=params$digits, method="FE", add=params$adjust,
                                 to=params$to)
+        # Weights assigned to each study
+        weights <- 1 / res$vi
+        res$weights <- weights
         # Create list to display summary of results
         metric.name <- pretty.metric.name(as.character(params$measure))
-        model.title <- paste("Binary Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="")
+        model.title <- paste("Binary Fixed-Effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="")
         summary.disp <- create.summary.disp(binary.data, params, res, model.title)
         
         # generate forest plot 
@@ -188,7 +191,7 @@ binary.fixed.inv.var.parameters <- function(){
 }
 
 binary.fixed.inv.var.pretty.names <- function() {
-    pretty.names <- list("pretty.name"="Binary Fixed-effect Inverse Variance", 
+    pretty.names <- list("pretty.name"="Binary Fixed-Effect Inverse Variance", 
                          "description" = "Performs fixed-effect meta-analysis with inverse variance weighting.",
                          "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
                          "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
@@ -222,11 +225,18 @@ binary.fixed.mh <- function(binary.data, params){
                                 ci=binary.data@g2O1, di=binary.data@g2O2, slab=binary.data@study.names,
                                 level=params$conf.level, digits=params$digits, measure=params$measure,
                                 add=c(params$adjust, 0), to=c(as.character(params$to), "none")) 
+        A <- binary.data@g1O1
+        B <- binary.data@g1O2
+        C <- binary.data@g2O1
+        D <- binary.data@g2O2
+        # Weights assigned to each study
+        weights <- B * C / (A + B + C + D) 
+        res$weights <- weights
         #                        
         # Create list to display summary of results
         #
         metric.name <- pretty.metric.name(as.character(params$measure))
-        model.title <- paste("Binary Fixed-effect Model - Mantel Haenszel\n\nMetric: ", metric.name, sep="")
+        model.title <- paste("Binary Fixed-Effect Model - Mantel Haenszel\n\nMetric: ", metric.name, sep="")
         summary.disp <- create.summary.disp(binary.data, params, res, model.title)
         #
         # generate forest plot
@@ -283,7 +293,7 @@ binary.fixed.mh.parameters <- function(){
 }
 
 binary.fixed.mh.pretty.names <- function() {
-    pretty.names <- list("pretty.name"="Binary Fixed-effect Mantel Haenszel", 
+    pretty.names <- list("pretty.name"="Binary Fixed-Effect Mantel Haenszel", 
                          "description" = "Performs fixed-effect meta-analysis using the Mantel Haenszel method.",
                          "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
                          "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
@@ -325,19 +335,25 @@ binary.fixed.peto <- function(binary.data, params){
     else{  
         res <- rma.peto(ai=binary.data@g1O1, bi=binary.data@g1O2, 
                                 ci=binary.data@g2O1, di=binary.data@g2O2, slab=binary.data@study.names,
-                                level=params$conf.level, digits=params$digits)              
+                                level=params$conf.level, digits=params$digits)
+        
+        # Corrected values for y and SE
+        binary.data@y <- res$yi
+        binary.data@SE <- sqrt(res$vi)
+
+        # Weights assigned to each study
+        weights <- 1 / res$vi
+        res$weights <- weights
         #                        
         # Create list to display summary of results
         #
         metric.name <- pretty.metric.name(as.character(params$measure))
-        model.title <- "Binary Fixed-effect Model - Peto\n\nMetric: Odds Ratio"
+        model.title <- "Binary Fixed-Effect Model - Peto\n\nMetric: Odds Ratio"
         summary.disp <- create.summary.disp(binary.data, params, res, model.title)
         #
         # generate forest plot 
         #
         if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
-            binary.data <- compute.bin.point.estimates(binary.data, params)
-            # compute point estimates for plot.data in case they are missing
             forest.path <- paste(params$fp_outpath, sep="")
             plot.data <- create.plot.data.binary(binary.data, params, res)
             changed.params <- plot.data$changed.params
@@ -386,7 +402,7 @@ binary.fixed.peto.parameters <- function(){
 }
 
 binary.fixed.peto.pretty.names <- function() {
-    pretty.names <- list("pretty.name"="Binary Fixed-effect Peto", 
+    pretty.names <- list("pretty.name"="Binary Fixed-Effect Peto", 
                          "description" = "Performs fixed-effect meta-analysis using the Peto method.",
                          "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
                          "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
@@ -433,7 +449,10 @@ binary.random <- function(binary.data, params){
                      slab=binary.data@study.names,
                      method=params$rm.method, level=params$conf.level,
                      digits=params$digits)
-
+        
+        # Weights assigned to each study
+        weights <- 1 / (res$vi + res$tau2)
+        res$weights <- weights
         #                        
         # Create list to display summary of results
         #
