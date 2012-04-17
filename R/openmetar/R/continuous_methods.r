@@ -87,7 +87,7 @@ create.cont.data.array <- function(cont.data, params, res){
                     paste(tx2.name, " N", sep=""), N.txB,
                     paste(tx2.name, " Mean", sep=""), mean.txB, 
                     paste(tx2.name, " SD", sep=""), sd.txB,
-                                                      effect.size.name, y, "Lower", LL, "Upper", UL, "Weight", weights), 
+                                                      effect.size.name, y, "Lower", LL, "Upper", UL, "Weight", weights.normal), 
                     dim=c(length(cont.data@study.names) + 1, 11))
   class(raw.data) <- "summary.data" 
   return(raw.data)
