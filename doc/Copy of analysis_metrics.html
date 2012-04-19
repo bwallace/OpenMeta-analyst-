@@ -1,0 +1,61 @@
+<html>
+<head>
+<link href="css/help.css" 
+type=text/css rel=stylesheet>
+</head>
+<body>
+<h2><a name="top">Analysis Metrics</a></h2>
+  <p>This section describes the metrics available in Open Meta-Analyst.</p>
+  <h3>Metrics for Binary Data</h3>
+  <p>You can choose a metric for binary or continuous data by selecting <b>metric</b> from the <b>analysis</b> menu,
+         as described in <a href="analysis.html#top">Example - Performing a Meta-Analysis</a>.</b>
+  <ul>
+     <li>Two-Arm Metrics:
+        <ul>
+          <li><b>OR</b> - Odds Ratio</li>
+         <li><b>RD</b> - Risk Difference</li>
+         <li><b>RR</b> - Risk Ratio</li>
+         <li><b>AS</b> - Arcsine</li>
+         <li><b>PETO</b> - Peto</li>
+         <li><b>YUQ</b> - Yule's Q</li>
+         <li><b>YUY</b> - Yule's Y</li>
+       </ul> 
+     </li>
+     <li>One-Arm Metrics:
+        <ul>
+          <li><b>PR</b> - Proportion</li>
+         <li><b>PLN</b> - Log-transformed proportion</li>
+         <li><b>PLO</b> - Logit-transformed proportion</li>
+         <li><b>PAS</b> - Arcsine-transformed proportion</li>
+         <li><b>PFT</b> - Freeman-Tukey double arcsine-transformed proportion</li>
+       </ul> 
+     </li>
+     </ul>
+   
+  	<h3>Metrics for Continuous Data</h3>
+  	  <li>Two-Arm Metrics:
+        <ul>
+          <li><b>MD</b> - Mean Difference</li>
+         <li><b>SMD</b> - Standardized Mean Difference</li>
+       </ul> 
+     </li>
+      <li>One-Arm Metrics:
+        <ul>
+          <li><b>TX Mean</b> - Treatment Mean</li>
+        </ul> 
+     </li>
+  	
+  	<h3>Metrics for Diagnostic Data</h3>
+  	<ul>
+  	   <li><b>sensitivity:</b> &nbsp;&nbsp;&nbsp;&nbsp; TP / (TP + FN)</li>
+  	   <li><b>specificity:</b> &nbsp;&nbsp;&nbsp;&nbsp; TN / (TN + FP)</li>
+  	   <li><b>likelihood ratio</b>
+  	       <ul>
+  	           <li><b>Positive likelihood ratio:</b> &nbsp;&nbsp;&nbsp;&nbsp; sensitivity / (1 - specificity)</li>
+  	           <li><b>Negative likelihood ratio:</b> &nbsp;&nbsp;&nbsp;&nbsp; (1 - sensitivity) / specificity</li>
+  	       </ul>
+  	    </li>
+  	    <li><b>diagnostic odds ratio:</b> &nbsp;&nbsp;&nbsp;&nbsp; (TP + TN) / (FP + FN)</li>
+   </ul>
+</body>
+</html>  

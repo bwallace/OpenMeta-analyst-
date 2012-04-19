@@ -15,6 +15,11 @@ img {
   text-align: left;
 }
 
+eq {
+  PADDING-RIGHT: 10px; PADDING-LEFT: 35px; PADDING-BOTTOM: 10px; MARGIN: 0px; PADDING-TOP: 10px;
+  text-align: left;
+}
+
 h1 {
 	font-size: 26px;
 	text-align: center;
@@ -35,11 +40,16 @@ h2 {
 }
 
 h3 {
- font-size:18px;
+ font-size: 18px;
  padding-left: 10px;
 }
 
-h1, h2, h3, h3, h5, h6 {
+h4 {
+ font-size: 16px;
+ padding-left: 25px;
+ }
+
+h1, h2, h3, h3, h4 {
   font-familty: arial, Helvetica, Geneva, SunSans-Regular, sans-serif;
 }
 
