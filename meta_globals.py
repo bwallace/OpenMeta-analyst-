@@ -27,7 +27,7 @@ VERSION = .005
 # know how to compute arbitrary metrics.
 
 # Binary metrics
-BINARY_TWO_ARM_METRICS = ["OR", "RD", "RR", "AS", "PETO", "YUQ", "YUY"]
+BINARY_TWO_ARM_METRICS = ["OR", "RD", "RR", "AS", "YUQ", "YUY"]
 BINARY_ONE_ARM_METRICS = ["PR", "PLN", "PLO", "PAS", "PFT"]
 
 # Continuous metrics
