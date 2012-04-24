@@ -5,24 +5,43 @@ type=text/css rel=stylesheet>
 </head>
 <body>
 <h2><a name="top">Random-Effects Methods</a></h2>
-  
-  <h3>Diagnostic Methods</h3>
+ <p>You can choose a random-effects method for a meta-analysis as follows:</p>
+ <ul>
+     <li>Select <b>Random-Effects</b> in the <b>analysis method</b> field of the Method & Parameters dialog.</li>
+     <li>Select one of the random-effects methods in the <b>Random method</b> field.</li>
+</ul>
+ <h3>Random-Effects Methods</h3>
+ <p><a name="random">The following random-effects methods are available:</a></p>
+       <ul>
+          <li>Hedges estimator (HE)</li>
+          <li>DerSimonian-Laird (DL)</li>
+          <li>Sidik-Jonkman (SJ) - Sidik, K. & Jonkman, J. N. (2005a) A note on variance estimation in random effects meta-regression. Journal of Biopharmaceutical Statistics, 15, 823–838.<br>
+                Sidik, K. & Jonkman, J. N. (2005b) Simple heterogeneity variance estimation for meta-analysis. Journal of the Royal Statistical Society, Series C, 54, 367–384.</li>
+          <li>Maximum likelihood (ML)</li>
+          <li>Restricted maximum likelihood (REML)</li>
+          <li>Empirical Bayes (EB)</li>
+      </ul>     
+ <h3>Hedges Estimator</h3>
+ <p><b>Reference:</b>  Hedges, L. (1981) Distribution theory for Glass's estimator of effect size and related estimators. <em>Journal of Educational Statistics</em>, 6, 107-128</p> 
+ <h3>DerSimonian-Laird</h3>
+ <p>In the DerSimionian-Laird method, the heterogeneity &tau;<sup>2</sup> is estimated as follows:</p>  
+<eq><img src="images/tau_squared.png"></eq> 
+<p>where</p>
+<eq><img src="images/tau_squared_Q.png"></eq><br> 
+<eq><img src="images/tau_squared_df.png"></eq><br>
+<eq><img src="images/tau_squared_C.png"></eq> 
+<p>In the random effects model, the weight assigned to each study is</p>
+<p><b>Reference:</b>  DerSimonian, R. & Laird, N. (1986) Meta-analysis in clinical trials. Controlled Clinical Trials, 7, 177–188.</p> 
+
+ <h3>Diagnostic Methods</h3>
   	  <ul>
   	    <li>Bivariate (Maximum Likelihood)</li>
        <li>HSROC (Hierarchical Summary Receiver Operating Characteristic)</li>
        <li>Fixed-effect inverse variance</li>
        <li>Random-effects
-     </ul>
- <p><b>Random-Effects Options</b></p>    
- <p><a name="random">For random-effects methods, the following options are available:</a></p>
-       <ul>
-          <li>HE (Hedges estimator) - Hedges, L. (1981). Distribution theory for Glass's estimator of effect size and related estimators. <em>Journal of Educational Statistics</em>, 6, 107-128.</li>
-          <li>DL (DerSimonian-Laird) - DerSimonian, R. & Laird, N. (1986) Meta-analysis in clinical trials. Controlled Clinical Trials, 7, 177–188.</li>
-          <li>SJ (Sidik-Jonkman) - Sidik, K. & Jonkman, J. N. (2005a) A note on variance estimation in random effects meta-regression. Journal of Biopharmaceutical Statistics, 15, 823–838.<br>
-                Sidik, K. & Jonkman, J. N. (2005b) Simple heterogeneity variance estimation for meta-analysis. Journal of the Royal Statistical Society, Series C, 54, 367–384.</li>
-          <li>ML - Maximum likelihood</li>
-          <li>REML - Restricted maximum likelihood</li>
-          <li>EB - Empirical Bayes</li>
-      </ul>     
+     </ul>      
+<p><a href="#top">Back to top</a></p>
+<br>
+ <table id="nav" cellspacing="0"><tr valign="center"><td align="left" width="20"><a href="main_window.html#top"><img src="images/b_prev.gif" border="0"></td><td align="left">The Open Meta-Analyst Window</td></a><td>&nbsp;</td><td align="right">Creating a New Data Set</td><td align="right" width="20"><a href="create_dataset.html#top"><img src="images/b_next.gif" border="0"></td></a></td></tr></table>
 </body>
 </html>

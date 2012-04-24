@@ -8,14 +8,14 @@
  * http://docs.jquery.com/UI/Accordion#theming
  */
 /* IE/Win - Fix animation bug - #4615 */
-.ui-accordion { width: 230px; margin-top: 25px}
+.ui-accordion { width: 250px; margin-top: 25px}
 .ui-accordion .ui-accordion-header { cursor: pointer; position: relative; margin-top: 0px; zoom: 1; }
 .ui-accordion .ui-accordion-li-fix { display: inline; }
 .ui-accordion .ui-accordion-header-active { border-bottom: 0 !important; }
-.ui-accordion .ui-accordion-header a { display: block; font-size: .6em; padding: 0em 0em 0em 0em; }
+.ui-accordion .ui-accordion-header a { display: block; font-size: .6em; padding: .5em 0em .5em 0em; }
 .ui-accordion-icons .ui-accordion-header a { padding-left: 1.2em; }
 .ui-accordion .ui-accordion-header .ui-icon { position: absolute; left: 0em; top: 50%; margin-top: -8px; }
-.ui-accordion .ui-accordion-content { padding: 0em 0em; border-top: 0; margin-top: -5px; position: relative; top: 2px; margin-bottom: 2px; overflow: auto; display: none; font-size: .5em}
+.ui-accordion .ui-accordion-content { padding: 0em 0em; border-top: 0; margin-top: -10px; position: relative; top: 0px; margin-bottom: 0px; overflow: auto; display: none; font-size: .5em}
 .ui-accordion .ui-accordion-content-active { display: block; }
 
 h2{

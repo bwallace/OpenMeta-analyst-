@@ -4,19 +4,41 @@
 type=text/css rel=stylesheet>
 </head>
 <body>
-<h2><a name="top">Analysis Metrics</a></h2>
+<h2><a name="top">Metrics</a></h2>
   <p>This section describes the metrics available in Open Meta-Analyst.</p>
   <h3>Metrics for Binary Data</h3>
   <p>You can choose a metric for binary or continuous data by selecting <b>metric</b> from the <b>analysis</b> menu,
-         as described in <a href="analysis.html#top">Example - Performing a Meta-Analysis</a>.</b>
+         as described in <a href="analysis.html#top">Example - Performing a Meta-Analysis</a>. </p>
+ <p>When reading the formulas shown in this section, assume that 
+  the 2 X 2 table data are labeled according to the table shown below:</p>       
+ <table width="100" cellspacing="0" cellpadding="10" border="1">
+<tr align="center">
+	<td></td>
+	<td>Events</td>
+	<td>Non-events</td>
+</tr>
+<tr align="center">
+	<td>Treated</td>
+	<td>a</td>
+	<td>b</td>
+</tr>
+<tr align="center">
+	<td>Control</td>
+	<td>c</td>
+	<td>d</td>
+</tr>
+</table>
+      
   <ul>
      <li>Two-Arm Metrics:
         <ul>
-          <li><b>OR</b> - Odds Ratio</li>
-         <li><b>RD</b> - Risk Difference</li>
-         <li><b>RR</b> - Risk Ratio</li>
-         <li><b>AS</b> - Arcsine</li>
-         <li><b>PETO</b> - Peto</li>
+          <li><b>OR</b> - Odds Ratio<br>
+          <eq><img src="images/eq_odds_ratio2.png"></eq></li>
+         <li><b>RD</b> - Risk Difference<br>
+          <eq><img src="images/eq_risk_difference.png"></eq></li>
+         <li><b>RR</b> - Relative Risk Ratio<br>
+          <eq><img src="images/eq_rel_risk.png"></eq></li>
+         <li><b>AS</b> - Arcsine-transformed risk difference</li>
          <li><b>YUQ</b> - Yule's Q</li>
          <li><b>YUY</b> - Yule's Y</li>
        </ul> 
