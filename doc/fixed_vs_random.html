@@ -5,16 +5,31 @@ type=text/css rel=stylesheet>
 </head>
 <body>
 <h2><a name="top">Fixed-Effect Versus Random-Effects Models</a></h2>
- <p>There are two fundamental types of models used in meta-analysis: fixed-effect models and random-effects models.</p>
- <p>In a fixed-effect model, we assume that all studies in the meta-analysis share a common (true) effect size. If Y<sub><em>i</em></sub> is the observed effect in study <em>i</em>, the model can be written as</p>
-<eq><img src="images/fixed_effect_model.png"></eq> 
-<p>where &theta; is the true effect size and &epsilon;<sub><em>i</em></sub> is the sampling error in study <em>i</em>. </p>
- <p>In a random-effects model, on the other hand, we assume that each study has its own true effect size, which may differ between studies. The variance of the true effect sizes is called the <em>between-study variance</em>, or <em>heterogeneity</em>. The random-effects model can be written as</p>
- <eq><img src="images/random_effects_model.png"></eq> 
- <p>where &mu; is the grand mean and &alpha;<sub><em>i</em></sub> is the between-study variance.  Note that in the fixed-effect case, &alpha;<sub><em>i</em></sub> is assumed to be 0.</p> 
+ <p>There are two fundamental types of models used in meta-analysis: fixed-effect models and random-effects models. The main differences between the two are summarized below:</p>
+ <ul>
+     <li>In the fixed-effect model, we assume that all studies in the meta-analysis share a common (true) effect size. The only source of uncertainty is the within-study (sampling) error.
+          The fixed-effect model can be written as<br>
+          <eq><img src="images/fixed_effect_model.png"></eq><br>
+          where y<sub><em>i</em></sub> is the observed effect in study <em>i</em>, &theta; is the true effect size, and <em>v<sub>i</sub></em> is the within-study variance (or sampling error) in study <em>i</em>. 
+     </li>
+     <li>In the random-effects model, we assume that each study has its own true effect size, which may differ between studies. Sources of uncertainty include both within-study errors and between-study variance - the variance of the true effect sizes. The between-study variance is also known as the <em>heterogeneity</em> of the model.<br><br>
+           The random-effects model can be written as<br>
+           <eq><img src="images/random_effects_model.png"></eq><br> 
+     where &mu; is the grand (overall) mean,  &alpha;<sub><em>i</em></sub> is the difference between the true effect in study <em>i</em> and the grand mean, and <em>v<sub>i</sub></em> is the within-study error in study <em>i</em>.</li>
+</ul>
 
-<p>The overall variance for each study is the sum of the between study-variance, &alpha;<sub><em>i</em></sub>, plust the within-study variance, &epsilon;<sub><em>i</em></sub>. One of the </p>
-
+ <h3>Fixed-Effect Methods</h3>
+<p>There are a variety of methods for estimating the summary effect size in a fixed-effect model. The most straight-forward method of these is the <em>inverse-variance</em> method, in which the summary effect Y is computed as a weighted sum of individual study effects, where the weights are proportional to the inverse of the study variance. That is,</p>
+ <eq><img src="images/inv_var_weighted_sum.png"></eq> 
+ <p>where <em>w<sub>i</sub></em> = 1 / <em>v<sub>i</sub></em>. The sum in the denominator is included to make the sum of the weights equal to 1.</p>
+ <h3>Random-Effect Methods</h3>
+<p>In the random effects model, one can still estimate the summary effect size as an inverse-variance weighted sum. However, in this case, the
+variance for each study is the sum of the within-study variance, &epsilon;<sub><em>i</em></sub>, plus the between-study variance.  The first of these is known from the data, but the between study variance - the heterogeneity, which is usually denoted by &tau;<sup>2</sup> - must be estimated. There are many methods for estimating the heterogeneity of the data, such as the DerSimonian Laird method.</p>
+<p>Note that the random-effects weights are proportional to</p>
+<eq><img src="images/random_effects_variance.png"></eq><br>
+<p>So the ratio of the weights for studies <em>i</em> and <em>j</em> is</p>
+<eq><img src="images/ratio_of_weights.png"></eq><br>
+<p>When the heterogeneity &tau;<sup>2</sup> is large compared to the within-study variances, the ratio of weights is approximately 1 - so the weights of studies <em>i</em> and <em>j</em> are approximately equal. In other words, in the random-effects estimate for the summary effect, all studies have approximately the same weight.</p>
 <p><a href="#top">Back to top</a></p>
 <br>
  <table id="nav" cellspacing="0"><tr valign="center"><td align="left" width="20"><a href="main_window.html#top"><img src="images/b_prev.gif" border="0"></td><td align="left">The Open Meta-Analyst Window</td></a><td>&nbsp;</td><td align="right">Creating a New Data Set</td><td align="right" width="20"><a href="create_dataset.html#top"><img src="images/b_next.gif" border="0"></td></a></td></tr></table>

@@ -13,14 +13,13 @@ type=text/css rel=stylesheet>
     </ul>
     
   <h3><a name="inv_var">Inverse Variance</a></h3>
-  <p>In the fixed-effect inverse variance method, the summary effect is the sum of individual study effect sizes, weighted by inverse variance.
+  <p>In the fixed-effect inverse variance method, the summary effect is the weighted sum of individual study effect sizes, where the weights are proportional to the inverse of the within-study variance.
   If <em>v<sub>i</sub></em> is the variance for study i, the weight assigned to study <em>i</em> is</p>
   <eq><img src="images/eq_inv_variance.png"></eq>
   <p>If <em>y<sub>i</sub></em> is the effect size for study <em>i</em>, the summary estimate of the effect size is</p>
   <eq><img src="images/eq_inv_var_overall.png"></eq>
-  <p>where</p>
-  <eq><img src="images/eq_sum_weights.png"></eq>
-  <p>is the sum of the individual study weights.  The variance of the summary effect is</p>
+   <p>The sum in the denominator is included to make the sum of the weights equal to 1.</p>
+   <p>The variance of the summary effect is</p>
   <eq><img src="images/eq_1_over_W.png"></eq>
   
   <h3><a name="MH">Mantel-Haenszel</a></h3>
