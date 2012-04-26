@@ -598,6 +598,9 @@ class MADataTable(QtGui.QTableView):
         # now append a blank study if studies were added.
         if num_to_add > 0:
             new_study = Study(self.model().dataset.max_study_id()+1)
+            # ah! fix for issue #171. stupidly, I was not previously
+            # excluding 'blank' studies appended here..
+            new_study.include = False
             self.model().dataset.add_study(new_study)
             self.model().dataset.study_auto_added = int(new_study.id)
 
