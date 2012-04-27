@@ -4,7 +4,7 @@ p1
 I1
 sS'current_outcome'
 p2
-VDeath
+Vblood pressure
 p3
 sS'current_time_point'
 p4
@@ -16,12 +16,14 @@ I3
 aI4
 aI5
 aI6
+aI7
+aI8
 asS'OUTCOMES'
 p7
 (lp8
-I7
-aI8
-aI9
+I9
+aI10
+aI11
 asS'study_auto_added'
 p9
 I0
@@ -46,6 +48,6 @@ aS'tx B'
 p19
 asS'current_effect'
 p20
-S'OR'
+S'MD'
 p21
 s.

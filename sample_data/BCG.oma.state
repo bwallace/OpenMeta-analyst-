@@ -4,7 +4,7 @@ p1
 I1
 sS'current_outcome'
 p2
-VDeath
+Vtuberculosis
 p3
 sS'current_time_point'
 p4
@@ -24,7 +24,7 @@ aI8
 aI9
 asS'study_auto_added'
 p9
-I0
+I13
 sS'HEADERS'
 p10
 (lp11
@@ -46,6 +46,6 @@ aS'tx B'
 p19
 asS'current_effect'
 p20
-S'OR'
+S'RR'
 p21
 s.
