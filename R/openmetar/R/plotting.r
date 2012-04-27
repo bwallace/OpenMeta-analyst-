@@ -142,7 +142,6 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
         plot.data$covariate <- list(varname = selected.cov,
                                    values = cov.values)
     }
-
     plot.data
 }
 
@@ -769,7 +768,7 @@ pretty.metric.name <- function(metric) {
     OR = "Odds Ratio",
     RD = "Risk Difference",
     MD = "Mean Difference",
-    RR = "Risk Ratio",
+    RR = "Relative Risk",
     AS = "Arcsine Risk Difference",
     PR = "Proportion",
     PLN = "Log Proportion",  
@@ -1054,7 +1053,7 @@ draw.forest.plot <- function(forest.data){
          num.additional.cols <- 0
     }
     
-    forest.plot.params <- create.plot.options(forest.data, gapSize = 3.2, plotWidth=5)
+    #forest.plot.params <- create.plot.options(forest.data, gapSize = 3.2, plotWidth=5)
     rows <- forest.data$rows
     # Draw the text in study col and additional cols
     if (show.study.col==TRUE) {

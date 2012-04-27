@@ -1,0 +1,179 @@
+<html>
+<head>
+<link href="css/help.css" 
+type=text/css rel=stylesheet>
+</head>
+<body>
+
+<h2><a name="top">Example - Fixed-Effect Method</a></h2>
+ <p>This section presents an example illustrating the fixed-effect inverse variance method. The data in the table below shows the results of a number of studies on the effect of
+ a vaccine, known as BCG, in preventing the development of tuberculosis (TB).</p>
+
+<table cellspacing="0" cellpadding="5" border="1" col>
+<tr align="center">
+	<td>Study</td>
+	<td width=20>Treatment events</td>
+	<td width=20>Treatment subjects</td>
+	<td width=20>Control events</td>
+	<td width=20>Control subjects</td>
+	<td width=50> Log risk ratio (y)</td>
+	<td>Variance (v)</td>
+	<td>w = 1/v</td>
+</tr>
+<tr align="center">
+	<td>Aaronson (1948)</td>
+	<td>4</td>
+	<td>123</td>
+	<td>11</td>
+	<td>139</td>
+	<td>-0.939</td>
+	<td>0.326</td>
+   <td>3.071</td>
+</tr>
+<tr align="center">
+	<td>Ferguson & Simes (1949)</td>
+	<td>6</td>
+	<td>306</td>
+	<td>29</td>
+	<td>303</td>
+	<td> -1.666</td>
+	<td>0.195</td>
+	<td>5.139</td>
+</tr>
+<tr align="center">
+	<td>Rosenthal (1960)</td>
+	<td>3</td>
+	<td>231</td>
+	<td>11</td>
+	<td>220</td>
+	<td>-1.386</td>
+	<td>0.415</td>
+	<td>2.408</td>
+</tr>
+<tr align="center">
+	<td>Hart & Sutherland (1977)</td>
+	<td>62</td>
+	<td>13598</td>
+	<td>248</td>
+	<td>12867</td>
+	<td>-1.456</td>
+	<td>0.020</td>
+	<td>49.975</td>
+</tr>
+<tr align="center">
+	<td>Frimodt-Moller (1973)</td>
+	<td>33</td>
+	<td>5069</td>
+	<td>47</td>
+	<td>5808</td>
+	<td>-0.219</td>
+	<td>0.051</td>
+	<td>19.527</td>
+</tr>
+<tr align="center">
+	<td>Stein & Aaronson (1953)</td>
+	<td>180</td>
+	<td>1541</td>
+	<td>372</td>
+	<td>1451</td>
+	<td>-0.958</td>
+	<td> 0.007</td>
+	<td>144.810</td>
+</tr>
+<tr align="center">
+	<td>Vandiviere (1973)</td>
+	<td>8</td>
+	<td>2545</td>
+	<td>10</td>
+	<td>629</td>
+	<td>-1.634</td>
+	<td>0.223</td>
+	<td>4.484</td>
+</tr>
+<tr align="center">
+	<td>TB Prevention Trial (1980)</td>
+	<td>505</td>
+	<td>88391</td>
+	<td>499</td>
+	<td>88391</td>
+	<td>0.012</td>
+	<td>0.004</td>
+	<td>252.425</td>
+</tr>
+<tr align="center">
+	<td>Coetzee & Berjak (1968)</td>
+	<td>29</td>
+	<td>7499</td>
+	<td>45</td>
+	<td>7277</td>
+	<td>-0.472</td>
+	<td>0.056</td>
+	<td>17.720</td>
+</tr>
+<tr align="center">
+	<td>Rosenthal (1961)</td>
+	<td>17</td>
+	<td>1716</td>
+	<td>65</td>
+	<td>1665</td>
+	<td>-1.419</td>
+	<td>0.073</td>
+	<td>13.692</td>
+</tr>
+<tr align="center">
+	<td>Comstock (1974)</td>
+	<td>186</td>
+	<td>50634</td>
+	<td>141</td>
+	<td>27338</td>
+	<td>-0.341</td>
+	<td>0.012</td>
+	<td>80.566 </td>
+</tr>
+<tr align="center">
+	<td>Comstock & Webster (1969)</td>
+	<td>5</td>
+	<td>2498</td>
+	<td>3</td>
+	<td>2341</td>
+	<td>0.447</td>
+	<td>0.533</td>
+	<td>1.878</td>
+</tr>
+<tr align="center">
+	<td>Comstock (1976)</td>
+	<td>27</td>
+	<td>16913</td>
+	<td>29</td>
+	<td>17854</td>
+	<td>-0.017</td>
+	<td>0.071</td>
+	<td>14.005</td>
+</tr>
+</table>
+
+<p>In this example, the effect size is the log relative risk.</p>
+<eq><img src="images/eq_log_rel_risk.png">
+<p>where a, b, c, and d are the numbers of treated events, treated non-events, control events, and control non-events, respectively. Note that for relative risk and odds ratio, all calculations are performed in
+       log scale. However, the Open Meta-Analyst data table displays the relative risk in standard scale</p>
+<p>The variance of the effect size is</p>
+<eq><img src="images/eq_rel_risk_var.png">
+<p>The table shows the calculated effect sizes, variances, and weights <em>w<sub>i</sub></em>&nbsp;=&nbsp;1&nbsp;/&nbsp;<em>v<sub>i</sub></em>.
+
+<p>The inverse-variance estimate of the summary effect size in log scale is</p>
+ <eq><img src="images/example_fixed_summary_est.png"></eq> 
+<p>Taking the exponential of this gives the summary effect size in standard scale.</p>
+<eq><img src="images/example_fixed_summary_est2.png"></eq>
+ <p>To perform this analysis in Open Meta-Analyst, do the following steps:</p>
+ <ol>
+     <li>Open the example data file BCG.oma in the sample_data directory.</li>
+     <li>Select <b>meta-analysis</b> on the <b>Analysis</b> menu.</li>
+     <li>In the Method & Parameters dialog, select <b>Binary Fixed Inverse Variance</b> as the analysis method. </li>
+     <li>Click <b>OK</b>.</li>
+ </ol>
+ 
+<p><a href="#top">Back to top</a></p>
+<br>
+ <table id="nav" cellspacing="0"><tr valign="center"><td align="left" width="20"><a href="main_window.html#top"><img src="images/b_prev.gif" border="0"></td><td align="left">The Open Meta-Analyst Window</td></a><td>&nbsp;</td><td align="right">Creating a New Data Set</td><td align="right" width="20"><a href="create_dataset.html#top"><img src="images/b_next.gif" border="0"></td></a></td></tr></table>
+</body>
+</html>
