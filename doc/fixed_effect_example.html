@@ -6,22 +6,23 @@ type=text/css rel=stylesheet>
 <body>
 
 <h2><a name="top">Example - Fixed-Effect Method</a></h2>
- <p>This section presents an example illustrating the fixed-effect inverse variance method. The data in the table below shows the results of a number of studies on the effect of
- a vaccine, known as BCG, in preventing the development of tuberculosis (TB).</p>
+ <p>This section presents an example illustrating the fixed-effect inverse variance method.</p>
+ <p>The data in the table below shows the results of a number of studies on the effect of
+ a vaccine (called BCG) in preventing the development of tuberculosis (TB).</p><br>
 
 <table cellspacing="0" cellpadding="5" border="1" col>
 <tr align="center">
-	<td>Study</td>
-	<td width=20>Treatment events</td>
-	<td width=20>Treatment subjects</td>
+	<td align="left">Study</td>
+	<td width=20>Treated events</td>
+	<td width=20>Treated subjects</td>
 	<td width=20>Control events</td>
 	<td width=20>Control subjects</td>
-	<td width=50> Log risk ratio (y)</td>
+	<td>Log relative risk</td>
 	<td>Variance (v)</td>
 	<td>w = 1/v</td>
 </tr>
 <tr align="center">
-	<td>Aaronson (1948)</td>
+	<td align="left">Aaronson (1948)</td>
 	<td>4</td>
 	<td>123</td>
 	<td>11</td>
@@ -31,7 +32,7 @@ type=text/css rel=stylesheet>
    <td>3.071</td>
 </tr>
 <tr align="center">
-	<td>Ferguson & Simes (1949)</td>
+	<td align="left">Ferguson & Simes (1949)</td>
 	<td>6</td>
 	<td>306</td>
 	<td>29</td>
@@ -41,7 +42,7 @@ type=text/css rel=stylesheet>
 	<td>5.139</td>
 </tr>
 <tr align="center">
-	<td>Rosenthal (1960)</td>
+	<td align="left">Rosenthal (1960)</td>
 	<td>3</td>
 	<td>231</td>
 	<td>11</td>
@@ -51,7 +52,7 @@ type=text/css rel=stylesheet>
 	<td>2.408</td>
 </tr>
 <tr align="center">
-	<td>Hart & Sutherland (1977)</td>
+	<td align="left">Hart & Sutherland (1977)</td>
 	<td>62</td>
 	<td>13598</td>
 	<td>248</td>
@@ -61,7 +62,7 @@ type=text/css rel=stylesheet>
 	<td>49.975</td>
 </tr>
 <tr align="center">
-	<td>Frimodt-Moller (1973)</td>
+	<td align="left">Frimodt-Moller (1973)</td>
 	<td>33</td>
 	<td>5069</td>
 	<td>47</td>
@@ -71,7 +72,7 @@ type=text/css rel=stylesheet>
 	<td>19.527</td>
 </tr>
 <tr align="center">
-	<td>Stein & Aaronson (1953)</td>
+	<td align="left">Stein & Aaronson (1953)</td>
 	<td>180</td>
 	<td>1541</td>
 	<td>372</td>
@@ -81,7 +82,7 @@ type=text/css rel=stylesheet>
 	<td>144.810</td>
 </tr>
 <tr align="center">
-	<td>Vandiviere (1973)</td>
+	<td align="left">Vandiviere (1973)</td>
 	<td>8</td>
 	<td>2545</td>
 	<td>10</td>
@@ -91,7 +92,7 @@ type=text/css rel=stylesheet>
 	<td>4.484</td>
 </tr>
 <tr align="center">
-	<td>TB Prevention Trial (1980)</td>
+	<td align="left">TB Prevention Trial (1980)</td>
 	<td>505</td>
 	<td>88391</td>
 	<td>499</td>
@@ -101,7 +102,7 @@ type=text/css rel=stylesheet>
 	<td>252.425</td>
 </tr>
 <tr align="center">
-	<td>Coetzee & Berjak (1968)</td>
+	<td align="left">Coetzee & Berjak (1968)</td>
 	<td>29</td>
 	<td>7499</td>
 	<td>45</td>
@@ -111,7 +112,7 @@ type=text/css rel=stylesheet>
 	<td>17.720</td>
 </tr>
 <tr align="center">
-	<td>Rosenthal (1961)</td>
+	<td align="left">Rosenthal (1961)</td>
 	<td>17</td>
 	<td>1716</td>
 	<td>65</td>
@@ -121,7 +122,7 @@ type=text/css rel=stylesheet>
 	<td>13.692</td>
 </tr>
 <tr align="center">
-	<td>Comstock (1974)</td>
+	<td align="left">Comstock (1974)</td>
 	<td>186</td>
 	<td>50634</td>
 	<td>141</td>
@@ -131,7 +132,7 @@ type=text/css rel=stylesheet>
 	<td>80.566 </td>
 </tr>
 <tr align="center">
-	<td>Comstock & Webster (1969)</td>
+	<td align="left">Comstock & Webster (1969)</td>
 	<td>5</td>
 	<td>2498</td>
 	<td>3</td>
@@ -141,7 +142,7 @@ type=text/css rel=stylesheet>
 	<td>1.878</td>
 </tr>
 <tr align="center">
-	<td>Comstock (1976)</td>
+	<td align="left">Comstock (1976)</td>
 	<td>27</td>
 	<td>16913</td>
 	<td>29</td>
@@ -151,20 +152,31 @@ type=text/css rel=stylesheet>
 	<td>14.005</td>
 </tr>
 </table>
-
-<p>In this example, the effect size is the log relative risk.</p>
-<eq><img src="images/eq_log_rel_risk.png">
-<p>where a, b, c, and d are the numbers of treated events, treated non-events, control events, and control non-events, respectively. Note that for relative risk and odds ratio, all calculations are performed in
-       log scale. However, the Open Meta-Analyst data table displays the relative risk in standard scale</p>
+<br><p>There are two groups of subjects in the studies:</p>
+<ul>
+    <li>Treatment group - subjects who received the vaccine</li>
+    <li>Control group - subjects who did not receive the vaccine</li>
+ </ul>
+<p>In this example, the effect of the vaccine is measured by the <em>relative risk</em> - the risk of contracting TB in the treatment group divided by the risk of contracting TB in the control group. The relative risk is defined by</p>
+<eq><img src="images/eq_rel_risk.png"></eq>
+<p>where</p>
+<ul>
+    <li>a = Treated events - number of subjects in the treatment group who contracted TB.</li>
+    <li>b = Treated subjects - total number of subjects in the treatment group</li>
+    <li>c = Control events - number of subjects in the control group who contracted TB.</li>
+    <li>d = Control subjects - total number of subjects in the treatment group</li>
+</ul>
+<p>For statistical reasons, in calculating the summary estimate, the effect sizes are calculated in log scale:</p> 
+<eq><img src="images/eq_log_rel_risk.png"></eq>
+<p><b>Note:</b> The Open Meta-Analyst data table displays the relative risk in standard scale, not log scale</p>
 <p>The variance of the effect size is</p>
 <eq><img src="images/eq_rel_risk_var.png">
-<p>The table shows the calculated effect sizes, variances, and weights <em>w<sub>i</sub></em>&nbsp;=&nbsp;1&nbsp;/&nbsp;<em>v<sub>i</sub></em>.
-
-<p>The inverse-variance estimate of the summary effect size in log scale is</p>
+<p>The table above shows the calculated effect sizes <em>y<sub>i</sub></em>, variances <em>v<sub>i</sub></em>, and weights <em>w<sub>i</sub></em>&nbsp;=&nbsp;1&nbsp;/&nbsp;<em>v<sub>i</sub></em>.</p>
+<p>The inverse-variance estimate of the summary effect size, as described in the previous section <a href="fixed_versus_random.html">Fixed and Random-Effects Models</a>, in log scale is</p>
  <eq><img src="images/example_fixed_summary_est.png"></eq> 
 <p>Taking the exponential of this gives the summary effect size in standard scale.</p>
 <eq><img src="images/example_fixed_summary_est2.png"></eq>
- <p>To perform this analysis in Open Meta-Analyst, do the following steps:</p>
+ <p>You can perform this analysis in Open Meta-Analyst by doing the following steps:</p>
  <ol>
      <li>Open the example data file BCG.oma in the sample_data directory.</li>
      <li>Select <b>meta-analysis</b> on the <b>Analysis</b> menu.</li>

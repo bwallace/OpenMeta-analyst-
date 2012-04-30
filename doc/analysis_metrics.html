@@ -9,8 +9,7 @@ type=text/css rel=stylesheet>
   <h3>Metrics for Binary Data</h3>
   <p>You can choose a metric for binary or continuous data by selecting <b>metric</b> from the <b>analysis</b> menu,
          as described in <a href="analysis.html#top">Example - Performing a Meta-Analysis</a>. </p>
- <p>When reading the formulas shown in this section, assume that 
-  the 2 X 2 table data are labeled according to the table shown below:</p>       
+ <p>The formulas shown in this section are labeled according to the 2 X 2 table data below:</p>       
  <table width="100" cellspacing="0" cellpadding="10" border="1">
 <tr align="center">
 	<td></td>
@@ -29,39 +28,39 @@ type=text/css rel=stylesheet>
 </tr>
 </table>
 <h4>Two-Arm Metrics</h4>
-<table width="400" cellspacing="0" cellpadding="0" border="1">
+<table cellspacing="0" cellpadding="5" border="1">
 <tr align="center">
-	<td><b>Metric</td>
+	<td align="left" width=20><b>Metric</td>
 	<td><b>Effect size</b></td>
 	<td><b>Variance</b></td>
 </tr>
 <tr align="center">
-	<td><b>OR</b> - Odds Ratio</td>
+	<td align="left"><b>OR</b> - Odds ratio</td>
 	<td><img src="images/eq_odds_ratio2.png"></td>
 	<td><img src="images/eq_odds_ratio_var.png"></td>
 </tr>
 <tr align="center">
-	<td><b>RD</b> - Risk Difference</td>
+	<td align="left"><b>RD</b> - Risk difference</td>
 	<td><img src="images/eq_risk_difference.png"></td>
 	<td><img src="images/eq_risk_diff_var.png"></td>
 </tr>
 <tr align="center">
-	<td><b>RR</b> - Relative Risk</td>
+	<td align="left"><b>RR</b> - Relative risk</td>
 	<td><img src="images/eq_rel_risk.png"></td>
 	<td><img src="images/eq_rel_risk_var.png"></td>
 </tr>
 <tr align="center">
+	<td align="left"  width=210><b>AS</b> - Arcsine-transformed risk difference</td>
+	<td><img src="images/eq_arcsin_risk_diff.png"></td>
 	<td></td>
+</tr>
+<tr align="center">
+	<td align="left"><b>YUQ</b> - Yule's Q</td>
 	<td></td>
 	<td></td>
 </tr>
 <tr align="center">
-	<td></td>
-	<td></td>
-	<td></td>
-</tr>
-<tr align="center">
-	<td></td>
+	<td align="left"><b>YUY</b> - Yule's Y</td>
 	<td></td>
 	<td></td>
 </tr>
@@ -69,19 +68,6 @@ type=text/css rel=stylesheet>
 
       
   <ul>
-     <li>Two-Arm Metrics:
-        <ul>
-          <li><b>OR</b> - Odds Ratio<br>
-          <eq><img src="images/eq_odds_ratio2.png"></eq></li>
-         <li><b>RD</b> - Risk Difference<br>
-          <eq><img src="images/eq_risk_difference.png"></eq></li>
-         <li><b>RR</b> - Relative Risk<br>
-          <eq><img src="images/eq_rel_risk.png"></eq></li>
-         <li><b>AS</b> - Arcsine-transformed risk difference</li>
-         <li><b>YUQ</b> - Yule's Q</li>
-         <li><b>YUY</b> - Yule's Y</li>
-       </ul> 
-     </li>
      <li>One-Arm Metrics:
         <ul>
           <li><b>PR</b> - Proportion</li>
@@ -89,9 +75,7 @@ type=text/css rel=stylesheet>
          <li><b>PLO</b> - Logit-transformed proportion</li>
          <li><b>PAS</b> - Arcsine-transformed proportion</li>
          <li><b>PFT</b> - Freeman-Tukey double arcsine-transformed proportion</li>
-       </ul> 
-     </li>
-     </ul>
+   </ul>
    
   	<h3>Metrics for Continuous Data</h3>
   	  <li>Two-Arm Metrics:
