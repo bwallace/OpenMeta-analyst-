@@ -12,6 +12,9 @@ library(metafor)
 
 binary.logit.metrics <- c("PLO")
 binary.log.metrics <- c("OR", "RR", "PLN")
+binary.arcsin.metrics <- c("AS")
+binary.two.arm.metrics <- c("OR", "RD", "RR", "AS", "YUQ", "YUY")
+binary.one.arm.metrics <- c("PR", "PLN", "PLO", "PAS", "PFT")
 
 compute.for.one.bin.study <- function(binary.data, params){
     res <- escalc(params$measure, ai=binary.data@g1O1, bi=binary.data@g1O2, 
@@ -38,8 +41,13 @@ binary.transform.f <- function(metric.str){
                 invlogit(x)
             }
             else {
+                if (metric.str %in% binary.arcsin.metrics){
+                    (sin(x))^2
+                }
+                else {  
                 # identity function
                 x
+                }
             }
         }
     }
@@ -61,7 +69,7 @@ binary.transform.f <- function(metric.str){
     list(display.scale = display.scale, calc.scale = calc.scale)
 }
 
-get.res.for.one.binary.study <- function(binary.data, params){
+get.res.for.one.binary.study <- function(binary.data, params) {
     # this method can be called when there is only one study to 
     # get the point estimate and lower/upper bounds.
     y<-NULL
@@ -90,31 +98,52 @@ create.binary.data.array <- function(binary.data, params, res){
     tx1.name <- "tx A"
     tx2.name <- "tx B"
     # TODO: these should be taken from the corresponding column labels in the GUI and passed in via params.
+    digits.str <- paste("%.", params$digits, "f", sep="")
+    effect.size.name <- pretty.metric.name(as.character(params$measure))
+    y <- binary.data@y
+    y.disp <- binary.transform.f(params$measure)$display.scale(binary.data@y)
+    lb.disp <- binary.transform.f(params$measure)$display.scale(res$study.lb)
+    ub.disp <- binary.transform.f(params$measure)$display.scale(res$study.ub)
+    y <- sprintf(digits.str, y.disp)
+    LL <- sprintf(digits.str, lb.disp)
+    UL <- sprintf(digits.str, ub.disp)
+    weights <- res$study.weights
+    weights <- sprintf(digits.str, weights)
+    weights <- format(weights, justify="right")
+    # Extract the data from binary.data and round
+    event.txA <- format(binary.data@g1O1, justify="right")
+    subject.txA <- format(binary.data@g1O1 + binary.data@g1O2, justify="right")
+    
+    if (params$measure %in% binary.two.arm.metrics) {
+        event.txB <- format(binary.data@g2O1, justify="right")
+        subject.txB <- format(binary.data@g2O1 + binary.data@g2O2, justify="right")  
+        raw.data <- array(c("Study", binary.data@study.names, 
+                      paste(tx1.name, " Events", sep=""), event.txA, 
+                      paste(tx1.name, " Subjects", sep=""), subject.txA, 
+                      paste(tx2.name, " Events", sep=""), event.txB, 
+                      paste(tx2.name, " Subjects", sep=""), subject.txB, 
+                      effect.size.name, y, "Lower", LL, "Upper", UL, "Weight", weights), 
+                      dim=c(length(binary.data@study.names) + 1, 9))
+        class(raw.data) <- "summary.data" 
+    } else if (params$measure %in% binary.one.arm.metrics) {
+        raw.data <- array(c("Study", binary.data@study.names, 
+                      paste(tx1.name, " Events", sep=""), event.txA, 
+                      paste(tx1.name, " Subjects", sep=""), subject.txA, 
+                      effect.size.name, y, "Lower", LL, "Upper", UL, "Weight", weights),
+                      dim=c(length(binary.data@study.names) + 1, 7))
+    }
+    return(raw.data)
+}
+
+create.output.df <- function(binary.data, params, res) {
+    # create data frame and export to csv
     alpha <- 1.0-(params$conf.level/100.0)
     mult <- abs(qnorm(alpha/2.0))
     digits.str <- paste("%.", params$digits, "f", sep="")
     effect.size.name <- pretty.metric.name(as.character(params$measure))
     y.disp <- binary.transform.f(params$measure)$display.scale(binary.data@y)
-    y <- sprintf(digits.str, y.disp)
-    LL <- sprintf(digits.str, (y.disp - mult*binary.data@SE))
-    UL <- sprintf(digits.str, (y.disp + mult*binary.data@SE))
     weights.normal <- res$weights / sum(res$weights)
-    weights.normal <- sprintf(digits.str, weights.normal)
-    weights.normal <- format(weights.normal, justify="right")
-    # Extract the data from binary.data and round
-    event.txA <- format(binary.data@g1O1, justify="right")
-    subject.txA <- format(binary.data@g1O1 + binary.data@g1O2, justify="right")
-    event.txB <- format(binary.data@g2O1, justify="right")
-    subject.txB <- format(binary.data@g2O1 + binary.data@g2O2, justify="right")
-    raw.data <- array(c("Study", binary.data@study.names, 
-                      paste(tx1.name, " Events", sep=""), event.txA, 
-                      paste(tx1.name, " Subjects", sep=""), subject.txA, 
-                      paste(tx2.name, " Events", sep=""), event.txB, 
-                      paste(tx2.name, " Subjects", sep=""), subject.txB, 
-                      effect.size.name, y, "Lower", LL, "Upper", UL, "Weight", weights.normal), 
-                    dim=c(length(binary.data@study.names) + 1, 9))
-    class(raw.data) <- "summary.data" 
-    return(raw.data)
+    
 }
 
 ###################################################
@@ -135,9 +164,10 @@ binary.fixed.inv.var <- function(binary.data, params){
         res<-rma.uni(yi=binary.data@y, sei=binary.data@SE, slab=binary.data@study.names,
                                 level=params$conf.level, digits=params$digits, method="FE", add=params$adjust,
                                 to=params$to)
+        # Add individual study confidence bounds
+        res <- calc.ci.bounds(binary.data, params, res)
         # Weights assigned to each study
-        weights <- 1 / res$vi
-        res$weights <- weights
+        res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
         # Create list to display summary of results
         metric.name <- pretty.metric.name(as.character(params$measure))
         model.title <- paste("Binary Fixed-Effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="")
@@ -225,13 +255,16 @@ binary.fixed.mh <- function(binary.data, params){
                                 ci=binary.data@g2O1, di=binary.data@g2O2, slab=binary.data@study.names,
                                 level=params$conf.level, digits=params$digits, measure=params$measure,
                                 add=c(params$adjust, 0), to=c(as.character(params$to), "none")) 
+        
+        # Add individual study confidence bounds
+        res <- calc.ci.bounds(binary.data, params, res)
+        # Weights assigned to each study
         A <- binary.data@g1O1
         B <- binary.data@g1O2
         C <- binary.data@g2O1
         D <- binary.data@g2O2
-        # Weights assigned to each study
-        weights <- B * C / (A + B + C + D) 
-        res$weights <- weights
+        weights <- B * C / (A + B + C + D)
+        res$study.weights <- weights / sum(weights)
         #                        
         # Create list to display summary of results
         #
@@ -340,10 +373,10 @@ binary.fixed.peto <- function(binary.data, params){
         # Corrected values for y and SE
         binary.data@y <- res$yi
         binary.data@SE <- sqrt(res$vi)
-
+        # Add individual study confidence bounds
+        res <- calc.ci.bounds(binary.data, params, res)
         # Weights assigned to each study
-        weights <- 1 / res$vi
-        res$weights <- weights
+        res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
         #                        
         # Create list to display summary of results
         #
@@ -449,10 +482,11 @@ binary.random <- function(binary.data, params){
                      slab=binary.data@study.names,
                      method=params$rm.method, level=params$conf.level,
                      digits=params$digits)
-        
+        # Add individual study confidence bounds
+        res <- calc.ci.bounds(binary.data, params, res)
         # Weights assigned to each study
         weights <- 1 / (res$vi + res$tau2)
-        res$weights <- weights
+        res$study.weights <- weights / sum(weights)
         #                        
         # Create list to display summary of results
         #

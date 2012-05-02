@@ -392,7 +392,9 @@ diagnostic.fixed.inv.var <- function(diagnostic.data, params){
                      slab=diagnostic.data@study.names,
                      method="FE", level=params$conf.level,
                      digits=params$digits)
-         # Create list to display summary of results
+        # Add individual study confidence bounds
+        res <- calc.ci.bounds(binary.data, params, res)
+        # Create list to display summary of results
         model.title <- paste("Diagnostic Fixed-Effect Model - Inverse Variance (k = ", res$k, ")", sep="")
         summary.disp <- create.summary.disp(diagnostic.data, params, res, model.title)
         pretty.names <- diagnostic.fixed.inv.var.pretty.names()
@@ -493,14 +495,15 @@ diagnostic.fixed.mh <- function(diagnostic.data, params){
                                 level=params$conf.level, digits=params$digits, measure="RR",
                                 add=c(params$adjust, 0), to=c(as.character(params$to), "none")),
         
+                      # For "NLR", switch ai with bi, and ci with di
+                      # in order to use rma.mh with measure "RR"          
             "NLR" = rma.mh(ai=diagnostic.data@FN, bi=diagnostic.data@TP, 
                                 ci=diagnostic.data@TN, di=diagnostic.data@FP, slab=diagnostic.data@study.names,
                                 level=params$conf.level, digits=params$digits, measure="RR",
                                 add=c(params$adjust, 0), to=c(as.character(params$to), "none")))
-  
-            # if measure is "NLR", switch ai with bi, and ci with di
-            # in order to use rma.mh with measure "RR"
-
+         
+        # Add individual study confidence bounds
+        res <- calc.ci.bounds(binary.data, params, res)
         #                        
         # Create list to display summary of results
         #
@@ -602,6 +605,8 @@ diagnostic.random <- function(diagnostic.data, params){
                  slab=diagnostic.data@study.names,
                  method=params$rm.method, level=params$conf.level,
                  digits=params$digits)
+        # Add individual study confidence bounds
+        res <- calc.ci.bounds(binary.data, params, res)
         #                        
         # Create list to display summary of results
         #

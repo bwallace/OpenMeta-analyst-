@@ -27,9 +27,11 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
         scale.str <- "log" 
     } else if (metric.is.logit.scale(params$measure)) {
         scale.str <- "logit"
+    } else if (metric.is.arcsin.scale(params$measure)) {
+        scale.str <- "arcsine"
     } else {
         scale.str <- "standard"
-    }
+    } 
     if ("ContinuousData" %in% class(om.data)) {
         transform.name <-"continuous.transform.f"
     } else if ("DiagnosticData" %in% class(om.data)) {
@@ -75,7 +77,6 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
       } else {
           PLabel <- "P="
       }
-      #QEp <- sprintf(digits.str, res$QEp)
       QEp <- round.display(res$QEp, params$digits)
     } else {
       QEp <- "NA"
@@ -90,14 +91,12 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
                       types = c(3, rep(0, length(om.data@study.names)), 2),
                       scale = scale.str,
                       options = plot.options)         
-    alpha <- 1.0-(params$conf.level/100.0)
-    mult <- abs(qnorm(alpha/2.0))
     y.overall <- res$b[1]
     lb.overall <- res$ci.lb[1]
     ub.overall <- res$ci.ub[1]
     y <- om.data@y
-    lb <- y - mult*om.data@SE
-    ub <- y + mult*om.data@SE
+    lb <- res$study.lb
+    ub <- res$study.ub
     
     y <- c(y, y.overall)
     lb <- c(lb, lb.overall)
@@ -111,8 +110,8 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     # these values will be displayed on the plot
     plot.data$effects.disp <- effects.disp
     
-    if (metric.is.logit.scale(params$measure)) {
-        # in logit scale, pass data in display scale - no scaling on x-axis
+    if ((metric.is.logit.scale(params$measure) || (metric.is.arcsin.scale(params$measure)))) {
+        # in logit or arcsin scale, pass data in display scale - no scaling on x-axis
         y <- y.disp
         lb <- lb.disp
         ub <- ub.disp
@@ -152,6 +151,10 @@ metric.is.log.scale <- function(metric){
 metric.is.logit.scale <- function(metric) {
     metric %in% c(binary.logit.metrics, diagnostic.logit.metrics)
 }    
+
+metric.is.arcsin.scale <- function(metric) {
+    metric %in% c(binary.arcsin.metrics)
+}
 
 create.plot.data.binary <- function(binary.data, params, res, selected.cov = NULL){
     
@@ -768,6 +771,7 @@ pretty.metric.name <- function(metric) {
     OR = "Odds Ratio",
     RD = "Risk Difference",
     MD = "Mean Difference",
+    SMD = "Standardized Mean Difference",
     RR = "Relative Risk",
     AS = "Arcsine Risk Difference",
     PR = "Proportion",
@@ -793,7 +797,7 @@ pretty.metric.name <- function(metric) {
     # diagnostic odds ratio
     DOR = "Diagnostic Odds Ratio",
     # tx mean is already pretty.
-    TX.Mean = "TX Mean")[[metric]]
+    TXMean = "TX Mean")[[metric]]
 
   metric.name
 }
@@ -1044,7 +1048,6 @@ draw.forest.plot <- function(forest.data){
     # Draws forest plot
     show.study.col <- forest.data$options$show.study.col                             
     
-    #additional.cols.grob <- c()
     # create graphical object for data columns.
     if (length(forest.data$additional.col.data)>0 ){
          additional.cols.grob <- forest.data$additional.cols.grob
@@ -1162,7 +1165,6 @@ draw.data.col <- function(forest.data, j, color.overall = "black",
             grid.xaxis(at = user.ticks , label = user.ticks, gp=gpar(cex=0.6))
             grid.xaxis(at = plot.range, label = FALSE)
             # Second call to grid.xaxis extends the axis to the plot range if necessary.
-            # Surely there is a better way to do this.
         }
     }
     
@@ -1213,6 +1215,19 @@ draw.data.col <- function(forest.data, j, color.overall = "black",
         }
         grid.xaxis(at = ticks , label = round(ticks, 2), gp=gpar(cex=0.6))
     } 
+    
+    if (forest.data$scale == "arcsine")  {
+      if (is.na(user.ticks)) { 
+        lb <- min(plot.range)
+        ub <- max(plot.range)
+        to.make.ticks <- c(lb, ub)
+        ticks <- axTicks(1, axp=c(to.make.ticks, 4))
+        changed.params$fp_xticks <- ticks
+      } else {
+        ticks <- user.ticks
+      }
+      grid.xaxis(at = ticks , label = round(ticks, 2), gp=gpar(cex=0.6))
+    }
     
     grid.text(x.axis.label, y=unit(-2, "lines"), gp=gpar(cex=0.8))
     data.col.width <- forest.data$data.col.width
@@ -1313,9 +1328,10 @@ calc.box.sizes <- function(forest.data, box.sca = 1) {
           precision <- sqrt(1 / ((effects$UL - effects$LL)/(2*1.96)))
     } else if (forest.data$scale == "logit") {
           precision <- sqrt(1 / ((effects$UL - effects$LL)/(2*1.96)))
+    } else if (forest.data$scale == "arcsine") {
+      precision <- sqrt(1 / ((effects$UL - effects$LL)/(2*1.96)))
     }
-    
-   box.sizes <- box.sca * precision/max(precision)
+    box.sizes <- box.sca * precision/max(precision)
     # sizes of the boxes in the forest plot - proportional to width of CI
 }
  

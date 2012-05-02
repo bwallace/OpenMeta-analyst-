@@ -132,7 +132,10 @@ create.summary.disp <- function(om.data, params, res, model.title) {
         scale.str <- "log" 
     } else if (metric.is.logit.scale(params$measure)) {
         scale.str <- "logit"
+    } else if (metric.is.arcsin.scale(params$measure)) {
+        scale.str <- "arcsine"
     }
+    
     tau2 <- sprintf(digits.str, res$tau2)
     degf <- res$k - 1
     QLabel =  paste("Q(df=", degf, ")", sep="")
@@ -174,7 +177,7 @@ create.summary.disp <- function(om.data, params, res, model.title) {
     class(het.array) <- "summary.data"
     het.title <- "  Heterogeneity"
    
-    if (scale.str == "log" || scale.str == "logit") {
+    if (scale.str == "log" || scale.str == "logit" || scale.str == "arcsine") {
          # display and calculation scales are different - create two tables for results
          res.col.labels <- c("Estimate", "Lower bound", "Upper bound","p-Value")
          res.col.vals <- c(y.disp, lb.disp, ub.disp, pVal)
@@ -440,4 +443,16 @@ create.subgroup.display <- function(res, study.names, params, model.title, data.
 results.short.list <- function(res) {
     # extracts res$b, res$ci.lb, and res$ci.ub from res
     res.short <- list("b"=res$b[1], "ci.lb"=res$ci.lb, "ci.ub"=res$ci.ub)
+}
+
+calc.ci.bounds <- function(om.data, params, res) {
+    y <- om.data@y
+    se <- om.data@SE
+    alpha <- 1.0-(params$conf.level/100.0)
+    mult <- abs(qnorm(alpha/2.0))
+    lb <- y - mult*om.data@SE
+    ub <- y + mult*om.data@SE
+    res$study.lb <- lb
+    res$study.ub <- ub
+    res
 }

@@ -10,6 +10,9 @@
 
 library(metafor)
 
+continuous.two.arm.metrics <- c("MD", "SMD")
+continuous.one.arm.metrics <- c("TXMean")
+
 compute.for.one.cont.study <- function(cont.data, params){
     n1i <- cont.data@N1
     n2i <- cont.data@N2
@@ -62,33 +65,42 @@ create.cont.data.array <- function(cont.data, params, res){
   tx1.name <- "tx A"
   tx2.name <- "tx B"
   # TODO: these should be taken from the corresponding column labels in the GUI and passed in via params.
-  alpha <- 1.0-(params$conf.level/100.0)
-  mult <- abs(qnorm(alpha/2.0))
   digits.str <- paste("%.", params$digits, "f", sep="")
   effect.size.name <- pretty.metric.name(as.character(params$measure))
   y.disp <- continuous.transform.f(params$measure)$display.scale(cont.data@y)
+  lb.disp <- continuous.transform.f(params$measure)$display.scale(res$study.lb)
+  ub.disp <- continuous.transform.f(params$measure)$display.scale(res$study.ub)
   y <- sprintf(digits.str, y.disp)
-  LL <- sprintf(digits.str, (y.disp - mult*cont.data@SE))
-  UL <- sprintf(digits.str, (y.disp + mult*cont.data@SE))
-  weights.normal <- res$weights / sum(res$weights)
-  weights.normal <- sprintf(digits.str, weights.normal)
-  weights.normal <- format(weights.normal, justify="right")
+  LL <- sprintf(digits.str, lb.disp)
+  UL <- sprintf(digits.str, ub.disp)
+  weights <- res$study.weights
+  weights <- sprintf(digits.str, weights)
+  weights <- format(weights, justify="right")
   # Extract the data from cont.data and round
   N.txA <- format(cont.data@N1, justify="right")
   mean.txA <- sprintf(digits.str, cont.data@mean1)
   sd.txA <- sprintf(digits.str, cont.data@sd1)
-  N.txB <- format(cont.data@N2, justify="right")
-  mean.txB <- sprintf(digits.str, cont.data@mean2)
-  sd.txB <- sprintf(digits.str, cont.data@sd2)
-  raw.data <- array(c("Study", cont.data@study.names, 
+  if (params$measure %in% continuous.two.arm.metrics) {
+      N.txB <- format(cont.data@N2, justify="right")
+      mean.txB <- sprintf(digits.str, cont.data@mean2)
+      sd.txB <- sprintf(digits.str, cont.data@sd2)
+      raw.data <- array(c("Study", cont.data@study.names, 
                     paste(tx1.name, " N", sep=""), N.txA, 
                     paste(tx1.name, " Mean", sep=""), mean.txA, 
                     paste(tx1.name, " SD", sep=""), sd.txA, 
                     paste(tx2.name, " N", sep=""), N.txB,
                     paste(tx2.name, " Mean", sep=""), mean.txB, 
                     paste(tx2.name, " SD", sep=""), sd.txB,
-                                                      effect.size.name, y, "Lower", LL, "Upper", UL, "Weight", weights.normal), 
+                                                      effect.size.name, y, "Lower", LL, "Upper", UL, "Weight", weights), 
                     dim=c(length(cont.data@study.names) + 1, 11))
+  } else if (params$measure %in% continuous.one.arm.metrics) {
+      raw.data <- array(c("Study", cont.data@study.names, 
+                    paste(tx1.name, " N", sep=""), N.txA, 
+                    paste(tx1.name, " Mean", sep=""), mean.txA, 
+                    paste(tx1.name, " SD", sep=""), sd.txA,
+                    effect.size.name, y, "Lower", LL, "Upper", UL, "Weight", weights), 
+                    dim=c(length(cont.data@study.names) + 1, 8))
+  }
   class(raw.data) <- "summary.data" 
   return(raw.data)
 }
@@ -113,10 +125,10 @@ continuous.fixed <- function(cont.data, params){
                      slab=cont.data@study.names,
                      method="FE", level=params$conf.level,
                      digits=params$digits)
+        # Add individual study confidence bounds
+        res <- calc.ci.bounds(cont.data, params, res)
         # Weights assigned to each study
-        weights <- 1 / res$vi
-        res$weights <- weights
-        
+        res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
         metric.name <- pretty.metric.name(as.character(params$measure))
         model.title <- paste("Continuous Fixed-Effect Model\n\nMetric: ", metric.name, sep="")
         summary.disp <- create.summary.disp(cont.data, params, res, model.title)
@@ -202,10 +214,11 @@ continuous.random <- function(cont.data, params){
                      slab=cont.data@study.names,
                      method=params$rm.method, level=params$conf.level,
                      digits=params$digits)
+        # Add individual study confidence bounds
+        res <- calc.ci.bounds(cont.data, params, res)
         # Weights assigned to each study
         weights <- 1 / (res$vi + res$tau2)
-        res$weights <- weights
-        
+        res$study.weights <- weights / sum(weights)
         metric.name <- pretty.metric.name(as.character(params$measure))
         model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", metric.name, sep="")
         summary.disp <- create.summary.disp(cont.data, params, res, model.title)
