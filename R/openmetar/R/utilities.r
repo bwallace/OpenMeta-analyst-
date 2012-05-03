@@ -132,7 +132,7 @@ create.summary.disp <- function(om.data, params, res, model.title) {
         scale.str <- "log" 
     } else if (metric.is.logit.scale(params$measure)) {
         scale.str <- "logit"
-    } else if (metric.is.arcsin.scale(params$measure)) {
+    } else if (metric.is.arcsine.scale(params$measure)) {
         scale.str <- "arcsine"
     }
     
@@ -360,7 +360,6 @@ create.overall.display <- function(res, study.names, params, model.title, data.t
 
     table.titles <- c("  Model Results")
     arrays <- list(arr1=overall.array)
-    #}
     overall.disp <- list("model.title" = model.title, "table.titles" = table.titles, "arrays" = arrays,
                          "MAResults" = res )
     class(overall.disp) <- "summary.display"
@@ -455,4 +454,21 @@ calc.ci.bounds <- function(om.data, params, res) {
     res$study.lb <- lb
     res$study.ub <- ub
     res
+}
+
+
+logit <- function(x) {
+    log(x/(1-x))
+}
+
+invlogit <- function(x) {
+    exp(x) / (1 + exp(x))
+}
+
+arcsine.sqrt <- function(x) {
+    asin(sqrt(x))
+}
+
+invarcsine.sqrt <- function(x) {
+    (sin(x))^2
 }

@@ -27,7 +27,7 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
         scale.str <- "log" 
     } else if (metric.is.logit.scale(params$measure)) {
         scale.str <- "logit"
-    } else if (metric.is.arcsin.scale(params$measure)) {
+    } else if (metric.is.arcsine.scale(params$measure)) {
         scale.str <- "arcsine"
     } else {
         scale.str <- "standard"
@@ -110,8 +110,8 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     # these values will be displayed on the plot
     plot.data$effects.disp <- effects.disp
     
-    if ((metric.is.logit.scale(params$measure) || (metric.is.arcsin.scale(params$measure)))) {
-        # in logit or arcsin scale, pass data in display scale - no scaling on x-axis
+    if (metric.is.logit.scale(params$measure) || metric.is.arcsine.scale(params$measure)) {
+        # if metric not log scale, pass data in display scale - no scaling on x-axis
         y <- y.disp
         lb <- lb.disp
         ub <- ub.disp
@@ -152,8 +152,8 @@ metric.is.logit.scale <- function(metric) {
     metric %in% c(binary.logit.metrics, diagnostic.logit.metrics)
 }    
 
-metric.is.arcsin.scale <- function(metric) {
-    metric %in% c(binary.arcsin.metrics)
+metric.is.arcsine.scale <- function(metric) {
+    metric %in% c(binary.arcsine.metrics)
 }
 
 create.plot.data.binary <- function(binary.data, params, res, selected.cov = NULL){

@@ -12,9 +12,12 @@ library(metafor)
 
 binary.logit.metrics <- c("PLO")
 binary.log.metrics <- c("OR", "RR", "PLN")
-binary.arcsin.metrics <- c("AS")
+binary.arcsine.metrics <- c("PAS")
+# The two-arm metric arcsine risk difference (AS) is not included in binary.arcsine.metrics
+# so that display scale will be same as calculation scale.
 binary.two.arm.metrics <- c("OR", "RD", "RR", "AS", "YUQ", "YUY")
 binary.one.arm.metrics <- c("PR", "PLN", "PLO", "PAS", "PFT")
+
 
 compute.for.one.bin.study <- function(binary.data, params){
     res <- escalc(params$measure, ai=binary.data@g1O1, bi=binary.data@g1O2, 
@@ -41,8 +44,8 @@ binary.transform.f <- function(metric.str){
                 invlogit(x)
             }
             else {
-                if (metric.str %in% binary.arcsin.metrics){
-                    (sin(x))^2
+                if (metric.str %in% binary.arcsine.metrics){
+                    invarcsine.sqrt(x)
                 }
                 else {  
                 # identity function
@@ -61,8 +64,13 @@ binary.transform.f <- function(metric.str){
                 logit(x)
             }
             else {
+              if (metric.str %in% binary.arcsine.metrics){
+                arcsine.sqrt(x) 
+              }
+              else {
                 # identity function
                 x
+              }
             }
          }
     }
