@@ -38,42 +38,32 @@ binary.transform.f <- function(metric.str){
     display.scale <- function(x){
         if (metric.str %in% binary.log.metrics){
             exp(x)
+        } else if (metric.str %in% binary.logit.metrics){
+            invlogit(x)
+        } else if (metric.str %in% binary.arcsine.metrics){
+            invarcsine.sqrt(x)
+        } else {  
+            # identity function
+            x
         }
-        else {
-            if (metric.str %in% binary.logit.metrics){
-                invlogit(x)
-            }
-            else {
-                if (metric.str %in% binary.arcsine.metrics){
-                    invarcsine.sqrt(x)
-                }
-                else {  
-                # identity function
-                x
-                }
-            }
-        }
-    }
+    }    
+
     
     calc.scale <- function(x){
         if (metric.str %in% binary.log.metrics){
             log(x)
         }
-        else {
-          if (metric.str %in% binary.logit.metrics){
-                logit(x)
-            }
-            else {
-              if (metric.str %in% binary.arcsine.metrics){
-                arcsine.sqrt(x) 
-              }
-              else {
-                # identity function
-                x
-              }
-            }
-         }
+        else if (metric.str %in% binary.logit.metrics){
+            logit(x)   
+        }
+        else if (metric.str %in% binary.arcsine.metrics){
+            arcsine.sqrt(x) 
+        } else {
+            # identity function
+            x
+        }
     }
+
     list(display.scale = display.scale, calc.scale = calc.scale)
 }
 
