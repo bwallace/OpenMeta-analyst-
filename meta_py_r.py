@@ -374,7 +374,8 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj",
     studies = table_model.get_studies(only_if_included=True)
     
     # issue #139 -- also grab the years
-    study_years = ", ".join(["as.integer(%s)" % study.year for study in studies])
+    none_to_str = lambda n : str(n) if n is not None else "" # this will produce NA ints
+    study_years = ", ".join(["as.integer(%s)" % none_to_str(study.year) for study in studies])
 
     study_names = ", ".join(["'" + study.name + "'" for study in studies])
     

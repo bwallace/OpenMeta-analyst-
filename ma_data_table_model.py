@@ -1148,11 +1148,13 @@ class DatasetModel(QAbstractTableModel):
         cur_ma_unit = self.get_current_ma_unit_for_study(study_index)
         effect = effect or self.current_effect
         
+
         est = cur_ma_unit.effects_dict[effect][group_str]["est"] 
 
         lower, upper = cur_ma_unit.effects_dict[effect][group_str]["lower"], \
                                 cur_ma_unit.effects_dict[effect][group_str]["upper"]
-                                
+
+
         se = (upper-est)/MULT
         return (est, se)
         
@@ -1160,6 +1162,7 @@ class DatasetModel(QAbstractTableModel):
         ests, SEs = [], []
         effect = effect or self.current_effect
         for study_index in xrange(len(self.dataset.studies)):
+            # issue #171 -- blank studies are *wrongly* set to be included after paste
             if not only_if_included or self.dataset.studies[study_index].include:
                 est, SE = self.cur_point_est_and_SE_for_study(study_index, effect=effect)
                 ests.append(est)

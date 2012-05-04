@@ -243,6 +243,8 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                                 "analysis failed",
                                 error_message)
                     bar.hide()
+                    # reset Rs working directory 
+                    meta_py_r.reset_Rs_working_dir()
                     self.accept()
 
             else:
