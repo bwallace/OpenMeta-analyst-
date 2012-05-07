@@ -1,0 +1,44 @@
+<html>
+<head>
+<link href="css/help.css" 
+type=text/css rel=stylesheet>
+</head>
+<body>
+
+<h2><a name="top">Example - Random-Effects Method</a></h2>
+ <p>This section shows have to perform a random effects meta-analysis, using the same data set as in <a href="fixed_effect_example.html">Example - Fixed-Effect Method</a>.</p>
+ <p>Recall that the random-effects model can be written as<br>
+           <eq><img src="images/random_effects_model.png"></eq><br> 
+     where
+     <ul>
+         <li>&mu; is the grand (overall) mean</li>
+         <li>&alpha;<sub><em>i</em></sub> is the between-study variance - the difference between the true effect in study <em>i</em> and the grand mean</li>
+         <li><em>v<sub>i</sub></em> is the within-study variance in study <em>i</em>.</li>
+     </ul>
+</ul>
+<p>In the random effects model, the overall variance is the sum of the within study variance, <em>v<sub>i</sub></em>, and the between-study-variance (the heterogeneity). <em>v<sub>i</sub></em> can be calculated from the data just as in the fixed-effects case. But the heterogeneity - which is usually denoted by &tau;<sup>2</sup> - must be estimated. There are many methods for estimating the heterogeneity. The example in this section uses the DerSimonian Laird method - see <a href="random-effects_methods.html">Random-Effects Methods</a> for details. Using the DerSimonian Laird method, the estimated heterogeneity is</p>
+<eq><img src="images/eq_tau2_example.png"></eq>
+<p>The summary effect size can be estimated using the inverse variance method, where the study weights are</p>
+<eq><img src="images/eq_random_effects_variance.png"></eq>
+<p>The summary estimate in log scale is</p>
+<eq><img src="images/example_random_summary_est.png"></eq>
+<p>In standard scale, the estimate is </p>
+<eq><img src="images/example_random_summary_est2.png"></eq><br>
+<h3>Remarks on the Random-Effects Inverse-Variance Method</h3>
+<p>In the Random-Effects Inverse Variance method,  the ratio of the weights for studies <em>i</em> and <em>j</em> is</p>
+<eq><img src="images/eq_ratio_of_weights.png"></eq><br>
+<p>When the heterogeneity &tau;<sup>2</sup> is large compared to the within-study variances, the ratio of weights is approximately 1, which means that the weights of any two studies <em>i</em> and <em>j</em> are approximately equal. In other words, all studies have approximately the same weight.</p>
+ 
+<p>You can perform this analysis in Open Meta-Analyst by doing the following steps:</p>
+ <ol>
+     <li>Open the example data file BCG.oma in the sample_data directory.</li>
+     <li>Select <b>meta-analysis</b> on the <b>Analysis</b> menu.</li>
+     <li>In the Method & Parameters dialog, select <b>Binary Random</b> as the analysis method. </li>
+     <li>Click <b>OK</b>.</li>
+ </ol>
+ 
+<p><a href="#top">Back to top</a></p>
+<br>
+ <table id="nav" cellspacing="0"><tr valign="center"><td align="left" width="20"><a href="fixed_effect_example.html#top"><img src="images/b_prev.gif" border="0"></td><td align="left">Example - Fixed-Effect Method</td></a><td>&nbsp;</td><td align="right">Data Sets</td><td align="right" width="20"><a href="data_sets.html#top"><img src="images/b_next.gif" border="0"></td></a></td></tr></table>
+</body>
+</html>

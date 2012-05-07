@@ -6,7 +6,9 @@ type=text/css rel=stylesheet>
 <body>
 
 <h2><a name="top">Example - Fixed-Effect Method</a></h2>
- <p>This section presents an example illustrating the fixed-effect inverse variance method.</p>
+<p>There are several methods for estimating the summary effect size in a fixed-effect model. This section describes the <em>inverse-variance</em> method, in which the summary effect Y is computed as a weighted sum of individual study effects, where the weights are proportional to the inverse of the study variance. That is,</p>
+<eq><img src="images/inv_var_weighted_sum.png"></eq> 
+ <p>where <em>w<sub>i</sub></em> = 1 / <em>v<sub>i</sub></em>. The sum in the denominator is included to make the sum of the weights equal to 1.</p>
  <p>The data in the table below shows the results of a number of studies on the effect of
  a vaccine (called BCG) in preventing the development of tuberculosis (TB).</p><br>
 
@@ -166,26 +168,28 @@ type=text/css rel=stylesheet>
     <li>c = Control events - number of subjects in the control group who contracted TB.</li>
     <li>d = Control subjects - total number of subjects in the treatment group</li>
 </ul>
-<p>For statistical reasons, in calculating the summary estimate, the effect sizes are calculated in log scale:</p> 
+<p>For statistical reasons, the effect sizes for relative risk are calculated in log scale:</p> 
 <eq><img src="images/eq_log_rel_risk.png"></eq>
-<p><b>Note:</b> The Open Meta-Analyst data table displays the relative risk in standard scale, not log scale</p>
 <p>The variance of the effect size is</p>
 <eq><img src="images/eq_rel_risk_var.png">
-<p>The table above shows the calculated effect sizes <em>y<sub>i</sub></em>, variances <em>v<sub>i</sub></em>, and weights <em>w<sub>i</sub></em>&nbsp;=&nbsp;1&nbsp;/&nbsp;<em>v<sub>i</sub></em>.</p>
-<p>The inverse-variance estimate of the summary effect size, as described in the previous section <a href="fixed_versus_random.html">Fixed and Random-Effects Models</a>, in log scale is</p>
+<p>The table above shows the effect sizes <em>y<sub>i</sub></em>, variances <em>v<sub>i</sub></em>, and weights <em>w<sub>i</sub></em>&nbsp;=&nbsp;1&nbsp;/&nbsp;<em>v<sub>i</sub></em>.</p>
+<p>The inverse-variance estimate of the summary effect size in log scale is</p>
  <eq><img src="images/example_fixed_summary_est.png"></eq> 
 <p>Taking the exponential of this gives the summary effect size in standard scale.</p>
 <eq><img src="images/example_fixed_summary_est2.png"></eq>
- <p>You can perform this analysis in Open Meta-Analyst by doing the following steps:</p>
+
+<p>In the random-effects method, one first estimates the heterogeneity of the mode. There are a number of methods for doing this - see <a html="random_effects_methods.html">Random-Effects Methods</a>. One standard method is Der-Simonian Laird. Applying this method to the data gives the following estimate of &tau;<sup>2</sup>: </p>
+<eq><img src="images/eq_tau2_example.png"></eq>
+ <p>You can perform  the above analysis in Open Meta-Analyst by doing the following steps:</p>
  <ol>
      <li>Open the example data file BCG.oma in the sample_data directory.</li>
      <li>Select <b>meta-analysis</b> on the <b>Analysis</b> menu.</li>
-     <li>In the Method & Parameters dialog, select <b>Binary Fixed Inverse Variance</b> as the analysis method. </li>
+     <li>In the Method & Parameters dialog, select the analysis method <b>Binary Fixed Inverse Variance</b>.</li>
      <li>Click <b>OK</b>.</li>
  </ol>
  
 <p><a href="#top">Back to top</a></p>
 <br>
- <table id="nav" cellspacing="0"><tr valign="center"><td align="left" width="20"><a href="main_window.html#top"><img src="images/b_prev.gif" border="0"></td><td align="left">The Open Meta-Analyst Window</td></a><td>&nbsp;</td><td align="right">Creating a New Data Set</td><td align="right" width="20"><a href="create_dataset.html#top"><img src="images/b_next.gif" border="0"></td></a></td></tr></table>
+ <table id="nav" cellspacing="0"><tr valign="center"><td align="left" width="20"><a href="fixed_vs_random.html#top"><img src="images/b_prev.gif" border="0"></td><td align="left">Fixed and Random-Effects Models</td></a><td>&nbsp;</td><td align="right">Example - Random-Effects Method</td><td align="right" width="20"><a href="random_effects_example.html#top"><img src="images/b_next.gif" border="0"></td></a></td></tr></table>
 </body>
 </html>

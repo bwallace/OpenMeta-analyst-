@@ -9,7 +9,7 @@ type=text/css rel=stylesheet>
   <h3>Metrics for Binary Data</h3>
   <p>You can choose a metric for binary or continuous data by selecting <b>metric</b> from the <b>analysis</b> menu,
          as described in <a href="analysis.html#top">Example - Performing a Meta-Analysis</a>. </p>
- <p>The formulas shown in this section are labeled according to the 2 X 2 table data below:</p>       
+ <p>The formulas for binary metrics are labeled according to the 2 X 2 table data below:</p>       
  <table width="100" cellspacing="0" cellpadding="10" border="1">
 <tr align="center">
 	<td></td>
@@ -52,6 +52,7 @@ type=text/css rel=stylesheet>
 <tr align="center">
 	<td align="left"  width=210><b>AS</b> - Arcsine-transformed risk difference</td>
 	<td><img src="images/eq_arcsin_risk_diff.png"></td>
+	<td><img src="images/eq_arcsin_risk_diff_variance.png"
 	<td></td>
 </tr>
 <tr align="center">
@@ -65,17 +66,41 @@ type=text/css rel=stylesheet>
 	<td></td>
 </tr>
 </table>
-
-      
-  <ul>
-     <li>One-Arm Metrics:
-        <ul>
-          <li><b>PR</b> - Proportion</li>
-         <li><b>PLN</b> - Log-transformed proportion</li>
-         <li><b>PLO</b> - Logit-transformed proportion</li>
-         <li><b>PAS</b> - Arcsine-transformed proportion</li>
-         <li><b>PFT</b> - Freeman-Tukey double arcsine-transformed proportion</li>
-   </ul>
+ 
+<h4>One-Arm Metrics</h4>
+<p>In the equations below, <em>n&nbsp;=&nbsp;a&nbsp;+&nbsp;b</em>.</p>
+<table cellspacing="0" cellpadding="5" border="1">
+<tr align="center">
+	<td align="left" width=20><b>Metric</td>
+	<td><b>Effect size</b></td>
+	<td><b>Variance</b></td>
+</tr>
+<tr align="center">
+	<td align="left"><b>PR</b> - Proportion</td>
+	<td><img src="images/eq_proportion.png"></td>
+	<td><img src="images/eq_prop_variance.png"></td>
+</tr>
+<tr align="center">
+	<td align="left"><b>PLN</b> - Log proportion</td>
+	<td><img src="images/eq_log_prop.png"></td>
+	<td><img src="images/eq_log_prop_variance.png"></td>
+</tr>
+<tr align="center">
+	<td align="left"><b>PLO</b> - Logit proportion</td>
+	<td><img src="images/eq_logit_prop.png"></td>
+	<td><img src="images/eq_logit_prop_variance.png"></td>
+</tr>
+<tr align="center">
+	<td align="left"  width=210><b>PAS</b> - Arcsine-transformed proportion</td>
+	<td><img src="images/eq_arcsin_prop.png"></td>
+	<td><img src="images/eq_arcsin_prop_variance.png"></td>
+</tr>
+<tr align="center">
+	<td align="left"><b>PFT</b> - Freeman-Tukey double arcsine-transformed proportion</td>
+	<td></td>
+	<td></td>
+</tr>
+</table>     
    
   	<h3>Metrics for Continuous Data</h3>
   	  <li>Two-Arm Metrics:
@@ -89,7 +114,7 @@ type=text/css rel=stylesheet>
           <li><b>TX Mean</b> - Treatment Mean</li>
         </ul> 
      </li>
-  	
+  	</ul>
   	<h3>Metrics for Diagnostic Data</h3>
   	<ul>
   	   <li><b>sensitivity:</b> &nbsp;&nbsp;&nbsp;&nbsp; TP / (TP + FN)</li>
@@ -102,5 +127,8 @@ type=text/css rel=stylesheet>
   	    </li>
   	    <li><b>diagnostic odds ratio:</b> &nbsp;&nbsp;&nbsp;&nbsp; (TP + TN) / (FP + FN)</li>
    </ul>
+<p><a href="#top">Back to top</a></p>
+<br>
+ <table id="nav" cellspacing="0"><tr valign="center"><td align="left" width="20"><a href="random_effects_methods.html#top"><img src="images/b_prev.gif" border="0"></td><td align="left">Random-Effects Methods</td></a><td>&nbsp;</td><td align="right">Forest Plot Options</td><td align="right" width="20"><a href="plot_options.html#top"><img src="images/b_next.gif" border="0"></td></a></td></tr></table>   
 </body>
 </html>  
