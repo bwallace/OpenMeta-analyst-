@@ -12,7 +12,7 @@ library(metafor)
 
 binary.logit.metrics <- c("PLO")
 binary.log.metrics <- c("OR", "RR", "PLN")
-binary.arcsine.metrics <- c("PAS")
+binary.arcsine.metrics <- c("PAS", "PFT")
 # The two-arm metric arcsine risk difference (AS) is not included in binary.arcsine.metrics
 # so that display scale will be same as calculation scale.
 binary.two.arm.metrics <- c("OR", "RD", "RR", "AS", "YUQ", "YUY")
