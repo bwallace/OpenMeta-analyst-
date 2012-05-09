@@ -178,14 +178,6 @@ get.res.for.one.diag.study <- function(diagnostic.data, params){
     res
 }
 
-logit <- function(x) {
-	log(x/(1-x))
-}
-
-invlogit <- function(x) {
-	exp(x) / (1 + exp(x))
-}
-
 ###################################################
 #     multiple diagnostic methods                 #
 ###################################################
@@ -393,7 +385,7 @@ diagnostic.fixed.inv.var <- function(diagnostic.data, params){
                      method="FE", level=params$conf.level,
                      digits=params$digits)
         # Add individual study confidence bounds
-        res <- calc.ci.bounds(binary.data, params, res)
+        res <- calc.ci.bounds(diagnostic.data, params, res)
         # Create list to display summary of results
         model.title <- paste("Diagnostic Fixed-Effect Model - Inverse Variance (k = ", res$k, ")", sep="")
         summary.disp <- create.summary.disp(diagnostic.data, params, res, model.title)
@@ -503,7 +495,7 @@ diagnostic.fixed.mh <- function(diagnostic.data, params){
                                 add=c(params$adjust, 0), to=c(as.character(params$to), "none")))
          
         # Add individual study confidence bounds
-        res <- calc.ci.bounds(binary.data, params, res)
+        res <- calc.ci.bounds(diagnostic.data, params, res)
         #                        
         # Create list to display summary of results
         #
@@ -606,7 +598,7 @@ diagnostic.random <- function(diagnostic.data, params){
                  method=params$rm.method, level=params$conf.level,
                  digits=params$digits)
         # Add individual study confidence bounds
-        res <- calc.ci.bounds(binary.data, params, res)
+        res <- calc.ci.bounds(diagnostic.data, params, res)
         #                        
         # Create list to display summary of results
         #
