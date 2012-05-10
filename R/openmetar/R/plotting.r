@@ -23,22 +23,8 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     # Creates a data structure that can be passed to forest.plot
     # res is the output of a call to the Metafor function rma
     
-    if (metric.is.log.scale(params$measure)){
-        scale.str <- "log" 
-    } else if (metric.is.logit.scale(params$measure)) {
-        scale.str <- "logit"
-    } else if (metric.is.arcsine.scale(params$measure)) {
-        scale.str <- "arcsine"
-    } else {
-        scale.str <- "standard"
-    } 
-    if ("ContinuousData" %in% class(om.data)) {
-        transform.name <-"continuous.transform.f"
-    } else if ("DiagnosticData" %in% class(om.data)) {
-        transform.name <- "diagnostic.transform.f"
-    }  else if ("BinaryData" %in% class(om.data)) {
-        transform.name <- "binary.transform.f"
-    }
+    scale.str <- get.scale(params)
+    transform.name <- get.transform.name(om.data)
     plot.options <- set.plot.options(params)
     
     if (params$fp_plot_lb == "[default]") {
@@ -142,18 +128,6 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
                                    values = cov.values)
     }
     plot.data
-}
-
-metric.is.log.scale <- function(metric){
-    metric %in% c(binary.log.metrics, diagnostic.log.metrics)    
-}
-
-metric.is.logit.scale <- function(metric) {
-    metric %in% c(binary.logit.metrics, diagnostic.logit.metrics)
-}    
-
-metric.is.arcsine.scale <- function(metric) {
-    metric %in% c(binary.arcsine.metrics)
 }
 
 create.plot.data.binary <- function(binary.data, params, res, selected.cov = NULL){

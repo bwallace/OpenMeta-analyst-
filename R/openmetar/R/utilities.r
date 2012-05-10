@@ -116,26 +116,8 @@ round.display <- function(x, digits) {
 create.summary.disp <- function(om.data, params, res, model.title) {
     # create table for diplaying summary of ma results
     digits.str <- paste("%.", params$digits, "f", sep="")
-    if ("ContinuousData" %in% class(om.data)) {
-      transform.name <-"continuous.transform.f"
-      data.type <- "continuous"
-    } else if ("DiagnosticData" %in% class(om.data)) {
-      transform.name <- "diagnostic.transform.f"
-      data.type <- "diagnostic"
-    } else if ("BinaryData" %in% class(om.data)) {
-      transform.name <- "binary.transform.f"
-      data.type <- "binary"
-    }
-    
-    scale.str <- "standard"
-    if (metric.is.log.scale(params$measure)){
-        scale.str <- "log" 
-    } else if (metric.is.logit.scale(params$measure)) {
-        scale.str <- "logit"
-    } else if (metric.is.arcsine.scale(params$measure)) {
-        scale.str <- "arcsine"
-    }
-    
+    transform.name <- get.transform.name(om.data)
+    scale.str <- get.scale(params)
     tau2 <- sprintf(digits.str, res$tau2)
     degf <- res$k - 1
     QLabel =  paste("Q(df=", degf, ")", sep="")
@@ -200,13 +182,13 @@ create.summary.disp <- function(om.data, params, res, model.title) {
         table.titles <- c(res.title, het.title)
     }
     
-    if (data.type == "binary") {
+    if (transform.name == "binary.transform.f") {
       # Add raw data title and array 
       raw.data.array <- create.binary.data.array(om.data, params, res)
       table.titles <- c("  Study Data", table.titles)
       raw.data.list <- list("arr0"=raw.data.array)
       arrays <- c(raw.data.list, arrays)
-    } else if (data.type == "continuous") {
+    } else if (transform.name == "continuous.transform.f") {
       raw.data.array <- create.cont.data.array(om.data, params, res)
       table.titles <- c("  Study Data", table.titles)
       raw.data.list <- list("arr0"=raw.data.array)
@@ -456,6 +438,56 @@ calc.ci.bounds <- function(om.data, params, res) {
     res
 }
 
+write.results.to.file <- function(om.data, params, res) {
+    # write results to file
+    transform.name <- get.transform.name(om.data) 
+    results.df <- data.frame("Summary.estimate" = eval(call(transform.name, params$measure))$display.scale(res$b),
+                             "Lower.bound" = eval(call(transform.name, params$measure))$display.scale(res$ci.lb),
+                             "Upper.bound" = eval(call(transform.name, params$measure))$display.scale(res$ci.ub),
+                             "p-Value" = res$pval)
+    write.csv(results.df, file="./r_tmp/results.csv", append=FALSE, row.names=FALSE)
+}
+
+get.transform.name <- function(om.data) { 
+    # Get transform name for converting between display and calculation scales 
+    if ("ContinuousData" %in% class(om.data)) {
+      transform.name <-"continuous.transform.f"
+      data.type <- "continuous"
+    } else if ("DiagnosticData" %in% class(om.data)) {
+      transform.name <- "diagnostic.transform.f"
+      data.type <- "diagnostic"
+    } else if ("BinaryData" %in% class(om.data)) {
+      transform.name <- "binary.transform.f"
+      data.type <- "binary"
+    }
+    transform.name
+}
+
+get.scale <- function(params) {
+    # Get the transformation scale
+    if (metric.is.log.scale(params$measure)){
+        scale <- "log" 
+    } else if (metric.is.logit.scale(params$measure)) {
+        scale <- "logit"
+    } else if (metric.is.arcsine.scale(params$measure)) {
+        scale <- "arcsine"
+    } else {
+      scale <- "standard"
+    }
+    scale
+}
+
+metric.is.log.scale <- function(metric){
+  metric %in% c(binary.log.metrics, diagnostic.log.metrics)    
+}
+
+metric.is.logit.scale <- function(metric) {
+  metric %in% c(binary.logit.metrics, diagnostic.logit.metrics)
+}    
+
+metric.is.arcsine.scale <- function(metric) {
+  metric %in% c(binary.arcsine.metrics)
+}
 
 logit <- function(x) {
     log(x/(1-x))

@@ -105,6 +105,37 @@ create.cont.data.array <- function(cont.data, params, res){
   return(raw.data)
 }
 
+write.cont.study.data.to.file <- function(cont.data, params, res) {
+  # create data frame and write to csv
+  effect.size.name <- pretty.metric.name(as.character(params$measure))
+  y.disp <- continuous.transform.f(params$measure)$display.scale(cont.data@y)
+  if (params$measure %in% continuous.two.arm.metrics) {
+    study.data.df <- data.frame("study.names"=paste(cont.data@study.names, " ", cont.data@years, sep=""),
+                                "N1" = cont.data@N1,
+                                "mean1" = cont.data@mean1,
+                                "sd1" = cont.data@sd1,
+                                "N2" = cont.data@N2,
+                                "mean2" = cont.data@mean2,
+                                "sd2" = cont.data@sd1,
+                                "Effect.size" = continuous.transform.f(params$measure)$display.scale(cont.data@y),
+                                "Lower.bound" = continuous.transform.f(params$measure)$display.scale(res$study.lb),
+                                "Upper.bound" = continuous.transform.f(params$measure)$display.scale(res$study.ub),
+                                "Weight" = res$study.weights)
+  } else if(params$measure %in% continuous.one.arm.metrics) {
+    study.data.df <- data.frame("study.names"=paste(cont.data@study.names, " ", cont.data@years, sep=""),
+                                "N1" = cont.data@N1,
+                                "mean1" = cont.data@mean1,
+                                "sd1" = cont.data@sd1,
+                                "Effect.size" = continuous.transform.f(params$measure)$display.scale(cont.data@y),
+                                "Lower.bound" = continuous.transform.f(params$measure)$display.scale(res$study.lb),
+                                "Upper.bound" = continuous.transform.f(params$measure)$display.scale(res$study.ub),
+                                "Weight" = res$study.weights)
+  }
+  # Rename effect size column
+  names(study.data.df)[names(study.data.df)=="Effect.size"] <- effect.size.name
+  write.csv(study.data.df, file="./r_tmp/study_data.csv", append=FALSE, row.names=FALSE)
+}
+
 ###############################
 #  continuous fixed effects  #
 ###############################
@@ -132,6 +163,9 @@ continuous.fixed <- function(cont.data, params){
         metric.name <- pretty.metric.name(as.character(params$measure))
         model.title <- paste("Continuous Fixed-Effect Model\n\nMetric: ", metric.name, sep="")
         summary.disp <- create.summary.disp(cont.data, params, res, model.title)
+        # Write results and study data to csv files
+        write.results.to.file(cont.data, params, res)
+        write.cont.study.data.to.file(cont.data, params, res)
     }    
     #
     # generate forest plot 
@@ -222,6 +256,9 @@ continuous.random <- function(cont.data, params){
         metric.name <- pretty.metric.name(as.character(params$measure))
         model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", metric.name, sep="")
         summary.disp <- create.summary.disp(cont.data, params, res, model.title)
+        # Write results and study data to csv files
+        write.results.to.file(cont.data, params, res)
+        write.cont.study.data.to.file(cont.data, params, res)
     }        
     #
     # generate forest plot 

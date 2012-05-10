@@ -52,11 +52,9 @@ binary.transform.f <- function(metric.str){
     calc.scale <- function(x){
         if (metric.str %in% binary.log.metrics){
             log(x)
-        }
-        else if (metric.str %in% binary.logit.metrics){
+        } else if (metric.str %in% binary.logit.metrics){
             logit(x)   
-        }
-        else if (metric.str %in% binary.arcsine.metrics){
+        } else if (metric.str %in% binary.arcsine.metrics){
             arcsine.sqrt(x) 
         } else {
             # identity function
@@ -115,7 +113,7 @@ create.binary.data.array <- function(binary.data, params, res){
     if (params$measure %in% binary.two.arm.metrics) {
         event.txB <- format(binary.data@g2O1, justify="right")
         subject.txB <- format(binary.data@g2O1 + binary.data@g2O2, justify="right")  
-        raw.data <- array(c("Study", binary.data@study.names, 
+        raw.data <- array(c("Study", paste(binary.data@study.names, " ", binary.data@years, sep=""), 
                       paste(tx1.name, " Events", sep=""), event.txA, 
                       paste(tx1.name, " Subjects", sep=""), subject.txA, 
                       paste(tx2.name, " Events", sep=""), event.txB, 
@@ -124,7 +122,7 @@ create.binary.data.array <- function(binary.data, params, res){
                       dim=c(length(binary.data@study.names) + 1, 9))
         class(raw.data) <- "summary.data" 
     } else if (params$measure %in% binary.one.arm.metrics) {
-        raw.data <- array(c("Study", binary.data@study.names, 
+        raw.data <- array(c("Study", paste(binary.data@study.names, " ", binary.data@years, sep=""), 
                       paste(tx1.name, " Events", sep=""), event.txA, 
                       paste(tx1.name, " Subjects", sep=""), subject.txA, 
                       effect.size.name, y, "Lower", LL, "Upper", UL, "Weight", weights),
@@ -133,15 +131,32 @@ create.binary.data.array <- function(binary.data, params, res){
     return(raw.data)
 }
 
-create.output.df <- function(binary.data, params, res) {
-    # create data frame and export to csv
-    alpha <- 1.0-(params$conf.level/100.0)
-    mult <- abs(qnorm(alpha/2.0))
-    digits.str <- paste("%.", params$digits, "f", sep="")
+write.bin.study.data.to.file <- function(binary.data, params, res) {
+    # create data frame and write to csv
     effect.size.name <- pretty.metric.name(as.character(params$measure))
     y.disp <- binary.transform.f(params$measure)$display.scale(binary.data@y)
-    weights.normal <- res$weights / sum(res$weights)
-    
+    if (params$measure %in% binary.two.arm.metrics) {
+        study.data.df <- data.frame("study.names"=paste(binary.data@study.names, " ", binary.data@years, sep=""),
+                            "txA.events" = binary.data@g1O1,
+                            "txA.subjects" = binary.data@g1O1 + binary.data@g1O2,
+                            "txB.events" = binary.data@g2O1,
+                            "txB.subjects" = binary.data@g2O1 + binary.data@g2O2,
+                            "Effect.size" = binary.transform.f(params$measure)$display.scale(binary.data@y),
+                            "Lower.bound" = binary.transform.f(params$measure)$display.scale(res$study.lb),
+                            "Upper.bound" = binary.transform.f(params$measure)$display.scale(res$study.ub),
+                            "Weight" = res$study.weights)
+    } else if(params$measure %in% binary.one.arm.metrics) {
+        study.data.df <- data.frame("study.names"=paste(binary.data@study.names, " ", binary.data@years, sep=""),
+                            "txA.events" = binary.data@g1O1,
+                            "txA.subjects" = binary.data@g1O1 + binary.data@g1O2,
+                            "Effect.size" = binary.transform.f(params$measure)$display.scale(binary.data@y),
+                            "Lower.bound" = binary.transform.f(params$measure)$display.scale(res$study.lb),
+                            "Upper.bound" = binary.transform.f(params$measure)$display.scale(res$study.ub),
+                            "Weight" = res$study.weights)
+    }
+    # Rename effect size column
+    names(study.data.df)[names(study.data.df)=="Effect.size"] <- effect.size.name
+    write.csv(study.data.df, file="./r_tmp/study_data.csv", append=FALSE, row.names=FALSE)
 }
 
 ###################################################
@@ -169,8 +184,11 @@ binary.fixed.inv.var <- function(binary.data, params){
         # Create list to display summary of results
         metric.name <- pretty.metric.name(as.character(params$measure))
         model.title <- paste("Binary Fixed-Effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="")
+        # Create results display tables
         summary.disp <- create.summary.disp(binary.data, params, res, model.title)
-        
+        # Write results and study data to csv files
+        write.results.to.file(binary.data, params, res)
+        write.bin.study.data.to.file(binary.data, params, res)
         # generate forest plot 
         if ((is.null(params$create.plot)) || params$create.plot == TRUE) {
             forest.path <- paste(params$fp_outpath, sep="")
@@ -268,7 +286,11 @@ binary.fixed.mh <- function(binary.data, params){
         #
         metric.name <- pretty.metric.name(as.character(params$measure))
         model.title <- paste("Binary Fixed-Effect Model - Mantel Haenszel\n\nMetric: ", metric.name, sep="")
+        # Create results display tables
         summary.disp <- create.summary.disp(binary.data, params, res, model.title)
+        # Write results and study data to csv files
+        write.results.to.file(binary.data, params, res)
+        write.bin.study.data.to.file(binary.data, params, res)
         #
         # generate forest plot
         #
@@ -380,7 +402,11 @@ binary.fixed.peto <- function(binary.data, params){
         #
         metric.name <- pretty.metric.name(as.character(params$measure))
         model.title <- "Binary Fixed-Effect Model - Peto\n\nMetric: Odds Ratio"
+        # Create results display tables
         summary.disp <- create.summary.disp(binary.data, params, res, model.title)
+        # Write results and study data to csv files
+        write.results.to.file(binary.data, params, res)
+        write.bin.study.data.to.file(binary.data, params, res)
         #
         # generate forest plot 
         #
@@ -490,8 +516,11 @@ binary.random <- function(binary.data, params){
         #
         metric.name <- pretty.metric.name(as.character(params$measure))
         model.title <- paste("Binary Random-Effects Model\n\nMetric: ", metric.name, sep="")
+        # Create results display tables
         summary.disp <- create.summary.disp(binary.data, params, res, model.title)
- 
+        # Write results and study data to csv files
+        write.results.to.file(binary.data, params, res)
+        write.bin.study.data.to.file(binary.data, params, res)
         #
         # generate forest plot 
         #
