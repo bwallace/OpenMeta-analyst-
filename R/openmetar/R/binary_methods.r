@@ -177,20 +177,25 @@ binary.fixed.inv.var <- function(binary.data, params){
         res<-rma.uni(yi=binary.data@y, sei=binary.data@SE, slab=binary.data@study.names,
                                 level=params$conf.level, digits=params$digits, method="FE", add=params$adjust,
                                 to=params$to)
-        # Add individual study confidence bounds
-        res <- calc.ci.bounds(binary.data, params, res)
-        # Weights assigned to each study
-        res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
         # Create list to display summary of results
         metric.name <- pretty.metric.name(as.character(params$measure))
         model.title <- paste("Binary Fixed-Effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="")
+        # Add individual study confidence bounds
+        res <- calc.ci.bounds(binary.data, params, res)
         # Create results display tables
         summary.disp <- create.summary.disp(binary.data, params, res, model.title)
-        # Write results and study data to csv files
-        write.results.to.file(binary.data, params, res)
-        write.bin.study.data.to.file(binary.data, params, res)
+        if ((is.null(params$write.to.file)) || params$write.to.file == TRUE) {
+            # Write results and study data to csv files 
+            # Weights assigned to each study
+            res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
+            results.path <- paste("./r_tmp/binary_fixed_inv_var_results.csv")
+            # @TODO Pass in results.path via params
+            write.results.to.file(binary.data, params, res, outpath=results.path)
+            write.bin.study.data.to.file(binary.data, params, res)
+        }
         # generate forest plot 
         if ((is.null(params$create.plot)) || params$create.plot == TRUE) {
+            
             forest.path <- paste(params$fp_outpath, sep="")
             plot.data <- create.plot.data.binary(binary.data, params, res)
             changed.params <- plot.data$changed.params
@@ -274,13 +279,6 @@ binary.fixed.mh <- function(binary.data, params){
         
         # Add individual study confidence bounds
         res <- calc.ci.bounds(binary.data, params, res)
-        # Weights assigned to each study
-        A <- binary.data@g1O1
-        B <- binary.data@g1O2
-        C <- binary.data@g2O1
-        D <- binary.data@g2O2
-        weights <- B * C / (A + B + C + D)
-        res$study.weights <- weights / sum(weights)
         #                        
         # Create list to display summary of results
         #
@@ -289,12 +287,35 @@ binary.fixed.mh <- function(binary.data, params){
         # Create results display tables
         summary.disp <- create.summary.disp(binary.data, params, res, model.title)
         # Write results and study data to csv files
-        write.results.to.file(binary.data, params, res)
-        write.bin.study.data.to.file(binary.data, params, res)
+        if ((is.null(params$write.to.file)) || params$write.to.file == TRUE) {
+          # Weights assigned to each study
+          A <- binary.data@g1O1
+          B <- binary.data@g1O2
+          C <- binary.data@g2O1
+          D <- binary.data@g2O2
+          weights <- B * C / (A + B + C + D)
+          res$study.weights <- weights / sum(weights)
+          results.path <- paste("./r_tmp/binary_fixed_mh_results.csv")
+          # @TODO Pass in results.path via params
+          write.results.to.file(binary.data, params, res, outpath=results.path)
+          write.bin.study.data.to.file(binary.data, params, res)
+        }
         #
         # generate forest plot
         #
         if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
+            # Weights assigned to each study
+            A <- binary.data@g1O1
+            B <- binary.data@g1O2
+            C <- binary.data@g2O1
+            D <- binary.data@g2O2
+            weights <- B * C / (A + B + C + D)
+            res$study.weights <- weights / sum(weights)
+            # Write results and study data to csv files
+            results.path <- paste("./r_tmp/binary_fixed_mh_results.csv")
+            # @TODO Pass in results.path via params
+            write.results.to.file(binary.data, params, res, outpath=results.path)
+            write.bin.study.data.to.file(binary.data, params, res)
             if (is.null(binary.data@y) || is.null(binary.data@SE)) {
                 binary.data <- compute.bin.point.estimates(binary.data, params)
                 # compute point estimates for plot.data in case they are missing
@@ -395,8 +416,6 @@ binary.fixed.peto <- function(binary.data, params){
         binary.data@SE <- sqrt(res$vi)
         # Add individual study confidence bounds
         res <- calc.ci.bounds(binary.data, params, res)
-        # Weights assigned to each study
-        res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
         #                        
         # Create list to display summary of results
         #
@@ -405,12 +424,19 @@ binary.fixed.peto <- function(binary.data, params){
         # Create results display tables
         summary.disp <- create.summary.disp(binary.data, params, res, model.title)
         # Write results and study data to csv files
-        write.results.to.file(binary.data, params, res)
-        write.bin.study.data.to.file(binary.data, params, res)
+        if ((is.null(params$write.to.file)) || params$write.to.file == TRUE) {
+            # Weights assigned to each study
+            res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
+            results.path <- paste("./r_tmp/binary_fixed_peto_results.csv")
+            # @TODO Pass in results.path via params
+            write.results.to.file(binary.data, params, res, outpath=results.path)
+            write.bin.study.data.to.file(binary.data, params, res) 
+        }
         #
         # generate forest plot 
         #
         if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
+            
             forest.path <- paste(params$fp_outpath, sep="")
             plot.data <- create.plot.data.binary(binary.data, params, res)
             changed.params <- plot.data$changed.params
@@ -508,9 +534,6 @@ binary.random <- function(binary.data, params){
                      digits=params$digits)
         # Add individual study confidence bounds
         res <- calc.ci.bounds(binary.data, params, res)
-        # Weights assigned to each study
-        weights <- 1 / (res$vi + res$tau2)
-        res$study.weights <- weights / sum(weights)
         #                        
         # Create list to display summary of results
         #
@@ -519,12 +542,21 @@ binary.random <- function(binary.data, params){
         # Create results display tables
         summary.disp <- create.summary.disp(binary.data, params, res, model.title)
         # Write results and study data to csv files
-        write.results.to.file(binary.data, params, res)
-        write.bin.study.data.to.file(binary.data, params, res)
+        if ((is.null(params$write.to.file)) || params$write.to.file == TRUE) {
+            # Weights assigned to each study
+            weights <- 1 / (res$vi + res$tau2)
+            res$study.weights <- weights / sum(weights)
+            # Write results and study data to csv files
+            results.path <- paste("./r_tmp/binary_random_results.csv")
+            # @TODO Pass in results.path via params
+            write.results.to.file(binary.data, params, res, outpath=results.path)
+            write.bin.study.data.to.file(binary.data, params, res)
+        }
         #
         # generate forest plot 
         #
         if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
+      
             forest.path <- paste(params$fp_outpath, sep="")
             plot.data <- create.plot.data.binary(binary.data, params, res)
             changed.params <- plot.data$changed.params

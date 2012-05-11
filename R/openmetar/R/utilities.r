@@ -438,14 +438,14 @@ calc.ci.bounds <- function(om.data, params, res) {
     res
 }
 
-write.results.to.file <- function(om.data, params, res) {
+write.results.to.file <- function(om.data, params, res, outpath) {
     # write results to file
     transform.name <- get.transform.name(om.data) 
     results.df <- data.frame("Summary.estimate" = eval(call(transform.name, params$measure))$display.scale(res$b),
                              "Lower.bound" = eval(call(transform.name, params$measure))$display.scale(res$ci.lb),
                              "Upper.bound" = eval(call(transform.name, params$measure))$display.scale(res$ci.ub),
                              "p-Value" = res$pval)
-    write.csv(results.df, file="./r_tmp/results.csv", append=FALSE, row.names=FALSE)
+    write.csv(results.df, file=outpath, append=FALSE, row.names=FALSE)
 }
 
 get.transform.name <- function(om.data) { 

@@ -125,31 +125,23 @@ diagnostic.transform.f <- function(metric.str){
     display.scale <- function(x){
         if (metric.str %in% diagnostic.log.metrics){
             exp(x)
-        }
-        else {
-            if (metric.str %in% diagnostic.logit.metrics){
-                invlogit(x)
-            }
-            else {
-                # identity function
-                x
-            }
+        } else if (metric.str %in% diagnostic.logit.metrics) {
+            invlogit(x)
+        } else {
+            # identity function
+            x
         }
     }
     
     calc.scale <- function(x){
         if (metric.str %in% diagnostic.log.metrics){
             log(x)
+        } else if (metric.str %in% diagnostic.logit.metrics){
+            logit(x)
+        } else {
+            # identity function
+            x
         }
-        else {
-        	if (metric.str %in% diagnostic.logit.metrics){
-                logit(x)
-            }
-            else {
-                # identity function
-                x
-            }
-         }
     }
     list(display.scale = display.scale, calc.scale = calc.scale)
 }
@@ -394,7 +386,14 @@ diagnostic.fixed.inv.var <- function(diagnostic.data, params){
         for (count in 1:length(summary.disp$table.titles)) {
           summary.disp$table.titles[count] <- paste(pretty.metric, " -", summary.disp$table.titles[count], sep="")
         }
-        
+        # Write results to csv file
+        if ((is.null(params$write.to.file)) || params$write.to.file == TRUE) {
+            # Weights assigned to each study
+            res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
+            results.path <- paste("./r_tmp/diag_fixed_inv_var_", params$measure, "_results.csv", sep="")
+            # @TODO Pass in results.path via params
+            write.results.to.file(diagnostic.data, params, res, outpath=results.path) 
+        }
         if ((is.null(params$create.plot)) || params$create.plot == TRUE) {
             # A forest plot will be created unless
             # params.create.plot is set to FALSE.
@@ -506,6 +505,19 @@ diagnostic.fixed.mh <- function(diagnostic.data, params){
         for (count in 1:length(summary.disp$table.titles)) {
           summary.disp$table.titles[count] <- paste(pretty.metric, " -", summary.disp$table.titles[count], sep="")
         }
+        # Write results to csv file
+        if ((is.null(params$write.to.file)) || params$write.to.file == TRUE) {
+            # Weights assigned to each study
+            A <- diagnostic.data@g1O1
+            B <- diagnostic.data@g1O2
+            C <- diagnostic.data@g2O1
+            D <- diagnostic.data@g2O2
+            weights <- B * C / (A + B + C + D)
+            res$study.weights <- weights / sum(weights)
+            results.path <- paste("./r_tmp/diag_fixed_mh_", params$measure, "_results.csv", sep="")
+            # @TODO Pass in results.path via params
+            write.results.to.file(diagnostic.data, params, res, outpath=results.path) 
+        }
         #
         # generate forest plot
         #
@@ -609,6 +621,15 @@ diagnostic.random <- function(diagnostic.data, params){
         pretty.metric <- eval(parse(text=paste("pretty.names$measure$", params$measure,sep="")))
         for (count in 1:length(summary.disp$table.titles)) {
             summary.disp$table.titles[count] <- paste(pretty.metric, " -", summary.disp$table.titles[count], sep="")
+        }
+        # Write results and study data to csv files
+        if ((is.null(params$write.to.file)) || params$write.to.file == TRUE) {
+            # Weights assigned to each study
+            weights <- 1 / (res$vi + res$tau2)
+            res$study.weights <- weights / sum(weights)
+            results.path <- paste("./r_tmp/diag_random_", params$measure, "_results.csv", sep="")
+            # @TODO Pass in results.path via params
+            write.results.to.file(diagnostic.data, params, res, outpath=results.path)
         }
         #
         # generate forest plot 

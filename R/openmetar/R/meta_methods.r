@@ -25,6 +25,7 @@ cum.ma.binary <- function(fname, binary.data, params){
     
     params.tmp <- params
     params.tmp$create.plot <- FALSE
+    params.tmp$write.to.file <- FALSE
     res <- eval(call(fname, binary.data, params.tmp))
     res.overall <- eval(call(paste(fname, ".overall", sep=""), res))
     # parse out the overall estimate
@@ -123,6 +124,7 @@ loo.ma.binary <- function(fname, binary.data, params){
     loo.results <- array(list(NULL), dim=c(length(binary.data@study.names)))
     params.tmp <- params
     params.tmp$create.plot <- FALSE
+    params.tmp$write.to.file <- FALSE
     # don't create plots when calling individual binary methods
     res <- eval(call(fname, binary.data, params.tmp))
     res.overall <- eval(call(paste(fname, ".overall", sep=""), res))
@@ -216,6 +218,7 @@ cum.ma.continuous <- function(fname, cont.data, params){
     
     params.tmp <- params
     params.tmp$create.plot <- FALSE
+    params.tmp$write.to.file <- FALSE
     res <- eval(call(fname, binary.data, params.tmp))
     res.overall <- eval(call(paste(fname, ".overall", sep=""), res))
     # parse out the overall estimate
@@ -230,6 +233,7 @@ cum.ma.continuous <- function(fname, cont.data, params){
     # iterate over the continuousData elements, adding one study at a time
     cum.results <- array(list(NULL), dim=c(length(cont.data@study.names)))
     params$create.plot <- FALSE
+    params.tmp$write.to.file <- FALSE
     for (i in 1:length(cont.data@study.names)){
         # build a ContinuousData object including studies
         # 1 through i
@@ -323,6 +327,7 @@ loo.ma.continuous <- function(fname, cont.data, params){
     loo.results <- array(list(NULL), dim=c(length(cont.data@study.names)))
     params.tmp <- params
     params.tmp$create.plot <- FALSE
+    params.tmp$write.to.file <- FALSE
     res <- eval(call(fname, cont.data, params.tmp))
     res.overall <- eval(call(paste(fname, ".overall", sep=""), res))
     N <- length(cont.data@study.names)
@@ -430,6 +435,7 @@ subgroup.ma.binary <- function(fname, binary.data, params){
     cov.vals <- selected.cov@cov.vals
     params.tmp <- params
     params.tmp$create.plot <- FALSE
+    params.tmp$write.to.file <- FALSE
     subgroup.list <- unique(cov.vals)
     grouped.data <- array(list(NULL),c(length(subgroup.list)+1))
     subgroup.results <- array(list(NULL), c(length(subgroup.list)+1))
@@ -530,6 +536,7 @@ subgroup.ma.continuous <- function(fname, cont.data, params){
     selected.cov <- get.cov(cont.data, cov.name)
     cov.vals <- selected.cov@cov.vals
     params$create.plot <- FALSE
+    params.tmp$write.to.file <- FALSE
     subgroup.list <- unique(cov.vals)
     grouped.data <- array(list(NULL),c(length(subgroup.list)+1))
     subgroup.results <- array(list(NULL), c(length(subgroup.list)+1))
@@ -759,7 +766,9 @@ multiple.loo.diagnostic <- function(fnames, params.list, diagnostic.data) {
         params.sens <- params.list[[sens.index]]
         params.spec <- params.list[[spec.index]]
         params.sens$create.plot <- FALSE
+        params.sens$write.to.file <- FALSE
         params.spec$create.plot <- FALSE
+        params.spec$write.to.file <- FALSE
         params.tmp <- list("left"=params.sens, "right"=params.spec)
         
         fname <- fnames[sens.index]

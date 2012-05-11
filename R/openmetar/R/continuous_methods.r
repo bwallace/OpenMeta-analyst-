@@ -158,15 +158,19 @@ continuous.fixed <- function(cont.data, params){
                      digits=params$digits)
         # Add individual study confidence bounds
         res <- calc.ci.bounds(cont.data, params, res)
-        # Weights assigned to each study
-        res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
         metric.name <- pretty.metric.name(as.character(params$measure))
         model.title <- paste("Continuous Fixed-Effect Model\n\nMetric: ", metric.name, sep="")
         summary.disp <- create.summary.disp(cont.data, params, res, model.title)
-        # Write results and study data to csv files
-        write.results.to.file(cont.data, params, res)
-        write.cont.study.data.to.file(cont.data, params, res)
-    }    
+    } 
+    # Write results and study data to csv files
+    if ((is.null(params$write.to.file)) || params$write.to.file == TRUE) {
+         # Weights assigned to each study
+        res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
+        results.path <- paste("./r_tmp/cont_fixed_results.csv")
+        # @TODO Pass in results.path via params
+        write.results.to.file(cont.data, params, res, outpath=results.path)
+        write.bin.study.data.to.file(cont.data, params, res) 
+    }
     #
     # generate forest plot 
     #
@@ -250,16 +254,20 @@ continuous.random <- function(cont.data, params){
                      digits=params$digits)
         # Add individual study confidence bounds
         res <- calc.ci.bounds(cont.data, params, res)
-        # Weights assigned to each study
-        weights <- 1 / (res$vi + res$tau2)
-        res$study.weights <- weights / sum(weights)
         metric.name <- pretty.metric.name(as.character(params$measure))
         model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", metric.name, sep="")
         summary.disp <- create.summary.disp(cont.data, params, res, model.title)
-        # Write results and study data to csv files
-        write.results.to.file(cont.data, params, res)
-        write.cont.study.data.to.file(cont.data, params, res)
-    }        
+    }  
+    # Write results and study data to csv files
+    if ((is.null(params$write.to.file)) || params$write.to.file == TRUE) {
+        # Weights assigned to each study
+        weights <- 1 / (res$vi + res$tau2)
+        res$study.weights <- weights / sum(weights)
+        results.path <- paste("./r_tmp/cont_random_results.csv")
+        # @TODO Pass in results.path via params
+        write.results.to.file(cont.data, params, res, outpath=results.path)
+        write.bin.study.data.to.file(cont.data, params, res) 
+    }
     #
     # generate forest plot 
     #
