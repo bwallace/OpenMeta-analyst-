@@ -789,6 +789,12 @@ diagnostic.hsroc.pretty.names <- function() {
 }
 
 
+diagnostic.hsroc.ml.is.feasible <- function(diagnostic.data, metric){
+    # only estimable when we have >= 5 studies
+    length(diagnostic.data@TP) > 4
+}
+
+
 ##################################
 #   diagnostic biviariate        #
 ##################################
