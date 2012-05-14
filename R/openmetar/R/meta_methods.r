@@ -24,12 +24,13 @@ cum.ma.binary <- function(fname, binary.data, params){
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
     
     params.tmp <- params
+    # These temporarily turn off creating plots and writing results to file
     params.tmp$create.plot <- FALSE
     params.tmp$write.to.file <- FALSE
     res <- eval(call(fname, binary.data, params.tmp))
     res.overall <- eval(call(paste(fname, ".overall", sep=""), res))
     # parse out the overall estimate
-    plot.data <- create.plot.data.binary(binary.data, params, res=res.overall)
+    plot.data <- create.plot.data.binary(binary.data, params, res.overall)
     # data for standard forest plot
     
     # iterate over the binaryData elements, adding one study at a time
@@ -123,6 +124,7 @@ loo.ma.binary <- function(fname, binary.data, params){
     
     loo.results <- array(list(NULL), dim=c(length(binary.data@study.names)))
     params.tmp <- params
+    
     params.tmp$create.plot <- FALSE
     params.tmp$write.to.file <- FALSE
     # don't create plots when calling individual binary methods
@@ -219,10 +221,10 @@ cum.ma.continuous <- function(fname, cont.data, params){
     params.tmp <- params
     params.tmp$create.plot <- FALSE
     params.tmp$write.to.file <- FALSE
-    res <- eval(call(fname, binary.data, params.tmp))
+    res <- eval(call(fname, cont.data, params.tmp))
     res.overall <- eval(call(paste(fname, ".overall", sep=""), res))
     # parse out the overall estimate
-    plot.data <- create.plot.data.binary(binary.data, params, res=res.overall)
+    plot.data <- create.plot.data.continuous(cont.data, params, res=res.overall)
     # data for standard forest plot
     
     params$fp_show_col3 <- FALSE
@@ -232,8 +234,7 @@ cum.ma.continuous <- function(fname, cont.data, params){
     
     # iterate over the continuousData elements, adding one study at a time
     cum.results <- array(list(NULL), dim=c(length(cont.data@study.names)))
-    params$create.plot <- FALSE
-    params.tmp$write.to.file <- FALSE
+    
     for (i in 1:length(cont.data@study.names)){
         # build a ContinuousData object including studies
         # 1 through i
@@ -266,7 +267,7 @@ cum.ma.continuous <- function(fname, cont.data, params){
         # data and parameters. Notice that this method knows
         # neither what method its calling nor what parameters
         # it's passing!
-        cur.res <- eval(call(fname, cont.data.tmp, params))
+        cur.res <- eval(call(fname, cont.data.tmp, params.tmp))
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
         cum.results[[i]] <- cur.overall
     }
@@ -762,7 +763,6 @@ multiple.loo.diagnostic <- function(fnames, params.list, diagnostic.data) {
 
     if (("Sens" %in% metrics) & ("Spec" %in% metrics)) {
         # create side-by-side forest plots for sens and spec.
-       
         params.sens <- params.list[[sens.index]]
         params.spec <- params.list[[spec.index]]
         params.sens$create.plot <- FALSE
@@ -813,7 +813,9 @@ multiple.loo.diagnostic <- function(fnames, params.list, diagnostic.data) {
         params.nlr <- params.list[[nlr.index]]
         params.plr <- params.list[[plr.index]]
         params.nlr$create.plot <- FALSE
+        params.nlr$write.to.file <- FALSE
         params.plr$create.plot <- FALSE
+        params.plr$write.to.file <- FALSE
         params.tmp <- list("left"=params.nlr, "right"=params.plr)
         
         fname <- fnames[nlr.index]
@@ -861,14 +863,14 @@ multiple.loo.diagnostic <- function(fnames, params.list, diagnostic.data) {
             #pretty.names <- eval(call(paste(fnames[count],".pretty.names",sep="")))
             results.tmp <- loo.ma.diagnostic(fnames[[count]], diagnostic.data, params.list[[count]])
             #if (is.null(params.list[[count]]$create.plot)) {
-               # create plot
-              images.tmp <- results.tmp$images
-              names(images.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
-              images <- c(images, images.tmp)
-              plot.params.paths.tmp <- results.tmp$plot_params_paths
-              names(plot.params.paths.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$", params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
-              plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
-              plot.names <- c(plot.names, results.tmp$plot.names)
+            # create plot
+            images.tmp <- results.tmp$images
+            names(images.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
+            images <- c(images, images.tmp)
+            plot.params.paths.tmp <- results.tmp$plot_params_paths
+            names(plot.params.paths.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$", params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
+            plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
+            plot.names <- c(plot.names, results.tmp$plot.names)
             #}
             summary.tmp <- list("Summary"=results.tmp$Summary)
             names(summary.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Summary", sep="")
@@ -887,12 +889,10 @@ loo.ma.diagnostic <- function(fname, diagnostic.data, params){
     # performs a single leave-one-out meta-analysis for diagnostic.data
     # assert that the argument is the correct type
     if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")
-    
     loo.results <- array(list(NULL), dim=c(length(diagnostic.data@study.names)))
     params.tmp <- params
     params.tmp$create.plot <- FALSE
-    params.tmp <- params
-    params.tmp$create.plot <- FALSE
+    params.tmp$write.to.file <- FALSE
     N <- length(diagnostic.data@study.names)
     for (i in 1:N){
         # get a list of indices, i.e., the subset
@@ -1180,6 +1180,7 @@ subgroup.ma.diagnostic <- function(fname, diagnostic.data, params, selected.cov)
     cov.vals <- selected.cov@cov.vals
     params.tmp <- params
     params.tmp$create.plot <- FALSE
+    params.tmp$write.to.file <- FALSE
     subgroup.list <- unique(cov.vals)
     grouped.data <- array(list(NULL),c(length(subgroup.list) + 1))
     subgroup.results <- array(list(NULL), c(length(subgroup.list) + 1))

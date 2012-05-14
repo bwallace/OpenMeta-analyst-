@@ -96,10 +96,12 @@ create.binary.data.array <- function(binary.data, params, res){
     # TODO: these should be taken from the corresponding column labels in the GUI and passed in via params.
     digits.str <- paste("%.", params$digits, "f", sep="")
     effect.size.name <- pretty.metric.name(as.character(params$measure))
-    y <- binary.data@y
+   #y <- binary.data@y
+    # Caculate confidence intervals
+    study.ci.bounds <- calc.ci.bounds(binary.data, params)
     y.disp <- binary.transform.f(params$measure)$display.scale(binary.data@y)
-    lb.disp <- binary.transform.f(params$measure)$display.scale(res$study.lb)
-    ub.disp <- binary.transform.f(params$measure)$display.scale(res$study.ub)
+    lb.disp <- binary.transform.f(params$measure)$display.scale(study.ci.bounds$lb)
+    ub.disp <- binary.transform.f(params$measure)$display.scale(study.ci.bounds$ub)
     y <- sprintf(digits.str, y.disp)
     LL <- sprintf(digits.str, lb.disp)
     UL <- sprintf(digits.str, ub.disp)
@@ -135,6 +137,7 @@ write.bin.study.data.to.file <- function(binary.data, params, res) {
     # create data frame and write to csv
     effect.size.name <- pretty.metric.name(as.character(params$measure))
     y.disp <- binary.transform.f(params$measure)$display.scale(binary.data@y)
+    study.ci.bounds <- calc.ci.bounds(binary.data, params)
     if (params$measure %in% binary.two.arm.metrics) {
         study.data.df <- data.frame("study.names"=paste(binary.data@study.names, " ", binary.data@years, sep=""),
                             "txA.events" = binary.data@g1O1,
@@ -142,16 +145,16 @@ write.bin.study.data.to.file <- function(binary.data, params, res) {
                             "txB.events" = binary.data@g2O1,
                             "txB.subjects" = binary.data@g2O1 + binary.data@g2O2,
                             "Effect.size" = binary.transform.f(params$measure)$display.scale(binary.data@y),
-                            "Lower.bound" = binary.transform.f(params$measure)$display.scale(res$study.lb),
-                            "Upper.bound" = binary.transform.f(params$measure)$display.scale(res$study.ub),
+                            "Lower.bound" = binary.transform.f(params$measure)$display.scale(study.ci.bounds$lb),
+                            "Upper.bound" = binary.transform.f(params$measure)$display.scale(study.ci.bounds$ub),
                             "Weight" = res$study.weights)
     } else if(params$measure %in% binary.one.arm.metrics) {
         study.data.df <- data.frame("study.names"=paste(binary.data@study.names, " ", binary.data@years, sep=""),
                             "txA.events" = binary.data@g1O1,
                             "txA.subjects" = binary.data@g1O1 + binary.data@g1O2,
                             "Effect.size" = binary.transform.f(params$measure)$display.scale(binary.data@y),
-                            "Lower.bound" = binary.transform.f(params$measure)$display.scale(res$study.lb),
-                            "Upper.bound" = binary.transform.f(params$measure)$display.scale(res$study.ub),
+                            "Lower.bound" = binary.transform.f(params$measure)$display.scale(study.ci.bounds$lb),
+                            "Upper.bound" = binary.transform.f(params$measure)$display.scale(study.ci.bounds$ub),
                             "Weight" = res$study.weights)
     }
     # Rename effect size column
@@ -169,59 +172,56 @@ binary.fixed.inv.var <- function(binary.data, params){
     if (length(binary.data@g1O1) == 1 || length(binary.data@y) == 1){
         res <- get.res.for.one.binary.study(binary.data, params)
         # Package res for use by overall method.
-        summary.disp <- list("MAResults" = res) 
-        results <- list("Summary"=summary.disp)
+        results <- list("Summary"=res)
     }
     else{
         # call out to the metafor package
         res<-rma.uni(yi=binary.data@y, sei=binary.data@SE, slab=binary.data@study.names,
                                 level=params$conf.level, digits=params$digits, method="FE", add=params$adjust,
                                 to=params$to)
-        # Create list to display summary of results
-        metric.name <- pretty.metric.name(as.character(params$measure))
-        model.title <- paste("Binary Fixed-Effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="")
-        # Add individual study confidence bounds
-        res <- calc.ci.bounds(binary.data, params, res)
-        # Create results display tables
-        summary.disp <- create.summary.disp(binary.data, params, res, model.title)
-        if ((is.null(params$write.to.file)) || params$write.to.file == TRUE) {
-            # Write results and study data to csv files 
-            # Weights assigned to each study
-            res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
-            results.path <- paste("./r_tmp/binary_fixed_inv_var_results.csv")
-            # @TODO Pass in results.path via params
-            write.results.to.file(binary.data, params, res, outpath=results.path)
-            write.bin.study.data.to.file(binary.data, params, res)
-        }
-        # generate forest plot 
-        if ((is.null(params$create.plot)) || params$create.plot == TRUE) {
-            
-            forest.path <- paste(params$fp_outpath, sep="")
-            plot.data <- create.plot.data.binary(binary.data, params, res)
-            changed.params <- plot.data$changed.params
-            # list of changed params values
-            params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
-            changed.params <- c(changed.params, params.changed.in.forest.plot)
-            params[names(changed.params)] <- changed.params
-            # update params values
-            forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
-            #
-            # Now we package the results in a dictionary (technically, a named 
-            # vector). In particular, there are two fields that must be returned; 
-            # a dictionary of images (mapping titles to image paths) and a list of texts
-            # (mapping titles to pretty-printed text). In this case we have only one 
-            # of each. 
-            #  
-            plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
-            images <- c("Forest Plot"=forest.path)
-            plot.names <- c("forest plot"="forest_plot")
-            results <- list("images"=images, "Summary"=summary.disp,
+        if (is.null(params$create.plot) || (is.null(params$write.to.file))) {
+            if (is.null(params$write.to.file)) {
+                # Write results and study data to csv files 
+                # Weights assigned to each study
+                res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
+                results.path <- paste("./r_tmp/binary_fixed_inv_var_results.csv")
+                # @TODO Pass in results.path via params
+                write.results.to.file(binary.data, params, res, outpath=results.path)
+                write.bin.study.data.to.file(binary.data, params, res)
+            }
+            if (is.null(params$create.plot)) {
+                # Create forest plot and list to display summary of results
+                metric.name <- pretty.metric.name(as.character(params$measure))
+                model.title <- paste("Binary Fixed-Effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="")
+                # Create results display tables
+                summary.disp <- create.summary.disp(binary.data, params, res, model.title)
+                forest.path <- paste(params$fp_outpath, sep="")
+                plot.data <- create.plot.data.binary(binary.data, params, res)
+                changed.params <- plot.data$changed.params
+                # list of changed params values
+                params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
+                changed.params <- c(changed.params, params.changed.in.forest.plot)
+                params[names(changed.params)] <- changed.params
+                # update params values
+                forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
+                #
+                # Now we package the results in a dictionary (technically, a named 
+                # vector). In particular, there are two fields that must be returned; 
+                # a dictionary of images (mapping titles to image paths) and a list of texts
+                # (mapping titles to pretty-printed text). In this case we have only one 
+                # of each. 
+                #  
+                plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+                images <- c("Forest Plot"=forest.path)
+                plot.names <- c("forest plot"="forest_plot")
+                results <- list("images"=images, "Summary"=summary.disp,
                             "plot_names"=plot.names, 
                             "plot_params_paths"=plot.params.paths)
+            }
         }
         else {
-            results <- list("Summary"=summary.disp)
-        }    
+            results <- list("Summary"=res)
+        }
     }
     results
 }
@@ -255,7 +255,7 @@ binary.fixed.inv.var.pretty.names <- function() {
 
 binary.fixed.inv.var.overall <- function(results) {
     # this parses out the overall from the computed result
-    res <- results$Summary$MAResults
+    res <- results$Summary
 }
 
 ############################################
@@ -268,83 +268,64 @@ binary.fixed.mh <- function(binary.data, params){
     if (length(binary.data@g1O1) == 1 || length(binary.data@y) == 1){
         res <- get.res.for.one.binary.study(binary.data, params)
          # Package res for use by overall method.
-        summary.disp <- list("MAResults" = res) 
-        results <- list("Summary"=summary.disp)
+        results <- list("Summary"=res)
     }
     else{
         res<-rma.mh(ai=binary.data@g1O1, bi=binary.data@g1O2, 
                                 ci=binary.data@g2O1, di=binary.data@g2O2, slab=binary.data@study.names,
                                 level=params$conf.level, digits=params$digits, measure=params$measure,
                                 add=c(params$adjust, 0), to=c(as.character(params$to), "none")) 
-        
-        # Add individual study confidence bounds
-        res <- calc.ci.bounds(binary.data, params, res)
-        #                        
-        # Create list to display summary of results
-        #
-        metric.name <- pretty.metric.name(as.character(params$measure))
-        model.title <- paste("Binary Fixed-Effect Model - Mantel Haenszel\n\nMetric: ", metric.name, sep="")
-        # Create results display tables
-        summary.disp <- create.summary.disp(binary.data, params, res, model.title)
-        # Write results and study data to csv files
-        if ((is.null(params$write.to.file)) || params$write.to.file == TRUE) {
-          # Weights assigned to each study
-          A <- binary.data@g1O1
-          B <- binary.data@g1O2
-          C <- binary.data@g2O1
-          D <- binary.data@g2O2
-          weights <- B * C / (A + B + C + D)
-          res$study.weights <- weights / sum(weights)
-          results.path <- paste("./r_tmp/binary_fixed_mh_results.csv")
-          # @TODO Pass in results.path via params
-          write.results.to.file(binary.data, params, res, outpath=results.path)
-          write.bin.study.data.to.file(binary.data, params, res)
-        }
-        #
-        # generate forest plot
-        #
-        if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
-            # Weights assigned to each study
-            A <- binary.data@g1O1
-            B <- binary.data@g1O2
-            C <- binary.data@g2O1
-            D <- binary.data@g2O2
-            weights <- B * C / (A + B + C + D)
-            res$study.weights <- weights / sum(weights)
-            # Write results and study data to csv files
-            results.path <- paste("./r_tmp/binary_fixed_mh_results.csv")
-            # @TODO Pass in results.path via params
-            write.results.to.file(binary.data, params, res, outpath=results.path)
-            write.bin.study.data.to.file(binary.data, params, res)
+        if (is.null(params$create.plot) || (is.null(params$write.to.file))) {
             if (is.null(binary.data@y) || is.null(binary.data@SE)) {
-                binary.data <- compute.bin.point.estimates(binary.data, params)
                 # compute point estimates for plot.data in case they are missing
+                binary.data <- compute.bin.point.estimates(binary.data, params)
             }
-            forest.path <- paste(params$fp_outpath, sep="")
-            plot.data <- create.plot.data.binary(binary.data, params, res)
-            changed.params <- plot.data$changed.params
-            # list of changed params values
-            params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
-            changed.params <- c(changed.params, params.changed.in.forest.plot)
-            params[names(changed.params)] <- changed.params
-            # dump the forest plot params to disk; return path to
-            # this .Rdata for later use
-            forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
-            #
-            # Now we package the results in a dictionary (technically, a named 
-            # vector). In particular, there are two fields that must be returned; 
-            # a dictionary of images (mapping titles to image paths) and a list of texts
-            # (mapping titles to pretty-printed text). In this case we have only one 
-            # of each. 
-            #     
-            plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
-            images <- c("Forest Plot"=forest.path)
-            plot.names <- c("forest plot"="forest_plot")
-            results <- list("images"=images, "Summary"=summary.disp, 
+            if (is.null(params$write.to.file)) {
+                # Write results and study data to csv files
+                # Weights assigned to each study
+                A <- binary.data@g1O1
+                B <- binary.data@g1O2
+                C <- binary.data@g2O1
+                D <- binary.data@g2O2
+                weights <- B * C / (A + B + C + D)
+                res$study.weights <- weights / sum(weights)
+                results.path <- paste("./r_tmp/binary_fixed_mh_results.csv")
+                # @TODO Pass in results.path via params
+                write.results.to.file(binary.data, params, res, outpath=results.path)
+                write.bin.study.data.to.file(binary.data, params, res)
+            }
+            if (is.null(params$create.plot)) {
+                # Create forest plot and list to display summary of results
+                metric.name <- pretty.metric.name(as.character(params$measure))
+                model.title <- paste("Binary Fixed-Effect Model - Mantel Haenszel\n\nMetric: ", metric.name, sep="")
+                # Create results display tables
+                summary.disp <- create.summary.disp(binary.data, params, res, model.title)
+                forest.path <- paste(params$fp_outpath, sep="")
+                plot.data <- create.plot.data.binary(binary.data, params, res)
+                changed.params <- plot.data$changed.params
+                # list of changed params values
+                params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
+                changed.params <- c(changed.params, params.changed.in.forest.plot)
+                params[names(changed.params)] <- changed.params
+                # dump the forest plot params to disk; return path to
+                # this .Rdata for later use
+                forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
+                #
+                # Now we package the results in a dictionary (technically, a named 
+                # vector). In particular, there are two fields that must be returned; 
+                # a dictionary of images (mapping titles to image paths) and a list of texts
+                # (mapping titles to pretty-printed text). In this case we have only one 
+                # of each. 
+                #     
+                plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+                images <- c("Forest Plot"=forest.path)
+                plot.names <- c("forest plot"="forest_plot")
+                results <- list("images"=images, "Summary"=summary.disp, 
                             "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)
+            }
         }
         else {
-            results <- list("Summary"=summary.disp)
+            results <- list("Summary"=res)
         }    
     }
     results
@@ -390,7 +371,7 @@ binary.fixed.mh.is.feasible <- function(binary.data, metric){
 
 binary.fixed.mh.overall <- function(results) {
     # this parses out the overall from the computed result
-    res <- results$Summary$MAResults
+    res <- results$Summary
 }
                                                                                                                          
 ##################################################
@@ -403,72 +384,69 @@ binary.fixed.peto <- function(binary.data, params){
     if (length(binary.data@g1O1) == 1){
         res <- get.res.for.one.binary.study(binary.data, params)
          # Package res for use by overall method.
-        summary.disp <- list("MAResults" = res) 
-        results <- list("Summary"=summary.disp)
+        results <- list("Summary"=res)
     }
     else{  
         res <- rma.peto(ai=binary.data@g1O1, bi=binary.data@g1O2, 
                                 ci=binary.data@g2O1, di=binary.data@g2O2, slab=binary.data@study.names,
                                 level=params$conf.level, digits=params$digits)
-        
         # Corrected values for y and SE
         binary.data@y <- res$yi
         binary.data@SE <- sqrt(res$vi)
-        # Add individual study confidence bounds
-        res <- calc.ci.bounds(binary.data, params, res)
-        #                        
-        # Create list to display summary of results
-        #
-        metric.name <- pretty.metric.name(as.character(params$measure))
-        model.title <- "Binary Fixed-Effect Model - Peto\n\nMetric: Odds Ratio"
-        # Create results display tables
-        summary.disp <- create.summary.disp(binary.data, params, res, model.title)
-        # Write results and study data to csv files
-        if ((is.null(params$write.to.file)) || params$write.to.file == TRUE) {
-            # Weights assigned to each study
-            res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
-            results.path <- paste("./r_tmp/binary_fixed_peto_results.csv")
-            # @TODO Pass in results.path via params
-            write.results.to.file(binary.data, params, res, outpath=results.path)
-            write.bin.study.data.to.file(binary.data, params, res) 
-        }
-        #
-        # generate forest plot 
-        #
-        if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
-            
-            forest.path <- paste(params$fp_outpath, sep="")
-            plot.data <- create.plot.data.binary(binary.data, params, res)
-            changed.params <- plot.data$changed.params
-            # list of changed params values
-            params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
-            changed.params <- c(changed.params, params.changed.in.forest.plot)
-            params[names(changed.params)] <- changed.params
-             # dump the forest plot params to disk; return path to
-            # this .Rdata for later use
-            forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
-            #
-            # Now we package the results in a dictionary (technically, a named 
-            # vector). In particular, there are two fields that must be returned; 
-            # a dictionary of images (mapping titles to image paths) and a list of texts
-            # (mapping titles to pretty-printed text). In this case we have only one 
-            # of each. 
-            #     
-            plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
-
-            images <- c("Forest Plot"=forest.path)
-            plot.names <- c("forest plot"="forest_plot")
-            results <- list("images"=images, "Summary"=summary.disp, 
+        
+        if (is.null(params$create.plot) || (is.null(params$write.to.file))) {
+            if (is.null(binary.data@y) || is.null(binary.data@SE)) {
+                # compute point estimates for plot.data in case they are missing
+                binary.data <- compute.bin.point.estimates(binary.data, params)
+            }
+            if (is.null(params$write.to.file)) {
+                # Write results and study data to csv files  
+                res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
+                results.path <- paste("./r_tmp/binary_fixed_peto_results.csv")
+                # @TODO Pass in results.path via params
+                write.results.to.file(binary.data, params, res, outpath=results.path)
+                write.bin.study.data.to.file(binary.data, params, res)
+            }
+            if (is.null(params$create.plot)) {
+                # Create forest plot and list to display summary of results
+                metric.name <- pretty.metric.name(as.character(params$measure))
+                model.title <- "Binary Fixed-Effect Model - Peto\n\nMetric: Odds Ratio"
+                # Create results display tables
+                summary.disp <- create.summary.disp(binary.data, params, res, model.title)
+                #
+                # generate forest plot 
+                #
+                forest.path <- paste(params$fp_outpath, sep="")
+                plot.data <- create.plot.data.binary(binary.data, params, res)
+                changed.params <- plot.data$changed.params
+                # list of changed params values
+                params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
+                changed.params <- c(changed.params, params.changed.in.forest.plot)
+                params[names(changed.params)] <- changed.params
+                # dump the forest plot params to disk; return path to
+                # this .Rdata for later use
+                forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
+                #
+                # Now we package the results in a dictionary (technically, a named 
+                # vector). In particular, there are two fields that must be returned; 
+                # a dictionary of images (mapping titles to image paths) and a list of texts
+                # (mapping titles to pretty-printed text). In this case we have only one 
+                # of each. 
+                #     
+                plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+                images <- c("Forest Plot"=forest.path)
+                plot.names <- c("forest plot"="forest_plot")
+                results <- list("images"=images, "Summary"=summary.disp, 
                             "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)
+            }
         }
         else {
-            results <- list("Summary"=summary.disp)
+            results <- list("Summary"=res)
         }    
     }
     results
 }
-
-                                
+                              
 binary.fixed.peto.parameters <- function(){
     # parameters
     apply_adjustment_to = c("only0", "all")
@@ -508,7 +486,7 @@ binary.fixed.peto.is.feasible <- function(binary.data, metric){
 
 binary.fixed.peto.overall <- function(results) {
     # this parses out the overall from the computed result
-    res <- results$Summary$MAResults
+    res <- results$Summary
 }
 
 
@@ -523,8 +501,7 @@ binary.random <- function(binary.data, params){
     if (length(binary.data@g1O1) == 1 || length(binary.data@y) == 1){
         res <- get.res.for.one.binary.study(binary.data, params)
          # Package res for use by overall method.
-        summary.disp <- list("MAResults" = res) 
-        results <- list("Summary"=summary.disp)
+        results <- list("Summary"=res)
     }
     else{     
         # call out to the metafor package
@@ -532,57 +509,58 @@ binary.random <- function(binary.data, params){
                      slab=binary.data@study.names,
                      method=params$rm.method, level=params$conf.level,
                      digits=params$digits)
-        # Add individual study confidence bounds
-        res <- calc.ci.bounds(binary.data, params, res)
-        #                        
-        # Create list to display summary of results
-        #
-        metric.name <- pretty.metric.name(as.character(params$measure))
-        model.title <- paste("Binary Random-Effects Model\n\nMetric: ", metric.name, sep="")
-        # Create results display tables
-        summary.disp <- create.summary.disp(binary.data, params, res, model.title)
-        # Write results and study data to csv files
-        if ((is.null(params$write.to.file)) || params$write.to.file == TRUE) {
-            # Weights assigned to each study
-            weights <- 1 / (res$vi + res$tau2)
-            res$study.weights <- weights / sum(weights)
-            # Write results and study data to csv files
-            results.path <- paste("./r_tmp/binary_random_results.csv")
-            # @TODO Pass in results.path via params
-            write.results.to.file(binary.data, params, res, outpath=results.path)
-            write.bin.study.data.to.file(binary.data, params, res)
-        }
-        #
-        # generate forest plot 
-        #
-        if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
-      
-            forest.path <- paste(params$fp_outpath, sep="")
-            plot.data <- create.plot.data.binary(binary.data, params, res)
-            changed.params <- plot.data$changed.params
-            # list of changed params values
-            params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
-            changed.params <- c(changed.params, params.changed.in.forest.plot)
-            params[names(changed.params)] <- changed.params
-            # dump the forest plot params to disk; return path to
-            # this .Rdata for later use
-            forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
-            #
-            # Now we package the results in a dictionary (technically, a named 
-            # vector). In particular, there are two fields that must be returned; 
-            # a dictionary of images (mapping titles to image paths) and a list of texts
-            # (mapping titles to pretty-printed text). In this case we have only one 
-            # of each. 
-            #     
-           
-            plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
-            images <- c("Forest Plot"=forest.path)
-            plot.names <- c("forest plot"="forest_plot")
-            results <- list("images"=images, "Summary"=summary.disp, 
+        if (is.null(params$create.plot) || (is.null(params$write.to.file))) {
+            if (is.null(binary.data@y) || is.null(binary.data@SE)) {
+                # compute point estimates for plot.data in case they are missing
+                binary.data <- compute.bin.point.estimates(binary.data, params)
+            }
+            if (is.null(params$write.to.file)) {
+                # Write results and study data to csv files
+                # Weights assigned to each study
+                weights <- 1 / (res$vi + res$tau2)
+                res$study.weights <- weights / sum(weights)
+                # Write results and study data to csv files
+                results.path <- paste("./r_tmp/binary_random_results.csv")
+                # @TODO Pass in results.path via params
+                write.results.to.file(binary.data, params, res, outpath=results.path)
+                write.bin.study.data.to.file(binary.data, params, res)
+            }
+            if (is.null(params$create.plot)) {
+                # Create forest plot and list to display summary of results
+                #
+                metric.name <- pretty.metric.name(as.character(params$measure))
+                model.title <- paste("Binary Random-Effects Model\n\nMetric: ", metric.name, sep="")
+                # Create results display tables
+                summary.disp <- create.summary.disp(binary.data, params, res, model.title)
+                #
+                # generate forest plot 
+                #
+                forest.path <- paste(params$fp_outpath, sep="")
+                plot.data <- create.plot.data.binary(binary.data, params, res)
+                changed.params <- plot.data$changed.params
+                # list of changed params values
+                params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
+                changed.params <- c(changed.params, params.changed.in.forest.plot)
+                params[names(changed.params)] <- changed.params
+                # dump the forest plot params to disk; return path to
+                # this .Rdata for later use
+                forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
+                #
+                # Now we package the results in a dictionary (technically, a named 
+                # vector). In particular, there are two fields that must be returned; 
+                # a dictionary of images (mapping titles to image paths) and a list of texts
+                # (mapping titles to pretty-printed text). In this case we have only one 
+                # of each. 
+                #     
+                plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+                images <- c("Forest Plot"=forest.path)
+                plot.names <- c("forest plot"="forest_plot")
+                results <- list("images"=images, "Summary"=summary.disp, 
                         "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)
+            }
         }
         else {
-            results <- list("Summary"=summary.disp)
+            results <- list("Summary"=res)
         }  
     }
     results
@@ -618,5 +596,5 @@ binary.random.pretty.names <- function() {
 
 binary.random.overall <- function(results) {
     # this parses out the overall from the computed result
-    res <- results$Summary$MAResults
+    res <- results$Summary
 }

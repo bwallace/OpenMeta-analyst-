@@ -40,19 +40,17 @@ print.summary.data <- function(table.data,...) {
     num.cols <- length(table.data[1,])
     # Compute column widths
     extra.col.spaces <- 2
+    table.line <- "+"
     col.widths <- NULL
     for (col.index in 1:num.cols) {
-      col.widths <- c(col.widths, max(nchar(table.data[,col.index])) + extra.col.spaces)
+        width <- max(nchar(table.data[,col.index])) + extra.col.spaces
+        col.widths <- c(col.widths, max(nchar(table.data[,col.index])) + extra.col.spaces)
+        dash.line <- create.repeat.string("-", width)
+        table.line <- paste(table.line, dash.line, "+", sep="")
     }
     table.width <- sum(col.widths) + num.cols + 1
-    # Create line of dashes of length table.width - 2
-    dash.line <- NULL
-    dash.line <- create.repeat.string("-", table.width - 2)
-    top.line <- paste("+", dash.line, "+", sep="")
-    middle.line <- paste("|", dash.line, "|", sep="")
-
     # Build table
-    cat(top.line)
+    cat(table.line)
     cat("\n")
 
     for (row.index in 1:num.rows) {
@@ -73,13 +71,9 @@ print.summary.data <- function(table.data,...) {
         }
         cat(table.row)
         cat("\n")
-        if (row.index < num.rows) {
-            cat(middle.line)
-            cat("\n")
-        }
+        cat(table.line)
+        cat("\n")
     }
-    cat(top.line)
-    cat("\n")
 }
 
 pad.with.spaces <- function(entry, begin.num, end.num) {
@@ -309,12 +303,7 @@ create.overall.display <- function(res, study.names, params, model.title, data.t
     }  else {  
         transform.name <- "binary.transform.f"
     }
-    scale.str <- "standard"
-    if (metric.is.log.scale(params$measure)){
-        scale.str <- "log" 
-    } else if (metric.is.logit.scale(params$measure)) {
-        scale.str <- "logit"
-    }
+    scale.str <- get.scale(params)
     overall.array <- array(dim=c(length(study.names) + 1, 6))
         #QLabel =  paste("Q(df = ", degf, ")", sep="")
     
@@ -426,16 +415,14 @@ results.short.list <- function(res) {
     res.short <- list("b"=res$b[1], "ci.lb"=res$ci.lb, "ci.ub"=res$ci.ub)
 }
 
-calc.ci.bounds <- function(om.data, params, res) {
+calc.ci.bounds <- function(om.data, params) {
     y <- om.data@y
     se <- om.data@SE
     alpha <- 1.0-(params$conf.level/100.0)
     mult <- abs(qnorm(alpha/2.0))
     lb <- y - mult*om.data@SE
     ub <- y + mult*om.data@SE
-    res$study.lb <- lb
-    res$study.ub <- ub
-    res
+    study.ci.bounds <- list(lb=lb, ub=ub)
 }
 
 write.results.to.file <- function(om.data, params, res, outpath) {

@@ -376,8 +376,6 @@ diagnostic.fixed.inv.var <- function(diagnostic.data, params){
                      slab=diagnostic.data@study.names,
                      method="FE", level=params$conf.level,
                      digits=params$digits)
-        # Add individual study confidence bounds
-        res <- calc.ci.bounds(diagnostic.data, params, res)
         # Create list to display summary of results
         model.title <- paste("Diagnostic Fixed-Effect Model - Inverse Variance (k = ", res$k, ")", sep="")
         summary.disp <- create.summary.disp(diagnostic.data, params, res, model.title)
@@ -388,8 +386,6 @@ diagnostic.fixed.inv.var <- function(diagnostic.data, params){
         }
         # Write results to csv file
         if ((is.null(params$write.to.file)) || params$write.to.file == TRUE) {
-            # Weights assigned to each study
-            res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
             results.path <- paste("./r_tmp/diag_fixed_inv_var_", params$measure, "_results.csv", sep="")
             # @TODO Pass in results.path via params
             write.results.to.file(diagnostic.data, params, res, outpath=results.path) 
@@ -493,8 +489,6 @@ diagnostic.fixed.mh <- function(diagnostic.data, params){
                                 level=params$conf.level, digits=params$digits, measure="RR",
                                 add=c(params$adjust, 0), to=c(as.character(params$to), "none")))
          
-        # Add individual study confidence bounds
-        res <- calc.ci.bounds(diagnostic.data, params, res)
         #                        
         # Create list to display summary of results
         #
@@ -507,13 +501,6 @@ diagnostic.fixed.mh <- function(diagnostic.data, params){
         }
         # Write results to csv file
         if ((is.null(params$write.to.file)) || params$write.to.file == TRUE) {
-            # Weights assigned to each study
-            A <- diagnostic.data@g1O1
-            B <- diagnostic.data@g1O2
-            C <- diagnostic.data@g2O1
-            D <- diagnostic.data@g2O2
-            weights <- B * C / (A + B + C + D)
-            res$study.weights <- weights / sum(weights)
             results.path <- paste("./r_tmp/diag_fixed_mh_", params$measure, "_results.csv", sep="")
             # @TODO Pass in results.path via params
             write.results.to.file(diagnostic.data, params, res, outpath=results.path) 
@@ -609,8 +596,6 @@ diagnostic.random <- function(diagnostic.data, params){
                  slab=diagnostic.data@study.names,
                  method=params$rm.method, level=params$conf.level,
                  digits=params$digits)
-        # Add individual study confidence bounds
-        res <- calc.ci.bounds(diagnostic.data, params, res)
         #                        
         # Create list to display summary of results
         #
@@ -624,9 +609,6 @@ diagnostic.random <- function(diagnostic.data, params){
         }
         # Write results and study data to csv files
         if ((is.null(params$write.to.file)) || params$write.to.file == TRUE) {
-            # Weights assigned to each study
-            weights <- 1 / (res$vi + res$tau2)
-            res$study.weights <- weights / sum(weights)
             results.path <- paste("./r_tmp/diag_random_", params$measure, "_results.csv", sep="")
             # @TODO Pass in results.path via params
             write.results.to.file(diagnostic.data, params, res, outpath=results.path)
