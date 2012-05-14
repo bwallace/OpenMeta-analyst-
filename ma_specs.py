@@ -157,10 +157,6 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
     def run_ma(self):
         ###
         # first, let's fire up a progress bar
-        #bar = self.make_indefinite_progress_bar()
-        #bar.show()
-        #bar.raise_()
-        #bar = progress_bar.MetaProgress(self)
         bar = MetaProgress(self)
         bar.show()
         result = None
@@ -346,7 +342,9 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         if self.data_type == "diagnostic":
             biv_ml_name = "Bivariate (Maximum Likelihood)"
             for biv_method in (biv_ml_name, "HSROC"):
-                if metric != "Sens" and biv_method in method_names or self.meta_f_str is not None:
+                if metric != "Sens" and biv_method in method_names or\
+                         self.meta_f_str is not None or\
+                         not ("sens" in self.diag_metrics and "spec" in self.diag_metrics):
                     method_names.remove(biv_method)
             
 
