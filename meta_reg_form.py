@@ -12,7 +12,13 @@ class MetaRegForm(QDialog, ui_meta_reg.Ui_cov_reg_dialog):
         self.setupUi(self)
         self.covs_and_check_boxes = None
         self._populate_chk_boxes()
+
+        # as usual, diagnostic data is special
+        self.is_diagnostic = self.model.get_current_outcome_type() == "diagnostic"
         
+        if not self.is_diagnostic:
+            self.diagnostic_group_box.hide()
+
         QObject.connect(self.buttonBox, SIGNAL("rejected()"), self.cancel)
         QObject.connect(self.buttonBox, SIGNAL("accepted()"), self.run_meta_reg)
         
@@ -31,10 +37,27 @@ class MetaRegForm(QDialog, ui_meta_reg.Ui_cov_reg_dialog):
             cov_d = self.model.dataset.get_values_for_cov(cov.name)
 
 
-        # note that we create a 'binary' data object (regardless
-        # of the data type) -- any variant of OMData will due here 
-        meta_py_r.ma_dataset_to_simple_binary_robj(self.model, include_raw_data=False,\
+
+        current_effect = self.model.current_effect
+        if self.is_diagnostic:
+            if self.dor_radio.isChecked():
+                current_effect = "DOR"
+            elif self.sensitivity_radio.isChecked():
+                current_effect = "Sens"
+            else:
+                current_effect = "Spec"
+
+        if self.is_diagnostic:
+            meta_py_r.ma_dataset_to_simple_diagnostic_robj(self.model,\
+                                                    metric=current_effect,
+                                                    covs_to_include=selected_covariates)    
+        else:
+            # note that we create a 'binary' data object (regardless
+            # of the data type, i.e., it may be a continuous outcome) -- 
+            # any variant of OMData will due here 
+            meta_py_r.ma_dataset_to_simple_binary_robj(self.model, include_raw_data=False,\
                                                     covs_to_include=selected_covariates)
+
 
         studies = []
         for study in [study.name for study in self.model.get_studies(only_if_included=True)]:
@@ -45,9 +68,10 @@ class MetaRegForm(QDialog, ui_meta_reg.Ui_cov_reg_dialog):
         fixed_effects = False
         if self.fixed_effects_radio.isChecked():
             fixed_effects = True
-      
+    
+
         result = meta_py_r.run_meta_regression(self.model.dataset, studies,\
-                                                 selected_covariates, self.model.current_effect,
+                                                 selected_covariates, current_effect,
                                                  fixed_effects=fixed_effects)
         if isinstance(result, str):
             # then there was an error!

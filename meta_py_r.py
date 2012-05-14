@@ -461,7 +461,8 @@ def _sanitize_for_R(str):
     return str.encode('latin-1', 'ignore')
 
 def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", \
-                                            metric="Sens", covs_to_include=None):
+                                            metric="Sens", covs_to_include=None,
+                                            effects_on_disp_scale=False):
     '''
     This converts a DatasetModel to an OpenMetaData (OMData) R object. We use type DatasetModel
     rather than a DataSet model directly to access the current variables. Furthermore, this allows
@@ -479,9 +480,10 @@ def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", \
     study_years = ", ".join(["as.integer(%s)" % study.year for study in studies])
 
     y_ests, y_SEs = table_model.get_cur_ests_and_SEs(only_if_included=True, effect=metric)
+    
     y_ests_str = ", ".join(_to_strs(y_ests))
     y_SEs_str = ", ".join(_to_strs(y_SEs))
-               
+
     # generate the covariate string
     cov_str = list_of_cov_value_objects_str(table_model.dataset,\
                                             study_ids, \
