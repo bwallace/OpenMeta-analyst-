@@ -861,7 +861,8 @@ multiple.loo.diagnostic <- function(fnames, params.list, diagnostic.data) {
         for (count in 1:length(params.list)) {
             # create ma summaries and single (not side-by-side) forest plots.
             #pretty.names <- eval(call(paste(fnames[count],".pretty.names",sep="")))
-            results.tmp <- loo.ma.diagnostic(fnames[[count]], diagnostic.data, params.list[[count]])
+            diagnostic.data.tmp <- compute.diag.point.estimates(diagnostic.data, params.list[[count]])
+            results.tmp <- loo.ma.diagnostic(fnames[[count]], diagnostic.data.tmp, params.list[[count]])
             #if (is.null(params.list[[count]]$create.plot)) {
             # create plot
             images.tmp <- results.tmp$images
@@ -1148,16 +1149,17 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
         for (count in 1:length(params.list)) {
             # create ma summaries and single (not side-by-side) forest plots.
             #pretty.names <- eval(call(paste(fnames[count],".pretty.names",sep="")))
-            results.tmp <- subgroup.ma.diagnostic(fnames[[count]], diagnostic.data, params.list[[count]], selected.cov)
+            diagnostic.data.tmp <- compute.diag.point.estimates(diagnostic.data, params.list[[count]])
+            results.tmp <- subgroup.ma.diagnostic(fnames[[count]], diagnostic.data.tmp, params.list[[count]], selected.cov)
             if (is.null(params.list[[count]]$create.plot)) {
-               # create plot
-              images.tmp <- results.tmp$images
-              names(images.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
-              images <- c(images, images.tmp)
-              plot.params.paths.tmp <- results.tmp$plot_params_paths
-              names(plot.params.paths.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$", params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
-              plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
-              plot.names <- c(plot.names, results.tmp$plot_names)
+                # create plot
+                images.tmp <- results.tmp$images
+                names(images.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
+                images <- c(images, images.tmp)
+                plot.params.paths.tmp <- results.tmp$plot_params_paths
+                names(plot.params.paths.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$", params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
+                plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
+                plot.names <- c(plot.names, results.tmp$plot_names)
             }
             summary.tmp <- list("Summary"=results.tmp$Summary)
             names(summary.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Summary", sep="")

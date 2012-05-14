@@ -327,7 +327,8 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         for (count in 1:length(params.list)) {
             # create ma summaries and single (not side-by-side) forest plots.
             #pretty.names <- eval(call(paste(fnames[count],".pretty.names",sep="")))
-            results.tmp <- eval(call(fnames[count], diagnostic.data, params.list[[count]]))
+            diagnostic.data.tmp <- compute.diag.point.estimates(diagnostic.data, params.list[[count]])
+            results.tmp <- eval(call(fnames[count], diagnostic.data.tmp, params.list[[count]]))
             images.tmp <- results.tmp$images
             names(images.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
             images <- c(images, images.tmp)
