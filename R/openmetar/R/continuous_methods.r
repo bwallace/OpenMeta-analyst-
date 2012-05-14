@@ -67,9 +67,11 @@ create.cont.data.array <- function(cont.data, params, res){
   # TODO: these should be taken from the corresponding column labels in the GUI and passed in via params.
   digits.str <- paste("%.", params$digits, "f", sep="")
   effect.size.name <- pretty.metric.name(as.character(params$measure))
+  # Caculate confidence intervals
+  study.ci.bounds <- calc.ci.bounds(cont.data, params)
   y.disp <- continuous.transform.f(params$measure)$display.scale(cont.data@y)
-  lb.disp <- continuous.transform.f(params$measure)$display.scale(res$study.lb)
-  ub.disp <- continuous.transform.f(params$measure)$display.scale(res$study.ub)
+  lb.disp <- continuous.transform.f(params$measure)$display.scale(study.ci.bounds$lb)
+  ub.disp <- continuous.transform.f(params$measure)$display.scale(study.ci.bounds$ub)
   y <- sprintf(digits.str, y.disp)
   LL <- sprintf(digits.str, lb.disp)
   UL <- sprintf(digits.str, ub.disp)
@@ -108,9 +110,11 @@ create.cont.data.array <- function(cont.data, params, res){
 write.cont.study.data.to.file <- function(cont.data, params, res) {
   # create data frame and write to csv
   effect.size.name <- pretty.metric.name(as.character(params$measure))
+  # Caculate confidence intervals
+  study.ci.bounds <- calc.ci.bounds(cont.data, params)
   y.disp <- continuous.transform.f(params$measure)$display.scale(cont.data@y)
   if (params$measure %in% continuous.two.arm.metrics) {
-    study.data.df <- data.frame("study.names"=paste(cont.data@study.names, " ", cont.data@years, sep=""),
+      study.data.df <- data.frame("study.names"=paste(cont.data@study.names, " ", cont.data@years, sep=""),
                                 "N1" = cont.data@N1,
                                 "mean1" = cont.data@mean1,
                                 "sd1" = cont.data@sd1,
@@ -118,8 +122,8 @@ write.cont.study.data.to.file <- function(cont.data, params, res) {
                                 "mean2" = cont.data@mean2,
                                 "sd2" = cont.data@sd1,
                                 "Effect.size" = continuous.transform.f(params$measure)$display.scale(cont.data@y),
-                                "Lower.bound" = continuous.transform.f(params$measure)$display.scale(res$study.lb),
-                                "Upper.bound" = continuous.transform.f(params$measure)$display.scale(res$study.ub),
+                                "Lower.bound" = continuous.transform.f(params$measure)$display.scale(study.ci.bounds$lb),
+                                "Upper.bound" = continuous.transform.f(params$measure)$display.scale(study.ci.bounds$ub),
                                 "Weight" = res$study.weights)
   } else if(params$measure %in% continuous.one.arm.metrics) {
     study.data.df <- data.frame("study.names"=paste(cont.data@study.names, " ", cont.data@years, sep=""),
@@ -127,8 +131,8 @@ write.cont.study.data.to.file <- function(cont.data, params, res) {
                                 "mean1" = cont.data@mean1,
                                 "sd1" = cont.data@sd1,
                                 "Effect.size" = continuous.transform.f(params$measure)$display.scale(cont.data@y),
-                                "Lower.bound" = continuous.transform.f(params$measure)$display.scale(res$study.lb),
-                                "Upper.bound" = continuous.transform.f(params$measure)$display.scale(res$study.ub),
+                                "Lower.bound" = continuous.transform.f(params$measure)$display.scale(study.ci.bounds$lb),
+                                "Upper.bound" = continuous.transform.f(params$measure)$display.scale(study.ci.bounds$ub),
                                 "Weight" = res$study.weights)
   }
   # Rename effect size column
@@ -148,59 +152,59 @@ continuous.fixed <- function(cont.data, params){
         # handle the case where only one study was passed in
         res <- get.res.for.one.cont.study(cont.data, params)   
          # Package res for use by overall method.
-        summary.disp <- list("MAResults" = res) 
-        results <- list("Summary"=summary.disp)
+        results <- list("Summary"=res)
     }
-    else{
+    else {
         res<-rma.uni(yi=cont.data@y, sei=cont.data@SE, 
                      slab=cont.data@study.names,
                      method="FE", level=params$conf.level,
                      digits=params$digits)
-        # Add individual study confidence bounds
-        res <- calc.ci.bounds(cont.data, params, res)
-        metric.name <- pretty.metric.name(as.character(params$measure))
-        model.title <- paste("Continuous Fixed-Effect Model\n\nMetric: ", metric.name, sep="")
-        summary.disp <- create.summary.disp(cont.data, params, res, model.title)
-    } 
-    # Write results and study data to csv files
-    if ((is.null(params$write.to.file)) || params$write.to.file == TRUE) {
-         # Weights assigned to each study
-        res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
-        results.path <- paste("./r_tmp/cont_fixed_results.csv")
-        # @TODO Pass in results.path via params
-        write.results.to.file(cont.data, params, res, outpath=results.path)
-        write.bin.study.data.to.file(cont.data, params, res) 
-    }
-    #
-    # generate forest plot 
-    #
-    if ((is.null(params$create.plot)) || (params$create.plot == TRUE)) {
-        forest.path <- paste(params$fp_outpath, sep="")
-        plot.data <- create.plot.data.continuous(cont.data, params, res)
-        changed.params <- plot.data$changed.params
-        # list of changed params values
-        params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
-        changed.params <- c(changed.params, params.changed.in.forest.plot)
-        params[names(changed.params)] <- changed.params
-        # dump the forest plot params to disk; return path to
-        # this .Rdata for later use
-        forest.plot.params.path <- save.data(cont.data, res, params, plot.data)
-        #
-        # Now we package the results in a dictionary (technically, a named 
-        # vector). In particular, there are two fields that must be returned; 
-        # a dictionary of images (mapping titles to image paths) and a list of texts
-        # (mapping titles to pretty-printed text). In this case we have only one 
-        # of each. 
-        #     
-        plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
-        images <- c("Forest Plot"=forest.path)
-        plot.names <- c("forest plot"="forest_plot")
-        results <- list("images"=images, "Summary"=summary.disp, 
+        if (is.null(params$create.plot) || (is.null(params$write.to.file))) {
+            if (is.null(params$write.to.file)) {
+                # Write results and study data to csv files
+                # Weights assigned to each study
+                res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
+                results.path <- paste("./r_tmp/cont_fixed_results.csv")
+                # @TODO Pass in results.path via params
+                write.results.to.file(cont.data, params, res, outpath=results.path)
+                write.cont.study.data.to.file(cont.data, params, res)
+            }
+            if (is.null(params$create.plot)) {
+                # Create forest plot and list to display summary of results
+                metric.name <- pretty.metric.name(as.character(params$measure))
+                model.title <- paste("Continuous Fixed-Effect Model\n\nMetric: ", metric.name, sep="")
+                summary.disp <- create.summary.disp(cont.data, params, res, model.title)
+                #
+                # generate forest plot 
+                #
+                forest.path <- paste(params$fp_outpath, sep="")
+                plot.data <- create.plot.data.continuous(cont.data, params, res)
+                changed.params <- plot.data$changed.params
+                # list of changed params values
+                params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
+                changed.params <- c(changed.params, params.changed.in.forest.plot)
+                params[names(changed.params)] <- changed.params
+                # dump the forest plot params to disk; return path to
+                # this .Rdata for later use
+                forest.plot.params.path <- save.data(cont.data, res, params, plot.data)
+                #
+                # Now we package the results in a dictionary (technically, a named 
+                # vector). In particular, there are two fields that must be returned; 
+                # a dictionary of images (mapping titles to image paths) and a list of texts
+                # (mapping titles to pretty-printed text). In this case we have only one 
+                # of each. 
+                #     
+                plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+                images <- c("Forest Plot"=forest.path)
+                plot.names <- c("forest plot"="forest_plot")
+                results <- list("images"=images, "Summary"=summary.disp, 
                         "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)
+            }
+        }
+        else {
+            results <- list("Summary"=res)
+        } 
     }
-    else {
-        results <- list("Summary"=summary.disp)
-    } 
     results
 }
 
@@ -229,7 +233,7 @@ continuous.fixed.pretty.names <- function() {
 
 continuous.fixed.overall <- function(results){
     # this parses out the overall from the computed result
-    res <- results$Summary$MAResults
+    res <- results$Summary
 }
 
 ###############################
@@ -244,60 +248,60 @@ continuous.random <- function(cont.data, params){
         # handle the case where only one study was passed in
         res <- get.res.for.one.cont.study(cont.data, params)   
          # Package res for use by overall method.
-        summary.disp <- list("MAResults" = res) 
-        results <- list("Summary"=summary.disp)
+        results <- list("Summary"=res)
     }
     else{
         res<-rma.uni(yi=cont.data@y, sei=cont.data@SE, 
                      slab=cont.data@study.names,
                      method=params$rm.method, level=params$conf.level,
                      digits=params$digits)
-        # Add individual study confidence bounds
-        res <- calc.ci.bounds(cont.data, params, res)
-        metric.name <- pretty.metric.name(as.character(params$measure))
-        model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", metric.name, sep="")
-        summary.disp <- create.summary.disp(cont.data, params, res, model.title)
-    }  
-    # Write results and study data to csv files
-    if ((is.null(params$write.to.file)) || params$write.to.file == TRUE) {
-        # Weights assigned to each study
-        weights <- 1 / (res$vi + res$tau2)
-        res$study.weights <- weights / sum(weights)
-        results.path <- paste("./r_tmp/cont_random_results.csv")
-        # @TODO Pass in results.path via params
-        write.results.to.file(cont.data, params, res, outpath=results.path)
-        write.bin.study.data.to.file(cont.data, params, res) 
-    }
-    #
-    # generate forest plot 
-    #
-    if ((is.null(params$create.plot)) || params$create.plot) {
-        forest.path <- paste(params$fp_outpath, sep="")
-        plot.data <- create.plot.data.continuous(cont.data, params, res)
-        changed.params <- plot.data$changed.params
-        # list of changed params values
-        params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
-        changed.params <- c(changed.params, params.changed.in.forest.plot)
-        params[names(changed.params)] <- changed.params
-        # dump the forest plot params to disk; return path to
-        # this .Rdata for later use
-        forest.plot.params.path <- save.data(cont.data, res, params, plot.data)
-        #
-        # Now we package the results in a dictionary (technically, a named 
-        # vector). In particular, there are two fields that must be returned; 
-        # a dictionary of images (mapping titles to image paths) and a list of texts
-        # (mapping titles to pretty-printed text). In this case we have only one 
-        # of each. 
-        #     
-        plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
-        images <- c("Forest Plot"=forest.path)
-        plot.names <- c("forest plot"="forest_plot")
-        results <- list("images"=images, "Summary"=summary.disp, 
+        if (is.null(params$create.plot) || (is.null(params$write.to.file))) {
+          if (is.null(params$write.to.file)) {
+              # Write results and study data to csv files
+              # Weights assigned to each study
+              weights <- 1 / (res$vi + res$tau2)
+              res$study.weights <- weights / sum(weights)
+              results.path <- paste("./r_tmp/cont_random_results.csv")
+              # @TODO Pass in results.path via params
+              write.results.to.file(cont.data, params, res, outpath=results.path)
+              write.bin.study.data.to.file(cont.data, params, res)
+          }
+          if (is.null(params$create.plot)) {
+              # Create forest plot and list to display summary of results
+              metric.name <- pretty.metric.name(as.character(params$measure))
+              model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", metric.name, sep="")
+              summary.disp <- create.summary.disp(cont.data, params, res, model.title)
+              #
+              # generate forest plot 
+              #
+              forest.path <- paste(params$fp_outpath, sep="")
+              plot.data <- create.plot.data.continuous(cont.data, params, res)
+              changed.params <- plot.data$changed.params
+              # list of changed params values
+              params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
+              changed.params <- c(changed.params, params.changed.in.forest.plot)
+              params[names(changed.params)] <- changed.params
+              # dump the forest plot params to disk; return path to
+              # this .Rdata for later use
+              forest.plot.params.path <- save.data(cont.data, res, params, plot.data)
+              #
+              # Now we package the results in a dictionary (technically, a named 
+              # vector). In particular, there are two fields that must be returned; 
+              # a dictionary of images (mapping titles to image paths) and a list of texts
+              # (mapping titles to pretty-printed text). In this case we have only one 
+              # of each. 
+              #     
+              plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+              images <- c("Forest Plot"=forest.path)
+              plot.names <- c("forest plot"="forest_plot")
+              results <- list("images"=images, "Summary"=summary.disp, 
                         "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)
+          }
+       }
+       else {
+           results <- list("Summary"=res)
+        }
     }
-    else {
-        results <- list("Summary"=summary.disp)
-    } 
     results
 }
 
@@ -329,5 +333,5 @@ continuous.random.pretty.names <- function() {
 
 continuous.random.overall <- function(results){
     # this parses out the overall from the computed result
-    res <- results$Summary$MAResults
+    res <- results$Summary
 }

@@ -65,6 +65,7 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
       }
       QEp <- round.display(res$QEp, params$digits)
     } else {
+      PLabel <- ""
       QEp <- "NA"
     } 
     
@@ -81,8 +82,9 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     lb.overall <- res$ci.lb[1]
     ub.overall <- res$ci.ub[1]
     y <- om.data@y
-    lb <- res$study.lb
-    ub <- res$study.ub
+    study.ci.bounds <- calc.ci.bounds(om.data, params)
+    lb <- study.ci.bounds$lb
+    ub <- study.ci.bounds$ub
     
     y <- c(y, y.overall)
     lb <- c(lb, lb.overall)
@@ -96,7 +98,7 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     # these values will be displayed on the plot
     plot.data$effects.disp <- effects.disp
     
-    if (metric.is.logit.scale(params$measure) || metric.is.arcsine.scale(params$measure)) {
+    if (!metric.is.log.scale(params$measure)) {
         # if metric not log scale, pass data in display scale - no scaling on x-axis
         y <- y.disp
         lb <- lb.disp
@@ -195,22 +197,10 @@ create.plot.data.continuous <- function(cont.data, params, res, selected.cov = N
 }
 
 create.plot.data.overall <- function(om.data, params, res){
-    scale.str <- "standard"
-    if (metric.is.log.scale(params$measure)){
-        scale.str <- "log" 
-    } else if (metric.is.logit.scale(params$measure)) {
-        scale.str <- "logit"
-    }
-    ## TO DO - don't really nead three transforms - the transform only depends on the measure.
-
-    if ("ContinuousData" %in% class(om.data)) {
-        transform.name <-"continuous.transform.f"
-    } else if ("DiagnosticData" %in% class(om.data)) {
-        transform.name <- "diagnostic.transform.f"
-    }  else if ("BinaryData" %in% class(om.data)) {
-        transform.name <- "binary.transform.f"
-    }
+    scale.str <- get.scale(params)
     
+    ## TO DO - don't really nead three transforms - the transform only depends on the measure.
+    transform.name <- get.transform.name(om.data)
     plot.options <- set.plot.options(params)
     plot.options$show.col3 <- FALSE
     plot.options$show.col4 <- FALSE
@@ -257,8 +247,8 @@ create.plot.data.overall <- function(om.data, params, res){
     effects.disp <- list(y.disp=y.disp, lb.disp=lb.disp, ub.disp=ub.disp)
     plot.data$effects.disp <- effects.disp
     
-    if (metric.is.logit.scale(params$measure)) {
-        # in logit scale, pass data in display scale - no scaling on x-axis
+    if (!metric.is.log.scale(params$measure)) {
+        # if metric not log scale, pass data in display scale - no scaling on x-axis
         y <- y.disp
         lb <- lb.disp
         ub <- ub.disp
@@ -285,7 +275,7 @@ create.plot.data.overall <- function(om.data, params, res){
 }
 
 create.plot.data.cum <- function(om.data, params, res) {
-    # Wrapper for creating leave-one-out plot.data
+    # Wrapper for creating cumulative plot.data
     params$show_col1 <- 'FALSE'
     # don't show study names for right-hand plot
     plot.data <- create.plot.data.overall(om.data, params, res)
@@ -323,8 +313,6 @@ create.plot.data.cum <- function(om.data, params, res) {
     study.names <- c(study.names, "")
     # extra blank name to align rows with standard plot
     plot.data$label <- c(as.character(params$fp_col1_str), study.names)  
-   
-    
     plot.data
 }
 
@@ -346,12 +334,8 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, 
     grouped.data <- subgroup.data$grouped.data
     res <- subgroup.data$results
     subgroup.list <- subgroup.data$subgroup.list
-    scale.str <- "standard"
-    if (metric.is.log.scale(params$measure)){
-        scale.str <- "log" 
-    } else if (metric.is.logit.scale(params$measure)) {
-        scale.str <- "logit"
-    }
+    scale.str <- get.scale(params)
+    
     ## TO DO - don't really nead three transforms - the transform only depends on the measure.
     if (data.type == "continuous") {
       transform.name <- "continuous.transform.f"
@@ -456,8 +440,8 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, 
     effects.disp <- list(y.disp=y.disp, lb.disp=lb.disp, ub.disp=ub.disp)
     plot.data$effects.disp <- effects.disp
     
-    if (metric.is.logit.scale(params$measure)) {
-        # in logit scale, pass data in display scale - no scaling on x-axis
+    if (!metric.is.log.scale(params$measure)) {
+        # if metric not log scale, pass data in display scale - no scaling on x-axis
         y <- y.disp
         lb <- lb.disp
         ub <- ub.disp
@@ -546,13 +530,7 @@ create.subgroup.plot.data.cont <- function(subgroup.data, params) {
 
 # create regression plot data
 create.plot.data.reg <- function(reg.data, params, fitted.line) {
-     if (metric.is.log.scale(params$measure)){
-        scale.str <- "log" 
-     } else if (metric.is.logit.scale(params$measure)) {
-        scale.str <- "logit"
-     } else {
-        scale.str <- "standard"
-     }
+     scale.str <- get.scale(params)
      cov.name <- reg.data@covariates[[1]]@cov.name
      cov.vals <- reg.data@covariates[[1]]@cov.vals
      plot.data <- list("fitted.line" = fitted.line,
