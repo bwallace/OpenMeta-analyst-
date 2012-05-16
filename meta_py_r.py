@@ -480,7 +480,7 @@ def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", \
     study_years = ", ".join(["as.integer(%s)" % study.year for study in studies])
 
     y_ests, y_SEs = table_model.get_cur_ests_and_SEs(only_if_included=True, effect=metric)
-    
+
     y_ests_str = ", ".join(_to_strs(y_ests))
     y_SEs_str = ", ".join(_to_strs(y_SEs))
 
@@ -489,6 +489,8 @@ def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", \
                                             study_ids, \
                                             cov_list=covs_to_include)
     
+    #pyqtRemoveInputHook()
+    #pdb.set_trace()
 
     # first try and construct an object with raw data
     if table_model.included_studies_have_raw_data():
