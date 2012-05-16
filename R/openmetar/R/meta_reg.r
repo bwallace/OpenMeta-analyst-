@@ -33,6 +33,10 @@ meta.regression <- function(reg.data, params) {
             # @TODO x and y labels ought to be passed in, probably
             plot.data$xlabel <- reg.data@covariates[[1]]@cov.name
             scale.str <- get.scale(params)
+            if ((scale.str=="standard") || (scale.str=="arcsine")) {
+                scale.str <- ""
+                # This is for the y-axis label on regression plot - don't "standard" or "arcsine" to label.
+            }
             plot.data$ylabel <- paste(scale.str, " ", pretty.metric.name(as.character(params$measure)), sep="")
             meta.regression.plot(plot.data, plot.path)
             
