@@ -1526,8 +1526,8 @@ sroc.plot <- function(plot.data, outpath){
     lines(s.vals.trans, reg.line.vals.trans, col = lcol, lwd = lweight, lty = lpatern)
     upper.ci.vals.trans <- invlogit((s.vals + upper.ci.vals))
     lower.ci.vals.trans <- invlogit((s.vals + lower.ci.vals))
-    lines(s.vals.trans, upper.ci.vals.trans, col = "black", lty=2)
-    lines(s.vals.trans, lower.ci.vals.trans, lty=2)
+    #lines(s.vals.trans, upper.ci.vals.trans, col = "black", lty=2)
+    #lines(s.vals.trans, lower.ci.vals.trans, lty=2)
     graphics.off()
 }
 

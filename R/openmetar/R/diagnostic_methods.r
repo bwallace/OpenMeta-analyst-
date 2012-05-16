@@ -267,9 +267,11 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
             # we use the system time as our unique-enough string to store
             # the params object
             sroc.plot.params.path <- save.plot.data(sroc.plot.data)
-            plot.params.paths.tmp <- c("SROC Plot"=sroc.plot.params.path)
-            images <- c(images, c("SROC"=sroc.path))
+            plot.params.paths.tmp <- c("SROC"=sroc.plot.params.path)
             plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
+            images.tmp <- c("SROC"=forest.path)
+            images <- c(images, c("SROC"=sroc.path))
+            image.order <- c(image.order, "SROC")
             plot.names <- c(plot.names, c("sroc"="sroc"))
             remove.indices <- c(sens.index, spec.index)
         }
@@ -904,12 +906,17 @@ create.sroc.plot.data <- function(diagnostic.data, params){
     inv.var <- data.adj$TP + data.adj$FN + data.adj$FP + data.adj$TN
     res <- lm(D~S)
     fitted.line <- list(intercept=res$coefficients[1], slope=res$coefficients[2])
+    std.err <- summary(res)$sigma
+    # residual standard error
+    alpha <- 1.0-(params$conf.level/100.0)
+    mult <- abs(qnorm(alpha/2.0))
+    # multiplier for std.err to get conf. int. bounds
     plot.options <- list()
     plot.options$roc.xlabel <- params$roc_xlabel
     plot.options$roc.ylabel <- params$roc_ylabel
     plot.options$roc.title <- params$roc_title
     # for future use as options from GUI
-    plot.data <- list("fitted.line" = fitted.line, "TPR"=TPR, "FPR"=FPR, "inv.var" = inv.var, "s.range" = s.range, "plot.options"=plot.options)
+    plot.data <- list("fitted.line" = fitted.line, "TPR"=TPR, "FPR"=FPR, "std.err"=std.err, "mult"=mult, "inv.var" = inv.var, "s.range" = s.range, "plot.options"=plot.options)
 }
 
 ###################################################
