@@ -32,9 +32,8 @@ meta.regression <- function(reg.data, params) {
 
             # @TODO x and y labels ought to be passed in, probably
             plot.data$xlabel <- reg.data@covariates[[1]]@cov.name
-            ylabel <- as.character(params$measure)
-            plot.data$ylabel <- pretty.metric.name(ylabel)
-            
+            scale.str <- get.scale(params)
+            plot.data$ylabel <- paste(scale.str, " ", pretty.metric.name(as.character(params$measure)), sep="")
             meta.regression.plot(plot.data, plot.path)
             
             # write the plot data to disk so we can save it
