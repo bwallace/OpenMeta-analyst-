@@ -730,7 +730,7 @@ pretty.metric.name <- function(metric) {
     PLN = "Log Proportion",  
     PLO = "Logit Proportion",
     PAS = "Arcsine of Square Root Proportion",
-    PET  = "Freeman-Tukey Double Arcsine Proportion",                
+    PFT  = "Freeman-Tukey Double Arcsine Proportion",                
     PETO = "Peto",
     YUQ = "Yule's Q",
     YUY = "Yules Y",
@@ -1514,11 +1514,20 @@ sroc.plot <- function(plot.data, outpath){
     
     # create regression line values
     s.vals <- seq(from = s.range$min, to = s.range$max, by=.001)
-    d.vals <- fitted.line$intercept + fitted.line$slope * s.vals
+    reg.line.vals <- fitted.line$intercept + fitted.line$slope * s.vals
+    std.err <- plot.data$std.err
+    mult <- plot.data$mult
+    upper.ci.vals <- reg.line.vals + mult * std.err
+    lower.ci.vals <- reg.line.vals - mult * std.err
     # transform regression line coords to TPR by 1 - FPR coords
-    tpr.vals <- invlogit((s.vals + d.vals) / 2)
-    fpr.vals <- invlogit((s.vals - d.vals) / 2)
-    lines(fpr.vals, tpr.vals, col = lcol, lwd = lweight, lty = lpatern)
+    reg.line.vals.trans <- invlogit((s.vals + reg.line.vals) / 2)
+    s.vals.trans <- invlogit((s.vals - reg.line.vals) / 2)
+    
+    lines(s.vals.trans, reg.line.vals.trans, col = lcol, lwd = lweight, lty = lpatern)
+    upper.ci.vals.trans <- invlogit((s.vals + upper.ci.vals))
+    lower.ci.vals.trans <- invlogit((s.vals + lower.ci.vals))
+    lines(s.vals.trans, upper.ci.vals.trans, col = "black", lty=2)
+    lines(s.vals.trans, lower.ci.vals.trans, lty=2)
     graphics.off()
 }
 
