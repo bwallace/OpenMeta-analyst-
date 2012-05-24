@@ -165,11 +165,9 @@ loo.ma.binary <- function(fname, binary.data, params){
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
         loo.results[[i]] <- cur.overall
     }
-    study.names <- c()
-    for (count in 1:length(binary.data@study.names)) {
-        study.names <- c(study.names, paste("- ",binary.data@study.names[count], sep=""))
-    }
-    
+    loo.results <- c(list(res.overall), loo.results)
+    # Add overall results
+    study.names <- c("Overall", paste("- ",binary.data@study.names, sep=""))
     metric.name <- pretty.metric.name(as.character(params$measure))
     model.title <- ""
     if (fname == "binary.fixed.inv.var") {
@@ -185,14 +183,13 @@ loo.ma.binary <- function(fname, binary.data, params){
     loo.disp <- create.overall.display(res=loo.results, study.names, params, model.title, data.type="binary")
     forest.path <- paste(params$fp_outpath, sep="")
     plot.data <- create.plot.data.loo(binary.data, params, res=loo.results)
-    plot.data$summary.est <- res.overall$b[1]
     changed.params <- plot.data$changed.params
     # list of changed params values
     params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
     changed.params <- c(changed.params, params.changed.in.forest.plot)
     params[names(changed.params)] <- changed.params
     # update params values
-     # we use the system time as our unique-enough string to store
+    # we use the system time as our unique-enough string to store
     # the params object
     forest.plot.params.path <- save.data(binary.data, res=loo.results, params, plot.data)
     #
@@ -335,16 +332,14 @@ loo.ma.continuous <- function(fname, cont.data, params){
     for (i in 1:N){
         # get a list of indices, i.e., the subset
         # that is 1:N with i left out
-        index.ls <- 1:N
-        if (i == 1){
-            index.ls <- index.ls[2:N]
-        }
-        else if (i==N){
-            index.ls <- index.ls[1:N-1]
-        }
-        else{
-            index.ls <- c(index.ls[1:i-1], index.ls[(i+1):N])  
-        }
+        index.ls <- setdiff(1:N, i)
+        
+        # build a ContinuousData object with the 
+        # ith study removed.  
+        y.tmp <- cont.data@y[index.ls]
+        SE.tmp <- cont.data@SE[index.ls]
+        names.tmp <- cont.data@study.names[index.ls]
+        bin.data.tmp <- NULL
         
         # build a BinaryData object with the 
         # ith study removed.  
@@ -382,12 +377,9 @@ loo.ma.continuous <- function(fname, cont.data, params){
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
         loo.results[[i]] <- cur.overall
     }
-    study.names <- c()
-    study.names <- c(study.names, paste("  ",cont.data@study.names[1], sep=""))
-    for (count in 2:length(cont.data@study.names)) {
-        study.names <- c(study.names, paste("- ",cont.data@study.names[count], sep=""))
-    }
-    cont.data@study.names <- study.names
+    loo.results <- c(list(res.overall), loo.results)
+    # Add overall results
+    study.names <- c("Overall", paste("- ", cont.data@study.names, sep=""))
     params$data.type <- "continuous"
     metric.name <- pretty.metric.name(as.character(params$measure))
     model.title <- ""
@@ -778,7 +770,7 @@ multiple.loo.diagnostic <- function(fnames, params.list, diagnostic.data) {
         results.sens <- loo.ma.diagnostic(fname, diagnostic.data.sens, params.sens)
         results.spec <- loo.ma.diagnostic(fname, diagnostic.data.spec, params.spec)
 
-        diagnostic.data.all <- list("left"=diagnostic.data.sens, "right"=diagnostic.data.spec)
+        diagnostic.data.sens.spec <- list("left"=diagnostic.data.sens, "right"=diagnostic.data.spec)
         
         summary.sens <- list("Summary"=results.sens$Summary)
         names(summary.sens) <- paste(eval(parse(text=paste("pretty.names$measure$", params.sens$measure,sep=""))), " Summary", sep="")
@@ -786,16 +778,13 @@ multiple.loo.diagnostic <- function(fnames, params.list, diagnostic.data) {
         names(summary.spec) <- paste(eval(parse(text=paste("pretty.names$measure$", params.spec$measure,sep=""))), " Summary", sep="")
         results <- c(results, summary.sens, summary.spec)
         
-        res.sens <- results.sens$res
-        res.spec <- results.spec$res
-        res <- list("left"=res.sens, "right"=res.spec)
-        
-        plot.data <- create.loo.side.by.side.plot.data(diagnostic.data.all, res=res, params.tmp)
+        res.sens.spec <- list("left"=results.sens$res, "right"=results.spec$res)
+        plot.data <- create.loo.side.by.side.plot.data(diagnostic.data.sens.spec, params.tmp, res=res.sens.spec)
         
         forest.path <- paste(params.sens$fp_outpath, sep="")
         two.forest.plots(plot.data, outpath=forest.path)
            
-        forest.plot.params.path <- save.data(om.data=diagnostic.data.all, res, params=params.tmp, plot.data)
+        forest.plot.params.path <- save.data(om.data=diagnostic.data.sens.spec, res.sens.spec, params=params.tmp, plot.data)
         plot.params.paths.tmp <- c("Sensitivity and Specificity Forest Plot"=forest.plot.params.path)
         plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
                
@@ -823,7 +812,7 @@ multiple.loo.diagnostic <- function(fnames, params.list, diagnostic.data) {
         diagnostic.data.plr <- compute.diag.point.estimates(diagnostic.data, params.plr)
         results.nlr <- loo.ma.diagnostic(fname, diagnostic.data.nlr, params.nlr)
         results.plr <- loo.ma.diagnostic(fname, diagnostic.data.plr, params.plr)
-        diagnostic.data.all <- list("left"=diagnostic.data.nlr, "right"=diagnostic.data.plr)
+        diagnostic.data.nlr.plr <- list("left"=diagnostic.data.nlr, "right"=diagnostic.data.plr)
         
         summary.nlr <- list("Summary"=results.nlr$Summary)
         names(summary.nlr) <- paste(eval(parse(text=paste("pretty.names$measure$", params.nlr$measure,sep=""))), " Summary", sep="")
@@ -831,16 +820,14 @@ multiple.loo.diagnostic <- function(fnames, params.list, diagnostic.data) {
         names(summary.plr) <- paste(eval(parse(text=paste("pretty.names$measure$", params.plr$measure,sep=""))), " Summary", sep="")
         results <- c(results, summary.nlr, summary.plr)
         
-        res.nlr <- results.nlr$res
-        res.plr <- results.plr$res
-        res <- list("left"=res.nlr, "right"=res.plr)
-        
-        plot.data <- create.loo.side.by.side.plot.data(diagnostic.data.all, res=res, params.tmp)
+        res.nlr.plr <- list("left"=results.nlr$res, "right"=results.plr$res)
+        plot.data <- create.loo.side.by.side.plot.data(diagnostic.data.nlr.plr, params.tmp, res=res.nlr.plr)
         
         forest.path <- paste(params.nlr$fp_outpath, sep="")
         two.forest.plots(plot.data, outpath=forest.path)
            
-        forest.plot.params.path <- save.data(diagnostic.data, res, params=params.tmp, plot.data)
+        forest.plot.params.path <- save.data(diagnostic.data.nlr.plr, res.nlr.plr, params=params.tmp, plot.data)
+        # @TODO: If you want to edit the plot, need to also 
         plot.params.paths.tmp <- c("NLR and PLR Forest Plot"=forest.plot.params.path)
         plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
                
@@ -894,6 +881,8 @@ loo.ma.diagnostic <- function(fname, diagnostic.data, params){
     params.tmp <- params
     params.tmp$create.plot <- FALSE
     params.tmp$write.to.file <- FALSE
+    res <- eval(call(fname, diagnostic.data, params.tmp))
+    res.overall <- eval(call(paste(fname, ".overall", sep=""), res))
     N <- length(diagnostic.data@study.names)
     for (i in 1:N){
         # get a list of indices, i.e., the subset
@@ -929,11 +918,9 @@ loo.ma.diagnostic <- function(fname, diagnostic.data, params){
         cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
         loo.results[[i]] <- cur.overall
     }
-    study.names <- c()
-    for (count in 1:length(diagnostic.data@study.names)) {
-        study.names <- c(study.names, paste("- ",diagnostic.data@study.names[count], sep=""))
-    }
-    
+    loo.results <- c(list(res.overall), loo.results)
+    # Add overall results
+    study.names <- c("Overall", paste("- ", diagnostic.data@study.names, sep=""))
     metric.name <- pretty.metric.name(as.character(params$measure))
     model.title <- ""
     if (fname == "diagnostic.fixed") {
@@ -970,12 +957,12 @@ loo.ma.diagnostic <- function(fname, diagnostic.data, params){
                         "plot_names"=plot.names, 
                         "plot_params_paths"=plot.params.paths)
     } else {
-        results <- list(res=loo.results, Summary=loo.disp) 
+        results <- list(res=loo.results, res.overall=res.overall, Summary=loo.disp) 
     }  
     results
 }
 
-create.loo.side.by.side.plot.data <- function(diagnostic.data, res, params) {    
+create.loo.side.by.side.plot.data <- function(diagnostic.data, params, res) {    
     # creates data for two side-by-side leave-one-out forest plots
     params.left <- params$left
     params.right <- params$right
@@ -983,16 +970,14 @@ create.loo.side.by.side.plot.data <- function(diagnostic.data, res, params) {
     params.right$fp_show_col1 <- 'FALSE'
     # only show study names on the left plot
     res.left <- res$left
-    res.right <- res$right    
+    res.right <- res$right 
     diagnostic.data.left <- diagnostic.data$left
     diagnostic.data.right <- diagnostic.data$right
-    
+    study.names <- c("Overall", paste("- ", diagnostic.data.left@study.names, sep=""))
     plot.data.left <- create.plot.data.loo(diagnostic.data.left, params.left, res.left)
     plot.data.left$options$fp.title <- pretty.metric.name(as.character(params.left$measure))
-      
     plot.data.right <- create.plot.data.loo(diagnostic.data.right, params.right, res.right)
     plot.data.right$options$fp.title <- pretty.metric.name(as.character(params.right$measure))
-    
     plot.data <- list("left"=plot.data.left, "right"=plot.data.right)
     plot.data
 }

@@ -264,7 +264,7 @@ continuous.random <- function(cont.data, params){
               results.path <- paste("./r_tmp/cont_random_results.csv")
               # @TODO Pass in results.path via params
               write.results.to.file(cont.data, params, res, outpath=results.path)
-              write.bin.study.data.to.file(cont.data, params, res)
+              write.cont.study.data.to.file(cont.data, params, res)
           }
           if (is.null(params$create.plot)) {
               # Create forest plot and list to display summary of results

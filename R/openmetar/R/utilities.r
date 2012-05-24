@@ -310,7 +310,7 @@ create.overall.display <- function(res, study.names, params, model.title, data.t
     overall.array[1,] <- c("Studies", "Estimate", "Lower bound", "Upper bound", "Std. error", "p-Val")
     
     # unpack the data
-    for (count in 1:length(study.names)) {
+    for (count in 1:length(res)) {
       y <- res[[count]]$b
       lb <- res[[count]]$ci.lb
       ub <- res[[count]]$ci.ub
