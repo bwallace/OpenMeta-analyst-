@@ -99,6 +99,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.metric_menu_is_set_for = None
         self.raise_()
 
+        # by default, disable meta-regression (until we
+        # have covariates)
+        self.action_meta_regression.setEnabled(False)
+
         if len(sys.argv)>1 and sys.argv[-1]=="--toy-data":
             # toy data for now
             data_model = _gen_some_data()
@@ -393,8 +397,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             # if we edited the current dataset when there was no
             # outcome yet, then we want to default to an outcome
             # that was added.
-            #if self.model.current_outcome is None:
-            #    self.model.current_outcome = edit_window.outcome_list.model().current_outcome
+
             ### get stateful dictionary here, update, pass to 
             old_state_dict = self.tableView.model().get_stateful_dict()
             new_state_dict = copy.deepcopy(old_state_dict)
@@ -583,10 +586,13 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.model.add_covariate(cov_name, cov_type)
         print "new covariate name: %s with type %s" % (cov_name, cov_type)
         self.tableView.resizeColumnsToContents()
+        self.action_meta_regression.setEnabled(True)
         
     def _undo_add_new_covariate(self, cov_name):
         self.model.remove_covariate(cov_name)
         self.tableView.resizeColumnsToContents()
+        if len(self.model.covariates) == 0:
+            self.action_meta_regression.setEnabled(False)
         
     def add_new(self):
         redo_f, undo_f = None, None
@@ -979,6 +985,12 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         else:
             self.disable_menu_options_that_require_dataset()
         
+        # covariates?
+        if len(data_model.covariates) > 0:
+            self.action_meta_regression.setEnabled(True)
+        else:
+            self.action_meta_regression.setEnabled(False)
+
         self.tableView.setModel(self.model)
 
         ## moving the statefulendess 
