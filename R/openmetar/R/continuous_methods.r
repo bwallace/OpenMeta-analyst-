@@ -107,7 +107,7 @@ create.cont.data.array <- function(cont.data, params, res){
   return(raw.data)
 }
 
-write.cont.study.data.to.file <- function(cont.data, params, res) {
+write.cont.study.data.to.file <- function(cont.data, params, res, data.outpath) {
   # create data frame and write to csv
   effect.size.name <- pretty.metric.name(as.character(params$measure))
   # Caculate confidence intervals
@@ -137,7 +137,7 @@ write.cont.study.data.to.file <- function(cont.data, params, res) {
   }
   # Rename effect size column
   names(study.data.df)[names(study.data.df)=="Effect.size"] <- effect.size.name
-  write.csv(study.data.df, file="./r_tmp/study_data.csv", append=FALSE, row.names=FALSE)
+  write.csv(study.data.df, file=data.outpath, append=FALSE, row.names=FALSE)
 }
 
 ###############################
@@ -166,8 +166,9 @@ continuous.fixed <- function(cont.data, params){
                 res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
                 results.path <- paste("./r_tmp/cont_fixed_results.csv")
                 # @TODO Pass in results.path via params
+                data.path <- paste("./r_tmp/cont_fixed_study_data.csv")
                 write.results.to.file(cont.data, params, res, outpath=results.path)
-                write.cont.study.data.to.file(cont.data, params, res)
+                write.cont.study.data.to.file(cont.data, params, res, data.outpath=data.path)
             }
             if (is.null(params$create.plot)) {
                 # Create forest plot and list to display summary of results
@@ -261,10 +262,11 @@ continuous.random <- function(cont.data, params){
               # Weights assigned to each study
               weights <- 1 / (res$vi + res$tau2)
               res$study.weights <- weights / sum(weights)
-              results.path <- paste("./r_tmp/cont_random_results.csv")
+              results.path <- "./r_tmp/cont_random_results.csv"
               # @TODO Pass in results.path via params
+              data.path <- "./r_tmp/cont_random_study_data.csv"
               write.results.to.file(cont.data, params, res, outpath=results.path)
-              write.cont.study.data.to.file(cont.data, params, res)
+              write.cont.study.data.to.file(cont.data, params, res, data.outpath=data.path)
           }
           if (is.null(params$create.plot)) {
               # Create forest plot and list to display summary of results

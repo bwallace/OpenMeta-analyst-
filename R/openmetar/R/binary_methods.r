@@ -133,7 +133,7 @@ create.binary.data.array <- function(binary.data, params, res){
     return(raw.data)
 }
 
-write.bin.study.data.to.file <- function(binary.data, params, res) {
+write.bin.study.data.to.file <- function(binary.data, params, res, data.outpath) {
     # create data frame and write to csv
     effect.size.name <- pretty.metric.name(as.character(params$measure))
     y.disp <- binary.transform.f(params$measure)$display.scale(binary.data@y)
@@ -159,7 +159,7 @@ write.bin.study.data.to.file <- function(binary.data, params, res) {
     }
     # Rename effect size column
     names(study.data.df)[names(study.data.df)=="Effect.size"] <- effect.size.name
-    write.csv(study.data.df, file="./r_tmp/study_data.csv", append=FALSE, row.names=FALSE)
+    write.csv(study.data.df, file=data.outpath, append=FALSE, row.names=FALSE)
 }
 
 ###################################################
@@ -184,10 +184,11 @@ binary.fixed.inv.var <- function(binary.data, params){
                 # Write results and study data to csv files 
                 # Weights assigned to each study
                 res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
-                results.path <- paste("./r_tmp/binary_fixed_inv_var_results.csv")
+                results.path <- "./r_tmp/binary_fixed_inv_var_results.csv"
                 # @TODO Pass in results.path via params
+                data.path <- "./r_tmp/binary_fixed_inv_var_study_data.csv"
                 write.results.to.file(binary.data, params, res, outpath=results.path)
-                write.bin.study.data.to.file(binary.data, params, res)
+                write.bin.study.data.to.file(binary.data, params, res, data.path)
             }
             if (is.null(params$create.plot)) {
                 # Create forest plot and list to display summary of results
@@ -289,10 +290,11 @@ binary.fixed.mh <- function(binary.data, params){
                 D <- binary.data@g2O2
                 weights <- B * C / (A + B + C + D)
                 res$study.weights <- weights / sum(weights)
-                results.path <- paste("./r_tmp/binary_fixed_mh_results.csv")
+                results.path <- "./r_tmp/binary_fixed_mh_results.csv"
                 # @TODO Pass in results.path via params
+                data.path <- "./r_tmp/binary_fixed_mh_study_data.csv"
                 write.results.to.file(binary.data, params, res, outpath=results.path)
-                write.bin.study.data.to.file(binary.data, params, res)
+                write.bin.study.data.to.file(binary.data, params, res, data.outpath=data.path)
             }
             if (is.null(params$create.plot)) {
                 # Create forest plot and list to display summary of results
@@ -404,8 +406,9 @@ binary.fixed.peto <- function(binary.data, params){
                 res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
                 results.path <- paste("./r_tmp/binary_fixed_peto_results.csv")
                 # @TODO Pass in results.path via params
+                data.path <- paste("./r_tmp/binary_fixed_peto_study_data.csv")
                 write.results.to.file(binary.data, params, res, outpath=results.path)
-                write.bin.study.data.to.file(binary.data, params, res)
+                write.bin.study.data.to.file(binary.data, params, res, data.outpath=data.path)
             }
             if (is.null(params$create.plot)) {
                 # Create forest plot and list to display summary of results
@@ -522,8 +525,9 @@ binary.random <- function(binary.data, params){
                 # Write results and study data to csv files
                 results.path <- paste("./r_tmp/binary_random_results.csv")
                 # @TODO Pass in results.path via params
+                data.path <- paste("./r_tmp/binary_random_study_data.csv")
                 write.results.to.file(binary.data, params, res, outpath=results.path)
-                write.bin.study.data.to.file(binary.data, params, res)
+                write.bin.study.data.to.file(binary.data, params, res, data.outpath=data.path)
             }
             if (is.null(params$create.plot)) {
                 # Create forest plot and list to display summary of results

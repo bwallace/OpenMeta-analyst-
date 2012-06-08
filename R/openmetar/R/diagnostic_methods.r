@@ -580,6 +580,123 @@ diagnostic.fixed.mh.overall <- function(results) {
     res <- results$Summary$MAResults
 }
 
+##################################################
+#       diagnostic fixed effects -- Peto             #
+##################################################
+diagnostic.fixed.peto <- function(diagnostic.data, params){
+  # assert that the argument is the correct type
+  if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.") 
+  
+  if (length(diagnostic.data@TP) == 1 || length(diagnostic.data@y) == 1){
+    res <- get.res.for.one.diagnostic.study(diagnostic.data, params)
+    # Package res for use by overall method.
+    summary.disp <- list("MAResults" = res) 
+    results <- list("Summary"=summary.disp)
+  }
+  else{  
+    res <- rma.peto(ai=diagnostic.data@TP, bi=diagnostic.data@FN, 
+                    ci=diagnostic.data@FP, di=diagnostic.data@TN, slab=diagnostic.data@study.names,
+                    level=params$conf.level, digits=params$digits,
+                    add=c(params$adjust, 0), to=c(as.character(params$to), "none"))
+    # Corrected values for y and SE
+    diagnostic.data@y <- res$yi
+    diagnostic.data@SE <- sqrt(res$vi)
+    
+    if (is.null(params$create.plot) || (is.null(params$write.to.file))) {
+      if (is.null(diagnostic.data@y) || is.null(diagnostic.data@SE)) {
+        # compute point estimates for plot.data in case they are missing
+        diagnostic.data <- compute.bin.point.estimates(diagnostic.data, params)
+      }
+      if (is.null(params$write.to.file)) {
+        # Write results and study data to csv files  
+        res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
+        results.path <- paste("./r_tmp/diagnostic_fixed_peto_results.csv")
+        # @TODO Pass in results.path via params
+        #data.path <- paste("./r_tmp/diagnostic_fixed_peto_study_data.csv")
+        write.results.to.file(diagnostic.data, params, res, outpath=results.path)
+      }
+      if (is.null(params$create.plot)) {
+        # Create forest plot and list to display summary of results
+        metric.name <- pretty.metric.name(as.character(params$measure))
+        model.title <- "Binary Fixed-Effect Model - Peto\n\nMetric: Odds Ratio"
+        # Create results display tables
+        summary.disp <- create.summary.disp(diagnostic.data, params, res, model.title)
+        #
+        # generate forest plot 
+        #
+        forest.path <- paste(params$fp_outpath, sep="")
+        plot.data <- create.plot.data.diagnostic(diagnostic.data, params, res)
+        changed.params <- plot.data$changed.params
+        # list of changed params values
+        params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
+        changed.params <- c(changed.params, params.changed.in.forest.plot)
+        params[names(changed.params)] <- changed.params
+        # dump the forest plot params to disk; return path to
+        # this .Rdata for later use
+        forest.plot.params.path <- save.data(diagnostic.data, res, params, plot.data)
+        #
+        # Now we package the results in a dictionary (technically, a named 
+        # vector). In particular, there are two fields that must be returned; 
+        # a dictionary of images (mapping titles to image paths) and a list of texts
+        # (mapping titles to pretty-printed text). In this case we have only one 
+        # of each. 
+        #     
+        plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+        images <- c("Forest Plot"=forest.path)
+        plot.names <- c("forest plot"="forest_plot")
+        results <- list("images"=images, "Summary"=summary.disp, 
+                        "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)
+      }
+    }
+    else {
+      results <- list("Summary"=res)
+    }    
+  }
+  results
+}
+
+diagnostic.fixed.peto.parameters <- function(){
+  # parameters
+  apply_adjustment_to = c("only0", "all")
+  
+  params <- list( "conf.level"="float", "digits"="float",
+                  "adjust"="float", "to"=apply_adjustment_to)
+  
+  # default values
+  defaults <- list("conf.level"=95, "digits"=3, "adjust"=.5, "to"="only0")
+  
+  var_order = c("conf.level", "digits", "adjust", "to")
+  
+  parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
+}
+
+diagnostic.fixed.peto.pretty.names <- function() {
+  pretty.names <- list("pretty.name"="Binary Fixed-Effect Peto", 
+                       "description" = "Performs fixed-effect meta-analysis using the Peto method.",
+                       "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
+                       "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
+                       "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
+                       "to"=list("pretty.name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
+                                   is added to all cells of each two-by-two table that contains at leason one zero. When set to \"all\", the correction factor
+                                   is added to all two-by-two tables if at least one table contains a zero.")
+                         )
+}
+
+diagnostic.fixed.peto.is.feasible <- function(diagnostic.data, metric){
+  # only feasible if we have raw (2x2) data for all studies
+  # and the metric is `OR'
+  metric == "OR" &&
+    length(diagnostic.data@g1O1)==length(diagnostic.data@g1O2) &&
+    length(diagnostic.data@g1O2)==length(diagnostic.data@g2O1) &&
+    length(diagnostic.data@g2O1)==length(diagnostic.data@g2O2) &&
+    length(diagnostic.data@g1O1) > 0
+}
+
+diagnostic.fixed.peto.overall <- function(results) {
+  # this parses out the overall from the computed result
+  res <- results$Summary
+}
+
 ##################################
 #  diagnostic random effects     #
 ##################################
