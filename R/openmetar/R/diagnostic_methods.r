@@ -385,7 +385,7 @@ diagnostic.fixed.inv.var <- function(diagnostic.data, params){
         pretty.names <- diagnostic.fixed.inv.var.pretty.names()
         pretty.metric <- eval(parse(text=paste("pretty.names$measure$", params$measure,sep="")))
         for (count in 1:length(summary.disp$table.titles)) {
-          summary.disp$table.titles[count] <- paste(pretty.metric, " -", summary.disp$table.titles[count], sep="")
+          summary.disp$table.titles[count] <- paste(" ", pretty.metric, " -", summary.disp$table.titles[count], sep="")
         }
         # Write results to csv file
         if ((is.null(params$write.to.file)) || params$write.to.file == TRUE) {
@@ -500,7 +500,7 @@ diagnostic.fixed.mh <- function(diagnostic.data, params){
         pretty.names <- diagnostic.fixed.mh.pretty.names()
         pretty.metric <- eval(parse(text=paste("pretty.names$measure$", params$measure,sep="")))
         for (count in 1:length(summary.disp$table.titles)) {
-          summary.disp$table.titles[count] <- paste(pretty.metric, " -", summary.disp$table.titles[count], sep="")
+          summary.disp$table.titles[count] <- paste(" ", pretty.metric, " -", summary.disp$table.titles[count], sep="")
         }
         # Write results to csv file
         if ((is.null(params$write.to.file)) || params$write.to.file == TRUE) {
@@ -602,6 +602,17 @@ diagnostic.fixed.peto <- function(diagnostic.data, params){
     diagnostic.data@y <- res$yi
     diagnostic.data@SE <- sqrt(res$vi)
     
+    #                        
+    # Create list to display summary of results
+    #
+    model.title <- "Diagnostic Fixed-Effect Model - Peto"
+    summary.disp <- create.summary.disp(diagnostic.data, params, res, model.title)
+    pretty.names <- diagnostic.fixed.peto.pretty.names()
+    pretty.metric <- eval(parse(text=paste("pretty.names$measure$", params$measure,sep="")))
+    for (count in 1:length(summary.disp$table.titles)) {
+      summary.disp$table.titles[count] <- paste(" ", pretty.metric, " -", summary.disp$table.titles[count], sep="")
+    }
+    
     if (is.null(params$create.plot) || (is.null(params$write.to.file))) {
       if (is.null(diagnostic.data@y) || is.null(diagnostic.data@SE)) {
         # compute point estimates for plot.data in case they are missing
@@ -618,7 +629,7 @@ diagnostic.fixed.peto <- function(diagnostic.data, params){
       if (is.null(params$create.plot)) {
         # Create forest plot and list to display summary of results
         metric.name <- pretty.metric.name(as.character(params$measure))
-        model.title <- "Binary Fixed-Effect Model - Peto\n\nMetric: Odds Ratio"
+        model.title <- "Diagnostic Fixed-Effect Model - Peto\n\nMetric: Odds Ratio"
         # Create results display tables
         summary.disp <- create.summary.disp(diagnostic.data, params, res, model.title)
         #
@@ -671,7 +682,7 @@ diagnostic.fixed.peto.parameters <- function(){
 }
 
 diagnostic.fixed.peto.pretty.names <- function() {
-  pretty.names <- list("pretty.name"="Binary Fixed-Effect Peto", 
+  pretty.names <- list("pretty.name"="Diagnostic Fixed-Effect Peto", 
                        "description" = "Performs fixed-effect meta-analysis using the Peto method.",
                        "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
                        "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
@@ -684,12 +695,12 @@ diagnostic.fixed.peto.pretty.names <- function() {
 
 diagnostic.fixed.peto.is.feasible <- function(diagnostic.data, metric){
   # only feasible if we have raw (2x2) data for all studies
-  # and the metric is `OR'
-  metric == "OR" &&
-    length(diagnostic.data@g1O1)==length(diagnostic.data@g1O2) &&
-    length(diagnostic.data@g1O2)==length(diagnostic.data@g2O1) &&
-    length(diagnostic.data@g2O1)==length(diagnostic.data@g2O2) &&
-    length(diagnostic.data@g1O1) > 0
+  # and the metric is `DOR'
+  metric == "DOR" &&
+    length(diagnostic.data@TP)==length(diagnostic.data@FN) &&
+    length(diagnostic.data@FN)==length(diagnostic.data@FP) &&
+    length(diagnostic.data@FP)==length(diagnostic.data@TN) &&
+    length(diagnostic.data@TP) > 0
 }
 
 diagnostic.fixed.peto.overall <- function(results) {
