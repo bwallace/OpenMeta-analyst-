@@ -936,6 +936,7 @@ diagnostic.bivariate.ml <- function(diagnostic.data, params){
     biv.results <- bivariate.dx.test(adjusted.counts$TP, adjusted.counts$FP, 
                                     adjusted.counts$FN, adjusted.counts$TN)
 
+    
     #### 
     # parse out results -- @TODO make this nicer.
     logit_sens = biv.results[1,1]
@@ -956,13 +957,11 @@ diagnostic.bivariate.ml <- function(diagnostic.data, params){
 
     r <- round(biv.results$correlation, digits)
 
-
-    # @TODO make this prettier
-    report.array <- array(c("sensitivity", "sens. (lower)", "sens. (upper)", 
-                                "specificity", "spec. (lower)", "spec. (upper)",
-                                "correlation", sensitivity, sens.low, sens.high,
-                                specificity, spec.low, spec.high, r), 
-                            dim=c(7,2))
+    report.array <- array(c("", "Sensitivity","Specificity", "Correlation",
+                            "Estimate", sensitivity, specificity, r,
+                            "Lower bound", sens.low, spec.low, "",
+                            "Upper bound", sens.high,spec.high, ""),
+                            dim=c(4,4))
 
     # this makes it pretty-print?
     class(report.array) <- "summary.data"
