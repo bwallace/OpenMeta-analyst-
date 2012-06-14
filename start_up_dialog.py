@@ -16,6 +16,7 @@ class StartUp(QDialog, ui_start_up.Ui_WelcomeDialog):
         self._setup_connections()
         self.parent = parent
         self.setFocus()
+        self.raise_()
         if not self.start_up:
             ### 
             # in the case that the user has selected
