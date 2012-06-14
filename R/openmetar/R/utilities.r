@@ -40,22 +40,27 @@ print.summary.data <- function(table.data,...) {
     num.cols <- length(table.data[1,])
     # Compute column widths
     extra.col.spaces <- 2
-    table.line <- "+"
+    #table.line <- " "
     col.widths <- NULL
     for (col.index in 1:num.cols) {
         width <- max(nchar(table.data[,col.index])) + extra.col.spaces
         col.widths <- c(col.widths, max(nchar(table.data[,col.index])) + extra.col.spaces)
-        dash.line <- create.repeat.string("-", width)
-        table.line <- paste(table.line, dash.line, "+", sep="")
+        #spaces <- rep(" ", width)
+        #dash.line <- create.repeat.string("-", width)
+        #table.line <- paste(table.line, spaces, " ", sep="")
     }
     table.width <- sum(col.widths) + num.cols + 1
     # Build table
-    cat(table.line)
+    #cat(table.line)
     cat("\n")
-
+    
     for (row.index in 1:num.rows) {
-        table.row <- "|"
-        for (col.index in 1:num.cols) {
+        study.name <- table.data[row.index, 1]
+        # Study names are aligned left
+        end.num <- col.widths[1] - nchar(study.name) -1
+        table.row <- pad.with.spaces(study.name, 1, end.num)
+        for (col.index in 2:num.cols) {
+            # Data is aligned right
             col.width <- col.widths[col.index]
             entry <- table.data[row.index,col.index]
             # pad entries with spaces to align columns.
@@ -67,11 +72,11 @@ print.summary.data <- function(table.data,...) {
             begin.num <- floor((col.width - nchar(entry))/2)
             end.num <- col.width - begin.num - nchar(entry)
             padded.entry <- pad.with.spaces(entry, begin.num, end.num)
-            table.row <- paste(table.row, padded.entry, "|", sep="")
+            table.row <- paste(table.row, padded.entry, " ", sep="")
         }
         cat(table.row)
         cat("\n")
-        cat(table.line)
+        #cat(table.line)
         cat("\n")
     }
 }
@@ -134,7 +139,7 @@ create.summary.disp <- function(om.data, params, res, model.title) {
       pVal <- "NA"
     }
         
-    res.title <- "  Model Results"
+    res.title <- " Model Results"
     y.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$b))
     lb.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$ci.lb))
     ub.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$ci.ub))
@@ -151,7 +156,7 @@ create.summary.disp <- function(om.data, params, res, model.title) {
         het.array <- rbind(het.col.labels, het.col.vals)
     }
     class(het.array) <- "summary.data"
-    het.title <- "  Heterogeneity"
+    het.title <- " Heterogeneity"
    
     if (scale.str == "log" || scale.str == "logit" || scale.str == "arcsine") {
          # display and calculation scales are different - create two tables for results
@@ -164,7 +169,7 @@ create.summary.disp <- function(om.data, params, res, model.title) {
          alt.col.labels <- c("Estimate", "Lower bound", "Upper bound", "Std. error")
          alt.col.vals <- c(estCalc, lbCalc, ubCalc, se)
          alt.array <- rbind(alt.col.labels, alt.col.vals)
-         alt.title <- paste("  Results (", scale.str, " scale)", sep="")
+         alt.title <- paste(" Results (", scale.str, " scale)", sep="")
          arrays <- list(arr1=res.array, arr2=het.array, arr3=alt.array)
          table.titles <- c(res.title, het.title, alt.title)
     } else {
@@ -179,12 +184,12 @@ create.summary.disp <- function(om.data, params, res, model.title) {
     if (transform.name == "binary.transform.f") {
       # Add raw data title and array 
       raw.data.array <- create.binary.data.array(om.data, params, res)
-      table.titles <- c("  Study Data", table.titles)
+      table.titles <- c(" Study Data", table.titles)
       raw.data.list <- list("arr0"=raw.data.array)
       arrays <- c(raw.data.list, arrays)
     } else if (transform.name == "continuous.transform.f") {
       raw.data.array <- create.cont.data.array(om.data, params, res)
-      table.titles <- c("  Study Data", table.titles)
+      table.titles <- c(" Study Data", table.titles)
       raw.data.list <- list("arr0"=raw.data.array)
       arrays <- c(raw.data.list, arrays)
     }
@@ -329,7 +334,7 @@ create.overall.display <- function(res, study.names, params, model.title, data.t
       overall.array[count+1,] <- c(study.names[count], y.disp, lb.disp, ub.disp, se.disp, pVal)
     }
 
-    table.titles <- c("  Model Results")
+    table.titles <- c(" Model Results")
     arrays <- list(arr1=overall.array)
     overall.disp <- list("model.title" = model.title, "table.titles" = table.titles, "arrays" = arrays,
                          "MAResults" = res )
@@ -400,7 +405,7 @@ create.subgroup.display <- function(res, study.names, params, model.title, data.
       het.array[count+1,] <- c(study.names[count], QE, QEp, I2)
     }
 
-    table.titles <- c("  Model Results", "  Heterogeneity")
+    table.titles <- c(" Model Results", "  Heterogeneity")
     arrays <- list(arr1=subgroup.array, arr2=het.array)
     #}
     subgroup.disp <- list("model.title" = model.title, "table.titles" = table.titles, "arrays" = arrays,
