@@ -188,7 +188,8 @@ binary.fixed.inv.var <- function(binary.data, params){
                 # @TODO Pass in results.path via params
                 data.path <- "./r_tmp/binary_fixed_inv_var_study_data.csv"
                 write.results.to.file(binary.data, params, res, outpath=results.path)
-                write.bin.study.data.to.file(binary.data, params, res, data.path)
+                # write.bin.study.data.to.file(binary.data, params, res, data.path)
+                # @TODO: Check for non-numeric entries and replace with blanks to avoid errors.
             }
             if (is.null(params$create.plot)) {
                 # Create forest plot and list to display summary of results
@@ -294,7 +295,8 @@ binary.fixed.mh <- function(binary.data, params){
                 # @TODO Pass in results.path via params
                 data.path <- "./r_tmp/binary_fixed_mh_study_data.csv"
                 write.results.to.file(binary.data, params, res, outpath=results.path)
-                write.bin.study.data.to.file(binary.data, params, res, data.outpath=data.path)
+                # write.bin.study.data.to.file(binary.data, params, res, data.outpath=data.path)
+                # @TODO: Check for non-numeric entries and replace with blanks to avoid errors.
             }
             if (is.null(params$create.plot)) {
                 # Create forest plot and list to display summary of results
@@ -408,7 +410,8 @@ binary.fixed.peto <- function(binary.data, params){
                 # @TODO Pass in results.path via params
                 data.path <- paste("./r_tmp/binary_fixed_peto_study_data.csv")
                 write.results.to.file(binary.data, params, res, outpath=results.path)
-                write.bin.study.data.to.file(binary.data, params, res, data.outpath=data.path)
+                # write.bin.study.data.to.file(binary.data, params, res, data.outpath=data.path)
+                # @TODO: Check for non-numeric entries and replace with blanks to avoid errors.
             }
             if (is.null(params$create.plot)) {
                 # Create forest plot and list to display summary of results
@@ -527,7 +530,8 @@ binary.random <- function(binary.data, params){
                 # @TODO Pass in results.path via params
                 data.path <- paste("./r_tmp/binary_random_study_data.csv")
                 write.results.to.file(binary.data, params, res, outpath=results.path)
-                write.bin.study.data.to.file(binary.data, params, res, data.outpath=data.path)
+                # write.bin.study.data.to.file(binary.data, params, res, data.outpath=data.path)
+                # @TODO: Check for non-numeric entries and replace with blanks to avoid errors.
             }
             if (is.null(params$create.plot)) {
                 # Create forest plot and list to display summary of results

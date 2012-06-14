@@ -168,7 +168,8 @@ continuous.fixed <- function(cont.data, params){
                 # @TODO Pass in results.path via params
                 data.path <- paste("./r_tmp/cont_fixed_study_data.csv")
                 write.results.to.file(cont.data, params, res, outpath=results.path)
-                write.cont.study.data.to.file(cont.data, params, res, data.outpath=data.path)
+                # write.cont.study.data.to.file(cont.data, params, res, data.outpath=data.path)
+                # @TODO: Check for non-numeric entries and replace with blanks to avoid errors.
             }
             if (is.null(params$create.plot)) {
                 # Create forest plot and list to display summary of results
@@ -266,7 +267,8 @@ continuous.random <- function(cont.data, params){
               # @TODO Pass in results.path via params
               data.path <- "./r_tmp/cont_random_study_data.csv"
               write.results.to.file(cont.data, params, res, outpath=results.path)
-              write.cont.study.data.to.file(cont.data, params, res, data.outpath=data.path)
+              # write.cont.study.data.to.file(cont.data, params, res, data.outpath=data.path)
+              # @TODO: Check for non-numeric entries and replace with blanks to avoid errors.
           }
           if (is.null(params$create.plot)) {
               # Create forest plot and list to display summary of results
