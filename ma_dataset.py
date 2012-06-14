@@ -360,11 +360,15 @@ class Dataset:
         return (list(set(node_list)), adjacency_list)
         
     def ma_unit_has_edge_between_groups(self, ma_unit, groups):
-        # TODO this will (probably) need to be updated; right now
-        # we return false if any of the groups in the unit don't
-        # contain raw_data; but really we need also to check
-        # for effect sizes, which may have been entered
-        # independently
+        # first check the effects. if *any* effect contains data
+        # comparing these two groups, we return true.
+        comp_str = "-".join(groups)
+        for effect in ma_unit.effects_dict.keys():
+            if comp_str in ma_unit.effects_dict[effect] and \
+                 ma_unit.effects_dict[effect][comp_str]['est'] is not None:
+                return True
+
+        # now check if they all have raw data
         for group in groups:
             if "" in ma_unit.tx_groups[group].raw_data:
                 return False

@@ -27,10 +27,16 @@ if DIR_NAME not in paths:
     paths.insert(0, DIR_NAME)
     os.environ["DYLD_LIBRARY_PATH"] = os.pathsep.join(paths)
     os.execv(sys.executable, sys.argv)
+else:
+    paths = os.environ.get("LD_LIBRARY_PATH", "").split(os.pathsep)
+    if DIR_NAME not in paths:
+        paths.insert(0, DIR_NAME)
+        os.environ["LD_LIBRARY_PATH"] = os.pathsep.join(paths)
+        os.execv(sys.executable, sys.argv)
 
 #os.environ["DYLD_LIBRARY_PATH"] = DIR_NAME
 #os.execv(sys.executable, sys.argv)
-print "dynamic library path set... hold your nose."
+print "dynamic library path set...I think?"
 #pdb.set_trace()
 os.environ["R_HOME"] = os.path.join(DIR_NAME, "R_dist", "2.10", "Resources")
 
