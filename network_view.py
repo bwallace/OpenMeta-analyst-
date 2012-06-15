@@ -13,7 +13,7 @@ class ViewDialog(QDialog, ui_network_view.Ui_network_view_dialog):
         self.setupUi(self)
         
         self.dataset = model.dataset
-        self.cur_outcome = model.current_outcome#"death"
+        self.cur_outcome = model.current_outcome
         self.cur_follow_up = model.get_current_follow_up_name()
         
         self.populate_cbo_boxes()
@@ -43,7 +43,15 @@ class ViewDialog(QDialog, ui_network_view.Ui_network_view_dialog):
     def populate_cbo_boxes(self):
         self.outcome_cbo_box.addItems(self.dataset.get_outcome_names())
         self.follow_up_cbo_box.addItems(self.dataset.get_follow_up_names())
+
+        # set the current item to reflect the selected/active outcome
+        # and follow-up
+        cur_outcome_index = self.outcome_cbo_box.findText(self.cur_outcome)
+        self.outcome_cbo_box.setCurrentIndex(cur_outcome_index)
         
+        cur_follow_up_index = self.follow_up_cbo_box.findText(self.cur_follow_up)
+        self.follow_up_cbo_box.setCurrentIndex(cur_follow_up_index)
+
     def graph_network(self, outcome, follow_up):
         nodes, edges = self.dataset.get_network(outcome, follow_up)
         # get_network returns a list of tuples, wherein
