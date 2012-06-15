@@ -842,11 +842,14 @@ diagnostic.hsroc <- function(diagnostic.data, params){
         dir.create(chain.out.dir)
         setwd(chain.out.dir)
         # TODO parameterize lambda, theta priors
-        HSROC(data=diag.data.frame, iter.num=params$num.iters, 
+        res <- try(HSROC(data=diag.data.frame, iter.num=params$num.iters, 
                 prior_LAMBDA=c(params$lambda.lower, params$lambda.upper), 
                 prior_THETA=c(params$theta.lower, params$theta.upper), 
-                path=chain.out.dir)
-        chain.out.dirs <- c(chain.out.dirs, chain.out.dir)
+                path=chain.out.dir))
+        # Put in try block in case HSROC fails
+        if (class(res!="try-error")) {
+            chain.out.dirs <- c(chain.out.dirs, chain.out.dir)
+        }
         # go back up to ./r_tmp
         setwd("../../")
     }
