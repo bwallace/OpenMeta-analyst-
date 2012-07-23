@@ -85,7 +85,7 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         # first add the text to self.scene
         self.add_text()
 
-        self.y_coord += 2*ROW_HEIGHT
+        self.y_coord += ROW_HEIGHT/2.0
 
         # and now the images
         self.add_images()
@@ -93,7 +93,6 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         # reset the scene
         self.graphics_view.setScene(self.scene)
         self.graphics_view.ensureVisible(QRectF(0,0,0,0))
-
 
     def f(self):
         print self.current_line()
@@ -196,7 +195,7 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
     def create_text_item(self, text, position):
         txt_item = QGraphicsTextItem(QString(text))
-        txt_item.setFont(QFont("courier", 8))
+        txt_item.setFont(QFont("courier", 12))
         txt_item.setTextInteractionFlags(Qt.TextEditable)
         self.scene.addItem(txt_item)
         # fix for issue #149; was formerly txt_item.boundingRect().size().height()
