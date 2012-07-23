@@ -379,9 +379,11 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         # add the method description
         method_description = meta_py_r.get_method_description(self.current_method)
         
-        self.add_label(self.parameter_grp_box.layout(), cur_grid_row, "Description: %s" % method_description)
+        self.add_label(self.parameter_grp_box.layout(), cur_grid_row, \
+                            "Description: %s" % method_description)
         cur_grid_row += 1
         
+
         if self.var_order is not None:
             for var_name in self.var_order:
                 val = self.current_params[var_name]
@@ -439,7 +441,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         Adds an enumeration to the UI, with the name and possible
         values as specified per the parameters.
         '''
-        
+       
         ### 
         # using the pretty name for the label now.
         self.add_label(layout, cur_grid_row, self.param_d[name]["pretty.name"], \
@@ -519,6 +521,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.current_params, self.current_defaults, self.var_order, self.param_d = \
                     meta_py_r.get_params(self.current_method)
                 
+
         ###
         # user selections overwrite the current parameter defaults.
         # ie., if the user has run this analysis before, the preferences

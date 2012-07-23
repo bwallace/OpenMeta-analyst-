@@ -153,7 +153,7 @@ def get_params(method_name):
     # note that we're assuming that the last entry of param_list, as provided
     # by the corresponding R routine, is the order to display the variables
     param_d = {}
-    for name, r_obj in zip(param_list.getnames(), param_list):    
+    for name, r_obj in zip(param_list.names, param_list):    
         param_d[name] = r_obj
 
     order_vars = None
@@ -162,8 +162,8 @@ def get_params(method_name):
 
     pretty_names_and_descriptions = get_pretty_names_and_descriptions_for_params(\
                                         method_name, param_list)
-                                    
-    return (_rlist_to_pydict(param_d['parameters']), \
+
+    return (_rlist_to_pydict(param_d['parameters'], recurse=False), \
             _rlist_to_pydict(param_d['defaults']), \
             order_vars,\
             pretty_names_and_descriptions)
@@ -178,12 +178,14 @@ def get_pretty_names_and_descriptions_for_params(method_name, param_list):
         pretty_names_and_descriptions = ro.r("%s()" % pretty_names_f)
         # this dictionary is assumed to be as follows:
         #      params_d[param] --> {"pretty.name":XX, "description":XX}
-        params_d = _rls_to_pyd(pretty_names_and_descriptions)
+        params_d = _rlist_to_pydict(pretty_names_and_descriptions) 
 
     # fill in entries for parameters for which pretty names/descriptions were
     # not provided-- these are just place-holders to make processing this
-    # easier 
-    for param in param_list:
+    # easier
+    names_index = param_list.names.index("parameters") 
+    param_names = param_list[names_index].names # pull out the list
+    for param in param_names:
         if not param in params_d.keys():
             params_d[param] = {"pretty.name":param, "description":"None provided"}
     
@@ -488,9 +490,7 @@ def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", \
     cov_str = list_of_cov_value_objects_str(table_model.dataset,\
                                             study_ids, \
                                             cov_list=covs_to_include)
-    
-    #pyqtRemoveInputHook()
-    #pdb.set_trace()
+
 
     # first try and construct an object with raw data
     if table_model.included_studies_have_raw_data():
@@ -584,6 +584,7 @@ def run_binary_ma(function_name, params, res_name="result", bin_data_name="tmp_o
     r_str = "%s<-%s(%s, %s)" % (res_name, function_name, bin_data_name,\
                                     params_df.r_repr())
     print "\n\n(run_binary_ma): executing:\n %s\n" % r_str
+
     ro.r(r_str)
     result = ro.r("%s" % res_name)
     return parse_out_results(result)
@@ -715,7 +716,7 @@ def parse_out_results(result):
     image_var_name_d, image_params_paths_d, image_path_d  = {}, {}, {}
     image_order = None
 
-    for text_n, text in zip(list(result.getnames()), list(result)):
+    for text_n, text in zip(list(result.names), list(result)):
         # some special cases, notably the plot names and the path for a forest
         # plot. TODO in the case of diagnostic data, we're probably going to 
         # need to parse out multiple forest plot param objects...
@@ -852,7 +853,7 @@ def _rls_to_pyd(r_ls):
     # base case is that the type is a native python type, rather
     # than an Rvector
     d = {}
-    for name, val in zip(r_ls.getnames(), r_ls):
+    for name, val in zip(r_ls.names, r_ls):
         ###
         # I know we shouldn't wrap the whole thing in a (generic) try block,
         # but rpy2 can throw some funky exceptions...
@@ -866,7 +867,7 @@ def _rls_to_pyd(r_ls):
                     d[name] = val
                 elif str(val)=="NULL":
                     d[name] = None
-                elif str(val.getnames())=="NULL":
+                elif str(val.names=="NULL"):
                     ###
                     # 11/28/11 -- swapping val[0] for the as.character
                     # version below to avoid parsing an ugly structure.
@@ -891,18 +892,36 @@ def _rls_to_pyd(r_ls):
     return d
 
 
-def _rlist_to_pydict(r_ls):
-    # need to fix this; recursively build dictionary!!!!
+def _is_a_list(x):
+    # @TODO add additional vector types?
+    return type(x) in [rpy2.robjects.vectors.StrVector, 
+                       rpy2.robjects.vectors.ListVector]
+
+def _rlist_to_pydict(r_ls, recurse=True):
+    '''
+    parse rpy2 data structure into analogous Python
+    dictionary. if the recursive flag is true, this is 
+    done recursively, i.e., if a key points to an R
+    list, that list will be converted, too. 
+    '''
     d = {}
-    names = r_ls.getnames()
+    names = r_ls.names
+
     for name, val in zip(names, r_ls):
-        if isinstance(val, rpy2.robjects.RVector) and not str(val.getnames())=="NULL":
+        print "name {0}, val {1}".format(name, val)
+        if recurse and _is_a_list(val) and not str(val.names)=="NULL":
+            print "recursing... \n"
             d[name] = _rlist_to_pydict(val)
+
         cur_x = list(val)
         if len(cur_x) == 1:
+            # if it's a singleton, extract the
+            # the value and stick it in the dict.
+            # -- this is essentially the 'base case'
             d[name] = cur_x[0]
-        else:
-            d[name] = cur_x
+        elif not recurse:
+            d[name] = cur_x # not a singleton list
+
     return d
 
 def _get_c_str_for_col(m, i):
