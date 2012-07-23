@@ -13,7 +13,7 @@ Otherwise, you'll need to install the necessary R packages. To this end, you'll 
     > R CMD BUILD openmetar
     > R CMD INSTALL openmetar
 
-For compatibility reasons, we use the slightly dated R 2.10. 
+On this branch, we have moved to R 2.15!
 
 Once R is setup for OpenMeta, you'll need to install Python (we use 2.7) and the necessary libraries. You'll need PyQT (and QT: see http://www.riverbankcomputing.co.uk/software/pyqt/intro) installed -- we use PyQt 4.9; your mileage may vary with other versions. 
 
