@@ -26,12 +26,14 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     scale.str <- get.scale(params)
     transform.name <- get.transform.name(om.data)
     plot.options <- set.plot.options(params)
+    if (length(om.dta@g1O1) > 1 && length(binary)) {}
+    
     
     if (params$fp_plot_lb == "[default]") {
         plot.options$plot.lb <- params$fp_plot_lb
     } else {
         plot.lb <- eval(parse(text=paste("c(", params$fp_plot_lb, ")", sep="")))
-        plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(plot.lb)
+        plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(plot.lb,n)
     } 
     
     if (params$fp_plot_ub == "[default]")  {
@@ -90,7 +92,7 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     lb <- c(lb, lb.overall)
     ub <- c(ub, ub.overall)
     
-    y.disp <- eval(call(transform.name, params$measure))$display.scale(y)
+    y.disp <- eval(call(transform.name, params$measure))$display.scale(y,binary.databinary.data@g1O2)
     lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb)
     ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub)
     

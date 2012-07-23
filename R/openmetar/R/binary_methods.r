@@ -12,9 +12,10 @@ library(metafor)
 
 binary.logit.metrics <- c("PLO")
 binary.log.metrics <- c("OR", "RR", "PLN")
-binary.arcsine.metrics <- c("PAS", "PFT")
+binary.arcsine.metrics <- c("PAS")
 # The two-arm metric arcsine risk difference (AS) is not included in binary.arcsine.metrics
 # so that display scale will be same as calculation scale.
+binary.freeman_tukey.metrics <- c("PFT")
 binary.two.arm.metrics <- c("OR", "RD", "RR", "AS", "YUQ", "YUY")
 binary.one.arm.metrics <- c("PR", "PLN", "PLO", "PAS", "PFT")
 
@@ -35,27 +36,32 @@ compute.bin.point.estimates <- function(binary.data, params) {
 }
 
 binary.transform.f <- function(metric.str){
-    display.scale <- function(x){
+    display.scale <- function(x, ...){
         if (metric.str %in% binary.log.metrics){
             exp(x)
         } else if (metric.str %in% binary.logit.metrics){
             invlogit(x)
         } else if (metric.str %in% binary.arcsine.metrics){
             invarcsine.sqrt(x)
-        } else {  
+        } else if (metric.str %in% binary.freeman_tukey.metrics){
+            invfreeman_tukey(x, n)
+        }
+        else {  
             # identity function
             x
         }
     }    
 
     
-    calc.scale <- function(x){
+    calc.scale <- function(x, ...){
         if (metric.str %in% binary.log.metrics){
             log(x)
         } else if (metric.str %in% binary.logit.metrics){
             logit(x)   
         } else if (metric.str %in% binary.arcsine.metrics){
             arcsine.sqrt(x) 
+        } else if (metric.str %in% binary.freeman_tukey.metrics){
+            freeman_tukey(x, n)
         } else {
             # identity function
             x
