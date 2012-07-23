@@ -181,19 +181,20 @@ create.summary.disp <- function(om.data, params, res, model.title) {
         table.titles <- c(res.title, het.title)
     }
     
-    if (transform.name == "binary.transform.f") {
+    #if (transform.name == "binary.transform.f") {
       # Add raw data title and array 
-      raw.data.array <- create.binary.data.array(om.data, params, res)
-      table.titles <- c(" Study Data", table.titles)
-      raw.data.list <- list("arr0"=raw.data.array)
-      arrays <- c(raw.data.list, arrays)
-    } else if (transform.name == "continuous.transform.f") {
-      raw.data.array <- create.cont.data.array(om.data, params, res)
-      table.titles <- c(" Study Data", table.titles)
-      raw.data.list <- list("arr0"=raw.data.array)
-      arrays <- c(raw.data.list, arrays)
-    }
-  
+      # raw.data.array <- create.binary.data.array(om.data, params, res)
+      # table.titles <- c(" Study Data", table.titles)
+      # raw.data.list <- list("arr0"=raw.data.array)
+      # arrays <- c(raw.data.list, arrays)
+    #} else if (transform.name == "continuous.transform.f") {
+      #raw.data.array <- create.cont.data.array(om.data, params, res)
+      #table.titles <- c(" Study Data", table.titles)
+      #raw.data.list <- list("arr0"=raw.data.array)
+      #arrays <- c(raw.data.list, arrays)
+    #}
+    # Above code can be re-enabled when write.x.study.data.to.file is fixed.
+    
     summary.disp <- list("model.title" = model.title, "table.titles" = table.titles, "arrays" = arrays,
                          "MAResults" = res)
     class(summary.disp) <- "summary.display"
@@ -463,7 +464,10 @@ get.scale <- function(params) {
         scale <- "logit"
     } else if (metric.is.arcsine.scale(params$measure)) {
         scale <- "arcsine"
-    } else {
+    } else if (metric.is.arcsine.scale(params$measure)) {
+      scale <- "arcsine"
+    }  
+      else {
       scale <- "standard"
     }
     scale
@@ -481,6 +485,10 @@ metric.is.arcsine.scale <- function(metric) {
   metric %in% c(binary.arcsine.metrics)
 }
 
+metric.is.freeman_tukey.scale <- function(metric) {
+  metric %in% c(binary.freeman_tukey.metrics)
+}
+
 logit <- function(x) {
     log(x/(1-x))
 }
@@ -495,4 +503,17 @@ arcsine.sqrt <- function(x) {
 
 invarcsine.sqrt <- function(x) {
     (sin(x))^2
+}
+
+freeman_tukey <- function(x,n) {
+    r <- x*n
+    # r is the number of successes in the proportion x.
+    0.5 * (asin(sqrt(r / (n + 1))) + asin(sqrt((r + 1) / (n + 1))))
+}
+
+invfreeman_tukey <- function(x, n) {
+   # See "The Inverse of the Freeman-Tukey Double Arcsine Transformations,"
+   # The American Statistician, Nov. 1978, Vol. 32, No. 4.
+   
+   p <- 0.5 * (1 - sign(cos(2*x)) * (1 - (sin(2*x) + (sin(2*x) - 1/sin(2*x)) / n)^2)^0.5)
 }
