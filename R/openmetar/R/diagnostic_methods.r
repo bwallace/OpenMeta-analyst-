@@ -60,17 +60,17 @@ compute.diag.point.estimates <- function(diagnostic.data, params) {
     
     y <- terms$numerator / terms$denominator
       
-    diagnostic.data@y <- eval(call("diagnostic.transform.f", params$measure))$calc.scale(y)
+    diagnostic.data@y <- eval(call("diagnostic.transform.f", params$measure))$calc.scale(y, n)
  
     diagnostic.data@SE <- switch(metric,
-        Sens <- sqrt((1 / TP) + (1 / FN)), 
-        Spec <- sqrt((1 / TN) + (1 / FP)),
-        PPV <- sqrt((1 / TP) + (1 / FP)),
-        NPV <- sqrt((1 / TN) + (1 / FN)),
-        Acc <- sqrt((1 / (TP + TN)) + (1 / (FP + FN))),
-        PLR <- sqrt((1 / TP) - (1 / (TP + FN)) + (1 / FP) - (1 / (TN + FP))),
-        NLR <- sqrt((1 / TP) - (1 / (TP + FN)) + (1 / FP) - (1 / (TN + FP))),
-        DOR <- sqrt((1 / TP) + (1 / FN) + (1 / FP) + (1 / TN)))
+        Sens = sqrt((1 / TP) + (1 / FN)), 
+        Spec = sqrt((1 / TN) + (1 / FP)),
+        PPV = sqrt((1 / TP) + (1 / FP)),
+        NPV = sqrt((1 / TN) + (1 / FN)),
+        Acc = sqrt((1 / (TP + TN)) + (1 / (FP + FN))),
+        PLR = sqrt((1 / TP) - (1 / (TP + FN)) + (1 / FP) - (1 / (TN + FP))),
+        NLR = sqrt((1 / TP) - (1 / (TP + FN)) + (1 / FP) - (1 / (TN + FP))),
+        DOR = sqrt((1 / TP) + (1 / FN) + (1 / FP) + (1 / TN)))
 
     diagnostic.data
 }
@@ -122,7 +122,7 @@ compute.diagnostic.terms <- function(raw.data, params) {
 }
 
 diagnostic.transform.f <- function(metric.str){
-    display.scale <- function(x){
+    display.scale <- function(x, ...){
         if (metric.str %in% diagnostic.log.metrics){
             exp(x)
         } else if (metric.str %in% diagnostic.logit.metrics) {
@@ -133,7 +133,7 @@ diagnostic.transform.f <- function(metric.str){
         }
     }
     
-    calc.scale <- function(x){
+    calc.scale <- function(x, ...){
         if (metric.str %in% diagnostic.log.metrics){
             log(x)
         } else if (metric.str %in% diagnostic.logit.metrics){
