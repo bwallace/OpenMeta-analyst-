@@ -44,7 +44,11 @@ binary.transform.f <- function(metric.str){
         } else if (metric.str %in% binary.arcsine.metrics){
             invarcsine.sqrt(x)
         } else if (metric.str %in% binary.freeman_tukey.metrics){
-            invfreeman_tukey(x, n)
+              if (is.list(ni)) {  
+                  transf.ipft.hm(x, targs=ni)
+              } else {
+                  transf.ipft(x, ni)
+              }
         }
         else {  
             # identity function
@@ -326,11 +330,12 @@ binary.fixed.mh <- function(binary.data, params){
                 # a dictionary of images (mapping titles to image paths) and a list of texts
                 # (mapping titles to pretty-printed text). In this case we have only one 
                 # of each. 
-                #     
+                # 
+                references <- "Mantel, N., & Haenszel, W. (1959) Statistical aspects of the analysis of data from retrospective studies of disease. Journal of the National Cancer Institute, 22, 719-748."
                 plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
                 images <- c("Forest Plot"=forest.path)
                 plot.names <- c("forest plot"="forest_plot")
-                results <- list("images"=images, "Summary"=summary.disp, 
+                results <- list("images"=images, "Summary"=summary.disp, "References"=references, 
                             "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)
             }
         }
