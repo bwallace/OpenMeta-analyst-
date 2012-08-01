@@ -50,7 +50,7 @@ except:
     raise Exception, "unable to create temporary directory for R results! make sure you have sufficient permissions."
 
 def reset_Rs_working_dir():
-    ro.r("setwd(%s)") % os.getcwd()
+    ro.r("setwd('%s')") % os.getcwd()
 
 def impute_two_by_two(bin_data_dict):
     print "computing 2x2 table via R..."
@@ -618,7 +618,6 @@ def run_diagnostic_multi(function_names, list_of_params, res_name="result", diag
     r_params_str = "list(%s)" % ",".join([_to_R_params(p) for p in list_of_params])
     ro.r("list.of.params <- %s" % r_params_str)
     ro.r("f.names <- c(%s)" % ",".join(["'%s'" % f_name for f_name in function_names]))
-
     result = ro.r("multiple.diagnostic(f.names, list.of.params, %s)" % diag_data_name)
 
     return parse_out_results(result)
