@@ -936,8 +936,7 @@ diagnostic.bivariate.ml <- function(diagnostic.data, params){
 
     adjusted.counts <- adjust.raw.data(diagnostic.data, params)
 
-    biv.results <- bivariate.dx.test(adjusted.counts$TP, adjusted.counts$FP, 
-                                    adjusted.counts$FN, adjusted.counts$TN)
+    biv.results <- bivariate.dx.test(adjusted.counts$TP, adjusted.counts$FP, adjusted.counts$FN, adjusted.counts$TN)
 
     
     #### 
