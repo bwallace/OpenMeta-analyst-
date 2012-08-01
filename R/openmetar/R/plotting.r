@@ -26,12 +26,16 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     scale.str <- get.scale(params)
     transform.name <- get.transform.name(om.data)
     plot.options <- set.plot.options(params)
+    # Set n, the vector of numbers of studies, for PFT metric.
+    if (params$measure=="PFT" && length(om.data@g1O1) > 0 && length(om.data@g1O2) > 0) {
+        n <- om.data@g1O1 + om.data@g1O2  # Number of subjects - needed for Freeman-Tukey double arcsine trans.
+    }    
     
     if (params$fp_plot_lb == "[default]") {
         plot.options$plot.lb <- params$fp_plot_lb
     } else {
         plot.lb <- eval(parse(text=paste("c(", params$fp_plot_lb, ")", sep="")))
-        plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(plot.lb)
+        plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(plot.lb, list(ni=n))
     } 
     
     if (params$fp_plot_ub == "[default]")  {
@@ -41,7 +45,7 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
         if (scale.str == "logit") {
           plot.ub <- min(1, plot.ub)
         }  
-        plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(plot.ub)
+        plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(plot.ub, list(ni=n))
     } 
     
     digits.str <- paste("%.", params$digits, "f", sep="")
@@ -86,13 +90,17 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     lb <- study.ci.bounds$lb
     ub <- study.ci.bounds$ub
     
-    y <- c(y, y.overall)
-    lb <- c(lb, lb.overall)
-    ub <- c(ub, ub.overall)
+    y.disp <- eval(call(transform.name, params$measure))$display.scale(y, n)
+    lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb, n)
+    ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub, n)
     
-    y.disp <- eval(call(transform.name, params$measure))$display.scale(y)
-    lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb)
-    ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub)
+    y.overall.disp <- eval(call(transform.name, params$measure))$display.scale(y.overall, list(ni=n))
+    lb.overall.disp <- eval(call(transform.name, params$measure))$display.scale(lb.overall, list(ni=n))
+    ub.overall.disp <- eval(call(transform.name, params$measure))$display.scale(ub.overall, list(ni=n))
+    
+    y.disp <- c(y.disp, y.overall.disp)
+    lb.disp <- c(lb.disp, lb.overall.disp)
+    ub.disp <- c(ub.disp, ub.overall.disp)
     
     effects.disp <- list(y.disp=y.disp, lb.disp=lb.disp, ub.disp=ub.disp)
     # these values will be displayed on the plot
@@ -112,8 +120,8 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     plot.range <- calc.plot.range(effects, plot.options)
     plot.data$plot.range <- plot.range
     # Put plot range in display scale to update params.
-    plot.range.disp.lower <- eval(call(transform.name, params$measure))$display.scale(plot.range[1])
-    plot.range.disp.upper <- eval(call(transform.name, params$measure))$display.scale(plot.range[2])
+    plot.range.disp.lower <- eval(call(transform.name, params$measure))$display.scale(plot.range[1], list(ni=n))
+    plot.range.disp.upper <- eval(call(transform.name, params$measure))$display.scale(plot.range[2], list(ni=n))
     changed.params <- plot.options$changed.params
     if (plot.options$plot.lb != plot.range.disp.lower) {
         changed.params$fp_plot_lb <- plot.range.disp.lower  
@@ -198,6 +206,10 @@ create.plot.data.continuous <- function(cont.data, params, res, selected.cov = N
 
 create.plot.data.overall <- function(om.data, params, res, res.overall){
     scale.str <- get.scale(params)
+    # Set n, the number of studies, for PFT metric.
+    if (params$measure=="PFT" && length(om.data@g1O1) > 0 && length(om.data@g1O2) > 0) {
+      n <- om.data@g1O1 + om.data@g1O2  # Number of subjects
+    }
     
     ## TO DO - don't really nead three transforms - the transform only depends on the measure.
     transform.name <- get.transform.name(om.data)
@@ -210,13 +222,13 @@ create.plot.data.overall <- function(om.data, params, res, res.overall){
         plot.options$plot.lb <- params$fp_plot_lb
     } else {
         plot.lb <- eval(parse(text=paste("c(", params$fp_plot_lb, ")", sep="")))
-        plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(plot.lb)
+        plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(plot.lb, n)
     }
     if (params$fp_plot_ub == "[default]") {
         plot.options$plot.ub <- params$fp_plot_ub
     } else {
         plot.ub <- eval(parse(text=paste("c(", params$fp_plot_ub, ")", sep="")))
-        plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(plot.ub)
+        plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(plot.ub, n)
     } 
     if (metric.is.log.scale(params$measure)) {
         plot.options$show.y.axis <- FALSE
@@ -238,9 +250,9 @@ create.plot.data.overall <- function(om.data, params, res, res.overall){
       ub <- c(ub, res[[count]]$ci.ub)
     }
       
-    y.disp <- eval(call(transform.name, params$measure))$display.scale(y)
-    lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb)
-    ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub)                   
+    y.disp <- eval(call(transform.name, params$measure))$display.scale(y, n)
+    lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb, n)
+    ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub, n)                   
     effects.disp <- list(y.disp=y.disp, lb.disp=lb.disp, ub.disp=ub.disp)
     plot.data$effects.disp <- effects.disp
     
@@ -258,8 +270,8 @@ create.plot.data.overall <- function(om.data, params, res, res.overall){
     plot.range <- calc.plot.range(effects, plot.options)
     plot.data$plot.range <- plot.range
     # Put plot range in display scale to update params.
-    plot.range.disp.lower <- eval(call(transform.name, params$measure))$display.scale(plot.range[1])
-    plot.range.disp.upper <- eval(call(transform.name, params$measure))$display.scale(plot.range[2])
+    plot.range.disp.lower <- eval(call(transform.name, params$measure))$display.scale(plot.range[1], list(ni=n))
+    plot.range.disp.upper <- eval(call(transform.name, params$measure))$display.scale(plot.range[2], list(ni=n))
     changed.params <- plot.options$changed.params
     if (plot.options$plot.lb != plot.range.disp.lower) {
         changed.params$fp_plot_lb <- plot.range.disp.lower  
@@ -271,7 +283,7 @@ create.plot.data.overall <- function(om.data, params, res, res.overall){
         plot.data$summary.est <- res.overall$b[1]
         # Pass in calc. scale if metric is log scale
     } else {
-        plot.data$summary.est <- eval(call(transform.name, params$measure))$display.scale(res.overall$b[1])
+        plot.data$summary.est <- eval(call(transform.name, params$measure))$display.scale(res.overall$b[1], n)
     }
     plot.data$changed.params <- changed.params
     plot.data
@@ -334,10 +346,15 @@ create.plot.data.loo <- function(om.data, params, res) {
 
 # create subgroup analysis plot data
 create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, selected.cov=NULL) {
+   
     grouped.data <- subgroup.data$grouped.data
     res <- subgroup.data$results
     subgroup.list <- subgroup.data$subgroup.list
     scale.str <- get.scale(params)
+    # Set n, the number of studies, for PFT metric.
+    if (params$measure=="PFT" && length(om.data@g1O1) > 1 && length(om.data@g1O2)) {
+      n <- om.data@g1O1 + om.data@g1O2  # Number of subjects
+    }
     
     ## TO DO - don't really nead three transforms - the transform only depends on the measure.
     if (data.type == "continuous") {
@@ -421,13 +438,13 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, 
         plot.options$plot.lb <- params$fp_plot_lb
     } else {
         plot.lb <- eval(parse(text=paste("c(", params$fp_plot_lb, ")", sep="")))
-        plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(plot.lb)
+        plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(plot.lb, n)
     }
     if (params$fp_plot_ub == "[default]") {
         plot.options$plot.ub <- params$fp_plot_ub
     } else {
         plot.ub <- eval(parse(text=paste("c(", params$fp_plot_ub, ")", sep="")))
-        plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(plot.ub)
+        plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(plot.ub, n)
     }
 
     # should we show summary line for subgroup plots??
@@ -435,9 +452,9 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, 
                       types=types,
                       scale = scale.str,
                       options = plot.options)      
-    y.disp <- eval(call(transform.name, params$measure))$display.scale(y)
-    lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb)
-    ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub)
+    y.disp <- eval(call(transform.name, params$measure))$display.scale(y, n)
+    lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb, n)
+    ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub, n)
     
     # these values will be displayed on the plot
     effects.disp <- list(y.disp=y.disp, lb.disp=lb.disp, ub.disp=ub.disp)
@@ -458,8 +475,8 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, 
     plot.range <- calc.plot.range(effects, plot.options)
     plot.data$plot.range <- plot.range
     # Put plot range in display scale to update params.
-    plot.range.disp.lower <- eval(call(transform.name, params$measure))$display.scale(plot.range[1])
-    plot.range.disp.upper <- eval(call(transform.name, params$measure))$display.scale(plot.range[2])
+    plot.range.disp.lower <- eval(call(transform.name, params$measure))$display.scale(plot.range[1], list(ni=n))
+    plot.range.disp.upper <- eval(call(transform.name, params$measure))$display.scale(plot.range[2], list(ni=n))
     changed.params <- plot.options$changed.params
     if (plot.options$plot.lb != plot.range.disp.lower) {
         changed.params$fp_plot_lb <- plot.range.disp.lower  

@@ -120,6 +120,10 @@ create.summary.disp <- function(om.data, params, res, model.title) {
     tau2 <- sprintf(digits.str, res$tau2)
     degf <- res$k - 1
     QLabel =  paste("Q(df=", degf, ")", sep="")
+    # Set n, the vector of numbers of studies, for PFT metric.
+    if (params$measure=="PFT" && length(om.data@g1O1) > 0 && length(om.data@g1O2) > 0) {
+      n <- om.data@g1O1 + om.data@g1O2  # Number of subjects - needed for Freeman-Tukey double arcsine trans.
+    }
     if (!is.null(res$QE)) {
       I2 <- max(0, (res$QE - degf)/res$QE)
       I2 <- paste(100 * round(I2, digits = 2), "%", sep="")
@@ -140,9 +144,9 @@ create.summary.disp <- function(om.data, params, res, model.title) {
     }
         
     res.title <- " Model Results"
-    y.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$b))
-    lb.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$ci.lb))
-    ub.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$ci.ub))
+    y.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$b, list(ni=n)))
+    lb.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$ci.lb, list(ni=n)))
+    ub.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$ci.ub, list(ni=n)))
     se <- sprintf(digits.str, res$se)
    
     
@@ -181,19 +185,20 @@ create.summary.disp <- function(om.data, params, res, model.title) {
         table.titles <- c(res.title, het.title)
     }
     
-    if (transform.name == "binary.transform.f") {
+    #if (transform.name == "binary.transform.f") {
       # Add raw data title and array 
-      raw.data.array <- create.binary.data.array(om.data, params, res)
-      table.titles <- c(" Study Data", table.titles)
-      raw.data.list <- list("arr0"=raw.data.array)
-      arrays <- c(raw.data.list, arrays)
-    } else if (transform.name == "continuous.transform.f") {
-      raw.data.array <- create.cont.data.array(om.data, params, res)
-      table.titles <- c(" Study Data", table.titles)
-      raw.data.list <- list("arr0"=raw.data.array)
-      arrays <- c(raw.data.list, arrays)
-    }
-  
+      # raw.data.array <- create.binary.data.array(om.data, params, res)
+      # table.titles <- c(" Study Data", table.titles)
+      # raw.data.list <- list("arr0"=raw.data.array)
+      # arrays <- c(raw.data.list, arrays)
+    #} else if (transform.name == "continuous.transform.f") {
+      #raw.data.array <- create.cont.data.array(om.data, params, res)
+      #table.titles <- c(" Study Data", table.titles)
+      #raw.data.list <- list("arr0"=raw.data.array)
+      #arrays <- c(raw.data.list, arrays)
+    #}
+    # Above code can be re-enabled when write.x.study.data.to.file is fixed.
+    
     summary.disp <- list("model.title" = model.title, "table.titles" = table.titles, "arrays" = arrays,
                          "MAResults" = res)
     class(summary.disp) <- "summary.display"
@@ -321,9 +326,9 @@ create.overall.display <- function(res, study.names, params, model.title, data.t
       ub <- res[[count]]$ci.ub
       se <- res[[count]]$se
       digits.str <- paste("%.", params$digits, "f", sep="")
-      y.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(y))
-      lb.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(lb))
-      ub.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(ub))
+      y.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(y, n))
+      lb.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(lb, n))
+      ub.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(ub, n))
       se.disp <- sprintf(digits.str, se)
       
       if (!is.null(res[[count]]$pval)) {
@@ -372,9 +377,9 @@ create.subgroup.display <- function(res, study.names, params, model.title, data.
       ub <- res[[count]]$ci.ub
       se <- res[[count]]$se
       digits.str <- paste("%.", params$digits, "f", sep="")
-      y.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(y))
-      lb.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(lb))
-      ub.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(ub))
+      y.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(y, n))
+      lb.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(lb, n))
+      ub.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(ub, n))
       se.disp <- sprintf(digits.str, se)
       if (!is.null(res[[count]]$QE)) {
         degf <- res[[count]]$k - 1
@@ -433,11 +438,11 @@ calc.ci.bounds <- function(om.data, params) {
 write.results.to.file <- function(om.data, params, res, outpath) {
     # write results to file
     transform.name <- get.transform.name(om.data) 
-    results.df <- data.frame("Summary.estimate" = eval(call(transform.name, params$measure))$display.scale(res$b),
-                             "Lower.bound" = eval(call(transform.name, params$measure))$display.scale(res$ci.lb),
-                             "Upper.bound" = eval(call(transform.name, params$measure))$display.scale(res$ci.ub),
+    results.df <- data.frame("Summary.estimate" = eval(call(transform.name, params$measure))$display.scale(res$b, n),
+                             "Lower.bound" = eval(call(transform.name, params$measure))$display.scale(res$ci.lb, n),
+                             "Upper.bound" = eval(call(transform.name, params$measure))$display.scale(res$ci.ub, n),
                              "p-Value" = res$pval)
-    write.csv(results.df, file=outpath, append=FALSE, row.names=FALSE)
+    write.csv(results.df, file=outpath, row.names=FALSE)
 }
 
 get.transform.name <- function(om.data) { 
@@ -463,7 +468,10 @@ get.scale <- function(params) {
         scale <- "logit"
     } else if (metric.is.arcsine.scale(params$measure)) {
         scale <- "arcsine"
-    } else {
+    } else if (metric.is.arcsine.scale(params$measure)) {
+      scale <- "arcsine"
+    }  
+      else {
       scale <- "standard"
     }
     scale
@@ -481,6 +489,10 @@ metric.is.arcsine.scale <- function(metric) {
   metric %in% c(binary.arcsine.metrics)
 }
 
+metric.is.freeman_tukey.scale <- function(metric) {
+  metric %in% c(binary.freeman_tukey.metrics)
+}
+
 logit <- function(x) {
     log(x/(1-x))
 }
@@ -495,4 +507,27 @@ arcsine.sqrt <- function(x) {
 
 invarcsine.sqrt <- function(x) {
     (sin(x))^2
+}
+
+freeman_tukey <- function(x,n) {
+    # Use metafor's FT
+    transf.pft(xi=x, ni=n)
+    #r <- x*n
+    # r is the number of successes in the proportion x.
+    #0.5 * (asin(sqrt(r / (n + 1))) + asin(sqrt((r + 1) / (n + 1))))
+}
+
+invfreeman_tukey <- function(x, n) {
+   # n is either a 
+   if (is.list(n)) {
+       y <- transf.ipft.hm(xi=x, ni=n)
+   } else {
+       y <- transf.ipft(x, n)
+   }
+      
+   y
+   # See "The Inverse of the Freeman-Tukey Double Arcsine Transformations,"
+   # The American Statistician, Nov. 1978, Vol. 32, No. 4.
+   
+   #p <- 0.5 * (1 - sign(cos(2*x)) * (1 - (sin(2*x) + (sin(2*x) - 1/sin(2*x)) / n)^2)^0.5)
 }

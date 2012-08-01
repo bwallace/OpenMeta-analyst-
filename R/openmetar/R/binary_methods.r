@@ -12,9 +12,10 @@ library(metafor)
 
 binary.logit.metrics <- c("PLO")
 binary.log.metrics <- c("OR", "RR", "PLN")
-binary.arcsine.metrics <- c("PAS", "PFT")
+binary.arcsine.metrics <- c("PAS")
 # The two-arm metric arcsine risk difference (AS) is not included in binary.arcsine.metrics
 # so that display scale will be same as calculation scale.
+binary.freeman_tukey.metrics <- c("PFT")
 binary.two.arm.metrics <- c("OR", "RD", "RR", "AS", "YUQ", "YUY")
 binary.one.arm.metrics <- c("PR", "PLN", "PLO", "PAS", "PFT")
 
@@ -35,27 +36,36 @@ compute.bin.point.estimates <- function(binary.data, params) {
 }
 
 binary.transform.f <- function(metric.str){
-    display.scale <- function(x){
+    display.scale <- function(x, ...){
         if (metric.str %in% binary.log.metrics){
             exp(x)
         } else if (metric.str %in% binary.logit.metrics){
             invlogit(x)
         } else if (metric.str %in% binary.arcsine.metrics){
             invarcsine.sqrt(x)
-        } else {  
+        } else if (metric.str %in% binary.freeman_tukey.metrics){
+              if (is.list(ni)) {  
+                  transf.ipft.hm(x, targs=ni)
+              } else {
+                  transf.ipft(x, ni)
+              }
+        }
+        else {  
             # identity function
             x
         }
     }    
 
     
-    calc.scale <- function(x){
+    calc.scale <- function(x, ...){
         if (metric.str %in% binary.log.metrics){
             log(x)
         } else if (metric.str %in% binary.logit.metrics){
             logit(x)   
         } else if (metric.str %in% binary.arcsine.metrics){
             arcsine.sqrt(x) 
+        } else if (metric.str %in% binary.freeman_tukey.metrics){
+            freeman_tukey(x, n)
         } else {
             # identity function
             x
@@ -320,11 +330,12 @@ binary.fixed.mh <- function(binary.data, params){
                 # a dictionary of images (mapping titles to image paths) and a list of texts
                 # (mapping titles to pretty-printed text). In this case we have only one 
                 # of each. 
-                #     
+                # 
+                references <- "Mantel, N., & Haenszel, W. (1959) Statistical aspects of the analysis of data from retrospective studies of disease. Journal of the National Cancer Institute, 22, 719-748."
                 plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
                 images <- c("Forest Plot"=forest.path)
                 plot.names <- c("forest plot"="forest_plot")
-                results <- list("images"=images, "Summary"=summary.disp, 
+                results <- list("images"=images, "Summary"=summary.disp, "References"=references, 
                             "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)
             }
         }
