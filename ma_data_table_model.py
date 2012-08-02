@@ -1005,7 +1005,13 @@ class DatasetModel(QAbstractTableModel):
 
         
     def blank_all_studies(self, include_them):
-        for study in self.dataset.studies:
+        # note that we do *not* change the status of the
+        # last study, because this is assumed to be an
+        # auto-added (blank) study. formerly, when
+        # 'include all' was used, this was being flipped
+        # to true for the empty studies, causing issues.
+        # this is a fix for issue #178
+        for study in self.dataset.studies[:-1]:
             study.include=include_them
     
     ###
