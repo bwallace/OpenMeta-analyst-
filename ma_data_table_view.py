@@ -1,6 +1,6 @@
 #############################################################
 #  Byron C. Wallace                                         #
-#  Tufts Medical Center                                     #
+#  Brown University                                         #
 #  OpenMeta(analyst)                                        #
 #                                                           #
 #                                                           #
@@ -188,9 +188,11 @@ class MADataTable(QtGui.QTableView):
 
     def include_all_studies(self):
         self.model().include_all_studies()
-    
+        self.model().reset()
+
     def exclude_all_studies(self):
         self.model().exclude_all_studies()
+        self.model().reset()
 
     def keyPressEvent(self, event):                                       
         if (event.modifiers() & QtCore.Qt.ControlModifier):
