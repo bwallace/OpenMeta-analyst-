@@ -425,14 +425,31 @@ results.short.list <- function(res) {
     res.short <- list("b"=res$b[1], "ci.lb"=res$ci.lb, "ci.ub"=res$ci.ub)
 }
 
-calc.ci.bounds <- function(om.data, params) {
+calc.ci.bounds <- function(om.data, params, ...) {
     y <- om.data@y
     se <- om.data@SE
     alpha <- 1.0-(params$conf.level/100.0)
     mult <- abs(qnorm(alpha/2.0))
     lb <- y - mult*om.data@SE
     ub <- y + mult*om.data@SE
+    # Some cleanup when bounds are outside the range of the transformation.
+    if (params$measure=="PR") {
+      for (i in 1:length(lb)) {  
+        lb[i] <- max(lb[i], 0)
+        ub[i] <- min(ub[i], 1)
+      }
+    }
+    if (params$measure=="PFT") {
+        for (i in 1:length(lb)) {  
+            lb[i] <- max(lb[i], transf.pft(0, n[i]))
+            ub[i] <- min(ub[i], transf.pft(1, n[i]))
+        }
+    }    
     study.ci.bounds <- list(lb=lb, ub=ub)
+}
+
+calc.freeman_tukey.ci.bounds <- function(om.data, params) {
+    
 }
 
 write.results.to.file <- function(om.data, params, res, outpath) {
@@ -510,17 +527,19 @@ invarcsine.sqrt <- function(x) {
 }
 
 freeman_tukey <- function(x,n) {
-    # Use metafor's FT
-    transf.pft(xi=x, ni=n)
-    #r <- x*n
-    # r is the number of successes in the proportion x.
-    #0.5 * (asin(sqrt(r / (n + 1))) + asin(sqrt((r + 1) / (n + 1))))
+    if (length(x)==1) {
+        hm <- 1/mean(1/n)
+        y <- transf.pft(xi=x, ni=hm)
+    } else {
+        y <- transf.pft(xi=x, ni=n)
+    }
+    y
 }
 
 invfreeman_tukey <- function(x, n) {
    # n is either a 
-   if (is.list(n)) {
-       y <- transf.ipft.hm(xi=x, ni=n)
+   if (length(x)==1) {
+       y <- transf.ipft.hm(xi=x, targs=list(ni=n))
    } else {
        y <- transf.ipft(x, n)
    }

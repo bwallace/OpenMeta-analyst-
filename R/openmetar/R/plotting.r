@@ -35,7 +35,7 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
         plot.options$plot.lb <- params$fp_plot_lb
     } else {
         plot.lb <- eval(parse(text=paste("c(", params$fp_plot_lb, ")", sep="")))
-        plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(plot.lb, list(ni=n))
+        plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(plot.lb, n)
     } 
     
     if (params$fp_plot_ub == "[default]")  {
@@ -45,7 +45,7 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
         if (scale.str == "logit") {
           plot.ub <- min(1, plot.ub)
         }  
-        plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(plot.ub, list(ni=n))
+        plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(plot.ub, n)
     } 
     
     digits.str <- paste("%.", params$digits, "f", sep="")
@@ -86,7 +86,7 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     lb.overall <- res$ci.lb[1]
     ub.overall <- res$ci.ub[1]
     y <- om.data@y
-    study.ci.bounds <- calc.ci.bounds(om.data, params)
+    study.ci.bounds <- calc.ci.bounds(om.data, params, n)
     lb <- study.ci.bounds$lb
     ub <- study.ci.bounds$ub
     
@@ -94,9 +94,13 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb, n)
     ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub, n)
     
-    y.overall.disp <- eval(call(transform.name, params$measure))$display.scale(y.overall, list(ni=n))
-    lb.overall.disp <- eval(call(transform.name, params$measure))$display.scale(lb.overall, list(ni=n))
-    ub.overall.disp <- eval(call(transform.name, params$measure))$display.scale(ub.overall, list(ni=n))
+    y.overall.disp <- eval(call(transform.name, params$measure))$display.scale(y.overall, n)
+    #forest(dat$pi, ci.lb=ci.lb, ci.ub=ci.ub, ylim=c(-0.5,8), refline=NA, xlim=c(-.5,1.8), alim=c(0,1), digits=3, xlab="Proportion")
+    #> addpoly(pred$pred, ci.lb=pred$ci.lb, ci.ub=pred$ci.ub, row=0, digits=3)
+    #> abline(h=0.5)
+    
+    lb.overall.disp <- eval(call(transform.name, params$measure))$display.scale(lb.overall, n)
+    ub.overall.disp <- eval(call(transform.name, params$measure))$display.scale(ub.overall, n)
     
     y.disp <- c(y.disp, y.overall.disp)
     lb.disp <- c(lb.disp, lb.overall.disp)
@@ -118,10 +122,16 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
                     UL = ub) 
     plot.data$effects <- effects
     plot.range <- calc.plot.range(effects, plot.options)
+    
     plot.data$plot.range <- plot.range
+    
+    if (params$measure == "PFT") {
+        
+        # Check whether   
+    }
     # Put plot range in display scale to update params.
-    plot.range.disp.lower <- eval(call(transform.name, params$measure))$display.scale(plot.range[1], list(ni=n))
-    plot.range.disp.upper <- eval(call(transform.name, params$measure))$display.scale(plot.range[2], list(ni=n))
+    plot.range.disp.lower <- eval(call(transform.name, params$measure))$display.scale(plot.range[1], n)
+    plot.range.disp.upper <- eval(call(transform.name, params$measure))$display.scale(plot.range[2], n)
     changed.params <- plot.options$changed.params
     if (plot.options$plot.lb != plot.range.disp.lower) {
         changed.params$fp_plot_lb <- plot.range.disp.lower  
@@ -270,8 +280,8 @@ create.plot.data.overall <- function(om.data, params, res, res.overall){
     plot.range <- calc.plot.range(effects, plot.options)
     plot.data$plot.range <- plot.range
     # Put plot range in display scale to update params.
-    plot.range.disp.lower <- eval(call(transform.name, params$measure))$display.scale(plot.range[1], list(ni=n))
-    plot.range.disp.upper <- eval(call(transform.name, params$measure))$display.scale(plot.range[2], list(ni=n))
+    plot.range.disp.lower <- eval(call(transform.name, params$measure))$display.scale(plot.range[1], n)
+    plot.range.disp.upper <- eval(call(transform.name, params$measure))$display.scale(plot.range[2], n)
     changed.params <- plot.options$changed.params
     if (plot.options$plot.lb != plot.range.disp.lower) {
         changed.params$fp_plot_lb <- plot.range.disp.lower  
@@ -475,8 +485,8 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, 
     plot.range <- calc.plot.range(effects, plot.options)
     plot.data$plot.range <- plot.range
     # Put plot range in display scale to update params.
-    plot.range.disp.lower <- eval(call(transform.name, params$measure))$display.scale(plot.range[1], list(ni=n))
-    plot.range.disp.upper <- eval(call(transform.name, params$measure))$display.scale(plot.range[2], list(ni=n))
+    plot.range.disp.lower <- eval(call(transform.name, params$measure))$display.scale(plot.range[1], n)
+    plot.range.disp.upper <- eval(call(transform.name, params$measure))$display.scale(plot.range[2], n)
     changed.params <- plot.options$changed.params
     if (plot.options$plot.lb != plot.range.disp.lower) {
         changed.params$fp_plot_lb <- plot.range.disp.lower  
@@ -708,24 +718,6 @@ calc.plot.range <- function(effects, plot.options) {
         plot.lb <- max(effects.min, effect.size.min - arrow.factor * effect.size.width)
         
         plot.range <- c(plot.lb, plot.ub)
-      
-        # TODO: Issa created the code below. I'm not sure what the "uncommon problem" is and
-        # I haven't observed it, so I commented out the code. I'm leaving it in case the problem arises in future. PT
-        #
-        
-        # this is an ugly solution to an uncommon problem
-        #merge.data <- data.frame(x = plot.data$types[-1][1:length(effects$ES)], y = effects$LL, z = effects$UL)
-        #merge.data <- subset(merge.data, x>0)
-        #if (length(merge.data$y) > 0) {
-        #  if (min(effects.range) >= min(merge.data$y)) { 
-        #    effects.range[1] <- min(merge.data$y)
-        #  }
-        #}
-        #if (length(merge.data$z) > 0) {
-        #  if (max(effects.range) <= max(merge.data$z)) { 
-        #    effects.range[2] <- max(merge.data$z)
-        #  }
-        # }
     }
     if (user.lb != "[default]") {
         # If the user's lb input is OK, set lower bound of range equal it.

@@ -44,13 +44,14 @@ binary.transform.f <- function(metric.str){
         } else if (metric.str %in% binary.arcsine.metrics){
             invarcsine.sqrt(x)
         } else if (metric.str %in% binary.freeman_tukey.metrics){
-              if (is.list(ni)) {  
-                  transf.ipft.hm(x, targs=ni)
+              if (length(x)==1) {
+                   # If x has length 1, use harmonic mean inverse transform, which takes the harmonic mean of n as second arg. 
+                   # If n also has length 1, this is the same as trans.ipft(x,n).
+                  transf.ipft.hm(x, targs=list(ni=n))
               } else {
-                  transf.ipft(x, ni)
+                  transf.ipft(x, n)
               }
-        }
-        else {  
+        } else {  
             # identity function
             x
         }
@@ -65,7 +66,9 @@ binary.transform.f <- function(metric.str){
         } else if (metric.str %in% binary.arcsine.metrics){
             arcsine.sqrt(x) 
         } else if (metric.str %in% binary.freeman_tukey.metrics){
-            freeman_tukey(x, n)
+          if (length(x)==1) {
+             transf.pft(x, n)
+          }
         } else {
             # identity function
             x
