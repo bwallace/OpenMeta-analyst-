@@ -452,11 +452,12 @@ binary.fixed.peto <- function(binary.data, params){
                 # a dictionary of images (mapping titles to image paths) and a list of texts
                 # (mapping titles to pretty-printed text). In this case we have only one 
                 # of each. 
-                #     
+                #
+                references <- "Yusuf, S., Peto, R., Lewis, J., Collins, R., & Sleight, P. (1985). Beta blockade during and after myocardial infarction: An overview of the randomized trials. Progress in Cardiovascular Disease, 27, 335-371."
                 plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
                 images <- c("Forest Plot"=forest.path)
                 plot.names <- c("forest plot"="forest_plot")
-                results <- list("images"=images, "Summary"=summary.disp, 
+                results <- list("images"=images, "Summary"=summary.disp, "References"=references,
                             "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)
             }
         }

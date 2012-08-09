@@ -426,17 +426,24 @@ results.short.list <- function(res) {
 }
 
 calc.ci.bounds <- function(om.data, params, ...) {
+    #  Calulate confidence interval bounds using normal approximation.
     y <- om.data@y
     se <- om.data@SE
     alpha <- 1.0-(params$conf.level/100.0)
     mult <- abs(qnorm(alpha/2.0))
     lb <- y - mult*om.data@SE
     ub <- y + mult*om.data@SE
-    # Some cleanup when bounds are outside the range of the transformation.
+    # Check that bounds are in the range of the transformation and truncate if necessary.
     if (params$measure=="PR") {
       for (i in 1:length(lb)) {  
         lb[i] <- max(lb[i], 0)
         ub[i] <- min(ub[i], 1)
+      }
+    }
+    if (params$measure=="PAS") {
+      for (i in 1:length(lb)) {  
+        lb[i] <- max(lb[i], asin(0))
+        ub[i] <- min(ub[i], asin(1))
       }
     }
     if (params$measure=="PFT") {
@@ -444,12 +451,9 @@ calc.ci.bounds <- function(om.data, params, ...) {
             lb[i] <- max(lb[i], transf.pft(0, n[i]))
             ub[i] <- min(ub[i], transf.pft(1, n[i]))
         }
-    }    
-    study.ci.bounds <- list(lb=lb, ub=ub)
-}
-
-calc.freeman_tukey.ci.bounds <- function(om.data, params) {
+    } 
     
+    study.ci.bounds <- list(lb=lb, ub=ub)
 }
 
 write.results.to.file <- function(om.data, params, res, outpath) {
@@ -485,10 +489,7 @@ get.scale <- function(params) {
         scale <- "logit"
     } else if (metric.is.arcsine.scale(params$measure)) {
         scale <- "arcsine"
-    } else if (metric.is.arcsine.scale(params$measure)) {
-      scale <- "arcsine"
-    }  
-      else {
+    } else {
       scale <- "standard"
     }
     scale

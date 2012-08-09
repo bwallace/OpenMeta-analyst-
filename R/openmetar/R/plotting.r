@@ -122,13 +122,16 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
                     UL = ub) 
     plot.data$effects <- effects
     plot.range <- calc.plot.range(effects, plot.options)
-    
+    # 
+    if (params$measure == "PFT") {
+      # Make sure plot range is between 0 and 1.
+      hm <- 1/
+      plot.range[1] <- max(plot.range[1], freeman_tukey(0, n))
+      plot.range[2] <- min(plot.range[2], freeman_tukey(1, n))
+    }
     plot.data$plot.range <- plot.range
     
-    if (params$measure == "PFT") {
-        
-        # Check whether   
-    }
+    
     # Put plot range in display scale to update params.
     plot.range.disp.lower <- eval(call(transform.name, params$measure))$display.scale(plot.range[1], n)
     plot.range.disp.upper <- eval(call(transform.name, params$measure))$display.scale(plot.range[2], n)
@@ -706,9 +709,9 @@ calc.plot.range <- function(effects, plot.options) {
         # If user has not supplied both lower and upper bounds (that meet the requirements), compute bounds.
         # This is a heuristic to determine a reasonable range for the displayed values - 
         # confidence intervals that exceed this range are truncated and left or right arrows are displayed instead of the full CI.
-        effect.size.max <- max(effects$ES) 
-        effect.size.min <- min(effects$ES)
-        effect.size.width <- effect.size.max - effect.size.min
+        #effect.size.max <- max(effects$ES) 
+        #effect.size.min <- min(effects$ES)
+        effect.size.width <- plot.lb.max - plot.ub.min
         
         effects.max <- max(effects$UL)
         effects.min <- min(effects$LL)
@@ -1294,8 +1297,8 @@ calc.tick.marks <- function(plot.range, scale) {
             calc.ticks <- log(user.ticks)
     }
         grid.xaxis(at = calc.ticks , label = round(ticks, 3), gp=gpar(cex=0.6))          
-  } 
-  if (scale == "logit")  {
+  } else  {
+        # Scale is not log
         if (is.na(user.ticks)) { 
           lb <- min(plot.range)
           ub <- max(plot.range)
