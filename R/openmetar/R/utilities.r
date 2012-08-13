@@ -298,7 +298,7 @@ create.regression.display <- function(res, params, display.data) {
     
     metric.name <- pretty.metric.name(as.character(params$measure)) 
     model.title <- paste("Meta-Regression\n\nMetric: ", metric.name, sep="")
-    reg.disp <- list("model.title" = model.title, "table.titles" = c("Model Results"), "arrays" = arrays)
+    reg.disp <- list("model.title" = model.title, "table.titles" = c("Model Results"), "arrays" = arrays, "MAResults" = res)
 
     class(reg.disp) <-  "summary.display"
     return(reg.disp)
