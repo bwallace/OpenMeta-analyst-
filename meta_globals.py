@@ -64,6 +64,8 @@ VANILLA, NETWORK = range(2)
 
 EMPTY_VALS = ("", None) # these indicate an empty row/cell 
 
+BASE_PATH = str(os.path.abspath(os.getcwd())) # where temporary R output should go
+
 # this is the (local) path to a (pickled) dictionary containing
 # user preferences
 PREFS_PATH = "user_prefs.dict"

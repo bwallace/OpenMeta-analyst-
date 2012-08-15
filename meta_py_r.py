@@ -50,7 +50,10 @@ except:
     raise Exception, "unable to create temporary directory for R results! make sure you have sufficient permissions."
 
 def reset_Rs_working_dir():
-    ro.r("setwd('%s')") % os.getcwd()
+    
+    #pdb.set_trace()
+    print "resetting "
+    ro.r("setwd('%s')" % BASE_PATH) 
 
 def impute_two_by_two(bin_data_dict):
     print "computing 2x2 table via R..."
@@ -300,7 +303,7 @@ def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj", \
     # issue #139 -- also grab the years
     study_years = ", ".join(["as.integer(%s)" % study.year for study in studies])
 
-    ests, SEs = table_model.get_cur_ests_and_SEs()
+    ests, SEs = table_model.get_cur_ests_and_SEs()    
     ests_str = ", ".join(_to_strs(ests))
     SEs_str = ", ".join(_to_strs(SEs))
     
@@ -374,7 +377,7 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj",
     # grab the study names. note: the list is pulled out in reverse order from the 
     # model, so we, er, reverse it.
     studies = table_model.get_studies(only_if_included=True)
-    
+
     # issue #139 -- also grab the years
     none_to_str = lambda n : str(n) if n is not None else "" # this will produce NA ints
     study_years = ", ".join(["as.integer(%s)" % none_to_str(study.year) for study in studies])
@@ -384,7 +387,7 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj",
     ests, SEs = table_model.get_cur_ests_and_SEs(only_if_included=True)
     ests_str = ", ".join(_to_strs(ests))
     SEs_str = ", ".join(_to_strs(SEs))
-        
+
     # for internal consumption; the ids preserve the order
     study_ids = [study.id for study in studies]
             
@@ -561,7 +564,7 @@ def cov_to_str(cov, study_ids, dataset, \
         else:
             if cov_value_d.has_key(study_id):
                 # factor; note the string.
-                cov_values.append("'%s'" % unicode(cov_value_d[study_id].toLatin1(), "latin1"))
+                cov_values.append("'%s'" % unicode(cov_value_d[study_id].encode('latin1'), 'latin1'))
             else:
                 cov_values.append("NA")
     cov_str += ",".join(cov_values) + ")"
