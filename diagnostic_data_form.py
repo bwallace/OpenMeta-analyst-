@@ -86,6 +86,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
     
     def impute_data(self):
         diag_data_dict = self.build_dict()
+
         if diag_data_dict is not None:
             imputed = meta_py_r.impute_diag_data(diag_data_dict, self.cur_effect)
             print "imputed data: %s" % imputed
@@ -94,7 +95,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
 
 
     def _get_row_col(self, field):
-        row = 1 if field in ("FP", "TP") else 0
+        row = 0 if field in ("FP", "TP") else 1
         col = 1 if field in ("FP", "TN") else 0
         return (row, col)
 
