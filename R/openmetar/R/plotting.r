@@ -709,8 +709,8 @@ calc.plot.range <- function(effects, plot.options) {
         # If user has not supplied both lower and upper bounds (that meet the requirements), compute bounds.
         # This is a heuristic to determine a reasonable range for the displayed values - 
         # confidence intervals that exceed this range are truncated and left or right arrows are displayed instead of the full CI.
-        #effect.size.max <- max(effects$ES) 
-        #effect.size.min <- min(effects$ES)
+        effect.size.max <- max(effects$ES) 
+        effect.size.min <- min(effects$ES)
         effect.size.width <- plot.lb.max - plot.ub.min
         
         effects.max <- max(effects$UL)

@@ -5,7 +5,11 @@ Type: Package
 Title: R component for Open Meta-Analyst
 Author: Byron Wallace <bwallace@tuftsmedicalcenter.org>
 Maintainer: Paul Trow <ptrow@tuftsmedicalcenter.org>
+<<<<<<< HEAD
 Depends: R (>= 2.9.2), grid, igraph, metafor, HSROC, lme4
+=======
+Depends: R (>= 2.9.2), grid, igraph, metafor, lme4
+>>>>>>> 34c632d2cbe702808ddbca2195009f56517ed215
 Description: R Component for Open Meta-Analyst, a graphical user interface for performing meta-analysis
 License: GPL (>= 2) 
 

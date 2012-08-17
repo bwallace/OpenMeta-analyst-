@@ -22,7 +22,7 @@ setwd("../../../dev")
 setwd("OpenMeta-analyst-/R/src/")
 
 # update if more files/modules are added
-flist <- c("classes.r", "binary_methods.r", "continuous_methods.r", 
+flist <- c("classes.r", "binary_methods.r", "bivariate.r", "continuous_methods.r", "diagnostic_methods.r",
              "data_transform.r", "meta_methods.r", "plotting.r", "meta_reg.r", "utilities.r")  
-package.skeleton(name="openmetar", path="../", code_files=flist)
+package.skeleton(name="openmetar", path="../../", code_files=flist)
 
