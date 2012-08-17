@@ -50,8 +50,6 @@ except:
     raise Exception, "unable to create temporary directory for R results! make sure you have sufficient permissions."
 
 def reset_Rs_working_dir():
-    
-    #pdb.set_trace()
     print "resetting "
     ro.r("setwd('%s')" % BASE_PATH) 
 
