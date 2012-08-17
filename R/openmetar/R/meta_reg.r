@@ -35,7 +35,7 @@ meta.regression <- function(reg.data, params) {
             scale.str <- get.scale(params)
             if ((scale.str=="standard") || (scale.str=="arcsine")) {
                 scale.str <- ""
-                # This is for the y-axis label on regression plot - don't "standard" or "arcsine" to label.
+                # This is for the y-axis label on regression plot - don't add "standard" or "arcsine" to label.
             }
             plot.data$ylabel <- paste(scale.str, " ", pretty.metric.name(as.character(params$measure)), sep="")
             meta.regression.plot(plot.data, plot.path)
