@@ -847,7 +847,7 @@ diagnostic.hsroc <- function(diagnostic.data, params){
                 prior_THETA=c(params$theta.lower, params$theta.upper), 
                 path=chain.out.dir))
         # Put in try block in case HSROC fails
-        if (class(res!="try-error")) {
+        if (class(res)!="try-error") {
             chain.out.dirs <- c(chain.out.dirs, chain.out.dir)
         }
         # go back up to ./r_tmp
