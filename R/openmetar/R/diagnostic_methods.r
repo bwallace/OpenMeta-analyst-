@@ -850,13 +850,9 @@ diagnostic.hsroc <- function(diagnostic.data, params){
 
         # Put in try block in case HSROC fails
         if (class(res)=="try-error") {
-            stop("ah, HSROC failed.")
+            stop("Sorry -- HSROC failed during sampling. Perhaps try running it again?")
         }
-
-
         chain.out.dirs <- c(chain.out.dirs, chain.out.dir)
-        # go back up to ./r_tmp
-        # setwd("../../")
     }
 
     hsroc.sum <- HSROCSummary(data=diag.data.frame , burn_in=params$burn.in, Thin=params$thin, print_plot=T ,
