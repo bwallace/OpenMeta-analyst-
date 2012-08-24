@@ -91,17 +91,16 @@ extract.cov.data <- function(reg.data) {
     factor.cov.array <- NULL
     if (cov.type=="factor") {
       levels <- unique(cov.vals)
-      # Remove "NA" from levels, if necessary.
-      levels.minus.NA <- setdiff(levels, "NA")
+      # Remove "" from levels, if necessary.
+      levels.minus.NA <- setdiff(levels, "")
       # Levels except for reference variable
       levels.minus.ref.var <- setdiff(levels.minus.NA, ref.var)
       cov.cols <- array(dim=c(length(reg.data@y), length(levels.minus.ref.var)))
       studies.col <- c(sum(cov.vals==ref.var))
       for (col.index in 1:length(levels.minus.ref.var)) {
            level <- levels.minus.ref.var[col.index]
-           #cov.cols[cov.vals!="NA",col.index] <- as.numeric((cov.vals!="NA" && cov.vals==level))
-           cov.cols[cov.vals!="NA" & cov.vals!=level, col.index] <- 0
-           cov.cols[cov.vals!="NA" & cov.vals==level, col.index] <- 1
+           cov.cols[cov.vals!="" & cov.vals!=level, col.index] <- 0
+           cov.cols[cov.vals!="" & cov.vals==level, col.index] <- 1
            studies.col <- c(studies.col, sum(cov.vals==level)) 
       }
       factor.cov.array <- cbind(factor.cov.array, cov.cols)
