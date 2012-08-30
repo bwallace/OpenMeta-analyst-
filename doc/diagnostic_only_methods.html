@@ -5,15 +5,20 @@ type=text/css rel=stylesheet>
 </head>
 <body>
 <h2><a name="top">Diagnostic-Only Methods</a></h2>
-  <p>The following methods are available only for diagnostic data.</p>
+  <p>The following methods are available for diagnostic data only.</p>
   <ul>
      <li><a href="#bivariate">Bivariate (Maximum Likelihood)</a></li>
      <li><a href="#HSROC">HSROC - Hierarchical standard receiver operating cuve</a></li>
     </ul>
     
   <h3><a name="bivariate">Bivariate (Maximum Likelihood)</a></h3>
-    
+  <p>The bivariate maximimum likelihood method uses a bivariate model to estimate the sensitivity and specificity (or positive and negative likelihood ratios) for diagnostic data. The model is defined as follows:</p>
+  <eq><img src="images/bivariate_model1.png"></eq>
+  <p>where the covariance matrix is</p>
+  <eq><img src="images/bivariate_model2.png"></eq>
+  <p>The method finds the maximal likilhood estimate of the probability of of a positive test result</p> 
   <h3><a name="HSROC">HSROC - Hierarchical standard receiver operating cuve</a></h3>
+  ,<p>
   <p><a href="#top">Back to top</a></p>
 <br>
  <table id="nav" cellspacing="0"><tr valign="center"><td align="left" width="20"><a href="random-effects_methods.html#top"><img src="images/b_prev.gif" border="0"></td><td align="left">Random-Effects Methods</td></a><td>&nbsp;</td><td align="right">Metrics</td><td align="right" width="20"><a href="analysis_metrics.html#top"><img src="images/b_next.gif" border="0"></td></a></td></tr></table>

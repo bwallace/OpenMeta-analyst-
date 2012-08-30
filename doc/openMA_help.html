@@ -7,13 +7,13 @@
 <link href="css/jquery.ui.accordion.css" type="text/css" rel="Stylesheet">
 <script type="text/javascript" src="js/jquery-1.5.1.min.js"></script>
 <script type="text/javascript" src="js/jquery-ui-1.8.11.custom.min.js"></script>
-<script type="text/javascript" srs="js/jquery-1.5.2.js"></script>
-<script>
+<!--<script type="text/javascript" srs="js/jquery-1.5.2.js"></script>-->
+<script type="text/javascript">
 	$(function() {
 		$( "#accordion" ).accordion();
 	});
 </script>
-<script language="JavaScript">
+<script type="text/javascript">
 function calcHeight()
 {
   //find the height of the internal page
@@ -26,11 +26,9 @@ function calcHeight()
       the_height;
 }
 </script>
- 
-</script>
 </head>
 <body onload="frames['IFrameName'].location.href='introduction.html'">
-<table border="0" width=100% cellpadding="0">
+<table border="0" width="100%" cellpadding="0">
 <tr><td align="left"><a href="http://tuftscaes.org/open_meta/">Open Meta-Analyst Home</a></td>
 <td></td>
 </tr>
@@ -41,7 +39,7 @@ function calcHeight()
 <div id="accordion">
 <h3><a href='#'>Getting Started</a></h3>
 <div>
-  <ul align="left" style="list-style-image: url(images/orball_small.gif)">
+  <ul style="list-style-image: url(images/orball_small.gif)">
       <li><a href="#self"  onclick="frames['IFrameName'].location.href='introduction.html'">Introducing Open Meta-Analyst</a></li>
       <li><a href="#self" onclick="frames['IFrameName'].location.href='starting.html'">Starting Open Meta-Analyst</a></li>
       <li><a href="#self" onclick="frames['IFrameName'].location.href='main_window.html'">The Open Meta-Analyst Window</a></li>
@@ -89,7 +87,7 @@ function calcHeight()
 </td>
 <td valign="top">
 
-<IFRAME name="IFrameName" frameborder="no" style="height:750px; width:1000px" id="htmlIframe"
+<IFRAME name="IFrameName" frameborder="0" style="height:750px; width:1000px" id="htmlIframe"
                scrolling="YES">
 </IFRAME>
  
