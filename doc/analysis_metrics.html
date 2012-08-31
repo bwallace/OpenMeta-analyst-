@@ -55,16 +55,6 @@ type=text/css rel=stylesheet>
 	<td><img src="images/eq_arcsin_risk_diff_variance.png"
 	<td></td>
 </tr>
-<tr align="center">
-	<td align="left"><b>YUQ</b> - Yule's Q</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr align="center">
-	<td align="left"><b>YUY</b> - Yule's Y</td>
-	<td></td>
-	<td></td>
-</tr>
 </table>
  
 <h4>One-Arm Metrics</h4>
@@ -106,45 +96,70 @@ type=text/css rel=stylesheet>
 <h4>Two-Arm Metrics</h4>
 <table cellspacing="0" cellpadding="5" border="1">
 <tr align="center">
-	<td align="left" width=20><b>Metric</td>
+	<td align="left" width=200><b>Metric</td>
 	<td><b>Effect size</b></td>
 	<td><b>Variance</b></td>
 </tr>
 <tr align="center">
-	<td align="left"><b>MD</b> - Mean Difference</td>
+	<td align="left" width=40><b>MD</b> - Mean Difference</td>
 	<td><img src="images/eq_odds_ratio2.png"></td>
 	<td><img src="images/eq_odds_ratio_var.png"></td>
 </tr>
 <tr align="center">
-	<td align="left"><b>SMD</b> - Standardized Mean Difference</td>
+	<td align="left" width=40><b>SMD</b> - Standardized Mean Difference</td>
 	<td><img src="images/eq_risk_difference.png"></td>
 	<td><img src="images/eq_risk_diff_var.png"></td>
 </tr>
 </table>	
-  	  <li>Two-Arm Metrics:
-        <ul>
-          <li></li>
-         <li><b>SMD</b> - Standardized Mean Difference</li>
-       </ul> 
-     </li>
-      <li>One-Arm Metrics:
-        <ul>
-          <li><b>TX Mean</b> - Treatment Mean</li>
-        </ul> 
-     </li>
-  	</ul>
+
+<h4>One-Arm Metric</h4>
+<table cellspacing="0" cellpadding="5" border="1">
+<tr align="center">
+	<td align="left" width=200><b>Metric</td>
+	<td><b>Effect size</b></td>
+	<td><b>Variance</b></td>
+</tr>
+<tr align="center">
+	<td align="left" width=20><b>TX Mean</b> - Treatment Mean</td>
+	<td><img src="images/eq_odds_ratio2.png"></td>
+	<td><img src="images/eq_odds_ratio_var.png"></td>
+</tr>
+</table>	
+   
   	<h3>Metrics for Diagnostic Data</h3>
-  	<ul>
-  	   <li><b>sensitivity:</b> &nbsp;&nbsp;&nbsp;&nbsp; TP / (TP + FN)</li>
-  	   <li><b>specificity:</b> &nbsp;&nbsp;&nbsp;&nbsp; TN / (TN + FP)</li>
-  	   <li><b>likelihood ratio</b>
-  	       <ul>
-  	           <li><b>Positive likelihood ratio:</b> &nbsp;&nbsp;&nbsp;&nbsp; sensitivity / (1 - specificity)</li>
-  	           <li><b>Negative likelihood ratio:</b> &nbsp;&nbsp;&nbsp;&nbsp; (1 - sensitivity) / specificity</li>
-  	       </ul>
-  	    </li>
-  	    <li><b>diagnostic odds ratio:</b> &nbsp;&nbsp;&nbsp;&nbsp; (TP + TN) / (FP + FN)</li>
-   </ul>
+  	<table cellspacing="0" cellpadding="5" border="1">
+<tr align="center">
+	<td align="left" width=200><b>Metric</td>
+	<td><b>Effect size</b></td>
+
+</tr>
+<tr align="center">
+	<td align="left"><b>Sensitivity</td>
+	<td>TP / (TP + FN)</td>
+
+</tr>
+<tr align="center">
+	<td align="left">Specificity</td>
+	<td>TN / (TN + FP)</td>
+
+</tr>
+<tr align="center">
+	<td align="left">Positive Likelihood Ratio</td>
+	<td>sensitivity / (1 - specificity)</td>
+
+</tr>
+<tr align="center">
+	<td align="left">Negative Likelihood Ratio</td>
+	<td>(1 - sensitivity) / specificity</td>
+
+</tr>
+<tr align="center">
+	<td align="left">Diagnostic Odds Ratio</td>
+	<td>(TP + TN) / (FP + FN)</td>
+
+</tr>
+</table>	
+  	
 <p><a href="#top">Back to top</a></p>
 <br>
  <table id="nav" cellspacing="0"><tr valign="center"><td align="left" width="20"><a href="diagnostic_only_methods.html#top"><img src="images/b_prev.gif" border="0"></td><td align="left">Diagnostic-Only Methods</td></a><td>&nbsp;</td><td align="right">Forest Plot Options</td><td align="right" width="20"><a href="plot_options.html#top"><img src="images/b_next.gif" border="0"></td></a></td></tr></table>   
