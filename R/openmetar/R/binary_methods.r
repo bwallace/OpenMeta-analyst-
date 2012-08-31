@@ -109,7 +109,6 @@ create.binary.data.array <- function(binary.data, params, res){
     # TODO: these should be taken from the corresponding column labels in the GUI and passed in via params.
     digits.str <- paste("%.", params$digits, "f", sep="")
     effect.size.name <- pretty.metric.name(as.character(params$measure))
-   #y <- binary.data@y
     # Caculate confidence intervals
     study.ci.bounds <- calc.ci.bounds(binary.data, params)
     y.disp <- binary.transform.f(params$measure)$display.scale(binary.data@y)
