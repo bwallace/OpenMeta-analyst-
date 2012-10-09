@@ -905,9 +905,6 @@ diagnostic.hsroc.parameters <- function(){
     parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var.order)
 }
 
-
-
-
 diagnostic.hsroc.pretty.names <- function() {
     pretty.names <- list("pretty.name"="HSROC", 
                          "description" = "Hierarchical regression analysis of diagnostic data\n (Rutter and Gatsonis, Statistics in Medicine, 2001).",

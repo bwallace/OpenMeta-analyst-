@@ -35,12 +35,13 @@ print.summary.display <- function(summary.disp,...) {
 }
 
 print.summary.data <- function(table.data,...) {
-    # Prints an array table.data with lines separating rows and columns.
+    # Prints an array table.data.
     num.rows <- length(table.data[,1])
     num.cols <- length(table.data[1,])
     # Compute column widths
     extra.col.spaces <- 2
     #table.line <- " "
+    # This was for the old table lines.
     col.widths <- NULL
     for (col.index in 1:num.cols) {
         width <- max(nchar(table.data[,col.index])) + extra.col.spaces
@@ -59,20 +60,22 @@ print.summary.data <- function(table.data,...) {
         # Study names are aligned left
         end.num <- col.widths[1] - nchar(study.name) -1
         table.row <- pad.with.spaces(study.name, 1, end.num)
-        for (col.index in 2:num.cols) {
-            # Data is aligned right
-            col.width <- col.widths[col.index]
-            entry <- table.data[row.index,col.index]
-            # pad entries with spaces to align columns.
-            end.num <- ceiling((col.width - nchar(entry))/2)
-            if ((row.index>1) & (regexpr("-", entry)!=1) & (regexpr("<", entry)!=1)) {
-                 # entry is a positive number so add extra space to align decimal sign.
-                 entry <- paste(" ", entry, sep="")
-            } 
-            begin.num <- floor((col.width - nchar(entry))/2)
-            end.num <- col.width - begin.num - nchar(entry)
-            padded.entry <- pad.with.spaces(entry, begin.num, end.num)
-            table.row <- paste(table.row, padded.entry, " ", sep="")
+        if (num.cols > 1) {
+            for (col.index in 2:num.cols) {
+                # Data is aligned right
+                col.width <- col.widths[col.index]
+                entry <- table.data[row.index,col.index]
+                # pad entries with spaces to align columns.
+                end.num <- ceiling((col.width - nchar(entry))/2)
+                if ((row.index>1) & (regexpr("-", entry)!=1) & (regexpr("<", entry)!=1)) {
+                     # entry is a positive number so add extra space to align decimal sign.
+                     entry <- paste(" ", entry, sep="")
+                } 
+                begin.num <- floor((col.width - nchar(entry))/2)
+                end.num <- col.width - begin.num - nchar(entry)
+                padded.entry <- pad.with.spaces(entry, begin.num, end.num)
+                table.row <- paste(table.row, padded.entry, " ", sep="")
+            }
         }
         cat(table.row)
         cat("\n")
@@ -113,7 +116,7 @@ round.display <- function(x, digits) {
 }
 
 create.summary.disp <- function(om.data, params, res, model.title) {
-    # create table for diplaying summary of ma results
+    # create tables for diplaying summary of ma results
     digits.str <- paste("%.", params$digits, "f", sep="")
     transform.name <- get.transform.name(om.data)
     scale.str <- get.scale(params)
@@ -294,18 +297,21 @@ create.regression.display <- function(res, params, display.data) {
     reg.array[2:n.rows, "Lower bound"] <- lbs.tmp
     reg.array[2:n.rows, "Upper bound"] <- ubs.tmp
     
-    arrays <- list(arr1=reg.array)
+    omnibus.pval.array <- array(dim=c(1,1))
+    omnibus.pval.array[1,1] <- sprintf(digits.str, res$QMp)
+    
+    arrays <- list(arr1=reg.array, arr2=omnibus.pval.array)
     
     metric.name <- pretty.metric.name(as.character(params$measure)) 
     model.title <- paste("Meta-Regression\n\nMetric: ", metric.name, sep="")
-    reg.disp <- list("model.title" = model.title, "table.titles" = c("Model Results"), "arrays" = arrays, "MAResults" = res)
+    reg.disp <- list("model.title" = model.title, "table.titles" = c("Model Results", "Omnibus p-Value"), "arrays" = arrays, "MAResults" = res)
 
     class(reg.disp) <-  "summary.display"
     return(reg.disp)
 }
 
 create.overall.display <- function(res, study.names, params, model.title, data.type) {
-    # create table for diplaying summary of overall ma results
+    # create tables for diplaying summary of meta-methods (cumulative and leave-one-out) results.
     if (data.type == "continuous") {
         transform.name <- "continuous.transform.f"
     } else if (data.type == "diagnostic") {

@@ -63,10 +63,8 @@ meta.regression <- function(reg.data, params) {
 }
 
 extract.cov.data <- function(reg.data) {
-  # separate continuous and factor covariates and extract data
-  cont.cov.array <- NULL
-  factor.cov.array <- NULL
-  # the following are passed to create.regression.display
+  # separate continuous and factor covariates and extract data.
+  # The following are passed to create.regression.display
   n.cont.covs <- 0
   factor.n.levels <- NULL # vector containing number of levels for each factor covariate
   factor.cov.display.col <- NULL
@@ -75,7 +73,7 @@ extract.cov.data <- function(reg.data) {
   
   # initialize names of continuous covariates to empty list
   cont.cov.names <- c()
-
+  cont.cov.array <- NULL
   for (n.covs in 1:length(reg.data@covariates)) {
     # put covariate data into two arrays, for continuous and factor covariates.
     cov <- reg.data@covariates[[n.covs]]
@@ -90,22 +88,26 @@ extract.cov.data <- function(reg.data) {
       cont.cov.names <- c(cont.cov.names, cov.name)
       n.cont.covs <- n.cont.covs + 1
     }
+    factor.cov.array <- NULL
     if (cov.type=="factor") {
       levels <- unique(cov.vals)
-      levels.minus.one <- setdiff(levels, ref.var)
-      # levels except for reference variable
-      cov.cols <- array(dim=c(length(reg.data@y), length(levels.minus.one)))
+      # Remove "" from levels, if necessary.
+      levels.minus.NA <- setdiff(levels, "")
+      # Levels except for reference variable
+      levels.minus.ref.var <- setdiff(levels.minus.NA, ref.var)
+      cov.cols <- array(dim=c(length(reg.data@y), length(levels.minus.ref.var)))
       studies.col <- c(sum(cov.vals==ref.var))
-      for (col.index in 1:length(levels.minus.one)) {
-           level <- levels.minus.one[col.index]
-           cov.cols[,col.index] <- as.numeric(cov.vals==level)
+      for (col.index in 1:length(levels.minus.ref.var)) {
+           level <- levels.minus.ref.var[col.index]
+           cov.cols[cov.vals!="" & cov.vals!=level, col.index] <- 0
+           cov.cols[cov.vals!="" & cov.vals==level, col.index] <- 1
            studies.col <- c(studies.col, sum(cov.vals==level)) 
       }
       factor.cov.array <- cbind(factor.cov.array, cov.cols)
-      factor.n.levels <- c(factor.n.levels, length(levels))
-      factor.cov.display.col <- c(factor.cov.display.col, cov.name, rep("",length(levels.minus.one)))
+      factor.n.levels <- c(factor.n.levels, length(levels.minus.NA))
+      factor.cov.display.col <- c(factor.cov.display.col, cov.name, rep("",length(levels.minus.ref.var)))
       factor.studies.display.col <- c() 
-      levels.display.col <- c(levels.display.col, ref.var, levels.minus.one)
+      levels.display.col <- c(levels.display.col, ref.var, levels.minus.ref.var)
       studies.display.col <- c(studies.display.col, studies.col)
       }
   }

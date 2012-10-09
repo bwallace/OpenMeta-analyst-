@@ -203,8 +203,7 @@ create.plot.data.diagnostic <- function(diagnostic.data, params, res, selected.c
         NLR = "(FN * Di-)/(TN * Di+)",
         # diagnostic odds ratio
         DOR = "(TP * TN)/(FP * FN)")
-        #data.col <- format.raw.data.col(nums = terms$numerator, denoms = terms$denominator, label = label) 
-        #plot.data$additional.col.data$cases = data.col
+        
         plot.data$options$col3.str <- label
         changed.params$fp_col3_str <- label
         plot.data$changed.params <- changed.params
@@ -721,24 +720,6 @@ calc.plot.range <- function(effects, plot.options) {
         plot.lb <- max(effects.min, effect.size.min - arrow.factor * effect.size.width)
         
         plot.range <- c(plot.lb, plot.ub)
-      
-        # TODO: Issa created the code below. I'm not sure what the "uncommon problem" is and
-        # I haven't observed it, so I commented out the code. I'm leaving it in case the problem arises in future. PT
-        #
-        
-        # this is an ugly solution to an uncommon problem
-        #merge.data <- data.frame(x = plot.data$types[-1][1:length(effects$ES)], y = effects$LL, z = effects$UL)
-        #merge.data <- subset(merge.data, x>0)
-        #if (length(merge.data$y) > 0) {
-        #  if (min(effects.range) >= min(merge.data$y)) { 
-        #    effects.range[1] <- min(merge.data$y)
-        #  }
-        #}
-        #if (length(merge.data$z) > 0) {
-        #  if (max(effects.range) <= max(merge.data$z)) { 
-        #    effects.range[2] <- max(merge.data$z)
-        #  }
-        # }
     }
     if (user.lb != "[default]") {
         # If the user's lb input is OK, set lower bound of range equal it.
@@ -1505,11 +1486,8 @@ two.forest.plots <- function(forest.data, outpath) {
    # calculate heights and widths of plots
    viewport.layout1 <- calc.viewport.layout(forest.data1, just="left")  
    platform <- Sys.info()
-   #if (platform[[1]]=="Windows") {
-       viewport.layout2 <- calc.viewport.layout(forest.data2, just="left")
-   #} else {
-   #    viewport.layout2 <- calc.viewport.layout(forest.data2, just="right")
-   #}
+   viewport.layout2 <- calc.viewport.layout(forest.data2, just="left")
+   
    # calculate layouts of plots
    how.wide1 <- plot.size1$how.wide
    how.wide2 <- plot.size2$how.wide
@@ -1535,12 +1513,7 @@ two.forest.plots <- function(forest.data, outpath) {
    # can't handle two sets of params values for xticks or plot bounds.
    # Could be changed in future.
    popViewport()
-   #if (platform[[1]]=="Windows") {
-   #    x.pos <- 1 + (how.wide1 - how.wide2) / (4 * how.wide1)
-       pushViewport(viewport(layout=viewport.layout2, layout.pos.col=2))
-   #} else {
-   #    pushViewport(viewport(layout=viewport.layout2, layout.pos.col=2))
-   #}     
+   pushViewport(viewport(layout=viewport.layout2, layout.pos.col=2))
    draw.forest.plot(forest.data2)
    popViewport(2)
    graphics.off()
@@ -1645,8 +1618,6 @@ sroc.plot <- function(plot.data, outpath){
     lines(s.vals.trans, reg.line.vals.trans, col = lcol, lwd = lweight, lty = lpatern)
     upper.ci.vals.trans <- invlogit((s.vals + upper.ci.vals))
     lower.ci.vals.trans <- invlogit((s.vals + lower.ci.vals))
-    #lines(s.vals.trans, upper.ci.vals.trans, col = "black", lty=2)
-    #lines(s.vals.trans, lower.ci.vals.trans, lty=2)
     graphics.off()
 }
 
@@ -1746,8 +1717,7 @@ format.effect.sizes <- function(y, lb, ub, options) {
   y.display <- sprintf(paste("%.", digits,"f", sep=""), y)
   lb.display <- sprintf(paste("%.", digits,"f", sep=""), lb)
   ub.display <- sprintf(paste("%.", digits,"f", sep=""), ub)
-  # add extra space for het. stats row
-  #y.display <- c(y.display,)
+  
   # for ub, add an extra space to positive numbers for alignment (negative numbers display minus sign)
   if (length(ub.display[ub.display >= 0])) {
     ub.display[ub.display >= 0] <- mapply(pad.with.spaces, ub.display[ub.display >= 0], begin.num=1, end.num=0)
@@ -1859,17 +1829,5 @@ calculate.radii <- function(plot.data, inv.var, max.symbol.size, max.ratio) {
     inv.var.max <- max(inv.var)
     inv.var.ratio <- inv.var.max / inv.var.min
     radius.max <- min.range / 10
-    
-    
-    #inv.var.max <- max(inv.var)
-    #inv.var.min <- min(inv.var)
-    #if ((inv.var.max / inv.var.min) <= max.ratio) {
-    #    C <- max.symbol.size / inv.var.max
-    #    exponent <- 1
-    #} else {
-    #    min.symbol.size <- max.symbol.size / max.ratio
-    #    exponent <- log(max.ratio)/log(inv.var.max / inv.var.min)
-     #   C <- max.symbol.size / (inv.var.max)^exponent
-    #}
     radii <- (radius.max / inv.var.max) * inv.var
 }
