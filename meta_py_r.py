@@ -301,8 +301,10 @@ def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj", \
     # the study_ids preserve the ordering
     study_ids = [study.id for study in studies]
     study_names = ", ".join(["'" + study.name + "'" for study in studies])
+    
     # issue #139 -- also grab the years
-    study_years = ", ".join(["as.integer(%s)" % study.year for study in studies])
+    none_to_str = lambda n : str(n) if n is not None else "" # this will produce NA ints
+    study_years = ", ".join(["as.integer(%s)" % none_to_str(study.year) for study in studies])
 
     ests, SEs = table_model.get_cur_ests_and_SEs()    
     ests_str = ", ".join(_to_strs(ests))
