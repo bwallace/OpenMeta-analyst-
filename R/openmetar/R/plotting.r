@@ -26,9 +26,9 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     scale.str <- get.scale(params)
     transform.name <- get.transform.name(om.data)
     plot.options <- set.plot.options(params)
-    # Set n, the vector of numbers of studies, for PFT metric.
-    if (params$measure=="PFT" && length(om.data@g1O1) > 0 && length(om.data@g1O2) > 0) {
-        n <- om.data@g1O1 + om.data@g1O2  # Number of subjects - needed for Freeman-Tukey double arcsine trans.
+    # Set n, the number of studies, for PFT metric.
+    if (params$measure=="PFT" && length(om.data@g1O1) > 1 && length(om.data@g1O2)) {
+        n <- om.data@g1O1 + om.data@g1O2  # Number of subjects
     }    
     
     if (params$fp_plot_lb == "[default]") {
@@ -86,21 +86,21 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     lb.overall <- res$ci.lb[1]
     ub.overall <- res$ci.ub[1]
     y <- om.data@y
-    study.ci.bounds <- calc.ci.bounds(om.data, params, n)
+    study.ci.bounds <- calc.ci.bounds(om.data, params)
     lb <- study.ci.bounds$lb
     ub <- study.ci.bounds$ub
-    
+        
     y.disp <- eval(call(transform.name, params$measure))$display.scale(y, n)
     lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb, n)
     ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub, n)
     
     y.overall.disp <- eval(call(transform.name, params$measure))$display.scale(y.overall, n)
-    #forest(dat$pi, ci.lb=ci.lb, ci.ub=ci.ub, ylim=c(-0.5,8), refline=NA, xlim=c(-.5,1.8), alim=c(0,1), digits=3, xlab="Proportion")
-    #> addpoly(pred$pred, ci.lb=pred$ci.lb, ci.ub=pred$ci.ub, row=0, digits=3)
-    #> abline(h=0.5)
-    
     lb.overall.disp <- eval(call(transform.name, params$measure))$display.scale(lb.overall, n)
     ub.overall.disp <- eval(call(transform.name, params$measure))$display.scale(ub.overall, n)
+    
+    y <- c(y, y.overall)
+    lb <- c(lb, lb.overall)
+    ub <- c(ub, ub.overall)
     
     y.disp <- c(y.disp, y.overall.disp)
     lb.disp <- c(lb.disp, lb.overall.disp)
@@ -109,6 +109,10 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     effects.disp <- list(y.disp=y.disp, lb.disp=lb.disp, ub.disp=ub.disp)
     # these values will be displayed on the plot
     plot.data$effects.disp <- effects.disp
+    
+    # If metric is log scale, effect sizes and plot range are passed to forest.plot in
+    # calculation (log) scale, in order to set tick marks in log scale.
+    # Otherwise, effect sizes and plot range are passed in display (untransformed) scale.
     
     if (!metric.is.log.scale(params$measure)) {
         # if metric not log scale, pass data in display scale - no scaling on x-axis
@@ -122,19 +126,17 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
                     UL = ub) 
     plot.data$effects <- effects
     plot.range <- calc.plot.range(effects, plot.options)
-    # 
-    if (params$measure == "PFT") {
-      # Make sure plot range is between 0 and 1.
-      hm <- 1/
-      plot.range[1] <- max(plot.range[1], freeman_tukey(0, n))
-      plot.range[2] <- min(plot.range[2], freeman_tukey(1, n))
+    # Calculate a reasonable range for the x-values to display in plot.
+    
+    if (metric.is.log.scale(params$measure)) {
+        # Plot range is in calc scale, so put back in display scale to update params.
+        plot.range.disp.lower <- eval(call(transform.name, params$measure))$display.scale(plot.range[1])
+        plot.range.disp.upper <- eval(call(transform.name, params$measure))$display.scale(plot.range[2])
+    } else {
+        plot.range.disp.lower <- plot.range[1]
+        plot.range.disp.upper <- plot.range[2]
     }
     plot.data$plot.range <- plot.range
-    
-    
-    # Put plot range in display scale to update params.
-    plot.range.disp.lower <- eval(call(transform.name, params$measure))$display.scale(plot.range[1], n)
-    plot.range.disp.upper <- eval(call(transform.name, params$measure))$display.scale(plot.range[2], n)
     changed.params <- plot.options$changed.params
     if (plot.options$plot.lb != plot.range.disp.lower) {
         changed.params$fp_plot_lb <- plot.range.disp.lower  
@@ -220,7 +222,7 @@ create.plot.data.continuous <- function(cont.data, params, res, selected.cov = N
 create.plot.data.overall <- function(om.data, params, res, res.overall){
     scale.str <- get.scale(params)
     # Set n, the number of studies, for PFT metric.
-    if (params$measure=="PFT" && length(om.data@g1O1) > 0 && length(om.data@g1O2) > 0) {
+    if (params$measure=="PFT" && length(om.data@g1O1) > 1 && length(om.data@g1O2)) {
       n <- om.data@g1O1 + om.data@g1O2  # Number of subjects
     }
     
@@ -683,23 +685,23 @@ set.plot.options <- function(params) {
 calc.plot.range <- function(effects, plot.options) {
     # Calculate lower and upper bounds for x-values of plotted data
     # if user has not supplied them (or user's bounds don't include all effect sizes).
-    plot.lb.max <- min(effects$ES)
+    effect.size.min <- min(effects$ES)
     # Smallest value for which we accept user's input for plot lower bound.
     # User's lower bound must be less than all effect sizes.
-    plot.ub.min <- max(effects$ES) 
+    effect.size.max <- max(effects$ES) 
     # Largest user input for plot upper bound. All effect sizes must be less than this value.
     user.lb <- plot.options$plot.lb
     user.ub <- plot.options$plot.ub
     if (user.lb != "[default]") {
         # Check whether user's lb is OK
-        if (user.lb > plot.lb.max) {
+        if (user.lb > effect.size.min) {
           # not OK
           user.lb <- "[default]"
         }
     } 
     if (user.ub != "[default]") {
         # Check whether user's lb is OK
-        if (plot.options$plot.ub < plot.ub.min) {
+        if (plot.options$plot.ub < effect.size.max) {
           # not OK
           user.ub <- "[default]"
         }
@@ -709,9 +711,7 @@ calc.plot.range <- function(effects, plot.options) {
         # If user has not supplied both lower and upper bounds (that meet the requirements), compute bounds.
         # This is a heuristic to determine a reasonable range for the displayed values - 
         # confidence intervals that exceed this range are truncated and left or right arrows are displayed instead of the full CI.
-        #effect.size.max <- max(effects$ES) 
-        #effect.size.min <- min(effects$ES)
-        effect.size.width <- plot.lb.max - plot.ub.min
+        effect.size.width <- effect.size.max - effect.size.min
         
         effects.max <- max(effects$UL)
         effects.min <- min(effects$LL)
@@ -721,6 +721,24 @@ calc.plot.range <- function(effects, plot.options) {
         plot.lb <- max(effects.min, effect.size.min - arrow.factor * effect.size.width)
         
         plot.range <- c(plot.lb, plot.ub)
+      
+        # TODO: Issa created the code below. I'm not sure what the "uncommon problem" is and
+        # I haven't observed it, so I commented out the code. I'm leaving it in case the problem arises in future. PT
+        #
+        
+        # this is an ugly solution to an uncommon problem
+        #merge.data <- data.frame(x = plot.data$types[-1][1:length(effects$ES)], y = effects$LL, z = effects$UL)
+        #merge.data <- subset(merge.data, x>0)
+        #if (length(merge.data$y) > 0) {
+        #  if (min(effects.range) >= min(merge.data$y)) { 
+        #    effects.range[1] <- min(merge.data$y)
+        #  }
+        #}
+        #if (length(merge.data$z) > 0) {
+        #  if (max(effects.range) <= max(merge.data$z)) { 
+        #    effects.range[2] <- max(merge.data$z)
+        #  }
+        # }
     }
     if (user.lb != "[default]") {
         # If the user's lb input is OK, set lower bound of range equal it.
@@ -1297,8 +1315,8 @@ calc.tick.marks <- function(plot.range, scale) {
             calc.ticks <- log(user.ticks)
     }
         grid.xaxis(at = calc.ticks , label = round(ticks, 3), gp=gpar(cex=0.6))          
-  } else  {
-        # Scale is not log
+  } 
+  if (scale == "logit")  {
         if (is.na(user.ticks)) { 
           lb <- min(plot.range)
           ub <- max(plot.range)

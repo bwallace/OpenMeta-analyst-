@@ -11,10 +11,8 @@
 #                weights = T)
 ####################################################################
 
- 
-
 bivariate.dx.test <- function(TP, FP, FN, TN)  {
-    library(lme4)  
+    library(lme4)
     n.studies <- length(TP)
     persons <- TP + FP + FN + TN
     true.positive <- NA

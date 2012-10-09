@@ -841,11 +841,13 @@ diagnostic.hsroc <- function(diagnostic.data, params){
         chain.out.dir <- paste(out.dir, "/chain_", chain.i, sep="")
         dir.create(chain.out.dir)
         setwd(chain.out.dir)
+
         # TODO parameterize lambda, theta priors
         res <- try(HSROC(data=diag.data.frame, iter.num=params$num.iters, 
                 prior_LAMBDA=c(params$lambda.lower, params$lambda.upper), 
                 prior_THETA=c(params$theta.lower, params$theta.upper), 
                 path=chain.out.dir))
+
         # Put in try block in case HSROC fails
         if (class(res)=="try-error") {
             stop("Sorry -- HSROC failed during sampling. Perhaps try running it again?")

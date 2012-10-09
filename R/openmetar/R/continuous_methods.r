@@ -25,11 +25,11 @@ compute.for.one.cont.study <- function(cont.data, params){
 }
 
 continuous.transform.f <- function(metric.str){
-    display.scale <- function(x){
+    display.scale <- function(x, ...){
         x
     }
     
-    calc.scale <- function(x){
+    calc.scale <- function(x, ...){
         x
     }
     
