@@ -18,13 +18,16 @@ import pdb
 from PyQt4.QtCore import pyqtRemoveInputHook
 
 from meta_globals import *
+import rpy2
+from rpy2 import robjects as ro
 
 try:
     import rpy2
+    # this line throws a segfault
     from rpy2 import robjects as ro
 except Exception, e:
-    print e
     raise Exception, "rpy2 not properly installed!"
+    print e
 
 try:
     # ascertain that R has write privledges
@@ -562,7 +565,7 @@ def cov_to_str(cov, study_ids, dataset, \
         else:
             if cov_value_d.has_key(study_id):
                 # factor; note the string.
-                cov_values.append("'%s'" % unicode(cov_value_d[study_id].encode('latin1'), 'latin1'))
+                cov_values.append("'%s'" % unicode(str(cov_value_d[study_id]).encode('latin1'), 'latin1'))
             else:
                 cov_values.append("NA")
     cov_str += ",".join(cov_values) + ")"
