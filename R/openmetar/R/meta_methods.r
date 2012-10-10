@@ -419,7 +419,6 @@ loo.ma.continuous <- function(fname, cont.data, params){
 ########################
 #  binary subgroup MA  #
 ########################
-
 subgroup.ma.binary <- function(fname, binary.data, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
@@ -525,6 +524,7 @@ get.subgroup.data.binary <- function(binary.data, cov.val, cov.vals) {
 
 subgroup.ma.continuous <- function(fname, cont.data, params){
     if (!("ContinuousData" %in% class(cont.data))) stop("Continuous data expected.")
+    params.tmp <- params
     cov.name <- as.character(params$cov_name)
     selected.cov <- get.cov(cont.data, cov.name)
     cov.vals <- selected.cov@cov.vals
