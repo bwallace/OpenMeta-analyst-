@@ -419,7 +419,6 @@ loo.ma.continuous <- function(fname, cont.data, params){
 ########################
 #  binary subgroup MA  #
 ########################
-
 subgroup.ma.binary <- function(fname, binary.data, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
