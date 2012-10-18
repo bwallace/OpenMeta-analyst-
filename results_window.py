@@ -13,6 +13,7 @@ import random
 from PyQt4.Qt import *
 import pdb
 import os
+import sys
 import ui_results_window
 import edit_forest_plot_form
 import meta_py_r
@@ -86,6 +87,12 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         self.add_text()
 
         self.y_coord += ROW_HEIGHT/2.0
+
+        # additional padding for Windows..
+        # again, hueristic. I don't know
+        # why windows requires so much padding.
+        if sys.platform.startswith('win'):
+            self.y_coord += 2*ROW_HEIGHT
 
         # and now the images
         self.add_images()
