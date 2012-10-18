@@ -1,52 +1,42 @@
 #------------------------------------------------------------------------------
-# open_meta_mac.py
-#
-#   this is an initscript used by cx_freeze for our mac
-#   distribution. we set the R_HOME variable via the sys 
-#   library before starting up meta_form. to use this script
-#   just point cx_freeze to it via the initscript argument,
-#   eg.,
-#    $ build/scripts-2.7/cxfreeze /Users/byronwallace/dev/OpenMeta-analyst-/meta_form.py \
-#                 --init-script=/Users/byronwallace/dev/OpenMeta-analyst-/open_meta_mac.py 
-#
-#   note that we also set the path to 
+# Console.py
+#   Initialization script for cx_Freeze which manipulates the path so that the
+# directory in which the executable is found is searched for extensions but
+# no other directory is searched. It also sets the attribute sys.frozen so that
+# the Win32 extensions behave as expected.
 #------------------------------------------------------------------------------
-
+import encodings
 import os
 import sys
 import zipimport
 import pdb
 
 
-print "\n\nR.I.P. Steve Jobs. \n\nI'm setting your R path temporarily (this console only).\n\ns"
+'''
+from ConsoleSetLibPath
+'''
 
-# issue #160 - setting path to dynamic libraries 
-
-paths = os.environ.get("DYLD_LIBRARY_PATH", "").split(os.pathsep)
+paths = os.environ.get("LD_LIBRARY_PATH", "").split(os.pathsep)
 if DIR_NAME not in paths:
     paths.insert(0, DIR_NAME)
-    os.environ["DYLD_LIBRARY_PATH"] = os.pathsep.join(paths)
+    os.environ["LD_LIBRARY_PATH"] = os.pathsep.join(paths)
+    # 8/21/12
+    #os.environ["DYLD_LIBRARY_PATH"] = os.pathsep.join(paths)
     os.execv(sys.executable, sys.argv)
-else:
-    paths = os.environ.get("LD_LIBRARY_PATH", "").split(os.pathsep)
-    if DIR_NAME not in paths:
-        paths.insert(0, DIR_NAME)
-        os.environ["LD_LIBRARY_PATH"] = os.pathsep.join(paths)
-        os.execv(sys.executable, sys.argv)
 
-#os.environ["DYLD_LIBRARY_PATH"] = DIR_NAME
-#os.execv(sys.executable, sys.argv)
-print "dynamic library path set...I think?"
-#pdb.set_trace()
-os.environ["R_HOME"] = os.path.join(DIR_NAME, "R_dist", "2.10", "Resources")
+print "*not* setting dydlib"
 
 sys.frozen = True
 sys.path = sys.path[:4]
+####
+# 8/21/12 -- TEMPORARY -- need to add this back!
+#print "\n\nok, mac user -- I'm setting your R path temporarily (this console only).\n\ns"
+#os.environ["R"] = os.path.join(DIR_NAME, "R_dist", "2.10", "Resources", "bin")
 
-# *now* we can import meta_form... cross your fingers.   
-#import meta_form
-#meta_form.start()
-print "\n\nok...?\n\n"
+
+os.environ["TCL_LIBRARY"] = os.path.join(DIR_NAME, "tcl")
+os.environ["TK_LIBRARY"] = os.path.join(DIR_NAME, "tk")
+
 m = __import__("__main__")
 importer = zipimport.zipimporter(INITSCRIPT_ZIP_FILE_NAME)
 code = importer.get_code(m.__name__)
@@ -59,6 +49,9 @@ if versionInfo >= (2, 5, 0) and versionInfo <= (2, 6, 4):
         module._shutdown()
 
 
-
-
-
+'''
+OK
+'''
+print "\n\nYEAH"
+import meta_form
+meta_form.start()

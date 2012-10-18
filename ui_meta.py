@@ -6,7 +6,6 @@
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
-
 from PyQt4 import QtCore, QtGui
 import ma_data_table_view
 
@@ -15,6 +14,7 @@ try:
 except AttributeError:
     _fromUtf8 = lambda s: s
 
+print "OK!"
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
@@ -306,4 +306,6 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         pass
 
+print "importing icons???"
 import icons_rc
+print "success"

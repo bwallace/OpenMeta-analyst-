@@ -20,11 +20,12 @@ import diagnostic_data_form
 # it's a questionable practice to import the
 # underlying model into the view, but sometimes
 # it's easiest to manipulate the model directly
-# on interaction rather than that tabe_model
+# on interaction rather than that table_model
 # intermediary 
 import ma_dataset
 from ma_dataset import *
 from meta_globals import *
+
 
 # for issue #169 -- normalizing new lines, e.g., for pasting
 # use QRegExp to manipulate QStrings (rather than re)
@@ -798,7 +799,9 @@ class CommandEditMAUnit(QUndoCommand):
 
     def redo(self):
         self.model.set_current_ma_unit_for_study(self.study_index, self.new_ma_unit)
-        self.model.reset()    
+        self.model.try_to_update_outcomes()
+        self.model.reset()
+        #self.table_view.model().reset()
         self.table_view.resizeColumnsToContents()
         self.ma_data_table_view.emit(SIGNAL("dataDirtied()"))
 

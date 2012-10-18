@@ -13,8 +13,11 @@ import sys
 import os
 import pdb
 import pickle
+print "about to import PyQt4..."
 from PyQt4 import QtCore, QtGui, Qt
 from PyQt4.Qt import *
+print "success!"
+#from os import urandom as _urandom
 #import nose # for unit tests
 import copy
 
@@ -103,6 +106,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # have covariates)
         self.action_meta_regression.setEnabled(False)
 
+        ####
+        # this (toy-data) is almost certainly antiquated 
+        # and should be removed or updated
+        ####
         if len(sys.argv)>1 and sys.argv[-1]=="--toy-data":
             # toy data for now
             data_model = _gen_some_data()
@@ -1001,11 +1008,11 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
         self.tableView.model().update_column_indices()
         self.tableView.resizeColumnsToContents()
-        self.model_updated()
-     
+  
         if check_for_appropriate_metric:
             self.tableView.change_metric_if_appropriate()
 
+        self.model_updated()
 
         if self.model.get_current_outcome_type() == "diagnostic":
             # no cumulative MA for diagnostic data
