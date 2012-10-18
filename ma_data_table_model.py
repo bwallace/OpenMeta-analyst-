@@ -1041,7 +1041,13 @@ class DatasetModel(QAbstractTableModel):
         data_type = self.get_current_outcome_type(get_str=False) 
         one_arm_effect = self.current_effect in BINARY_ONE_ARM_METRICS + CONTINUOUS_ONE_ARM_METRICS  
 
-        self.dataset.studies[study_index].include = False
+        ####
+        # previously we were always setting this to false here,
+        # but below we check only for raw data. in fact,
+        # we only want to foce an exclude if there is no
+        # raw data *and* no manually entered point estimate/CI
+        if not self.study_has_point_est(study_index):
+            self.dataset.studies[study_index].include = False
 
         # we try to compute outcomes if either all raw data is there, or, if we have a one-arm
         # metric then if sufficient raw data exists to compute this
@@ -1108,12 +1114,13 @@ class DatasetModel(QAbstractTableModel):
                 ma_unit.set_display_effect_and_ci(self.current_effect, group_str, disp_est, disp_lower, disp_upper)
     
                 
-    def get_cur_raw_data(self, only_if_included=True):
+    def get_cur_raw_data(self, only_if_included=True, only_these_studies=None):
         raw_data = []
         
         for study_index in range(len(self.dataset.studies)):
             if not only_if_included or self.dataset.studies[study_index].include:
-                raw_data.append(self.get_cur_raw_data_for_study(study_index))
+                if only_these_studies is None or self.dataset.studies[study_index].id in only_these_studies:
+                    raw_data.append(self.get_cur_raw_data_for_study(study_index))
 
         return raw_data
                 
@@ -1164,15 +1171,16 @@ class DatasetModel(QAbstractTableModel):
         se = (upper-est)/MULT
         return (est, se)
         
-    def get_cur_ests_and_SEs(self, only_if_included=True, effect=None):
+    def get_cur_ests_and_SEs(self, only_if_included=True, only_these_studies=None, effect=None):
         ests, SEs = [], []
         effect = effect or self.current_effect
         for study_index in xrange(len(self.dataset.studies)):
-            # issue #171 -- blank studies are *wrongly* set to be included after paste
-            if not only_if_included or self.dataset.studies[study_index].include:
-                est, SE = self.cur_point_est_and_SE_for_study(study_index, effect=effect)
-                ests.append(est)
-                SEs.append(SE)
+            if only_these_studies is None or self.dataset.studies[study_index].id in only_these_studies:
+                # issue #171 -- blank studies are *wrongly* set to be included after paste
+                if not only_if_included or self.dataset.studies[study_index].include:
+                    est, SE = self.cur_point_est_and_SE_for_study(study_index, effect=effect)
+                    ests.append(est)
+                    SEs.append(SE)
         return (ests, SEs)
         
     def included_studies_have_point_estimates(self, effect=None):

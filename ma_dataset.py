@@ -207,7 +207,11 @@ class Dataset:
         return ids_to_names
 
     def get_values_for_cov(self, covariate, ids_for_keys=False):
-        ''' returns a dictionary mapping study names to values for the given covariate '''
+        ''' 
+        returns a dictionary mapping study names to values for 
+        the given covariate -- BEWARE these (study names) aren't 
+        necessarily unique! safer to set the ids_for_keys flag.
+        '''
         cov_name = covariate
         if isinstance(covariate, Covariate):
             cov_name = covariate.name

@@ -292,12 +292,14 @@ def draw_network(edge_list, unconnected_vertices, network_path = '"./r_tmp/netwo
     
 
 def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj", \
-                                                covs_to_include=None):
+                                                covs_to_include=None,
+                                                studies=None):
     r_str = None
     
-    # grab the study names. note: the list is pulled out in reverse order from the 
-    # model, so we, er, reverse it.
-    studies = table_model.get_studies()
+    if studies is None:
+        # grab all studies. note: the list is pulled out in reverse order from the 
+        # model, so we, er, reverse it.
+        studies = table_model.get_studies()
     # the study_ids preserve the ordering
     study_ids = [study.id for study in studies]
     study_names = ", ".join(["'" + study.name + "'" for study in studies])
@@ -306,7 +308,7 @@ def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj", \
     none_to_str = lambda n : str(n) if n is not None else "" # this will produce NA ints
     study_years = ", ".join(["as.integer(%s)" % none_to_str(study.year) for study in studies])
 
-    ests, SEs = table_model.get_cur_ests_and_SEs()    
+    ests, SEs = table_model.get_cur_ests_and_SEs(only_these_studies=study_ids)    
     ests_str = ", ".join(_to_strs(ests))
     SEs_str = ", ".join(_to_strs(SEs))
     
@@ -321,7 +323,7 @@ def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj", \
                          table_model.included_studies_have_raw_data():
         print "we have raw data... parsing, parsing, parsing"
             
-        raw_data = table_model.get_cur_raw_data()
+        raw_data = table_model.get_cur_raw_data(only_these_studies=study_ids)
         Ns1_str = _get_str(raw_data, 0)
         means1_str = _get_str(raw_data, 1)
         SDs1_str = _get_str(raw_data, 2)
@@ -362,7 +364,8 @@ def _get_str(M, col_index, reverse=True):
     
     
 def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj", 
-                                        include_raw_data=True, covs_to_include=None):
+                                        include_raw_data=True, covs_to_include=None,
+                                        studies=None):
     '''
     This converts a DatasetModel to an OpenMetaData (OMData) R object. We use type DatasetModel
     rather than a DataSet model directly to access the current variables. Furthermore, this allows
@@ -377,22 +380,22 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj",
     '''
     r_str = None
     
-    # grab the study names. note: the list is pulled out in reverse order from the 
-    # model, so we, er, reverse it.
-    studies = table_model.get_studies(only_if_included=True)
+    if studies is None:
+        # grab the study names. note: the list is pulled out in reverse order from the 
+        # model, so we, er, reverse it.
+        studies = table_model.get_studies(only_if_included=True)
+
+    study_ids = [study.id for study in studies]
 
     # issue #139 -- also grab the years
     none_to_str = lambda n : str(n) if n is not None else "" # this will produce NA ints
     study_years = ", ".join(["as.integer(%s)" % none_to_str(study.year) for study in studies])
-
     study_names = ", ".join(["'" + study.name + "'" for study in studies])
     
-    ests, SEs = table_model.get_cur_ests_and_SEs(only_if_included=True)
+    ests, SEs = table_model.get_cur_ests_and_SEs(only_if_included=True, only_these_studies=study_ids)
     ests_str = ", ".join(_to_strs(ests))
     SEs_str = ", ".join(_to_strs(SEs))
 
-    # for internal consumption; the ids preserve the order
-    study_ids = [study.id for study in studies]
             
     # generate the covariate string
     cov_str = list_of_cov_value_objects_str(table_model.dataset,\
@@ -404,13 +407,8 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj",
     if include_raw_data and table_model.included_studies_have_raw_data():
         print "ok; raw data has been entered for all included studies"
         
-        # get the point estimates
-        ests, SEs = table_model.get_cur_ests_and_SEs(only_if_included=True)
-        ests_str = ", ".join(_to_strs(ests))
-        SEs_str = ", ".join(_to_strs(SEs))
-        
         # now figure out the raw data
-        raw_data = table_model.get_cur_raw_data()
+        raw_data = table_model.get_cur_raw_data(only_these_studies=study_ids)
     
         g1_events = _get_col(raw_data, 0)
         
@@ -470,17 +468,21 @@ def _sanitize_for_R(str):
 
 def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", \
                                             metric="Sens", covs_to_include=None,
-                                            effects_on_disp_scale=False):
+                                            effects_on_disp_scale=False, 
+                                            studies=None):
     '''
     This converts a DatasetModel to an OpenMetaData (OMData) R object. We use type DatasetModel
     rather than a DataSet model directly to access the current variables. Furthermore, this allows
     us to check which studies (if any) were excluded by the user.
+
+
     '''
     r_str = None
     
     # grab the study names. note: the list is pulled out in reverse order from the 
     # model, so we, er, reverse it.
-    studies = table_model.get_studies(only_if_included=True)
+    if studies is None:
+        studies = table_model.get_studies(only_if_included=True)
     study_ids = [study.id for study in studies]
 
     study_names = ", ".join(["'" + study.name + "'" for study in studies])
@@ -769,6 +771,7 @@ def _gen_cov_vals_obj_str(cov, study_ids, dataset):
 
     ## setting the reference variable to the first entry
     # for now -- this only matters for factors, obviously
+
     r_str = "new('CovariateValues', cov.name='%s', cov.vals=%s, \
                     cov.type='%s', ref.var='%s')" % \
                 (cov.name, values_str, TYPE_TO_STR_DICT[cov.data_type], ref_var)
@@ -803,7 +806,6 @@ def run_meta_regression(dataset, study_names, cov_list, metric_name,\
 
 
     print "\n\n(run_meta_regression): executing:\n %s\n" % r_str
-
 
     ### TODO -- this is hacky
     ro.r(r_str)
@@ -845,6 +847,7 @@ def run_meta_method(meta_function_name, function_name, params, \
             (res_name, meta_function_name, function_name, data_name, params_df.r_repr())
 
     print "\n\n(run_meta_method): executing:\n %s\n" % r_str
+
     ro.r(r_str)
     result = ro.r("%s" % res_name)
     
