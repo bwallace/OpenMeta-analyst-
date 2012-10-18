@@ -403,7 +403,7 @@ impute.diagnostic.data <- function(diag.data, metric){
       est.var <- calc.est.var(ci.data)
       # fill in estimate, ci.lb, ci.ub
       diag.data$spec <- est.var$estimate
-      diag.data$cpec.var <- est.var$var
+      diag.data$spec.var <- est.var$var
       diag.data <- calc.spec.data(diag.data)
     }  
     diag.data 
@@ -494,11 +494,11 @@ calc.spec.data <- function(diag.data) {
   TN<-NULL; FP<-NULL; TN<-NULL; FP<-NULL; spec<-NULL; spec.var<-NULL
   
     
-  if (isnt.null(diag.data$spec) & isnt.null(diag.data$SE)) {
+  if (isnt.null(diag.data$spec) & isnt.null(diag.data$spec.var)) {
     spec <- diag.data$spec
     spec.var <- diag.data$spec.var
-    diag.data$TN <- 1 / ((1-spec) * spec.var)
-    diag.data$FP <- 1 / (spec * spec.var)
+    diag.data$TN <- round(1 / ((1-spec) * spec.var), digits=0)
+    diag.data$FP <- round(1 / (spec * spec.var), digits=0)
   } else if (isnt.null(diag.data$spec) & isnt.null(diag.data$TN)) {
     spec <- diag.data$spec 
     TN <- diag.data$TN

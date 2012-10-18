@@ -257,8 +257,15 @@ continuous.random <- function(cont.data, params){
                      slab=cont.data@study.names,
                      method=params$rm.method, level=params$conf.level,
                      digits=params$digits)
-        if (is.null(params$create.plot) || (is.null(params$write.to.file))) {
-          if (is.null(params$write.to.file)) {
+
+        
+        results <- list("Summary"=res)
+
+        ###
+        # @TODO this needs major re-factoring -- totally
+        #   unreadable / illogical
+        if (is.null(params$create.plot) || (is.null(params$write.to.file)) || params$create.plot || params$write.to.file) {
+          if (is.null(params$write.to.file) || params$write.to.file) {
               # Write results and study data to csv files
               # Weights assigned to each study
               weights <- 1 / (res$vi + res$tau2)
@@ -270,7 +277,8 @@ continuous.random <- function(cont.data, params){
               # write.cont.study.data.to.file(cont.data, params, res, data.outpath=data.path)
               # @TODO: Check for non-numeric entries and replace with blanks to avoid errors.
           }
-          if (is.null(params$create.plot)) {
+
+          if (is.null(params$create.plot) || params$create.plot) {
               # Create forest plot and list to display summary of results
               metric.name <- pretty.metric.name(as.character(params$measure))
               model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", metric.name, sep="")
@@ -302,9 +310,6 @@ continuous.random <- function(cont.data, params){
                         "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)
           }
        }
-       else {
-           results <- list("Summary"=res)
-        }
     }
     results
 }
