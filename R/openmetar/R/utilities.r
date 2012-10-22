@@ -67,7 +67,8 @@ print.summary.data <- function(table.data,...) {
                 entry <- table.data[row.index,col.index]
                 # pad entries with spaces to align columns.
                 end.num <- ceiling((col.width - nchar(entry))/2)
-                if ((row.index>1) & (regexpr("-", entry)!=1) & (regexpr("<", entry)!=1)) {
+                pos.num.check <- ((row.index>1) & (regexpr("-", entry)!=1) & (regexpr("<", entry)!=1))
+                if (!(is.na(pos.num.check)) && pos.num.check) {
                      # entry is a positive number so add extra space to align decimal sign.
                      entry <- paste(" ", entry, sep="")
                 } 
