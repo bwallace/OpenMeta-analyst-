@@ -67,9 +67,11 @@ class CovModel(QAbstractTableModel):
 
         studies_to_guessed_vals = {}
         for study in self.included_studies:
-            orig_val = cov_d[study.name]
-            studies_to_guessed_vals[study.name] = guessed_vals_d[orig_val]
-
+            if cov_d.has_key(study.name):
+                orig_val = cov_d[study.name]
+                studies_to_guessed_vals[study.name] = guessed_vals_d[orig_val]
+            else:
+                studies_to_guessed_vals[study.name] = None
 
         return studies_to_guessed_vals
 
@@ -121,8 +123,12 @@ class CovModel(QAbstractTableModel):
 
         self.orig_cov_list, self.new_cov_list = [], []
         for study in self.included_studies:
-            self.orig_cov_list.append(cov_d[study.name])            
-            self.new_cov_list.append(new_cov_d[study.name])
+            if cov_d.has_key(study.name):
+                self.orig_cov_list.append(cov_d[study.name])            
+                self.new_cov_list.append(new_cov_d[study.name])
+            else:
+                self.orig_cov_list.append(None)
+                self.new_cov_list.append(None)
         self.orig_cov_list.append("")
 
         self.reset()
