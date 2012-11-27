@@ -82,7 +82,7 @@ class MetaRegForm(QDialog, ui_meta_reg.Ui_cov_reg_dialog):
         if at_least_one_study_does_not_have_vals:
             run_with_missing = QMessageBox.warning(self,
                         "Missing covariate value(s)",
-                        "Some studies do not have values for the covariate(s) you have selected. Do you want me to run the regression without them (i.e., drop studies with missing values?",
+                        "Some studies do not have values for the covariate(s) you have selected. Do you want me to run the regression without them (i.e., drop studies with missing values)?",
                         QMessageBox.Yes | QMessageBox.No)
         
             if run_with_missing == QMessageBox.No:
