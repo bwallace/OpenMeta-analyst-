@@ -345,7 +345,19 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # note that the spec form gets *this* form as a parameter.
         # this allows the spec form to callback to this
         # module when specifications have been provided.
-        form =  ma_specs.MA_Specs(self.model, meta_f_str="cum.ma", parent=self)
+        if self.model.get_current_outcome_type() != "diagnostic":
+            form =  ma_specs.MA_Specs(self.model, meta_f_str="cum.ma", parent=self)
+        else:
+            # diagnostic data; we first have the user select metric(s),
+            # and only then the model, &etc.
+            '''
+            @@ TODO this is not actually implemented! i.e., we do not have
+            a cumulative diagnostic MA method. for now this method should
+            *never* be called with diagnostic data.
+            '''
+            form = diag_metrics.Diag_Metrics(self.model, meta_f_str="cum.ma", \
+                                                parent=self) 
+
         form.show()
         
     def loo_ma(self):
@@ -1012,14 +1024,13 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         if check_for_appropriate_metric:
             self.tableView.change_metric_if_appropriate()
 
-        self.model_updated()
-
         if self.model.get_current_outcome_type() == "diagnostic":
             # no cumulative MA for diagnostic data
             self.action_cum_ma.setEnabled(False)
         else:
             self.action_cum_ma.setEnabled(True)
 
+        self.model_updated()
         self.data_dirtied()
         print "ok -- model set."
         
