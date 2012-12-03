@@ -325,6 +325,17 @@ class DatasetModel(QAbstractTableModel):
             group_str = "-".join(self.current_txs)
         return group_str
         
+
+    def _verify_raw_data(self, s, data_type):
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
+        if not meta_globals._is_a_float(s):
+            return False, "raw data needs to be numeric."
+
+        elif data_type in (BINARY, DIAGNOSTIC) and not meta_globals._is_an_int(s):
+            return False, "expecting count data -- you provided a float (?)"
+        return True, None
+
     def setData(self, index, value, role=Qt.EditRole):
         '''
         Implementation of the AbstractDataTable method. The view uses this method
@@ -341,7 +352,6 @@ class DatasetModel(QAbstractTableModel):
             old_val = self.data(index)
             study = self.dataset.studies[index.row()]
             if column in (self.NAME, self.YEAR):
-                #print "row, column, row_count-DUMMY_ROWS".format(index.row(), column, self.rowCount()-DUMMY_ROWS)
                 if column == self.NAME:
                     study.name = unicode(value.toString().toUtf8(), encoding="utf8")
                     if study.name == "":
@@ -367,6 +377,14 @@ class DatasetModel(QAbstractTableModel):
                 else:
                     study.year = value.toInt()[0]
             elif self.current_outcome is not None and column in self.RAW_DATA:
+
+                data_ok, msg = self._verify_raw_data(value, current_data_type)
+                if not data_ok:
+                    #pyqtRemoveInputHook()
+                    #pdb.set_trace()
+                    self.emit(SIGNAL("dataError(QString)"), QString(msg))
+                    return False
+
                 # @TODO make module-level constant?
                 adjust_by = 3 # include study, study name, year columns
                 ma_unit = self.get_current_ma_unit_for_study(index.row())

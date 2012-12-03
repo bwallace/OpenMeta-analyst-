@@ -74,9 +74,11 @@ class MADataTable(QtGui.QTableView):
 
             study_index = self.rowAt(event.y())
 
+            ### if this is a dummy row, it doesn't make
+            # sense to provide a context-menu
             if study_index >= len(self.model().dataset.studies):
                 return None
-                
+
             ### delete study
             study = self.model().dataset.studies[study_index]
             action = QAction("delete study %s" % study.name, self)

@@ -225,6 +225,9 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         QObject.disconnect(self.tableView, SIGNAL("dataDirtied()"), self.data_dirtied)
 
 
+    def data_error(self, msg):
+        QMessageBox.warning(self.parent(), "whoops", msg)
+
     def set_edit_focus(self, index):
         ''' sets edit focus to the row,col specified by index.'''
         self.tableView.setCurrentIndex(index)
@@ -268,7 +271,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # this fixes bug #20.
         QObject.connect(self.tableView.model(), SIGNAL("modelReset(QModelIndex)"),
                                                                 self.set_edit_focus) 
-                                                        
+                                                
+        QObject.connect(self.tableView.model(), SIGNAL("dataError(QString)"), 
+                                                                self.data_error)
+
         QObject.connect(self.tableView, SIGNAL("dataDirtied()"),
                                                 self.data_dirtied)                                                       
         if menu_actions:                

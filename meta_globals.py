@@ -111,4 +111,18 @@ def check_plot_bound(bound):
         return float(bound)
     except:
         return False
+
+def _is_a_float(s):
+    try:
+        return float(s)
+        return True
+    except:
+        return False
+
+def _is_an_int(s):
+    try:
+        int(s)
+        return True
+    except:
+        return False
     
