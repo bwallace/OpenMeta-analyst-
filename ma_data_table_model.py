@@ -25,6 +25,8 @@ import meta_py_r
 import meta_globals 
 from meta_globals import *
 
+DUMMY_ROWS = 20
+
 class DatasetModel(QAbstractTableModel):
     '''
     This module mediates between the classes comprising a dataset
@@ -192,6 +194,7 @@ class DatasetModel(QAbstractTableModel):
         current_data_type = self.dataset.get_outcome_type(self.current_outcome)
         column = index.column()
 
+
         if role in (Qt.DisplayRole, Qt.EditRole):
             if column == self.NAME:
                 return QVariant(study.name)
@@ -338,12 +341,13 @@ class DatasetModel(QAbstractTableModel):
             old_val = self.data(index)
             study = self.dataset.studies[index.row()]
             if column in (self.NAME, self.YEAR):
+                #print "row, column, row_count-DUMMY_ROWS".format(index.row(), column, self.rowCount()-DUMMY_ROWS)
                 if column == self.NAME:
                     study.name = unicode(value.toString().toUtf8(), encoding="utf8")
                     if study.name == "":
                         # just ignore -- we don't allow empty study names
                         return False
-                    elif index.row() == self.rowCount()-1:
+                    elif index.row() == self.rowCount()-DUMMY_ROWS-1:
                         # if the last study was just edited, append a
                         # new, blank study
                         # TODO bug: if a new tx group is added, and then a new study
@@ -600,7 +604,7 @@ class DatasetModel(QAbstractTableModel):
                             Qt.ItemIsEditable)
 
     def rowCount(self, index=QModelIndex()):
-        return self.dataset.num_studies()
+        return self.dataset.num_studies() + DUMMY_ROWS
 
     def columnCount(self, index=QModelIndex()):
         return self._get_col_count()

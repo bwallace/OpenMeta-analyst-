@@ -1,7 +1,7 @@
 #############################################
 #                                           #
 #  Byron C. Wallace                         #
-#  Tufts Medical Center                     #
+#  Brown University                         #
 #  OpenMeta[analyst]                        #
 #                                           #
 #  This is the component responsible        #
@@ -170,16 +170,18 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
     def add_text(self):
         for title, text in self.texts.items():
-            print "title: %s; text: %s" % (title, text)
-            cur_y = max(0, self.y_coord)
-            print "cur_y: %s" % cur_y
-            # first add the title
-            qt_item = self.add_title(title)
+            try:
+                print "title: %s; text: %s" % (title, text)
+                cur_y = max(0, self.y_coord)
+                print "cur_y: %s" % cur_y
+                # first add the title
+                qt_item = self.add_title(title)
 
-            # now the text
-            text_item_rect, pos = self.create_text_item(str(text), self.position())
-            self.items_to_coords[qt_item] =  pos
-
+                # now the text
+                text_item_rect, pos = self.create_text_item(str(text), self.position())
+                self.items_to_coords[qt_item] =  pos
+            except:
+                pass
 
     def add_title(self, title):
         text = QGraphicsTextItem()

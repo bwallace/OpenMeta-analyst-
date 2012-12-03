@@ -808,12 +808,16 @@ def run_meta_regression(dataset, study_names, cov_list, metric_name,\
     print "\n\n(run_meta_regression): executing:\n %s\n" % r_str
 
     ### TODO -- this is hacky
+
     ro.r(r_str)
     result = ro.r("%s" % results_name)
 
     if "try-error" in str(result):
-        # uh-oh, there was an error
+        # uh-oh, there was an error (but the weird
+        # RRunTimeError alluded to above; this is a 
+        # legit error returned from an R routine)
         return str([msg for msg in result][0])
+ 
 
     parsed_results = parse_out_results(result)
 
@@ -830,6 +834,7 @@ def run_meta_method_diag(meta_function_name, function_names, list_of_params,\
     multi_meta_function_name = \
         {"loo.ma.diagnostic":"multiple.loo.diagnostic",\
          "subgroup.ma.diagnostic":"multiple.subgroup.diagnostic"}[meta_function_name]
+
     result = ro.r("%s(f.names, list.of.params, %s)" % (multi_meta_function_name, diag_data_name))
     
     return parse_out_results(result)
@@ -1066,6 +1071,7 @@ def diagnostic_convert_scale(x, metric_name, convert_to="display.scale"):
     
 def generic_convert_scale(x, metric_name, data_type, convert_to="display.scale"):
     ro.r("trans.f <- %s.transform.f('%s')" % (data_type, metric_name))
+
     islist = isinstance(x, list) or isinstance(x, tuple) # being loose with what qualifies as a 'list' here.
     if islist:
         ro.r("x <- c%s" % str(x))

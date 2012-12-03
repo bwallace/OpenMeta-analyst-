@@ -64,9 +64,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         super(MetaForm, self).__init__(parent)
         self.setupUi(self)
         
-        # this is just for debugging purposes; if a
-        # switch is passed in, display fake/toy data
-        #
+
         # TODO should also allow a (path to a) dataset
         # to be given on the console.
         self.model = None
@@ -98,6 +96,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # to the main form 
         self.tableView.main_gui = self
         self.tableView.resizeColumnsToContents()
+    
+
         self.out_path = None
         self.metric_menu_is_set_for = None
         self.raise_()
@@ -1041,7 +1041,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.model.update_current_outcome()
         self.model.update_current_time_points()
 
-        self.model.try_to_update_outcomes()
+        if self.model.current_outcome is not None:
+            self.model.try_to_update_outcomes()
             
         # This is kind of subtle. We have to reconnect
         # our signals and slots when the underlying model 

@@ -72,8 +72,12 @@ class MADataTable(QtGui.QTableView):
         def _context_menu(event):
             context_menu = QMenu(self)
 
-            ### delete study
             study_index = self.rowAt(event.y())
+
+            if study_index >= len(self.model().dataset.studies):
+                return None
+                
+            ### delete study
             study = self.model().dataset.studies[study_index]
             action = QAction("delete study %s" % study.name, self)
             QObject.connect(action, SIGNAL("triggered()"), \
