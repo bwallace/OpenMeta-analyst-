@@ -326,14 +326,28 @@ class DatasetModel(QAbstractTableModel):
         return group_str
         
 
-    def _verify_raw_data(self, s, data_type):
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
+    def _verify_raw_data(self, s, col, data_type):
         if not meta_globals._is_a_float(s):
             return False, "raw data needs to be numeric."
 
-        elif data_type in (BINARY, DIAGNOSTIC) and not meta_globals._is_an_int(s):
-            return False, "expecting count data -- you provided a float (?)"
+        if data_type in (BINARY, DIAGNOSTIC):
+            if not meta_globals._is_an_int(s):
+                return False, "expecting count data -- you provided a float (?)"
+
+            if int(s) < 0:
+                return False, "counts cannot be negative"
+
+        return True, None
+
+    def _verify_outcome_data(self, s, col, row, data_type):
+        if s.trimmed() == '':
+            # in this case, they've deleted a value
+            # (i.e., left it blank) -- this is OK.
+            return True, None 
+
+        if not meta_globals._is_a_float(s):
+            return False, "outcomes need to be numeric, you crazy person"
+
         return True, None
 
     def setData(self, index, value, role=Qt.EditRole):
@@ -377,11 +391,11 @@ class DatasetModel(QAbstractTableModel):
                 else:
                     study.year = value.toInt()[0]
             elif self.current_outcome is not None and column in self.RAW_DATA:
-
-                data_ok, msg = self._verify_raw_data(value, current_data_type)
+                data_ok, msg = self._verify_raw_data(value.toString(), column, current_data_type)
                 if not data_ok:
-                    #pyqtRemoveInputHook()
-                    #pdb.set_trace()
+                    # this signal is (-- presumably --) handled by the UI
+                    # i.e., meta_form, which reports the problem to the
+                    # user. the model is not affected.
                     self.emit(SIGNAL("dataError(QString)"), QString(msg))
                     return False
 
@@ -408,33 +422,97 @@ class DatasetModel(QAbstractTableModel):
                 # update the corresponding outcome (if data permits)
                 self.update_outcome_if_possible(index.row())
             elif column in self.OUTCOMES:
-                # the user can also explicitly set the effect size / CIs
-                # @TODO what to do if the entered estimate contradicts the raw data?
-                display_scale_val, converted_ok = value.toDouble()
-                if converted_ok:
+                row = index.row()
+                
+                if value.toString().trimmed() == "":
+                    delete_value = True  
+                    display_scale_val = None
+                    calc_scale_val = None
+                else:
+                    # sanity check -- is this a number?
+                    data_ok, msg = self._verify_outcome_data(value.toString(), row, column, current_data_type)
+                    if not data_ok:
+                        self.emit(SIGNAL("dataError(QString)"), QString(msg))
+                        return False
+
+                    # the user can also explicitly set the effect size / CIs
+                    # @TODO what to do if the entered estimate contradicts the raw data?
+                    display_scale_val, converted_ok = value.toDouble()
+
+                if display_scale_val is None or converted_ok:
                     if not self.is_diag():
                         # note that we convert from the display/continuous
                         # scale on which the metric is assumed to have been
                         # entered into the 'calculation' scale (e.g., log)
                         calc_scale_val = None
-                        if current_data_type == BINARY:
-                            calc_scale_val = meta_py_r.binary_convert_scale(display_scale_val, \
-                                                        self.current_effect, convert_to="calc.scale")
-                        else:
-                            ## assuming continuous here
-                            calc_scale_val = meta_py_r.continuous_convert_scale(display_scale_val, \
-                                                        self.current_effect, convert_to="calc.scale")
+                        if display_scale_val is not None:
+                            if current_data_type == BINARY:
+                                calc_scale_val = meta_py_r.binary_convert_scale(display_scale_val, \
+                                                            self.current_effect, convert_to="calc.scale")
+                            else:
+                                ## assuming continuous here
+                                calc_scale_val = meta_py_r.continuous_convert_scale(display_scale_val, \
+                                                            self.current_effect, convert_to="calc.scale")
                                                         
                         ma_unit = self.get_current_ma_unit_for_study(index.row())
+                        
+                        ###
+                        # note -- we check here with regards to verifying confidence
+                        # intervals, because it was easier to integrate this check here,
+                        # rather than in _verify_outcome_data (e.g., we already check
+                        # if we're updating the lower, est or upper). perhaps this is more
+                        # tightly coupled than ideal.
+                        ###
+                        # est, lower, upper
+                        cur_est, cur_lower, cur_upper = ma_unit.get_effect_and_ci(self.current_effect, group_str)
+        
                         if column == self.OUTCOMES[0]:
+                            # estimate better be between lower, upper!
+                            point_est_ok = True
+                            if display_scale_val is not None:
+                                if cur_lower is not None and cur_lower > calc_scale_val:
+                                    point_est_ok = False
+                                if cur_upper is not None and cur_upper < calc_scale_val:
+                                    point_est_ok = False
+
+                                if not point_est_ok:
+                                    msg = "You entered a point estimate that isn't between your lower and upper CIs!"
+                                    self.emit(SIGNAL("dataError(QString)"), QString(msg))
+                                    return False
+
                             ma_unit.set_effect(self.current_effect, group_str, calc_scale_val)
                             ma_unit.set_display_effect(self.current_effect, group_str, display_scale_val)
+
                         elif column == self.OUTCOMES[1]:
                             # lower
+                            lower_ok = True
+                            if display_scale_val is not None:
+                                if cur_est is not None and cur_est < calc_scale_val:
+                                    lower_ok = False
+                                if cur_upper is not None and cur_upper < calc_scale_val:
+                                    lower_ok = False
+
+                                if not lower_ok:
+                                    msg = "You entered a lower bound that is greater than your upper bound or point estimate!"
+                                    self.emit(SIGNAL("dataError(QString)"), QString(msg))
+                                    return False
+
                             ma_unit.set_lower(self.current_effect, group_str, calc_scale_val)
                             ma_unit.set_display_lower(self.current_effect, group_str, display_scale_val)
                         else:
                             # upper
+                            upper_ok = True
+                            if display_scale_val is not None:
+                                if cur_est is not None and cur_est > calc_scale_val:
+                                    upper_ok = False
+                                if cur_upper is not None and cur_lower > calc_scale_val:
+                                    upper_ok = False
+
+                                if not upper_ok:
+                                    msg = "You entered an upper bound that is lower than your lower bound or point estimate!"
+                                    self.emit(SIGNAL("dataError(QString)"), QString(msg))
+                                    return False
+
                             ma_unit.set_upper(self.current_effect, group_str, calc_scale_val)
                             ma_unit.set_display_upper(self.current_effect, group_str, display_scale_val)
                     else:
@@ -456,7 +534,8 @@ class DatasetModel(QAbstractTableModel):
                         else:
                             ma_unit.set_upper(m_str, group_str, calc_scale_val)
                             ma_unit.set_display_upper(m_str, group_str, display_scale_val) 
-                        
+                
+
             elif column == self.INCLUDE_STUDY:
                 study.include = value.toBool()
                 # we keep note if a study was manually 

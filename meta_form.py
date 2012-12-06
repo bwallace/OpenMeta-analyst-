@@ -271,7 +271,13 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # this fixes bug #20.
         QObject.connect(self.tableView.model(), SIGNAL("modelReset(QModelIndex)"),
                                                                 self.set_edit_focus) 
-                                                
+           
+        ###
+        # this listens to the model regarding errors in data entry -- 
+        # such data will be rejected (e.g., strings for counts, or whatever),
+        # and this hook allows the model to pass along error messages to the
+        # user. the data checking happens in ma_dataset (specifically, in the
+        # setData method)                                     
         QObject.connect(self.tableView.model(), SIGNAL("dataError(QString)"), 
                                                                 self.data_error)
 

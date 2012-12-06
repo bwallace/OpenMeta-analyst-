@@ -562,7 +562,8 @@ class MetaAnalyticUnit:
         else:
             self.raw_data_length = 4
         
-        raw_data = raw_data or [["" for n in range(self.raw_data_length)] for group in group_names]
+        raw_data = raw_data or \
+                    [["" for n in range(self.raw_data_length)] for group in group_names]
 
         self.effects_dict = {}
         

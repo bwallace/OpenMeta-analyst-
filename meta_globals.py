@@ -108,13 +108,15 @@ def seems_sane(xticks):
     
 def check_plot_bound(bound):
     try:
-        return float(bound)
+        # errrm... this might cause a problem if 
+        # bound is 0... 
+        return float(bound) 
     except:
         return False
 
 def _is_a_float(s):
     try:
-        return float(s)
+        float(s)
         return True
     except:
         return False
