@@ -121,6 +121,9 @@ def _is_a_float(s):
     except:
         return False
 
+def _is_empty(s):
+    return s is None or s == ""
+    
 def _is_an_int(s):
     try:
         int(s)

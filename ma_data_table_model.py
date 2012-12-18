@@ -327,36 +327,60 @@ class DatasetModel(QAbstractTableModel):
         
 
     def _verify_raw_data(self, s, col, data_type):
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
+
         # ignore blank entries
         if s.trimmed() == "" or s is None:
             return True, None
 
         if not meta_globals._is_a_float(s):
-            return False, "raw data needs to be numeric."
+            return False, "Raw data needs to be numeric."
 
         if data_type in (BINARY, DIAGNOSTIC):
             if not meta_globals._is_an_int(s):
-                return False, "expecting count data -- you provided a float (?)"
+                return False, "Expecting count data -- you provided a float (?)"
 
             if int(s) < 0:
-                return False, "counts cannot be negative"
+                return False, "Counts cannot be negative."
+
 
         return True, None
 
+
     def _verify_outcome_data(self, s, col, row, data_type):
+        # here we check if there is raw data for this study; 
+        # if there is, we don't allow entry of outcomes
+
+        if len(self.dataset.studies) > row:
+            raw_data = self.get_cur_raw_data_for_study(row)
+
+            if not all([meta_globals._is_empty(s_i) for s_i in raw_data]):
+                return False, '''You have already entered raw data for this study. If you want to enter the outcome directly, delete the raw data first.'''
+
         if s.trimmed() == '':
             # in this case, they've deleted a value
             # (i.e., left it blank) -- this is OK.
             return True, None 
 
         if not meta_globals._is_a_float(s):
-            return False, "outcomes need to be numeric, you crazy person"
+            return False, "Outcomes need to be numeric, you crazy person"
 
         if self.current_effect in ("OR", "RR"):
             if float(s) < 0:
-                return False, "ratios cannot be negative."
-                
+                return False, "Ratios cannot be negative."
+
         return True, None
+
+    def _verify_year(self, s):
+        if s.trimmed() == '':
+            return True, None
+
+        if not meta_globals._is_an_int(s):
+            return False, "Years need to be integers."
+
+        return True, None
+
 
     def setData(self, index, value, role=Qt.EditRole):
         '''
@@ -397,6 +421,10 @@ class DatasetModel(QAbstractTableModel):
                         new_index = self.index(index.row(), index.column()+1)
                         self.emit(SIGNAL("modelReset(QModelIndex)"), new_index)
                 else:
+                    year_ok, msg = self._verify_year(value.toString())
+                    if not year_ok:
+                        self.emit(SIGNAL("dataError(QString)"), QString(msg))
+                        return False
                     study.year = value.toInt()[0]
             elif self.current_outcome is not None and column in self.RAW_DATA:
                 data_ok, msg = self._verify_raw_data(value.toString(), column, current_data_type)
@@ -438,7 +466,7 @@ class DatasetModel(QAbstractTableModel):
                     calc_scale_val = None
                 else:
                     # sanity check -- is this a number?
-                    data_ok, msg = self._verify_outcome_data(value.toString(), row, column, current_data_type)
+                    data_ok, msg = self._verify_outcome_data(value.toString(), column, row, current_data_type)
                     if not data_ok:
                         self.emit(SIGNAL("dataError(QString)"), QString(msg))
                         return False
