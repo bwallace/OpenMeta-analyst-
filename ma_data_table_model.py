@@ -327,6 +327,10 @@ class DatasetModel(QAbstractTableModel):
         
 
     def _verify_raw_data(self, s, col, data_type):
+        # ignore blank entries
+        if s.trimmed() == "" or s is None:
+            return True, None
+
         if not meta_globals._is_a_float(s):
             return False, "raw data needs to be numeric."
 
@@ -348,6 +352,10 @@ class DatasetModel(QAbstractTableModel):
         if not meta_globals._is_a_float(s):
             return False, "outcomes need to be numeric, you crazy person"
 
+        if self.current_effect in ("OR", "RR"):
+            if float(s) < 0:
+                return False, "ratios cannot be negative."
+                
         return True, None
 
     def setData(self, index, value, role=Qt.EditRole):
