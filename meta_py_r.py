@@ -1037,8 +1037,11 @@ def effect_for_study(e1, n1, e2=None, n2=None, two_arm=True,
                         (metric, e1, n1, e2, n2)
     else:
         r_str = "escalc(measure='%s', xi=c(%s), ni=c(%s))" % (metric, e1, n1)        
-                    
+             
+    print "calling out to R: %s" % r_str
     effect = ro.r(r_str)
+
+    print "result: %s" % effect
     point_est = effect[0][0]
     se = math.sqrt(effect[1][0])
 

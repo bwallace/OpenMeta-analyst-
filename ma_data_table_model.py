@@ -327,9 +327,6 @@ class DatasetModel(QAbstractTableModel):
         
 
     def _verify_raw_data(self, s, col, data_type):
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
-
         # ignore blank entries
         if s.trimmed() == "" or s is None:
             return True, None
@@ -349,22 +346,50 @@ class DatasetModel(QAbstractTableModel):
 
 
     def _verify_outcome_data(self, s, col, row, data_type):
+
+        if not meta_globals._is_a_float(s):
+            return False, "Outcomes need to be numeric, you crazy person"
+
         # here we check if there is raw data for this study; 
         # if there is, we don't allow entry of outcomes
-
         if len(self.dataset.studies) > row:
             raw_data = self.get_cur_raw_data_for_study(row)
 
             if not all([meta_globals._is_empty(s_i) for s_i in raw_data]):
-                return False, '''You have already entered raw data for this study. If you want to enter the outcome directly, delete the raw data first.'''
+                # fix for issue #180 
+                # sort of hacky. we check here to see if the outcome
+                # in fact was "changed", by which we mean the value
+                # has been set to a 'sufficiently' different
+                # value. this avoids the UI annoyingly bugging users when
+                # they are tabbing along. probably a better fix would
+                # be to modify the actual tabbing behavior of the spreadsheet
+                # for the last 'raw data' column.
+                ma_unit = self.get_current_ma_unit_for_study(row)
+                group_str = self.get_cur_group_str()
+                prev_est, prev_lower, prev_upper = ma_unit.get_display_effect_and_ci(self.current_effect, group_str)
+                
+                d = dict(zip(self.OUTCOMES, [prev_est, prev_lower, prev_upper]))
+                new_val = float(s)
+                previously_was_none = d[col] is None
+                delta = None
+                if previously_was_none:
+                    # then it was previously not set;
+                    # go ahead and let the user override.
+                    delta = float("-inf")
+                else:
+                    delta = abs(new_val - d[col])
+                    print "new val {0}, prev val {1}".format(new_val, d[col])
+                    print "DELTA {0}".format(delta)
+                
+                epsilon = 10E-6 
+                if delta > epsilon:
+                    return False, '''You have already entered raw data for this study. If you want to enter the outcome directly, delete the raw data first.'''
+
 
         if s.trimmed() == '':
             # in this case, they've deleted a value
             # (i.e., left it blank) -- this is OK.
             return True, None 
-
-        if not meta_globals._is_a_float(s):
-            return False, "Outcomes need to be numeric, you crazy person"
 
         if self.current_effect in ("OR", "RR"):
             if float(s) < 0:
@@ -1183,7 +1208,7 @@ class DatasetModel(QAbstractTableModel):
         # but below we check only for raw data. in fact,
         # we only want to foce an exclude if there is no
         # raw data *and* no manually entered point estimate/CI
-        if not self.study_has_point_est(study_index):
+        if data_type == DIAGNOSTIC or not self.study_has_point_est(study_index):
             self.dataset.studies[study_index].include = False
 
         # we try to compute outcomes if either all raw data is there, or, if we have a one-arm

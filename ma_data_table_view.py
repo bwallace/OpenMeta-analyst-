@@ -201,9 +201,10 @@ class MADataTable(QtGui.QTableView):
         self.model().exclude_all_studies()
         self.model().reset()
 
-    def keyPressEvent(self, event):                                       
+    def keyPressEvent(self, event):                                  
         if (event.modifiers() & QtCore.Qt.ControlModifier):
             ## undo/redo
+
             if event.key() == QtCore.Qt.Key_Z:
                 self.undoStack.undo()
             elif event.key() == QtCore.Qt.Key_Y:
@@ -221,6 +222,14 @@ class MADataTable(QtGui.QTableView):
                 # in particular, we pass the event up to the main UI
                 self.main_gui.keyPressEvent(event)
         else:
+            # fix for issue #180
+            #if event.key() == QtCore.Qt.Key_Tab:
+                # check to see if the next cell is
+                # an outcome cell; if it is, treat
+                # this like an enter, instead of a tab.
+         
+
+
             ### 
             # This is a call to the default keyPressEvent function,
             # which we are here overwriting, thereby eliminating
