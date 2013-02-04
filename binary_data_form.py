@@ -148,7 +148,8 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         
         print computed
         if computed is not None:
-            if max(computed['residuals'].values()) > THRESHOLD:
+            # fix for issue # 182
+            if max(computed['residuals']) > THRESHOLD:
                 print "problem computing 2x2 table."
             else:
                 print "table computed!"
