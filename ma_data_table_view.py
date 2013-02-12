@@ -284,6 +284,9 @@ class MADataTable(QtGui.QTableView):
                 # push the edit even
                 ma_edit = CommandEditMAUnit(self, study_index, ma_unit, old_ma_unit)
                 self.undoStack.push(ma_edit)
+                print 'pressed OK' ######### FOR DEBUGGING REMOVE LATER (GD)
+            else:                  ####FOR DEBUGGING REMOVE LATER (GD)
+                print 'pressed Cancel' ##### FOR DEBUGGING REMOVE LATER (GD)
         elif data_type == "continuous":
             cur_raw_data_dict = {}
             for group_name in cur_txs:

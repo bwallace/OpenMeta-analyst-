@@ -551,7 +551,7 @@ class MetaAnalyticUnit:
         elif group_names is None:
             group_names = ["test 1"]
 
-        # TreatmentGroup ids to effect scalars. Note 
+        # TreatmentGroup ids to effect scalars.
         self.tx_groups = {}
         
         self.raw_data_length = 0
@@ -559,8 +559,10 @@ class MetaAnalyticUnit:
             self.raw_data_length = 2
         elif outcome.data_type == CONTINUOUS:
             self.raw_data_length = 3
-        else:
+        elif outcome.data_type == DIAGNOSTIC:
             self.raw_data_length = 4
+        else:
+            raise Exception, "Unrecognized outcome data type, '%s' was given" % outcome.data_type
         
         raw_data = raw_data or \
                     [["" for n in range(self.raw_data_length)] for group in group_names]
