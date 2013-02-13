@@ -262,7 +262,8 @@ class MADataTable(QtGui.QTableView):
         # dispatch on the data type
         form = None
         study_index = row
-        ma_unit = self.model().get_current_ma_unit_for_study(study_index)
+        # fix for issue # 183
+        ma_unit = copy.deepcopy(self.model().get_current_ma_unit_for_study(study_index))
         old_ma_unit = copy.deepcopy(ma_unit)
         cur_txs = self.model().current_txs
         cur_effect = self.model().current_effect
@@ -284,9 +285,6 @@ class MADataTable(QtGui.QTableView):
                 # push the edit even
                 ma_edit = CommandEditMAUnit(self, study_index, ma_unit, old_ma_unit)
                 self.undoStack.push(ma_edit)
-                print 'pressed OK' ######### FOR DEBUGGING REMOVE LATER (GD)
-            else:                  ####FOR DEBUGGING REMOVE LATER (GD)
-                print 'pressed Cancel' ##### FOR DEBUGGING REMOVE LATER (GD)
         elif data_type == "continuous":
             cur_raw_data_dict = {}
             for group_name in cur_txs:
