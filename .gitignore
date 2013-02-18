@@ -1,2 +1,6 @@
 *.pyc
-/r_tmp
+r_tmp/
+user_prefs.dict
+.project
+.pydevproject
+.settings

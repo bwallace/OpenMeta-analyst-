@@ -112,6 +112,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         
     def _update_raw_data(self):
         ''' Generates the 2x2 table with whatever parametric data was provided '''
+        ''' Sets #events and #subjects in binary table'''
         self.raw_data_table.blockSignals(True)
         for row, group in enumerate(self.cur_groups):
             for col in (0,2):
@@ -144,15 +145,21 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         # on to the R routine
         self._fillin_basics(row, col) 
         params = self._get_vals()
-        computed = meta_py_r.fillin_2x2(params)
+        print "Params: ", params
         
-        print computed
-        if computed is not None:
-            # fix for issue # 182
-            if max(computed['residuals']) > THRESHOLD:
+        #DOESN'T WORK
+        computed = meta_py_r.fillin_2x2(params)
+        print "Computed: ", computed 
+        
+        if computed != None: # more than one value entered
+            abs_residuals = [abs(x) for x in computed['residuals']]
+            if max(abs_residuals ) > THRESHOLD:
                 print "problem computing 2x2 table."
-            else:
-                print "table computed!"
+                print "max residual: %s" % max(computed['residuals'])
+                print computed['residuals']
+                print ("Coefficients: ", computed['coefficients'])
+            else: # values are hunky-dory
+                print "table computed successfully!"
                 self._set_vals(computed["coefficients"])
                 # need to try and update metric here
                 
@@ -176,6 +183,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         
          
     def _set_vals(self, computed_d):
+        '''Sets values in table widget'''
         self.raw_data_table.blockSignals(True)
         self._set_val(0, 0, computed_d["c11"])
         self._set_val(0, 1, computed_d["c12"])
@@ -186,6 +194,9 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self._set_val(2, 0, computed_d["c1sum"])
         self._set_val(2, 1, computed_d["c2sum"])  
         self._set_val(2, 2, computed_d["total"])  
+        
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
         self.raw_data_table.blockSignals(False)
         
     def _set_val(self, i, j, val):
@@ -194,7 +205,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             self._set_table_cell(i, j, val)
         
     def _set_table_cell(self, i, j, val):
-        # try to case to an int
+        # try to cast to an int
         try:
             val = int(round(val))
         except:
@@ -206,7 +217,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self._update_ma_unit()
         # _update_raw_data results in the 1,0 being "None"
         self._update_raw_data()
-        self._update_data_table()
+        #self._update_data_table()  # comment out to see if new R fillin.2x2.simpler works
         self.check_for_consistencies()
         
         

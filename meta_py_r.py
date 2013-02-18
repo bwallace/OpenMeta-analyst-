@@ -88,7 +88,11 @@ def impute_diag_data(diag_data_dict, metric):
 
 
 def fillin_2x2(table_data_dict):
-    r_str = ["fillin.2x2.simple("]
+    #r_str = ["fillin.2x2.simple("]
+    ro.r("source('sandbox.r')")
+    r_str = ["fillin.2x2.simpler("]
+    
+    # construct argument list if argument is not None
     for param, val in table_data_dict.items():
         if val is not None:
             r_str.append("%s=%s," % (param, val))
@@ -97,15 +101,73 @@ def fillin_2x2(table_data_dict):
     r_str = "".join(r_str)[:-1] if r_str[-1].endswith(",") else "".join(r_str)
     r_str += ")"
     res = ro.r(r_str)
-    if "NA" in str(res).split(" "):
-        return None
+    #if "NA" in str(res).split(" "):
+    #    return None
     
     print "\n\n*****"
     print r_str
     print res
     print "*****\n\n"
     
-    return _rls_to_pyd(res)
+    
+    # CONVERT res to python DICT using the fact that the r objects are iterable
+    #for (name, index, value) in zip(enumerate(res.names)
+    
+    
+    R_NA_types = [rpy2.rinterface.NALogicalType, rpy2.rinterface.NARealType]
+    if len(res) == 1 and type(res[0]) in R_NA_types:
+        return None
+    toreturn = _grlist_to_pydict(res,True)
+    return toreturn
+    #toreturn = _rls_to_pyd(res)
+    #pyqtRemoveInputHook()
+    #pdb.set_trace()
+    #return _rls_to_pyd(res)
+    #return res
+
+
+# NOTE: CUSTOM VERSION......
+def _grlist_to_pydict(r_ls, recurse=True):
+    '''
+    parse rpy2 data structure into analogous Python
+    dictionary. if the recursive flag is true, this is 
+    done recursively, i.e., if a key points to an R
+    list, that list will be converted, too.
+    '''
+    
+    def gis_a_list(x):
+        # @TODO add additional vector types?
+        return type(x) in [rpy2.robjects.vectors.StrVector, 
+                           rpy2.robjects.vectors.ListVector]
+        
+    def gis_NA(x):
+        return type(x) in [rpy2.rinterface.NALogicalType, rpy2.rinterface.NARealType]
+    def convert_NA_to_None(x):
+        return None if gis_NA(x) else x
+    
+    d = {}
+    names = r_ls.names
+
+    for name, val in zip(names, r_ls):
+        print "name {0}, val {1}".format(name, val)
+        if recurse and gis_a_list(val) and not str(val.names)=="NULL":
+            print "recursing... \n"
+            d[name] = _grlist_to_pydict(val)
+
+        cur_x = list(val)
+        if len(cur_x) == 1:
+            # if it's a singleton, extract the
+            # the value and stick it in the dict.
+            # -- this is essentially the 'base case'
+            d[name] = cur_x[0]
+            d[name] = convert_NA_to_None(d[name])
+            
+        #elif not recurse:
+        elif not gis_a_list(val):
+            d[name] = cur_x # not a singleton list
+            d[name] = [convert_NA_to_None(x) for x in d[name][:]]
+
+    return d
 
 def impute_cont_data(cont_data_dict, alpha):
     print "computing continuous data via R..."
