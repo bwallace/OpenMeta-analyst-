@@ -756,7 +756,7 @@ class DatasetModel(QAbstractTableModel):
         if not index.isValid():
             return Qt.ItemIsEnabled
         elif index.column() == self.INCLUDE_STUDY:
-             return Qt.ItemFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled |
+            return Qt.ItemFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled |
                             Qt.ItemIsUserCheckable | Qt.ItemIsSelectable)
         return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
                             Qt.ItemIsEditable)

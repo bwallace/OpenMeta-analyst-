@@ -106,7 +106,7 @@ def fillin_2x2(table_data_dict):
     
     print "\n\n*****"
     print r_str
-    print res
+    #print res
     print "*****\n\n"
     
     
@@ -149,7 +149,7 @@ def _grlist_to_pydict(r_ls, recurse=True):
     names = r_ls.names
 
     for name, val in zip(names, r_ls):
-        print "name {0}, val {1}".format(name, val)
+        #print "name {0}, val {1}".format(name, val)
         if recurse and gis_a_list(val) and not str(val.names)=="NULL":
             print "recursing... \n"
             d[name] = _grlist_to_pydict(val)

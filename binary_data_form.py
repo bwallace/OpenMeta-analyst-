@@ -13,6 +13,7 @@ from PyQt4.Qt import *
 from PyQt4 import QtGui
 
 import meta_py_r
+import meta_globals
 from meta_globals import *
 
 import ui_binary_data_form
@@ -56,6 +57,14 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         inconsistency_palette.setColor(QPalette.WindowText,Qt.red)
         self.inconsistencyLabel.setPalette(inconsistency_palette)
         self.inconsistencyLabel.setVisible(False)
+        
+        # used for checking the data we attempt to set is good
+        self.current_item_data = self._get_int(self.raw_data_table.currentRow(),self.raw_data_table.currentColumn())
+        
+    @pyqtSignature("int, int, int, int")
+    def on_raw_data_table_currentCellChanged(self,currentRow,currentColumn,previousRow,previousColumn):
+        self.current_item_data = self._get_int(currentRow,currentColumn)
+        print "Current Item Data:",self.current_item_data
         
     def _setup_signals_and_slots(self):
         QObject.connect(self.raw_data_table, SIGNAL("cellChanged (int, int)"), 
@@ -148,9 +157,43 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                 print "%s, %s: %s" % (row, col, self._get_int(row, col))
         print "ok -- raw data is now: %s" % self.raw_data_d
         
+    def _cell_data_not_valid(self, celldata_string):
+        # ignore blank entries
+        if celldata_string.trimmed() == "" or celldata_string is None:
+            return None
+
+        if not meta_globals._is_a_float(celldata_string):
+            return "Raw data needs to be numeric."
+
+        if not meta_globals._is_an_int(celldata_string):
+            return "Expecting count data -- you provided a float (?)"
+
+        if int(celldata_string) < 0:
+            return "Counts cannot be negative."
+        return None
+        
     def _cell_changed(self, row, col):
         # tries to make sense of user input before passing
         # on to the R routine
+        
+        #######int_val = int(float(self.raw_data_table.item(i, j).text()))
+        
+        print "previous cell data:",self.current_item_data
+        print "new cell data:", self.raw_data_table.item(row, col).text()
+        
+        new_num_not_valid = self._cell_data_not_valid(self.raw_data_table.item(row, col).text())
+        # Test if entered data is valid (a number)
+        if new_num_not_valid:
+            # popup warning message
+            QMessageBox.warning(self.parent(), "whoops", new_num_not_valid)
+            # set value back to original and leave, doing nothing
+            self.raw_data_table.blockSignals(True)
+            self._set_val(row, col, self.current_item_data)
+            self.raw_data_table.blockSignals(False)
+            return
+            
+            
+            
         
         # Used to be _fillin_basics _fillin_basics(self, row, col):
         self._update_ma_unit() # table --> ma_unit
@@ -166,6 +209,9 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         computed_parameters = self._compute_2x2_table(params)
         if computed_parameters:
             self._set_vals(computed_parameters) # computed --> table widget
+        self.current_item_data = self._get_int(row,col)
+        ## TODO OVERWRITE table widget item value with given value instead of that obtained from the regression    
+            
             
         self.check_for_consistencies()
         
@@ -415,6 +461,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         
 
     def _get_int(self, i, j):
+        '''Get value from cell specified by row=i, col=j as an integer'''
         if not self._is_empty(i,j):
             int_val = int(float(self.raw_data_table.item(i, j).text()))
             return int_val
