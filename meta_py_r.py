@@ -14,12 +14,15 @@
 import math
 import os
 import pdb
+import collections
 
 from PyQt4.QtCore import pyqtRemoveInputHook
 
 from meta_globals import *
 import rpy2
 from rpy2 import robjects as ro
+import rpy2.robjects
+import rpy2.rinterface
 
 try:
     import rpy2
@@ -56,19 +59,19 @@ def reset_Rs_working_dir():
     print "resetting "
     ro.r("setwd('%s')" % BASE_PATH) 
 
-def impute_two_by_two(bin_data_dict):
-    print "computing 2x2 table via R..."
-    print bin_data_dict
-
-    # rpy2 doesn't know how to handle None types.
-    # we can just remove them from the dictionary.
-    for param, val in bin_data_dict.items():
-        if val is None:
-            bin_data_dict.pop(param)
-
-    dataf = ro.r['data.frame'](**bin_data_dict)
-    two_by_two = ro.r('impute.bin.data(bin.data=%s)' % dataf.r_repr())
-    print two_by_two
+#def impute_two_by_two(bin_data_dict):
+#    print "computing 2x2 table via R..."
+#    print bin_data_dict
+#
+#    # rpy2 doesn't know how to handle None types.
+#    # we can just remove them from the dictionary.
+#    for param, val in bin_data_dict.items():
+#        if val is None:
+#            bin_data_dict.pop(param)
+#
+#    dataf = ro.r['data.frame'](**bin_data_dict)
+#    two_by_two = ro.r('impute.bin.data(bin.data=%s)' % dataf.r_repr())
+#    print two_by_two
 
 def impute_diag_data(diag_data_dict, metric):
     print "computing 2x2 table via R..."
@@ -114,8 +117,8 @@ def fillin_2x2(table_data_dict):
     #for (name, index, value) in zip(enumerate(res.names)
     
     
-    R_NA_types = [rpy2.rinterface.NALogicalType, rpy2.rinterface.NARealType]
-    if len(res) == 1 and type(res[0]) in R_NA_types:
+    #R_NA_types = [rpy2.rinterface.NALogicalType, rpy2.rinterface.NARealType]
+    if len(res) == 1 and _gis_NA(res[0]):
         return None
     toreturn = _grlist_to_pydict(res,True)
     return toreturn
@@ -125,6 +128,8 @@ def fillin_2x2(table_data_dict):
     #return _rls_to_pyd(res)
     #return res
 
+def _gis_NA(x):
+    return type(x) in [rpy2.rinterface.NALogicalType, rpy2.rinterface.NARealType]
 
 # NOTE: CUSTOM VERSION......
 def _grlist_to_pydict(r_ls, recurse=True):
@@ -135,37 +140,49 @@ def _grlist_to_pydict(r_ls, recurse=True):
     list, that list will be converted, too.
     '''
     
+    #pyqtRemoveInputHook()
+    #pdb.set_trace() 
+    
     def gis_a_list(x):
         # @TODO add additional vector types?
+        #return type(x) in [rpy2.robjects.vectors.StrVector, rpy2.robjects.vectors.ListVector]
         return type(x) in [rpy2.robjects.vectors.StrVector, 
-                           rpy2.robjects.vectors.ListVector]
-        
-    def gis_NA(x):
-        return type(x) in [rpy2.rinterface.NALogicalType, rpy2.rinterface.NARealType]
+                           rpy2.robjects.vectors.ListVector, 
+                           rpy2.robjects.vectors.FloatVector,
+                           rpy2.robjects.vectors.Vector,]
+    
+    
+    
+        #return str(type(x)) in ["<type 'rpy2.robjects.vectors.StrVector'>", "<type 'rpy2.robjects.vectors.ListVector'>"]
+
     def convert_NA_to_None(x):
-        return None if gis_NA(x) else x
+        return None if _gis_NA(x) else x
+    
+    def is_named_R_list(val):
+        return gis_a_list(val) and not str(val.names)=="NULL"
     
     d = {}
     names = r_ls.names
 
     for name, val in zip(names, r_ls):
         #print "name {0}, val {1}".format(name, val)
-        if recurse and gis_a_list(val) and not str(val.names)=="NULL":
+        if recurse and is_named_R_list(val):
             print "recursing... \n"
             d[name] = _grlist_to_pydict(val)
-
-        cur_x = list(val)
-        if len(cur_x) == 1:
-            # if it's a singleton, extract the
-            # the value and stick it in the dict.
-            # -- this is essentially the 'base case'
-            d[name] = cur_x[0]
-            d[name] = convert_NA_to_None(d[name])
-            
-        #elif not recurse:
-        elif not gis_a_list(val):
-            d[name] = cur_x # not a singleton list
-            d[name] = [convert_NA_to_None(x) for x in d[name][:]]
+        else: # not a named R list or we should not recurse
+            try: #assume val is iterable.....
+                cur_x = list(val)
+                if len(cur_x) == 1:
+                    # if it's a singleton, extract the
+                    # the value and stick it in the dict.
+                    # -- this is essentially the 'base case'
+                    d[name] = cur_x[0]
+                    d[name] = convert_NA_to_None(d[name])
+                else: # val is a real list, not a singleton list
+                    d[name] = val # not a singleton list
+                    d[name] = [convert_NA_to_None(x) for x in d[name][:]]
+            except: # val is not iterable
+                d[name] = val  
 
     return d
 
@@ -189,7 +206,10 @@ def impute_cont_data(cont_data_dict, alpha):
     
     print "attempting to execute: %s" % r_str
     c_data = ro.r(r_str)
-    return _rls_to_pyd(c_data)
+    #pyqtRemoveInputHook()
+    #pdb.set_trace() 
+    #return _rls_to_pyd(c_data)
+    return _grlist_to_pydict(c_data,True)
     
 def impute_pre_post_cont_data(cont_data_dict, correlation, alpha):
     if len(cont_data_dict.items()) == 0:
@@ -1000,7 +1020,7 @@ def _rlist_to_pydict(r_ls, recurse=True):
     return d
 
 def _get_c_str_for_col(m, i):
-    return ", ".join(self._get_col(m, i))
+    return ", ".join(_get_col(m, i))
 
 def _to_strs(v):
     return [str(x) for x in v]

@@ -350,7 +350,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         print "Computed: ", computed 
         
         if computed != None: # more than one value entered
-            abs_residuals = [abs(x) for x in computed['residuals']]
+            abs_residuals = [abs(x) for x in computed['residuals'].values()]
             if max(abs_residuals ) > THRESHOLD:
                 print "problem computing 2x2 table."
                 print "max residual: %s" % max(computed['residuals'])

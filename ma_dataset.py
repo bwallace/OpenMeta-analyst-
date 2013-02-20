@@ -113,8 +113,8 @@ class Dataset:
         else:
             self.studies.insert(study_index, study)
         
-    def remove_study(self, id):
-        self.studies = [study for study in self.studies if study.id != id]
+    def remove_study(self, studyid):
+        self.studies = [study for study in self.studies if study.id != studyid]
         
     def num_studies(self):
         return len(self.studies)

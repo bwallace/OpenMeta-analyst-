@@ -226,21 +226,32 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                 if var_value is not None:
                     cur_dict[var_name] = var_value
             
+            #pyqtRemoveInputHook()
+            #pdb.set_trace()  
+            
+            
             # now pass off what we have for this study to the
             # imputation routine
             results_from_r = meta_py_r.impute_cont_data(cur_dict, self.alpha)
             print "results from R (imputation): %s" % results_from_r
             print results_from_r
+            
+            #pyqtRemoveInputHook()
+            #pdb.set_trace() 
 
-
-            if _is_true(results_from_r["succeeded"]):
+            print "Results from r succeeded:", results_from_r["succeeded"]
+            if results_from_r["succeeded"]:
                 computed_vals = results_from_r["output"]
                 # and then iterate over the columns again, 
                 # populating the table with any available
                 # computed fields
             
                 self.simple_table.blockSignals(True)
+                
+                print "-------\nComputedvals:\n",computed_vals
                 for var_index, var_name in enumerate(var_names):
+                    #pyqtRemoveInputHook()
+                    #pdb.set_trace()     
                     float_str = self.float_to_str(float(computed_vals[var_name]))
                     self.simple_table.setItem(row_index, var_index, QTableWidgetItem(QString(float_str)))
 
