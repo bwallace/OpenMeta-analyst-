@@ -47,7 +47,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.cur_groups = cur_txs
         self.group_str = cur_group_str
         self.cur_effect = cur_effect
-        self._update_raw_data()
+        self._update_raw_data() # ma_unit --> table
         self._populate_effect_data()
         self._update_data_table()
         
@@ -73,6 +73,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.set_current_effect()
 
     def set_current_effect(self):
+        '''Populates text boxes with effects (computed values) from ma unit'''
         effect_dict = self.ma_unit.effects_dict[self.cur_effect][self.group_str]
         for s, txt_box in zip(['display_est', 'display_lower', 'display_upper'], \
                               [self.effect_txt_box, self.low_txt_box, self.high_txt_box]):
@@ -82,6 +83,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                 txt_box.setText(QString(""))
             
     def effect_changed(self):
+        '''Called when a new effect is selected in the combo box'''
         self.cur_effect = unicode(self.effect_cbo_box.currentText().toUtf8(), "utf-8")
         self.try_to_update_cur_outcome()
         self.set_current_effect()
@@ -128,10 +130,11 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.raw_data_table.blockSignals(False)
       
     def _update_ma_unit(self):
+        ''' Copy data from binary data form table to the MA_unit'''
         ''' 
         Walk over the entries in the matrix (which may have been updated
         via imputation in the _cell_changed method) corresponding to the 
-        raw data in the underlying meta-analytic unit and upate the values.
+        raw data in the underlying meta-analytic unit and update the values.
         '''
         for row in range(2):
             for col in (0,2):
@@ -143,37 +146,34 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
     def _cell_changed(self, row, col):
         # tries to make sense of user input before passing
         # on to the R routine
-        self._fillin_basics(row, col) 
+        
+        # Used to be _fillin_basics _fillin_basics(self, row, col):
+        self._update_ma_unit() # table --> ma_unit
+        # _update_raw_data results in the 1,0 being "None"
+        self._update_raw_data() # ma_unit --> table
+        ####self._update_data_table()  # comment out to see if new R fillin.2x2.simpler works
+        self.check_for_consistencies()
+        
+        
         params = self._get_vals()
         print "Params: ", params
         
-        #DOESN'T WORK
-        computed = meta_py_r.fillin_2x2(params)
-        print "Computed: ", computed 
+        computed_parameters = self._compute_2x2_table(params)
+        if computed_parameters:
+            self._set_vals(computed_parameters) # computed --> table widget
         
-        if computed != None: # more than one value entered
-            abs_residuals = [abs(x) for x in computed['residuals']]
-            if max(abs_residuals ) > THRESHOLD:
-                print "problem computing 2x2 table."
-                print "max residual: %s" % max(computed['residuals'])
-                print computed['residuals']
-                print ("Coefficients: ", computed['coefficients'])
-            else: # values are hunky-dory
-                print "table computed successfully!"
-                self._set_vals(computed["coefficients"])
-                # need to try and update metric here
-                
-        self._update_ma_unit()
+        # need to try and update metric here     
+        self._update_ma_unit() # table widget --> ma_unit
         self.try_to_update_cur_outcome()
         
     def _get_vals(self):
+        ''' Package table from 2x2 table in to a dictionary'''
+        
         vals_d = {}
         vals_d["c11"] = self._get_int(0, 0)
         vals_d["c12"] = self._get_int(0, 1)
-        
         vals_d["c21"] = self._get_int(1, 0)
         vals_d["c22"] = self._get_int(1, 1)
-
         vals_d["r1sum"] = self._get_int(0, 2)
         vals_d["r2sum"] = self._get_int(1, 2)
         vals_d["c1sum"] = self._get_int(2, 0)
@@ -211,15 +211,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         except:
             pass
         self.raw_data_table.setItem(i, j, \
-                 QTableWidgetItem(str(val)))
-        
-    def _fillin_basics(self, row, col):
-        self._update_ma_unit()
-        # _update_raw_data results in the 1,0 being "None"
-        self._update_raw_data()
-        #self._update_data_table()  # comment out to see if new R fillin.2x2.simpler works
-        self.check_for_consistencies()
-        
+                 QTableWidgetItem(str(val)))     
         
     def _build_dict(self):
         d =  dict(zip(["control.n.outcome", "control.N", "tx.n.outcome", "tx.N"], self.raw_data))
@@ -245,6 +237,13 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
     def check_that_cols_sum(self):
         # TODO
         pass
+        for col in range(3):
+            if self._col_is_populated(col):
+                col_sum = 0
+                for row in range(2):
+                    col_sum += self._get_int(row,col)
+                if not col_sum == self._get_int(2,col):
+                    self._color_col(col)
         
     def _color_all(self, color=ERROR_COLOR):
         self.raw_data_table.blockSignals(True)
@@ -266,8 +265,38 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             self.raw_data_table.item(row, col).setTextColor(error_color)
         self.raw_data_table.blockSignals(False)
         
+    def _color_col(self, col):
+        self.raw_data_table.blockSignals(True)
+        error_color = QColor("red")
+        for row in range(3):
+            print "setting row: %s, col: %s" % (row, col)
+            self.raw_data_table.item(row, col).setTextColor(error_color)
+        self.raw_data_table.blockSignals(False)
+        
     def _row_is_populated(self, row):
         return not True in [self._is_empty(row, col) for col in range(2)]
+    def _col_is_populated(self, col):
+        return not True in [self._is_empty(row, col) for row in range(2)]
+    
+    def _compute_2x2_table(self,params):
+        ''' Computes values for the 2x2 table if possible'''
+        
+        computed = meta_py_r.fillin_2x2(params)
+        print "Computed: ", computed 
+        
+        if computed != None: # more than one value entered
+            abs_residuals = [abs(x) for x in computed['residuals']]
+            if max(abs_residuals ) > THRESHOLD:
+                print "problem computing 2x2 table."
+                print "max residual: %s" % max(computed['residuals'])
+                print computed['residuals']
+                print ("Coefficients: ", computed['coefficients'])
+                return None
+            else: # values are hunky-dory
+                print "table computed successfully!"
+                return computed["coefficients"]
+                #self._set_vals(computed["coefficients"]) # computed --> table widget
+        return None
         
     def _update_data_table(self):        
         '''
@@ -288,140 +317,64 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         
         print "updating raw data with:\n e1 = %s, n1 = %s, e2 = %s, n2 = %s" % \
                                             (e1, n1, e2, n2)
-        no_events1, no_events2 = None, None
         
-        ### some basic row/column sums for the 2x2 table
-        # first, try to compute the interior of the table
-        # here is row 1
-        if e1 is not None:
-            # we've got events 1 data
-            
-            # note that instead of checking if None, we check if None or "" 
-            #  (either way it's considered 'empty')
-            if n1 is not None:
-                no_events1 = n1 - e1
-                self.raw_data_table.setItem(0, 1, \
-                                                QTableWidgetItem(str(no_events1)))
-            elif not self._is_empty(0, 1):
-                # we have e1 and no-events 1; total to get n1
-                n1 = e1 + self._get_int(0, 1)
-                self.raw_data_table.setItem(0, 2, \
-                                                QTableWidgetItem(str(n1)))
-        elif n1 is not None:
-            # no events given, but we have the total
-            if not self._is_empty(0, 1):
-                e1 = n1 - self._get_int(0, 1)                                
-                self.raw_data_table.setItem(0, 0, \
-                                            QTableWidgetItem(str(e1)))
-
-        # row 2                       
-        if e2 is not None:
-            # we have events 2 data.
-            if n2 is not None:
-                no_events2 = n2 - e2
-                self.raw_data_table.setItem(1, 1, \
-                                            QTableWidgetItem(str(no_events2)))
-            elif not self._is_empty(1, 1):
-                # we have number no-events, too
-                n2 = self._get_int(1, 1) + e2
-                self.raw_data_table.setItem(1, 2, \
-                                            QTableWidgetItem(str(n2)))
+        ###### NEW STUFF ######
+        # set up parameters for R fill-in
+        params = {}
+        params["c11"] = e1
+        params["c12"] = None
+        params["c21"] = e2
+        params["c22"] = None
+        params["r1sum"] = n1
+        params["r2sum"] = n2
+        params["c1sum"] = None
+        params["c2sum"] = None
+        params["total"] = None
         
-                                
-        elif n2 is not None:
-            if not self._is_empty(1, 1):
-                e2 = n2 - self._get_int(1,1)
-                self.raw_data_table.setItem(1, 0, \
-                                            QTableWidgetItem(str(e2))) 
+        computed_params = self._compute_2x2_table(params)
+        (total_events,total_no_events,total_total_events) = (None,None,None)
+        if computed_params:
+            self._set_vals(computed_params) # computed --> table widget
+            # Set the following values explicitly even though they may conflict
+            # with the values given by computed_params. If they do, let the consistency
+            # checker catch it and alert the user.
+            self.raw_data_table.blockSignals(True)
+            self._set_val(0, 0, e1)
+            self._set_val(1, 0, e2)
+            self._set_val(0, 2, n1)
+            self._set_val(1, 2, n2)
+            self.raw_data_table.blockSignals(False)
         
-        # total the totals (if possible)
-        n1 = self._get_int(0,2)
-        n2 = self._get_int(1,2)
-        if n1 is not None and n2 is not None:
-            self.raw_data_table.setItem(2, 2, \
-                                            QTableWidgetItem(str(n1 + n2)))
- 
-            
-        no_events1 = self._get_int(0,1)
-        no_events2 = self._get_int(1,1)
-        
-        # and the totals of *no* events
-        if no_events1 is not None and no_events2 is not None:
-            self.raw_data_table.setItem(2, 1, \
-                                            QTableWidgetItem(str(no_events1 + no_events2)))
-                    
-        # and now compute the sum of events
-        total_events = self._get_int(2, 0)
-        total_no_events =  self._get_int(2, 1)
-            
-        if e1 is not None and e2 is not None:
-            no_events_total = e1 + e2
-            self.raw_data_table.setItem(2, 0, \
-                                            QTableWidgetItem(str(no_events_total)))
-
-        elif total_events is not None:
-            if e1 is not None:
-                e2 = total_events - e1
-                self.raw_data_table.setItem(1, 0, \
-                                            QTableWidgetItem(str(e2)))
-            elif e2 is not None:
-                e1 = total_events - e2
-                self.raw_data_table.setItem(1, 0, \
-                                            QTableWidgetItem(str(e1)))
-        if total_no_events is not None:
-            if no_events1 is not None:
-                no_events2 = total_no_events - no_events1
-                self.raw_data_table.setItem(1, 1, \
-                                            QTableWidgetItem(str(no_events2)))
-            elif no_events2 is not None:
-                no_events1 = total_no_events - no_events2
-                self.raw_data_table.setItem(0, 1, \
-                                            QTableWidgetItem(str(no_events1)))
-        if total_events is not None and total_no_events is not None:
-            total_total = total_events + total_no_events
-            self.raw_data_table.setItem(2, 2, \
-                                        QTableWidgetItem(str(total_total)))  
-                                
-        total_total_events = self._get_int(2, 2) 
-                   
-        if total_total_events is not None:
-            total_events = self._get_int(2, 0)
-            total_no_events = self._get_int(2, 1)
-            if total_events is None and not total_no_events is None:
-                total_events = total_total_events - total_no_events
-                self.raw_data_table.setItem(2, 0, \
-                                            QTableWidgetItem(str(total_events)))
-            elif total_no_events is None and not total_events is None:
-                total_no_events = total_total_events - total_events
-                self.raw_data_table.setItem(2, 1, \
-                                            QTableWidgetItem(str(total_no_events)))
-            
-            n1 = self._get_int(0,2)
-            n2 = self._get_int(1,2)
-            if n1 is None and not n2 is None:
-                n1 = total_total_events - n2
-                self.raw_data_table.setItem(0, 2, \
-                                            QTableWidgetItem(str(n1)))
-            elif n2 is None and not n1 is None:
-                n2 = total_total_events - n1
-                self.raw_data_table.setItem(1, 2, \
-                                             QTableWidgetItem(str(n2)))
-            
-        self.incosistent = False
+            # this is just here to get the inconsistency stuff below to work with minimal effort
+            total_events    = computed_params["c1sum"]
+            total_no_events = computed_params["c2sum"]
+            total_total_events = computed_params["total"]
+            try:
+                total_events = int(round(total_events))
+                total_no_events = int(round(total_no_events))
+                total_total_events = int(round(total_total_events))
+            except:
+                raise Exception("Could not convert to int while trying update the binary calculator table")
+                      
+        self.inconsistent = False
         if not any([x is None or x=="" for x in (n1, n2, total_events, total_no_events)]):
             if n1 < 0 or n2 < 0 or not (n1 + n2 == total_events + total_no_events == total_total_events):
                 self._color_all()
                 self.inconsistent = True
+                print "------\nhello1"
+                print "n1:",n1,"n2:",n2,"total_events:",total_events,"total_no_events:",total_no_events,"total_total_events:",total_total_events
                 
         if not any([x is None or x=="" for x in (total_events, total_no_events)]):
             if total_events < 0 or total_no_events < 0:
                 self._color_all()
                 self.inconsistent = True
+                print "hello2"
         
         if not any([x is None or x=="" for x in (total_events, total_no_events, n1, n2)]):
             if not (n1 + n2 == total_events + total_no_events == total_total_events):
                 self._color_all()
                 self.inconsistent = True
+                print "hello3"
         
         # finally, check the whole thing for negative numbers
         for row in range(3):
@@ -446,6 +399,8 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         if not self._is_empty(i,j):
             int_val = int(float(self.raw_data_table.item(i, j).text()))
             return int_val
+        else:
+            return None # its good to be explicit
             
     def _none_or_empty(self, x):
         return x is None or x == ""
