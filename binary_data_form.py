@@ -51,6 +51,11 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self._populate_effect_data()
         self._update_data_table()
         
+        # Setup inconsistency label
+        inconsistency_palette = QPalette()
+        inconsistency_palette.setColor(QPalette.WindowText,Qt.red)
+        self.inconsistencyLabel.setPalette(inconsistency_palette)
+        self.inconsistencyLabel.setVisible(False)
         
     def _setup_signals_and_slots(self):
         QObject.connect(self.raw_data_table, SIGNAL("cellChanged (int, int)"), 
@@ -152,7 +157,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         # _update_raw_data results in the 1,0 being "None"
         self._update_raw_data() # ma_unit --> table
         ####self._update_data_table()  # comment out to see if new R fillin.2x2.simpler works
-        self.check_for_consistencies()
+        #self.check_for_consistencies()
         
         
         params = self._get_vals()
@@ -161,6 +166,9 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         computed_parameters = self._compute_2x2_table(params)
         if computed_parameters:
             self._set_vals(computed_parameters) # computed --> table widget
+            
+        self.check_for_consistencies()
+        
         
         # need to try and update metric here     
         self._update_ma_unit() # table widget --> ma_unit
@@ -222,8 +230,17 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         return d
         
     def check_for_consistencies(self):
+        self.inconsistent = False
         self.check_that_rows_sum()
         self.check_that_cols_sum()
+        
+        if self.inconsistent:
+            #show label, disable OK buttonbox button
+            self.inconsistencyLabel.setVisible(True)
+            self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(False)
+        else:
+            self.inconsistencyLabel.setVisible(False)
+            self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(True)
         
     def check_that_rows_sum(self):
         for row in range(3):
@@ -233,6 +250,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                     row_sum += self._get_int(row, col)
                 if not row_sum == self._get_int(row, 2):
                     self._color_row(row)
+                    self.inconsistent = True
                     
     def check_that_cols_sum(self):
         # TODO
@@ -244,6 +262,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                     col_sum += self._get_int(row,col)
                 if not col_sum == self._get_int(2,col):
                     self._color_col(col)
+                    self.inconsistent = True
         
     def _color_all(self, color=ERROR_COLOR):
         self.raw_data_table.blockSignals(True)
