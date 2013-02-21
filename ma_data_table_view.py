@@ -8,7 +8,7 @@
 #############################################################
 
 import pdb
-import copy
+#import copy
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.Qt import *
@@ -864,15 +864,15 @@ class CommandSort(QUndoCommand):
         
 class StudyDelegate(QItemDelegate):
 
-      def __init__(self, parent=None):
+    def __init__(self, parent=None):
         super(StudyDelegate, self).__init__(parent)
 
 
-      def createEditor(self, parent, *args):
+    def createEditor(self, parent, *args):
         le = QLineEdit(parent)
         return le
 
-      def setEditorData(self, editor, index):
+    def setEditorData(self, editor, index):
         # used to be Qt.DisplayRole
         text = index.model().data(index, Qt.EditRole)
         editor.setText(text.toString())
