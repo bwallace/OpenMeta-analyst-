@@ -16,8 +16,9 @@ from PyQt4.Qt import *
 from PyQt4 import QtGui
 
 import meta_py_r
+import meta_globals
 from meta_globals import *
-import ui_continuous_data_form
+#import ui_continuous_data_form
 from ui_diagnostic_data_form import Ui_DiagnosticDataForm
 
 class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
@@ -49,6 +50,9 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         # unblock
         for widget in entry_widgets:
             widget.blockSignals(False)
+        
+        # used for checking the data we attempt to set is good
+        self.current_item_data = self._get_int(self.two_by_two_table.currentRow(),self.two_by_two_table.currentColumn())
     
     def setup_signals_and_slots(self):
         QObject.connect(self.two_by_two_table, SIGNAL("cellChanged (int, int)"), 
@@ -62,28 +66,84 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         QObject.connect(self.low_txt_box, SIGNAL("textChanged(QString)"), lambda new_text : self.val_edit("lower", new_text))
         QObject.connect(self.high_txt_box, SIGNAL("textChanged(QString)"), lambda new_text : self.val_edit("upper", new_text))
 
-
+    @pyqtSignature("int, int, int, int")
+    def on_raw_data_table_currentCellChanged(self,currentRow,currentColumn,previousRow,previousColumn):
+        self.current_item_data = self._get_int(currentRow,currentColumn)
+        print "Current Item Data:",self.current_item_data
 
     def _get_int(self, i, j):
         if not self._is_empty(i,j):
             int_val = int(float(self.two_by_two_table.item(i, j).text()))
             return int_val
+        else:
+            return None
+    
+    def _cell_data_not_valid(self, celldata_string):
+        # ignore blank entries
+        if celldata_string.trimmed() == "" or celldata_string is None:
+            return None
+
+        if not meta_globals._is_a_float(celldata_string):
+            return "Raw data needs to be numeric."
+
+        if not meta_globals._is_an_int(celldata_string):
+            return "Expecting count data -- you provided a float (?)"
+
+        if int(celldata_string) < 0:
+            return "Counts cannot be negative."
+        return None
 
     def _is_empty(self, i, j):
         val = self.two_by_two_table.item(i,j)
         return val is None or val.text() == ""
 
-
     def _is_txt_box_empty(self, txt_box):
         val = txt_box.text()
-        val is None or val == ""
+        return val is None or val == ""
+    
+    
+    
+    def _set_val(self, i, j, val):
+        (row,col) = (i,j)
+        
+        is_NaN = lambda x: x != x
+        
+        # need this to reset empty cells
+        if val is None or val == "":
+            item = QTableWidgetItem("")
+            self.two_by_two_table.setItem(row, col, item)
+            return
+        if not is_NaN(val):
+            try:
+                val = str(int(val))
+                self.simple_table.setItem(row_index, var_index, QTableWidgetItem(QString(val))) 
+            except:
+                print "got to pass"
+                pass
+    
 
     def value_changed(self, i, j):
+        (row,col) = (i,j)
+        print "previous cell data:",self.current_item_data
+        print "new cell data:", self.two_by_two_table.item(row, col).text()
+        
+        new_num_not_valid = self._cell_data_not_valid(self.two_by_two_table.item(row, col).text())
+        # Test if entered data is valid (a number)
+        if new_num_not_valid:
+            # popup warning message
+            QMessageBox.warning(self.parent(), "whoops", new_num_not_valid)
+            # set value back to original and leave, doing nothing
+            self.two_by_two_table.blockSignals(True)
+            self._set_val(row, col, self.current_item_data)
+            self.two_by_two_table.blockSignals(False)
+            return
+        
+        
+        
         new_val = self._get_int(i, j)
         if new_val is not None:
             self.impute_data()
 
-    
     def impute_data(self):
         diag_data_dict = self.build_dict()
 
@@ -91,8 +151,6 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             imputed = meta_py_r.impute_diag_data(diag_data_dict, self.cur_effect)
             print "imputed data: %s" % imputed
             self.update_2x2_table(imputed)
-
-
 
     def _get_row_col(self, field):
         row = 0 if field in ("FP", "TP") else 1
