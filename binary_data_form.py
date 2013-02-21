@@ -191,9 +191,6 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             self._set_val(row, col, self.current_item_data)
             self.raw_data_table.blockSignals(False)
             return
-            
-            
-            
         
         # Used to be _fillin_basics _fillin_basics(self, row, col):
         self._update_ma_unit() # table --> ma_unit
@@ -209,7 +206,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         computed_parameters = self._compute_2x2_table(params)
         if computed_parameters:
             self._set_vals(computed_parameters) # computed --> table widget
-        self.current_item_data = self._get_int(row,col)
+        self.current_item_data = self._get_int(row,col) # For verification
         ## TODO OVERWRITE table widget item value with given value instead of that obtained from the regression    
             
             
@@ -255,17 +252,25 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         
     def _set_val(self, i, j, val):
         is_NaN = lambda x: x != x
-        if val >= 0 and not is_NaN(val):
+        
+        # need this to reset empty cells
+        if val is None or val == "":
+            self._set_table_cell(i, j, val)
+            return
+        if not is_NaN(val) and val >= 0:
             self._set_table_cell(i, j, val)
         
     def _set_table_cell(self, i, j, val):
+        if val is None or val == "":
+            self.raw_data_table.setItem(i, j, QTableWidgetItem(""))
+            return
+        
         # try to cast to an int
         try:
             val = int(round(val))
         except:
             pass
-        self.raw_data_table.setItem(i, j, \
-                 QTableWidgetItem(str(val)))     
+        self.raw_data_table.setItem(i, j, QTableWidgetItem(str(val)))     
         
     def _build_dict(self):
         d =  dict(zip(["control.n.outcome", "control.N", "tx.n.outcome", "tx.N"], self.raw_data))

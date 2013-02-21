@@ -25,9 +25,11 @@ from PyQt4.Qt import *
 from PyQt4 import QtGui
 
 import meta_py_r
-from meta_globals import *
+import meta_globals
+#from meta_globals import *
+from meta_globals import CONTINUOUS_ONE_ARM_METRICS,CONTINUOUS_TWO_ARM_METRICS
 import ui_continuous_data_form
-from ui_continuous_data_form import Ui_ContinuousDataForm
+#from ui_continuous_data_form import Ui_ContinuousDataForm
 
 # @TODO this should be an *application global*. It is now a
 # global here and in the data_table_view class. (However
@@ -68,10 +70,11 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.grp_2_lbl.setText(QString(self.cur_groups[1]))
         self._populate_effect_data()
         self.update_raw_data()
+        
+        # used for checking the data we attempt to set is good
+        self.current_item_data = self._get_float(self.simple_table.currentRow(),self.simple_table.currentColumn())
 
     def setup_signals_and_slots(self):
-        QObject.connect(self.simple_table, SIGNAL("cellChanged (int, int)"), 
-                                            self.impute_data)
         QObject.connect(self.simple_table, SIGNAL("cellChanged (int, int)"), 
                                             self._cell_changed)
         QObject.connect(self.alpha_edit, SIGNAL("textChanged (QString)"), 
@@ -181,6 +184,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                 txt_box.setText(QString(""))
         
     def update_raw_data(self):
+        '''Updates table widget with data from ma_unit'''
         self.simple_table.blockSignals(True)
         for row_index, group_name in enumerate(self.cur_groups):
             grp_raw_data = self.raw_data_dict[group_name]
@@ -197,10 +201,83 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                 
         self.impute_data()
         self.simple_table.blockSignals(False)
+        
+    def _cell_data_not_valid(self, celldata_string, cell_header=None):
+        # ignore blank entries
+        if celldata_string.trimmed() == "" or celldata_string is None:
+            return None
+
+        if not meta_globals._is_a_float(celldata_string):
+            return "Raw data needs to be numeric."
+
+        if cell_header in ['n','sd','se','var','pval'] and float(celldata_string) < 0:
+            return "%s cannot be negative." % (cell_header,)
+        
+        if cell_header == 'pval' and not (0 <= float(celldata_string) <= 1):
+            return "pval must be between 0 and 1"
+        return None
           
     def _cell_changed(self, row, col):
-        self._update_ma_unit()
+        print("CELL CHANGED: (ROW,COL)=(%d,%d)" % (row,col))
+        
+        print "previous cell data:",self.current_item_data
+        print "new cell data:", self.simple_table.item(row, col).text()
+        
+        column_headers = self.get_column_header_strs()
+        
+        ###### VALIDATE ENTRY ######
+        new_num_not_valid = self._cell_data_not_valid(self.simple_table.item(row, col).text(),column_headers[col])
+        # Test if entered data is valid (a number)
+        if new_num_not_valid:
+            # popup warning message
+            QMessageBox.warning(self.parent(), "whoops", new_num_not_valid)
+            # set value back to original and leave, doing nothing
+            self.simple_table.blockSignals(True)
+            self._set_val(row, col, self.current_item_data)
+            self.simple_table.blockSignals(False)
+            return
+        ### END OF MOST OF VALIDATE ENTRY ###
+        
+        self.impute_data()
+        self._update_ma_unit() # table --> ma_unit
         self.try_to_update_cur_outcome()
+        
+        self.current_item_data = self._get_float(row,col) # FOR VALIDATING ENTRY
+    
+    def _set_val(self, row_index, var_index, val):
+        is_NaN = lambda x: x != x
+        
+        # need this to reset empty cells
+        if val is None or val == "":
+            self.simple_table.setItem(row_index, var_index, QTableWidgetItem(QString(""))) 
+            return
+        
+        if not is_NaN(val):
+            #self._set_table_cell(i, j, val)
+            try:
+                float_str = self.float_to_str(val)
+                self.simple_table.setItem(row_index, var_index, QTableWidgetItem(QString(float_str))) 
+            except:
+                print "got to pass"
+                pass
+    
+    
+    
+#    def _set_val(self, i, j, val):
+#        is_NaN = lambda x: x != x
+#        
+#        # need this to reset empty cells
+#        if val is None or val == "":
+#            self._set_table_cell(i, j, val)
+#            return
+#        if not is_NaN(val) and val >= 0:
+#            self._set_table_cell(i, j, val)
+#        
+#    def _set_table_cell(self, i, j, val):
+#        if val is None or val == "":
+#            self.raw_data_table.setItem(i, j, QTableWidgetItem(""))
+#            return
+    
     
     def _update_ma_unit(self):
         for row_index, group_name in enumerate(self.cur_groups):
@@ -214,11 +291,16 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             self.ma_unit.effects_dict[self.cur_effect][self.group_str]["SE"] = self._get_float(row_index, se_index)
         
     def impute_data(self):
-        ''' compute what we can for each study from what has been given '''
+        ''' compute what we can for each study from what has been given in the table'''
+        
         # note that we rely on the variable names corresponding to what
         # the meta_py_r routine expects.
         var_names = self.get_column_header_strs()
+        print "current groups: ", self.cur_groups #######################
+        print "----------------------------"      #######################
         for row_index, group_name in enumerate(self.cur_groups):
+            print "Group:",group_name             #######################
+            print "--------"                      #######################
             # assemble the fields in a dictionary; pass off to meta_py_r
             cur_dict = {}
             for var_index, var_name in enumerate(var_names):
@@ -233,13 +315,14 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             # now pass off what we have for this study to the
             # imputation routine
             results_from_r = meta_py_r.impute_cont_data(cur_dict, self.alpha)
-            print "results from R (imputation): %s" % results_from_r
+
+            print "Raw results from R (imputation): %s" % results_from_r
             print results_from_r
             
             #pyqtRemoveInputHook()
             #pdb.set_trace() 
 
-            print "Results from r succeeded:", results_from_r["succeeded"]
+            print "Results from r succeeded?:", results_from_r["succeeded"]
             if results_from_r["succeeded"]:
                 computed_vals = results_from_r["output"]
                 # and then iterate over the columns again, 
@@ -248,7 +331,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             
                 self.simple_table.blockSignals(True)
                 
-                print "-------\nComputedvals:\n",computed_vals
+                print "Computed vals:",computed_vals
                 for var_index, var_name in enumerate(var_names):
                     #pyqtRemoveInputHook()
                     #pdb.set_trace()     
@@ -339,6 +422,11 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         
     def get_column_header_strs_pre_post(self):
         return self.get_column_header_strs(table=self.g1_pre_post_table)
+    
+    @pyqtSignature("int, int, int, int")
+    def on_simple_table_currentCellChanged(self,currentRow,currentColumn,previousRow,previousColumn):
+        self.current_item_data = self._get_float(currentRow,currentColumn)
+        print "Current Item Data:",self.current_item_data
         
 
     def _is_empty(self, i, j, table):

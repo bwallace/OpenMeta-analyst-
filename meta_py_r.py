@@ -12,17 +12,13 @@
 #############################################################################
 
 import math
-import os
+#import os
 import pdb
-import collections
+#import collections
 
 from PyQt4.QtCore import pyqtRemoveInputHook
 
-from meta_globals import *
-import rpy2
-from rpy2 import robjects as ro
-import rpy2.robjects
-import rpy2.rinterface
+from meta_globals import *   
 
 try:
     import rpy2
@@ -31,6 +27,10 @@ try:
 except Exception, e:
     raise Exception, "rpy2 not properly installed!"
     print e
+    
+import rpy2.robjects
+from rpy2.rinterface import NALogicalType
+from rpy2.rinterface import NARealType
 
 try:
     # ascertain that R has write privledges
@@ -129,7 +129,11 @@ def fillin_2x2(table_data_dict):
     #return res
 
 def _gis_NA(x):
-    return type(x) in [rpy2.rinterface.NALogicalType, rpy2.rinterface.NARealType]
+    #print "Result of NA comparison:"
+    #print "Old:", type(x) in [rpy2.rinterface.NALogicalType, rpy2.rinterface.NARealType]
+    #print "New:", type(x) in [NALogicalType, NARealType]
+    #return type(x) in [rpy2.rinterface.NALogicalType, rpy2.rinterface.NARealType]
+    return type(x) in [NALogicalType, NARealType]
 
 # NOTE: CUSTOM VERSION......
 def _grlist_to_pydict(r_ls, recurse=True):
@@ -150,9 +154,6 @@ def _grlist_to_pydict(r_ls, recurse=True):
                            rpy2.robjects.vectors.ListVector, 
                            rpy2.robjects.vectors.FloatVector,
                            rpy2.robjects.vectors.Vector,]
-    
-    
-    
         #return str(type(x)) in ["<type 'rpy2.robjects.vectors.StrVector'>", "<type 'rpy2.robjects.vectors.ListVector'>"]
 
     def convert_NA_to_None(x):
