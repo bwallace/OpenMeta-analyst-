@@ -21,6 +21,8 @@ from meta_globals import *
 #import ui_continuous_data_form
 from ui_diagnostic_data_form import Ui_DiagnosticDataForm
 
+BACK_CALCULATABLE_DIAGNOSTIC_EFFECTS = ["Sens", "Spec"]
+
 class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
     def __init__(self, ma_unit, cur_txs, cur_group_str, parent=None):
         super(DiagnosticDataForm, self).__init__(parent)
@@ -42,8 +44,9 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         # block all the widgets for a moment
         for widget in entry_widgets:
             widget.blockSignals(True)
-        self._update_raw_data()
+        self._update_raw_data() 
         self._populate_effect_data()
+        self.impute_data() 
         self._update_data_table() # does nothing....
         self.set_current_effect()
 
@@ -72,10 +75,12 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         print "Current Item Data:",self.current_item_data
 
     def _get_int(self, i, j):
-        if not self._is_empty(i,j):
-            int_val = int(float(self.two_by_two_table.item(i, j).text()))
-            return int_val
-        else:
+        try:
+            if not self._is_empty(i,j):
+                int_val = int(float(self.two_by_two_table.item(i, j).text()))
+                return int_val
+        except:
+            print "Could not convert %s to integer" % self.two_by_two_table.item(i, j).text()
             return None
     
     def _cell_data_not_valid(self, celldata_string):
@@ -96,11 +101,23 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
     def _is_empty(self, i, j):
         val = self.two_by_two_table.item(i,j)
         return val is None or val.text() == ""
+    def _is_invalid(self, i, j):
+        val = self.two_by_two_table.item(i,j)
+        try:
+            int(val.text())
+        except:
+            return True
+        return False
+            
+            
+    
 
     def _is_txt_box_empty(self, txt_box):
         val = txt_box.text()
         return val is None or val == ""
-    
+    def _is_txt_box_invalid(self, txt_box):
+        val = txt_box.text()
+        return meta_globals.is_NaN(val) or self._is_txt_box_empty(txt_box)
     
     
     def _set_val(self, i, j, val):
@@ -202,36 +219,42 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             self.ma_unit.set_display_effect_and_ci(metric, self.group_str, disp_est, disp_lower, disp_upper)
       
     def _set_table_item(self, i, j, val):
+        if meta_globals.is_NaN(val):
+            print "%s is not a number" % val
+            return
+        
         item = QTableWidgetItem(val)
         self.two_by_two_table.setItem(i, j, item)
 
     def update_alpha(self):
         pass
 
+
+
     def build_dict(self):
         d = {}
         metric_str = self.cur_effect.lower()
        
 
-        if not self._is_txt_box_empty(self.effect_txt_box):
+        if not self._is_txt_box_invalid(self.effect_txt_box):
             try:
                 d[metric_str] = float(self.effect_txt_box.text())
             except:
                 pass
 
-        if not self._is_txt_box_empty(self.low_txt_box):
+        if not self._is_txt_box_invalid(self.low_txt_box):
             try:
                 d["%s.lb" % metric_str] = float(self.low_txt_box.text())
             except:
                 pass
 
-        if not self._is_txt_box_empty(self.high_txt_box):
+        if not self._is_txt_box_invalid(self.high_txt_box):
             try:
                 d["%s.ub" % metric_str] = float(self.high_txt_box.text())
             except:
                 pass
         
-        if not self._is_txt_box_empty(self.alpha_edit):
+        if not self._is_txt_box_invalid(self.alpha_edit):
             try:
                 d["conf.level"] = (1.0-float(self.alpha_edit.text()))*100
             except:
@@ -239,16 +262,16 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
 
 
         # now grab the raw data, if available
-        if not self._is_empty(0,0):
+        if not self._is_invalid(0,0):
             d["TP"] = float(self._get_int(0,0))
         
-        if not self._is_empty(1,0):
+        if not self._is_invalid(1,0):
             d["FN"] = float(self._get_int(1,0))
         
-        if not self._is_empty(0,1):
+        if not self._is_invalid(0,1):
             d["FP"] = float(self._get_int(0,1))
         
-        if not self._is_empty(1,1):
+        if not self._is_invalid(1,1):
             d["TN"] = float(self._get_int(1,1))
 
         return d
@@ -293,7 +316,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
 
     def _populate_effect_data(self):
         # for now we only back-calculate from sens/spec
-        effects = ["Sens", "Spec"] # TODO add more metrics
+        effects = BACK_CALCULATABLE_DIAGNOSTIC_EFFECTS # TODO add more metrics
         self.effect_cbo_box.blockSignals(True)
         self.effect_cbo_box.addItems(effects)
         self.effect_cbo_box.blockSignals(False)
