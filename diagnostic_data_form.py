@@ -44,7 +44,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             widget.blockSignals(True)
         self._update_raw_data()
         self._populate_effect_data()
-        self._update_data_table()
+        self._update_data_table() # does nothing....
         self.set_current_effect()
 
         # unblock
@@ -116,7 +116,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         if not is_NaN(val):
             try:
                 val = str(int(val))
-                self.simple_table.setItem(row_index, var_index, QTableWidgetItem(QString(val))) 
+                self.simple_table.setItem(row, col, QTableWidgetItem(QString(val))) 
             except:
                 print "got to pass"
                 pass
@@ -142,12 +142,20 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         
         new_val = self._get_int(i, j)
         if new_val is not None:
-            self.impute_data()
+            # make sensitivity and specificity calculations work...
+            #   does impute_diag_data try and fail to do this?
+            self.update_effects_in_ma_unit()
+            self.set_current_effect()
+            self.impute_data() # 2x2 table --> ma_unit
+            
+        
+            
 
     def impute_data(self):
         diag_data_dict = self.build_dict()
 
         if diag_data_dict is not None:
+            print "arguments to imputed data: ", diag_data_dict, self.cur_effect
             imputed = meta_py_r.impute_diag_data(diag_data_dict, self.cur_effect)
             print "imputed data: %s" % imputed
             self.update_2x2_table(imputed)
@@ -158,6 +166,8 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         return (row, col)
 
     def update_2x2_table(self, imputed_dict):
+        ''' Fill in entries in 2x2 table and add data to ma_unit'''
+        
         self.two_by_two_table.blockSignals(True) 
         for field in ["FP", "TP", "TN", "FN"]:
             if field in imputed_dict:
@@ -167,7 +177,29 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
                 raw_data_index = DIAG_FIELDS_TO_RAW_INDICES[field]
                 self.ma_unit.tx_groups[self.group_str].raw_data[raw_data_index] =\
                          float(imputed_dict[field])
-        self.two_by_two_table.blockSignals(False) 
+        self.two_by_two_table.blockSignals(False)
+        
+    def update_effects_in_ma_unit(self):
+        '''Fill in effect text boxes with data from ma_unit if all the raw data is available'''
+        #### MOSTLY DUPLICATED FROM ma_data_table_model.update_outcome_if_possible()
+        # diagnostic data
+        counts = self._get_raw_data()
+        tp, fn, fp, tn = counts['TP'], counts['FN'], counts['FP'], counts['TN']
+        
+        if None in [tp,fn,fp,tn]:
+            return  # do nothing if we don't have all the counts
+        
+        # sensitivity and specificity
+        ests_and_cis = meta_py_r.diagnostic_effects_for_study(\
+                                tp, fn, fp, tn, metrics=DIAGNOSTIC_METRICS)
+        
+        # now we're going to set the effect estimate/CI on the MA object.
+        for metric in DIAGNOSTIC_METRICS:
+            est, lower, upper = ests_and_cis[metric]["calc_scale"]
+            self.ma_unit.set_effect_and_ci(metric, self.group_str, est, lower, upper)
+            
+            disp_est, disp_lower, disp_upper = ests_and_cis[metric]["display_scale"]
+            self.ma_unit.set_display_effect_and_ci(metric, self.group_str, disp_est, disp_lower, disp_upper)
       
     def _set_table_item(self, i, j, val):
         item = QTableWidgetItem(val)
@@ -220,6 +252,19 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             d["TN"] = float(self._get_int(1,1))
 
         return d
+    
+    def _get_raw_data(self,convert_None_to_NA_string=False):
+        '''Returns a dictionary of the raw data in the table, None for empty cell'''
+        
+        NoneValue = "NA" if convert_None_to_NA_string else None
+        
+        d={}
+        d["TP"] = float(self._get_int(0,0)) if not self._is_empty(0,0) else NoneValue
+        d["FN"] = float(self._get_int(1,0)) if not self._is_empty(1,0) else NoneValue
+        d["FP"] = float(self._get_int(0,1)) if not self._is_empty(0,1) else NoneValue
+        d["TN"] = float(self._get_int(1,1)) if not self._is_empty(1,1) else NoneValue
+        return d
+            
 
     def val_edit(self, val_str, new_val_text):
         print "imputing data!"
@@ -258,6 +303,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self.set_current_effect()
     
     def set_current_effect(self):
+        '''Fill in effect text boxes with data from ma_unit'''
         effect_dict = self.ma_unit.effects_dict[self.cur_effect][self.group_str]
         for s, txt_box in zip(['display_est', 'display_lower', 'display_upper'], \
                               [self.effect_txt_box, self.low_txt_box, self.high_txt_box]):

@@ -115,18 +115,11 @@ def fillin_2x2(table_data_dict):
     
     # CONVERT res to python DICT using the fact that the r objects are iterable
     #for (name, index, value) in zip(enumerate(res.names)
-    
-    
-    #R_NA_types = [rpy2.rinterface.NALogicalType, rpy2.rinterface.NARealType]
+
     if len(res) == 1 and _gis_NA(res[0]):
         return None
     toreturn = _grlist_to_pydict(res,True)
     return toreturn
-    #toreturn = _rls_to_pyd(res)
-    #pyqtRemoveInputHook()
-    #pdb.set_trace()
-    #return _rls_to_pyd(res)
-    #return res
 
 def _gis_NA(x):
     #print "Result of NA comparison:"
@@ -154,7 +147,6 @@ def _grlist_to_pydict(r_ls, recurse=True):
                            rpy2.robjects.vectors.ListVector, 
                            rpy2.robjects.vectors.FloatVector,
                            rpy2.robjects.vectors.Vector,]
-        #return str(type(x)) in ["<type 'rpy2.robjects.vectors.StrVector'>", "<type 'rpy2.robjects.vectors.ListVector'>"]
 
     def convert_NA_to_None(x):
         return None if _gis_NA(x) else x
