@@ -174,6 +174,23 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.add_new(dataset_info)        
             self.cur_dimension = tmp
             #self.close()
+            
+            # SET DEFAULT METRICS
+            if dataset_info['data_type'] == "Binary":
+                if dataset_info['arms'] == "one":
+                    self.model.current_effect = meta_globals.DEFAULT_BINARY_ONE_ARM
+                elif dataset_info['arms'] == "two":
+                    self.model.current_effect = meta_globals.DEFAULT_BINARY_TWO_ARM
+            if dataset_info['data_type'] == "Continuous":
+                if dataset_info['arms'] == "one":
+                    self.model.current_effect = meta_globals.DEFAULT_CONTINUOUS_ONE_ARM
+                elif dataset_info['arms'] == "two":
+                    self.model.current_effect = meta_globals.DEFAULT_CONTINUOUS_TWO_ARM
+            # Put this stuff in an if just in case...
+            if dataset_info['data_type'] == "Binary" or dataset_info['data_type'] == "Continuous":
+                self.populate_metrics_menu(metric_to_check=self.model.current_effect)
+                self.model.try_to_update_outcomes()
+                self.model.reset()
         
         
     def new_dataset(self, name=None, is_diag=False):

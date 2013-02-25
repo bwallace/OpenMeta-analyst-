@@ -3,6 +3,7 @@ import pdb
 import ui_start_upV2
 
 import create_new_project_dialog
+import meta_globals
 
 class StartUp(QDialog, ui_start_upV2.Ui_WelcomeDialog):
     
@@ -81,6 +82,24 @@ class StartUp(QDialog, ui_start_upV2.Ui_WelcomeDialog):
             self.hide()
             self.parent.add_new(dataset_info)        
             self.parent.cur_dimension = tmp
+            
+            # SET DEFAULT METRICS
+            if dataset_info['data_type'] == "Binary":
+                if dataset_info['arms'] == "one":
+                    self.parent.model.current_effect = meta_globals.DEFAULT_BINARY_ONE_ARM
+                elif dataset_info['arms'] == "two":
+                    self.parent.model.current_effect = meta_globals.DEFAULT_BINARY_TWO_ARM
+            if dataset_info['data_type'] == "Continuous":
+                if dataset_info['arms'] == "one":
+                    self.parent.model.current_effect = meta_globals.DEFAULT_CONTINUOUS_ONE_ARM
+                elif dataset_info['arms'] == "two":
+                    self.parent.model.current_effect = meta_globals.DEFAULT_CONTINUOUS_TWO_ARM
+            # Put this stuff in an if just in case...
+            if dataset_info['data_type'] == "Binary" or dataset_info['data_type'] == "Continuous":
+                self.parent.populate_metrics_menu(metric_to_check=self.parent.model.current_effect)
+                self.parent.model.try_to_update_outcomes()
+                self.parent.model.reset()
+            
             
             self.close()
     
