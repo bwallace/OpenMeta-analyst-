@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Splash</class>
- <widget class="QDialog" name="Splash">
+ <class>WelcomeDialog</class>
+ <widget class="QDialog" name="WelcomeDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>531</width>
-    <height>420</height>
+    <width>591</width>
+    <height>410</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -228,23 +228,35 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QPushButton" name="openButton">
+      <widget class="QPushButton" name="open_btn">
        <property name="text">
         <string>Open an existing project</string>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButton">
-       <property name="text">
-        <string>open recent ...</string>
+       <property name="icon">
+        <iconset>
+         <normaloff>images/function_icon_set/folder_48.png</normaloff>images/function_icon_set/folder_48.png</iconset>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="newButton">
+      <widget class="QPushButton" name="open_recent_btn">
+       <property name="text">
+        <string>open recent ...</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>images/function_icon_set/folder_48.png</normaloff>images/function_icon_set/folder_48.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="create_new_btn">
        <property name="text">
         <string>Create a new Project</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>images/function_icon_set/add_48.png</normaloff>images/function_icon_set/add_48.png</iconset>
        </property>
       </widget>
      </item>

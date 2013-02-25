@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Dialog</class>
- <widget class="QDialog" name="Dialog">
+ <class>newprojectdialog</class>
+ <widget class="QDialog" name="newprojectdialog">
   <property name="enabled">
    <bool>true</bool>
   </property>
@@ -9,19 +9,28 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>628</width>
-    <height>563</height>
+    <width>504</width>
+    <height>541</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
   <property name="sizeGripEnabled">
+   <bool>true</bool>
+  </property>
+  <property name="modal">
    <bool>false</bool>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QLabel" name="label">
+    <widget class="QLabel" name="what_type_of_data_Label">
      <property name="minimumSize">
       <size>
        <width>281</width>
@@ -53,121 +62,8 @@
       <string/>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0" colspan="3">
-       <widget class="QLabel" name="label_2">
-        <property name="font">
-         <font>
-          <underline>false</underline>
-         </font>
-        </property>
-        <property name="text">
-         <string>One piece of data from each study</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QToolButton" name="onegrp_proportionButton">
-        <property name="minimumSize">
-         <size>
-          <width>90</width>
-          <height>65</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>90</width>
-          <height>65</height>
-         </size>
-        </property>
-        <property name="baseSize">
-         <size>
-          <width>10</width>
-          <height>10</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>proportion</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QToolButton" name="onegrp_incidence_rateButton">
-        <property name="minimumSize">
-         <size>
-          <width>90</width>
-          <height>65</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>90</width>
-          <height>65</height>
-         </size>
-        </property>
-        <property name="baseSize">
-         <size>
-          <width>10</width>
-          <height>10</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Incidence
-Rate</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="2">
-       <widget class="QToolButton" name="onegrp_meanButton">
-        <property name="minimumSize">
-         <size>
-          <width>90</width>
-          <height>65</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>90</width>
-          <height>65</height>
-         </size>
-        </property>
-        <property name="baseSize">
-         <size>
-          <width>10</width>
-          <height>10</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>mean</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="3">
-       <widget class="QToolButton" name="onegrp_correlationButton">
-        <property name="minimumSize">
-         <size>
-          <width>90</width>
-          <height>65</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>90</width>
-          <height>65</height>
-         </size>
-        </property>
-        <property name="baseSize">
-         <size>
-          <width>10</width>
-          <height>10</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>correlation</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="4">
-       <widget class="QToolButton" name="onegrp_reg_coeffButton">
+       <widget class="QToolButton" name="onearm_single_reg_coef_Button">
         <property name="minimumSize">
          <size>
           <width>90</width>
@@ -190,160 +86,16 @@ Rate</string>
          <string>single regression
 coefficient</string>
         </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroup</string>
+        </attribute>
        </widget>
       </item>
-      <item row="3" column="0" colspan="2">
-       <widget class="QLabel" name="label_3">
-        <property name="font">
-         <font>
-          <underline>false</underline>
-         </font>
-        </property>
-        <property name="text">
-         <string>Studies w/ one group</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QToolButton" name="single_gen_effect_sizeButton">
-        <property name="minimumSize">
-         <size>
-          <width>90</width>
-          <height>65</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>90</width>
-          <height>65</height>
-         </size>
-        </property>
-        <property name="baseSize">
-         <size>
-          <width>10</width>
-          <height>10</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>generic
-effect size</string>
-        </property>
-        <property name="arrowType">
-         <enum>Qt::NoArrow</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1" colspan="2">
-       <widget class="QToolButton" name="onegrp_onesided_pvalueButton">
-        <property name="minimumSize">
-         <size>
-          <width>90</width>
-          <height>65</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>90</width>
-          <height>65</height>
-         </size>
-        </property>
-        <property name="baseSize">
-         <size>
-          <width>10</width>
-          <height>10</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>1-sided
-p-value</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="0" colspan="3">
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>Data on two or more groups per study</string>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="0">
-       <widget class="QToolButton" name="groups_proportionsButton">
-        <property name="minimumSize">
-         <size>
-          <width>90</width>
-          <height>65</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>90</width>
-          <height>65</height>
-         </size>
-        </property>
-        <property name="baseSize">
-         <size>
-          <width>10</width>
-          <height>10</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>proportions</string>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="1">
-       <widget class="QToolButton" name="groups_incidenceratesButton">
-        <property name="minimumSize">
-         <size>
-          <width>90</width>
-          <height>65</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>90</width>
-          <height>65</height>
-         </size>
-        </property>
-        <property name="baseSize">
-         <size>
-          <width>10</width>
-          <height>10</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Incidence
-rates</string>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="2">
-       <widget class="QToolButton" name="groups_meansButton">
-        <property name="minimumSize">
-         <size>
-          <width>90</width>
-          <height>65</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>90</width>
-          <height>65</height>
-         </size>
-        </property>
-        <property name="baseSize">
-         <size>
-          <width>10</width>
-          <height>10</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>means</string>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="3">
-       <widget class="QToolButton" name="groups_smdsButton">
+      <item row="5" column="2">
+       <widget class="QToolButton" name="twoarm_smds_Button">
         <property name="minimumSize">
          <size>
           <width>90</width>
@@ -366,17 +118,161 @@ rates</string>
          <string>Standardized
 mean differences</string>
         </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroup</string>
+        </attribute>
        </widget>
       </item>
-      <item row="9" column="0" colspan="2">
+      <item row="1" column="3">
+       <widget class="QToolButton" name="onearm_generic_effect_size_Button">
+        <property name="minimumSize">
+         <size>
+          <width>90</width>
+          <height>65</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>90</width>
+          <height>65</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>10</width>
+          <height>10</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>generic
+effect size</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="arrowType">
+         <enum>Qt::NoArrow</enum>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QToolButton" name="onearm_mean_Button">
+        <property name="minimumSize">
+         <size>
+          <width>90</width>
+          <height>65</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>90</width>
+          <height>65</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>10</width>
+          <height>10</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>mean</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QToolButton" name="onearm_proportion_Button">
+        <property name="minimumSize">
+         <size>
+          <width>90</width>
+          <height>65</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>90</width>
+          <height>65</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>10</width>
+          <height>10</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>proportion</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="4" column="0" colspan="3">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Data on two or more groups per study</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QToolButton" name="twoarm_proportions_Button">
+        <property name="minimumSize">
+         <size>
+          <width>90</width>
+          <height>65</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>90</width>
+          <height>65</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>10</width>
+          <height>10</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>proportions</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="7" column="0" colspan="2">
        <widget class="QLabel" name="label_5">
         <property name="text">
          <string>Data on test performance</string>
         </property>
        </widget>
       </item>
-      <item row="10" column="0">
-       <widget class="QToolButton" name="testperf_singleproportionButton">
+      <item row="8" column="0">
+       <widget class="QToolButton" name="diagnostic_Button">
         <property name="minimumSize">
          <size>
           <width>90</width>
@@ -396,150 +292,18 @@ mean differences</string>
          </size>
         </property>
         <property name="text">
-         <string>single
-proportion</string>
+         <string>diagnostic</string>
         </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroup</string>
+        </attribute>
        </widget>
       </item>
-      <item row="10" column="1">
-       <widget class="QToolButton" name="testperf_lhood_ratiosButton">
-        <property name="minimumSize">
-         <size>
-          <width>90</width>
-          <height>65</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>90</width>
-          <height>65</height>
-         </size>
-        </property>
-        <property name="baseSize">
-         <size>
-          <width>10</width>
-          <height>10</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>likelihood
-ratios</string>
-        </property>
-       </widget>
-      </item>
-      <item row="10" column="2">
-       <widget class="QToolButton" name="testperf_sum_point_1threshButton">
-        <property name="minimumSize">
-         <size>
-          <width>90</width>
-          <height>65</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>90</width>
-          <height>65</height>
-         </size>
-        </property>
-        <property name="baseSize">
-         <size>
-          <width>10</width>
-          <height>10</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>summary point
-1 threshold</string>
-        </property>
-       </widget>
-      </item>
-      <item row="10" column="3">
-       <widget class="QToolButton" name="testperf_hsroc_1threshButton">
-        <property name="minimumSize">
-         <size>
-          <width>90</width>
-          <height>65</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>90</width>
-          <height>65</height>
-         </size>
-        </property>
-        <property name="baseSize">
-         <size>
-          <width>10</width>
-          <height>10</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>HSROC
-1 threshold</string>
-        </property>
-       </widget>
-      </item>
-      <item row="10" column="4">
-       <widget class="QToolButton" name="testperf_more_complex_dataButton">
-        <property name="minimumSize">
-         <size>
-          <width>90</width>
-          <height>65</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>90</width>
-          <height>65</height>
-         </size>
-        </property>
-        <property name="baseSize">
-         <size>
-          <width>10</width>
-          <height>10</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>more complex
-data on tests</string>
-        </property>
-       </widget>
-      </item>
-      <item row="10" column="5">
-       <widget class="QToolButton" name="testperf_hsroc_kthreshButton">
-        <property name="minimumSize">
-         <size>
-          <width>90</width>
-          <height>65</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>90</width>
-          <height>65</height>
-         </size>
-        </property>
-        <property name="baseSize">
-         <size>
-          <width>10</width>
-          <height>10</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>HSROC
-k thresholds</string>
-        </property>
-       </widget>
-      </item>
-      <item row="8" column="0" colspan="6">
+      <item row="6" column="0" colspan="6">
        <widget class="Line" name="line_4">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0" colspan="6">
-       <widget class="Line" name="line_3">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -552,54 +316,163 @@ k thresholds</string>
         </property>
        </widget>
       </item>
+      <item row="5" column="1">
+       <widget class="QToolButton" name="twoarm_means_Button">
+        <property name="minimumSize">
+         <size>
+          <width>90</width>
+          <height>65</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>90</width>
+          <height>65</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>10</width>
+          <height>10</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>means</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="0" column="0" colspan="5">
+       <widget class="QLabel" name="label_2">
+        <property name="font">
+         <font>
+          <underline>false</underline>
+         </font>
+        </property>
+        <property name="text">
+         <string>One piece of data from each study or studies with one group</string>
+        </property>
+       </widget>
+      </item>
      </layout>
-     <zorder>onegrp_proportionButton</zorder>
-     <zorder>onegrp_incidence_rateButton</zorder>
-     <zorder>onegrp_correlationButton</zorder>
-     <zorder>onegrp_reg_coeffButton</zorder>
+     <zorder>onearm_proportion_Button</zorder>
      <zorder>line_2</zorder>
-     <zorder>single_gen_effect_sizeButton</zorder>
-     <zorder>groups_proportionsButton</zorder>
-     <zorder>groups_incidenceratesButton</zorder>
-     <zorder>groups_meansButton</zorder>
-     <zorder>groups_smdsButton</zorder>
-     <zorder>testperf_singleproportionButton</zorder>
-     <zorder>testperf_lhood_ratiosButton</zorder>
+     <zorder>twoarm_proportions_Button</zorder>
+     <zorder>diagnostic_Button</zorder>
      <zorder>label_2</zorder>
      <zorder>label_4</zorder>
      <zorder>label_5</zorder>
-     <zorder>line_3</zorder>
      <zorder>line_4</zorder>
-     <zorder>onegrp_meanButton</zorder>
-     <zorder>label_3</zorder>
-     <zorder>testperf_sum_point_1threshButton</zorder>
-     <zorder>testperf_hsroc_1threshButton</zorder>
-     <zorder>testperf_hsroc_kthreshButton</zorder>
-     <zorder>testperf_more_complex_dataButton</zorder>
-     <zorder>onegrp_onesided_pvalueButton</zorder>
+     <zorder>onearm_mean_Button</zorder>
+     <zorder>onearm_single_reg_coef_Button</zorder>
+     <zorder>onearm_generic_effect_size_Button</zorder>
+     <zorder>twoarm_means_Button</zorder>
+     <zorder>twoarm_smds_Button</zorder>
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QLabel" name="helpLabel">
-       <property name="text">
-        <string>&lt;a href=&quot;http://tuftscaes.org/open_meta/help/openMA_help.html&quot;&gt;help&lt;/a&gt;</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-       <property name="openExternalLinks">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <widget class="QFrame" name="outcome_name_Frame">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>What is the name of your outcome?</string>
+        </property>
+        <property name="buddy">
+         <cstring>outcome_name_LineEdit</cstring>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="outcome_name_LineEdit">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="helpLabel">
+     <property name="text">
+      <string>&lt;a href=&quot;http://tuftscaes.org/open_meta/help/openMA_help.html&quot;&gt;help&lt;/a&gt;</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+     <property name="openExternalLinks">
+      <bool>true</bool>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
  <resources>
   <include location="images/icons.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>newprojectdialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>451</x>
+     <y>482</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>293</x>
+     <y>535</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>newprojectdialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>377</x>
+     <y>489</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>148</x>
+     <y>531</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+ </buttongroups>
 </ui>

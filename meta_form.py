@@ -49,6 +49,7 @@ import change_cov_type_form
 import network_view
 import meta_globals 
 import start_up_dialog
+import create_new_project_dialog
 
 # for the help
 import webbrowser
@@ -135,7 +136,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
                 ## arg -- this won't work!
                 start_up_window.setFocus()
-                start_up_window.dataset_name_le.setFocus()
+                #start_up_window.dataset_name_le.setFocus()  ######## DELETE LATER? OBSOLETE?
                 start_up_window.raise_()
                 start_up_window.activateWindow()
       
@@ -149,14 +150,30 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 event.ignore()
         print "*** goodbye, dear analyst. ***"
 
+    ###    Should ask if user wants to save before making the new dataset.. GD
     def create_new_dataset(self):
-        new_data_window = start_up_dialog.StartUp(parent=self, \
-                    recent_datasets=self.user_prefs['recent datasets'],
-                    start_up=False)
-        new_data_window.show()
-        ## arg -- this won't work!
-        new_data_window.setFocus()
-        new_data_window.dataset_name_le.setFocus()
+#        new_data_window = start_up_dialog.StartUp(parent=self, \
+#                    recent_datasets=self.user_prefs['recent datasets'],
+#                    start_up=False)
+#        new_data_window.show()
+#        ## arg -- this won't work!
+#        new_data_window.setFocus()
+#        new_data_window.dataset_name_le.setFocus()
+        
+        name = unicode("untitled_dataset", "utf-8")
+        
+        new_project_dialog = create_new_project_dialog.CreateNewProjectDlg(parent=self)
+        if new_project_dialog.exec_():
+            dataset_info = new_project_dialog.get_summary()
+            is_diag = dataset_info['data_type'] == "Diagnostic"
+        
+            self.new_dataset(name=name, is_diag=is_diag)
+            tmp = self.cur_dimension
+            self.cur_dimension = "outcome"
+            #self.hide()
+            self.add_new(dataset_info)        
+            self.cur_dimension = tmp
+            #self.close()
         
         
     def new_dataset(self, name=None, is_diag=False):
@@ -625,9 +642,9 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         if len(self.model.covariates) == 0:
             self.action_meta_regression.setEnabled(False)
         
-    def add_new(self):
+    def add_new(self, startup_outcome = None):
         redo_f, undo_f = None, None
-        if self.cur_dimension == "outcome":
+        if self.cur_dimension == "outcome" and not startup_outcome:
             form = add_new_dialogs.AddNewOutcomeForm(parent=self, is_diag=self.model.is_diag())
             form.outcome_name_le.setFocus()
             if form.exec_():
@@ -641,6 +658,13 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 redo_f = lambda: self._add_new_outcome(new_outcome_name, new_outcome_type)
                 prev_outcome = str(self.model.current_outcome)
                 undo_f = lambda: self._undo_add_new_outcome(new_outcome_name, prev_outcome)
+        elif self.cur_dimension == "outcome" and startup_outcome: # For dealing with outcomes from the startup form
+            new_outcome_name = unicode(startup_outcome['name'].toUtf8(), "utf-8")
+            new_outcome_type = str(startup_outcome['data_type'])
+            print 'Startup Outcome',startup_outcome
+            redo_f = lambda: self._add_new_outcome(new_outcome_name, new_outcome_type)
+            prev_outcome = str(self.model.current_outcome)
+            undo_f = lambda: self._undo_add_new_outcome(new_outcome_name, prev_outcome)
         elif self.cur_dimension == "group":
             form = add_new_dialogs.AddNewGroupForm(self)
             form.group_name_le.setFocus()        
