@@ -384,7 +384,7 @@ class DatasetModel(QAbstractTableModel):
                 epsilon = 10E-6 
                 if delta > epsilon:
                     return False, '''You have already entered raw data for this study. If you want to enter the outcome directly, delete the raw data first.'''
-
+                    
 
         if s.trimmed() == '':
             # in this case, they've deleted a value

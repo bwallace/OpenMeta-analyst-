@@ -262,7 +262,7 @@ class MADataTable(QtGui.QTableView):
         # dispatch on the data type
         form = None
         study_index = row
-        ma_unit = self.model().get_current_ma_unit_for_study(study_index)
+        ma_unit = copy.deepcopy(self.model().get_current_ma_unit_for_study(study_index))
         old_ma_unit = copy.deepcopy(ma_unit)
         cur_txs = self.model().current_txs
         cur_effect = self.model().current_effect
