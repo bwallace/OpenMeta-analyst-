@@ -327,7 +327,7 @@ class DatasetModel(QAbstractTableModel):
         return group_str
         
 
-    def _verify_raw_data(self, s, col, data_type):
+    def _verify_raw_data(self, s, col, data_type, index_of_s=None):
         
         # ignore blank entries
         if s.trimmed() == "" or s is None:
@@ -341,6 +341,27 @@ class DatasetModel(QAbstractTableModel):
                 return False, "Expecting count data -- you provided a float (?)"
             if int(s) < 0:
                 return False, "Counts cannot be negative."
+        
+        # fix for issue #193
+        # do not allow TxA to be greater than N_A, or TxB to be greater than N_B
+        msg = "Number of events cannot be greater than number of samples."
+        (row,col) = (index_of_s.row(), index_of_s.column())
+        if data_type == BINARY:
+            if col in [3,5]: # col is TxA or TxB
+                #print "Events just entered:" , s
+                #print "Number of samples:" , self.data(self.index(row, col+1)).toString()
+                N_samples = self.data(self.index(row, col+1)).toString() # string representation of N_samples
+                if meta_globals._is_an_int(N_samples):
+                    if int(s) > int(N_samples): #uh oh
+                        return False, msg
+            elif col in [4,6]: # col is N_A or N_B
+                #print "N_samples just entered:" , s
+                #print "Number of events:" , self.data(self.index(row, col-1)).toString()
+                N_events = self.data(self.index(row, col-1)).toString()
+                if meta_globals._is_an_int(N_events):
+                    if int(s) < int(N_events):
+                        return False, msg
+            
         
         if data_type == CONTINUOUS:
             if float(s) < 0:
@@ -459,7 +480,7 @@ class DatasetModel(QAbstractTableModel):
                         return False
                     study.year = value.toInt()[0]
             elif self.current_outcome is not None and column in self.RAW_DATA:
-                data_ok, msg = self._verify_raw_data(value.toString(), column, current_data_type)
+                data_ok, msg = self._verify_raw_data(value.toString(), column, current_data_type, index)
                 if not data_ok:
                     # this signal is (-- presumably --) handled by the UI
                     # i.e., meta_form, which reports the problem to the
