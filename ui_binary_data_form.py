@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'binary_data_form2.ui'
 #
-# Created: Tue Nov 29 12:46:10 2011
-#      by: PyQt4 UI code generator 4.8.5
+# Created: Wed Feb 20 09:53:34 2013
+#      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,7 +12,16 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_BinaryDataForm(object):
     def setupUi(self, BinaryDataForm):
@@ -21,26 +30,11 @@ class Ui_BinaryDataForm(object):
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Verdana"))
         BinaryDataForm.setFont(font)
-        BinaryDataForm.setWindowTitle(QtGui.QApplication.translate("BinaryDataForm", "Binary Data", None, QtGui.QApplication.UnicodeUTF8))
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/images/meta.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         BinaryDataForm.setWindowIcon(icon)
-        self.layoutWidget_5 = QtGui.QWidget(BinaryDataForm)
-        self.layoutWidget_5.setGeometry(QtCore.QRect(10, 250, 359, 41))
-        self.layoutWidget_5.setObjectName(_fromUtf8("layoutWidget_5"))
-        self.horizontalLayout = QtGui.QHBoxLayout(self.layoutWidget_5)
-        self.horizontalLayout.setSpacing(6)
-        self.horizontalLayout.setContentsMargins(36, 3, -1, -1)
-        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        spacerItem = QtGui.QSpacerItem(160, 20, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem)
-        self.buttonBox = QtGui.QDialogButtonBox(self.layoutWidget_5)
-        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
-        self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
-        self.horizontalLayout.addWidget(self.buttonBox)
         self.layoutWidget = QtGui.QWidget(BinaryDataForm)
-        self.layoutWidget.setGeometry(QtCore.QRect(10, 10, 363, 238))
+        self.layoutWidget.setGeometry(QtCore.QRect(10, 10, 374, 238))
         self.layoutWidget.setObjectName(_fromUtf8("layoutWidget"))
         self.verticalLayout_3 = QtGui.QVBoxLayout(self.layoutWidget)
         self.verticalLayout_3.setMargin(0)
@@ -57,7 +51,6 @@ class Ui_BinaryDataForm(object):
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Verdana"))
         self.label_5.setFont(font)
-        self.label_5.setText(QtGui.QApplication.translate("BinaryDataForm", "event", None, QtGui.QApplication.UnicodeUTF8))
         self.label_5.setAlignment(QtCore.Qt.AlignCenter)
         self.label_5.setObjectName(_fromUtf8("label_5"))
         self.gridLayout.addWidget(self.label_5, 0, 1, 1, 1)
@@ -65,7 +58,6 @@ class Ui_BinaryDataForm(object):
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Verdana"))
         self.label_6.setFont(font)
-        self.label_6.setText(QtGui.QApplication.translate("BinaryDataForm", "no event", None, QtGui.QApplication.UnicodeUTF8))
         self.label_6.setAlignment(QtCore.Qt.AlignCenter)
         self.label_6.setObjectName(_fromUtf8("label_6"))
         self.gridLayout.addWidget(self.label_6, 0, 2, 1, 1)
@@ -75,7 +67,6 @@ class Ui_BinaryDataForm(object):
         font.setBold(True)
         font.setWeight(75)
         self.label_10.setFont(font)
-        self.label_10.setText(QtGui.QApplication.translate("BinaryDataForm", "total", None, QtGui.QApplication.UnicodeUTF8))
         self.label_10.setAlignment(QtCore.Qt.AlignCenter)
         self.label_10.setObjectName(_fromUtf8("label_10"))
         self.gridLayout.addWidget(self.label_10, 0, 3, 1, 1)
@@ -83,7 +74,6 @@ class Ui_BinaryDataForm(object):
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Verdana"))
         self.label_3.setFont(font)
-        self.label_3.setText(QtGui.QApplication.translate("BinaryDataForm", "group 1", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing)
         self.label_3.setObjectName(_fromUtf8("label_3"))
         self.gridLayout.addWidget(self.label_3, 1, 0, 1, 1)
@@ -117,7 +107,6 @@ class Ui_BinaryDataForm(object):
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Verdana"))
         self.label_4.setFont(font)
-        self.label_4.setText(QtGui.QApplication.translate("BinaryDataForm", "group 2", None, QtGui.QApplication.UnicodeUTF8))
         self.label_4.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_4.setObjectName(_fromUtf8("label_4"))
         self.gridLayout.addWidget(self.label_4, 2, 0, 1, 1)
@@ -127,7 +116,6 @@ class Ui_BinaryDataForm(object):
         font.setBold(True)
         font.setWeight(75)
         self.label_9.setFont(font)
-        self.label_9.setText(QtGui.QApplication.translate("BinaryDataForm", "total", None, QtGui.QApplication.UnicodeUTF8))
         self.label_9.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_9.setObjectName(_fromUtf8("label_9"))
         self.gridLayout.addWidget(self.label_9, 3, 0, 1, 1)
@@ -140,7 +128,6 @@ class Ui_BinaryDataForm(object):
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Verdana"))
         self.label_13.setFont(font)
-        self.label_13.setText(QtGui.QApplication.translate("BinaryDataForm", "effect", None, QtGui.QApplication.UnicodeUTF8))
         self.label_13.setAlignment(QtCore.Qt.AlignCenter)
         self.label_13.setObjectName(_fromUtf8("label_13"))
         self.horizontalLayout_4.addWidget(self.label_13)
@@ -157,7 +144,7 @@ class Ui_BinaryDataForm(object):
         self.effect_grp_box.setTitle(_fromUtf8(""))
         self.effect_grp_box.setObjectName(_fromUtf8("effect_grp_box"))
         self.layoutWidget_4 = QtGui.QWidget(self.effect_grp_box)
-        self.layoutWidget_4.setGeometry(QtCore.QRect(0, 0, 351, 41))
+        self.layoutWidget_4.setGeometry(QtCore.QRect(0, 0, 374, 41))
         self.layoutWidget_4.setObjectName(_fromUtf8("layoutWidget_4"))
         self.gridLayout_3 = QtGui.QGridLayout(self.layoutWidget_4)
         self.gridLayout_3.setMargin(0)
@@ -168,7 +155,6 @@ class Ui_BinaryDataForm(object):
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Verdana"))
         self.label_14.setFont(font)
-        self.label_14.setText(QtGui.QApplication.translate("BinaryDataForm", "est.", None, QtGui.QApplication.UnicodeUTF8))
         self.label_14.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft)
         self.label_14.setObjectName(_fromUtf8("label_14"))
         self.gridLayout_3.addWidget(self.label_14, 0, 0, 1, 1)
@@ -177,7 +163,6 @@ class Ui_BinaryDataForm(object):
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Verdana"))
         self.label_15.setFont(font)
-        self.label_15.setText(QtGui.QApplication.translate("BinaryDataForm", "low", None, QtGui.QApplication.UnicodeUTF8))
         self.label_15.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft)
         self.label_15.setObjectName(_fromUtf8("label_15"))
         self.gridLayout_3.addWidget(self.label_15, 0, 2, 1, 1)
@@ -186,7 +171,6 @@ class Ui_BinaryDataForm(object):
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Verdana"))
         self.label_16.setFont(font)
-        self.label_16.setText(QtGui.QApplication.translate("BinaryDataForm", "high", None, QtGui.QApplication.UnicodeUTF8))
         self.label_16.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft)
         self.label_16.setObjectName(_fromUtf8("label_16"))
         self.gridLayout_3.addWidget(self.label_16, 0, 4, 1, 1)
@@ -195,7 +179,6 @@ class Ui_BinaryDataForm(object):
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Verdana"))
         self.label_17.setFont(font)
-        self.label_17.setText(QtGui.QApplication.translate("BinaryDataForm", "p-val", None, QtGui.QApplication.UnicodeUTF8))
         self.label_17.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft)
         self.label_17.setObjectName(_fromUtf8("label_17"))
         self.gridLayout_3.addWidget(self.label_17, 0, 6, 1, 1)
@@ -226,6 +209,26 @@ class Ui_BinaryDataForm(object):
         self.verticalLayout_4 = QtGui.QVBoxLayout(self.layoutWidget1)
         self.verticalLayout_4.setMargin(0)
         self.verticalLayout_4.setObjectName(_fromUtf8("verticalLayout_4"))
+        self.widget = QtGui.QWidget(BinaryDataForm)
+        self.widget.setGeometry(QtCore.QRect(10, 250, 370, 32))
+        self.widget.setObjectName(_fromUtf8("widget"))
+        self.horizontalLayout = QtGui.QHBoxLayout(self.widget)
+        self.horizontalLayout.setMargin(0)
+        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
+        self.inconsistencyLabel = QtGui.QLabel(self.widget)
+        font = QtGui.QFont()
+        font.setBold(True)
+        font.setWeight(75)
+        self.inconsistencyLabel.setFont(font)
+        self.inconsistencyLabel.setObjectName(_fromUtf8("inconsistencyLabel"))
+        self.horizontalLayout.addWidget(self.inconsistencyLabel)
+        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem)
+        self.buttonBox = QtGui.QDialogButtonBox(self.widget)
+        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
+        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
+        self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
+        self.horizontalLayout.addWidget(self.buttonBox)
 
         self.retranslateUi(BinaryDataForm)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), BinaryDataForm.accept)
@@ -233,6 +236,18 @@ class Ui_BinaryDataForm(object):
         QtCore.QMetaObject.connectSlotsByName(BinaryDataForm)
 
     def retranslateUi(self, BinaryDataForm):
-        pass
+        BinaryDataForm.setWindowTitle(_translate("BinaryDataForm", "Binary Data", None))
+        self.label_5.setText(_translate("BinaryDataForm", "event", None))
+        self.label_6.setText(_translate("BinaryDataForm", "no event", None))
+        self.label_10.setText(_translate("BinaryDataForm", "total", None))
+        self.label_3.setText(_translate("BinaryDataForm", "group 1", None))
+        self.label_4.setText(_translate("BinaryDataForm", "group 2", None))
+        self.label_9.setText(_translate("BinaryDataForm", "total", None))
+        self.label_13.setText(_translate("BinaryDataForm", "effect", None))
+        self.label_14.setText(_translate("BinaryDataForm", "est.", None))
+        self.label_15.setText(_translate("BinaryDataForm", "low", None))
+        self.label_16.setText(_translate("BinaryDataForm", "high", None))
+        self.label_17.setText(_translate("BinaryDataForm", "p-val", None))
+        self.inconsistencyLabel.setText(_translate("BinaryDataForm", "INCONSISTENT FORM", None))
 
 import icons_rc

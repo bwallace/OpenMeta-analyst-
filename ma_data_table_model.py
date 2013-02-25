@@ -19,8 +19,9 @@ from PyQt4.QtCore import pyqtRemoveInputHook
 import pdb
 
 # home-grown
-import ma_dataset
-from ma_dataset import *
+#import ma_dataset
+#from ma_dataset import *
+from ma_dataset import Dataset,Outcome,Study,Covariate
 import meta_py_r
 import meta_globals 
 from meta_globals import *
@@ -297,10 +298,10 @@ class DatasetModel(QAbstractTableModel):
         elif role == Qt.CheckStateRole:
             # this is where we deal with the inclusion/exclusion of studies
             if column == self.INCLUDE_STUDY:
-               checked_state = Qt.Unchecked
-               if index.row() < self.rowCount()-1 and study.include:
-                   checked_state = Qt.Checked
-               return QVariant(checked_state)
+                checked_state = Qt.Unchecked
+                if index.row() < self.rowCount()-1 and study.include:
+                    checked_state = Qt.Checked
+                    return QVariant(checked_state)
         elif role == Qt.BackgroundColorRole:
             if column in self.OUTCOMES:
                 return QVariant(QColor(Qt.yellow))
@@ -327,6 +328,7 @@ class DatasetModel(QAbstractTableModel):
         
 
     def _verify_raw_data(self, s, col, data_type):
+        
         # ignore blank entries
         if s.trimmed() == "" or s is None:
             return True, None
@@ -337,11 +339,16 @@ class DatasetModel(QAbstractTableModel):
         if data_type in (BINARY, DIAGNOSTIC):
             if not meta_globals._is_an_int(s):
                 return False, "Expecting count data -- you provided a float (?)"
-
             if int(s) < 0:
                 return False, "Counts cannot be negative."
-
-
+        
+        if data_type == CONTINUOUS:
+            if float(s) < 0:
+                if col in [3,6]:
+                    return False,"Count cannot be negative"
+                if col in [5,8]:
+                    return False,"Standard Deviation cannot be negative"
+            
         return True, None
 
 
@@ -479,7 +486,7 @@ class DatasetModel(QAbstractTableModel):
                 adjusted_index = column-adjust_by
                 val = value.toDouble()[0] if value.toDouble()[1] else ""
                 ma_unit.tx_groups[group_name].raw_data[adjusted_index] = val
-                # If a raw data column value is being edit, attempt to
+                # If a raw data column value is being edited, attempt to
                 # update the corresponding outcome (if data permits)
                 self.update_outcome_if_possible(index.row())
             elif column in self.OUTCOMES:
@@ -594,7 +601,8 @@ class DatasetModel(QAbstractTableModel):
                             ma_unit.set_display_lower(m_str, group_str, display_scale_val)    
                         else:
                             ma_unit.set_upper(m_str, group_str, calc_scale_val)
-                            ma_unit.set_display_upper(m_str, group_str, display_scale_val) 
+                            ma_unit.set_display_upper(m_str, group_str, display_scale_val)
+                        
                 
 
             elif column == self.INCLUDE_STUDY:
@@ -756,7 +764,7 @@ class DatasetModel(QAbstractTableModel):
         if not index.isValid():
             return Qt.ItemIsEnabled
         elif index.column() == self.INCLUDE_STUDY:
-             return Qt.ItemFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled |
+            return Qt.ItemFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled |
                             Qt.ItemIsUserCheckable | Qt.ItemIsSelectable)
         return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
                             Qt.ItemIsEditable)
@@ -843,8 +851,8 @@ class DatasetModel(QAbstractTableModel):
         self.dataset.remove_covariate(covariate_name)
         self.reset()
         
-    def remove_study(self, id):
-        self.dataset.studies.pop(id)
+    def remove_study(self, an_id):
+        self.dataset.studies.pop(an_id)
         self.reset()
 
     def get_name(self):
@@ -1001,9 +1009,9 @@ class DatasetModel(QAbstractTableModel):
     def order_studies(self, ids):
         ''' Shuffles studies vector to the order specified by ids'''
         ordered_studies = []
-        for id in ids:
+        for an_id in ids:
             for study in self.dataset.studies:
-                if study.id == id:
+                if study.id == an_id:
                     ordered_studies.append(study)
                     break
         self.dataset.studies = ordered_studies

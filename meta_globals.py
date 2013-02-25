@@ -131,3 +131,5 @@ def _is_an_int(s):
     except:
         return False
     
+def is_NaN(x):
+    return x != x

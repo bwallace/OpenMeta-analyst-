@@ -8,7 +8,7 @@
 #############################################################
 
 import pdb
-import copy
+#import copy
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.Qt import *
@@ -262,6 +262,7 @@ class MADataTable(QtGui.QTableView):
         # dispatch on the data type
         form = None
         study_index = row
+        # fix for issue # 183
         ma_unit = copy.deepcopy(self.model().get_current_ma_unit_for_study(study_index))
         old_ma_unit = copy.deepcopy(ma_unit)
         cur_txs = self.model().current_txs
@@ -301,7 +302,6 @@ class MADataTable(QtGui.QTableView):
             for group in cur_txs:
                 cur_raw_data_dict[group] = list(ma_unit.get_raw_data_for_group(group))
 
-            
             form = diagnostic_data_form.DiagnosticDataForm(ma_unit, cur_txs, cur_group_str, parent=self)
             if form.exec_():
                 ma_edit = CommandEditMAUnit(self, study_index, ma_unit, old_ma_unit)
@@ -355,12 +355,14 @@ class MADataTable(QtGui.QTableView):
                     return (True, original_metric)
         return (False,  original_metric)
 
-    def _data_for_only_one_group(self):
-        study_index = row
-        ma_unit = self.model().get_current_ma_unit_for_study(study_index)
-        old_ma_unit = copy.deepcopy(ma_unit)
-        cur_txs = self.model().current_txs
-        cur_effect = self.model().current_effect
+    # Broken code, doesn't seem to be called from anywhere else but keeping
+    #   around until told otherwise
+#    def _data_for_only_one_group(self):
+#        study_index = row
+#        ma_unit = self.model().get_current_ma_unit_for_study(study_index)
+#        old_ma_unit = copy.deepcopy(ma_unit)
+#        cur_txs = self.model().current_txs
+#        cur_effect = self.model().current_effect
 
 
     def get_covariate_columns(self):
@@ -386,10 +388,12 @@ class MADataTable(QtGui.QTableView):
         self.undoStack.push(sort_command)
         self.reverse_column_sorts[column] = not self.reverse_column_sorts[column]
 
-    def _data_for_only_one_of_two_arms(self):
-        cur_txs = self.model().current_txs
-        for group in cur_txs:
-            cur_raw_data_dict[group] = list(ma_unit.get_raw_data_for_group(group))
+    # Broken code, doesn't seem to be called from anywhere else but keeping
+    #   around until told otherwise
+    #def _data_for_only_one_of_two_arms(self):
+    #    cur_txs = self.model().current_txs
+    #    for group in cur_txs:
+    #        cur_raw_data_dict[group] = list(ma_unit.get_raw_data_for_group(group))
 
     def _normalize_newlines(self, qstr_text):
         return qstr_text.replace(_newlines_re, "\n")
@@ -863,15 +867,15 @@ class CommandSort(QUndoCommand):
         
 class StudyDelegate(QItemDelegate):
 
-      def __init__(self, parent=None):
+    def __init__(self, parent=None):
         super(StudyDelegate, self).__init__(parent)
 
 
-      def createEditor(self, parent, *args):
+    def createEditor(self, parent, *args):
         le = QLineEdit(parent)
         return le
 
-      def setEditorData(self, editor, index):
+    def setEditorData(self, editor, index):
         # used to be Qt.DisplayRole
         text = index.model().data(index, Qt.EditRole)
         editor.setText(text.toString())

@@ -847,7 +847,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         
     def open(self, file_path=None):
         '''
-        This gets called when the use opts to open an existing dataset. Note that we make use
+        This gets called when the user opts to open an existing dataset. Note that we make use
         of the pickled dataset itself (.oma) and we also look for a corresponding `state`
         dictionary, which contains things like which outcome was currently displayed, etc.
         Also note that, as in Excel, the open operation is undoable. 
