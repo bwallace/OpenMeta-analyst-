@@ -46,7 +46,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             widget.blockSignals(True)
         self._update_raw_data() 
         self._populate_effect_data()
-        self.impute_data() 
+        self._impute_2by2_from_all_available_info()
         self._update_data_table() # does nothing....
         self.set_current_effect()
 
@@ -176,6 +176,25 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             imputed = meta_py_r.impute_diag_data(diag_data_dict, self.cur_effect)
             print "imputed data: %s" % imputed
             self.update_2x2_table(imputed)
+    
+    def _impute_2by2_from_all_available_info(self):
+        original_effect = self.cur_effect
+        
+        for effect in BACK_CALCULATABLE_DIAGNOSTIC_EFFECTS:
+            # stupid way to do this but whatever
+            #    should be done by looking at ma_unit, not playing with gui
+            self.cur_effect = effect
+            self.set_current_effect()
+            
+            diag_data_dict = self.build_dict()
+            if diag_data_dict is not None:
+                print "arguments to imputed data: ", diag_data_dict, effect
+                imputed = meta_py_r.impute_diag_data(diag_data_dict, effect)
+                print "imputed data: %s" % imputed
+                self.update_2x2_table(imputed)
+        # restore things to how they were
+        self.cur_effect = original_effect
+        self.set_current_effect()
 
     def _get_row_col(self, field):
         row = 0 if field in ("FP", "TP") else 1

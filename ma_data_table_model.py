@@ -343,10 +343,11 @@ class DatasetModel(QAbstractTableModel):
                 return False, "Counts cannot be negative."
         
         if data_type == CONTINUOUS:
-            if col in [3,6]:
-                return False,"Count cannot be negative"
-            if col in [5,8]:
-                return False,"Standard Deviation cannot be negative"
+            if float(s) < 0:
+                if col in [3,6]:
+                    return False,"Count cannot be negative"
+                if col in [5,8]:
+                    return False,"Standard Deviation cannot be negative"
             
         return True, None
 
@@ -600,7 +601,8 @@ class DatasetModel(QAbstractTableModel):
                             ma_unit.set_display_lower(m_str, group_str, display_scale_val)    
                         else:
                             ma_unit.set_upper(m_str, group_str, calc_scale_val)
-                            ma_unit.set_display_upper(m_str, group_str, display_scale_val) 
+                            ma_unit.set_display_upper(m_str, group_str, display_scale_val)
+                        
                 
 
             elif column == self.INCLUDE_STUDY:
