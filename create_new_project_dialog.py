@@ -38,9 +38,9 @@ class CreateNewProjectDlg(QDialog, ui_create_new_projectdlg.Ui_newprojectdialog)
     def _set_outcome_name(self,outcome_name):
         if outcome_name != "":
             self.summary['name'] = outcome_name
-            self.buttonBox.setEnabled(True)
+            self.ok_Button.setEnabled(True)
         else:
-            self.buttonBox.setEnabled(False)
+            self.ok_Button.setEnabled(False)
     
     def _project_button_toggled(self,abool):
         checked_button = (self.diagnostic_Button.isChecked()                 or
