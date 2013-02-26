@@ -5,6 +5,8 @@ Created on Feb 25, 2013
 '''
 
 from PyQt4.Qt import *
+from PyQt4.QtGui import *
+#from PyQt4.QtCore import *
 
 import ui_create_new_projectdlg
 
@@ -16,6 +18,9 @@ class CreateNewProjectDlg(QDialog, ui_create_new_projectdlg.Ui_newprojectdialog)
         
         self._setup_connections()
         self.summary = {}
+        
+        pal = self.outcome_name_LineEdit.palette()
+        self.orignal_background_color = pal.color(self.outcome_name_LineEdit.backgroundRole())
     
     
     def _setup_connections(self):
@@ -46,8 +51,18 @@ class CreateNewProjectDlg(QDialog, ui_create_new_projectdlg.Ui_newprojectdialog)
                           self.twoarm_means_Button.isChecked()               or
                           self.twoarm_proportions_Button.isChecked()         or
                           self.twoarm_smds_Button.isChecked())
+       
+        pal = self.outcome_name_LineEdit.palette()
+        
+        # TO RESET BG COLOR (FOR REFERENCE)
+        #pal.setColor(self.outcome_name_LineEdit.backgroundRole(), self.orignal_background_color)
+        #self.outcome_name_LineEdit.setPalette(pal)
+        
         if checked_button:
             self.outcome_name_LineEdit.setEnabled(True)
+            pal.setColor(self.outcome_name_LineEdit.backgroundRole(), Qt.green)
+            self.outcome_name_LineEdit.setPalette(pal)
+            
         else:
             self.outcome_name_LineEdit.setEnabled(False)
         
