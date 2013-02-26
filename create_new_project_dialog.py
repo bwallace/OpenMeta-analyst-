@@ -62,7 +62,7 @@ class CreateNewProjectDlg(QDialog, ui_create_new_projectdlg.Ui_newprojectdialog)
             self.outcome_name_LineEdit.setEnabled(True)
             pal.setColor(self.outcome_name_LineEdit.backgroundRole(), Qt.green)
             self.outcome_name_LineEdit.setPalette(pal)
-            
+            self.outcome_name_LineEdit.setFocus()
         else:
             self.outcome_name_LineEdit.setEnabled(False)
         
