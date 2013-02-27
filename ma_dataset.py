@@ -54,17 +54,6 @@ class Dataset:
     def get_outcome_names(self):
         return sorted(self.outcome_names_to_follow_ups.keys())
         
-    def get_group_names(self):
-        if len(self.studies) == 0:
-            return []
-        all_group_names = []
-        study = self.studies[0]
-        for outcome in study.outcomes_to_follow_ups.keys():
-            a_follow_up = self.outcome_names_to_follow_ups[outcome].values()[0]
-            all_group_names.extend(study.outcomes_to_follow_ups[outcome][a_follow_up].get_group_names())
-
-        return list(set(all_group_names))
-        
 
     def change_group_name(self, old_group_name, new_group_name, outcome=None, follow_up=None):
         if (outcome is None and follow_up is not None) or (follow_up is None and outcome is not None):
