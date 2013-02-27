@@ -1,6 +1,11 @@
 *.pyc
 r_tmp/
+r_tmp/*.png
 user_prefs.dict
 .project
 .pydevproject
 .settings
+.RData
+.Rhistory
+
+

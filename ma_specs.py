@@ -14,18 +14,20 @@
 #                                           #
 #############################################
 
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
+from PyQt4 import QtCore, QtGui
 
-from PyQt4 import QtCore, QtGui, Qt
-from PyQt4.Qt import *
 import pdb
-import sys
+#import sys
 import copy
-import sip
+#import sip
 
 import ui_ma_specs
-import ma_specs
 import meta_py_r
-from meta_globals import *
+#from meta_globals import *
+from meta_globals import (check_plot_bound, DIAG_METRIC_NAMES_D, 
+                          METHODS_WITH_NO_FOREST_PLOT, ONE_ARM_METRICS, seems_sane)
 import diagnostic_explain
 
 ###
@@ -371,8 +373,8 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
     def ui_for_params(self):
         if self.parameter_grp_box.layout() is None:
-           layout = QGridLayout()
-           self.parameter_grp_box.setLayout(layout)
+            layout = QGridLayout()
+            self.parameter_grp_box.setLayout(layout)
 
         cur_grid_row = 0
         
