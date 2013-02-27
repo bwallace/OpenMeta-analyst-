@@ -34,6 +34,12 @@ BINARY_ONE_ARM_METRICS = ["PR", "PLN", "PLO", "PAS", "PFT"]
 CONTINUOUS_TWO_ARM_METRICS = ["MD", "SMD"]
 CONTINUOUS_ONE_ARM_METRICS = ["TX Mean"]
 
+# Default metrics (for when making a new dataset)
+DEFAULT_BINARY_ONE_ARM = "PR"
+DEFAULT_BINARY_TWO_ARM = "OR"
+DEFAULT_CONTINUOUS_ONE_ARM = "TX Mean"
+DEFAULT_CONTINUOUS_TWO_ARM = "SMD"
+
 # Sometimes it's useful to know if we're dealing with a one-arm outcome,
 # in general
 ONE_ARM_METRICS = BINARY_ONE_ARM_METRICS + CONTINUOUS_ONE_ARM_METRICS 
@@ -90,6 +96,8 @@ PATH_TO_HELP = "http://tuftscaes.org/open_meta/help/openMA_help.html"#os.path.jo
 
 # list of methods with no forest plot parameters
 METHODS_WITH_NO_FOREST_PLOT = ["diagnostic.hsroc", "diagnostic.bivariate.ml"]
+
+
 
 
 '''

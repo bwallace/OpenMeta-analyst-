@@ -10,14 +10,14 @@
 import pdb
 
 from PyQt4.Qt import *
-from PyQt4 import QtGui
+from PyQt4.QtGui import *
 
 import meta_py_r
 import meta_globals
-from meta_globals import *
+from meta_globals import BINARY_ONE_ARM_METRICS, BINARY_TWO_ARM_METRICS
 
 import ui_binary_data_form
-from ui_binary_data_form import Ui_BinaryDataForm
+#from ui_binary_data_form import Ui_BinaryDataForm
 
 # @TODO this should be an *application global*. It is now a
 # global here and in the data_table_view class. (However

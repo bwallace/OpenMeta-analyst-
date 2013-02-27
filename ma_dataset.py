@@ -53,7 +53,6 @@ class Dataset:
         
     def get_outcome_names(self):
         return sorted(self.outcome_names_to_follow_ups.keys())
-        
 
     def change_group_name(self, old_group_name, new_group_name, outcome=None, follow_up=None):
         if (outcome is None and follow_up is not None) or (follow_up is None and outcome is not None):

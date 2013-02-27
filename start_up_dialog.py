@@ -1,8 +1,11 @@
 from PyQt4.Qt import *
 import pdb
-import ui_start_up
+import ui_start_upV2
 
-class StartUp(QDialog, ui_start_up.Ui_WelcomeDialog):
+import create_new_project_dialog
+import meta_globals
+
+class StartUp(QDialog, ui_start_upV2.Ui_WelcomeDialog):
     
     def __init__(self, parent=None, recent_datasets=None, start_up=True):
 
@@ -34,9 +37,9 @@ class StartUp(QDialog, ui_start_up.Ui_WelcomeDialog):
                                     self.new_dataset)
         QObject.connect(self.open_btn, SIGNAL("pressed()"),
                                     self.open_dataset)
-        QObject.connect(self.chk_show,  SIGNAL("stateChanged(int)"),
-                            lambda: self.parent.update_user_prefs("splash", \
-                                    self.chk_show.isChecked()))
+        #QObject.connect(self.chk_show,  SIGNAL("stateChanged(int)"),
+        #                    lambda: self.parent.update_user_prefs("splash", \
+        #                            self.chk_show.isChecked()))
 
         if self.start_up and len(self.recent_datasets) > 0:
             ### 
@@ -64,16 +67,41 @@ class StartUp(QDialog, ui_start_up.Ui_WelcomeDialog):
         self.close()
         
     def new_dataset(self):
-        name = unicode(self.dataset_name_le.text().toUtf8(), "utf-8")
-        is_diag = self.diag_radio.isChecked()
+        #name = unicode(self.dataset_name_le.text().toUtf8(), "utf-8")
+        name = unicode("untitled_dataset", "utf-8")
+        #is_diag = self.diag_radio.isChecked()
         
-        self.parent.new_dataset(name=name, is_diag=is_diag)
-        tmp = self.parent.cur_dimension
-        self.parent.cur_dimension = "outcome"
-        self.hide()
-        self.parent.add_new()
-        self.parent.cur_dimension = tmp
-        self.close()
+        new_project_dialog = create_new_project_dialog.CreateNewProjectDlg(parent=self)
+        if new_project_dialog.exec_():
+            dataset_info = new_project_dialog.get_summary()
+            is_diag = dataset_info['data_type'] == "Diagnostic"
+        
+            self.parent.new_dataset(name=name, is_diag=is_diag)
+            tmp = self.parent.cur_dimension
+            self.parent.cur_dimension = "outcome"
+            self.hide()
+            self.parent.add_new(dataset_info)        
+            self.parent.cur_dimension = tmp
+            
+            # SET DEFAULT METRICS
+            if dataset_info['data_type'] == "Binary":
+                if dataset_info['arms'] == "one":
+                    self.parent.model.current_effect = meta_globals.DEFAULT_BINARY_ONE_ARM
+                elif dataset_info['arms'] == "two":
+                    self.parent.model.current_effect = meta_globals.DEFAULT_BINARY_TWO_ARM
+            if dataset_info['data_type'] == "Continuous":
+                if dataset_info['arms'] == "one":
+                    self.parent.model.current_effect = meta_globals.DEFAULT_CONTINUOUS_ONE_ARM
+                elif dataset_info['arms'] == "two":
+                    self.parent.model.current_effect = meta_globals.DEFAULT_CONTINUOUS_TWO_ARM
+            # Put this stuff in an if just in case...
+            if dataset_info['data_type'] == "Binary" or dataset_info['data_type'] == "Continuous":
+                self.parent.populate_metrics_menu(metric_to_check=self.parent.model.current_effect)
+                self.parent.model.try_to_update_outcomes()
+                self.parent.model.reset()
+            
+            
+            self.close()
     
     def open_dataset(self):
         # fix for issue #61 -keep dialog open if the 
