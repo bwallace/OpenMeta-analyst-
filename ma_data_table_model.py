@@ -1018,6 +1018,30 @@ class DatasetModel(QAbstractTableModel):
             self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by="name", reverse=reverse), reverse=reverse)
         elif col == self.YEAR:
             self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by="year", reverse=reverse), reverse=reverse)
+        elif col in self.RAW_DATA:
+            #data_type = self.dataset.get_outcome_type(self.current_outcome)
+            # need this to dig down to find right ma_unit and data we're looking for to compare against
+            ma_unit_reference_info = {'outcome_name': self.current_outcome, 
+                                      'follow_up': self.get_follow_up_name_for_t_point(self.current_time_point),
+                                      'current_groups': self.get_current_groups(),
+                                      'data_index': col - min(self.RAW_DATA)}
+            self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by="raw_data", 
+                reverse=reverse, directions_to_ma_unit=ma_unit_reference_info), reverse=reverse)
+        elif col in self.OUTCOMES:
+            # need this to dig down to find right ma_unit and data we're looking for to compare against
+            ma_unit_reference_info = {
+                'outcome_type': self.dataset.get_outcome_type(self.current_outcome),
+                'outcome_name': self.current_outcome, 
+                'follow_up': self.get_follow_up_name_for_t_point(self.current_time_point),
+                'current_groups': self.get_current_groups(),
+                'current_effect': self.current_effect,
+                'group_str': self.get_cur_group_str(),
+                'data_index': col - min(self.OUTCOMES)
+            }
+            self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by="outcomes", 
+                reverse=reverse, directions_to_ma_unit=ma_unit_reference_info), reverse=reverse)
+        
+            
         # covariates -- note that we assume anything to the right of the outcomes
         # is a covariate
         elif col > self.OUTCOMES[-1]:

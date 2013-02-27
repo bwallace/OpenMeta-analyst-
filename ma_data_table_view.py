@@ -110,7 +110,9 @@ class MADataTable(QtGui.QTableView):
         column_clicked = self.columnAt(pos.x())
         covariate_columns = self.get_covariate_columns()
         raw_data_columns = self.model().RAW_DATA
+        outcomes_columns = self.model().OUTCOMES
 
+        sort_by_col = self.model().get_current_outcome_type()
         data_type = self.model().get_current_outcome_type()
 
         print "right click @ column: %s" % column_clicked
@@ -150,17 +152,31 @@ class MADataTable(QtGui.QTableView):
                 if column_clicked in raw_data_columns[3:]:
                     corresponding_tx_group = self.model().current_txs[1]
             
+            #renaming
             action_rename = QAction("rename group %s..." % corresponding_tx_group, self)
             QObject.connect(action_rename, SIGNAL("triggered()"), \
                         lambda : self.main_gui.edit_group_name(corresponding_tx_group))
             context_menu.addAction(action_rename)
-
+            # sorting
             col_name = self.model().headerData(column_clicked, Qt.Horizontal).toString()
             action_sort = QAction("sort studies by %s" % col_name, self)
             QObject.connect(action_sort, SIGNAL("triggered()"), \
                         lambda : self.sort_by_col(column_clicked))
             context_menu.addAction(action_sort)
-
+        elif column_clicked in raw_data_columns and data_type == "diagnostic":
+            # sorting
+            col_name = self.model().headerData(column_clicked, Qt.Horizontal).toString()
+            action_sort = QAction("sort studies by %s" % col_name, self)
+            QObject.connect(action_sort, SIGNAL("triggered()"), \
+                        lambda : self.sort_by_col(column_clicked))
+            context_menu.addAction(action_sort)
+        elif column_clicked in outcomes_columns:
+            # sorting
+            col_name = self.model().headerData(column_clicked, Qt.Horizontal).toString()
+            action_sort = QAction("sort studies by %s" % col_name, self)
+            QObject.connect(action_sort, SIGNAL("triggered()"), \
+                        lambda : self.sort_by_col(column_clicked))
+            context_menu.addAction(action_sort)
         elif column_clicked in covariate_columns:
             cov = self.model().get_cov(column_clicked)
 
@@ -379,7 +395,7 @@ class MADataTable(QtGui.QTableView):
         # if a covariate column was clicked, it may not yet have an entry in the
         # reverse_column_sorts dictionary; thus we insert one here
         #
-        # TODO this should *not* use the column nubmer as the key!
+        # TODO this should *not* use the column number as the key!
         # rather, it should use the name -- the column number of a given
         # covariate might change (e.g., if another covariate is deleted)
         if not self.reverse_column_sorts.has_key(column):
@@ -389,7 +405,7 @@ class MADataTable(QtGui.QTableView):
         self.reverse_column_sorts[column] = not self.reverse_column_sorts[column]
 
     # Broken code, doesn't seem to be called from anywhere else but keeping
-    #   around until told otherwise
+    #   around until told otherwise GD
     #def _data_for_only_one_of_two_arms(self):
     #    cur_txs = self.model().current_txs
     #    for group in cur_txs:

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'create_new_projectdlg.ui'
 #
-# Created: Tue Feb 26 13:28:34 2013
+# Created: Wed Feb 27 15:41:53 2013
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -27,7 +27,7 @@ class Ui_newprojectdialog(object):
     def setupUi(self, newprojectdialog):
         newprojectdialog.setObjectName(_fromUtf8("newprojectdialog"))
         newprojectdialog.setEnabled(True)
-        newprojectdialog.resize(504, 541)
+        newprojectdialog.resize(504, 551)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -40,10 +40,10 @@ class Ui_newprojectdialog(object):
         self.what_type_of_data_Label = QtGui.QLabel(newprojectdialog)
         self.what_type_of_data_Label.setMinimumSize(QtCore.QSize(281, 0))
         font = QtGui.QFont()
-        font.setFamily(_fromUtf8("Comic Sans MS"))
+        font.setFamily(_fromUtf8("Verdana"))
         font.setPointSize(14)
-        font.setBold(True)
-        font.setWeight(75)
+        font.setBold(False)
+        font.setWeight(50)
         self.what_type_of_data_Label.setFont(font)
         self.what_type_of_data_Label.setObjectName(_fromUtf8("what_type_of_data_Label"))
         self.verticalLayout.addWidget(self.what_type_of_data_Label)
@@ -145,7 +145,10 @@ class Ui_newprojectdialog(object):
         self.diagnostic_Button.setMinimumSize(QtCore.QSize(90, 65))
         self.diagnostic_Button.setMaximumSize(QtCore.QSize(90, 65))
         self.diagnostic_Button.setBaseSize(QtCore.QSize(10, 10))
-        self.diagnostic_Button.setIconSize(QtCore.QSize(40, 40))
+        icon6 = QtGui.QIcon()
+        icon6.addPixmap(QtGui.QPixmap(_fromUtf8("images/startscreens/diagnostic.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.diagnostic_Button.setIcon(icon6)
+        self.diagnostic_Button.setIconSize(QtCore.QSize(85, 44))
         self.diagnostic_Button.setCheckable(True)
         self.diagnostic_Button.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.diagnostic_Button.setObjectName(_fromUtf8("diagnostic_Button"))
@@ -165,9 +168,9 @@ class Ui_newprojectdialog(object):
         self.twoarm_means_Button.setMinimumSize(QtCore.QSize(90, 65))
         self.twoarm_means_Button.setMaximumSize(QtCore.QSize(90, 65))
         self.twoarm_means_Button.setBaseSize(QtCore.QSize(10, 10))
-        icon6 = QtGui.QIcon()
-        icon6.addPixmap(QtGui.QPixmap(_fromUtf8("images/startscreens/twoarm/means.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.twoarm_means_Button.setIcon(icon6)
+        icon7 = QtGui.QIcon()
+        icon7.addPixmap(QtGui.QPixmap(_fromUtf8("images/startscreens/twoarm/means.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.twoarm_means_Button.setIcon(icon7)
         self.twoarm_means_Button.setIconSize(QtCore.QSize(54, 40))
         self.twoarm_means_Button.setCheckable(True)
         self.twoarm_means_Button.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)

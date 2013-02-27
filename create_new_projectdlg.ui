@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>504</width>
-    <height>541</height>
+    <height>551</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -39,10 +39,10 @@
      </property>
      <property name="font">
       <font>
-       <family>Comic Sans MS</family>
+       <family>Verdana</family>
        <pointsize>14</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
+       <weight>50</weight>
+       <bold>false</bold>
       </font>
      </property>
      <property name="text">
@@ -370,10 +370,14 @@ effect size</string>
         <property name="text">
          <string>diagnostic</string>
         </property>
+        <property name="icon">
+         <iconset>
+          <normaloff>images/startscreens/diagnostic.png</normaloff>images/startscreens/diagnostic.png</iconset>
+        </property>
         <property name="iconSize">
          <size>
-          <width>40</width>
-          <height>40</height>
+          <width>85</width>
+          <height>44</height>
          </size>
         </property>
         <property name="checkable">
