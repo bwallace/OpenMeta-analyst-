@@ -422,23 +422,31 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         calc_scale_val = meta_py_r.binary_convert_scale(display_scale_val, \
                                         self.cur_effect, convert_to="calc.scale")
         
-        
-        
-    #    print "imputing data!"
-        self.impute_data()
+    
         # LEFT OVER FROM COPY AND PASTE FROM BIN AND CONT, USE LATER......
-#        if val_str == "est":
-#            self.ma_unit.set_effect(self.cur_effect, self.group_str, calc_scale_val)
-#            self.ma_unit.set_display_effect(self.cur_effect, self.group_str, display_scale_val)
-#        elif val_str == "lower":
-#            self.ma_unit.set_lower(self.cur_effect, self.group_str, calc_scale_val)
-#            self.ma_unit.set_display_lower(self.cur_effect, self.group_str, display_scale_val)
-#        else:
-#            self.ma_unit.set_upper(self.cur_effect, self.group_str, calc_scale_val)
-#            self.ma_unit.set_display_upper(self.cur_effect, self.group_str, display_scale_val)
+        if val_str == "est":
+            self.ma_unit.set_effect(self.cur_effect, self.group_str, calc_scale_val)
+            self.ma_unit.set_display_effect(self.cur_effect, self.group_str, display_scale_val)
             
-    # Todo: Impute 2x2 from here if est,low,high all filled out
+        elif val_str == "lower":
+            self.ma_unit.set_lower(self.cur_effect, self.group_str, calc_scale_val)
+            self.ma_unit.set_display_lower(self.cur_effect, self.group_str, display_scale_val)
+        else:
+            self.ma_unit.set_upper(self.cur_effect, self.group_str, calc_scale_val)
+            self.ma_unit.set_display_upper(self.cur_effect, self.group_str, display_scale_val)
+########################
+#        # now we're going to set the effect estimate/CI on the MA object.
+#        for metric in DIAGNOSTIC_METRICS:
+#            est, lower, upper = ests_and_cis[metric]["calc_scale"]
+#            self.ma_unit.set_effect_and_ci(metric, self.group_str, est, lower, upper)
+#            
+#            disp_est, disp_lower, disp_upper = ests_and_cis[metric]["display_scale"]
+#            self.ma_unit.set_display_effect_and_ci(metric, self.group_str, disp_est, disp_lower, disp_upper)
 
+
+        # Impute 2x2 from here
+        print "imputing data!"
+        self.impute_data()
     
     def val_edit(self, val_str, display_scale_val):
         print "Editing %s with value: %s" % (val_str,display_scale_val)
