@@ -404,7 +404,7 @@ class Dataset:
                     (outcome_data_A, outcome_data_B) = ([],[])
                     #                                     |
                     #                                  \_____/
-                    for diag_metric in ["Sens","Spec"]:
+                    for diag_metric in ["Sens","Spec"]: # this order corresponds to the order displayed on the spreadsheet
                         est_and_ci_A = ma_unit_A.get_display_effect_and_ci(diag_metric, directions_to_ma_unit['group_str'])
                         est_and_ci_B = ma_unit_B.get_display_effect_and_ci(diag_metric, directions_to_ma_unit['group_str'])
                         outcome_data_A.extend(est_and_ci_A)

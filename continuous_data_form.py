@@ -27,7 +27,7 @@ from PyQt4 import QtGui
 import meta_py_r
 import meta_globals
 #from meta_globals import *
-from meta_globals import CONTINUOUS_ONE_ARM_METRICS,CONTINUOUS_TWO_ARM_METRICS
+from meta_globals import CONTINUOUS_ONE_ARM_METRICS,CONTINUOUS_TWO_ARM_METRICS, _is_a_float,_is_empty
 import ui_continuous_data_form
 #from ui_continuous_data_form import Ui_ContinuousDataForm
 
@@ -73,6 +73,12 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         
         # used for checking the data we attempt to set is good
         self.current_item_data = self._get_float(self.simple_table.currentRow(),self.simple_table.currentColumn())
+        
+        # for validation on text boxes
+        self.curr_effect_tbox_text = self.effect_txt_box.text()
+        self.curr_low_tbox_text    = self.low_txt_box.text()
+        self.curr_high_tbox_text  = self.high_txt_box.text()
+        (self.candidate_est,self.candidate_lower,self.candidate_upper) = (None,None,None)
 
     def setup_signals_and_slots(self):
         QObject.connect(self.simple_table, SIGNAL("cellChanged (int, int)"), 
@@ -88,9 +94,13 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         QObject.connect(self.effect_cbo_box, SIGNAL("currentIndexChanged(QString)"),
                                                                                 self.effect_changed) 
                                                                                 
-        QObject.connect(self.effect_txt_box, SIGNAL("textChanged(QString)"), lambda new_text : self.val_edit("est", new_text))
-        QObject.connect(self.low_txt_box, SIGNAL("textChanged(QString)"), lambda new_text : self.val_edit("lower", new_text))
-        QObject.connect(self.high_txt_box, SIGNAL("textChanged(QString)"), lambda new_text : self.val_edit("upper", new_text)) 
+        QObject.connect(self.effect_txt_box, SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("est", new_text))
+        QObject.connect(self.low_txt_box,    SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("lower", new_text))
+        QObject.connect(self.high_txt_box,   SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("upper", new_text)) 
+        
+        QObject.connect(self.effect_txt_box, SIGNAL("editingFinished()"), lambda: self.val_changed("est")   )
+        QObject.connect(self.low_txt_box,    SIGNAL("editingFinished()"), lambda: self.val_changed("lower") )
+        QObject.connect(self.high_txt_box,   SIGNAL("editingFinished()"), lambda: self.val_changed("upper") )
         
                                                                                 
     def _set_col_widths(self, table):
@@ -149,9 +159,95 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.cur_effect = unicode(self.effect_cbo_box.currentText().toUtf8(), "utf-8")
         self.try_to_update_cur_outcome()
         self.set_current_effect()
+      
         
-    def val_edit(self, val_str, display_scale_val):
-        ''' val_str is one of `est`, `lower`, `upper` '''
+    def val_changed(self, val_str):
+        def my_lt(a,b):
+            if _is_a_float(a) and _is_a_float(b):
+                return float(a) < float(b)
+            else:
+                return None
+        def between_bounds(est=self.curr_effect_tbox_text, 
+                           low=self.curr_low_tbox_text, 
+                           high=self.curr_high_tbox_text):
+            good_result = my_lt(low,est)
+            okay = True if not (good_result is None) else False
+            if okay and not good_result:
+                msg = "The lower CI must be less than the point estimate!"
+                QMessageBox.warning(self.parent(), "whoops", msg)
+                return False
+            
+            good_result = my_lt(est,high)
+            okay = True if not (good_result is None) else False
+            if okay and not good_result:
+                msg = "The higher CI must be greater than the point estimate!"
+                QMessageBox.warning(self.parent(), "whoops", msg)
+                return False
+            
+            good_result = my_lt(low,high)
+            okay = True if not (good_result is None) else False
+            if okay and not good_result:
+                msg = "The lower CI must be less than the higher CI!"
+                QMessageBox.warning(self.parent(), "whoops", msg)
+                return False
+            return True
+        
+        def block_box_signals(state):
+            self.effect_txt_box.blockSignals(state)
+            self.low_txt_box.blockSignals(state)
+            self.high_txt_box.blockSignals(state)
+        ###### ERROR CHECKING CODE#####
+        # Make sure entered value is numeric and between the appropriate bounds
+        block_box_signals(True)
+        float_msg = "Must be numeric!"
+        errorflag = False
+        if val_str == "est" and not _is_empty(self.candidate_est):
+            # Check type
+            if not _is_a_float(self.candidate_est) :
+                QMessageBox.warning(self.parent(), "whoops", float_msg)
+                errorflag = True
+            if not between_bounds(est=self.candidate_est):
+                errorflag = True
+            if errorflag:
+                self.effect_txt_box.setText(self.curr_effect_tbox_text)
+                self.candidate_est = self.curr_effect_tbox_text
+                self.effect_txt_box.setFocus()
+                block_box_signals(False)
+                return
+            display_scale_val = float(self.candidate_est)
+        elif val_str == "lower" and not _is_empty(self.candidate_lower):
+            if not _is_a_float(self.candidate_lower) :
+                QMessageBox.warning(self.parent(), "whoops", float_msg)
+                errorflag=True
+            if not between_bounds(low=self.candidate_lower):
+                errorflag=True
+            if errorflag:
+                self.low_txt_box.setText(self.curr_low_tbox_text)
+                self.candidate_lower = self.curr_low_tbox_text
+                self.low_txt_box.setFocus()
+                block_box_signals(False)
+                return
+            display_scale_val = float(self.candidate_lower)
+        elif val_str == "upper" and not _is_empty(self.candidate_upper): 
+            if not _is_a_float(self.candidate_upper) :
+                QMessageBox.warning(self.parent(), "whoops", float_msg)
+                errorflag=True
+            if not between_bounds(high=self.candidate_upper):
+                errorflag=True
+            if errorflag:
+                self.high_txt_box.setText(self.curr_high_tbox_text)
+                self.candidate_upper = self.curr_high_tbox_text
+                self.high_txt_box.setFocus()
+                block_box_signals(False)
+                return
+            display_scale_val = float(self.candidate_upper)
+            
+        block_box_signals(False)
+        # If we got to this point it means everything is ok so far
+    
+        self.curr_effect_tbox_text = self.effect_txt_box.text()
+        self.curr_low_tbox_text    = self.low_txt_box.text()
+        self.curr_high_tbox_text   = self.high_txt_box.text()
         
         try:
             display_scale_val = float(display_scale_val)
@@ -161,8 +257,8 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             print "fail."
             return None
             
-        calc_scale_val = meta_py_r.continuous_convert_scale(display_scale_val, \
-                                                    self.cur_effect, convert_to="calc.scale")
+        calc_scale_val = meta_py_r.binary_convert_scale(display_scale_val, \
+                                        self.cur_effect, convert_to="calc.scale")
                       
         if val_str == "est":
             self.ma_unit.set_effect(self.cur_effect, self.group_str, calc_scale_val)
@@ -173,6 +269,18 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         else:
             self.ma_unit.set_upper(self.cur_effect, self.group_str, calc_scale_val)
             self.ma_unit.set_display_upper(self.cur_effect, self.group_str, display_scale_val)
+            
+    # Todo: Impute 2x2 from here if est,low,high all filled out
+
+    
+    def val_edit(self, val_str, display_scale_val):
+        print "Editing %s with value: %s" % (val_str,display_scale_val)
+        if val_str == "est":
+            self.candidate_est = display_scale_val
+        if val_str == "lower":
+            self.candidate_lower = display_scale_val
+        if val_str == "upper":
+            self.candidate_upper = display_scale_val        
             
     def set_current_effect(self):
         effect_dict = self.ma_unit.effects_dict[self.cur_effect][self.group_str]

@@ -17,7 +17,7 @@ from PyQt4 import QtGui
 
 import meta_py_r
 import meta_globals
-from meta_globals import *
+from meta_globals import _is_a_float, _is_empty, NUM_DIGITS, DIAGNOSTIC_METRICS, DIAG_FIELDS_TO_RAW_INDICES
 #import ui_continuous_data_form
 from ui_diagnostic_data_form import Ui_DiagnosticDataForm
 
@@ -56,18 +56,28 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         
         # used for checking the data we attempt to set is good
         self.current_item_data = self._get_int(self.two_by_two_table.currentRow(),self.two_by_two_table.currentColumn())
+        
+        # for validation on text boxes
+        self.curr_effect_tbox_text = self.effect_txt_box.text()
+        self.curr_low_tbox_text    = self.low_txt_box.text()
+        self.curr_high_tbox_text  = self.high_txt_box.text()
+        (self.candidate_est,self.candidate_lower,self.candidate_upper) = (None,None,None)
     
     def setup_signals_and_slots(self):
         QObject.connect(self.two_by_two_table, SIGNAL("cellChanged (int, int)"), 
-                                            self.value_changed)
+                                            self._cell_changed)
         QObject.connect(self.alpha_edit, SIGNAL("textChanged (QString)"), 
                                             self.update_alpha)                            
         QObject.connect(self.effect_cbo_box, SIGNAL("currentIndexChanged(QString)"),
                                              self.effect_changed) 
-                                                                                
-        QObject.connect(self.effect_txt_box, SIGNAL("textChanged(QString)"), lambda new_text : self.val_edit("est", new_text))
-        QObject.connect(self.low_txt_box, SIGNAL("textChanged(QString)"), lambda new_text : self.val_edit("lower", new_text))
-        QObject.connect(self.high_txt_box, SIGNAL("textChanged(QString)"), lambda new_text : self.val_edit("upper", new_text))
+        
+        QObject.connect(self.effect_txt_box, SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("est", new_text))
+        QObject.connect(self.low_txt_box,    SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("lower", new_text))
+        QObject.connect(self.high_txt_box,   SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("upper", new_text))
+        
+        QObject.connect(self.effect_txt_box, SIGNAL("editingFinished()"), lambda: self.val_changed("est")   )
+        QObject.connect(self.low_txt_box,    SIGNAL("editingFinished()"), lambda: self.val_changed("lower") )
+        QObject.connect(self.high_txt_box,   SIGNAL("editingFinished()"), lambda: self.val_changed("upper") )
 
     @pyqtSignature("int, int, int, int")
     def on_raw_data_table_currentCellChanged(self,currentRow,currentColumn,previousRow,previousColumn):
@@ -117,7 +127,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         return val is None or val == ""
     def _is_txt_box_invalid(self, txt_box):
         val = txt_box.text()
-        return meta_globals.is_NaN(val) or self._is_txt_box_empty(txt_box)
+        return meta_globals.is_NaN(val) or self._is_txt_box_empty(txt_box) or (not _is_a_float(val))
     
     
     def _set_val(self, i, j, val):
@@ -139,7 +149,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
                 pass
     
 
-    def value_changed(self, i, j):
+    def _cell_changed(self, i, j):
         (row,col) = (i,j)
         print "previous cell data:",self.current_item_data
         print "new cell data:", self.two_by_two_table.item(row, col).text()
@@ -160,8 +170,8 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         new_val = self._get_int(i, j)
         if new_val is not None:
             # make sensitivity and specificity calculations work...
-            #   does impute_diag_data try and fail to do this?
-            self.update_effects_in_ma_unit()
+            #   does impute_diag_data try and fail to do this? GD
+            self.impute_effects_in_ma_unit()
             self.set_current_effect()
             self.impute_data() # 2x2 table --> ma_unit
             
@@ -215,8 +225,8 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
                          float(imputed_dict[field])
         self.two_by_two_table.blockSignals(False)
         
-    def update_effects_in_ma_unit(self):
-        '''Fill in effect text boxes with data from ma_unit if all the raw data is available'''
+    def impute_effects_in_ma_unit(self):
+        '''Calculate and store values for effects in ma_unit based on values in 2x2 table'''
         #### MOSTLY DUPLICATED FROM ma_data_table_model.update_outcome_if_possible()
         # diagnostic data
         counts = self._get_raw_data()
@@ -308,9 +318,136 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         return d
             
 
-    def val_edit(self, val_str, new_val_text):
-        print "imputing data!"
-        self.impute_data()  
+    #def val_edit(self, val_str, new_val_text):
+    #    print "imputing data!"
+    #    self.impute_data()
+        
+        
+    def val_changed(self, val_str):
+        def my_lt(a,b):
+            if _is_a_float(a) and _is_a_float(b):
+                return float(a) < float(b)
+            else:
+                return None
+        def between_bounds(est=self.curr_effect_tbox_text, 
+                           low=self.curr_low_tbox_text, 
+                           high=self.curr_high_tbox_text):
+            good_result = my_lt(low,est)
+            okay = True if not (good_result is None) else False
+            if okay and not good_result:
+                msg = "The lower CI must be less than the point estimate!"
+                QMessageBox.warning(self.parent(), "whoops", msg)
+                return False
+            
+            good_result = my_lt(est,high)
+            okay = True if not (good_result is None) else False
+            if okay and not good_result:
+                msg = "The higher CI must be greater than the point estimate!"
+                QMessageBox.warning(self.parent(), "whoops", msg)
+                return False
+            
+            good_result = my_lt(low,high)
+            okay = True if not (good_result is None) else False
+            if okay and not good_result:
+                msg = "The lower CI must be less than the higher CI!"
+                QMessageBox.warning(self.parent(), "whoops", msg)
+                return False
+            return True
+        
+        def block_box_signals(state):
+            self.effect_txt_box.blockSignals(state)
+            self.low_txt_box.blockSignals(state)
+            self.high_txt_box.blockSignals(state)
+        ###### ERROR CHECKING CODE#####
+        # Make sure entered value is numeric and between the appropriate bounds
+        block_box_signals(True)
+        float_msg = "Must be numeric!"
+        errorflag = False
+        if val_str == "est" and not _is_empty(self.candidate_est):
+            # Check type
+            if not _is_a_float(self.candidate_est) :
+                QMessageBox.warning(self.parent(), "whoops", float_msg)
+                errorflag = True
+            if not between_bounds(est=self.candidate_est):
+                errorflag = True
+            if errorflag:
+                self.effect_txt_box.setText(self.curr_effect_tbox_text)
+                self.candidate_est = self.curr_effect_tbox_text
+                self.effect_txt_box.setFocus()
+                block_box_signals(False)
+                return
+            display_scale_val = float(self.candidate_est)
+        elif val_str == "lower" and not _is_empty(self.candidate_lower):
+            if not _is_a_float(self.candidate_lower) :
+                QMessageBox.warning(self.parent(), "whoops", float_msg)
+                errorflag=True
+            if not between_bounds(low=self.candidate_lower):
+                errorflag=True
+            if errorflag:
+                self.low_txt_box.setText(self.curr_low_tbox_text)
+                self.candidate_lower = self.curr_low_tbox_text
+                self.low_txt_box.setFocus()
+                block_box_signals(False)
+                return
+            display_scale_val = float(self.candidate_lower)
+        elif val_str == "upper" and not _is_empty(self.candidate_upper): 
+            if not _is_a_float(self.candidate_upper) :
+                QMessageBox.warning(self.parent(), "whoops", float_msg)
+                errorflag=True
+            if not between_bounds(high=self.candidate_upper):
+                errorflag=True
+            if errorflag:
+                self.high_txt_box.setText(self.curr_high_tbox_text)
+                self.candidate_upper = self.curr_high_tbox_text
+                self.high_txt_box.setFocus()
+                block_box_signals(False)
+                return
+            display_scale_val = float(self.candidate_upper)
+            
+        block_box_signals(False)
+        # If we got to this point it means everything is ok so far
+    
+        self.curr_effect_tbox_text = self.effect_txt_box.text()
+        self.curr_low_tbox_text    = self.low_txt_box.text()
+        self.curr_high_tbox_text   = self.high_txt_box.text()
+        
+        try:
+            display_scale_val = float(display_scale_val)
+        except:
+            # a number wasn't entered; ignore
+            # should probably clear out the box here, too.
+            print "fail."
+            return None
+            
+        calc_scale_val = meta_py_r.binary_convert_scale(display_scale_val, \
+                                        self.cur_effect, convert_to="calc.scale")
+        
+        
+        
+    #    print "imputing data!"
+        self.impute_data()
+        # LEFT OVER FROM COPY AND PASTE FROM BIN AND CONT, USE LATER......
+#        if val_str == "est":
+#            self.ma_unit.set_effect(self.cur_effect, self.group_str, calc_scale_val)
+#            self.ma_unit.set_display_effect(self.cur_effect, self.group_str, display_scale_val)
+#        elif val_str == "lower":
+#            self.ma_unit.set_lower(self.cur_effect, self.group_str, calc_scale_val)
+#            self.ma_unit.set_display_lower(self.cur_effect, self.group_str, display_scale_val)
+#        else:
+#            self.ma_unit.set_upper(self.cur_effect, self.group_str, calc_scale_val)
+#            self.ma_unit.set_display_upper(self.cur_effect, self.group_str, display_scale_val)
+            
+    # Todo: Impute 2x2 from here if est,low,high all filled out
+
+    
+    def val_edit(self, val_str, display_scale_val):
+        print "Editing %s with value: %s" % (val_str,display_scale_val)
+        if val_str == "est":
+            self.candidate_est = display_scale_val
+        if val_str == "lower":
+            self.candidate_lower = display_scale_val
+        if val_str == "upper":
+            self.candidate_upper = display_scale_val  
 
     def effect_changed(self):
         self.cur_effect = str(self.effect_cbo_box.currentText()) 

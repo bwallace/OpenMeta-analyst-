@@ -14,7 +14,7 @@ from PyQt4.QtGui import *
 
 import meta_py_r
 import meta_globals
-from meta_globals import BINARY_ONE_ARM_METRICS, BINARY_TWO_ARM_METRICS
+from meta_globals import BINARY_ONE_ARM_METRICS, BINARY_TWO_ARM_METRICS, _is_a_float,_is_empty
 
 import ui_binary_data_form
 #from ui_binary_data_form import Ui_BinaryDataForm
@@ -61,6 +61,12 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         # used for checking the data we attempt to set is good
         self.current_item_data = self._get_int(self.raw_data_table.currentRow(),self.raw_data_table.currentColumn())
         
+        # for validation on text boxes
+        self.curr_effect_tbox_text = self.effect_txt_box.text()
+        self.curr_low_tbox_text    = self.low_txt_box.text()
+        self.curr_high_tbox_text  = self.high_txt_box.text()
+        (self.candidate_est,self.candidate_lower,self.candidate_upper) = (None,None,None)
+        
     @pyqtSignature("int, int, int, int")
     def on_raw_data_table_currentCellChanged(self,currentRow,currentColumn,previousRow,previousColumn):
         self.current_item_data = self._get_int(currentRow,currentColumn)
@@ -71,10 +77,15 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                                                     self._cell_changed)
         QObject.connect(self.effect_cbo_box, SIGNAL("currentIndexChanged(QString)"),
                                                     self.effect_changed) 
-                                                                                
-        QObject.connect(self.effect_txt_box, SIGNAL("textChanged(QString)"), lambda new_text : self.val_edit("est", new_text))
-        QObject.connect(self.low_txt_box, SIGNAL("textChanged(QString)"), lambda new_text : self.val_edit("lower", new_text))
-        QObject.connect(self.high_txt_box, SIGNAL("textChanged(QString)"), lambda new_text : self.val_edit("upper", new_text))                                                                                            
+        
+        QObject.connect(self.effect_txt_box, SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("est", new_text))
+        QObject.connect(self.low_txt_box,    SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("lower", new_text))
+        QObject.connect(self.high_txt_box,   SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("upper", new_text))
+        
+        QObject.connect(self.effect_txt_box, SIGNAL("editingFinished()"), lambda: self.val_changed("est")   )
+        QObject.connect(self.low_txt_box,    SIGNAL("editingFinished()"), lambda: self.val_changed("lower") )
+        QObject.connect(self.high_txt_box,   SIGNAL("editingFinished()"), lambda: self.val_changed("upper") )
+                                                                                        
 
                                                                              
     def _populate_effect_data(self):
@@ -102,8 +113,93 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.try_to_update_cur_outcome()
         self.set_current_effect()
         
-    def val_edit(self, val_str, display_scale_val):
-        ''' val_str is one of `est`, `lower`, `upper` '''
+    def val_changed(self, val_str):
+        def my_lt(a,b):
+            if _is_a_float(a) and _is_a_float(b):
+                return float(a) < float(b)
+            else:
+                return None
+        def between_bounds(est=self.curr_effect_tbox_text, 
+                           low=self.curr_low_tbox_text, 
+                           high=self.curr_high_tbox_text):
+            good_result = my_lt(low,est)
+            okay = True if not (good_result is None) else False
+            if okay and not good_result:
+                msg = "The lower CI must be less than the point estimate!"
+                QMessageBox.warning(self.parent(), "whoops", msg)
+                return False
+            
+            good_result = my_lt(est,high)
+            okay = True if not (good_result is None) else False
+            if okay and not good_result:
+                msg = "The higher CI must be greater than the point estimate!"
+                QMessageBox.warning(self.parent(), "whoops", msg)
+                return False
+            
+            good_result = my_lt(low,high)
+            okay = True if not (good_result is None) else False
+            if okay and not good_result:
+                msg = "The lower CI must be less than the higher CI!"
+                QMessageBox.warning(self.parent(), "whoops", msg)
+                return False
+            return True
+        
+        def block_box_signals(state):
+            self.effect_txt_box.blockSignals(state)
+            self.low_txt_box.blockSignals(state)
+            self.high_txt_box.blockSignals(state)
+        ###### ERROR CHECKING CODE#####
+        # Make sure entered value is numeric and between the appropriate bounds
+        block_box_signals(True)
+        float_msg = "Must be numeric!"
+        errorflag = False
+        if val_str == "est" and not _is_empty(self.candidate_est):
+            # Check type
+            if not _is_a_float(self.candidate_est) :
+                QMessageBox.warning(self.parent(), "whoops", float_msg)
+                errorflag = True
+            if not between_bounds(est=self.candidate_est):
+                errorflag = True
+            if errorflag:
+                self.effect_txt_box.setText(self.curr_effect_tbox_text)
+                self.candidate_est = self.curr_effect_tbox_text
+                self.effect_txt_box.setFocus()
+                block_box_signals(False)
+                return
+            display_scale_val = float(self.candidate_est)
+        elif val_str == "lower" and not _is_empty(self.candidate_lower):
+            if not _is_a_float(self.candidate_lower) :
+                QMessageBox.warning(self.parent(), "whoops", float_msg)
+                errorflag=True
+            if not between_bounds(low=self.candidate_lower):
+                errorflag=True
+            if errorflag:
+                self.low_txt_box.setText(self.curr_low_tbox_text)
+                self.candidate_lower = self.curr_low_tbox_text
+                self.low_txt_box.setFocus()
+                block_box_signals(False)
+                return
+            display_scale_val = float(self.candidate_lower)
+        elif val_str == "upper" and not _is_empty(self.candidate_upper): 
+            if not _is_a_float(self.candidate_upper) :
+                QMessageBox.warning(self.parent(), "whoops", float_msg)
+                errorflag=True
+            if not between_bounds(high=self.candidate_upper):
+                errorflag=True
+            if errorflag:
+                self.high_txt_box.setText(self.curr_high_tbox_text)
+                self.candidate_upper = self.curr_high_tbox_text
+                self.high_txt_box.setFocus()
+                block_box_signals(False)
+                return
+            display_scale_val = float(self.candidate_upper)
+            
+        block_box_signals(False)
+        # If we got to this point it means everything is ok so far
+    
+        self.curr_effect_tbox_text = self.effect_txt_box.text()
+        self.curr_low_tbox_text    = self.low_txt_box.text()
+        self.curr_high_tbox_text   = self.high_txt_box.text()
         
         try:
             display_scale_val = float(display_scale_val)
@@ -125,6 +221,18 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         else:
             self.ma_unit.set_upper(self.cur_effect, self.group_str, calc_scale_val)
             self.ma_unit.set_display_upper(self.cur_effect, self.group_str, display_scale_val)
+            
+    # Todo: Impute 2x2 from here if est,low,high all filled out
+
+    
+    def val_edit(self, val_str, display_scale_val):
+        print "Editing %s with value: %s" % (val_str,display_scale_val)
+        if val_str == "est":
+            self.candidate_est = display_scale_val
+        if val_str == "lower":
+            self.candidate_lower = display_scale_val
+        if val_str == "upper":
+            self.candidate_upper = display_scale_val
         
     def _update_raw_data(self):
         ''' Generates the 2x2 table with whatever parametric data was provided '''
@@ -171,6 +279,15 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         if int(celldata_string) < 0:
             return "Counts cannot be negative."
         return None
+    
+#    def _est_and_ci_not_valid(self, est, low, high):
+#        is_blank = lambda x: x=="" or x is None
+#        is_valid = lambda x: not is_blank(x) and _is_a_float(x)
+#        
+#        #have low and est
+#        if is_valid(low) and is_valid(est):
+#            if 
+            
         
     def _cell_changed(self, row, col):
         # tries to make sense of user input before passing
