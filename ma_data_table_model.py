@@ -374,10 +374,15 @@ class DatasetModel(QAbstractTableModel):
 
 
     def _verify_outcome_data(self, s, col, row, data_type):
-
         if not meta_globals._is_a_float(s):
             return False, "Outcomes need to be numeric, you crazy person"
 
+
+
+
+       # ma_unit = self.get_current_ma_unit_for_study(row)
+        #group_str = self.get_cur_group_str()
+        #prev_est, prev_lower, prev_upper = ma_unit.get_display_effect_and_ci(self.current_effect, group_str)
         # here we check if there is raw data for this study; 
         # if there is, we don't allow entry of outcomes
         if len(self.dataset.studies) > row:
@@ -392,6 +397,7 @@ class DatasetModel(QAbstractTableModel):
                 # they are tabbing along. probably a better fix would
                 # be to modify the actual tabbing behavior of the spreadsheet
                 # for the last 'raw data' column.
+                
                 ma_unit = self.get_current_ma_unit_for_study(row)
                 group_str = self.get_cur_group_str()
                 prev_est, prev_lower, prev_upper = ma_unit.get_display_effect_and_ci(self.current_effect, group_str)
@@ -422,6 +428,15 @@ class DatasetModel(QAbstractTableModel):
         if self.current_effect in ("OR", "RR"):
             if float(s) < 0:
                 return False, "Ratios cannot be negative."
+        
+#        if (data_type==DIAGNOSTIC):
+#            prev_est, prev_lower, prev_upper = ma_unit.get_display_effect_and_ci(self.current_effect, group_str)
+#            print "STUFF:", prev_est, prev_lower, prev_upper
+#            
+#            def is_between_bounds(est=self.prev_est, 
+#                              low=prev_lower, 
+#                              high=prev_upper):
+#                return meta_globals.between_bounds(parent=self.parent(), est=est, low=low, high=high)
 
         return True, None
 
@@ -604,15 +619,19 @@ class DatasetModel(QAbstractTableModel):
 
                             ma_unit.set_upper(self.current_effect, group_str, calc_scale_val)
                             ma_unit.set_display_upper(self.current_effect, group_str, display_scale_val)
-                    else:
-                        calc_scale_val = meta_py_r.diagnostic_convert_scale(display_scale_val, \
-                                                            self.current_effect, convert_to="calc.scale")
+                    else: #outcome is diagnostic
+
                         ma_unit = self.get_current_ma_unit_for_study(index.row())
                         # figure out if this column is sensitivity or specificity
                         m_str = "Sens"
                         if column in self.OUTCOMES[3:]:
                             # by convention, the last three columns are specificity
                             m_str = "Spec"
+
+                        if not display_scale_val in meta_globals.EMPTY_VALS:
+                            calc_scale_val = meta_py_r.diagnostic_convert_scale(display_scale_val, \
+                                                        m_str, convert_to="calc.scale")    
+                            
                         # now we switch on what outcome column we're on ... kind of ugly, but eh.
                         if column in (self.OUTCOMES[0], self.OUTCOMES[3]):
                             ma_unit.set_effect(m_str, group_str, calc_scale_val)

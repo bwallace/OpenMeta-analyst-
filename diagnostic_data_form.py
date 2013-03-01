@@ -324,36 +324,10 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         
         
     def val_changed(self, val_str):
-        def my_lt(a,b):
-            if _is_a_float(a) and _is_a_float(b):
-                return float(a) < float(b)
-            else:
-                return None
-        def between_bounds(est=self.curr_effect_tbox_text, 
-                           low=self.curr_low_tbox_text, 
-                           high=self.curr_high_tbox_text):
-            good_result = my_lt(low,est)
-            okay = True if not (good_result is None) else False
-            if okay and not good_result:
-                msg = "The lower CI must be less than the point estimate!"
-                QMessageBox.warning(self.parent(), "whoops", msg)
-                return False
-            
-            good_result = my_lt(est,high)
-            okay = True if not (good_result is None) else False
-            if okay and not good_result:
-                msg = "The higher CI must be greater than the point estimate!"
-                QMessageBox.warning(self.parent(), "whoops", msg)
-                return False
-            
-            good_result = my_lt(low,high)
-            okay = True if not (good_result is None) else False
-            if okay and not good_result:
-                msg = "The lower CI must be less than the higher CI!"
-                QMessageBox.warning(self.parent(), "whoops", msg)
-                return False
-            return True
-        
+        def is_between_bounds(est=self.curr_effect_tbox_text, 
+                              low=self.curr_low_tbox_text, 
+                              high=self.curr_high_tbox_text):
+            return meta_globals.between_bounds(parent=self.parent(), est=est, low=low, high=high)
         def block_box_signals(state):
             self.effect_txt_box.blockSignals(state)
             self.low_txt_box.blockSignals(state)
@@ -368,7 +342,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             if not _is_a_float(self.candidate_est) :
                 QMessageBox.warning(self.parent(), "whoops", float_msg)
                 errorflag = True
-            if not between_bounds(est=self.candidate_est):
+            if not is_between_bounds(est=self.candidate_est):
                 errorflag = True
             if errorflag:
                 self.effect_txt_box.setText(self.curr_effect_tbox_text)
@@ -381,7 +355,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             if not _is_a_float(self.candidate_lower) :
                 QMessageBox.warning(self.parent(), "whoops", float_msg)
                 errorflag=True
-            if not between_bounds(low=self.candidate_lower):
+            if not is_between_bounds(low=self.candidate_lower):
                 errorflag=True
             if errorflag:
                 self.low_txt_box.setText(self.curr_low_tbox_text)
@@ -394,7 +368,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             if not _is_a_float(self.candidate_upper) :
                 QMessageBox.warning(self.parent(), "whoops", float_msg)
                 errorflag=True
-            if not between_bounds(high=self.candidate_upper):
+            if not is_between_bounds(high=self.candidate_upper):
                 errorflag=True
             if errorflag:
                 self.high_txt_box.setText(self.curr_high_tbox_text)
@@ -434,15 +408,6 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         else:
             self.ma_unit.set_upper(self.cur_effect, self.group_str, calc_scale_val)
             self.ma_unit.set_display_upper(self.cur_effect, self.group_str, display_scale_val)
-########################
-#        # now we're going to set the effect estimate/CI on the MA object.
-#        for metric in DIAGNOSTIC_METRICS:
-#            est, lower, upper = ests_and_cis[metric]["calc_scale"]
-#            self.ma_unit.set_effect_and_ci(metric, self.group_str, est, lower, upper)
-#            
-#            disp_est, disp_lower, disp_upper = ests_and_cis[metric]["display_scale"]
-#            self.ma_unit.set_display_effect_and_ci(metric, self.group_str, disp_est, disp_lower, disp_upper)
-
 
         # Impute 2x2 from here
         print "imputing data!"
