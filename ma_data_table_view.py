@@ -275,10 +275,9 @@ class MADataTable(QtGui.QTableView):
         self._enable_analysis_menus_if_appropriate()
                                                
     def row_header_clicked(self, row):
-        print "SECTION CLICKED:", row
-        
-        
+        # fix for issue # 184
         self.vert_header.blockSignals(True)
+        
         # dispatch on the data type
         form = None
         study_index = row
