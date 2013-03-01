@@ -537,9 +537,9 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj",
     print "ok."
     return r_str
 
-def _sanitize_for_R(str):
+def _sanitize_for_R(a_str):
     # may want to do something fancier in the future...
-    return str.encode('latin-1', 'ignore')
+    return a_str.encode('latin-1', 'ignore')
 
 def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", \
                                             metric="Sens", covs_to_include=None,

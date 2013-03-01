@@ -377,48 +377,52 @@ class DatasetModel(QAbstractTableModel):
         if not meta_globals._is_a_float(s):
             return False, "Outcomes need to be numeric, you crazy person"
 
-
-
-
-       # ma_unit = self.get_current_ma_unit_for_study(row)
-        #group_str = self.get_cur_group_str()
-        #prev_est, prev_lower, prev_upper = ma_unit.get_display_effect_and_ci(self.current_effect, group_str)
+        ma_unit = self.get_current_ma_unit_for_study(row)
+        group_str = self.get_cur_group_str()
+        
+        
+        if data_type == BINARY or data_type == CONTINUOUS:
+            prev_est, prev_lower, prev_upper = ma_unit.get_display_effect_and_ci(self.current_effect, group_str)
+        elif data_type == DIAGNOSTIC:
+            m_str = "Sens" if col in self.OUTCOMES[:3] else "Spec"
+            prev_est, prev_lower, prev_upper = ma_unit.get_display_effect_and_ci(m_str, group_str)
+            
         # here we check if there is raw data for this study; 
         # if there is, we don't allow entry of outcomes
-        if len(self.dataset.studies) > row:
-            raw_data = self.get_cur_raw_data_for_study(row)
-
-            if not all([meta_globals._is_empty(s_i) for s_i in raw_data]):
-                # fix for issue #180 
-                # sort of hacky. we check here to see if the outcome
-                # in fact was "changed", by which we mean the value
-                # has been set to a 'sufficiently' different
-                # value. this avoids the UI annoyingly bugging users when
-                # they are tabbing along. probably a better fix would
-                # be to modify the actual tabbing behavior of the spreadsheet
-                # for the last 'raw data' column.
+        ###########if len(self.dataset.studies) > row: ## DELETE REMOVE GD
+        raw_data = self.get_cur_raw_data_for_study(row)
+    
+        if not all([meta_globals._is_empty(s_i) for s_i in raw_data]):
+            # fix for issue #180 
+            # sort of hacky. we check here to see if the outcome
+            # in fact was "changed", by which we mean the value
+            # has been set to a 'sufficiently' different
+            # value. this avoids the UI annoyingly bugging users when
+            # they are tabbing along. probably a better fix would
+            # be to modify the actual tabbing behavior of the spreadsheet
+            # for the last 'raw data' column.
+            
+            #ma_unit = self.get_current_ma_unit_for_study(row)
+            #group_str = self.get_cur_group_str()
+            #prev_est, prev_lower, prev_upper = ma_unit.get_display_effect_and_ci(self.current_effect, group_str)
+            
+            d = dict(zip(self.OUTCOMES, [prev_est, prev_lower, prev_upper]))
+            new_val = float(s)
+            previously_was_none = d[col] is None
+            delta = None
+            if previously_was_none:
+                # then it was previously not set;
+                # go ahead and let the user override.
+                delta = float("-inf")
+            else:
+                delta = abs(new_val - d[col])
+                print "new val {0}, prev val {1}".format(new_val, d[col])
+                print "DELTA {0}".format(delta)
+            
+            epsilon = 10E-6 
+            if delta > epsilon:
+                return False, '''You have already entered raw data for this study. If you want to enter the outcome directly, delete the raw data first.'''
                 
-                ma_unit = self.get_current_ma_unit_for_study(row)
-                group_str = self.get_cur_group_str()
-                prev_est, prev_lower, prev_upper = ma_unit.get_display_effect_and_ci(self.current_effect, group_str)
-                
-                d = dict(zip(self.OUTCOMES, [prev_est, prev_lower, prev_upper]))
-                new_val = float(s)
-                previously_was_none = d[col] is None
-                delta = None
-                if previously_was_none:
-                    # then it was previously not set;
-                    # go ahead and let the user override.
-                    delta = float("-inf")
-                else:
-                    delta = abs(new_val - d[col])
-                    print "new val {0}, prev val {1}".format(new_val, d[col])
-                    print "DELTA {0}".format(delta)
-                
-                epsilon = 10E-6 
-                if delta > epsilon:
-                    return False, '''You have already entered raw data for this study. If you want to enter the outcome directly, delete the raw data first.'''
-
 
         if s.trimmed() == '':
             # in this case, they've deleted a value
@@ -429,14 +433,31 @@ class DatasetModel(QAbstractTableModel):
             if float(s) < 0:
                 return False, "Ratios cannot be negative."
         
-#        if (data_type==DIAGNOSTIC):
-#            prev_est, prev_lower, prev_upper = ma_unit.get_display_effect_and_ci(self.current_effect, group_str)
-#            print "STUFF:", prev_est, prev_lower, prev_upper
-#            
-#            def is_between_bounds(est=self.prev_est, 
-#                              low=prev_lower, 
-#                              high=prev_upper):
-#                return meta_globals.between_bounds(parent=self.parent(), est=est, low=low, high=high)
+        #figure out why type of column we are in
+        fields = ["est","lower","upper"]
+        if data_type == DIAGNOSTIC:
+            fields.extend(fields[:])
+ 
+        col_to_type = dict(zip(self.OUTCOMES,fields))
+ 
+        val_str = col_to_type[col]
+            
+        def is_between_bounds(est=prev_est, 
+                              low=prev_lower, 
+                              high=prev_upper):
+            return meta_globals.between_bounds(est=est, low=low, high=high)
+        
+        good_result = None
+        if val_str == "est":
+            (good_result,msg) = is_between_bounds(est=float(s))
+        elif val_str == "lower":
+            (good_result,msg) = is_between_bounds(low=float(s))
+        elif val_str == "upper":
+            (good_result,msg) = is_between_bounds(high=float(s))
+        assert not good_result is None, "Why don't we have a result for what outcome we're in?"
+        
+        if not good_result:
+            return False, msg
 
         return True, None
 
@@ -560,62 +581,17 @@ class DatasetModel(QAbstractTableModel):
                                                         
                         ma_unit = self.get_current_ma_unit_for_study(index.row())
                         
-                        ###
-                        # note -- we check here with regards to verifying confidence
-                        # intervals, because it was easier to integrate this check here,
-                        # rather than in _verify_outcome_data (e.g., we already check
-                        # if we're updating the lower, est or upper). perhaps this is more
-                        # tightly coupled than ideal.
-                        ###
                         # est, lower, upper
                         cur_est, cur_lower, cur_upper = ma_unit.get_effect_and_ci(self.current_effect, group_str)
         
-                        if column == self.OUTCOMES[0]:
-                            # estimate better be between lower, upper!
-                            point_est_ok = True
-                            if display_scale_val is not None:
-                                if cur_lower is not None and cur_lower > calc_scale_val:
-                                    point_est_ok = False
-                                if cur_upper is not None and cur_upper < calc_scale_val:
-                                    point_est_ok = False
-
-                                if not point_est_ok:
-                                    msg = "You entered a point estimate that isn't between your lower and upper CIs!"
-                                    self.emit(SIGNAL("dataError(QString)"), QString(msg))
-                                    return False
-
+                        if column == self.OUTCOMES[0]: # estimate
                             ma_unit.set_effect(self.current_effect, group_str, calc_scale_val)
                             ma_unit.set_display_effect(self.current_effect, group_str, display_scale_val)
-
-                        elif column == self.OUTCOMES[1]:
-                            # lower
-                            lower_ok = True
-                            if display_scale_val is not None:
-                                if cur_est is not None and cur_est < calc_scale_val:
-                                    lower_ok = False
-                                if cur_upper is not None and cur_upper < calc_scale_val:
-                                    lower_ok = False
-
-                                if not lower_ok:
-                                    msg = "You entered a lower bound that is greater than your upper bound or point estimate!"
-                                    self.emit(SIGNAL("dataError(QString)"), QString(msg))
-                                    return False
-
+                            
+                        elif column == self.OUTCOMES[1]: #lower
                             ma_unit.set_lower(self.current_effect, group_str, calc_scale_val)
                             ma_unit.set_display_lower(self.current_effect, group_str, display_scale_val)
-                        else:
-                            # upper
-                            upper_ok = True
-                            if display_scale_val is not None:
-                                if cur_est is not None and cur_est > calc_scale_val:
-                                    upper_ok = False
-                                if cur_upper is not None and cur_lower > calc_scale_val:
-                                    upper_ok = False
-
-                                if not upper_ok:
-                                    msg = "You entered an upper bound that is lower than your lower bound or point estimate!"
-                                    self.emit(SIGNAL("dataError(QString)"), QString(msg))
-                                    return False
+                        else: #upper
 
                             ma_unit.set_upper(self.current_effect, group_str, calc_scale_val)
                             ma_unit.set_display_upper(self.current_effect, group_str, display_scale_val)

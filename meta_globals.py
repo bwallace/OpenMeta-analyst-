@@ -10,7 +10,7 @@
 ######################################
 
 import os
-from PyQt4.Qt import QMessageBox
+#from PyQt4.Qt import QMessageBox
 
 # number of digits to display
 NUM_DIGITS = 3
@@ -156,28 +156,25 @@ def my_lt(a,b):
         return float(a) < float(b)
     else:
         return None
-def between_bounds(parent = None,
-                   est=None, 
+def between_bounds(est=None, 
                    low=None, 
                    high=None):
     good_result = my_lt(low,est)
     okay = True if not (good_result is None) else False
     if okay and not good_result:
         msg = "The lower CI must be less than the point estimate!"
-        QMessageBox.warning(parent, "whoops", msg)
-        return False
+        return False,msg
     
     good_result = my_lt(est,high)
     okay = True if not (good_result is None) else False
     if okay and not good_result:
         msg = "The higher CI must be greater than the point estimate!"
-        QMessageBox.warning(parent, "whoops", msg)
-        return False
+        return False,msg
     
     good_result = my_lt(low,high)
     okay = True if not (good_result is None) else False
     if okay and not good_result:
         msg = "The lower CI must be less than the higher CI!"
-        QMessageBox.warning(parent, "whoops", msg)
-        return False
-    return True
+        return False,msg
+    
+    return True,None

@@ -13,7 +13,7 @@
 import pdb
 
 from PyQt4.Qt import *
-from PyQt4 import QtGui
+#from PyQt4 import QtGui
 
 import meta_py_r
 import meta_globals
@@ -151,8 +151,8 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
 
     def _cell_changed(self, i, j):
         (row,col) = (i,j)
-        print "previous cell data:",self.current_item_data
-        print "new cell data:", self.two_by_two_table.item(row, col).text()
+        ##print "previous cell data:",self.current_item_data
+        ##print "new cell data:", self.two_by_two_table.item(row, col).text()
         
         new_num_not_valid = self._cell_data_not_valid(self.two_by_two_table.item(row, col).text())
         # Test if entered data is valid (a number)
@@ -164,9 +164,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             self._set_val(row, col, self.current_item_data)
             self.two_by_two_table.blockSignals(False)
             return
-        
-        
-        
+    
         new_val = self._get_int(i, j)
         if new_val is not None:
             # make sensitivity and specificity calculations work...
@@ -174,9 +172,6 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             self.impute_effects_in_ma_unit()
             self.set_current_effect()
             self.impute_data() # 2x2 table --> ma_unit
-            
-        
-            
 
     def impute_data(self):
         diag_data_dict = self.build_dict()
@@ -327,7 +322,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         def is_between_bounds(est=self.curr_effect_tbox_text, 
                               low=self.curr_low_tbox_text, 
                               high=self.curr_high_tbox_text):
-            return meta_globals.between_bounds(parent=self.parent(), est=est, low=low, high=high)
+            return meta_globals.between_bounds(est=est, low=low, high=high)
         def block_box_signals(state):
             self.effect_txt_box.blockSignals(state)
             self.low_txt_box.blockSignals(state)
@@ -342,7 +337,9 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             if not _is_a_float(self.candidate_est) :
                 QMessageBox.warning(self.parent(), "whoops", float_msg)
                 errorflag = True
-            if not is_between_bounds(est=self.candidate_est):
+            (good_result,msg) = is_between_bounds(est=self.candidate_est)
+            if not good_result:
+                QMessageBox.warning(self.parent(), "whoops", msg)
                 errorflag = True
             if errorflag:
                 self.effect_txt_box.setText(self.curr_effect_tbox_text)
@@ -355,7 +352,9 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             if not _is_a_float(self.candidate_lower) :
                 QMessageBox.warning(self.parent(), "whoops", float_msg)
                 errorflag=True
-            if not is_between_bounds(low=self.candidate_lower):
+            (good_result,msg) = is_between_bounds(low=self.candidate_lower)
+            if not good_result:
+                QMessageBox.warning(self.parent(), "whoops", msg)
                 errorflag=True
             if errorflag:
                 self.low_txt_box.setText(self.curr_low_tbox_text)
@@ -368,7 +367,9 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             if not _is_a_float(self.candidate_upper) :
                 QMessageBox.warning(self.parent(), "whoops", float_msg)
                 errorflag=True
-            if not is_between_bounds(high=self.candidate_upper):
+            (good_result,msg) = is_between_bounds(high=self.candidate_upper)
+            if not good_result:
+                QMessageBox.warning(self.parent(), "whoops", msg)
                 errorflag=True
             if errorflag:
                 self.high_txt_box.setText(self.curr_high_tbox_text)
@@ -396,8 +397,6 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         calc_scale_val = meta_py_r.binary_convert_scale(display_scale_val, \
                                         self.cur_effect, convert_to="calc.scale")
         
-    
-        # LEFT OVER FROM COPY AND PASTE FROM BIN AND CONT, USE LATER......
         if val_str == "est":
             self.ma_unit.set_effect(self.cur_effect, self.group_str, calc_scale_val)
             self.ma_unit.set_display_effect(self.cur_effect, self.group_str, display_scale_val)
