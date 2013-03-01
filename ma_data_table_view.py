@@ -50,8 +50,8 @@ class MADataTable(QtGui.QTableView):
         header = self.horizontalHeader()
         self.connect(header, SIGNAL("sectionClicked(int)"), self.header_clicked)
 
-        vert_header = self.verticalHeader()
-        self.connect(vert_header, SIGNAL("sectionClicked(int)"), \
+        self.vert_header = self.verticalHeader()
+        self.connect(self.vert_header, SIGNAL("sectionClicked(int)"), \
                             self.row_header_clicked)
     
         ## TODO need to add covariate indices here, as needed
@@ -275,6 +275,10 @@ class MADataTable(QtGui.QTableView):
         self._enable_analysis_menus_if_appropriate()
                                                
     def row_header_clicked(self, row):
+        print "SECTION CLICKED:", row
+        
+        
+        self.vert_header.blockSignals(True)
         # dispatch on the data type
         form = None
         study_index = row
@@ -322,6 +326,7 @@ class MADataTable(QtGui.QTableView):
             if form.exec_():
                 ma_edit = CommandEditMAUnit(self, study_index, ma_unit, old_ma_unit)
                 self.undoStack.push(ma_edit)
+        self.vert_header.blockSignals(False)
 
     def rowMoved(self, row, oldIndex, newIndex):
         pass

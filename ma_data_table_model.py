@@ -619,8 +619,6 @@ class DatasetModel(QAbstractTableModel):
                             ma_unit.set_upper(m_str, group_str, calc_scale_val)
                             ma_unit.set_display_upper(m_str, group_str, display_scale_val)
                         
-                
-
             elif column == self.INCLUDE_STUDY:
                 study.include = value.toBool()
                 # we keep note if a study was manually 
