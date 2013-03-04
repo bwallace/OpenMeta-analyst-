@@ -1,7 +1,8 @@
 ######################################
 #                                    #       
 #  Byron C. Wallace                  #
-#  Tufts Medical Center              # 
+#  George Dietz                      #
+#  CEBM @ Brown                      # 
 #  OpenMeta[analyst]                 # 
 #                                    # 
 #  Contains globals used             #
@@ -10,11 +11,9 @@
 ######################################
 
 import os
+
 import meta_py_r
 from PyQt4.Qt import QColor, QDialogButtonBox
-#from PyQt4.QtGui import
-
-#from PyQt4.Qt import QMessageBox
 
 # number of digits to display
 NUM_DIGITS = 3
@@ -150,10 +149,6 @@ def _is_an_int(s):
     
 def is_NaN(x):
     return x != x
-
-
-
-
 
 
 

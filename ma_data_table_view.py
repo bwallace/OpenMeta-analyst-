@@ -1,6 +1,7 @@
 #############################################################
 #  Byron C. Wallace                                         #
-#  Brown University                                         #
+#  George Dietz                                             #
+#  CEBM @ Brown                                             #
 #  OpenMeta(analyst)                                        #
 #                                                           #
 #                                                           #
@@ -8,7 +9,6 @@
 #############################################################
 
 import pdb
-#import copy
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.Qt import *
@@ -25,7 +25,6 @@ import diagnostic_data_form
 import ma_dataset
 from ma_dataset import *
 from meta_globals import *
-
 
 # for issue #169 -- normalizing new lines, e.g., for pasting
 # use QRegExp to manipulate QStrings (rather than re)
@@ -66,8 +65,6 @@ class MADataTable(QtGui.QTableView):
         headers.setContextMenuPolicy(Qt.CustomContextMenu)
         headers.customContextMenuRequested.connect(self.header_context_menu)
 
-
-    
     def _make_context_menu(self):
         def _context_menu(event):
             context_menu = QMenu(self)
@@ -374,15 +371,6 @@ class MADataTable(QtGui.QTableView):
                     self.set_metric_in_ui(default_metric)
                     return (True, original_metric)
         return (False,  original_metric)
-
-    # Broken code, doesn't seem to be called from anywhere else but keeping
-    #   around until told otherwise
-#    def _data_for_only_one_group(self):
-#        study_index = row
-#        ma_unit = self.model().get_current_ma_unit_for_study(study_index)
-#        old_ma_unit = copy.deepcopy(ma_unit)
-#        cur_txs = self.model().current_txs
-#        cur_effect = self.model().current_effect
 
 
     def get_covariate_columns(self):
@@ -838,8 +826,9 @@ class CommandEditMAUnit(QUndoCommand):
 
     def redo(self):
         self.model.set_current_ma_unit_for_study(self.study_index, self.new_ma_unit)
-        self.model.try_to_update_outcomes()
         self.model.reset()
+        self.model.try_to_update_outcomes()
+        
         #self.table_view.model().reset()
         self.table_view.resizeColumnsToContents()
         self.ma_data_table_view.emit(SIGNAL("dataDirtied()"))

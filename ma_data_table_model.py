@@ -1,7 +1,8 @@
 #########################################################################################
 #                                                                                       #
 #  Byron C. Wallace                                                                     #
-#  Tufts Medical Center                                                                 #
+#  George Dietz                                                                         #
+#  CEBM @ Brown                                                                         #
 #  OpenMeta[analyst]                                                                    #
 #  ---                                                                                  #
 #  Proxy class, interfaces between the underlying representation (in ma_dataset.py)     #
@@ -19,13 +20,13 @@ from PyQt4.QtCore import pyqtRemoveInputHook
 import pdb
 
 # home-grown
-#import ma_dataset
-#from ma_dataset import *
 from ma_dataset import Dataset,Outcome,Study,Covariate
 import meta_py_r
 import meta_globals 
 from meta_globals import *
 
+# number of (empty) rows in the spreadsheet to show
+# following the last study.
 DUMMY_ROWS = 20
 
 class DatasetModel(QAbstractTableModel):
@@ -348,15 +349,11 @@ class DatasetModel(QAbstractTableModel):
         (row,col) = (index_of_s.row(), index_of_s.column())
         if data_type == BINARY:
             if col in [3,5]: # col is TxA or TxB
-                #print "Events just entered:" , s
-                #print "Number of samples:" , self.data(self.index(row, col+1)).toString()
                 N_samples = self.data(self.index(row, col+1)).toString() # string representation of N_samples
                 if meta_globals._is_an_int(N_samples):
                     if int(s) > int(N_samples): #uh oh
                         return False, msg
             elif col in [4,6]: # col is N_A or N_B
-                #print "N_samples just entered:" , s
-                #print "Number of events:" , self.data(self.index(row, col-1)).toString()
                 N_events = self.data(self.index(row, col-1)).toString()
                 if meta_globals._is_an_int(N_events):
                     if int(s) < int(N_events):
@@ -389,7 +386,6 @@ class DatasetModel(QAbstractTableModel):
             
         # here we check if there is raw data for this study; 
         # if there is, we don't allow entry of outcomes
-        ###########if len(self.dataset.studies) > row: ## DELETE REMOVE GD
         raw_data = self.get_cur_raw_data_for_study(row)
     
         if not all([meta_globals._is_empty(s_i) for s_i in raw_data]):
@@ -401,11 +397,6 @@ class DatasetModel(QAbstractTableModel):
             # they are tabbing along. probably a better fix would
             # be to modify the actual tabbing behavior of the spreadsheet
             # for the last 'raw data' column.
-            
-            #ma_unit = self.get_current_ma_unit_for_study(row)
-            #group_str = self.get_cur_group_str()
-            #prev_est, prev_lower, prev_upper = ma_unit.get_display_effect_and_ci(self.current_effect, group_str)
-            
             d = dict(zip(self.OUTCOMES, [prev_est, prev_lower, prev_upper]))
             new_val = float(s)
             previously_was_none = d[col] is None
@@ -422,7 +413,6 @@ class DatasetModel(QAbstractTableModel):
             epsilon = 10E-6 
             if delta > epsilon:
                 return False, '''You have already entered raw data for this study. If you want to enter the outcome directly, delete the raw data first.'''
-                
 
         if s.trimmed() == '':
             # in this case, they've deleted a value
@@ -587,16 +577,13 @@ class DatasetModel(QAbstractTableModel):
                         if column == self.OUTCOMES[0]: # estimate
                             ma_unit.set_effect(self.current_effect, group_str, calc_scale_val)
                             ma_unit.set_display_effect(self.current_effect, group_str, display_scale_val)
-                            
                         elif column == self.OUTCOMES[1]: #lower
                             ma_unit.set_lower(self.current_effect, group_str, calc_scale_val)
                             ma_unit.set_display_lower(self.current_effect, group_str, display_scale_val)
                         else: #upper
-
                             ma_unit.set_upper(self.current_effect, group_str, calc_scale_val)
                             ma_unit.set_display_upper(self.current_effect, group_str, display_scale_val)
                     else: #outcome is diagnostic
-
                         ma_unit = self.get_current_ma_unit_for_study(index.row())
                         # figure out if this column is sensitivity or specificity
                         m_str = "Sens"
@@ -648,11 +635,9 @@ class DatasetModel(QAbstractTableModel):
             # and new values were. This for undo/redo purposes.
             new_val = self.data(index)
 
-
             self.emit(SIGNAL("pyCellContentChanged(PyQt_PyObject, PyQt_PyObject, PyQt_PyObject, PyQt_PyObject)"), 
                                index, old_val, new_val, study_added_due_to_edit)
          
-
             if not self.is_diag():
                 group_str = self.get_cur_group_str()
 

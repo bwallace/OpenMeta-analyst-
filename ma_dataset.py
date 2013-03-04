@@ -1,7 +1,8 @@
 #############################################################################################
 #                                                                                           #                
-#  Byron C. Wallace                                                                         #  
-#  Tufts Medical Center                                                                     # 
+#  Byron C. Wallace                                                                         # 
+#  George Dietz                                                                             #
+#  CEBM @ Brown                                                                             # 
 #  OpenMeta[analyst]                                                                        # 
 #                                                                                           # 
 #  Dataset module; a roll your own back end. This is a model for manipulating               # 
