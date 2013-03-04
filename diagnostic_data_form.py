@@ -149,8 +149,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
                 pass
     
 
-    def _cell_changed(self, i, j):
-        (row,col) = (i,j)
+    def _cell_changed(self, row, col):
         ##print "previous cell data:",self.current_item_data
         ##print "new cell data:", self.two_by_two_table.item(row, col).text()
         
@@ -165,7 +164,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             self.two_by_two_table.blockSignals(False)
             return
     
-        new_val = self._get_int(i, j)
+        new_val = self._get_int(row, col)
         if new_val is not None:
             # make sensitivity and specificity calculations work...
             #   does impute_diag_data try and fail to do this? GD

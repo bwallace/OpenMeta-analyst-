@@ -178,3 +178,15 @@ def between_bounds(est=None,
         return False,msg
     
     return True,None
+
+def cast_to_int(value, name=None):
+    '''Converts value to int if possible'''
+    try:
+        rounded = round(float(value))
+        return int(rounded)
+    except:
+        if not name is None:
+            print("Could not convert %s='%s' to int" % (name,str(value)))
+        else:
+            print("Could not convert '%s' to int" % (str(value)))
+        return None
