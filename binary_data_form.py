@@ -14,7 +14,8 @@ from PyQt4.QtGui import *
 
 import meta_py_r
 import meta_globals
-from meta_globals import BINARY_ONE_ARM_METRICS, BINARY_TWO_ARM_METRICS
+from meta_globals import (BINARY_ONE_ARM_METRICS, BINARY_TWO_ARM_METRICS,
+                          _is_a_float, _is_empty, EMPTY_VALS, cast_to_int)
 
 import ui_binary_data_form
 #from ui_binary_data_form import Ui_BinaryDataForm
@@ -61,6 +62,17 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         # used for checking the data we attempt to set is good
         self.current_item_data = self._get_int(self.raw_data_table.currentRow(),self.raw_data_table.currentColumn())
         
+        # for validation on text boxes
+        self.curr_effect_tbox_text = self.effect_txt_box.text()
+        self.curr_low_tbox_text    = self.low_txt_box.text()
+        self.curr_high_tbox_text  = self.high_txt_box.text()
+        (self.candidate_est,self.candidate_lower,self.candidate_upper) = (None,None,None)
+        
+        
+        ### TEMPORARILY HIDE FOR PRESENTATION:
+        self.pval_lbl.setVisible(False)
+        self.effect_p_txt_box.setVisible(False)
+        
     @pyqtSignature("int, int, int, int")
     def on_raw_data_table_currentCellChanged(self,currentRow,currentColumn,previousRow,previousColumn):
         self.current_item_data = self._get_int(currentRow,currentColumn)
@@ -71,10 +83,15 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                                                     self._cell_changed)
         QObject.connect(self.effect_cbo_box, SIGNAL("currentIndexChanged(QString)"),
                                                     self.effect_changed) 
-                                                                                
-        QObject.connect(self.effect_txt_box, SIGNAL("textChanged(QString)"), lambda new_text : self.val_edit("est", new_text))
-        QObject.connect(self.low_txt_box, SIGNAL("textChanged(QString)"), lambda new_text : self.val_edit("lower", new_text))
-        QObject.connect(self.high_txt_box, SIGNAL("textChanged(QString)"), lambda new_text : self.val_edit("upper", new_text))                                                                                            
+        
+        QObject.connect(self.effect_txt_box, SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("est", new_text))
+        QObject.connect(self.low_txt_box,    SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("lower", new_text))
+        QObject.connect(self.high_txt_box,   SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("upper", new_text))
+        
+        QObject.connect(self.effect_txt_box, SIGNAL("editingFinished()"), lambda: self.val_changed("est")   )
+        QObject.connect(self.low_txt_box,    SIGNAL("editingFinished()"), lambda: self.val_changed("lower") )
+        QObject.connect(self.high_txt_box,   SIGNAL("editingFinished()"), lambda: self.val_changed("upper") )
+                                                                                        
 
                                                                              
     def _populate_effect_data(self):
@@ -102,8 +119,93 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.try_to_update_cur_outcome()
         self.set_current_effect()
         
-    def val_edit(self, val_str, display_scale_val):
-        ''' val_str is one of `est`, `lower`, `upper` '''
+    def val_changed(self, val_str):
+        def my_lt(a,b):
+            if _is_a_float(a) and _is_a_float(b):
+                return float(a) < float(b)
+            else:
+                return None
+        def between_bounds(est=self.curr_effect_tbox_text, 
+                           low=self.curr_low_tbox_text, 
+                           high=self.curr_high_tbox_text):
+            good_result = my_lt(low,est)
+            okay = True if not (good_result is None) else False
+            if okay and not good_result:
+                msg = "The lower CI must be less than the point estimate!"
+                QMessageBox.warning(self.parent(), "whoops", msg)
+                return False
+            
+            good_result = my_lt(est,high)
+            okay = True if not (good_result is None) else False
+            if okay and not good_result:
+                msg = "The higher CI must be greater than the point estimate!"
+                QMessageBox.warning(self.parent(), "whoops", msg)
+                return False
+            
+            good_result = my_lt(low,high)
+            okay = True if not (good_result is None) else False
+            if okay and not good_result:
+                msg = "The lower CI must be less than the higher CI!"
+                QMessageBox.warning(self.parent(), "whoops", msg)
+                return False
+            return True
+        
+        def block_box_signals(state):
+            self.effect_txt_box.blockSignals(state)
+            self.low_txt_box.blockSignals(state)
+            self.high_txt_box.blockSignals(state)
+        ###### ERROR CHECKING CODE#####
+        # Make sure entered value is numeric and between the appropriate bounds
+        block_box_signals(True)
+        float_msg = "Must be numeric!"
+        errorflag = False
+        if val_str == "est" and not _is_empty(self.candidate_est):
+            # Check type
+            if not _is_a_float(self.candidate_est) :
+                QMessageBox.warning(self.parent(), "whoops", float_msg)
+                errorflag = True
+            if not between_bounds(est=self.candidate_est):
+                errorflag = True
+            if errorflag:
+                self.effect_txt_box.setText(self.curr_effect_tbox_text)
+                self.candidate_est = self.curr_effect_tbox_text
+                self.effect_txt_box.setFocus()
+                block_box_signals(False)
+                return
+            display_scale_val = float(self.candidate_est)
+        elif val_str == "lower" and not _is_empty(self.candidate_lower):
+            if not _is_a_float(self.candidate_lower) :
+                QMessageBox.warning(self.parent(), "whoops", float_msg)
+                errorflag=True
+            if not between_bounds(low=self.candidate_lower):
+                errorflag=True
+            if errorflag:
+                self.low_txt_box.setText(self.curr_low_tbox_text)
+                self.candidate_lower = self.curr_low_tbox_text
+                self.low_txt_box.setFocus()
+                block_box_signals(False)
+                return
+            display_scale_val = float(self.candidate_lower)
+        elif val_str == "upper" and not _is_empty(self.candidate_upper): 
+            if not _is_a_float(self.candidate_upper) :
+                QMessageBox.warning(self.parent(), "whoops", float_msg)
+                errorflag=True
+            if not between_bounds(high=self.candidate_upper):
+                errorflag=True
+            if errorflag:
+                self.high_txt_box.setText(self.curr_high_tbox_text)
+                self.candidate_upper = self.curr_high_tbox_text
+                self.high_txt_box.setFocus()
+                block_box_signals(False)
+                return
+            display_scale_val = float(self.candidate_upper)
+            
+        block_box_signals(False)
+        # If we got to this point it means everything is ok so far
+    
+        self.curr_effect_tbox_text = self.effect_txt_box.text()
+        self.curr_low_tbox_text    = self.low_txt_box.text()
+        self.curr_high_tbox_text   = self.high_txt_box.text()
         
         try:
             display_scale_val = float(display_scale_val)
@@ -125,6 +227,18 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         else:
             self.ma_unit.set_upper(self.cur_effect, self.group_str, calc_scale_val)
             self.ma_unit.set_display_upper(self.cur_effect, self.group_str, display_scale_val)
+            
+    # Todo: Impute 2x2 from here if est,low,high all filled out
+
+    
+    def val_edit(self, val_str, display_scale_val):
+        print "Editing %s with value: %s" % (val_str,display_scale_val)
+        if val_str == "est":
+            self.candidate_est = display_scale_val
+        if val_str == "lower":
+            self.candidate_lower = display_scale_val
+        if val_str == "upper":
+            self.candidate_upper = display_scale_val
         
     def _update_raw_data(self):
         ''' Generates the 2x2 table with whatever parametric data was provided '''
@@ -144,7 +258,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.raw_data_table.blockSignals(False)
       
     def _update_ma_unit(self):
-        ''' Copy data from binary data form table to the MA_unit'''
+        ''' Copy data from binary data table to the MA_unit'''
         ''' 
         Walk over the entries in the matrix (which may have been updated
         via imputation in the _cell_changed method) corresponding to the 
@@ -171,15 +285,23 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         if int(celldata_string) < 0:
             return "Counts cannot be negative."
         return None
+    
+#    def _est_and_ci_not_valid(self, est, low, high):
+#        is_blank = lambda x: x=="" or x is None
+#        is_valid = lambda x: not is_blank(x) and _is_a_float(x)
+#        
+#        #have low and est
+#        if is_valid(low) and is_valid(est):
+#            if 
+            
         
     def _cell_changed(self, row, col):
         # tries to make sense of user input before passing
         # on to the R routine
         
         #######int_val = int(float(self.raw_data_table.item(i, j).text()))
-        
-        print "previous cell data:",self.current_item_data
-        print "new cell data:", self.raw_data_table.item(row, col).text()
+        #print "previous cell data:",self.current_item_data
+        #print "new cell data:", self.raw_data_table.item(row, col).text()
         
         new_num_not_valid = self._cell_data_not_valid(self.raw_data_table.item(row, col).text())
         # Test if entered data is valid (a number)
@@ -192,26 +314,17 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             self.raw_data_table.blockSignals(False)
             return
         
-        # Used to be _fillin_basics _fillin_basics(self, row, col):
-        self._update_ma_unit() # table --> ma_unit
-        # _update_raw_data results in the 1,0 being "None"
-        self._update_raw_data() # ma_unit --> table
-        ####self._update_data_table()  # comment out to see if new R fillin.2x2.simpler works
-        #self.check_for_consistencies()
-        
-        
         params = self._get_vals()
         print "Params: ", params
         
         computed_parameters = self._compute_2x2_table(params)
         if computed_parameters:
+            print("Computed Parameters:",computed_parameters)
             self._set_vals(computed_parameters) # computed --> table widget
         self.current_item_data = self._get_int(row,col) # For verification
         ## TODO OVERWRITE table widget item value with given value instead of that obtained from the regression    
             
-            
         self.check_for_consistencies()
-        
         
         # need to try and update metric here     
         self._update_ma_unit() # table widget --> ma_unit
@@ -254,10 +367,10 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         is_NaN = lambda x: x != x
         
         # need this to reset empty cells
-        if val is None or val == "":
+        if val in EMPTY_VALS:
             self._set_table_cell(i, j, val)
             return
-        if not is_NaN(val) and val >= 0:
+        if not is_NaN(val): # and val >= 0: # want to make errors more explicit
             self._set_table_cell(i, j, val)
         
     def _set_table_cell(self, i, j, val):
@@ -269,6 +382,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         try:
             val = int(round(val))
         except:
+            print("Could not cast to an int from within _set_table_cell")
             pass
         self.raw_data_table.setItem(i, j, QTableWidgetItem(str(val)))     
         
@@ -284,6 +398,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.inconsistent = False
         self.check_that_rows_sum()
         self.check_that_cols_sum()
+        self.check_that_values_positive()
         
         if self.inconsistent:
             #show label, disable OK buttonbox button
@@ -304,8 +419,6 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                     self.inconsistent = True
                     
     def check_that_cols_sum(self):
-        # TODO
-        pass
         for col in range(3):
             if self._col_is_populated(col):
                 col_sum = 0
@@ -314,7 +427,20 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                 if not col_sum == self._get_int(2,col):
                     self._color_col(col)
                     self.inconsistent = True
-        
+                    
+    def check_that_values_positive(self):
+        for row in range(3):
+            for col in range(3):
+                value = self._get_int(row,col)
+                if not value in EMPTY_VALS:
+                    if value < 0:
+                        # Color item
+                        self.raw_data_table.blockSignals(True)
+                        self.raw_data_table.item(row,col).setTextColor(ERROR_COLOR)
+                        self.blockSignals(False)
+                        # Set flag
+                        self.inconsistent = True
+                        
     def _color_all(self, color=ERROR_COLOR):
         self.raw_data_table.blockSignals(True)
         for row in range(3):
@@ -329,18 +455,16 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         
     def _color_row(self, row):
         self.raw_data_table.blockSignals(True)
-        error_color = QColor("red")
         for col in range(3):
             print "setting row: %s, col: %s" % (row, col)
-            self.raw_data_table.item(row, col).setTextColor(error_color)
+            self.raw_data_table.item(row, col).setTextColor(ERROR_COLOR)
         self.raw_data_table.blockSignals(False)
         
     def _color_col(self, col):
         self.raw_data_table.blockSignals(True)
-        error_color = QColor("red")
         for row in range(3):
             print "setting row: %s, col: %s" % (row, col)
-            self.raw_data_table.item(row, col).setTextColor(error_color)
+            self.raw_data_table.item(row, col).setTextColor(ERROR_COLOR)
         self.raw_data_table.blockSignals(False)
         
     def _row_is_populated(self, row):
@@ -365,7 +489,6 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             else: # values are hunky-dory
                 print "table computed successfully!"
                 return computed["coefficients"]
-                #self._set_vals(computed["coefficients"]) # computed --> table widget
         return None
         
     def _update_data_table(self):        
@@ -383,7 +506,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         for group in self.cur_groups:
             raw_data_list.extend(self.raw_data_d[group])
         
-        e1, n1, e2, n2 = [int(x) if (x != "" and x is not None) else None for x in raw_data_list]
+        e1, n1, e2, n2 = [int(x) if (not x in EMPTY_VALS) else None for x in raw_data_list]
         
         print "updating raw data with:\n e1 = %s, n1 = %s, e2 = %s, n2 = %s" % \
                                             (e1, n1, e2, n2)
@@ -416,43 +539,39 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             self.raw_data_table.blockSignals(False)
         
             # this is just here to get the inconsistency stuff below to work with minimal effort
-            total_events    = computed_params["c1sum"]
-            total_no_events = computed_params["c2sum"]
-            total_total_events = computed_params["total"]
-            try:
-                total_events = int(round(total_events))
-                total_no_events = int(round(total_no_events))
-                total_total_events = int(round(total_total_events))
-            except:
-                raise Exception("Could not convert to int while trying update the binary calculator table")
-                      
-        self.inconsistent = False
-        if not any([x is None or x=="" for x in (n1, n2, total_events, total_no_events)]):
-            if n1 < 0 or n2 < 0 or not (n1 + n2 == total_events + total_no_events == total_total_events):
-                self._color_all()
-                self.inconsistent = True
-                print "------\nhello1"
-                print "n1:",n1,"n2:",n2,"total_events:",total_events,"total_no_events:",total_no_events,"total_total_events:",total_total_events
-                
-        if not any([x is None or x=="" for x in (total_events, total_no_events)]):
-            if total_events < 0 or total_no_events < 0:
-                self._color_all()
-                self.inconsistent = True
-                print "hello2"
+            total_events       = cast_to_int(computed_params["c1sum"],"total_events")
+            total_no_events    = cast_to_int(computed_params["c2sum"],"total_no_events")
+            total_total_events = cast_to_int(computed_params["total"],"total_no_events")     
+                 
+#        self.inconsistent = False
+#        if not any([x in EMPTY_VALS for x in (n1, n2, total_events, total_no_events)]):
+#            if n1 < 0 or n2 < 0 or not (n1 + n2 == total_events + total_no_events == total_total_events):
+#                self._color_all()
+#                self.inconsistent = True
+#                print "------\nhello1"##debug
+#                print "n1:",n1,"n2:",n2,"total_events:",total_events,"total_no_events:",total_no_events,"total_total_events:",total_total_events
+#                
+#        if not any([x in EMPTY_VALS for x in (total_events, total_no_events)]):
+#            if total_events < 0 or total_no_events < 0:
+#                self._color_all()
+#                self.inconsistent = True
+#                print "hello2"##debug
+#        
+#        if not any([x in EMPTY_VALS for x in (total_events, total_no_events, n1, n2)]):
+#            if not (n1 + n2 == total_events + total_no_events == total_total_events):
+#                self._color_all()
+#                self.inconsistent = True
+#                print "hello3"##debug
+#        
+#        # finally, check the whole thing for negative numbers
+#        for row in range(3):
+#            for col in range(3):
+#                val = self._get_int(row, col)
+#                if val is not None and val != "" and val < 0:
+#                    self._color_all()
+#                    self.inconsistent = True
         
-        if not any([x is None or x=="" for x in (total_events, total_no_events, n1, n2)]):
-            if not (n1 + n2 == total_events + total_no_events == total_total_events):
-                self._color_all()
-                self.inconsistent = True
-                print "hello3"
-        
-        # finally, check the whole thing for negative numbers
-        for row in range(3):
-            for col in range(3):
-                val = self._get_int(row, col)
-                if val is not None and val != "" and val < 0:
-                    self._color_all()
-                    self.inconsistent = True
+        self.check_for_consistencies()
                 
         if not self.inconsistent:
             self._color_all(color=OK_COLOR)

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>591</width>
-    <height>410</height>
+    <height>426</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -84,7 +84,8 @@
    <item>
     <widget class="QLabel" name="fundedby_lbl">
      <property name="text">
-      <string>Funded By Elves</string>
+      <string>Funded by the Agency for Healthcare Research and Quality (AHRQ)
+Grant # R01 HS 018574</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

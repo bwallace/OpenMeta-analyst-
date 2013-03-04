@@ -126,6 +126,8 @@ def _gis_NA(x):
     #print "Old:", type(x) in [rpy2.rinterface.NALogicalType, rpy2.rinterface.NARealType]
     #print "New:", type(x) in [NALogicalType, NARealType]
     #return type(x) in [rpy2.rinterface.NALogicalType, rpy2.rinterface.NARealType]
+    print "TESTING NA"
+    
     return type(x) in [NALogicalType, NARealType]
 
 # NOTE: CUSTOM VERSION......
@@ -537,9 +539,9 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj",
     print "ok."
     return r_str
 
-def _sanitize_for_R(str):
+def _sanitize_for_R(a_str):
     # may want to do something fancier in the future...
-    return str.encode('latin-1', 'ignore')
+    return a_str.encode('latin-1', 'ignore')
 
 def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", \
                                             metric="Sens", covs_to_include=None,
@@ -1113,10 +1115,10 @@ def effect_for_study(e1, n1, e2=None, n2=None, two_arm=True,
     else:
         r_str = "escalc(measure='%s', xi=c(%s), ni=c(%s))" % (metric, e1, n1)        
              
-    print "calling out to R: %s" % r_str
+    #print "calling out to R: %s" % r_str
     effect = ro.r(r_str)
 
-    print "result: %s" % effect
+    #print "result: %s" % effect
     point_est = effect[0][0]
     se = math.sqrt(effect[1][0])
 

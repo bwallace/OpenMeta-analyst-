@@ -1,7 +1,8 @@
 ######################################
 #                                    #       
 #  Byron C. Wallace                  #
-#  Tufts Medical Center              # 
+#  George Dietz                      #
+#  CEBM @ Brown                      # 
 #  OpenMeta[analyst]                 # 
 #                                    # 
 #  Contains globals used             #
@@ -141,3 +142,47 @@ def _is_an_int(s):
     
 def is_NaN(x):
     return x != x
+
+
+
+# These two functions started life in the diagnostic data form used for checking
+#  that low < effect < high
+def my_lt(a,b):
+    if _is_a_float(a) and _is_a_float(b):
+        return float(a) < float(b)
+    else:
+        return None
+def between_bounds(est=None, 
+                   low=None, 
+                   high=None):
+    good_result = my_lt(low,est)
+    okay = True if not (good_result is None) else False
+    if okay and not good_result:
+        msg = "The lower CI must be less than the point estimate!"
+        return False,msg
+    
+    good_result = my_lt(est,high)
+    okay = True if not (good_result is None) else False
+    if okay and not good_result:
+        msg = "The higher CI must be greater than the point estimate!"
+        return False,msg
+    
+    good_result = my_lt(low,high)
+    okay = True if not (good_result is None) else False
+    if okay and not good_result:
+        msg = "The lower CI must be less than the higher CI!"
+        return False,msg
+    
+    return True,None
+
+def cast_to_int(value, name=None):
+    '''Converts value to int if possible'''
+    try:
+        rounded = round(float(value))
+        return int(rounded)
+    except:
+        if not name is None:
+            print("Could not convert %s='%s' to int" % (name,str(value)))
+        else:
+            print("Could not convert '%s' to int" % (str(value)))
+        return None

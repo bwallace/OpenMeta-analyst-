@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'binary_data_form2.ui'
 #
-# Created: Wed Feb 20 09:53:34 2013
+# Created: Mon Mar  4 11:33:25 2013
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -174,14 +174,14 @@ class Ui_BinaryDataForm(object):
         self.label_16.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft)
         self.label_16.setObjectName(_fromUtf8("label_16"))
         self.gridLayout_3.addWidget(self.label_16, 0, 4, 1, 1)
-        self.label_17 = QtGui.QLabel(self.layoutWidget_4)
-        self.label_17.setMaximumSize(QtCore.QSize(16777215, 20))
+        self.pval_lbl = QtGui.QLabel(self.layoutWidget_4)
+        self.pval_lbl.setMaximumSize(QtCore.QSize(16777215, 20))
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Verdana"))
-        self.label_17.setFont(font)
-        self.label_17.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft)
-        self.label_17.setObjectName(_fromUtf8("label_17"))
-        self.gridLayout_3.addWidget(self.label_17, 0, 6, 1, 1)
+        self.pval_lbl.setFont(font)
+        self.pval_lbl.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft)
+        self.pval_lbl.setObjectName(_fromUtf8("pval_lbl"))
+        self.gridLayout_3.addWidget(self.pval_lbl, 0, 6, 1, 1)
         self.effect_txt_box = QtGui.QLineEdit(self.layoutWidget_4)
         self.effect_txt_box.setMinimumSize(QtCore.QSize(50, 22))
         self.effect_txt_box.setMaximumSize(QtCore.QSize(50, 22))
@@ -209,13 +209,13 @@ class Ui_BinaryDataForm(object):
         self.verticalLayout_4 = QtGui.QVBoxLayout(self.layoutWidget1)
         self.verticalLayout_4.setMargin(0)
         self.verticalLayout_4.setObjectName(_fromUtf8("verticalLayout_4"))
-        self.widget = QtGui.QWidget(BinaryDataForm)
-        self.widget.setGeometry(QtCore.QRect(10, 250, 370, 32))
-        self.widget.setObjectName(_fromUtf8("widget"))
-        self.horizontalLayout = QtGui.QHBoxLayout(self.widget)
+        self.layoutWidget2 = QtGui.QWidget(BinaryDataForm)
+        self.layoutWidget2.setGeometry(QtCore.QRect(10, 250, 370, 32))
+        self.layoutWidget2.setObjectName(_fromUtf8("layoutWidget2"))
+        self.horizontalLayout = QtGui.QHBoxLayout(self.layoutWidget2)
         self.horizontalLayout.setMargin(0)
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        self.inconsistencyLabel = QtGui.QLabel(self.widget)
+        self.inconsistencyLabel = QtGui.QLabel(self.layoutWidget2)
         font = QtGui.QFont()
         font.setBold(True)
         font.setWeight(75)
@@ -224,7 +224,7 @@ class Ui_BinaryDataForm(object):
         self.horizontalLayout.addWidget(self.inconsistencyLabel)
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
-        self.buttonBox = QtGui.QDialogButtonBox(self.widget)
+        self.buttonBox = QtGui.QDialogButtonBox(self.layoutWidget2)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
@@ -247,7 +247,7 @@ class Ui_BinaryDataForm(object):
         self.label_14.setText(_translate("BinaryDataForm", "est.", None))
         self.label_15.setText(_translate("BinaryDataForm", "low", None))
         self.label_16.setText(_translate("BinaryDataForm", "high", None))
-        self.label_17.setText(_translate("BinaryDataForm", "p-val", None))
+        self.pval_lbl.setText(_translate("BinaryDataForm", "p-val", None))
         self.inconsistencyLabel.setText(_translate("BinaryDataForm", "INCONSISTENT FORM", None))
 
 import icons_rc

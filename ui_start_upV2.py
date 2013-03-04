@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'start_upV2.ui'
 #
-# Created: Mon Feb 25 10:57:20 2013
+# Created: Mon Mar  4 11:17:44 2013
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_WelcomeDialog(object):
     def setupUi(self, WelcomeDialog):
         WelcomeDialog.setObjectName(_fromUtf8("WelcomeDialog"))
-        WelcomeDialog.resize(591, 410)
+        WelcomeDialog.resize(591, 426)
         WelcomeDialog.setSizeGripEnabled(False)
         self.verticalLayout = QtGui.QVBoxLayout(WelcomeDialog)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
@@ -134,7 +134,8 @@ class Ui_WelcomeDialog(object):
 
     def retranslateUi(self, WelcomeDialog):
         WelcomeDialog.setWindowTitle(_translate("WelcomeDialog", "Welcome to OpenMeta", None))
-        self.fundedby_lbl.setText(_translate("WelcomeDialog", "Funded By Elves", None))
+        self.fundedby_lbl.setText(_translate("WelcomeDialog", "Funded by the Agency for Healthcare Research and Quality (AHRQ)\n"
+"Grant # R01 HS 018574", None))
         self.updatesLabel.setText(_translate("WelcomeDialog", "<a href=\"www.google.com\">Check for updates</a>", None))
         self.oma_onlineLabel.setText(_translate("WelcomeDialog", "<a href=\"http://www.cebm.brown.edu/open_meta\">OpenMeta online</a>", None))
         self.how_to_citeLabel.setText(_translate("WelcomeDialog", "<a href=\"www.google.com\">How to cite</a>", None))

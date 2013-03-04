@@ -1,6 +1,7 @@
 #############################################################
 #  Byron C. Wallace                                         #
-#  Brown University                                         #
+#  George Dietz                                             #
+#  CEBM @ Brown                                             #
 #  OpenMeta(analyst)                                        #
 #                                                           #
 #                                                           #
@@ -8,7 +9,6 @@
 #############################################################
 
 import pdb
-#import copy
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.Qt import *
@@ -25,7 +25,6 @@ import diagnostic_data_form
 import ma_dataset
 from ma_dataset import *
 from meta_globals import *
-
 
 # for issue #169 -- normalizing new lines, e.g., for pasting
 # use QRegExp to manipulate QStrings (rather than re)
@@ -50,8 +49,8 @@ class MADataTable(QtGui.QTableView):
         header = self.horizontalHeader()
         self.connect(header, SIGNAL("sectionClicked(int)"), self.header_clicked)
 
-        vert_header = self.verticalHeader()
-        self.connect(vert_header, SIGNAL("sectionClicked(int)"), \
+        self.vert_header = self.verticalHeader()
+        self.connect(self.vert_header, SIGNAL("sectionClicked(int)"), \
                             self.row_header_clicked)
     
         ## TODO need to add covariate indices here, as needed
@@ -66,8 +65,6 @@ class MADataTable(QtGui.QTableView):
         headers.setContextMenuPolicy(Qt.CustomContextMenu)
         headers.customContextMenuRequested.connect(self.header_context_menu)
 
-
-    
     def _make_context_menu(self):
         def _context_menu(event):
             context_menu = QMenu(self)
@@ -110,7 +107,9 @@ class MADataTable(QtGui.QTableView):
         column_clicked = self.columnAt(pos.x())
         covariate_columns = self.get_covariate_columns()
         raw_data_columns = self.model().RAW_DATA
+        outcomes_columns = self.model().OUTCOMES
 
+        sort_by_col = self.model().get_current_outcome_type()
         data_type = self.model().get_current_outcome_type()
 
         print "right click @ column: %s" % column_clicked
@@ -150,17 +149,31 @@ class MADataTable(QtGui.QTableView):
                 if column_clicked in raw_data_columns[3:]:
                     corresponding_tx_group = self.model().current_txs[1]
             
+            #renaming
             action_rename = QAction("rename group %s..." % corresponding_tx_group, self)
             QObject.connect(action_rename, SIGNAL("triggered()"), \
                         lambda : self.main_gui.edit_group_name(corresponding_tx_group))
             context_menu.addAction(action_rename)
-
+            # sorting
             col_name = self.model().headerData(column_clicked, Qt.Horizontal).toString()
             action_sort = QAction("sort studies by %s" % col_name, self)
             QObject.connect(action_sort, SIGNAL("triggered()"), \
                         lambda : self.sort_by_col(column_clicked))
             context_menu.addAction(action_sort)
-
+        elif column_clicked in raw_data_columns and data_type == "diagnostic":
+            # sorting
+            col_name = self.model().headerData(column_clicked, Qt.Horizontal).toString()
+            action_sort = QAction("sort studies by %s" % col_name, self)
+            QObject.connect(action_sort, SIGNAL("triggered()"), \
+                        lambda : self.sort_by_col(column_clicked))
+            context_menu.addAction(action_sort)
+        elif column_clicked in outcomes_columns:
+            # sorting
+            col_name = self.model().headerData(column_clicked, Qt.Horizontal).toString()
+            action_sort = QAction("sort studies by %s" % col_name, self)
+            QObject.connect(action_sort, SIGNAL("triggered()"), \
+                        lambda : self.sort_by_col(column_clicked))
+            context_menu.addAction(action_sort)
         elif column_clicked in covariate_columns:
             cov = self.model().get_cov(column_clicked)
 
@@ -259,6 +272,9 @@ class MADataTable(QtGui.QTableView):
         self._enable_analysis_menus_if_appropriate()
                                                
     def row_header_clicked(self, row):
+        # fix for issue # 184
+        self.vert_header.blockSignals(True)
+        
         # dispatch on the data type
         form = None
         study_index = row
@@ -306,6 +322,7 @@ class MADataTable(QtGui.QTableView):
             if form.exec_():
                 ma_edit = CommandEditMAUnit(self, study_index, ma_unit, old_ma_unit)
                 self.undoStack.push(ma_edit)
+        self.vert_header.blockSignals(False)
 
     def rowMoved(self, row, oldIndex, newIndex):
         pass
@@ -355,15 +372,6 @@ class MADataTable(QtGui.QTableView):
                     return (True, original_metric)
         return (False,  original_metric)
 
-    # Broken code, doesn't seem to be called from anywhere else but keeping
-    #   around until told otherwise
-#    def _data_for_only_one_group(self):
-#        study_index = row
-#        ma_unit = self.model().get_current_ma_unit_for_study(study_index)
-#        old_ma_unit = copy.deepcopy(ma_unit)
-#        cur_txs = self.model().current_txs
-#        cur_effect = self.model().current_effect
-
 
     def get_covariate_columns(self):
         return range(self.model().OUTCOMES[-1]+1, self.model().columnCount())
@@ -379,7 +387,7 @@ class MADataTable(QtGui.QTableView):
         # if a covariate column was clicked, it may not yet have an entry in the
         # reverse_column_sorts dictionary; thus we insert one here
         #
-        # TODO this should *not* use the column nubmer as the key!
+        # TODO this should *not* use the column number as the key!
         # rather, it should use the name -- the column number of a given
         # covariate might change (e.g., if another covariate is deleted)
         if not self.reverse_column_sorts.has_key(column):
@@ -389,7 +397,7 @@ class MADataTable(QtGui.QTableView):
         self.reverse_column_sorts[column] = not self.reverse_column_sorts[column]
 
     # Broken code, doesn't seem to be called from anywhere else but keeping
-    #   around until told otherwise
+    #   around until told otherwise GD
     #def _data_for_only_one_of_two_arms(self):
     #    cur_txs = self.model().current_txs
     #    for group in cur_txs:
@@ -818,8 +826,9 @@ class CommandEditMAUnit(QUndoCommand):
 
     def redo(self):
         self.model.set_current_ma_unit_for_study(self.study_index, self.new_ma_unit)
-        self.model.try_to_update_outcomes()
         self.model.reset()
+        self.model.try_to_update_outcomes()
+        
         #self.table_view.model().reset()
         self.table_view.resizeColumnsToContents()
         self.ma_data_table_view.emit(SIGNAL("dataDirtied()"))

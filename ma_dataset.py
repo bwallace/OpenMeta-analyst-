@@ -1,7 +1,8 @@
 #############################################################################################
 #                                                                                           #                
-#  Byron C. Wallace                                                                         #  
-#  Tufts Medical Center                                                                     # 
+#  Byron C. Wallace                                                                         # 
+#  George Dietz                                                                             #
+#  CEBM @ Brown                                                                             # 
 #  OpenMeta[analyst]                                                                        # 
 #                                                                                           # 
 #  Dataset module; a roll your own back end. This is a model for manipulating               # 
@@ -366,7 +367,7 @@ class Dataset:
                 return False
         return True
         
-    def cmp_studies(self, compare_by="name", reverse=True, ordered_list=None):
+    def cmp_studies(self, compare_by="name", reverse=True, ordered_list=None, directions_to_ma_unit=None):
         '''
         compare studies in various ways -- pass the returned function
         to the (built-in) sort function.
@@ -381,6 +382,40 @@ class Dataset:
         elif compare_by == "year":
             return lambda study_a, study_b : self._meta_cmp_wrapper(study_a, study_b, study_a.year, \
                                                                     study_b.year, reverse)
+        elif compare_by == 'raw_data':
+            def f(study_a, study_b):
+                ma_unit_A = study_a.get_ma_unit(directions_to_ma_unit['outcome_name'],directions_to_ma_unit['follow_up'])
+                ma_unit_B = study_b.get_ma_unit(directions_to_ma_unit['outcome_name'],directions_to_ma_unit['follow_up'])
+                raw_data_A = ma_unit_A.get_raw_data_for_groups(directions_to_ma_unit['current_groups'])
+                raw_data_B = ma_unit_B.get_raw_data_for_groups(directions_to_ma_unit['current_groups'])
+                study_a_val = raw_data_A[directions_to_ma_unit['data_index']]
+                study_b_val = raw_data_B[directions_to_ma_unit['data_index']]
+                return self._meta_cmp_wrapper(study_a, study_b, study_a_val, study_b_val, reverse)
+            return f
+        elif compare_by == 'outcomes':
+            def f(study_a, study_b):
+                ma_unit_A = study_a.get_ma_unit(directions_to_ma_unit['outcome_name'],directions_to_ma_unit['follow_up'])
+                ma_unit_B = study_b.get_ma_unit(directions_to_ma_unit['outcome_name'],directions_to_ma_unit['follow_up'])
+
+                if directions_to_ma_unit['outcome_type'] in (BINARY,CONTINUOUS):
+                    outcome_data_A = ma_unit_A.get_display_effect_and_ci(directions_to_ma_unit['current_effect'], directions_to_ma_unit['group_str']) 
+                    outcome_data_B = ma_unit_B.get_display_effect_and_ci(directions_to_ma_unit['current_effect'], directions_to_ma_unit['group_str'])
+                elif directions_to_ma_unit['outcome_type'] == DIAGNOSTIC:
+                    #                                  /\/\/\/\
+                    (outcome_data_A, outcome_data_B) = ([],[])
+                    #                                     |
+                    #                                  \_____/
+                    for diag_metric in ["Sens","Spec"]: # this order corresponds to the order displayed on the spreadsheet
+                        est_and_ci_A = ma_unit_A.get_display_effect_and_ci(diag_metric, directions_to_ma_unit['group_str'])
+                        est_and_ci_B = ma_unit_B.get_display_effect_and_ci(diag_metric, directions_to_ma_unit['group_str'])
+                        outcome_data_A.extend(est_and_ci_A)
+                        outcome_data_B.extend(est_and_ci_B)
+                study_a_val = outcome_data_A[directions_to_ma_unit['data_index']]
+                study_b_val = outcome_data_B[directions_to_ma_unit['data_index']]
+                
+                return self._meta_cmp_wrapper(study_a, study_b, study_a_val, study_b_val, reverse)
+            return f
+        
         elif compare_by == "ordered_list":
             # then just use the list order
             return lambda study_a, study_b : self._meta_cmp_wrapper(study_a, study_b, \
@@ -463,6 +498,12 @@ class Study:
         
     def __str__(self):
         return self.name
+    
+    def get_ma_unit(self, outcome, follow_up,):
+        try:
+            return self.outcomes_to_follow_ups[outcome][follow_up]
+        except:
+            raise Exception, "You're trying to access an ma_unit that doesn't exist"
 
     def add_outcome(self, outcome, follow_up_name="first", group_names=None):
         ''' Adds a new, blank outcome (i.e., no raw data) '''
