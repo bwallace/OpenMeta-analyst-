@@ -668,6 +668,7 @@ class DatasetModel(QAbstractTableModel):
         respective columns.
         '''
         
+        # for doing cool calculator icon
         if orientation == Qt.Vertical:
             if role == Qt.DecorationRole and section < len(self.dataset):
                 return QIcon("images/calculator-34.png")
@@ -757,18 +758,9 @@ class DatasetModel(QAbstractTableModel):
             else:
                 # pass, basically
                 return QVariant("")
-   
-        # this is the vertical -- non-table header -- case.
-#        if orientation == Qt.Vertical:
-#            if role == Qt.DecorationRole:
-#                print "HELLLLLLLLLOOOO CALCULAGIOREEWD"
-#                pyqtRemoveInputHook()
-#                pdb.set_trace()
-#                return QIcon("./calculator-34.png")
             
-            
-            
-            # we just show row numbers (not zero-based; hence the +1).
+        # this is the vertical -- non-table header -- case.    
+        # we just show row numbers (not zero-based; hence the +1).
         return QVariant(int(section+1))
 
 
