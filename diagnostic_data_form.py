@@ -45,7 +45,8 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         # block all the widgets for a moment
         for widget in entry_widgets:
             widget.blockSignals(True)
-            
+        
+        self._setup_inconsistency_checking()
         self._update_raw_data()            # ma_unit --> table
         self._populate_effect_data()       # make combo boxes for effects
         self._impute_2by2_from_effects()   # back-calculate 2x2
@@ -80,6 +81,30 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         QObject.connect(self.effect_txt_box, SIGNAL("editingFinished()"), lambda: self.val_changed("est")   )
         QObject.connect(self.low_txt_box,    SIGNAL("editingFinished()"), lambda: self.val_changed("lower") )
         QObject.connect(self.high_txt_box,   SIGNAL("editingFinished()"), lambda: self.val_changed("upper") )
+
+
+######################### INCONSISTENCY CHECKING STUFF #########################
+    def _setup_inconsistency_checking(self):
+        # set-up inconsistency label
+        inconsistency_palette = QPalette()
+        inconsistency_palette.setColor(QPalette.WindowText,Qt.red)
+        self.inconsistencyLabel.setPalette(inconsistency_palette)
+        self.inconsistencyLabel.setVisible(False)
+        
+        self.check_consistency = meta_globals.ConsistencyChecker(
+                            fn_consistent=self.action_consistent_table,
+                            fn_inconsistent=self.action_inconsistent_table,
+                            table_2x2 = self.two_by_two_table)
+
+    def action_consistent_table(self):    
+        self.inconsistencyLabel.setVisible(False)
+        self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(True)
+    def action_inconsistent_table(self):
+        #show label, disable OK buttonbox button
+        self.inconsistencyLabel.setVisible(True)
+        self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(False)
+####################### END INCONSISTENCY CHECKING STUFF #######################
+
 
     @pyqtSignature("int, int, int, int")
     def on_raw_data_table_currentCellChanged(self,currentRow,currentColumn,previousRow,previousColumn):
@@ -182,7 +207,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             self.two_by_two_table.blockSignals(False)
             return
         
-        #
+        # Try to calculate the rest of the table values
         table_values = self._get_table_vals()
         print "Table Values: ", table_values
         computed_parameters = meta_globals.compute_2x2_table(table_values)
@@ -190,15 +215,23 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             print("Computed Parameters:",computed_parameters)
             self._set_vals(computed_parameters) # computed --> table widget
         self.current_item_data = self._get_int(row,col) # For verification
+        
+        #check consistency of table
+        self.check_consistency.run()
     
-        new_val = self._get_int(row, col)
-        if new_val is not None:
-            # make sensitivity and specificity calculations work...
-            #   does impute_diag_data try and fail to do this? GD
-            self.impute_data() # 2x2 table --> ma_unit
-            self.impute_effects_in_ma_unit()
-            self.set_current_effect()
-            
+#        #new_val = self._get_int(row, col)
+#        #if new_val is not None:
+#            # make sensitivity and specificity calculations work...
+#            #   does impute_diag_data try and fail to do this? GD
+
+        # NEED TO REWORK METHOD FOR STORING DATA: TABLE-->MA_UNIT
+        # going through impute_data is rather circuitous
+        self.impute_data() # 2x2 table --> ma_unit
+        
+#            self.impute_effects_in_ma_unit()
+#            self.set_current_effect()
+        self.impute_effects_in_ma_unit()
+        self.set_current_effect()
     
     def _get_table_vals(self):
         ''' Package table from 2x2 table in to a dictionary'''
@@ -512,9 +545,25 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self.two_by_two_table.blockSignals(True)
         raw_data = self._get_raw_data()
         
+        print("Updating raw_data with",raw_data)
         
+        params = {}
+        params["c11"] = raw_data['TP']
+        params["c12"] = raw_data['FP']
+        params["c21"] = raw_data['FN']
+        params["c22"] = raw_data['TN']
+        params["r1sum"] = None
+        params["r2sum"] = None
+        params["c1sum"] = None
+        params["c2sum"] = None
+        params["total"] = None
         
+        computed_params = meta_globals.compute_2x2_table(params)
+        if computed_params:
+            self._set_vals(computed_params) # computed --> table widget
         
+        self.check_consistency.run()
+        self.two_by_two_table.blockSignals(False)
         
         
         

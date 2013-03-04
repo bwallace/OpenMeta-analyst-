@@ -444,13 +444,14 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         computed_params = meta_globals.compute_2x2_table(params)
         if computed_params:
             self._set_vals(computed_params) # computed --> table widget
-            # Set the following values explicitly even though they may conflict
-            # with the values given by computed_params. If they do, let the consistency
-            # checker catch it and alert the user.
-            self._set_val(0, 0, e1)
-            self._set_val(1, 0, e2)
-            self._set_val(0, 2, n1)
-            self._set_val(1, 2, n2)
+# REMOVE GD DELETE ???
+#            # Set the following values explicitly even though they may conflict
+#            # with the values given by computed_params. If they do, let the consistency
+#            # checker catch it and alert the user.
+#            self._set_val(0, 0, e1)
+#            self._set_val(1, 0, e2)
+#            self._set_val(0, 2, n1)
+#            self._set_val(1, 2, n2)
         
         self.check_consistency.run()
         self.raw_data_table.blockSignals(False)

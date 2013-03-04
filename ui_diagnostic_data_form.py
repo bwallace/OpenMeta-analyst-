@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'diagnostic_data_form.ui'
 #
-# Created: Tue Feb 26 13:56:18 2013
+# Created: Mon Mar  4 17:15:43 2013
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_DiagnosticDataForm(object):
     def setupUi(self, DiagnosticDataForm):
         DiagnosticDataForm.setObjectName(_fromUtf8("DiagnosticDataForm"))
-        DiagnosticDataForm.resize(380, 323)
+        DiagnosticDataForm.resize(380, 325)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/images/meta.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         DiagnosticDataForm.setWindowIcon(icon)
@@ -172,11 +172,23 @@ class Ui_DiagnosticDataForm(object):
         spacerItem3 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem3)
         self.verticalLayout.addLayout(self.horizontalLayout)
+        self.horizontalLayout_4 = QtGui.QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(_fromUtf8("horizontalLayout_4"))
+        self.inconsistencyLabel = QtGui.QLabel(DiagnosticDataForm)
+        font = QtGui.QFont()
+        font.setBold(True)
+        font.setWeight(75)
+        self.inconsistencyLabel.setFont(font)
+        self.inconsistencyLabel.setObjectName(_fromUtf8("inconsistencyLabel"))
+        self.horizontalLayout_4.addWidget(self.inconsistencyLabel)
+        spacerItem4 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_4.addItem(spacerItem4)
         self.buttonBox = QtGui.QDialogButtonBox(DiagnosticDataForm)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
-        self.verticalLayout.addWidget(self.buttonBox)
+        self.horizontalLayout_4.addWidget(self.buttonBox)
+        self.verticalLayout.addLayout(self.horizontalLayout_4)
         self.prevalence_lbl.setBuddy(self.prevalence_le)
 
         self.retranslateUi(DiagnosticDataForm)
@@ -207,5 +219,6 @@ class Ui_DiagnosticDataForm(object):
         self.label_2.setText(_translate("DiagnosticDataForm", "α:", None))
         self.alpha_edit.setText(_translate("DiagnosticDataForm", ".05", None))
         self.ci_label.setText(_translate("DiagnosticDataForm", "(95% confidence interval)", None))
+        self.inconsistencyLabel.setText(_translate("DiagnosticDataForm", "INCONSISTENT FORM", None))
 
 import icons_rc
