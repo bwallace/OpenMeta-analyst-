@@ -50,6 +50,7 @@ class MADataTable(QtGui.QTableView):
         self.connect(header, SIGNAL("sectionClicked(int)"), self.header_clicked)
 
         self.vert_header = self.verticalHeader()
+        
         self.connect(self.vert_header, SIGNAL("sectionClicked(int)"), \
                             self.row_header_clicked)
     
@@ -272,6 +273,9 @@ class MADataTable(QtGui.QTableView):
         self._enable_analysis_menus_if_appropriate()
                                                
     def row_header_clicked(self, row):
+        if row > len(self.model().dataset) - 1:
+            return
+        
         # fix for issue # 184
         self.vert_header.blockSignals(True)
         

@@ -667,6 +667,11 @@ class DatasetModel(QAbstractTableModel):
         model class. This is responsible for providing header data for the
         respective columns.
         '''
+        
+        if orientation == Qt.Vertical:
+            if role == Qt.DecorationRole and section < len(self.dataset):
+                return QIcon("images/calculator-34.png")
+        
         if role == Qt.TextAlignmentRole:
             return QVariant(int(Qt.AlignLeft|Qt.AlignVCenter))
         if role != Qt.DisplayRole:
@@ -753,9 +758,17 @@ class DatasetModel(QAbstractTableModel):
                 # pass, basically
                 return QVariant("")
    
-        
         # this is the vertical -- non-table header -- case.
-        # we just show row numbers (not zero-based; hence the +1).
+#        if orientation == Qt.Vertical:
+#            if role == Qt.DecorationRole:
+#                print "HELLLLLLLLLOOOO CALCULAGIOREEWD"
+#                pyqtRemoveInputHook()
+#                pdb.set_trace()
+#                return QIcon("./calculator-34.png")
+            
+            
+            
+            # we just show row numbers (not zero-based; hence the +1).
         return QVariant(int(section+1))
 
 
