@@ -15,7 +15,7 @@ from PyQt4.QtGui import *
 import meta_py_r
 import meta_globals
 from meta_globals import (BINARY_ONE_ARM_METRICS, BINARY_TWO_ARM_METRICS,
-                          _is_a_float, _is_empty, EMPTY_VALS, cast_to_int)
+                          _is_a_float, _is_empty, EMPTY_VALS)
 
 import ui_binary_data_form
 #from ui_binary_data_form import Ui_BinaryDataForm
@@ -25,39 +25,31 @@ import ui_binary_data_form
 # here we show four digits; there it is 3. We want different
 # levels of granularity).
 NUM_DIGITS = 4 
-ERROR_COLOR = QColor("red")
-OK_COLOR = QColor("black")
+
 
 # this is the maximum size of a residual that we're willing to accept
 # when computing 2x2 data
 THRESHOLD = 1e-5
 
 class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
-    
-    
     def __init__(self, ma_unit, cur_txs, cur_group_str, cur_effect, parent=None):
         super(BinaryDataForm2, self).__init__(parent)
         self.setupUi(self)
         self._setup_signals_and_slots()
         self.ma_unit = ma_unit
         self.raw_data_d = {}
-        self.inconsistent = False
         for group in cur_txs:
             raw_data = self.ma_unit.get_raw_data_for_group(group)
             self.raw_data_d[group]  = raw_data
-        
         self.cur_groups = cur_txs
         self.group_str = cur_group_str
         self.cur_effect = cur_effect
-        self._update_raw_data() # ma_unit --> table
-        self._populate_effect_data()
-        self._update_data_table()
         
-        # Setup inconsistency label
-        inconsistency_palette = QPalette()
-        inconsistency_palette.setColor(QPalette.WindowText,Qt.red)
-        self.inconsistencyLabel.setPalette(inconsistency_palette)
-        self.inconsistencyLabel.setVisible(False)
+        self._setup_inconsistency_checking()
+        self._update_raw_data()      # ma_unit --> table
+        self._populate_effect_data() # make combo boxes for effects
+        self.set_current_effect()    # fill in current effect data in line edits
+        self._update_data_table()    # fill in 2x2 
         
         # used for checking the data we attempt to set is good
         self.current_item_data = self._get_int(self.raw_data_table.currentRow(),self.raw_data_table.currentColumn())
@@ -68,10 +60,33 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.curr_high_tbox_text  = self.high_txt_box.text()
         (self.candidate_est,self.candidate_lower,self.candidate_upper) = (None,None,None)
         
+
         
         ### TEMPORARILY HIDE FOR PRESENTATION:
         self.pval_lbl.setVisible(False)
         self.effect_p_txt_box.setVisible(False)
+        
+######################### INCONSISTENCY CHECKING STUFF #########################
+    def _setup_inconsistency_checking(self):
+        # set-up inconsistency label
+        inconsistency_palette = QPalette()
+        inconsistency_palette.setColor(QPalette.WindowText,Qt.red)
+        self.inconsistencyLabel.setPalette(inconsistency_palette)
+        self.inconsistencyLabel.setVisible(False)
+        
+        self.check_consistency = meta_globals.ConsistencyChecker(
+                            fn_consistent=self.action_consistent_table,
+                            fn_inconsistent=self.action_inconsistent_table,
+                            table_2x2 = self.raw_data_table)
+
+    def action_consistent_table(self):    
+        self.inconsistencyLabel.setVisible(False)
+        self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(True)
+    def action_inconsistent_table(self):
+        #show label, disable OK buttonbox button
+        self.inconsistencyLabel.setVisible(True)
+        self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(False)
+####################### END INCONSISTENCY CHECKING STUFF #######################
         
     @pyqtSignature("int, int, int, int")
     def on_raw_data_table_currentCellChanged(self,currentRow,currentColumn,previousRow,previousColumn):
@@ -100,8 +115,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.effect_cbo_box.addItems(q_effects)
         self.effect_cbo_box.blockSignals(False)
         self.effect_cbo_box.setCurrentIndex(q_effects.index(QString(self.cur_effect)))
-        # populate fields with current effect data
-        self.set_current_effect()
+
 
     def set_current_effect(self):
         '''Populates text boxes with effects (computed values) from ma unit'''
@@ -314,23 +328,23 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             self.raw_data_table.blockSignals(False)
             return
         
-        params = self._get_vals()
+        # Try to calculate the rest of the table values
+        params = self._get_table_vals()
         print "Params: ", params
-        
-        computed_parameters = self._compute_2x2_table(params)
+        computed_parameters = meta_globals.compute_2x2_table(params)
         if computed_parameters:
             print("Computed Parameters:",computed_parameters)
             self._set_vals(computed_parameters) # computed --> table widget
         self.current_item_data = self._get_int(row,col) # For verification
         ## TODO OVERWRITE table widget item value with given value instead of that obtained from the regression    
             
-        self.check_for_consistencies()
+        self.check_consistency.run()
         
         # need to try and update metric here     
         self._update_ma_unit() # table widget --> ma_unit
         self.try_to_update_cur_outcome()
         
-    def _get_vals(self):
+    def _get_table_vals(self):
         ''' Package table from 2x2 table in to a dictionary'''
         
         vals_d = {}
@@ -358,9 +372,6 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self._set_val(2, 0, computed_d["c1sum"])
         self._set_val(2, 1, computed_d["c2sum"])  
         self._set_val(2, 2, computed_d["total"])  
-        
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
         self.raw_data_table.blockSignals(False)
         
     def _set_val(self, i, j, val):
@@ -374,7 +385,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             self._set_table_cell(i, j, val)
         
     def _set_table_cell(self, i, j, val):
-        if val is None or val == "":
+        if val in EMPTY_VALS:
             self.raw_data_table.setItem(i, j, QTableWidgetItem(""))
             return
         
@@ -393,103 +404,9 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         print d["estimate"] == ""
         print d["estimate"] is None
         return d
-        
-    def check_for_consistencies(self):
-        self.inconsistent = False
-        self.check_that_rows_sum()
-        self.check_that_cols_sum()
-        self.check_that_values_positive()
-        
-        if self.inconsistent:
-            #show label, disable OK buttonbox button
-            self.inconsistencyLabel.setVisible(True)
-            self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(False)
-        else:
-            self.inconsistencyLabel.setVisible(False)
-            self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(True)
-        
-    def check_that_rows_sum(self):
-        for row in range(3):
-            if self._row_is_populated(row):
-                row_sum = 0
-                for col in range(2):
-                    row_sum += self._get_int(row, col)
-                if not row_sum == self._get_int(row, 2):
-                    self._color_row(row)
-                    self.inconsistent = True
-                    
-    def check_that_cols_sum(self):
-        for col in range(3):
-            if self._col_is_populated(col):
-                col_sum = 0
-                for row in range(2):
-                    col_sum += self._get_int(row,col)
-                if not col_sum == self._get_int(2,col):
-                    self._color_col(col)
-                    self.inconsistent = True
-                    
-    def check_that_values_positive(self):
-        for row in range(3):
-            for col in range(3):
-                value = self._get_int(row,col)
-                if not value in EMPTY_VALS:
-                    if value < 0:
-                        # Color item
-                        self.raw_data_table.blockSignals(True)
-                        self.raw_data_table.item(row,col).setTextColor(ERROR_COLOR)
-                        self.blockSignals(False)
-                        # Set flag
-                        self.inconsistent = True
-                        
-    def _color_all(self, color=ERROR_COLOR):
-        self.raw_data_table.blockSignals(True)
-        for row in range(3):
-            for col in range(3):
-                print "setting row: %s, col: %s" % (row, col)
-                item = self.raw_data_table.item(row, col)
-                if item is not None:
-                    item.setTextColor(color)
-        self.raw_data_table.blockSignals(False)
-        
-             
-        
-    def _color_row(self, row):
-        self.raw_data_table.blockSignals(True)
-        for col in range(3):
-            print "setting row: %s, col: %s" % (row, col)
-            self.raw_data_table.item(row, col).setTextColor(ERROR_COLOR)
-        self.raw_data_table.blockSignals(False)
-        
-    def _color_col(self, col):
-        self.raw_data_table.blockSignals(True)
-        for row in range(3):
-            print "setting row: %s, col: %s" % (row, col)
-            self.raw_data_table.item(row, col).setTextColor(ERROR_COLOR)
-        self.raw_data_table.blockSignals(False)
-        
-    def _row_is_populated(self, row):
-        return not True in [self._is_empty(row, col) for col in range(2)]
-    def _col_is_populated(self, col):
-        return not True in [self._is_empty(row, col) for row in range(2)]
     
-    def _compute_2x2_table(self,params):
-        ''' Computes values for the 2x2 table if possible'''
-        
-        computed = meta_py_r.fillin_2x2(params)
-        print "Computed: ", computed 
-        
-        if computed != None: # more than one value entered
-            abs_residuals = [abs(x) for x in computed['residuals'].values()]
-            if max(abs_residuals ) > THRESHOLD:
-                print "problem computing 2x2 table."
-                print "max residual: %s" % max(computed['residuals'])
-                print computed['residuals']
-                print ("Coefficients: ", computed['coefficients'])
-                return None
-            else: # values are hunky-dory
-                print "table computed successfully!"
-                return computed["coefficients"]
-        return None
+    
+
         
     def _update_data_table(self):        
         '''
@@ -524,60 +441,19 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         params["c2sum"] = None
         params["total"] = None
         
-        computed_params = self._compute_2x2_table(params)
-        (total_events,total_no_events,total_total_events) = (None,None,None)
+        computed_params = meta_globals.compute_2x2_table(params)
         if computed_params:
             self._set_vals(computed_params) # computed --> table widget
             # Set the following values explicitly even though they may conflict
             # with the values given by computed_params. If they do, let the consistency
             # checker catch it and alert the user.
-            self.raw_data_table.blockSignals(True)
             self._set_val(0, 0, e1)
             self._set_val(1, 0, e2)
             self._set_val(0, 2, n1)
             self._set_val(1, 2, n2)
-            self.raw_data_table.blockSignals(False)
         
-            # this is just here to get the inconsistency stuff below to work with minimal effort
-            total_events       = cast_to_int(computed_params["c1sum"],"total_events")
-            total_no_events    = cast_to_int(computed_params["c2sum"],"total_no_events")
-            total_total_events = cast_to_int(computed_params["total"],"total_no_events")     
-                 
-#        self.inconsistent = False
-#        if not any([x in EMPTY_VALS for x in (n1, n2, total_events, total_no_events)]):
-#            if n1 < 0 or n2 < 0 or not (n1 + n2 == total_events + total_no_events == total_total_events):
-#                self._color_all()
-#                self.inconsistent = True
-#                print "------\nhello1"##debug
-#                print "n1:",n1,"n2:",n2,"total_events:",total_events,"total_no_events:",total_no_events,"total_total_events:",total_total_events
-#                
-#        if not any([x in EMPTY_VALS for x in (total_events, total_no_events)]):
-#            if total_events < 0 or total_no_events < 0:
-#                self._color_all()
-#                self.inconsistent = True
-#                print "hello2"##debug
-#        
-#        if not any([x in EMPTY_VALS for x in (total_events, total_no_events, n1, n2)]):
-#            if not (n1 + n2 == total_events + total_no_events == total_total_events):
-#                self._color_all()
-#                self.inconsistent = True
-#                print "hello3"##debug
-#        
-#        # finally, check the whole thing for negative numbers
-#        for row in range(3):
-#            for col in range(3):
-#                val = self._get_int(row, col)
-#                if val is not None and val != "" and val < 0:
-#                    self._color_all()
-#                    self.inconsistent = True
-        
-        self.check_for_consistencies()
-                
-        if not self.inconsistent:
-            self._color_all(color=OK_COLOR)
-                
+        self.check_consistency.run()
         self.raw_data_table.blockSignals(False)
-        
         
     def _is_empty(self, i, j):
         val = self.raw_data_table.item(i,j)
@@ -587,8 +463,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
     def _get_int(self, i, j):
         '''Get value from cell specified by row=i, col=j as an integer'''
         if not self._is_empty(i,j):
-            int_val = int(float(self.raw_data_table.item(i, j).text()))
-            return int_val
+            return int(float(self.raw_data_table.item(i, j).text()))
         else:
             return None # its good to be explicit
             

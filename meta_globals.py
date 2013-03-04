@@ -10,6 +10,10 @@
 ######################################
 
 import os
+import meta_py_r
+from PyQt4.Qt import QColor, QDialogButtonBox
+#from PyQt4.QtGui import
+
 #from PyQt4.Qt import QMessageBox
 
 # number of digits to display
@@ -98,8 +102,12 @@ PATH_TO_HELP = "http://tuftscaes.org/open_meta/help/openMA_help.html"#os.path.jo
 # list of methods with no forest plot parameters
 METHODS_WITH_NO_FOREST_PLOT = ["diagnostic.hsroc", "diagnostic.bivariate.ml"]
 
+# this is the maximum size of a residual that we're willing to accept
+# when computing 2x2 data
+THRESHOLD = 1e-5
 
-
+ERROR_COLOR = QColor("red")
+OK_COLOR = QColor("black")
 
 '''
 some useful static methods
@@ -190,3 +198,185 @@ def cast_to_int(value, name=None):
         else:
             print("Could not convert '%s' to int" % (str(value)))
         return None
+
+# For computing the 2x2 table in the binary and diagnostic case
+def OLDcompute_2x2_table(params):
+    ''' Computes values for the whole 2x2 table if possible based on partial values from the rest of the table'''
+    
+    computed = meta_py_r.fillin_2x2(params)
+    print "Computed: ", computed 
+    
+    if computed != None: # more than one value entered
+        abs_residuals = [abs(x) for x in computed['residuals'].values()]
+        if max(abs_residuals ) > THRESHOLD:
+            print "problem computing 2x2 table."
+            print "max residual: %s" % max(computed['residuals'])
+            print computed['residuals']
+            print ("Coefficients: ", computed['coefficients'])
+            return None
+        else: # values are hunky-dory
+            print "table computed successfully!"
+            return computed["coefficients"]
+    return None
+
+def compute_2x2_table(params):
+    ''' Computes values for the whole 2x2 table if possible based on partial values from the rest of the table'''
+    
+    # Realized R code is screwy.... now for some more screwy code that hopefully works better
+    table = [[ params['c11'],   params['c12'],   params['r1sum']],
+             [ params['c21'],   params['c22'],   params['r2sum']],
+             [ params['c1sum'], params['c2sum'], params['total'] ]]
+    
+    for row in range(3):
+        for col in range(3):
+            # go through row-wise
+            if table[row][col] in EMPTY_VALS:
+                if col == 0:
+                    try:
+                        table[row][col] = table[row][2] - table[row][1]
+                    except:
+                        pass
+                if col == 1:
+                    try:
+                        table[row][col] = table[row][2] - table[row][0]
+                    except:
+                        pass
+                if col == 2:
+                    try:
+                        table[row][col] = table[row][0] + table[row][1]
+                    except:
+                        pass
+            # and now column-wise
+            if table[row][col] in EMPTY_VALS:
+                if row == 0:
+                    try:
+                        table[row][col] = table[2][col] - table[1][col]
+                    except:
+                        pass
+                if row == 1:
+                    try:
+                        table[row][col] = table[2][col] - table[0][col]
+                    except:
+                        pass
+                if row == 2:
+                    try:
+                        table[row][col] = table[0][col] + table[1][col]
+                    except:
+                        pass
+    coef = {}
+    coef['c11']   = table[0][0]
+    coef['c12']   = table[0][1]
+    coef['r1sum'] = table[0][2]
+    coef['c21']   = table[1][0]
+    coef['c22']   = table[1][1]
+    coef['r2sum'] = table[1][2]
+    coef['c1sum'] = table[2][0]
+    coef['c2sum'] = table[2][1]
+    coef['total'] = table[2][2]
+    
+    return coef
+
+# Consistency checking code for 2x2 tables (binary and diagnostic)
+########################### CONSISTENCY CHECKING CODE ##########################
+class ConsistencyChecker():
+    def __init__(self,fn_consistent=None,fn_inconsistent=None,table_2x2=None):
+        functions_passed = (not fn_consistent is None) and (not fn_inconsistent is None)
+        assert functions_passed, "Not enough functions passed to check_for_consistencies"
+        assert not table_2x2 is None, "No table argument passed."
+        
+        self.inconsistent = False
+        self.inconsistent_action = fn_inconsistent
+        self.consistent_action = fn_consistent
+        self.table = table_2x2
+        
+    def run(self):
+        self.check_for_consistencies()
+        
+        if not self.inconsistent:
+            self._color_all(color=OK_COLOR)
+        return self.inconsistent
+     
+    def check_for_consistencies(self):
+        self.inconsistent = False
+        self.check_that_rows_sum() # also colors non-summing rows
+        self.check_that_cols_sum()
+        self.check_that_values_positive()
+        
+        if self.inconsistent:
+            self.inconsistent_action()
+        else:
+            self.consistent_action()
+        
+    def check_that_rows_sum(self):
+        for row in range(3):
+            if self._row_is_populated(row):
+                row_sum = 0
+                for col in range(2):
+                    row_sum += self._get_int(row, col)
+                if not row_sum == self._get_int(row, 2):
+                    self._color_row(row)
+                    self.inconsistent = True
+    
+    def _get_int(self, i, j):
+        '''Get value from cell specified by row=i, col=j as an integer'''
+        if not self._is_empty_cell(i,j):
+            return int(float(self.table.item(i, j).text()))
+        else:
+            return None # its good to be explicit
+                    
+    def check_that_cols_sum(self):
+        for col in range(3):
+            if self._col_is_populated(col):
+                col_sum = 0
+                for row in range(2):
+                    col_sum += self._get_int(row,col)
+                if not col_sum == self._get_int(2,col):
+                    self._color_col(col)
+                    self.inconsistent = True
+                    
+    def check_that_values_positive(self):
+        for row in range(3):
+            for col in range(3):
+                value = self._get_int(row,col)
+                if not value in EMPTY_VALS:
+                    if value < 0:
+                        # Color item
+                        self.table.blockSignals(True)
+                        self.table.item(row,col).setTextColor(ERROR_COLOR)
+                        self.table.blockSignals(False)
+                        # Set flag
+                        self.inconsistent = True
+                        
+    def _color_all(self, color=ERROR_COLOR):
+        self.table.blockSignals(True)
+        for row in range(3):
+            for col in range(3):
+                print "setting row: %s, col: %s" % (row, col)
+                item = self.table.item(row, col)
+                if item is not None:
+                    item.setTextColor(color)
+        self.table.blockSignals(False)
+        
+    def _color_row(self, row):
+        self.table.blockSignals(True)
+        for col in range(3):
+            print "setting row: %s, col: %s" % (row, col)
+            self.table.item(row, col).setTextColor(ERROR_COLOR)
+        self.table.blockSignals(False)
+        
+    def _color_col(self, col):
+        self.table.blockSignals(True)
+        for row in range(3):
+            print "setting row: %s, col: %s" % (row, col)
+            self.table.item(row, col).setTextColor(ERROR_COLOR)
+        self.table.blockSignals(False)
+        
+    def _row_is_populated(self, row):
+        return not True in [self._is_empty_cell(row, col) for col in range(2)]
+    def _col_is_populated(self, col):
+        return not True in [self._is_empty_cell(row, col) for row in range(2)]
+    
+    def _is_empty_cell(self, i, j):
+        val = self.table.item(i,j)
+        return val is None or val.text() == ""
+########################### END CONSISTENCY CHECKER ############################

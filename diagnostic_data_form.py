@@ -17,7 +17,8 @@ from PyQt4.Qt import *
 
 import meta_py_r
 import meta_globals
-from meta_globals import _is_a_float, _is_empty, NUM_DIGITS, DIAGNOSTIC_METRICS, DIAG_FIELDS_TO_RAW_INDICES
+from meta_globals import (_is_a_float, _is_empty, NUM_DIGITS,
+                          DIAGNOSTIC_METRICS, DIAG_FIELDS_TO_RAW_INDICES,EMPTY_VALS)
 #import ui_continuous_data_form
 from ui_diagnostic_data_form import Ui_DiagnosticDataForm
 
@@ -34,8 +35,8 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             raw_data = self.ma_unit.get_raw_data_for_group(group)
             self.raw_data_dict[group] = raw_data
         self.cur_groups = cur_txs
-        self.cur_effect = "Sens" # arbitrary
         self.group_str = cur_group_str
+        self.cur_effect = "Sens" # arbitrary
         self.alpha = .05
         
         entry_widgets = [self.two_by_two_table, self.alpha_edit,\
@@ -44,11 +45,12 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         # block all the widgets for a moment
         for widget in entry_widgets:
             widget.blockSignals(True)
-        self._update_raw_data() 
-        self._populate_effect_data()
-        self._impute_2by2_from_all_available_info()
+            
+        self._update_raw_data()            # ma_unit --> table
+        self._populate_effect_data()       # make combo boxes for effects
+        self._impute_2by2_from_effects()   # back-calculate 2x2
         self._update_data_table() # does nothing....
-        self.set_current_effect()
+        self.set_current_effect() # fill in current effect data in line edits
 
         # unblock
         for widget in entry_widgets:
@@ -130,28 +132,44 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         return meta_globals.is_NaN(val) or self._is_txt_box_empty(txt_box) or (not _is_a_float(val))
     
     
-    def _set_val(self, i, j, val):
-        (row,col) = (i,j)
-        
+    
+    def _set_val(self, row, col, val):
         is_NaN = lambda x: x != x
         
-        # need this to reset empty cells
-        if val is None or val == "":
-            item = QTableWidgetItem("")
-            self.two_by_two_table.setItem(row, col, item)
+        # get out quick
+        if is_NaN(val):
             return
-        if not is_NaN(val):
-            try:
-                val = str(int(val))
-                self.simple_table.setItem(row, col, QTableWidgetItem(QString(val))) 
-            except:
-                print "got to pass"
-                pass
+        
+        # need this to reset empty cells
+        if val in EMPTY_VALS:
+            self.two_by_two_table.setItem(row, col, QTableWidgetItem(""))
+            return
+
+        try:
+            val = str(int(val))
+        except:
+            print("Got to except in _set_val")
+        self.two_by_two_table.setItem(row, col, QTableWidgetItem(QString(val))) 
     
+    def _set_vals(self, computed_d):
+        '''Sets values in table widget'''
+        self.two_by_two_table.blockSignals(True)
+        self._set_val(0, 0, computed_d["c11"])
+        self._set_val(0, 1, computed_d["c12"])
+        self._set_val(1, 0, computed_d["c21"])
+        self._set_val(1, 1, computed_d["c22"])  
+        self._set_val(0, 2, computed_d["r1sum"])
+        self._set_val(1, 2, computed_d["r2sum"])
+        self._set_val(2, 0, computed_d["c1sum"])
+        self._set_val(2, 1, computed_d["c2sum"])  
+        self._set_val(2, 2, computed_d["total"])  
+        self.two_by_two_table.blockSignals(False)
 
     def _cell_changed(self, row, col):
         ##print "previous cell data:",self.current_item_data
         ##print "new cell data:", self.two_by_two_table.item(row, col).text()
+        print "------------------------------------"
+        print "CELL CHANGED"
         
         new_num_not_valid = self._cell_data_not_valid(self.two_by_two_table.item(row, col).text())
         # Test if entered data is valid (a number)
@@ -163,14 +181,39 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             self._set_val(row, col, self.current_item_data)
             self.two_by_two_table.blockSignals(False)
             return
+        
+        #
+        table_values = self._get_table_vals()
+        print "Table Values: ", table_values
+        computed_parameters = meta_globals.compute_2x2_table(table_values)
+        if computed_parameters:
+            print("Computed Parameters:",computed_parameters)
+            self._set_vals(computed_parameters) # computed --> table widget
+        self.current_item_data = self._get_int(row,col) # For verification
     
         new_val = self._get_int(row, col)
         if new_val is not None:
             # make sensitivity and specificity calculations work...
             #   does impute_diag_data try and fail to do this? GD
+            self.impute_data() # 2x2 table --> ma_unit
             self.impute_effects_in_ma_unit()
             self.set_current_effect()
-            self.impute_data() # 2x2 table --> ma_unit
+            
+    
+    def _get_table_vals(self):
+        ''' Package table from 2x2 table in to a dictionary'''
+        
+        vals_d = {}
+        vals_d["c11"] = self._get_int(0, 0)
+        vals_d["c12"] = self._get_int(0, 1)
+        vals_d["c21"] = self._get_int(1, 0)
+        vals_d["c22"] = self._get_int(1, 1)
+        vals_d["r1sum"] = self._get_int(0, 2)
+        vals_d["r2sum"] = self._get_int(1, 2)
+        vals_d["c1sum"] = self._get_int(2, 0)
+        vals_d["c2sum"] = self._get_int(2, 1)
+        vals_d["total"] = self._get_int(2, 2)
+        return vals_d
 
     def impute_data(self):
         diag_data_dict = self.build_dict()
@@ -181,7 +224,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             print "imputed data: %s" % imputed
             self.update_2x2_table(imputed)
     
-    def _impute_2by2_from_all_available_info(self):
+    def _impute_2by2_from_effects(self):
         original_effect = self.cur_effect
         
         for effect in BACK_CALCULATABLE_DIAGNOSTIC_EFFECTS:
@@ -196,6 +239,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
                 imputed = meta_py_r.impute_diag_data(diag_data_dict, effect)
                 print "imputed data: %s" % imputed
                 self.update_2x2_table(imputed)
+                
         # restore things to how they were
         self.cur_effect = original_effect
         self.set_current_effect()
@@ -218,10 +262,11 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
                 self.ma_unit.tx_groups[self.group_str].raw_data[raw_data_index] =\
                          float(imputed_dict[field])
         self.two_by_two_table.blockSignals(False)
-        
+    
+    #### MOSTLY DUPLICATED FROM ma_data_table_model.update_outcome_if_possible()
     def impute_effects_in_ma_unit(self):
         '''Calculate and store values for effects in ma_unit based on values in 2x2 table'''
-        #### MOSTLY DUPLICATED FROM ma_data_table_model.update_outcome_if_possible()
+        
         # diagnostic data
         counts = self._get_raw_data()
         tp, fn, fp, tn = counts['TP'], counts['FN'], counts['FP'], counts['TN']
@@ -448,9 +493,6 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self.effect_cbo_box.addItems(effects)
         self.effect_cbo_box.blockSignals(False)
         self.effect_cbo_box.setCurrentIndex(0)
-
-        # populate fields with current effect data
-        self.set_current_effect()
     
     def set_current_effect(self):
         '''Fill in effect text boxes with data from ma_unit'''
@@ -465,4 +507,14 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             txt_box.blockSignals(False)
 
     def _update_data_table(self):
-        pass
+        '''Fill-in 2x2 table from provided (spreadsheet raw data) information'''
+        
+        self.two_by_two_table.blockSignals(True)
+        raw_data = self._get_raw_data()
+        
+        
+        
+        
+        
+        
+        
