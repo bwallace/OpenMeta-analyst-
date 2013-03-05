@@ -222,42 +222,55 @@ def compute_2x2_table(params):
              [ params['c21'],   params['c22'],   params['r2sum']],
              [ params['c1sum'], params['c2sum'], params['total'] ]]
     
-    for row in range(3):
-        for col in range(3):
-            # go through row-wise
-            if table[row][col] in EMPTY_VALS:
-                if col == 0:
-                    try:
-                        table[row][col] = table[row][2] - table[row][1]
-                    except:
-                        pass
-                if col == 1:
-                    try:
-                        table[row][col] = table[row][2] - table[row][0]
-                    except:
-                        pass
-                if col == 2:
-                    try:
-                        table[row][col] = table[row][0] + table[row][1]
-                    except:
-                        pass
-            # and now column-wise
-            if table[row][col] in EMPTY_VALS:
-                if row == 0:
-                    try:
-                        table[row][col] = table[2][col] - table[1][col]
-                    except:
-                        pass
-                if row == 1:
-                    try:
-                        table[row][col] = table[2][col] - table[0][col]
-                    except:
-                        pass
-                if row == 2:
-                    try:
-                        table[row][col] = table[0][col] + table[1][col]
-                    except:
-                        pass
+    
+    while True:
+        changed = False 
+        for row in range(3):
+            for col in range(3):
+                # go through row-wise
+                if table[row][col] in EMPTY_VALS:
+                    if col == 0:
+                        try:
+                            table[row][col] = table[row][2] - table[row][1]
+                            changed = True
+                        except:
+                            pass
+                    if col == 1:
+                        try:
+                            table[row][col] = table[row][2] - table[row][0]
+                            changed = True
+                        except:
+                            pass
+                    if col == 2:
+                        try:
+                            table[row][col] = table[row][0] + table[row][1]
+                            changed = True
+                        except:
+                            pass
+                # and now column-wise
+                if table[row][col] in EMPTY_VALS:
+                    if row == 0:
+                        try:
+                            table[row][col] = table[2][col] - table[1][col]
+                            changed = True
+                        except:
+                            pass
+                    if row == 1:
+                        try:
+                            table[row][col] = table[2][col] - table[0][col]
+                            changed = True
+                        except:
+                            pass
+                    if row == 2:
+                        try:
+                            table[row][col] = table[0][col] + table[1][col]
+                            changed = True
+                        except:
+                            pass
+        if not changed:
+            break
+    ## end of big while loop
+        
     coef = {}
     coef['c11']   = table[0][0]
     coef['c12']   = table[0][1]

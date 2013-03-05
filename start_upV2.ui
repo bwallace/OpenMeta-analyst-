@@ -108,35 +108,6 @@ Grant # R01 HS 018574</string>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QLabel" name="updatesLabel">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>120</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>&lt;a href=&quot;www.google.com&quot;&gt;Check for updates&lt;/a&gt;</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-       <property name="openExternalLinks">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="Line" name="line_2">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QLabel" name="oma_onlineLabel">
        <property name="minimumSize">
         <size>
@@ -145,7 +116,7 @@ Grant # R01 HS 018574</string>
         </size>
        </property>
        <property name="text">
-        <string>&lt;a href=&quot;http://www.cebm.brown.edu/open_meta&quot;&gt;OpenMeta online&lt;/a&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;http://www.cebm.brown.edu/open_meta&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;OpenMeta Website&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
