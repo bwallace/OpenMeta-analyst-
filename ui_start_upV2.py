@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'start_upV2.ui'
 #
-# Created: Mon Mar  4 11:17:44 2013
+# Created: Tue Mar  5 15:55:49 2013
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_WelcomeDialog(object):
     def setupUi(self, WelcomeDialog):
         WelcomeDialog.setObjectName(_fromUtf8("WelcomeDialog"))
-        WelcomeDialog.resize(591, 426)
+        WelcomeDialog.resize(591, 442)
         WelcomeDialog.setSizeGripEnabled(False)
         self.verticalLayout = QtGui.QVBoxLayout(WelcomeDialog)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
@@ -59,18 +59,6 @@ class Ui_WelcomeDialog(object):
         self.verticalLayout.addItem(spacerItem2)
         self.horizontalLayout_2 = QtGui.QHBoxLayout()
         self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
-        self.updatesLabel = QtGui.QLabel(WelcomeDialog)
-        self.updatesLabel.setEnabled(False)
-        self.updatesLabel.setMinimumSize(QtCore.QSize(120, 0))
-        self.updatesLabel.setAlignment(QtCore.Qt.AlignCenter)
-        self.updatesLabel.setOpenExternalLinks(True)
-        self.updatesLabel.setObjectName(_fromUtf8("updatesLabel"))
-        self.horizontalLayout_2.addWidget(self.updatesLabel)
-        self.line_2 = QtGui.QFrame(WelcomeDialog)
-        self.line_2.setFrameShape(QtGui.QFrame.VLine)
-        self.line_2.setFrameShadow(QtGui.QFrame.Sunken)
-        self.line_2.setObjectName(_fromUtf8("line_2"))
-        self.horizontalLayout_2.addWidget(self.line_2)
         self.oma_onlineLabel = QtGui.QLabel(WelcomeDialog)
         self.oma_onlineLabel.setMinimumSize(QtCore.QSize(120, 0))
         self.oma_onlineLabel.setAlignment(QtCore.Qt.AlignCenter)
@@ -135,9 +123,9 @@ class Ui_WelcomeDialog(object):
     def retranslateUi(self, WelcomeDialog):
         WelcomeDialog.setWindowTitle(_translate("WelcomeDialog", "Welcome to OpenMeta", None))
         self.fundedby_lbl.setText(_translate("WelcomeDialog", "Funded by the Agency for Healthcare Research and Quality (AHRQ)\n"
-"Grant # R01 HS 018574", None))
-        self.updatesLabel.setText(_translate("WelcomeDialog", "<a href=\"www.google.com\">Check for updates</a>", None))
-        self.oma_onlineLabel.setText(_translate("WelcomeDialog", "<a href=\"http://www.cebm.brown.edu/open_meta\">OpenMeta online</a>", None))
+"Grant # R01 HS 018574\n"
+"Contract No. HHSA 290 2007 10055 I; Task Order #2", None))
+        self.oma_onlineLabel.setText(_translate("WelcomeDialog", "<html><head/><body><p><a href=\"http://www.cebm.brown.edu/open_meta\"><span style=\" text-decoration: underline; color:#0000ff;\">OpenMeta Website</span></a></p></body></html>", None))
         self.how_to_citeLabel.setText(_translate("WelcomeDialog", "<a href=\"www.google.com\">How to cite</a>", None))
         self.helpLabel.setText(_translate("WelcomeDialog", "<a href=\"http://tuftscaes.org/open_meta/help/openMA_help.html\">Help</a>", None))
         self.label.setText(_translate("WelcomeDialog", "I want to:", None))

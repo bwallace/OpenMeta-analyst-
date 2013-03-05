@@ -28,7 +28,7 @@ import ui_meta
 from ma_data_table_view import StudyDelegate
 import ma_data_table_view
 from ma_data_table_model import *
-import meta_globals
+#import meta_globals
 from meta_globals import *
 import ma_dataset
 from ma_dataset import *
@@ -47,7 +47,6 @@ import edit_dialog
 import edit_group_name_form
 import change_cov_type_form
 import network_view
-import meta_globals 
 import start_up_dialog
 import create_new_project_dialog
 

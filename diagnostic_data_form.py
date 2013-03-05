@@ -91,7 +91,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self.inconsistencyLabel.setPalette(inconsistency_palette)
         self.inconsistencyLabel.setVisible(False)
         
-        self.check_consistency = meta_globals.ConsistencyChecker(
+        self.check_table_consistency = meta_globals.ConsistencyChecker(
                             fn_consistent=self.action_consistent_table,
                             fn_inconsistent=self.action_inconsistent_table,
                             table_2x2 = self.two_by_two_table)
@@ -217,21 +217,11 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self.current_item_data = self._get_int(row,col) # For verification
         
         #check consistency of table
-        self.check_consistency.run()
-    
-#        #new_val = self._get_int(row, col)
-#        #if new_val is not None:
-#            # make sensitivity and specificity calculations work...
-#            #   does impute_diag_data try and fail to do this? GD
-
-        # NEED TO REWORK METHOD FOR STORING DATA: TABLE-->MA_UNIT
-        # going through impute_data is rather circuitous
-        self.impute_data() # 2x2 table --> ma_unit
+        self.check_table_consistency.run()
         
-#            self.impute_effects_in_ma_unit()
-#            self.set_current_effect()
-        self.impute_effects_in_ma_unit()
-        self.set_current_effect()
+        self._update_ma_unit()           # 2x2 table --> ma_unit
+        self.impute_effects_in_ma_unit() # effects   --> ma_unit
+        self.set_current_effect()        # ma_unit   --> effects
     
     def _get_table_vals(self):
         ''' Package table from 2x2 table in to a dictionary'''
@@ -295,6 +285,14 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
                 self.ma_unit.tx_groups[self.group_str].raw_data[raw_data_index] =\
                          float(imputed_dict[field])
         self.two_by_two_table.blockSignals(False)
+    
+    def _update_ma_unit(self):
+        '''Copy data from data table to the MA_unit'''
+        raw_dict = self._get_raw_data() # values are floats or None
+        for field,value in raw_dict.iteritems():
+            i = DIAG_FIELDS_TO_RAW_INDICES[field]
+            self.ma_unit.tx_groups[self.group_str].raw_data[i] = raw_dict[field]
+        
     
     #### MOSTLY DUPLICATED FROM ma_data_table_model.update_outcome_if_possible()
     def impute_effects_in_ma_unit(self):
@@ -562,7 +560,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         if computed_params:
             self._set_vals(computed_params) # computed --> table widget
         
-        self.check_consistency.run()
+        self.check_table_consistency.run()
         self.two_by_two_table.blockSignals(False)
         
         

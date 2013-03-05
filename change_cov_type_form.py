@@ -185,7 +185,7 @@ class CovModel(QAbstractTableModel):
                     # continuous
                     new_value, converted_ok = value.toDouble()
                     if not converted_ok: 
-                        print "whoops! can't convert %s to a number." % val
+                        print "whoops! can't convert %s to a number." % value
                         new_value = None
                 study.covariate_dict[cov_name] = new_value
                 self.refresh_cov_values()

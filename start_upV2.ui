@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>591</width>
-    <height>426</height>
+    <height>442</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -85,7 +85,8 @@
     <widget class="QLabel" name="fundedby_lbl">
      <property name="text">
       <string>Funded by the Agency for Healthcare Research and Quality (AHRQ)
-Grant # R01 HS 018574</string>
+Grant # R01 HS 018574
+Contract No. HHSA 290 2007 10055 I; Task Order #2</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

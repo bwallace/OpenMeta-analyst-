@@ -281,7 +281,7 @@ class DatasetModel(QAbstractTableModel):
                 
             elif column != self.INCLUDE_STUDY:
                 # here the column is to the right of the outcomes (and not the 0th, or
-                # 'include study' column), and thus must corrrespond to a covariate.
+                # 'include study' column), and thus must correspond to a covariate.
                 cov_obj = self.get_cov(column)
                 cov_name = cov_obj.name
                 cov_value = study.covariate_dict[cov_name] if \
@@ -302,7 +302,7 @@ class DatasetModel(QAbstractTableModel):
                 checked_state = Qt.Unchecked
                 if index.row() < self.rowCount()-1 and study.include:
                     checked_state = Qt.Checked
-                    return QVariant(checked_state)
+                return QVariant(checked_state)
         elif role == Qt.BackgroundColorRole:
             if column in self.OUTCOMES:
                 return QVariant(QColor(Qt.yellow))
@@ -1242,7 +1242,7 @@ class DatasetModel(QAbstractTableModel):
         ####
         # previously we were always setting this to false here,
         # but below we check only for raw data. in fact,
-        # we only want to foce an exclude if there is no
+        # we only want to force an exclude if there is no
         # raw data *and* no manually entered point estimate/CI
         if data_type == DIAGNOSTIC or not self.study_has_point_est(study_index):
             self.dataset.studies[study_index].include = False
@@ -1252,9 +1252,10 @@ class DatasetModel(QAbstractTableModel):
         if self.raw_data_is_complete_for_study(study_index) or \
                 (one_arm_effect and self.raw_data_is_complete_for_study(study_index, first_arm_only=True)):
             
-            # include the study -- note that if the user excluded the study, then
-            # edited the raw data, this will re-include it automatically
-            self.dataset.studies[study_index].include = True
+            if not self.dataset.studies[study_index].manually_excluded:
+                # include the study -- note that if the user excluded the study, then
+                # edited the raw data, this will re-include it automatically
+                self.dataset.studies[study_index].include = True
 
             if data_type == BINARY:
                 e1, n1, e2, n2 = self.get_cur_raw_data_for_study(study_index)
