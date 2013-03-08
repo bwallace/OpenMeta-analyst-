@@ -12,16 +12,16 @@
 #############################################################################
 
 import math
-#import os
+import os
 import pdb
 #import collections
 
 from PyQt4.QtCore import pyqtRemoveInputHook
-
-from meta_globals import *   
+from meta_globals import (BASE_PATH,CONTINUOUS,ONE_ARM_METRICS,TWO_ARM_METRICS,
+                          TYPE_TO_STR_DICT)
 
 try:
-    import rpy2
+    #import rpy2
     # this line throws a segfault
     from rpy2 import robjects as ro
 except Exception, e:
@@ -29,8 +29,8 @@ except Exception, e:
     print e
     
 import rpy2.robjects
-from rpy2.rinterface import NALogicalType
-from rpy2.rinterface import NARealType
+#from rpy2.rinterface import NALogicalType
+#from rpy2.rinterface import NARealType
 
 try:
     # ascertain that R has write privledges
@@ -128,7 +128,8 @@ def _gis_NA(x):
     #return type(x) in [rpy2.rinterface.NALogicalType, rpy2.rinterface.NARealType]
     print "TESTING NA"
     
-    return type(x) in [NALogicalType, NARealType]
+    #return type(x) in [NALogicalType, NARealType]
+    return str(x) == 'NA'
 
 # NOTE: CUSTOM VERSION......
 def _grlist_to_pydict(r_ls, recurse=True):

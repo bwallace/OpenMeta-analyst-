@@ -46,6 +46,8 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         for widget in entry_widgets:
             widget.blockSignals(True)
         
+        self.alpha_edit.setText(".05")
+        
         self._setup_inconsistency_checking()
         self._update_raw_data()            # ma_unit --> table
         self._populate_effect_data()       # make combo boxes for effects
@@ -64,24 +66,33 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self.curr_effect_tbox_text = self.effect_txt_box.text()
         self.curr_low_tbox_text    = self.low_txt_box.text()
         self.curr_high_tbox_text  = self.high_txt_box.text()
-        (self.candidate_est,self.candidate_lower,self.candidate_upper) = (None,None,None)
+        self.curr_alpha_tbox_text = self.alpha_edit.text()
+        self.curr_prevalence_tbox_text = self.prevalence_txt_box.text()
+        
+        (self.candidate_est,self.candidate_lower,self.candidate_upper,) = (None,None,None)
+        self.candidate_alpha = None
+        self.candidate_prevalence = None
+    
     
     def setup_signals_and_slots(self):
         QObject.connect(self.two_by_two_table, SIGNAL("cellChanged (int, int)"), 
                                             self._cell_changed)
-        QObject.connect(self.alpha_edit, SIGNAL("textChanged (QString)"), 
-                                            self.update_alpha)                            
+        #QObject.connect(self.alpha_edit, SIGNAL("textChanged (QString)"), 
+        #                                    self.update_alpha)                            
         QObject.connect(self.effect_cbo_box, SIGNAL("currentIndexChanged(QString)"),
                                              self.effect_changed) 
         
         QObject.connect(self.effect_txt_box, SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("est", new_text))
         QObject.connect(self.low_txt_box,    SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("lower", new_text))
         QObject.connect(self.high_txt_box,   SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("upper", new_text))
+        QObject.connect(self.alpha_edit,     SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("alpha", new_text))
+        QObject.connect(self.prevalence_txt_box, SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("prevalence", new_text))
         
         QObject.connect(self.effect_txt_box, SIGNAL("editingFinished()"), lambda: self.val_changed("est")   )
         QObject.connect(self.low_txt_box,    SIGNAL("editingFinished()"), lambda: self.val_changed("lower") )
         QObject.connect(self.high_txt_box,   SIGNAL("editingFinished()"), lambda: self.val_changed("upper") )
-
+        QObject.connect(self.alpha_edit,     SIGNAL("editingFinished()"), lambda: self.val_changed("alpha") )
+        QObject.connect(self.prevalence_txt_box, SIGNAL("editingFinished()"), lambda: self.val_changed("prevalence") )
 
 ######################### INCONSISTENCY CHECKING STUFF #########################
     def _setup_inconsistency_checking(self):
@@ -358,6 +369,14 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
                 d["conf.level"] = (1.0-float(self.alpha_edit.text()))*100
             except:
                 pass
+        
+        if not self._is_txt_box_invalid(self.prevalence_txt_box):
+            try:
+                d["prev"] = float(self.prevalence_txt_box.text())
+                pass
+            except:
+                pass
+                        
 
 
         # now grab the raw data, if available
@@ -402,6 +421,8 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             self.effect_txt_box.blockSignals(state)
             self.low_txt_box.blockSignals(state)
             self.high_txt_box.blockSignals(state)
+            self.alpha_edit.blockSignals(state)
+            self.prevalence_txt_box.blockSignals(state)
         ###### ERROR CHECKING CODE#####
         # Make sure entered value is numeric and between the appropriate bounds
         block_box_signals(True)
@@ -453,6 +474,33 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
                 block_box_signals(False)
                 return
             display_scale_val = float(self.candidate_upper)
+        elif val_str == "alpha" and not _is_empty(self.candidate_alpha):
+            if not _is_a_float(self.candidate_alpha):
+                QMessageBox.warning(self.parent(), "whoops", float_msg)
+                errorflag = True
+            if _is_a_float(self.candidate_alpha) and not 0 < float(self.candidate_alpha) < 1:
+                QMessageBox.warning(self.parent(), "whoops", "Alpha must be between 0 and 1 (closer to zero please!")
+                errorflag = True
+            if errorflag:
+                self.alpha_edit.setText(self.curr_alpha_tbox_text)
+                self.candidate_alpha = self.curr_alpha_tbox_text
+                self.alpha_edit.setFocus()
+                block_box_signals(False)
+                return
+        elif val_str == "prevalence" and not _is_empty(self.candidate_prevalence):
+            if not _is_a_float(self.candidate_prevalence):
+                QMessageBox.warning(self.parent(), "whoops", float_msg)
+                errorflag = True
+            if _is_a_float(self.candidate_prevalence) and not 0 < float(self.candidate_prevalence) < 1:
+                QMessageBox.warning(self.parent(), "whoops", "Prevalence must be between 0 and 1.")
+                errorflag = True
+            if errorflag:
+                self.prevalence_txt_box.setText(self.curr_prevalence_tbox_text)
+                self.candidate_prevalence = self.curr_prevalence_tbox_text
+                self.prevalence_txt_box.setFocus()
+                block_box_signals(False)
+                return
+                
             
         block_box_signals(False)
         # If we got to this point it means everything is ok so far
@@ -460,6 +508,9 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self.curr_effect_tbox_text = self.effect_txt_box.text()
         self.curr_low_tbox_text    = self.low_txt_box.text()
         self.curr_high_tbox_text   = self.high_txt_box.text()
+        self.curr_alpha_tbox_text  = self.alpha_edit.text()
+        self.alpha = float(self.alpha_edit.text())
+        #self.curr_prevalence_tbox_text = self.prevalence_txt_box.text()
         
         try:
             display_scale_val = float(display_scale_val)
@@ -494,7 +545,11 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         if val_str == "lower":
             self.candidate_lower = display_scale_val
         if val_str == "upper":
-            self.candidate_upper = display_scale_val  
+            self.candidate_upper = display_scale_val
+        if val_str == "alpha":
+            self.candidate_alpha = display_scale_val
+        if val_str == "prevalence":
+            self.candidate_prevalence = display_scale_val
 
     def effect_changed(self):
         self.cur_effect = str(self.effect_cbo_box.currentText()) 

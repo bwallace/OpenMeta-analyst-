@@ -12,7 +12,7 @@
 #########################################################################################
 
 # core libraries
-import PyQt4
+#import PyQt4
 from PyQt4 import *
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -1298,12 +1298,12 @@ class DatasetModel(QAbstractTableModel):
             # is where we update the point estimates -- we do this 
             # above in the case of diagnostic data, which needs to be
             # handled differently, because we're updating two
-            # outcomes, in that csae
+            # outcomes, in that case
             if data_type != DIAGNOSTIC:
                 est, lower, upper = None, None, None
                 if est_and_ci_d is not None:
                     est, lower, upper = est_and_ci_d["calc_scale"] # calculation scale
-                    disp_est, disp_lower, disp_upper = est_and_ci_d["display_scale"] # transformed/dispaly scale
+                    disp_est, disp_lower, disp_upper = est_and_ci_d["display_scale"] # transformed/display scale
                 ma_unit = self.get_current_ma_unit_for_study(study_index)
                 # now set the effect size & CIs
                 # note that we keep two versions around; a version on the 'calculation' scale

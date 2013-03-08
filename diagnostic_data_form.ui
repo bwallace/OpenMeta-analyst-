@@ -120,12 +120,12 @@
         <string>Prevalence</string>
        </property>
        <property name="buddy">
-        <cstring>prevalence_le</cstring>
+        <cstring>prevalence_txt_box</cstring>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="prevalence_le">
+      <widget class="QLineEdit" name="prevalence_txt_box">
        <property name="minimumSize">
         <size>
          <width>75</width>
@@ -386,7 +386,7 @@
         </size>
        </property>
        <property name="text">
-        <string>.05</string>
+        <string/>
        </property>
       </widget>
      </item>
