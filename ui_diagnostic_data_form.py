@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'diagnostic_data_form.ui'
 #
-# Created: Fri Mar  8 17:40:41 2013
+# Created: Mon Mar 11 16:47:29 2013
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_DiagnosticDataForm(object):
     def setupUi(self, DiagnosticDataForm):
         DiagnosticDataForm.setObjectName(_fromUtf8("DiagnosticDataForm"))
-        DiagnosticDataForm.resize(380, 325)
+        DiagnosticDataForm.resize(380, 335)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/images/meta.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         DiagnosticDataForm.setWindowIcon(icon)
@@ -79,6 +79,9 @@ class Ui_DiagnosticDataForm(object):
         self.horizontalLayout_3.addWidget(self.prevalence_txt_box)
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_3.addItem(spacerItem1)
+        self.startover_Btn = QtGui.QPushButton(DiagnosticDataForm)
+        self.startover_Btn.setObjectName(_fromUtf8("startover_Btn"))
+        self.horizontalLayout_3.addWidget(self.startover_Btn)
         self.verticalLayout.addLayout(self.horizontalLayout_3)
         self.horizontalLayout_2 = QtGui.QHBoxLayout()
         self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
@@ -141,9 +144,9 @@ class Ui_DiagnosticDataForm(object):
         self.high_txt_box.setMaximumSize(QtCore.QSize(50, 22))
         self.high_txt_box.setObjectName(_fromUtf8("high_txt_box"))
         self.gridLayout.addWidget(self.high_txt_box, 0, 5, 1, 1)
-        self.label = QtGui.QLabel(DiagnosticDataForm)
-        self.label.setObjectName(_fromUtf8("label"))
-        self.gridLayout.addWidget(self.label, 0, 6, 1, 1)
+        self.se_lbl = QtGui.QLabel(DiagnosticDataForm)
+        self.se_lbl.setObjectName(_fromUtf8("se_lbl"))
+        self.gridLayout.addWidget(self.se_lbl, 0, 6, 1, 1)
         self.se_txt_box = QtGui.QLineEdit(DiagnosticDataForm)
         self.se_txt_box.setMinimumSize(QtCore.QSize(50, 22))
         self.se_txt_box.setMaximumSize(QtCore.QSize(50, 22))
@@ -212,11 +215,12 @@ class Ui_DiagnosticDataForm(object):
         item = self.two_by_two_table.horizontalHeaderItem(2)
         item.setText(_translate("DiagnosticDataForm", "total", None))
         self.prevalence_lbl.setText(_translate("DiagnosticDataForm", "Prevalence", None))
+        self.startover_Btn.setText(_translate("DiagnosticDataForm", "Start Over", None))
         self.label_13.setText(_translate("DiagnosticDataForm", "metric", None))
         self.label_14.setText(_translate("DiagnosticDataForm", "est.", None))
         self.label_15.setText(_translate("DiagnosticDataForm", "low", None))
         self.label_16.setText(_translate("DiagnosticDataForm", "high", None))
-        self.label.setText(_translate("DiagnosticDataForm", "se", None))
+        self.se_lbl.setText(_translate("DiagnosticDataForm", "se", None))
         self.label_2.setText(_translate("DiagnosticDataForm", "α:", None))
         self.ci_label.setText(_translate("DiagnosticDataForm", "(95% confidence interval)", None))
         self.inconsistencyLabel.setText(_translate("DiagnosticDataForm", "INCONSISTENT FORM", None))

@@ -1,8 +1,10 @@
 ##################################################
 #
-#  Byron C. Wallace
-#  Tufts Medical Center
-#  OpenMeta[analyst]
+#  Byron C. Wallace                  
+#  George Dietz                      
+#  CEBM @ Brown                       
+#  OpenMeta[analyst] 
+#
 #  ---
 #  Diagnostic data form module; for flexible entry of diagnostic
 #  outcome data.
@@ -39,8 +41,15 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self.cur_effect = "Sens" # arbitrary
         self.alpha = .05
         
+        # Stores form effect info as text
+        self.form_effects_dict = {"Sens":{"est":"","lower":"","upper":"","se":""},
+                                  "Spec":{"est":"","lower":"","upper":"","se":""},
+                                  "alpha":"","prevalence":""}
+        # Stores table items as text
+        self.table_backup = [[None,None,None],[None,None,None],[None,None,None]]
+        
         entry_widgets = [self.two_by_two_table, self.alpha_edit,\
-            self.low_txt_box, self.high_txt_box, self.effect_txt_box]
+            self.low_txt_box, self.high_txt_box, self.effect_txt_box, self.se_txt_box]
         
         # block all the widgets for a moment
         for widget in entry_widgets:
@@ -49,50 +58,48 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self.alpha_edit.setText(".05")
         
         self._setup_inconsistency_checking()
-        self._update_raw_data()            # ma_unit --> table
-        self._populate_effect_data()       # make combo boxes for effects
-        self._impute_2by2_from_effects()   # back-calculate 2x2
-        self._update_data_table() # does nothing....
-        self.set_current_effect() # fill in current effect data in line edits
+        self._update_raw_data()           # ma_unit --> table
+        self._populate_effect_data()      # make combo boxes for effects
+        self._impute_2by2_from_effects()  # back-calculate 2x2
+        self._update_data_table()         # fill in the rest of the data table
+        self.set_current_effect()         # fill in current effect data in line edits
+        self._setup_table_effect_dict()   # stores effect info locally
+        self._save_table_data()
+        self._save_displayed_effects_data() # for validation on text boxes
 
         # unblock
         for widget in entry_widgets:
             widget.blockSignals(False)
         
-        # used for checking the data we attempt to set is good
-        self.current_item_data = self._get_int(self.two_by_two_table.currentRow(),self.two_by_two_table.currentColumn())
-        
-        # for validation on text boxes
-        self.curr_effect_tbox_text = self.effect_txt_box.text()
-        self.curr_low_tbox_text    = self.low_txt_box.text()
-        self.curr_high_tbox_text  = self.high_txt_box.text()
-        self.curr_alpha_tbox_text = self.alpha_edit.text()
-        self.curr_prevalence_tbox_text = self.prevalence_txt_box.text()
-        
         (self.candidate_est,self.candidate_lower,self.candidate_upper,) = (None,None,None)
         self.candidate_alpha = None
         self.candidate_prevalence = None
+        #self.candidate_se = None
     
+        # SE MAKES NO SENSE IN THIS CONTEXT........
+        self.se_txt_box.setVisible(False)
+        self.se_lbl.setVisible(False)
     
     def setup_signals_and_slots(self):
         QObject.connect(self.two_by_two_table, SIGNAL("cellChanged (int, int)"), 
-                                            self._cell_changed)
-        #QObject.connect(self.alpha_edit, SIGNAL("textChanged (QString)"), 
-        #                                    self.update_alpha)                            
+                                            self._cell_changed)                          
         QObject.connect(self.effect_cbo_box, SIGNAL("currentIndexChanged(QString)"),
                                              self.effect_changed) 
+        QObject.connect(self.startover_Btn, SIGNAL("clicked()"), self.start_over)
         
         QObject.connect(self.effect_txt_box, SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("est", new_text))
         QObject.connect(self.low_txt_box,    SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("lower", new_text))
         QObject.connect(self.high_txt_box,   SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("upper", new_text))
         QObject.connect(self.alpha_edit,     SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("alpha", new_text))
         QObject.connect(self.prevalence_txt_box, SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("prevalence", new_text))
+        QObject.connect(self.se_txt_box, SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("se", new_text))
         
         QObject.connect(self.effect_txt_box, SIGNAL("editingFinished()"), lambda: self.val_changed("est")   )
         QObject.connect(self.low_txt_box,    SIGNAL("editingFinished()"), lambda: self.val_changed("lower") )
         QObject.connect(self.high_txt_box,   SIGNAL("editingFinished()"), lambda: self.val_changed("upper") )
         QObject.connect(self.alpha_edit,     SIGNAL("editingFinished()"), lambda: self.val_changed("alpha") )
         QObject.connect(self.prevalence_txt_box, SIGNAL("editingFinished()"), lambda: self.val_changed("prevalence") )
+        QObject.connect(self.se_txt_box,     SIGNAL("editingFinished()"), lambda: self.val_changed("se") )
 
 ######################### INCONSISTENCY CHECKING STUFF #########################
     def _setup_inconsistency_checking(self):
@@ -117,10 +124,11 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
 ####################### END INCONSISTENCY CHECKING STUFF #######################
 
 
-    @pyqtSignature("int, int, int, int")
-    def on_raw_data_table_currentCellChanged(self,currentRow,currentColumn,previousRow,previousColumn):
-        self.current_item_data = self._get_int(currentRow,currentColumn)
-        print "Current Item Data:",self.current_item_data
+#    @pyqtSignature("int, int, int, int")
+#    def on_raw_data_table_currentCellChanged(self,currentRow,currentColumn,previousRow,previousColumn):
+#        #self.current_item_data = self._get_int(currentRow,currentColumn)
+#        #print "Current Item Data:",self.current_item_data
+#        pass
 
     def _get_int(self, i, j):
         try:
@@ -156,18 +164,13 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         except:
             return True
         return False
-            
-            
     
-
     def _is_txt_box_empty(self, txt_box):
         val = txt_box.text()
         return val is None or val == ""
     def _is_txt_box_invalid(self, txt_box):
         val = txt_box.text()
         return meta_globals.is_NaN(val) or self._is_txt_box_empty(txt_box) or (not _is_a_float(val))
-    
-    
     
     def _set_val(self, row, col, val):
         is_NaN = lambda x: x != x
@@ -202,37 +205,91 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self.two_by_two_table.blockSignals(False)
 
     def _cell_changed(self, row, col):
-        ##print "previous cell data:",self.current_item_data
-        ##print "new cell data:", self.two_by_two_table.item(row, col).text()
-        print "------------------------------------"
-        print "CELL CHANGED"
-        
         new_num_not_valid = self._cell_data_not_valid(self.two_by_two_table.item(row, col).text())
         # Test if entered data is valid (a number)
         if new_num_not_valid:
             # popup warning message
             QMessageBox.warning(self.parent(), "whoops", new_num_not_valid)
             # set value back to original and leave, doing nothing
-            self.two_by_two_table.blockSignals(True)
-            self._set_val(row, col, self.current_item_data)
-            self.two_by_two_table.blockSignals(False)
+            self._restore_table()
+            return
+    
+        self._update_data_table() # calculate rest of data table
+        
+        #check consistency of table (rows sum, etc)
+        (check, msg) = self.check_table_consistency.run()
+        if msg:
+            QMessageBox.warning(self.parent(), "whoops", msg)
+            #pyqtRemoveInputHook()
+            #pdb.set_trace()
+            self._restore_table()
             return
         
-        # Try to calculate the rest of the table values
-        table_values = self._get_table_vals()
-        print "Table Values: ", table_values
-        computed_parameters = meta_globals.compute_2x2_table(table_values)
-        if computed_parameters:
-            print("Computed Parameters:",computed_parameters)
-            self._set_vals(computed_parameters) # computed --> table widget
-        self.current_item_data = self._get_int(row,col) # For verification
-        
-        #check consistency of table
-        self.check_table_consistency.run()
-        
+        self._save_table_data()
         self._update_ma_unit()           # 2x2 table --> ma_unit
         self.impute_effects_in_ma_unit() # effects   --> ma_unit
         self.set_current_effect()        # ma_unit   --> effects
+        
+    def _save_displayed_effects_data(self):
+        print "Saving Displayed Effects data...."
+        
+        self.form_effects_dict[self.cur_effect]["est"]   = self.effect_txt_box.text() 
+        self.form_effects_dict[self.cur_effect]["lower"] = self.low_txt_box.text()    
+        self.form_effects_dict[self.cur_effect]["upper"] = self.high_txt_box.text()    
+        #self.form_effects_dict[self.cur_effect]["se"]    = self.se_txt_box.text()
+        self.form_effects_dict["alpha"]                  = self.alpha_edit.text() 
+        self.form_effects_dict["prevalence"]             = self.prevalence_txt_box.text()
+        
+    def _restore_displayed_effects_data(self):
+        print "Restoring displayed effects data..."
+        
+        self.block_box_signals(True)
+        self.effect_txt_box.setText(    self.form_effects_dict[self.cur_effect]["est"]  )    
+        self.low_txt_box.setText(       self.form_effects_dict[self.cur_effect]["lower"])       
+        self.high_txt_box.setText(      self.form_effects_dict[self.cur_effect]["upper"])      
+        #self.se_txt_box.setText(        self.form_effects_dict[self.cur_effect]["se"]   )        
+        self.alpha_edit.setText(        self.form_effects_dict["alpha"]                 )        
+        self.prevalence_txt_box.setText(self.form_effects_dict["prevalence"]            )
+        
+        self.candidate_est        = self.effect_txt_box.text()
+        self.candidate_lower      = self.low_txt_box.text()
+        self.candidate_upper      = self.high_txt_box.text()
+        self.candidate_alpha      = self.alpha_edit.text()
+        self.candidate_prevalence = self.prevalence_txt_box.text()
+        self.block_box_signals(False)
+                                    
+    def _save_table_data(self):
+        for row in range(3):
+            for col in range(3):
+                contents = self.two_by_two_table.item(row, col).text()
+                self.table_backup[row][col]=contents
+        self.prevalence_backup = self.prevalence_txt_box.text()
+        
+        #print("Backed-up table:")
+        #self._print_backup_table()
+    def _restore_table(self):
+        #print "Table to restore:"
+        #self._print_backup_table()
+        
+        self.two_by_two_table.blockSignals(True)
+        for row in range(3):
+            for col in range(3):
+                self.two_by_two_table.item(row, col).setText(self.table_backup[row][col])
+        self.check_table_consistency.run()
+        
+        #prevalence
+        self.prevalence_txt_box.blockSignals(True)
+        self.prevalence_txt_box.setText(self.prevalence_backup)
+        self.prevalence_txt_box.blockSignals(False)
+        
+        self.two_by_two_table.blockSignals(False)
+        
+    def _print_backup_table(self):
+        for row in range(3):
+            line = ""
+            for col in range(3):
+                line += self.table_backup[row][col] + ", "
+            print line
     
     def _get_table_vals(self):
         ''' Package table from 2x2 table in to a dictionary'''
@@ -327,6 +384,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             
             disp_est, disp_lower, disp_upper = ests_and_cis[metric]["display_scale"]
             self.ma_unit.set_display_effect_and_ci(metric, self.group_str, disp_est, disp_lower, disp_upper)
+        
       
     def _set_table_item(self, i, j, val):
         if meta_globals.is_NaN(val):
@@ -373,25 +431,18 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         if not self._is_txt_box_invalid(self.prevalence_txt_box):
             try:
                 d["prev"] = float(self.prevalence_txt_box.text())
-                pass
             except:
                 pass
-                        
-
+        
+        if not self._is_txt_box_invalid(self.se_txt_box):
+            try:
+                d["%s.se" % metric_str] = float(self.se_txt_box.text())
+            except:
+                pass
 
         # now grab the raw data, if available
-        if not self._is_invalid(0,0):
-            d["TP"] = float(self._get_int(0,0))
+        d.update(self._get_raw_data())
         
-        if not self._is_invalid(1,0):
-            d["FN"] = float(self._get_int(1,0))
-        
-        if not self._is_invalid(0,1):
-            d["FP"] = float(self._get_int(0,1))
-        
-        if not self._is_invalid(1,1):
-            d["TN"] = float(self._get_int(1,1))
-
         return d
     
     def _get_raw_data(self,convert_None_to_NA_string=False):
@@ -405,112 +456,104 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         d["FP"] = float(self._get_int(0,1)) if not self._is_empty(0,1) else NoneValue
         d["TN"] = float(self._get_int(1,1)) if not self._is_empty(1,1) else NoneValue
         return d
-            
 
-    #def val_edit(self, val_str, new_val_text):
-    #    print "imputing data!"
-    #    self.impute_data()
-        
-        
+    def block_box_signals(self,state):
+        self.effect_txt_box.blockSignals(state)
+        self.low_txt_box.blockSignals(state)
+        self.high_txt_box.blockSignals(state)
+        self.alpha_edit.blockSignals(state)
+        self.prevalence_txt_box.blockSignals(state)
+        #self.se_txt_box.blockSignals(state)
+
     def val_changed(self, val_str):
-        def is_between_bounds(est=self.curr_effect_tbox_text, 
-                              low=self.curr_low_tbox_text, 
-                              high=self.curr_high_tbox_text):
+        #print "--------------\nEntering val_changed...."
+        
+        def is_between_bounds(est=self.form_effects_dict[self.cur_effect]["est"], 
+                              low=self.form_effects_dict[self.cur_effect]["lower"], 
+                              high=self.form_effects_dict[self.cur_effect]["upper"]):
             return meta_globals.between_bounds(est=est, low=low, high=high)
-        def block_box_signals(state):
-            self.effect_txt_box.blockSignals(state)
-            self.low_txt_box.blockSignals(state)
-            self.high_txt_box.blockSignals(state)
-            self.alpha_edit.blockSignals(state)
-            self.prevalence_txt_box.blockSignals(state)
+
         ###### ERROR CHECKING CODE#####
         # Make sure entered value is numeric and between the appropriate bounds
-        block_box_signals(True)
+        self.block_box_signals(True)
         float_msg = "Must be numeric!"
-        errorflag = False
-        if val_str == "est" and not _is_empty(self.candidate_est):
-            # Check type
-            if not _is_a_float(self.candidate_est) :
-                QMessageBox.warning(self.parent(), "whoops", float_msg)
-                errorflag = True
-            (good_result,msg) = is_between_bounds(est=self.candidate_est)
-            if not good_result:
-                QMessageBox.warning(self.parent(), "whoops", msg)
-                errorflag = True
-            if errorflag:
-                self.effect_txt_box.setText(self.curr_effect_tbox_text)
-                self.candidate_est = self.curr_effect_tbox_text
+        try:
+            if val_str == "est" and not _is_empty(self.candidate_est):
+                # Check type
+                if not _is_a_float(self.candidate_est) :
+                    QMessageBox.warning(self.parent(), "whoops", float_msg)
+                    raise Exception("error")
+                (good_result,msg) = is_between_bounds(est=self.candidate_est)
+                if not good_result:
+                    QMessageBox.warning(self.parent(), "whoops", msg)
+                    raise Exception("error")
+                display_scale_val = float(self.candidate_est)
+            elif val_str == "lower" and not _is_empty(self.candidate_lower):
+                if not _is_a_float(self.candidate_lower) :
+                    QMessageBox.warning(self.parent(), "whoops", float_msg)
+                    raise Exception("error")
+                (good_result,msg) = is_between_bounds(low=self.candidate_lower)
+                if not good_result:
+                    QMessageBox.warning(self.parent(), "whoops", msg)
+                    raise Exception("error")
+                display_scale_val = float(self.candidate_lower)
+            elif val_str == "upper" and not _is_empty(self.candidate_upper): 
+                if not _is_a_float(self.candidate_upper) :
+                    QMessageBox.warning(self.parent(), "whoops", float_msg)
+                    raise Exception("error")
+                (good_result,msg) = is_between_bounds(high=self.candidate_upper)
+                if not good_result:
+                    QMessageBox.warning(self.parent(), "whoops", msg)
+                    raise Exception("error")
+                display_scale_val = float(self.candidate_upper)
+            elif val_str == "alpha" and not _is_empty(self.candidate_alpha):
+                if not _is_a_float(self.candidate_alpha):
+                    QMessageBox.warning(self.parent(), "whoops", float_msg)
+                    raise Exception("error")
+                if _is_a_float(self.candidate_alpha) and not 0 < float(self.candidate_alpha) < 1:
+                    QMessageBox.warning(self.parent(), "whoops", "Alpha must be between 0 and 1 (closer to zero please!")
+                    raise Exception("error")
+            elif val_str == "prevalence" and not _is_empty(self.candidate_prevalence):
+                if not _is_a_float(self.candidate_prevalence):
+                    QMessageBox.warning(self.parent(), "whoops", float_msg)
+                    raise Exception("error")
+                if _is_a_float(self.candidate_prevalence) and not 0 < float(self.candidate_prevalence) < 1:
+                    QMessageBox.warning(self.parent(), "whoops", "Prevalence must be between 0 and 1.")
+                    raise Exception("error")
+    #        elif val_str == "se" and not _is_empty(self.candidate_se):
+    #            if not _is_a_float(self.candidate_se):
+    #                QMessageBox.warning(self.parent(), "whoops", float_msg)
+    #                errorflag = True
+    #            if _is_a_float(self.candidate_se) and not 0 < float(self.candidate_se):
+    #                QMessageBox.warning(self.parent(), "whoops", "Standard Error must be greater than 0.")
+    #                errorflag = True
+    #            if errorflag:
+    #                self.se_txt_box.setText(self.curr_se_tbox_text)
+    #                self.candidate_se = self.curr_se_tbox_text
+    #                self.se_txt_box.setFocus()
+    #                block_box_signals(False)
+    #                return
+        except:
+            print "Error flag is true"
+            self._restore_displayed_effects_data()
+            self.block_box_signals(True)
+            if val_str == "est":
                 self.effect_txt_box.setFocus()
-                block_box_signals(False)
-                return
-            display_scale_val = float(self.candidate_est)
-        elif val_str == "lower" and not _is_empty(self.candidate_lower):
-            if not _is_a_float(self.candidate_lower) :
-                QMessageBox.warning(self.parent(), "whoops", float_msg)
-                errorflag=True
-            (good_result,msg) = is_between_bounds(low=self.candidate_lower)
-            if not good_result:
-                QMessageBox.warning(self.parent(), "whoops", msg)
-                errorflag=True
-            if errorflag:
-                self.low_txt_box.setText(self.curr_low_tbox_text)
-                self.candidate_lower = self.curr_low_tbox_text
+            elif val_str == "lower":
                 self.low_txt_box.setFocus()
-                block_box_signals(False)
-                return
-            display_scale_val = float(self.candidate_lower)
-        elif val_str == "upper" and not _is_empty(self.candidate_upper): 
-            if not _is_a_float(self.candidate_upper) :
-                QMessageBox.warning(self.parent(), "whoops", float_msg)
-                errorflag=True
-            (good_result,msg) = is_between_bounds(high=self.candidate_upper)
-            if not good_result:
-                QMessageBox.warning(self.parent(), "whoops", msg)
-                errorflag=True
-            if errorflag:
-                self.high_txt_box.setText(self.curr_high_tbox_text)
-                self.candidate_upper = self.curr_high_tbox_text
+            elif val_str == "upper":
                 self.high_txt_box.setFocus()
-                block_box_signals(False)
-                return
-            display_scale_val = float(self.candidate_upper)
-        elif val_str == "alpha" and not _is_empty(self.candidate_alpha):
-            if not _is_a_float(self.candidate_alpha):
-                QMessageBox.warning(self.parent(), "whoops", float_msg)
-                errorflag = True
-            if _is_a_float(self.candidate_alpha) and not 0 < float(self.candidate_alpha) < 1:
-                QMessageBox.warning(self.parent(), "whoops", "Alpha must be between 0 and 1 (closer to zero please!")
-                errorflag = True
-            if errorflag:
-                self.alpha_edit.setText(self.curr_alpha_tbox_text)
-                self.candidate_alpha = self.curr_alpha_tbox_text
+            elif val_str == "alpha":
                 self.alpha_edit.setFocus()
-                block_box_signals(False)
-                return
-        elif val_str == "prevalence" and not _is_empty(self.candidate_prevalence):
-            if not _is_a_float(self.candidate_prevalence):
-                QMessageBox.warning(self.parent(), "whoops", float_msg)
-                errorflag = True
-            if _is_a_float(self.candidate_prevalence) and not 0 < float(self.candidate_prevalence) < 1:
-                QMessageBox.warning(self.parent(), "whoops", "Prevalence must be between 0 and 1.")
-                errorflag = True
-            if errorflag:
-                self.prevalence_txt_box.setText(self.curr_prevalence_tbox_text)
-                self.candidate_prevalence = self.curr_prevalence_tbox_text
+            elif val_str == "prevalence":
                 self.prevalence_txt_box.setFocus()
-                block_box_signals(False)
-                return
+            self.block_box_signals(False)
+            return
                 
-            
-        block_box_signals(False)
+        self.block_box_signals(False)
+        
         # If we got to this point it means everything is ok so far
-    
-        self.curr_effect_tbox_text = self.effect_txt_box.text()
-        self.curr_low_tbox_text    = self.low_txt_box.text()
-        self.curr_high_tbox_text   = self.high_txt_box.text()
-        self.curr_alpha_tbox_text  = self.alpha_edit.text()
-        self.alpha = float(self.alpha_edit.text())
-        #self.curr_prevalence_tbox_text = self.prevalence_txt_box.text()
+        self._save_displayed_effects_data()
         
         try:
             display_scale_val = float(display_scale_val)
@@ -526,17 +569,22 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         if val_str == "est":
             self.ma_unit.set_effect(self.cur_effect, self.group_str, calc_scale_val)
             self.ma_unit.set_display_effect(self.cur_effect, self.group_str, display_scale_val)
-            
         elif val_str == "lower":
             self.ma_unit.set_lower(self.cur_effect, self.group_str, calc_scale_val)
             self.ma_unit.set_display_lower(self.cur_effect, self.group_str, display_scale_val)
         else:
             self.ma_unit.set_upper(self.cur_effect, self.group_str, calc_scale_val)
             self.ma_unit.set_display_upper(self.cur_effect, self.group_str, display_scale_val)
+        
+        # update effect quantity in local dictionary of effects
+        if val_str in ["est","lower","upper"]: #["est","lower","upper","se"]:
+            self.form_effects_dict[self.cur_effect][val_str] = str(display_scale_val)
 
         # Impute 2x2 from here
         print "imputing data!"
         self.impute_data()
+        self._update_data_table()
+        self._save_table_data()
     
     def val_edit(self, val_str, display_scale_val):
         print "Editing %s with value: %s" % (val_str,display_scale_val)
@@ -550,6 +598,8 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             self.candidate_alpha = display_scale_val
         if val_str == "prevalence":
             self.candidate_prevalence = display_scale_val
+        #if val_str == "se":
+        #    self.candidate_se = display_scale_val
 
     def effect_changed(self):
         self.cur_effect = str(self.effect_cbo_box.currentText()) 
@@ -591,32 +641,52 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             else:
                 txt_box.setText(QString(""))
             txt_box.blockSignals(False)
+            
+    def _setup_table_effect_dict(self):
+        '''Fill in local copy of table-effects dict w/ data from ma_unit'''
+        for effect in BACK_CALCULATABLE_DIAGNOSTIC_EFFECTS:
+            effects_dict = self.ma_unit.effects_dict[self.cur_effect][self.group_str]
+            for keyA,keyB in zip(['display_est', 'display_lower', 'display_upper'],["est","lower","upper"]):
+                self.form_effects_dict[effect][keyB] = str(effects_dict[keyA])
+        print "Form effects dict:",self.form_effects_dict
 
     def _update_data_table(self):
-        '''Fill-in 2x2 table from provided (spreadsheet raw data) information'''
+        '''Try to calculate rest of 2x2 table from existing cells'''
         
         self.two_by_two_table.blockSignals(True)
-        raw_data = self._get_raw_data()
         
-        print("Updating raw_data with",raw_data)
-        
-        params = {}
-        params["c11"] = raw_data['TP']
-        params["c12"] = raw_data['FP']
-        params["c21"] = raw_data['FN']
-        params["c22"] = raw_data['TN']
-        params["r1sum"] = None
-        params["r2sum"] = None
-        params["c1sum"] = None
-        params["c2sum"] = None
-        params["total"] = None
-        
+        params = self._get_table_vals()
         computed_params = meta_globals.compute_2x2_table(params)
+        print "Computed Params", computed_params
         if computed_params:
             self._set_vals(computed_params) # computed --> table widget
         
-        self.check_table_consistency.run()
+        # Compute prevalence if possible
+        self.prevalence_txt_box.blockSignals(True)
+        if (not computed_params['c1sum'] in EMPTY_VALS) and (not computed_params['total'] in EMPTY_VALS):
+            prevalence = float(computed_params['c1sum'])/float(computed_params['total'])
+            prev_str = str(prevalence)[:7]
+            self.prevalence_txt_box.setText("%s" % prev_str)
+            self.curr_prevalence_tbox_text = self.prevalence_txt_box.text()
+        self.prevalence_txt_box.blockSignals(False)
+        
+        
         self.two_by_two_table.blockSignals(False)
         
+    def start_over(self):
+        blank_vals = {}
+        blank_vals["c11"]   = ""        blank_vals["c12"]   = ""        blank_vals["c21"]   = ""        blank_vals["c22"]   = ""        blank_vals["r1sum"] = ""        blank_vals["r2sum"] = ""        blank_vals["c1sum"] = ""        blank_vals["c2sum"] = ""        blank_vals["total"] = ""
+        self._set_vals(blank_vals)
+        self._update_ma_unit()
         
+        # clear out effects stuff
+        for metric in DIAGNOSTIC_METRICS:
+            self.ma_unit.set_effect_and_ci(metric, self.group_str, None, None, None)
+            self.ma_unit.set_display_effect_and_ci(metric, self.group_str, None, None, None)
+        self.set_current_effect()
         
+        self.prevalence_txt_box.blockSignals(True)
+        self.prevalence_backup = ""
+        self.prevalence_txt_box.setText("")
+        self.prevalence_txt_box.blockSignals(False)
+            

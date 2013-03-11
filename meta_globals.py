@@ -194,25 +194,26 @@ def cast_to_int(value, name=None):
             print("Could not convert '%s' to int" % (str(value)))
         return None
 
-# For computing the 2x2 table in the binary and diagnostic case
-def OLDcompute_2x2_table(params):
-    ''' Computes values for the whole 2x2 table if possible based on partial values from the rest of the table'''
-    
-    computed = meta_py_r.fillin_2x2(params)
-    print "Computed: ", computed 
-    
-    if computed != None: # more than one value entered
-        abs_residuals = [abs(x) for x in computed['residuals'].values()]
-        if max(abs_residuals ) > THRESHOLD:
-            print "problem computing 2x2 table."
-            print "max residual: %s" % max(computed['residuals'])
-            print computed['residuals']
-            print ("Coefficients: ", computed['coefficients'])
-            return None
-        else: # values are hunky-dory
-            print "table computed successfully!"
-            return computed["coefficients"]
-    return None
+## For computing the 2x2 table in the binary and diagnostic case
+# Maybe bring back some version of this in the near future: DON'T DELETE ME BYRON!
+#def OLDcompute_2x2_table(params):
+#    ''' Computes values for the whole 2x2 table if possible based on partial values from the rest of the table'''
+#    
+#    computed = meta_py_r.fillin_2x2(params)
+#    print "Computed: ", computed 
+#    
+#    if computed != None: # more than one value entered
+#        abs_residuals = [abs(x) for x in computed['residuals'].values()]
+#        if max(abs_residuals ) > THRESHOLD:
+#            print "problem computing 2x2 table."
+#            print "max residual: %s" % max(computed['residuals'])
+#            print computed['residuals']
+#            print ("Coefficients: ", computed['coefficients'])
+#            return None
+#        else: # values are hunky-dory
+#            print "table computed successfully!"
+#            return computed["coefficients"]
+#    return None
 
 def compute_2x2_table(params):
     ''' Computes values for the whole 2x2 table if possible based on partial values from the rest of the table'''
@@ -221,7 +222,6 @@ def compute_2x2_table(params):
     table = [[ params['c11'],   params['c12'],   params['r1sum']],
              [ params['c21'],   params['c22'],   params['r2sum']],
              [ params['c1sum'], params['c2sum'], params['total'] ]]
-    
     
     while True:
         changed = False 
@@ -298,24 +298,34 @@ class ConsistencyChecker():
         self.table = table_2x2
         
     def run(self):
-        self.check_for_consistencies()
+        (good_result, msg) = self.check_for_consistencies()
         
         if not self.inconsistent:
             self._color_all(color=OK_COLOR)
-        return self.inconsistent
+        return (good_result, msg)
      
     def check_for_consistencies(self):
         self.inconsistent = False
-        self.check_that_rows_sum() # also colors non-summing rows
-        self.check_that_cols_sum()
-        self.check_that_values_positive()
+        rows_sum  = self.check_that_rows_sum() # also colors non-summing rows
+        cols_sum = self.check_that_cols_sum()
+        all_pos  = self.check_that_values_positive()
         
         if self.inconsistent:
             self.inconsistent_action()
         else:
             self.consistent_action()
         
+        if not rows_sum:
+            return (False, "Rows must sum!")
+        elif not cols_sum:
+            return (False, "Columns must sum!")
+        elif not all_pos:
+            return (False, "Counts must be positive!")
+        else:
+            return (True, None)
+        
     def check_that_rows_sum(self):
+        rows_sum = True
         for row in range(3):
             if self._row_is_populated(row):
                 row_sum = 0
@@ -324,6 +334,8 @@ class ConsistencyChecker():
                 if not row_sum == self._get_int(row, 2):
                     self._color_row(row)
                     self.inconsistent = True
+                    rows_sum = False
+        return rows_sum
     
     def _get_int(self, i, j):
         '''Get value from cell specified by row=i, col=j as an integer'''
@@ -333,6 +345,7 @@ class ConsistencyChecker():
             return None # its good to be explicit
                     
     def check_that_cols_sum(self):
+        cols_sum = True
         for col in range(3):
             if self._col_is_populated(col):
                 col_sum = 0
@@ -341,8 +354,12 @@ class ConsistencyChecker():
                 if not col_sum == self._get_int(2,col):
                     self._color_col(col)
                     self.inconsistent = True
+                    cols_sum = False
+        return cols_sum
                     
     def check_that_values_positive(self):
+        all_positive = True
+        
         for row in range(3):
             for col in range(3):
                 value = self._get_int(row,col)
@@ -354,6 +371,8 @@ class ConsistencyChecker():
                         self.table.blockSignals(False)
                         # Set flag
                         self.inconsistent = True
+                        all_positive = False
+        return all_positive
                         
     def _color_all(self, color=ERROR_COLOR):
         self.table.blockSignals(True)
@@ -380,9 +399,13 @@ class ConsistencyChecker():
         self.table.blockSignals(False)
         
     def _row_is_populated(self, row):
-        return not True in [self._is_empty_cell(row, col) for col in range(2)]
+        
+        result = not True in [self._is_empty_cell(row, col) for col in range(3)]
+        if result:
+            print "Row %d is populated" % row
+        return result
     def _col_is_populated(self, col):
-        return not True in [self._is_empty_cell(row, col) for row in range(2)]
+        return not True in [self._is_empty_cell(row, col) for row in range(3)]
     
     def _is_empty_cell(self, i, j):
         val = self.table.item(i,j)

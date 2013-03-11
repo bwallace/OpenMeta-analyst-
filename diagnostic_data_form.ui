@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>380</width>
-    <height>325</height>
+    <height>335</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -152,6 +152,13 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="startover_Btn">
+       <property name="text">
+        <string>Start Over</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -335,7 +342,7 @@
       </widget>
      </item>
      <item row="0" column="6">
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="se_lbl">
        <property name="text">
         <string>se</string>
        </property>

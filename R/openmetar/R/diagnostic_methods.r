@@ -62,6 +62,7 @@ compute.diag.point.estimates <- function(diagnostic.data, params) {
       
     diagnostic.data@y <- eval(call("diagnostic.transform.f", params$measure))$calc.scale(y, n)
  
+	# logit scale SE
     diagnostic.data@SE <- switch(metric,
         Sens = sqrt((1 / TP) + (1 / FN)), 
         Spec = sqrt((1 / TN) + (1 / FP)),
@@ -71,6 +72,8 @@ compute.diag.point.estimates <- function(diagnostic.data, params) {
         PLR = sqrt((1 / TP) - (1 / (TP + FN)) + (1 / FP) - (1 / (TN + FP))),
         NLR = sqrt((1 / TP) - (1 / (TP + FN)) + (1 / FP) - (1 / (TN + FP))),
         DOR = sqrt((1 / TP) + (1 / FN) + (1 / FP) + (1 / TN)))
+	# display scale SE
+
 
     diagnostic.data
 }
