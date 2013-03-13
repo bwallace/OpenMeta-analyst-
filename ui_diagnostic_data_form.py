@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'diagnostic_data_form.ui'
 #
-# Created: Mon Mar 11 16:47:29 2013
+# Created: Wed Mar 13 11:09:41 2013
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -144,14 +144,6 @@ class Ui_DiagnosticDataForm(object):
         self.high_txt_box.setMaximumSize(QtCore.QSize(50, 22))
         self.high_txt_box.setObjectName(_fromUtf8("high_txt_box"))
         self.gridLayout.addWidget(self.high_txt_box, 0, 5, 1, 1)
-        self.se_lbl = QtGui.QLabel(DiagnosticDataForm)
-        self.se_lbl.setObjectName(_fromUtf8("se_lbl"))
-        self.gridLayout.addWidget(self.se_lbl, 0, 6, 1, 1)
-        self.se_txt_box = QtGui.QLineEdit(DiagnosticDataForm)
-        self.se_txt_box.setMinimumSize(QtCore.QSize(50, 22))
-        self.se_txt_box.setMaximumSize(QtCore.QSize(50, 22))
-        self.se_txt_box.setObjectName(_fromUtf8("se_txt_box"))
-        self.gridLayout.addWidget(self.se_txt_box, 0, 7, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
@@ -220,7 +212,6 @@ class Ui_DiagnosticDataForm(object):
         self.label_14.setText(_translate("DiagnosticDataForm", "est.", None))
         self.label_15.setText(_translate("DiagnosticDataForm", "low", None))
         self.label_16.setText(_translate("DiagnosticDataForm", "high", None))
-        self.se_lbl.setText(_translate("DiagnosticDataForm", "se", None))
         self.label_2.setText(_translate("DiagnosticDataForm", "α:", None))
         self.ci_label.setText(_translate("DiagnosticDataForm", "(95% confidence interval)", None))
         self.inconsistencyLabel.setText(_translate("DiagnosticDataForm", "INCONSISTENT FORM", None))

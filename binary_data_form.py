@@ -9,8 +9,10 @@
 ##################################################
 import pdb
 
-from PyQt4.Qt import *
-from PyQt4.QtGui import *
+#from PyQt4.Qt import *
+from PyQt4.Qt import (pyqtSignature, QDialog, QDialogButtonBox, QMessageBox,
+                      QObject, QPalette, QString, Qt, QTableWidgetItem, SIGNAL)
+#from PyQt4.QtGui import *
 
 import meta_py_r
 import meta_globals
@@ -45,7 +47,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.group_str = cur_group_str
         self.cur_effect = cur_effect
         
-        self._setup_inconsistency_checking()
+        self.setup_inconsistency_checking()
         self._update_raw_data()      # ma_unit --> table
         self._populate_effect_data() # make combo boxes for effects
         self.set_current_effect()    # fill in current effect data in line edits
@@ -67,7 +69,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.effect_p_txt_box.setVisible(False)
         
 ######################### INCONSISTENCY CHECKING STUFF #########################
-    def _setup_inconsistency_checking(self):
+    def setup_inconsistency_checking(self):
         # set-up inconsistency label
         inconsistency_palette = QPalette()
         inconsistency_palette.setColor(QPalette.WindowText,Qt.red)
@@ -95,7 +97,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         
     def _setup_signals_and_slots(self):
         QObject.connect(self.raw_data_table, SIGNAL("cellChanged (int, int)"), 
-                                                    self._cell_changed)
+                                                    self.cell_changed)
         QObject.connect(self.effect_cbo_box, SIGNAL("currentIndexChanged(QString)"),
                                                     self.effect_changed) 
         
@@ -275,7 +277,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         ''' Copy data from binary data table to the MA_unit'''
         ''' 
         Walk over the entries in the matrix (which may have been updated
-        via imputation in the _cell_changed method) corresponding to the 
+        via imputation in the cell_changed method) corresponding to the 
         raw data in the underlying meta-analytic unit and update the values.
         '''
         for row in range(2):
@@ -309,7 +311,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
 #            if 
             
         
-    def _cell_changed(self, row, col):
+    def cell_changed(self, row, col):
         # tries to make sense of user input before passing
         # on to the R routine
         

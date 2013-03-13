@@ -73,7 +73,7 @@ def reset_Rs_working_dir():
 #    two_by_two = ro.r('impute.bin.data(bin.data=%s)' % dataf.r_repr())
 #    print two_by_two
 
-def impute_diag_data(diag_data_dict, metric):
+def OLDimpute_diag_data(diag_data_dict, metric):
     print "computing 2x2 table via R..."
     print diag_data_dict
 
@@ -88,6 +88,26 @@ def impute_diag_data(diag_data_dict, metric):
                         (dataf.r_repr(), metric))
 
     return _rls_to_pyd(two_by_two)
+
+def impute_diag_data(diag_data_dict):
+    print "computing 2x2 table via R..."
+    print diag_data_dict
+
+    # rpy2 doesn't know how to handle None types.
+    # we can just remove them from the dictionary.
+    for param, val in diag_data_dict.items():
+        if val is None:
+            diag_data_dict.pop(param)
+
+    dataf = ro.r['data.frame'](**diag_data_dict)
+    two_by_two = ro.r("gimpute.diagnostic.data(%s)" % (dataf.r_repr()))
+    
+    
+    #print "Imputed 2by2:", _rls_to_pyd(two_by_two)
+    print "Imputed 2by2:", _grlist_to_pydict(two_by_two)
+
+    #return _rls_to_pyd(two_by_two)
+    return _grlist_to_pydict(two_by_two)
 
 
 def fillin_2x2(table_data_dict):
@@ -126,7 +146,7 @@ def _gis_NA(x):
     #print "Old:", type(x) in [rpy2.rinterface.NALogicalType, rpy2.rinterface.NARealType]
     #print "New:", type(x) in [NALogicalType, NARealType]
     #return type(x) in [rpy2.rinterface.NALogicalType, rpy2.rinterface.NARealType]
-    print "TESTING NA"
+    #print "TESTING NA"
     
     #return type(x) in [NALogicalType, NARealType]
     return str(x) == 'NA'
@@ -1031,7 +1051,7 @@ def diagnostic_effects_for_study(tp, fn, fp, tn, metrics=["Spec", "Sens"]):
     # first create a diagnostic data object
     r_str = "diag.tmp <- new('DiagnosticData', TP=c(%s), FN=c(%s), TN=c(%s), FP=c(%s))" % \
                             (tp, fn, tn, fp)
-    
+                            
     print "\n\n(diagnostic_effects_for_study): executing:\n %s\n" % r_str
     ro.r(r_str)
     

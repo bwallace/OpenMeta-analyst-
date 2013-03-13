@@ -12,8 +12,8 @@
 
 import os
 
-import meta_py_r
-from PyQt4.Qt import QColor, QDialogButtonBox
+#import meta_py_r
+from PyQt4.Qt import QColor   #, QDialogButtonBox
 
 # number of digits to display
 NUM_DIGITS = 3
@@ -298,11 +298,11 @@ class ConsistencyChecker():
         self.table = table_2x2
         
     def run(self):
-        (good_result, msg) = self.check_for_consistencies()
+        msg = self.check_for_consistencies()
         
         if not self.inconsistent:
             self._color_all(color=OK_COLOR)
-        return (good_result, msg)
+        return msg
      
     def check_for_consistencies(self):
         self.inconsistent = False
@@ -316,13 +316,13 @@ class ConsistencyChecker():
             self.consistent_action()
         
         if not rows_sum:
-            return (False, "Rows must sum!")
+            return "Rows must sum!"
         elif not cols_sum:
-            return (False, "Columns must sum!")
+            return "Columns must sum!"
         elif not all_pos:
-            return (False, "Counts must be positive!")
+            return "Counts must be positive!"
         else:
-            return (True, None)
+            return None
         
     def check_that_rows_sum(self):
         rows_sum = True
@@ -378,7 +378,7 @@ class ConsistencyChecker():
         self.table.blockSignals(True)
         for row in range(3):
             for col in range(3):
-                print "setting row: %s, col: %s" % (row, col)
+                #print "setting row: %s, col: %s" % (row, col)
                 item = self.table.item(row, col)
                 if item is not None:
                     item.setTextColor(color)

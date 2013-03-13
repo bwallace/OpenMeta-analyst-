@@ -385,6 +385,201 @@ fillin.cont.AminusB <- function(
 
 }
 
+################################################################################
+# New diagnostic data calculation (back calculator) by George Dietz            #
+################################################################################
+gimpute.diagnostic.data <- function(diag.data) {
+	# imputes diagnostic data (2x2 tables) from fields in diag.data data frame
+	# paramater. This will include (perhaps):
+	#   TP, FN, TN, FP, N, prev, sens, sens.lb, sens.ub, spec, spec.lb, spec.ub,
+	#   alpha
+	# Ignore the case #s below, just a way i was working things out
+	
+	
+	
+	
+#	targets <- list(TP=diag.data$TP, FN=diag.data$FN, TN=diag.data$TN, FP=diag.data$FP)
+#
+#	
+	#initialize local variables
+	TP <-         diag.data[["TP"]]
+	FN <-         diag.data[["FN"]]
+	TN <-         diag.data[["TN"]]
+	FP <-         diag.data[["FP"]]
+	N    <-       diag.data[["total"]]
+	prev <-       diag.data[["prev"]]
+	sens <-       diag.data[["sens"]]
+	sens.lb <-    diag.data[["sens.lb"]]
+	sens.ub <-    diag.data[["sens.ub"]]
+	spec    <-    diag.data[["spec"]]
+	spec.lb <-    diag.data[["spec.lb"]]
+	spec.ub <-    diag.data[["spec.ub"]]
+	conf.level <- diag.data[["conf.level"]]
+	
+	print ("sens")
+	print(sens)
+	#print 
+	
+	case2a.condition <- isnt.null(sens) & isnt.null(prev) & isnt.null(N)
+	case2b.condition <- isnt.null(spec) & isnt.null(prev) & isnt.null(N)
+	
+	tmpA <- isnt.null(sens) & (isnt.null(sens.lb) | isnt.null(sens.ub))
+	tmpB <- isnt.null(sens.lb) & isnt.null(sens.ub)
+	case5a.condition <- (tmpA | tmpB) & isnt.null(conf.level)
+	case5b.condition <- case5a.condition & isnt.null(spec) & isnt.null(N)
+	
+	tmpA <- isnt.null(spec) & (isnt.null(spec.lb) | isnt.null(spec.ub))
+	tmpB <- isnt.null(spec.lb) & isnt.null(spec.ub)
+	case6a.condition <- (tmpA | tmpB) & isnt.null(conf.level)
+	case6b.condition <- case6a.condition & isnt.null(sens) & isnt.null(N)
+	
+	tmpA <- isnt.null(sens) & (isnt.null(sens.lb) | isnt.null(sens.ub))
+	tmpA <- tmpA | (isnt.null(sens.lb) & isnt.null(sens.ub))
+	tmpB <- isnt.null(spec) & (isnt.null(spec.lb) | isnt.null(spec.ub))
+	tmpB <- tmpB | (isnt.null(spec.lb) & isnt.null(spec.ub))
+	case8a.condition <- tmpA & isnt.null(conf.level)
+	case8b.condition <- tmpB & isnt.null(conf.level)
+	
+	# Case 2: inputs: sens, spec, prev, N
+	case2 <- function(sens, spec, prev, N) {
+		TP <- sens*prev*N
+		FN <- (1-sens)*prev*N
+		FP <- N*(spec-1)*(prev-1)
+		TN <- N*spec*(1-prev)
+		
+		list(TP=TP,FP=FP,TN=TN,FN=FN)
+	}
+	# Case 5: inputs: sens, sens.lb or sens.ub, spec, N, conf.level
+	case5 <- function(sens, sens.lb, sens.ub, spec, N, conf.level) {
+		ci.data <- list(estimate=sens, lb=sens.lb, ub=sens.ub, conf.level=conf.level)
+		est.var <- calc.est.var(ci.data)
+		varLogitSENS = est.var$var
+		
+		TP = -1/(varLogitSENS*(sens-1))
+		FP = -(-1+spec)*(varLogitSENS*sens^2*N-varLogitSENS*sens*N+1)/(varLogitSENS*sens*(sens-1))
+		TN = spec*(varLogitSENS*sens^2*N-varLogitSENS*sens*N+1)/(varLogitSENS*sens*(sens-1))
+		FN = 1/(varLogitSENS*sens)
+		
+		list(TP=TP,FP=FP,TN=TN,FN=FN)
+	}
+	
+	
+	# Case 6: inputs: spec, spec.lb or spec.ub, sens, N, conf.level
+	case6 <- function(spec, spec.lb, spec.ub, sens, N, conf.level) {
+		ci.data <- list(estimate=spec, lb=spec.lb, ub=spec.ub, conf.level=conf.level)
+		est.var <- calc.est.var(ci.data)
+		varLogitSPEC = est.var$var
+		
+		TP = sens*(-1*varLogitSPEC*spec*N+varLogitSPEC*spec^2*N+1)/(varLogitSPEC*spec*(-1+spec))
+		FP = 1/(varLogitSPEC*spec)
+		TN = -1/(varLogitSPEC*(-1+spec))
+		FN = -(sens-1)*(-1*varLogitSPEC*spec*N+varLogitSPEC*spec^2*N+1)/(varLogitSPEC*spec*(-1+spec))
+		
+		list(TP=TP,FP=FP,TN=TN,FN=FN)
+	}
+	
+	# Case 8: inputs sens, sens.lb or sens.ub, spec, spec.lb or spec.ub, conf.level
+	case8 <- function(sens, sens.lb, sens.ub, spec, spec.lb, spec.ub, conf.level) {
+		ci.data <- list(estimate=sens, lb=sens.lb, ub=sens.ub, conf.level=conf.level)
+		est.var <- calc.est.var(ci.data)
+		varLogitSENS = est.var$var
+		
+		ci.data <- list(estimate=spec, lb=spec.lb, ub=spec.ub, conf.level=conf.level)
+		est.var <- calc.est.var(ci.data)
+		varLogitSPEC = est.var$var
+		
+		TP = -1/(varLogitSENS*(sens-1))
+		FP = 1/(varLogitSPEC*spec)
+		TN = -1/(varLogitSPEC*(-1+spec))
+		FN = 1/(varLogitSENS*sens)
+	
+		list(TP=TP,FP=FP,TN=TN,FN=FN)
+	}
+
+
+	
+	case2res <- case2(sens, spec, prev, N)
+	case5res <- case5(sens, sens.lb, sens.ub, spec, N, conf.level)
+    case6res <- case6(spec, spec.lb, spec.ub, sens, N, conf.level)
+	case8res <- case8(sens, sens.lb, sens.ub, spec, spec.lb, spec.ub, conf.level)
+
+	# TP,FN
+	if (case2a.condition) {
+		print("Entering 2a")
+		TP <- if(is.null(TP)) case2res$TP
+		FN <- if(is.null(FN)) case2res$FN
+	} else if (case5a.condition) {
+		print("Entering 5a")
+		TP <- if(is.null(TP)) case5res$TP
+		FN <- if(is.null(FN)) case5res$FN
+	} else if (case6b.condition) {
+		print("Entering 6b")
+		TP <- if(is.null(TP)) case6res$TP
+		FN <- if(is.null(FN)) case6res$FN
+	} else if (case8a.condition) {
+		print("Entering 8a")
+		TP <- if(is.null(TP)) case8res$TP
+		FN <- if(is.null(FN)) case8res$FN
+	}
+	
+	# TN,FP
+	if (case2b.condition) {
+		print("Entering 2b")
+		TN <- if(is.null(TN)) case2res$TN
+	    FP <- if(is.null(FP)) case2res$FP
+	} else if (case5b.condition) {
+		print("Entering 5b")
+		TN <- if(is.null(TN)) case5res$TN
+		FP <- if(is.null(FP)) case5res$FP
+	} else if (case6a.condition) {
+		print("Entering 6a")
+		TN <- if(is.null(TN)) case6res$TN
+		FP <- if(is.null(FP)) case6res$FP
+	} else if (case8b.condition) {
+		print("Entering 8b")
+		TN <- if(is.null(TN)) case8res$TN
+		FP <- if(is.null(FP)) case8res$FP
+	}
+	
+	# Convert NULL to NA for fun, also other reasons?
+	if(is.null(TP)) {
+    	TP <- NA
+	}
+	if(is.null(FN)) {
+    	FN <- NA
+	}
+	if(is.null(TN)) {
+    	TN <- NA
+	}
+	if(is.null(FP)) {
+    	FP <- NA
+	}
+	
+	# calculate rounding error
+	TP.rnd.err <- abs(TP-round(TP,digits=0))
+	FN.rnd.err <- abs(FN-round(FN,digits=0))
+	TN.rnd.err <- abs(TN-round(TN,digits=0))
+	FP.rnd.err <- abs(FP-round(FP,digits=0))
+	
+  
+  
+	TP <- round(TP,digits=0)
+	FN <- round(FN,digits=0)
+	TN <- round(TN,digits=0)
+	FP <- round(FP,digits=0)
+	
+	# return
+	list(TP=TP,
+		 FN=FN,
+		 TN=TN,
+		 FP=FP,
+		 TP.rnd.err=TP.rnd.err,
+		 FN.rnd.err=FN.rnd.err,
+		 TN.rnd.err=TN.rnd.err,
+		 FP.rnd.err=FP.rnd.err)
+}
+
+
 ################################ 
 # Diagnostic data calculation  #
 ################################
