@@ -548,12 +548,21 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         if val_str == "est":
             self.ma_unit.set_effect(self.cur_effect, self.group_str, calc_scale_val)
             self.ma_unit.set_display_effect(self.cur_effect, self.group_str, display_scale_val)
+            print("Disabling effect box...")
+            self.effect_txt_box.setEnabled(False)
         elif val_str == "lower":
             self.ma_unit.set_lower(self.cur_effect, self.group_str, calc_scale_val)
             self.ma_unit.set_display_lower(self.cur_effect, self.group_str, display_scale_val)
-        else:
+            print("disabling low box...")
+            self.low_txt_box.setEnabled(False)
+        elif val_str == "upper":
             self.ma_unit.set_upper(self.cur_effect, self.group_str, calc_scale_val)
             self.ma_unit.set_display_upper(self.cur_effect, self.group_str, display_scale_val)
+            self.high_txt_box.setEnabled(False)
+            print("Disabling high box...")
+        elif val_str == "prevalence":
+            self.prevalence_txt_box.setEnabled(False)
+            print("Disabling prevalence box...")
 
         self.save_form_state()
         # Impute 2x2 from here
@@ -579,6 +588,16 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
     def effect_changed(self):
         self.cur_effect = str(self.effect_cbo_box.currentText()) 
         self.set_current_effect()
+        
+        
+        
+        if self.effect_txt_box.text() in EMPTY_VALS:
+            self.effect_txt_box.setEnabled(True)
+        if self.low_txt_box.text() in EMPTY_VALS:
+            self.low_txt_box.setEnabled(True)
+        if self.high_txt_box.text() in EMPTY_VALS:
+            self.high_txt_box.setEnabled(True)
+            
 
     def _read_in_table_data_from_MAunit(self):
         ''' populates the 2x2 table with whatever parametric data was provided '''
@@ -650,6 +669,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             prevalence = float(computed_params['c1sum'])/float(computed_params['total'])
             prev_str = str(prevalence)[:7]
             self.prevalence_txt_box.setText("%s" % prev_str)
+            self.prevalence_txt_box.setEnabled(False)
         
         self.block_all_signals(False)
         
@@ -669,6 +689,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self.set_current_effect()
         self.prevalence_txt_box.blockSignals(True)
         self.prevalence_txt_box.setText("")
+        self.prevalence_txt_box.setEnabled(True)
         self.prevalence_txt_box.blockSignals(False)
         
         self.save_form_state()
@@ -688,5 +709,8 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self.block_all_signals(False)
         
         self.effect_txt_box.setEnabled(True)
+        self.low_txt_box.setEnabled(True)
+        self.high_txt_box.setEnabled(True)
+        self.prevalence_txt_box.setEnabled(True)
         
         self.print_backup_table()
