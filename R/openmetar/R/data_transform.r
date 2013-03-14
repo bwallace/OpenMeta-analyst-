@@ -395,17 +395,14 @@ gimpute.diagnostic.data <- function(diag.data) {
 	#   alpha
 	# Ignore the case #s below, just a way i was working things out
 	
-	
-	
-	
-#	targets <- list(TP=diag.data$TP, FN=diag.data$FN, TN=diag.data$TN, FP=diag.data$FP)
-#
-#	
 	#initialize local variables
-	TP <-         diag.data[["TP"]]
-	FN <-         diag.data[["FN"]]
-	TN <-         diag.data[["TN"]]
-	FP <-         diag.data[["FP"]]
+	#TP <-         diag.data[["TP"]]
+	#FN <-         diag.data[["FN"]]
+	#TN <-         diag.data[["TN"]]
+	#FP <-         diag.data[["FP"]]
+	
+	TP <- NULL; FN <- NULL; TN <- NULL; FP <-NULL;
+			
 	N    <-       diag.data[["total"]]
 	prev <-       diag.data[["prev"]]
 	sens <-       diag.data[["sens"]]
@@ -453,7 +450,8 @@ gimpute.diagnostic.data <- function(diag.data) {
 	case5 <- function(sens, sens.lb, sens.ub, spec, N, conf.level) {
 		ci.data <- list(estimate=sens, lb=sens.lb, ub=sens.ub, conf.level=conf.level)
 		est.var <- calc.est.var(ci.data)
-		varLogitSENS = est.var$var
+		varLogitSENS <- est.var$var
+		sens <- est.var$estimate
 		
 		TP = -1/(varLogitSENS*(sens-1))
 		FP = -(-1+spec)*(varLogitSENS*sens^2*N-varLogitSENS*sens*N+1)/(varLogitSENS*sens*(sens-1))
@@ -468,7 +466,8 @@ gimpute.diagnostic.data <- function(diag.data) {
 	case6 <- function(spec, spec.lb, spec.ub, sens, N, conf.level) {
 		ci.data <- list(estimate=spec, lb=spec.lb, ub=spec.ub, conf.level=conf.level)
 		est.var <- calc.est.var(ci.data)
-		varLogitSPEC = est.var$var
+		varLogitSPEC <- est.var$var
+		spec <- est.var$estimate
 		
 		TP = sens*(-1*varLogitSPEC*spec*N+varLogitSPEC*spec^2*N+1)/(varLogitSPEC*spec*(-1+spec))
 		FP = 1/(varLogitSPEC*spec)
@@ -482,11 +481,13 @@ gimpute.diagnostic.data <- function(diag.data) {
 	case8 <- function(sens, sens.lb, sens.ub, spec, spec.lb, spec.ub, conf.level) {
 		ci.data <- list(estimate=sens, lb=sens.lb, ub=sens.ub, conf.level=conf.level)
 		est.var <- calc.est.var(ci.data)
-		varLogitSENS = est.var$var
+		varLogitSENS <- est.var$var
+		sens <- est.var$estimate
 		
 		ci.data <- list(estimate=spec, lb=spec.lb, ub=spec.ub, conf.level=conf.level)
 		est.var <- calc.est.var(ci.data)
-		varLogitSPEC = est.var$var
+		varLogitSPEC <- est.var$var
+		spec <- est.var$estimate
 		
 		TP = -1/(varLogitSENS*(sens-1))
 		FP = 1/(varLogitSPEC*spec)
