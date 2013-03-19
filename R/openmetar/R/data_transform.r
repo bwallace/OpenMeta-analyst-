@@ -167,7 +167,15 @@ gimpute.bin.data <- function(bin.data) {
 		op2 <- NULL;
 	}
 
-	res <- list(op1=op1, op2=op2)
+	if (is.null(op2)) {
+		res <- list(op1=op1)
+	}
+	else {
+		res <- list(op1=op1, op2=op2)
+	}
+	
+	
+	return(res)
 }
 	
 	

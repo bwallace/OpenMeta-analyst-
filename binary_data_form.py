@@ -96,6 +96,12 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             
             return d
         
+        # Makes no sense to show the button on a form where the back calculation is not implemented
+        if not self.cur_effect in ["OR","RR","RD"]:
+            self.back_calc_btn.setVisible(False)
+        else:
+            self.back_calc_btn.setVisible(True)
+            
         bin_data = build_back_calc_args_dict()
         print("Binary data for back_calculation:",bin_data)
         
@@ -221,6 +227,8 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.cur_effect = unicode(self.effect_cbo_box.currentText().toUtf8(), "utf-8")
         self.try_to_update_cur_outcome()
         self.set_current_effect()
+        
+        self.enable_back_calculation_btn()
         
     def save_form_state(self):
         ''' Saves the state of all objects on the form '''
@@ -629,21 +637,22 @@ class ChooseBackCalcResultForm(QDialog, ui_choose_bin_back_calc_result_form.Ui_C
         self.setupUi(self)
         
         op1 = imputed_data["op1"] # option 1 data
-        op2 = imputed_data["op2"]
-        
         a,b,c,d = op1["a"],op1["b"],op1["c"],op1["d"]
         a,b,c,d = int(round(a)),int(round(b)),int(round(c)),int(round(d))
         option1_txt = "Group 1:\n  #events: %d\n  Total: %d\nGroup 2:\n  #events: %d\n  Total: %d" % (a,b,c,d)
-        a,b,c,d = op2["a"],op2["b"],op2["c"],op2["d"]
-        a,b,c,d = int(round(a)),int(round(b)),int(round(c)),int(round(d))
-        option2_txt = "Group 1:\n  #events: %d\n  Total: %d\nGroup 2:\n  #events: %d\n  Total: %d" % (a,b,c,d)
         
         try:
-            self.choice1_lbl.setText(option1_txt)
-            self.choice2_lbl.setText(option2_txt)
+            op2 = imputed_data["op2"]
+            a,b,c,d = op2["a"],op2["b"],op2["c"],op2["d"]
+            a,b,c,d = int(round(a)),int(round(b)),int(round(c)),int(round(d))
+            option2_txt = "Group 1:\n  #events: %d\n  Total: %d\nGroup 2:\n  #events: %d\n  Total: %d" % (a,b,c,d)
         except:
             pyqtRemoveInputHook()
             pdb.set_trace()
+        
+
+        self.choice1_lbl.setText(option1_txt)
+        self.choice2_lbl.setText(option2_txt)
 
     def getChoice(self):
         choices = ["op1", "op2"]
