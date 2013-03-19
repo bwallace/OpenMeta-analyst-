@@ -1,17 +1,19 @@
-##################################################
-#
-#  Byron C. Wallace
-#  Tufts Medical Center
-#  OpenMeta[analyst]
-#  ---
-#  Binary data form module; for flexible entry of dichotomous
-#  outcome data
-##################################################
+######################################
+#                                    #
+#  Byron C. Wallace                  #
+#  George Dietz                      #     
+#  CEBM @ Brown                      #     
+#  OpenMeta[analyst]                 ########################## 
+#  ---                                                        #
+#  Binary data form module; for flexible entry of dichotomous #
+#  outcome data                                               #
+###############################################################
+
 import pdb
 
 #from PyQt4.Qt import *
 from PyQt4.Qt import (pyqtSignature, QDialog, QDialogButtonBox, QMessageBox,
-                      QObject, QPalette, QString, Qt, QTableWidgetItem, SIGNAL)
+                      QObject, QPalette, QString, Qt, QTableWidgetItem, SIGNAL, pyqtRemoveInputHook)
 #from PyQt4.QtGui import *
 
 import meta_py_r
@@ -20,6 +22,7 @@ from meta_globals import (BINARY_ONE_ARM_METRICS, BINARY_TWO_ARM_METRICS,
                           _is_a_float, _is_empty, EMPTY_VALS)
 
 import ui_binary_data_form
+import ui_choose_bin_back_calc_result_form
 #from ui_binary_data_form import Ui_BinaryDataForm
 
 # @TODO this should be an *application global*. It is now a
@@ -32,6 +35,8 @@ NUM_DIGITS = 4
 # this is the maximum size of a residual that we're willing to accept
 # when computing 2x2 data
 THRESHOLD = 1e-5
+
+
 
 class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
     def __init__(self, ma_unit, cur_txs, cur_group_str, cur_effect, parent=None):
@@ -46,29 +51,96 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.cur_groups = cur_txs
         self.group_str = cur_group_str
         self.cur_effect = cur_effect
+        self.entry_widgets = [self.raw_data_table, self.low_txt_box,
+                              self.high_txt_box, self.effect_txt_box]
         
         self.setup_inconsistency_checking()
+        self.initialize_backup_structures()
+        #self.setup_table_effect_dict()
         self._update_raw_data()      # ma_unit --> table
         self._populate_effect_data() # make combo boxes for effects
         self.set_current_effect()    # fill in current effect data in line edits
-        self._update_data_table()    # fill in 2x2 
-        
-        # used for checking the data we attempt to set is good
-        self.current_item_data = self._get_int(self.raw_data_table.currentRow(),self.raw_data_table.currentColumn())
-        
-        # for validation on text boxes
-        self.curr_effect_tbox_text = self.effect_txt_box.text()
-        self.curr_low_tbox_text    = self.low_txt_box.text()
-        self.curr_high_tbox_text  = self.high_txt_box.text()
-        (self.candidate_est,self.candidate_lower,self.candidate_upper) = (None,None,None)
-        
+        self._update_data_table()    # fill in 2x2
+        self.enable_back_calculation_btn()
+        self.save_form_state()
 
-        
         ### TEMPORARILY HIDE FOR PRESENTATION:
-        self.pval_lbl.setVisible(False)
-        self.effect_p_txt_box.setVisible(False)
+        #self.pval_lbl.setVisible(False)
+        #self.effect_p_txt_box.setVisible(False)
         
-######################### INCONSISTENCY CHECKING STUFF #########################
+    def print_effects_dict_from_ma_unit(self):
+        print self.ma_unit.effects_dict
+    
+    def enable_back_calculation_btn(self, engage = False):
+        print("Enabling back-calculation button...")
+
+        def build_back_calc_args_dict():
+            
+            effect = self.cur_effect
+            d = {}
+            
+            d["metric"] = str(effect)
+            
+            for key,R_key in zip(["est","lower","upper"],["estimate","lower","upper"]):
+                try:
+                    d["%s" %  R_key] = float(self.form_effects_dict[effect][key])
+                except:
+                    d["%s" %  R_key] = None
+            
+            # TODO: Make this depend on value displayed for alpha on form
+            alpha_dummy = 0.05
+            d["conf.level"] = (1.0-float(alpha_dummy))*100
+            
+            d["N_A"] = float(self._get_int(0,2)) if not self._is_empty(0,2) else None
+            d["N_B"] = float(self._get_int(1,2)) if not self._is_empty(1,2) else None
+            
+            return d
+        
+        bin_data = build_back_calc_args_dict()
+        print("Binary data for back_calculation:",bin_data)
+        
+        imputed = meta_py_r.impute_bin_data(bin_data)
+        print("Imputed data: %s", imputed)
+        
+        # Leave if nothing was imputed
+        if "FAIL" in imputed:
+            print("Fail to impute")
+            self.back_calc_btn.setEnabled(False)
+            return None
+        
+        print("Got beyond the failure, button should be enabled")
+        self.back_calc_btn.setEnabled(True)
+        
+        if not engage:
+            return None
+        ########################################################################
+        # Actually do stuff with imputed data here if we are 'engaged'
+        ########################################################################
+        for x in range(3):
+            self.clear_column(x) # clear out the table
+
+        if len(imputed.keys()) > 1:
+            dialog = ChooseBackCalcResultForm(imputed, parent=self)
+            if dialog.exec_():
+                choice = dialog.getChoice()
+            else: # don't do anything if cancelled
+                return None
+        else: # only one option
+            choice = "op1"
+            
+            
+        # set values in table & save in ma_unit
+        self.raw_data_table.blockSignals(True)
+        self._set_val(0, 0, int(round(imputed[choice]["a"]))  )
+        self._set_val(0, 2, int(round(imputed[choice]["b"]))  )  
+        self._set_val(1, 0, int(round(imputed[choice]["c"]))  ) 
+        self._set_val(1, 2, int(round(imputed[choice]["d"]))  ) 
+        self.raw_data_table.blockSignals(False)
+        
+        self._update_data_table()
+        self._update_ma_unit() # save in ma_unit
+        self.save_form_state()
+
     def setup_inconsistency_checking(self):
         # set-up inconsistency label
         inconsistency_palette = QPalette()
@@ -76,19 +148,28 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.inconsistencyLabel.setPalette(inconsistency_palette)
         self.inconsistencyLabel.setVisible(False)
         
-        self.check_consistency = meta_globals.ConsistencyChecker(
-                            fn_consistent=self.action_consistent_table,
-                            fn_inconsistent=self.action_inconsistent_table,
+        def action_consistent_table():    
+            self.inconsistencyLabel.setVisible(False)
+            self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(True)
+        def action_inconsistent_table():
+            #show label, disable OK buttonbox button
+            self.inconsistencyLabel.setVisible(True)
+            self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(False)
+        
+        self.check_table_consistency = meta_globals.ConsistencyChecker(
+                            fn_consistent=action_consistent_table,
+                            fn_inconsistent=action_inconsistent_table,
                             table_2x2 = self.raw_data_table)
 
-    def action_consistent_table(self):    
-        self.inconsistencyLabel.setVisible(False)
-        self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(True)
-    def action_inconsistent_table(self):
-        #show label, disable OK buttonbox button
-        self.inconsistencyLabel.setVisible(True)
-        self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(False)
-####################### END INCONSISTENCY CHECKING STUFF #######################
+    def initialize_backup_structures(self):
+        # Stores form effect info as text
+        self.form_effects_dict = {}
+        #self.form_effects_dict["alpha"] = ""
+        for effect in self.get_effect_names():
+            self.form_effects_dict[effect] = {"est":"","lower":"","upper":""}
+        
+        # Stores table items as text
+        self.table_backup = [[None,None,None],[None,None,None],[None,None,None]]
         
     @pyqtSignature("int, int, int, int")
     def on_raw_data_table_currentCellChanged(self,currentRow,currentColumn,previousRow,previousColumn):
@@ -108,19 +189,25 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         QObject.connect(self.effect_txt_box, SIGNAL("editingFinished()"), lambda: self.val_changed("est")   )
         QObject.connect(self.low_txt_box,    SIGNAL("editingFinished()"), lambda: self.val_changed("lower") )
         QObject.connect(self.high_txt_box,   SIGNAL("editingFinished()"), lambda: self.val_changed("upper") )
-                                                                                        
-
-                                                                             
+        
+        QObject.connect(self.back_calc_btn, SIGNAL("clicked()"), lambda: self.enable_back_calculation_btn(engage=True) )
+                                                                                                                               
     def _populate_effect_data(self):
         q_effects = sorted([QString(effect_str) for effect_str in self.ma_unit.effects_dict.keys()])
         self.effect_cbo_box.blockSignals(True)
         self.effect_cbo_box.addItems(q_effects)
         self.effect_cbo_box.blockSignals(False)
         self.effect_cbo_box.setCurrentIndex(q_effects.index(QString(self.cur_effect)))
-
-
+        
+    def get_effect_names(self):
+        effects = self.ma_unit.effects_dict.keys()
+        return effects
+    
     def set_current_effect(self):
         '''Populates text boxes with effects (computed values) from ma unit'''
+        
+        print("Setting current effect...")
+        
         effect_dict = self.ma_unit.effects_dict[self.cur_effect][self.group_str]
         for s, txt_box in zip(['display_est', 'display_lower', 'display_upper'], \
                               [self.effect_txt_box, self.low_txt_box, self.high_txt_box]):
@@ -135,93 +222,153 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.try_to_update_cur_outcome()
         self.set_current_effect()
         
-    def val_changed(self, val_str):
-        def my_lt(a,b):
-            if _is_a_float(a) and _is_a_float(b):
-                return float(a) < float(b)
-            else:
-                return None
-        def between_bounds(est=self.curr_effect_tbox_text, 
-                           low=self.curr_low_tbox_text, 
-                           high=self.curr_high_tbox_text):
-            good_result = my_lt(low,est)
-            okay = True if not (good_result is None) else False
-            if okay and not good_result:
-                msg = "The lower CI must be less than the point estimate!"
-                QMessageBox.warning(self.parent(), "whoops", msg)
-                return False
-            
-            good_result = my_lt(est,high)
-            okay = True if not (good_result is None) else False
-            if okay and not good_result:
-                msg = "The higher CI must be greater than the point estimate!"
-                QMessageBox.warning(self.parent(), "whoops", msg)
-                return False
-            
-            good_result = my_lt(low,high)
-            okay = True if not (good_result is None) else False
-            if okay and not good_result:
-                msg = "The lower CI must be less than the higher CI!"
-                QMessageBox.warning(self.parent(), "whoops", msg)
-                return False
-            return True
+    def save_form_state(self):
+        ''' Saves the state of all objects on the form '''
         
-        def block_box_signals(state):
-            self.effect_txt_box.blockSignals(state)
-            self.low_txt_box.blockSignals(state)
-            self.high_txt_box.blockSignals(state)
+        print("Saving form state...")
+        
+        def save_table_data():
+            for row in range(3):
+                for col in range(3):
+                    item = self.raw_data_table.item(row, col)
+                    contents = "" if item is None else item.text()
+                    self.table_backup[row][col]=contents
+                    
+        def save_displayed_effects_data(effect=None):
+            print "Saving Displayed Effects data...."
+            
+            if effect is None:
+                effect = self.cur_effect
+            
+            self.form_effects_dict[effect]["est"]   = self.effect_txt_box.text() 
+            self.form_effects_dict[effect]["lower"] = self.low_txt_box.text()    
+            self.form_effects_dict[effect]["upper"] = self.high_txt_box.text()    
+            #self.form_effects_dict["alpha"]      = self.alpha_edit.text() 
+        
+            self.candidate_est        = self.effect_txt_box.text()
+            self.candidate_lower      = self.low_txt_box.text()
+            self.candidate_upper      = self.high_txt_box.text()
+            #self.candidate_alpha      = self.alpha_edit.text()
+
+        save_table_data()
+        save_displayed_effects_data()
+        self.enable_back_calculation_btn()
+    
+    def block_all_signals(self, state):
+        for widget in self.entry_widgets:
+            widget.blockSignals(state)
+        
+    def restore_form_state(self):
+        ''' Restores the state of all objects on the form '''
+        
+        # Block all signals on the form 
+        self.block_all_signals(True)
+        ########################################################################
+        
+        def restore_displayed_effects_data():
+            print "Restoring displayed effects data..."
+            
+            self.effect_txt_box.setText(    self.form_effects_dict[self.cur_effect]["est"]  )    
+            self.low_txt_box.setText(       self.form_effects_dict[self.cur_effect]["lower"])       
+            self.high_txt_box.setText(      self.form_effects_dict[self.cur_effect]["upper"])              
+            #self.alpha_edit.setText(        self.form_effects_dict["alpha"]                 )        
+            
+            self.candidate_est        = self.effect_txt_box.text()
+            self.candidate_lower      = self.low_txt_box.text()
+            self.candidate_upper      = self.high_txt_box.text()
+            #self.candidate_alpha      = self.alpha_edit.text()
+        
+        def restore_table():
+            #print "Table to restore:"
+            #self.print_backup_table()
+        
+            for row in range(3):
+                for col in range(3):
+                    self.raw_data_table.blockSignals(True)
+                    self._set_val(row, col, self.table_backup[row][col])
+                    self.raw_data_table.blockSignals(False)
+            self.check_table_consistency.run()
+            
+            #print("Backed-up table:")
+            #self.print_backup_table()
+        
+        restore_displayed_effects_data()
+        restore_table()
+        self.enable_back_calculation_btn()
+        
+        
+        ########################################################################
+        # Unblock the signals
+        self.block_all_signals(False)
+        
+    def val_changed(self, val_str):        
+        print "--------------\nEntering val_changed...."
+        
+        def is_between_bounds(est=self.form_effects_dict[self.cur_effect]["est"], 
+                              low=self.form_effects_dict[self.cur_effect]["lower"], 
+                              high=self.form_effects_dict[self.cur_effect]["upper"]):
+            return meta_globals.between_bounds(est=est, low=low, high=high)
+
         ###### ERROR CHECKING CODE#####
         # Make sure entered value is numeric and between the appropriate bounds
-        block_box_signals(True)
+        self.block_all_signals(True)
         float_msg = "Must be numeric!"
-        errorflag = False
-        if val_str == "est" and not _is_empty(self.candidate_est):
-            # Check type
-            if not _is_a_float(self.candidate_est) :
-                QMessageBox.warning(self.parent(), "whoops", float_msg)
-                errorflag = True
-            if not between_bounds(est=self.candidate_est):
-                errorflag = True
-            if errorflag:
-                self.effect_txt_box.setText(self.curr_effect_tbox_text)
-                self.candidate_est = self.curr_effect_tbox_text
+
+        try:
+            if val_str == "est" and not _is_empty(self.candidate_est):
+                # Check type
+                if not _is_a_float(self.candidate_est) :
+                    QMessageBox.warning(self.parent(), "whoops", float_msg)
+                    raise Exception("error")
+                (good_result,msg) = is_between_bounds(est=self.candidate_est)
+                if not good_result:
+                    QMessageBox.warning(self.parent(), "whoops", msg)
+                    raise Exception("error")
+                display_scale_val = float(self.candidate_est)
+            elif val_str == "lower" and not _is_empty(self.candidate_lower):
+                if not _is_a_float(self.candidate_lower) :
+                    QMessageBox.warning(self.parent(), "whoops", float_msg)
+                    raise Exception("error")
+                (good_result,msg) = is_between_bounds(low=self.candidate_lower)
+                if not good_result:
+                    QMessageBox.warning(self.parent(), "whoops", msg)
+                    raise Exception("error")
+                display_scale_val = float(self.candidate_lower)
+            elif val_str == "upper" and not _is_empty(self.candidate_upper): 
+                if not _is_a_float(self.candidate_upper) :
+                    QMessageBox.warning(self.parent(), "whoops", float_msg)
+                    raise Exception("error")
+                (good_result,msg) = is_between_bounds(high=self.candidate_upper)
+                if not good_result:
+                    QMessageBox.warning(self.parent(), "whoops", msg)
+                    raise Exception("error")
+                display_scale_val = float(self.candidate_upper)
+#            elif val_str == "alpha" and not _is_empty(self.candidate_alpha):
+#                if not _is_a_float(self.candidate_alpha):
+#                    QMessageBox.warning(self.parent(), "whoops", float_msg)
+#                    raise Exception("error")
+#                if _is_a_float(self.candidate_alpha) and not 0 < float(self.candidate_alpha) < 1:
+#                    QMessageBox.warning(self.parent(), "whoops", "Alpha must be between 0 and 1 (closer to zero please!")
+#                    raise Exception("error")
+        except:
+            print "Error flag is true"
+            self.restore_form_state()
+            self.block_all_signals(True)
+            if val_str == "est":
                 self.effect_txt_box.setFocus()
-                block_box_signals(False)
-                return
-            display_scale_val = float(self.candidate_est)
-        elif val_str == "lower" and not _is_empty(self.candidate_lower):
-            if not _is_a_float(self.candidate_lower) :
-                QMessageBox.warning(self.parent(), "whoops", float_msg)
-                errorflag=True
-            if not between_bounds(low=self.candidate_lower):
-                errorflag=True
-            if errorflag:
-                self.low_txt_box.setText(self.curr_low_tbox_text)
-                self.candidate_lower = self.curr_low_tbox_text
+            elif val_str == "lower":
                 self.low_txt_box.setFocus()
-                block_box_signals(False)
-                return
-            display_scale_val = float(self.candidate_lower)
-        elif val_str == "upper" and not _is_empty(self.candidate_upper): 
-            if not _is_a_float(self.candidate_upper) :
-                QMessageBox.warning(self.parent(), "whoops", float_msg)
-                errorflag=True
-            if not between_bounds(high=self.candidate_upper):
-                errorflag=True
-            if errorflag:
-                self.high_txt_box.setText(self.curr_high_tbox_text)
-                self.candidate_upper = self.curr_high_tbox_text
+            elif val_str == "upper":
                 self.high_txt_box.setFocus()
-                block_box_signals(False)
-                return
-            display_scale_val = float(self.candidate_upper)
+            #elif val_str == "alpha":
+            #    self.alpha_edit.setFocus()
+            self.block_all_signals(False)
+            return
+
+
             
-        block_box_signals(False)
+        self.block_all_signals(False)
         # If we got to this point it means everything is ok so far
-    
-        self.curr_effect_tbox_text = self.effect_txt_box.text()
-        self.curr_low_tbox_text    = self.low_txt_box.text()
-        self.curr_high_tbox_text   = self.high_txt_box.text()
         
         try:
             display_scale_val = float(display_scale_val)
@@ -245,10 +392,11 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             self.ma_unit.set_display_upper(self.cur_effect, self.group_str, display_scale_val)
             
     # Todo: Impute 2x2 from here if est,low,high all filled out
-
+        self.save_form_state()
+        self.enable_back_calculation_btn()
     
     def val_edit(self, val_str, display_scale_val):
-        print "Editing %s with value: %s" % (val_str,display_scale_val)
+        #print "Editing %s with value: %s" % (val_str,display_scale_val)
         if val_str == "est":
             self.candidate_est = display_scale_val
         if val_str == "lower":
@@ -301,50 +449,43 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         if int(celldata_string) < 0:
             return "Counts cannot be negative."
         return None
-    
-#    def _est_and_ci_not_valid(self, est, low, high):
-#        is_blank = lambda x: x=="" or x is None
-#        is_valid = lambda x: not is_blank(x) and _is_a_float(x)
-#        
-#        #have low and est
-#        if is_valid(low) and is_valid(est):
-#            if 
-            
         
     def cell_changed(self, row, col):
         # tries to make sense of user input before passing
         # on to the R routine
         
-        #######int_val = int(float(self.raw_data_table.item(i, j).text()))
-        #print "previous cell data:",self.current_item_data
-        #print "new cell data:", self.raw_data_table.item(row, col).text()
+        print("Entering cell changed...")
+        print("New cell data(%d,%d): %s" % (row,col, self.raw_data_table.item(row, col).text()))   
         
-        new_num_not_valid = self._cell_data_not_valid(self.raw_data_table.item(row, col).text())
-        # Test if entered data is valid (a number)
-        if new_num_not_valid:
-            # popup warning message
-            QMessageBox.warning(self.parent(), "whoops", new_num_not_valid)
-            # set value back to original and leave, doing nothing
-            self.raw_data_table.blockSignals(True)
-            self._set_val(row, col, self.current_item_data)
-            self.raw_data_table.blockSignals(False)
-            return
+        try:
+            # Test if entered data is valid (a number)
+            warning_msg = self._cell_data_not_valid(self.raw_data_table.item(row, col).text())
+            if warning_msg:
+                raise Exception("Invalid Cell Data")
+    
+            self._update_data_table() # calculate rest of table (provisionally) based on new entry
+            warning_msg = self.check_table_consistency.run()
+            if warning_msg:
+                raise Exception("Table no longer consistent.")
+        except Exception as e:
+            msg = e.args[0]
+            QMessageBox.warning(self.parent(), "whoops", msg) #popup warning
+            self.restore_form_state() # brings things back to the way they were
+            return                    # and leave
         
-        # Try to calculate the rest of the table values
-        params = self._get_table_vals()
-        print "Params: ", params
-        computed_parameters = meta_globals.compute_2x2_table(params)
-        if computed_parameters:
-            print("Computed Parameters:",computed_parameters)
-            self._set_vals(computed_parameters) # computed --> table widget
-        self.current_item_data = self._get_int(row,col) # For verification
-        ## TODO OVERWRITE table widget item value with given value instead of that obtained from the regression    
-            
-        self.check_consistency.run()
-        
+        self.save_form_state()
         # need to try and update metric here     
         self._update_ma_unit() # table widget --> ma_unit
         self.try_to_update_cur_outcome()
+        self.enable_back_calculation_btn()
+        self.save_form_state()
+        
+        # disable just-edited cell
+        self.block_all_signals(True)
+        item = self.raw_data_table.item(row, col)
+        newflags = item.flags() & ~Qt.ItemIsEditable
+        item.setFlags(newflags)
+        self.block_all_signals(False)
         
     def _get_table_vals(self):
         ''' Package table from 2x2 table in to a dictionary'''
@@ -360,7 +501,17 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         vals_d["c2sum"] = self._get_int(2, 1)
         vals_d["total"] = self._get_int(2, 2)
         return vals_d
+    
+    def clear_column(self,col):
+        '''Clears out column in table and ma_unit'''
+
+        for row in range(3):
+            self.raw_data_table.blockSignals(True)
+            self._set_val(row, col, None)  
+            self.raw_data_table.blockSignals(False)
         
+        self._update_ma_unit()
+        self.save_form_state()
          
     def _set_vals(self, computed_d):
         '''Sets values in table widget'''
@@ -374,31 +525,29 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self._set_val(2, 0, computed_d["c1sum"])
         self._set_val(2, 1, computed_d["c2sum"])  
         self._set_val(2, 2, computed_d["total"])  
-        self.raw_data_table.blockSignals(False)
+        self.raw_data_table.blockSignals(False)  
         
-    def _set_val(self, i, j, val):
-        is_NaN = lambda x: x != x
-        
-        # need this to reset empty cells
-        if val in EMPTY_VALS:
-            self._set_table_cell(i, j, val)
-            return
-        if not is_NaN(val): # and val >= 0: # want to make errors more explicit
-            self._set_table_cell(i, j, val)
-        
-    def _set_table_cell(self, i, j, val):
-        if val in EMPTY_VALS:
-            self.raw_data_table.setItem(i, j, QTableWidgetItem(""))
+    def _set_val(self, row, col, val):
+        if meta_globals.is_NaN(val): # get out quick
+            print "%s is not a number" % val
             return
         
-        # try to cast to an int
         try:
-            val = int(round(val))
+            str_val = "" if val in EMPTY_VALS else str(int(val))
+            if self.raw_data_table.item(row, col) == None:
+                self.raw_data_table.setItem(row, col, QTableWidgetItem(str_val))
+            else:
+                self.raw_data_table.item(row, col).setText(str_val)
+            
+            #disable item
+            if str_val != "": 
+                item = self.raw_data_table.item(row, col)
+                newflags = item.flags() & ~Qt.ItemIsEditable
+                item.setFlags(newflags)
         except:
-            print("Could not cast to an int from within _set_table_cell")
-            pass
-        self.raw_data_table.setItem(i, j, QTableWidgetItem(str(val)))     
-        
+            print("Got to except in _set_val when trying to set (%d,%d)" % (row,col))
+            raise
+ 
     def _build_dict(self):
         d =  dict(zip(["control.n.outcome", "control.N", "tx.n.outcome", "tx.N"], self.raw_data))
         print "\n!%s" % self.ma_unit.effects_dict[self.cur_effect]
@@ -406,67 +555,30 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         print d["estimate"] == ""
         print d["estimate"] is None
         return d
-    
-    
-
         
     def _update_data_table(self):        
-        '''
-        boring code that tries to compute/fill-in the basic 2x2 table from
-        provided information. sort of verbose, should probably make more 
-        concise.
-        '''
+        '''Fill in 2x2 table from other entries in the table '''
+        
         self.raw_data_table.blockSignals(True)
-        # now compute the numbers with no events, if possible.
-        # 
-        # the raw data is of the form g_n / g_N where g_N is the *total* 
-        # and g_n is the event count. thus no event = g_N - g_n.
-        raw_data_list = []
-        for group in self.cur_groups:
-            raw_data_list.extend(self.raw_data_d[group])
         
-        e1, n1, e2, n2 = [int(x) if (not x in EMPTY_VALS) else None for x in raw_data_list]
-        
-        print "updating raw data with:\n e1 = %s, n1 = %s, e2 = %s, n2 = %s" % \
-                                            (e1, n1, e2, n2)
-        
-        ###### NEW STUFF ######
-        # set up parameters for R fill-in
-        params = {}
-        params["c11"] = e1
-        params["c12"] = None
-        params["c21"] = e2
-        params["c22"] = None
-        params["r1sum"] = n1
-        params["r2sum"] = n2
-        params["c1sum"] = None
-        params["c2sum"] = None
-        params["total"] = None
-        
+        params = self._get_table_vals()
         computed_params = meta_globals.compute_2x2_table(params)
+        print "Computed Params", computed_params
         if computed_params:
             self._set_vals(computed_params) # computed --> table widget
-# REMOVE GD DELETE ???
-#            # Set the following values explicitly even though they may conflict
-#            # with the values given by computed_params. If they do, let the consistency
-#            # checker catch it and alert the user.
-#            self._set_val(0, 0, e1)
-#            self._set_val(1, 0, e2)
-#            self._set_val(0, 2, n1)
-#            self._set_val(1, 2, n2)
-        
-        self.check_consistency.run()
+            
         self.raw_data_table.blockSignals(False)
         
     def _is_empty(self, i, j):
         val = self.raw_data_table.item(i,j)
         return val is None or val.text() == ""
         
-
     def _get_int(self, i, j):
         '''Get value from cell specified by row=i, col=j as an integer'''
         if not self._is_empty(i,j):
-            return int(float(self.raw_data_table.item(i, j).text()))
+            val = int(float(self.raw_data_table.item(i, j).text()))
+            print("Val from _get_int: %d" % val)
+            return val
         else:
             return None # its good to be explicit
             
@@ -476,14 +588,13 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
     def try_to_update_cur_outcome(self):
         e1, n1, e2, n2 = self.ma_unit.get_raw_data_for_groups(self.cur_groups)
         # if None is in the raw data, should we clear out current outcome?
-        if not any([self._none_or_empty(x) for x in [e1, n1, e2, n2]]) or \
-                        (not any([self._none_or_empty(x) for x in [e1, n1]]) and self.cur_effect in BINARY_ONE_ARM_METRICS):
+        if not (any([self._none_or_empty(x) for x in [e1, n1, e2, n2]]) or
+                   (not any([self._none_or_empty(x) for x in [e1, n1]]) and self.cur_effect in BINARY_ONE_ARM_METRICS)):
             if self.cur_effect in BINARY_TWO_ARM_METRICS:
                 est_and_ci_d = meta_py_r.effect_for_study(e1, n1, e2, n2, metric=self.cur_effect)
             else:
                 # binary, one-arm
-                est_and_ci_d = meta_py_r.effect_for_study(e1, n1, \
-                                            two_arm=False, metric=self.cur_effect)
+                est_and_ci_d = meta_py_r.effect_for_study(e1, n1, two_arm=False, metric=self.cur_effect)
         
             display_est, display_low, display_high = est_and_ci_d["display_scale"]
             self.ma_unit.set_display_effect_and_ci(self.cur_effect, self.group_str, display_est, display_low, display_high)                            
@@ -491,4 +602,53 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             self.ma_unit.set_effect_and_ci(self.cur_effect, self.group_str, est, low, high)
             self.set_current_effect()
            
+#    def start_over(self):
+#        keys = ["c11", "c12", "r1sum", "c21", "c22", "r2sum", "c1sum", "c2sum", "total"]
+#        blank_vals = dict( zip(keys, [""]*len(keys)) )
+#
+#        self._set_vals(blank_vals)
+#        self._update_ma_unit()
+#        
+#        # clear out effects stuff
+#        for metric in BINARY_ONE_ARM_METRICS + BINARY_TWO_ARM_METRICS:
+#            if ((self.cur_effect in BINARY_TWO_ARM_METRICS and metric in BINARY_TWO_ARM_METRICS) or
+#                (self.cur_effect in BINARY_ONE_ARM_METRICS and metric in BINARY_ONE_ARM_METRICS)):
+#                self.ma_unit.set_effect_and_ci(metric, self.group_str, None, None, None)
+#                self.ma_unit.set_display_effect_and_ci(metric, self.group_str, None, None, None)
+#            else:
+#                #TODO
+#                # do nothing for now..... treat the case where we have to switch group strings down the line
+#                pass
+#            
+#        # clear line edits
+#        self.set_current_effect()
+
+class ChooseBackCalcResultForm(QDialog, ui_choose_bin_back_calc_result_form.Ui_ChooseBackCalcResultForm):
+    def __init__(self, imputed_data, parent=None):
+        super(ChooseBackCalcResultForm, self).__init__(parent)
+        self.setupUi(self)
         
+        op1 = imputed_data["op1"] # option 1 data
+        op2 = imputed_data["op2"]
+        
+        a,b,c,d = op1["a"],op1["b"],op1["c"],op1["d"]
+        a,b,c,d = int(round(a)),int(round(b)),int(round(c)),int(round(d))
+        option1_txt = "Group 1:\n  #events: %d\n  Total: %d\nGroup 2:\n  #events: %d\n  Total: %d" % (a,b,c,d)
+        a,b,c,d = op2["a"],op2["b"],op2["c"],op2["d"]
+        a,b,c,d = int(round(a)),int(round(b)),int(round(c)),int(round(d))
+        option2_txt = "Group 1:\n  #events: %d\n  Total: %d\nGroup 2:\n  #events: %d\n  Total: %d" % (a,b,c,d)
+        
+        try:
+            self.choice1_lbl.setText(option1_txt)
+            self.choice2_lbl.setText(option2_txt)
+        except:
+            pyqtRemoveInputHook()
+            pdb.set_trace()
+
+    def getChoice(self):
+        choices = ["op1", "op2"]
+        
+        if self.choice1_btn.isChecked():
+            return choices[0] # op1
+        else:
+            return choices[1] # op2

@@ -51,17 +51,15 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self.block_all_signals(True)
         
         self.alpha_edit.setText(".05")
+        
         self.setup_inconsistency_checking()
         self.initialize_backup_structures()
         self.setup_table_effect_dict()         # gather effect info from ma_unit
-        
         self._read_in_table_data_from_MAunit() # populate table items from raw data in ma_unit
         self._populate_effect_cmbo_box()     # make cmbo box entries for effects
-        
         self.impute_data()  # back-calculate 2x2
         self._update_data_table()         # fill in the rest of the data table
         self.set_current_effect()         # fill in current effect data in line edits
-        
         self.save_form_state()
 
         # unblock
@@ -219,7 +217,9 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self._update_ma_unit()           # 2x2 table --> ma_unit
         self.impute_effects_in_ma_unit() # effects   --> ma_unit
         self.set_current_effect()        # ma_unit   --> effects
+        self.save_form_state()
         
+        # disable just-edited cell
         self.block_all_signals(True)
         item = self.two_by_two_table.item(row, col)
         newflags = item.flags() & ~Qt.ItemIsEditable
@@ -697,7 +697,6 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
     def clear_column(self,col):
         '''Clears out column in table and ma_unit'''
 
-        
         for row in range(3):
             self.two_by_two_table.blockSignals(True)
             self._set_val(row, col, None)  

@@ -109,6 +109,15 @@ def impute_diag_data(diag_data_dict):
     #return _rls_to_pyd(two_by_two)
     return _grlist_to_pydict(two_by_two)
 
+def impute_bin_data(bin_data_dict):
+    for param, val in bin_data_dict.items():
+        if val is None:
+            bin_data_dict.pop(param)
+
+    dataf = ro.r['data.frame'](**bin_data_dict)
+    two_by_two = ro.r("gimpute.bin.data(%s)" % (dataf.r_repr()))
+    
+    return _grlist_to_pydict(two_by_two)
 
 def fillin_2x2(table_data_dict):
     #r_str = ["fillin.2x2.simple("]
@@ -179,7 +188,6 @@ def _grlist_to_pydict(r_ls, recurse=True):
     
     d = {}
     names = r_ls.names
-
     for name, val in zip(names, r_ls):
         #print "name {0}, val {1}".format(name, val)
         if recurse and is_named_R_list(val):
@@ -198,7 +206,7 @@ def _grlist_to_pydict(r_ls, recurse=True):
                     d[name] = val # not a singleton list
                     d[name] = [convert_NA_to_None(x) for x in d[name][:]]
             except: # val is not iterable
-                d[name] = val  
+                d[name] = val
 
     return d
 
@@ -1142,6 +1150,9 @@ def effect_for_study(e1, n1, e2=None, n2=None, two_arm=True,
     #print "result: %s" % effect
     point_est = effect[0][0]
     se = math.sqrt(effect[1][0])
+    
+    #print "point_est: ", point_est
+    #print "var:", effect[1][0]
 
     # scalar for computing confidence interval
     r_str = "qnorm(%s)" % conf_level
