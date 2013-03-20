@@ -164,6 +164,10 @@ continuous.fixed <- function(cont.data, params){
                 # Write results and study data to csv files
                 # Weights assigned to each study
                 res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
+				## GD EXPERIMENTAL ##############
+				res$study.names <- cont.data@study.names
+				res$study.years <- cont.data@years
+				##################################
                 results.path <- paste("./r_tmp/cont_fixed_results.csv")
                 # @TODO Pass in results.path via params
                 data.path <- paste("./r_tmp/cont_fixed_study_data.csv")
@@ -270,6 +274,12 @@ continuous.random <- function(cont.data, params){
               # Weights assigned to each study
               weights <- 1 / (res$vi + res$tau2)
               res$study.weights <- weights / sum(weights)
+			  
+			  ## GD EXPERIMENTAL ##############
+			  res$study.names <- cont.data@study.names
+			  res$study.years <- cont.data@years
+			  ##################################
+			  
               results.path <- "./r_tmp/cont_random_results.csv"
               # @TODO Pass in results.path via params
               data.path <- "./r_tmp/cont_random_study_data.csv"

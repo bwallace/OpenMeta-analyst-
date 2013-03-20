@@ -196,6 +196,10 @@ binary.fixed.inv.var <- function(binary.data, params){
                 # Write results and study data to csv files 
                 # Weights assigned to each study
                 res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
+				## GD EXPERIMENTAL ##############
+				res$study.names <- binary.data@study.names
+				res$study.years <- binary.data@years
+				##################################
                 results.path <- "./r_tmp/binary_fixed_inv_var_results.csv"
                 # @TODO Pass in results.path via params
                 data.path <- "./r_tmp/binary_fixed_inv_var_study_data.csv"
@@ -303,6 +307,10 @@ binary.fixed.mh <- function(binary.data, params){
                 D <- binary.data@g2O2
                 weights <- B * C / (A + B + C + D)
                 res$study.weights <- weights / sum(weights)
+				## GD EXPERIMENTAL ##############
+				res$study.names <- binary.data@study.names
+				res$study.years <- binary.data@years
+				##################################
                 results.path <- "./r_tmp/binary_fixed_mh_results.csv"
                 # @TODO Pass in results.path via params
                 data.path <- "./r_tmp/binary_fixed_mh_study_data.csv"
@@ -419,6 +427,10 @@ binary.fixed.peto <- function(binary.data, params){
             if (is.null(params$write.to.file)) {
                 # Write results and study data to csv files  
                 res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
+				## GD EXPERIMENTAL ##############
+				res$study.names <- binary.data@study.names
+				res$study.years <- binary.data@years
+				##################################
                 results.path <- paste("./r_tmp/binary_fixed_peto_results.csv")
                 # @TODO Pass in results.path via params
                 data.path <- paste("./r_tmp/binary_fixed_peto_study_data.csv")
@@ -513,7 +525,7 @@ binary.fixed.peto.overall <- function(results) {
 ##################################
 #  binary random effects         #
 ##################################
-binary.random <- function(binary.data, params){
+binary.random <- function(binary.data, params){	
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
     
@@ -539,6 +551,12 @@ binary.random <- function(binary.data, params){
                 # Weights assigned to each study
                 weights <- 1 / (res$vi + res$tau2)
                 res$study.weights <- weights / sum(weights)
+				
+				## GD EXPERIMENTAL ##############
+				res$study.names <- binary.data@study.names
+				res$study.years <- binary.data@years
+				##################################
+				
                 # Write results and study data to csv files
                 results.path <- paste("./r_tmp/binary_random_results.csv")
                 # @TODO Pass in results.path via params
@@ -546,12 +564,27 @@ binary.random <- function(binary.data, params){
                 write.results.to.file(binary.data, params, res, outpath=results.path)
                 # write.bin.study.data.to.file(binary.data, params, res, data.outpath=data.path)
                 # @TODO: Check for non-numeric entries and replace with blanks to avoid errors.
+				###############################
+				print("THE WEIGHTS:")         #
+				print(res$study.weights)      #
+				###############################
             }
             if (is.null(params$create.plot)) {
                 # Create forest plot and list to display summary of results
                 #
                 metric.name <- pretty.metric.name(as.character(params$measure))
                 model.title <- paste("Binary Random-Effects Model\n\nMetric: ", metric.name, sep="")
+				
+				###############################
+				#print("RES HERE:")            #
+				#print(res)                    #
+				#
+				#print("Res weights here")
+				#print(res$study.weights)
+				#
+				#print("END OF RES HERE")
+				###############################
+				
                 # Create results display tables
                 summary.disp <- create.summary.disp(binary.data, params, res, model.title)
                 #

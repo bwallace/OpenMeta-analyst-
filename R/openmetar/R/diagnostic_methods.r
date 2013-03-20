@@ -382,6 +382,11 @@ diagnostic.fixed.inv.var <- function(diagnostic.data, params){
                      slab=diagnostic.data@study.names,
                      method="FE", level=params$conf.level,
                      digits=params$digits)
+		# GD EXPERIMENTAL#########################
+		res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
+		res$study.names <- diagnostic.data@study.names
+		res$study.years <- diagnostic.data@years
+		#########################################
         # Create list to display summary of results
         model.title <- paste("Diagnostic Fixed-Effect Model - Inverse Variance (k = ", res$k, ")", sep="")
         summary.disp <- create.summary.disp(diagnostic.data, params, res, model.title)
@@ -495,6 +500,11 @@ diagnostic.fixed.mh <- function(diagnostic.data, params){
                                 level=params$conf.level, digits=params$digits, measure="RR",
                                 add=c(params$adjust, 0), to=c(as.character(params$to), "none")))
          
+		# GD EXPERIMENTAL#########################
+		res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
+		res$study.names <- diagnostic.data@study.names
+		res$study.years <- diagnostic.data@years
+		#########################################		
         #                        
         # Create list to display summary of results
         #
@@ -601,6 +611,12 @@ diagnostic.fixed.peto <- function(diagnostic.data, params){
                     ci=diagnostic.data@FP, di=diagnostic.data@TN, slab=diagnostic.data@study.names,
                     level=params$conf.level, digits=params$digits,
                     add=c(params$adjust, 0), to=c(as.character(params$to), "none"))
+	# GD EXPERIMENTAL#########################
+	res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
+	res$study.names <- diagnostic.data@study.names
+	res$study.years <- diagnostic.data@years
+	#########################################			
+			
     # Corrected values for y and SE
     diagnostic.data@y <- res$yi
     diagnostic.data@SE <- sqrt(res$vi)
@@ -730,10 +746,15 @@ diagnostic.random <- function(diagnostic.data, params){
                  slab=diagnostic.data@study.names,
                  method=params$rm.method, level=params$conf.level,
                  digits=params$digits)
-        #                        
-        # Create list to display summary of results
-        #
 
+		# GD EXPERIMENTAL#########################
+		weights <- 1 / (res$vi + res$tau2)
+        res$study.weights <- weights / sum(weights)
+		res$study.names <- diagnostic.data@study.names
+		res$study.years <- diagnostic.data@years
+		#########################################
+		 
+        # Create list to display summary of results
         model.title <- paste("Diagnostic Random-Effects Model (k = ", res$k, ")", sep="")
         summary.disp <- create.summary.disp(diagnostic.data, params, res, model.title)
         pretty.names <- diagnostic.random.pretty.names()

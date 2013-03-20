@@ -42,6 +42,11 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         self.borders = []
         self.printer = QPrinter(QPrinter.HighResolution)
         self.printer.setPageSize(QPrinter.Letter)
+        
+        #########################
+        print("results from results window:",results)
+        print("--------------- END OF RESULTS FROM RESULTS WINDOW")
+        ########################
 
         QObject.connect(self.nav_tree, SIGNAL("itemClicked(QTreeWidgetItem*, int)"),
                                        self.item_clicked)
@@ -100,6 +105,8 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         # reset the scene
         self.graphics_view.setScene(self.scene)
         self.graphics_view.ensureVisible(QRectF(0,0,0,0))
+        
+
 
     def f(self):
         print self.current_line()
@@ -142,6 +149,8 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
                                                 title, image, params_path=params_path)
 
             self.items_to_coords[qt_item] = pos
+            
+            
 
 
     def generate_pixmap(self, image):
