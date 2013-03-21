@@ -248,7 +248,7 @@ binary.fixed.inv.var.parameters <- function(){
     # parameters
     apply_adjustment_to = c("only0", "all")
     
-    params <- list("conf.level"="float", "digits"="float", 
+    params <- list("conf.level"="float", "digits"="int", 
                             "adjust"="float", "to"=apply_adjustment_to)
     
     # default values
@@ -360,7 +360,7 @@ binary.fixed.mh.parameters <- function(){
     # parameters
     apply_adjustment_to = c("only0", "all")
     
-    params <- list("conf.level"="float", "digits"="float",
+    params <- list("conf.level"="float", "digits"="int",
                             "adjust"="float", "to"=apply_adjustment_to)
     
     # default values
@@ -483,7 +483,7 @@ binary.fixed.peto.parameters <- function(){
     # parameters
     apply_adjustment_to = c("only0", "all")
     
-    params <- list( "conf.level"="float", "digits"="float",
+    params <- list( "conf.level"="float", "digits"="int",
                             "adjust"="float", "to"=apply_adjustment_to)
     
     # default values
@@ -626,7 +626,7 @@ binary.random.parameters <- function(){
     # parameters
     apply_adjustment_to = c("only0", "all")
     rm_method_ls <- c("HE", "DL", "SJ", "ML", "REML", "EB")
-    params <- list("rm.method"=rm_method_ls, "conf.level"="float", "digits"="float",
+    params <- list("rm.method"=rm_method_ls, "conf.level"="float", "digits"="int",
                    "adjust"="float", "to"=apply_adjustment_to)
        
     # default values

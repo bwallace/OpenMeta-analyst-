@@ -439,6 +439,8 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             self.add_enum(layout, cur_grid_row, name, value)
         elif value.lower() == "float":
             self.add_float_box(layout, cur_grid_row, name)
+        elif value.lower() == "int":
+            self.add_int_box(layout, cur_grid_row, name)
         # should we add an array type?
         elif value.lower() == "string":
             self.add_text_box(layout, cur_grid_row, name)
@@ -487,6 +489,23 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                                  self.set_param_f(name, to_type=float))
         self.current_widgets.append(finput)
         layout.addWidget(finput, cur_grid_row, 1)
+        
+    def add_int_box(self, layout, cur_grid_row, name):
+        self.add_label(layout, cur_grid_row, self.param_d[name]["pretty.name"],\
+                                tool_tip_text=self.param_d[name]["description"])
+        # now add the int input line edit
+        iinput = QLineEdit()
+
+        # if a default value has been specified, use it
+        if self.current_defaults.has_key(name):
+            iinput.setText(str(int(self.current_defaults[name])))
+            self.current_param_vals[name] = self.current_defaults[name]
+
+        iinput.setMaximumWidth(50)
+        QObject.connect(iinput, QtCore.SIGNAL("textChanged(QString)"),
+                                 self.set_param_f(name, to_type=int))
+        self.current_widgets.append(iinput)
+        layout.addWidget(iinput, cur_grid_row, 1)
 
     def add_text_box(self, layout, cur_grid_row, name):
         self.add_label(layout, cur_grid_row, self.param_d[name]["pretty.name"],\
@@ -531,7 +550,6 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         # they were provided for the given param)
         self.current_params, self.current_defaults, self.var_order, self.param_d = \
                     meta_py_r.get_params(self.current_method)
-                
 
         ###
         # user selections overwrite the current parameter defaults.

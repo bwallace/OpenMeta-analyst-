@@ -216,7 +216,7 @@ continuous.fixed <- function(cont.data, params){
 
 continuous.fixed.parameters <- function(){
     # parameters
-    params <- list("conf.level"="float", "digits"="float")
+    params <- list("conf.level"="float", "digits"="int")
     
     # default values
     defaults <- list("conf.level"=95, "digits"=3)
@@ -328,7 +328,7 @@ continuous.random <- function(cont.data, params){
 continuous.random.parameters <- function(){
     # parameters
     rm_method_ls <- c("HE", "DL", "SJ", "ML", "REML", "EB")
-    params <- list("rm.method"=rm_method_ls, "conf.level"="float", "digits"="float")
+    params <- list("rm.method"=rm_method_ls, "conf.level"="float", "digits"="int")
     
     # default values
     defaults <- list("rm.method"="DL", "conf.level"=95, "digits"=3)

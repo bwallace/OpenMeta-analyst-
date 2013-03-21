@@ -433,7 +433,7 @@ diagnostic.fixed.inv.var.parameters <- function(){
     # parameters
     apply_adjustment_to = c("only0", "all")
 
-    params <- list("conf.level"="float", "digits"="float",
+    params <- list("conf.level"="float", "digits"="int",
                             "adjust"="float", "to"=apply_adjustment_to)
 
     # default values
@@ -558,7 +558,7 @@ diagnostic.fixed.mh.parameters <- function(){
     # parameters
     apply_adjustment_to = c("only0", "all")
     
-    params <- list("conf.level"="float", "digits"="float",
+    params <- list("conf.level"="float", "digits"="int",
                             "adjust"="float", "to"=apply_adjustment_to)
     
     # default values
@@ -689,7 +689,7 @@ diagnostic.fixed.peto.parameters <- function(){
   # parameters
   apply_adjustment_to = c("only0", "all")
   
-  params <- list( "conf.level"="float", "digits"="float",
+  params <- list( "conf.level"="float", "digits"="int",
                   "adjust"="float", "to"=apply_adjustment_to)
   
   # default values
@@ -801,7 +801,7 @@ diagnostic.random <- function(diagnostic.data, params){
 diagnostic.random.parameters <- function(){
     apply.adjustment.to = c("only0", "all")
     rm.method.ls <- c("HE", "DL", "SJ", "ML", "REML", "EB")
-    params <- list("rm.method"=rm.method.ls, "conf.level"="float", "digits"="float",
+    params <- list("rm.method"=rm.method.ls, "conf.level"="float", "digits"="int",
                             "adjust"="float", "to"=apply.adjustment.to)
     
     # default values

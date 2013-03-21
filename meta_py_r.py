@@ -270,12 +270,12 @@ def get_params(method_name):
     if param_d.has_key("var_order"):
         order_vars = list(param_d["var_order"])
 
-    pretty_names_and_descriptions = get_pretty_names_and_descriptions_for_params(\
+    pretty_names_and_descriptions = get_pretty_names_and_descriptions_for_params(
                                         method_name, param_list)
 
-    return (_rlist_to_pydict(param_d['parameters'], recurse=False), \
-            _rlist_to_pydict(param_d['defaults']), \
-            order_vars,\
+    return (_rlist_to_pydict(param_d['parameters'], recurse=False),
+            _rlist_to_pydict(param_d['defaults']),
+            order_vars,
             pretty_names_and_descriptions)
             
 
