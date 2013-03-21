@@ -641,16 +641,11 @@ class ChooseBackCalcResultForm(QDialog, ui_choose_bin_back_calc_result_form.Ui_C
         a,b,c,d = int(round(a)),int(round(b)),int(round(c)),int(round(d))
         option1_txt = "Group 1:\n  #events: %d\n  Total: %d\nGroup 2:\n  #events: %d\n  Total: %d" % (a,b,c,d)
         
-        try:
-            op2 = imputed_data["op2"]
-            a,b,c,d = op2["a"],op2["b"],op2["c"],op2["d"]
-            a,b,c,d = int(round(a)),int(round(b)),int(round(c)),int(round(d))
-            option2_txt = "Group 1:\n  #events: %d\n  Total: %d\nGroup 2:\n  #events: %d\n  Total: %d" % (a,b,c,d)
-        except:
-            pyqtRemoveInputHook()
-            pdb.set_trace()
+        op2 = imputed_data["op2"]
+        a,b,c,d = op2["a"],op2["b"],op2["c"],op2["d"]
+        a,b,c,d = int(round(a)),int(round(b)),int(round(c)),int(round(d))
+        option2_txt = "Group 1:\n  #events: %d\n  Total: %d\nGroup 2:\n  #events: %d\n  Total: %d" % (a,b,c,d)
         
-
         self.choice1_lbl.setText(option1_txt)
         self.choice2_lbl.setText(option2_txt)
 

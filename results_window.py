@@ -42,11 +42,6 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         self.borders = []
         self.printer = QPrinter(QPrinter.HighResolution)
         self.printer.setPageSize(QPrinter.Letter)
-        
-        #########################
-        print("results from results window:",results)
-        print("--------------- END OF RESULTS FROM RESULTS WINDOW")
-        ########################
 
         QObject.connect(self.nav_tree, SIGNAL("itemClicked(QTreeWidgetItem*, int)"),
                                        self.item_clicked)

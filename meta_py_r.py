@@ -852,37 +852,43 @@ def parse_out_results(result):
         else:
             text_d[text_n]=text
             # Construct List of Weights for studies
-            if text_n.rfind("Summary") != -1:
-                summary_dict = _grlist_to_pydict(text)
-                try:
-                    if "study.names" in summary_dict['MAResults']: # this is a silly thing to look for but its something I explicitly set in the random methods so I know it's there
-                        text_n_withoutSummary = text_n.replace("Summary","")
-                        text_n_withoutSummary.strip()
-                        key_name = text_n_withoutSummary + " Weights"
-                        key_name.strip()
-                        
-                        study_names = summary_dict['MAResults']['study.names']
-                        study_years = summary_dict['MAResults']['study.years']
-                        study_weights = summary_dict['MAResults']['study.weights']
-                        max_len = max([len(name) for name in study_names])
-                        weights_txt = "studies" + " "*(max_len-1) + "weights\n"
-                        
-                        for name,year,weight in zip(study_names, study_years, study_weights):
-                            weights_txt += "{0:{name_width}} {1} {2:4.1f}%\n".format(name, year, weight*100, name_width=max_len)
-                        text_d[key_name] = weights_txt
-                except:
-                    print("In parse-out results:")
-                    pyqtRemoveInputHook()
-                    pdb.set_trace()
-                    
-            
-
+            (key, astring) = make_weights_list(text_n,text)
+            if key != None:
+                text_d[key] = astring
 
     return {"images":image_path_d,
             "image_var_names":image_var_name_d,
             "texts":text_d,
             "image_params_paths":image_params_paths_d,
             "image_order":image_order}
+    
+    
+def make_weights_list(text_n,text):
+    # Construct List of Weights for studies
+    try:
+        if text_n.find("Summary") != -1:
+            summary_dict = _grlist_to_pydict(text)
+    
+            if "study.names" in summary_dict['MAResults']: # this is a silly thing to look for but its something I explicitly set in the random methods so I know it's there
+                text_n_withoutSummary = text_n.replace("Summary","")
+                text_n_withoutSummary.strip()
+                key_name = text_n_withoutSummary + " Weights"
+                key_name.strip()
+                
+                study_names = summary_dict['MAResults']['study.names']
+                study_years = summary_dict['MAResults']['study.years']
+                study_weights = summary_dict['MAResults']['study.weights']
+                max_len = max([len(name) for name in study_names])
+                weights_txt = "studies" + " "*(max_len-1) + "weights\n"
+                
+                for name,year,weight in zip(study_names, study_years, study_weights):
+                    weights_txt += "{0:{name_width}} {1} {2:4.1f}%\n".format(name, year, weight*100, name_width=max_len)
+                return (key_name, weights_txt)
+    except:
+        print("Something went wrong from make_weights_list: Are we in bivariate?? :)")
+        return (None,None)
+    
+
                 
                                        
 def run_binary_fixed_meta_regression(selected_cov, bin_data_name="tmp_obj", \

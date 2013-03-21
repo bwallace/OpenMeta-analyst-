@@ -116,7 +116,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         # of metrics.
         if self.diag_metrics is not None:
             # these are the two 'groups' of metrics (sens/spec & DOR/LR+/-)
-            # these booleans tell us for which of these grups we're getting parameters
+            # these booleans tell us for which of these groups we're getting parameters
             self.sens_spec = any([m in ("sens", "spec") for m in self.diag_metrics])
             self.lr_dor = any([m in ("lr", "dor") for m in self.diag_metrics])
             self.setup_diagnostic_ui()
@@ -330,6 +330,9 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                                          data_obj_name=tmp_obj_name, metric=metric)
 
         print "\n\navailable %s methods: %s" % (self.data_type, ", ".join(self.available_method_d.keys()))
+        
+        
+        #print("----------------------------------\nAvailable methods dictionary:",self.available_method_d)
 
         # issue #110 -- this is NOT a general/good/flexible solution
         # -- we sort here in reverse because this will put .random
@@ -348,8 +351,14 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                          self.meta_f_str is not None or\
                          not ("sens" in self.diag_metrics and "spec" in self.diag_metrics):
                     method_names.remove(biv_method)
-            
-
+            # Fix for issue # 175            
+            if set(["lr","dor"]) <= set(self.diag_metrics):    
+                try:
+                    method_names.remove('Diagnostic Fixed-Effect Peto')
+                    #QMessageBox.warning(self.parent(), "whoops", "removed peto")
+                except:
+                    print("Couldn't remove 'Diagnostic Fixed-Effect Peto' for some reason... don't know why")
+        
         method_names.sort(reverse=True)
 
         ###
@@ -552,9 +561,9 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         # liklihood ratio and diagnostic odds ratio analyses.
         # we pass along the parameters acquired for sens/spec
         # in the diag_metrics* dictionary.
-        form =  MA_Specs(self.model, parent=self.parent(),\
-                    diag_metrics=("lr", "dor"), \
-                    meta_f_str = self.meta_f_str,\
+        form =  MA_Specs(self.model, parent=self.parent(),
+                    diag_metrics=list(set(["lr", "dor"]) & set(self.diag_metrics)),
+                    meta_f_str = self.meta_f_str,
                     diag_metrics_to_analysis_details_d=self.diag_metrics_to_analysis_details)
         form.show()
         self.hide()

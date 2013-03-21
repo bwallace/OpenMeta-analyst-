@@ -440,9 +440,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                 self.simple_table.blockSignals(True)
                 
                 print "Computed vals:",computed_vals
-                for var_index, var_name in enumerate(var_names):
-                    #pyqtRemoveInputHook()
-                    #pdb.set_trace()     
+                for var_index, var_name in enumerate(var_names):  
                     float_str = self.float_to_str(float(computed_vals[var_name]))
                     self.simple_table.setItem(row_index, var_index, QTableWidgetItem(QString(float_str)))
 
@@ -549,8 +547,8 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             try:
                 return float(table.item(i,j).text())
             except:
-                pyqtRemoveInputHook()
-                pdb.set_trace()
+                print("Could not convert %s to float" % table.item(i,j))
+                return None
         return None
         
     def no_val(self, x):
