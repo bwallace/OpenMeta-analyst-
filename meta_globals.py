@@ -33,10 +33,27 @@ VERSION = .005
 # Binary metrics
 BINARY_TWO_ARM_METRICS = ["OR", "RD", "RR", "AS", "YUQ", "YUY"]
 BINARY_ONE_ARM_METRICS = ["PR", "PLN", "PLO", "PAS", "PFT"]
+BINARY_METRIC_NAMES = {"OR":"Odds Ratio",
+                       "RD":"Risk Difference",
+                       "RR":"Risk Ratio",
+                       "AS":"",
+                       "YUQ":"",
+                       "YUY":"",
+                       "PR":"",
+                       "PLN":"",
+                       "PLO":"",
+                       "PAS":"",
+                       "PFT":"",
+                       }
 
 # Continuous metrics
 CONTINUOUS_TWO_ARM_METRICS = ["MD", "SMD"]
 CONTINUOUS_ONE_ARM_METRICS = ["TX Mean"]
+CONTINUOUS_METRIC_NAMES = {"MD":"Mean Difference",
+                           "SMD":"Standardized Mean Difference",
+                           "TX Mean":"TX Mean",
+                           }
+
 
 # Default metrics (for when making a new dataset)
 DEFAULT_BINARY_ONE_ARM = "PR"
@@ -52,6 +69,12 @@ TWO_ARM_METRICS = BINARY_TWO_ARM_METRICS + CONTINUOUS_TWO_ARM_METRICS
 # Diagnostic metrics
 DIAGNOSTIC_METRICS = ["Sens", "Spec", "PLR", "NLR", "DOR"]
 DIAGNOSTIC_LOG_METRICS = ["PLR", "NLR", "DOR"]
+DIAGNOSTIC_METRIC_NAMES = {"Sens":"Sensitivity",
+                           "Spec":"Specificity",
+                           "PLR":"",
+                           "NLR":"",
+                           "DOR":"Diagnostic Odds Ratio",
+                           }
 
 # enumeration of data types and dictionaries mapping both ways
 BINARY, CONTINUOUS, DIAGNOSTIC, OTHER = range(4)
@@ -82,6 +105,8 @@ PREFS_PATH = "user_prefs.dict"
 
 # this is a useful function sometimes.
 none_to_str = lambda x: "" if x is None else x
+
+HELP_URL = "http://www.cebm.brown.edu/open_meta"
 
 # for diagnostic data -- this dictionary maps
 # the mteric names as they appear in the UI/ure

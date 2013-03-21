@@ -340,11 +340,11 @@ continuous.random.parameters <- function(){
 continuous.random.pretty.names <- function() {
     pretty.names <- list("pretty.name"="Continuous Random-Effects", 
                          "description" = "Performs random-effects meta-analysis.",
-                         "rm.method"=list("pretty.name"="Random method", "description"="Method for estimating between-studies heterogeneity"),                      
+                         "rm.method"=list("pretty.name"="Random-Effects method", "description"="Method for estimating between-studies heterogeneity"),                      
                          "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
-                         "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
+                         "digits"=list("pretty.name"="Number of digits of precision to display", "description"="Number of digits to display in results"),
                          "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
-                         "to"=list("pretty.name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
+                         "to"=list("pretty.name"="Cells to which correction factor should be added", "description"="When Add correction factor is set to \"only 0\", the correction factor
                                    is added to all cells of each two-by-two table that contains at leason one zero. When set to \"all\", the correction factor
                                    is added to all two-by-two tables if at least one table contains a zero.")
                          )
