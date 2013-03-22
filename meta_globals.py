@@ -36,14 +36,14 @@ BINARY_ONE_ARM_METRICS = ["PR", "PLN", "PLO", "PAS", "PFT"]
 BINARY_METRIC_NAMES = {"OR":"Odds Ratio",
                        "RD":"Risk Difference",
                        "RR":"Risk Ratio",
-                       "AS":"",
-                       "YUQ":"",
-                       "YUY":"",
-                       "PR":"",
-                       "PLN":"",
-                       "PLO":"",
-                       "PAS":"",
-                       "PFT":"",
+                       "AS":"Difference of arcsines transformed proportions",
+                       "YUQ":"Yule's Q is equal to (oi-1)/(oi+1), where oi is the odds ratio.",
+                       "YUY":"Yule's Y is equal to (sqrt(oi)-1)/(sqrt(oi)+1), where oi is the odds ratio.",
+                       "PR":"Untransformed Proportion",
+                       "PLN":"Natural Logarithm transformed Proportion",
+                       "PLO":"Logit transformed Proportion",
+                       "PAS":"Arcsine transformed Proportion",
+                       "PFT":"Freeman-Tukey Transformed Proportion",
                        }
 
 # Continuous metrics
@@ -71,8 +71,8 @@ DIAGNOSTIC_METRICS = ["Sens", "Spec", "PLR", "NLR", "DOR"]
 DIAGNOSTIC_LOG_METRICS = ["PLR", "NLR", "DOR"]
 DIAGNOSTIC_METRIC_NAMES = {"Sens":"Sensitivity",
                            "Spec":"Specificity",
-                           "PLR":"",
-                           "NLR":"",
+                           "PLR":"Positive Likelihood Ratio",
+                           "NLR":"Negative Likelihood Ratio",
                            "DOR":"Diagnostic Odds Ratio",
                            }
 
