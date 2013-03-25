@@ -57,9 +57,10 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self.setup_table_effect_dict()         # gather effect info from ma_unit
         self._read_in_table_data_from_MAunit() # populate table items from raw data in ma_unit
         self._populate_effect_cmbo_box()     # make cmbo box entries for effects
-        self.impute_data()  # back-calculate 2x2
-        self._update_data_table()         # fill in the rest of the data table
+        #self.impute_data()  # back-calculate 2x2
+        #self._update_data_table()         # fill in the rest of the data table
         self.set_current_effect()         # fill in current effect data in line edits
+        self.enable_back_calculation_btn()
         self.save_form_state()
 
         # unblock
@@ -80,7 +81,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
                                             self.cell_changed)                          
         QObject.connect(self.effect_cbo_box, SIGNAL("currentIndexChanged(QString)"),
                                              self.effect_changed) 
-        QObject.connect(self.startover_Btn, SIGNAL("clicked()"), self.start_over)
+        QObject.connect(self.clear_Btn, SIGNAL("clicked()"), self.clear_form)
         
         QObject.connect(self.effect_txt_box, SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("est", new_text))
         QObject.connect(self.low_txt_box,    SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("lower", new_text))
@@ -93,6 +94,8 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         QObject.connect(self.high_txt_box,   SIGNAL("editingFinished()"), lambda: self.val_changed("upper") )
         QObject.connect(self.alpha_edit,     SIGNAL("editingFinished()"), lambda: self.val_changed("alpha") )
         QObject.connect(self.prevalence_txt_box, SIGNAL("editingFinished()"), lambda: self.val_changed("prevalence") )
+
+        QObject.connect(self.back_calc_Btn, SIGNAL("clicked()"), lambda: self.enable_back_calculation_btn(engage=True) )
 
     def setup_inconsistency_checking(self):
         # set-up inconsistency label
@@ -125,7 +128,6 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             QMessageBox.warning(self.parent(), "whoops", msg)
             raise Exception("Could not convert %s to int" % self.two_by_two_table.item(i, j))
             
-    
     def cell_data_invalid(self, celldata_string):
         # ignore blank entries
         if celldata_string.trimmed() == "" or celldata_string is None:
@@ -217,6 +219,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self._update_ma_unit()           # 2x2 table --> ma_unit
         self.impute_effects_in_ma_unit() # effects   --> ma_unit
         self.set_current_effect()        # ma_unit   --> effects
+        self.enable_back_calculation_btn()
         self.save_form_state()
         
         # disable just-edited cell
@@ -256,7 +259,8 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             self.candidate_prevalence = self.prevalence_txt_box.text()
 
         save_table_data()
-        save_displayed_effects_data()            
+        save_displayed_effects_data()
+        self.enable_back_calculation_btn()
     
     def restore_form_state(self):
         ''' Restores the state of all objects on the form '''
@@ -297,6 +301,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         
         restore_displayed_effects_data()
         restore_table()
+        self.enable_back_calculation_btn()
         
         ########################################################################
         # Unblock the signals
@@ -339,14 +344,14 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         
         
 
-    def impute_data(self):
-        diag_data_dict = self.build_dict()
-
-        if diag_data_dict is not None:
-            #print "arguments to imputed data: ", diag_data_dict
-            imputed = meta_py_r.impute_diag_data(diag_data_dict)
-            #print "imputed data: %s" % imputed
-            self.update_2x2_table(imputed)
+#    def impute_data(self):
+#        diag_data_dict = self.build_dict()
+#
+#        if diag_data_dict is not None:
+#            #print "arguments to imputed data: ", diag_data_dict
+#            imputed = meta_py_r.impute_diag_data(diag_data_dict)
+#            #print "imputed data: %s" % imputed
+#            self.update_2x2_table(imputed)
             
     def impute_effects_in_ma_unit(self):
         '''Calculate and store values for effects in ma_unit based on values in 2x2 table'''
@@ -356,12 +361,12 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         tp, fn, fp, tn = counts['TP'], counts['FN'], counts['FP'], counts['TN']
         
         # Do what we can if we don't have all the counts
-        sens_kosher_to_kalculate, spec_kosher_to_kalculate = True, True
+        can_calculate_sens, can_calculate_spec = True, True
         if None in [tp,fn]:
-            sens_kosher_to_kalculate = False
+            can_calculate_sens = False
             tp,fn = 0,0 # dummy data
         if None in [tn,fp]:
-            spec_kosher_to_kalculate = False
+            can_calculate_spec = False
             tn, fp = 0,0 # dummy data
         
         # sensitivity and specificity
@@ -371,9 +376,9 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         # now we're going to set the effect estimate/CI on the MA object.
         for metric in DIAGNOSTIC_METRICS:
             # don't set stuff if it made-up
-            if metric.lower()=="sens" and not sens_kosher_to_kalculate:
+            if metric.lower()=="sens" and not can_calculate_sens:
                 continue
-            elif metric.lower()=="spec" and not spec_kosher_to_kalculate:
+            elif metric.lower()=="spec" and not can_calculate_spec:
                 continue
             
             est, lower, upper = ests_and_cis[metric]["calc_scale"]
@@ -419,44 +424,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         raw_dict = self.get_raw_diag_data() # values are floats or None
         for field in raw_dict.iterkeys():
             i = DIAG_FIELDS_TO_RAW_INDICES[field]
-            self.ma_unit.tx_groups[self.group_str].raw_data[i] = raw_dict[field]      
-
-    
-
-    def build_dict(self):
-        d = {}
-        
-        print "Building dict"
-
-        for effect in BACK_CALCULATABLE_DIAGNOSTIC_EFFECTS:
-            for key,Rsubkey in zip(["est","lower","upper"],["",".lb",".ub"]):
-                try:
-                    d["%s%s" % (effect.lower(), Rsubkey)] = float(self.form_effects_dict[effect][key])
-                except:
-                    pass
-        
-        if not self.getTotalSubjects() is None:
-            try:
-                d["total"] = float(self.getTotalSubjects())
-            except:
-                pass
-        
-        if not self._is_txt_box_invalid(self.alpha_edit):
-            try:
-                d["conf.level"] = (1.0-float(self.alpha_edit.text()))*100
-            except:
-                pass
-        
-        if not self._is_txt_box_invalid(self.prevalence_txt_box):
-            try:
-                d["prev"] = float(self.prevalence_txt_box.text())
-            except:
-                pass
-
-        # now grab the raw data, if available
-        d.update(self.get_raw_diag_data())
-        
-        return d
+            self.ma_unit.tx_groups[self.group_str].raw_data[i] = raw_dict[field]
     
     def get_raw_diag_data(self,convert_None_to_NA_string=False):
         '''Returns a dictionary of the raw data in the table (TP,FN,FP,TN), 
@@ -569,30 +537,28 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         if val_str == "est":
             self.ma_unit.set_effect(self.cur_effect, self.group_str, calc_scale_val)
             self.ma_unit.set_display_effect(self.cur_effect, self.group_str, display_scale_val)
-            print("Disabling effect box...")
             self.effect_txt_box.setEnabled(False)
         elif val_str == "lower":
             self.ma_unit.set_lower(self.cur_effect, self.group_str, calc_scale_val)
             self.ma_unit.set_display_lower(self.cur_effect, self.group_str, display_scale_val)
-            print("disabling low box...")
             self.low_txt_box.setEnabled(False)
         elif val_str == "upper":
             self.ma_unit.set_upper(self.cur_effect, self.group_str, calc_scale_val)
             self.ma_unit.set_display_upper(self.cur_effect, self.group_str, display_scale_val)
             self.high_txt_box.setEnabled(False)
-            print("Disabling high box...")
         elif val_str == "prevalence":
             self.prevalence_txt_box.setEnabled(False)
-            print("Disabling prevalence box...")
 
         self.save_form_state()
+        self.enable_back_calculation_btn()
+        
         # Impute 2x2 from here
-        print "imputing data!"
-        self.impute_data()
-        self._update_data_table()
-        self.impute_effects_in_ma_unit() # go backward in case we have a missing effect
-        self.set_current_effect()
-        self.save_form_state()
+        #print "imputing data!"
+        #self.impute_data()
+        #self._update_data_table()
+        #self.impute_effects_in_ma_unit() # go backward in case we have a missing effect
+        #self.set_current_effect()
+        #self.save_form_state()
         
     
     def val_edit(self, val_str, display_scale_val):
@@ -612,14 +578,9 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self.cur_effect = str(self.effect_cbo_box.currentText()) 
         self.set_current_effect()
         
-        if self.effect_txt_box.text() in EMPTY_VALS:
-            self.effect_txt_box.setEnabled(True)
-        if self.low_txt_box.text() in EMPTY_VALS:
-            self.low_txt_box.setEnabled(True)
-        if self.high_txt_box.text() in EMPTY_VALS:
-            self.high_txt_box.setEnabled(True)
+        self.enable_txt_box_input()
+        self.enable_back_calculation_btn()
             
-
     def _read_in_table_data_from_MAunit(self):
         ''' populates the 2x2 table with whatever parametric data was provided '''
         self.two_by_two_table.blockSignals(True) 
@@ -705,7 +666,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self._update_ma_unit()
         self.save_form_state()
         
-    def start_over(self):
+    def clear_form(self):
         keys = ["c11", "c12", "r1sum", "c21", "c22", "r2sum", "c1sum", "c2sum", "total"]
         blank_vals = dict( zip(keys, [""]*len(keys)) )
 
@@ -732,14 +693,27 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
                                   "alpha":"","prevalence":""}
 
         self.reset_table_item_flags()
-        
-        self.effect_txt_box.setEnabled(True)
-        self.low_txt_box.setEnabled(True)
-        self.high_txt_box.setEnabled(True)
-        self.prevalence_txt_box.setEnabled(True)
+        self.enable_txt_box_input()
         
         ##self.print_backup_table()
         
+    def enable_txt_box_input(self):
+        ''' Enables text boxes if they are empty, disables them otherwise '''
+        
+        self.effect_txt_box.setEnabled(False)
+        self.low_txt_box.setEnabled(False)
+        self.high_txt_box.setEnabled(False)
+        self.prevalence_txt_box.setEnabled(False)
+        
+        if self.effect_txt_box.text() in EMPTY_VALS:
+            self.effect_txt_box.setEnabled(True)
+        if self.low_txt_box.text() in EMPTY_VALS:
+            self.low_txt_box.setEnabled(True)
+        if self.high_txt_box.text() in EMPTY_VALS:
+            self.high_txt_box.setEnabled(True)
+        if self.prevalence_txt_box.text() in EMPTY_VALS:
+            self.prevalence_txt_box.setEnabled(True)
+            
     def reset_table_item_flags(self):
         self.block_all_signals(True)
         for row in range(3):
@@ -749,3 +723,61 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
                 item.setFlags(newflags)
         self.block_all_signals(False)
             
+    def enable_back_calculation_btn(self, engage = False):
+        print("Enabling back-calculation button...")
+        
+        def build_dict():
+            d = {}
+
+            for effect in BACK_CALCULATABLE_DIAGNOSTIC_EFFECTS:
+                for key,Rsubkey in zip(["est","lower","upper"],["",".lb",".ub"]):
+                    try:
+                        d["%s%s" % (effect.lower(), Rsubkey)] = float(self.form_effects_dict[effect][key])
+                    except:
+                        pass
+            
+            x = self.getTotalSubjects()
+            d["total"] = float(x) if _is_a_float(x) else None
+
+            x = self.prevalence_txt_box.text()
+            d["prev"] = float(x) if _is_a_float(x) else None
+
+            x = self.alpha_edit.text()
+            d["conf.level"] = (1.0-float(x))*100 if _is_a_float(x) else None
+    
+            # now grab the raw data, if available
+            d.update(self.get_raw_diag_data())
+            
+            return d
+
+        diag_data = build_dict()
+        print("Diagnostic Data for back-calculation: ", diag_data)
+
+        #if diag_data is not None:
+            
+        imputed = meta_py_r.impute_diag_data(diag_data)
+        print "imputed data: %s" % imputed
+        
+        # Leave if nothing was imputed
+        if not (imputed["TP"] or imputed["TN"] or imputed["FP"] or imputed["FN"]):
+            print("Nothing could be imputed")
+            self.back_calc_Btn.setEnabled(False)
+            return None
+        
+        self.back_calc_Btn.setEnabled(True)
+            
+        if not engage:
+            return None
+        ########################################################################
+        # Actually do stuff with imputed data here if we are 'engaged'
+        ########################################################################
+        for x in range(3):
+            self.clear_column(x) # clear out the table
+        self.update_2x2_table(imputed)
+        self._update_data_table()
+        self.save_form_state()
+
+        # Go backward in case we have a missing effect
+        #self.impute_effects_in_ma_unit() 
+        #self.set_current_effect()
+        #self.save_form_state()

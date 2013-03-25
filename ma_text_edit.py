@@ -9,11 +9,11 @@ class MATextEdit(QTextEdit):
 
     def event(self, event):
         if event.type()==QEvent.KeyPress:
-           if event.key()==Qt.Key_Enter or event.key()==Qt.Key_Return:
-              self.emit(SIGNAL("returnPressed"))
-              return True
-           elif event.key()==Qt.Key_Up:
-              print "up??"
-              return True
+            if event.key()==Qt.Key_Enter or event.key()==Qt.Key_Return:
+                self.emit(SIGNAL("returnPressed"))
+                return True
+            elif event.key()==Qt.Key_Up:
+                print "up??"
+                return True
 
         return QTextEdit.event(self, event)

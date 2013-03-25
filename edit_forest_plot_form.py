@@ -84,7 +84,7 @@ class EditPlotWindow(QDialog, ui_edit_forest_plot.Ui_edit_forest_plot_dlg):
         #       so that it overwrites the params '[default]' values
         #       with the generated values used in practice -- we'll
         #       just need to write them out here.
-       # pyqtRemoveInputHook()
+        # pyqtRemoveInputHook()
         #pdb.set_trace()       
 
 

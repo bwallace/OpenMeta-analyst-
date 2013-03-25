@@ -56,17 +56,12 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         
         self.setup_inconsistency_checking()
         self.initialize_backup_structures()
-        #self.setup_table_effect_dict()
         self._update_raw_data()      # ma_unit --> table
         self._populate_effect_data() # make combo boxes for effects
         self.set_current_effect()    # fill in current effect data in line edits
         self._update_data_table()    # fill in 2x2
         self.enable_back_calculation_btn()
         self.save_form_state()
-
-        ### TEMPORARILY HIDE FOR PRESENTATION:
-        #self.pval_lbl.setVisible(False)
-        #self.effect_p_txt_box.setVisible(False)
         
     def print_effects_dict_from_ma_unit(self):
         print self.ma_unit.effects_dict
@@ -103,7 +98,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             self.back_calc_btn.setVisible(True)
             
         bin_data = build_back_calc_args_dict()
-        print("Binary data for back_calculation:",bin_data)
+        print("Binary data for back-calculation:",bin_data)
         
         imputed = meta_py_r.impute_bin_data(bin_data)
         print("Imputed data: %s", imputed)
@@ -114,7 +109,6 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             self.back_calc_btn.setEnabled(False)
             return None
         
-        print("Got beyond the failure, button should be enabled")
         self.back_calc_btn.setEnabled(True)
         
         if not engage:
@@ -176,7 +170,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         
         # Stores table items as text
         self.table_backup = [[None,None,None],[None,None,None],[None,None,None]]
-        
+    
     @pyqtSignature("int, int, int, int")
     def on_raw_data_table_currentCellChanged(self,currentRow,currentColumn,previousRow,previousColumn):
         self.current_item_data = self._get_int(currentRow,currentColumn)
@@ -186,7 +180,8 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         QObject.connect(self.raw_data_table, SIGNAL("cellChanged (int, int)"), 
                                                     self.cell_changed)
         QObject.connect(self.effect_cbo_box, SIGNAL("currentIndexChanged(QString)"),
-                                                    self.effect_changed) 
+                                                    self.effect_changed)
+        QObject.connect(self.clear_Btn, SIGNAL("clicked()"), self.clear_form)
         
         QObject.connect(self.effect_txt_box, SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("est", new_text))
         QObject.connect(self.low_txt_box,    SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("lower", new_text))
@@ -210,7 +205,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         return effects
     
     def set_current_effect(self):
-        '''Populates text boxes with effects (computed values) from ma unit'''
+        '''Fills in text boxes with data from ma unit'''
         
         print("Setting current effect...")
         
@@ -372,8 +367,6 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             #    self.alpha_edit.setFocus()
             self.block_all_signals(False)
             return
-
-
             
         self.block_all_signals(False)
         # If we got to this point it means everything is ok so far
@@ -399,7 +392,6 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             self.ma_unit.set_upper(self.cur_effect, self.group_str, calc_scale_val)
             self.ma_unit.set_display_upper(self.cur_effect, self.group_str, display_scale_val)
             
-    # Todo: Impute 2x2 from here if est,low,high all filled out
         self.save_form_state()
         self.enable_back_calculation_btn()
     
@@ -481,10 +473,9 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             self.restore_form_state() # brings things back to the way they were
             return                    # and leave
         
-        self.save_form_state()
-        # need to try and update metric here     
+        self.save_form_state()    
         self._update_ma_unit() # table widget --> ma_unit
-        self.try_to_update_cur_outcome()
+        self.try_to_update_cur_outcome() # update metric
         self.enable_back_calculation_btn()
         self.save_form_state()
         
@@ -610,27 +601,47 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             self.ma_unit.set_effect_and_ci(self.cur_effect, self.group_str, est, low, high)
             self.set_current_effect()
            
-#    def start_over(self):
-#        keys = ["c11", "c12", "r1sum", "c21", "c22", "r2sum", "c1sum", "c2sum", "total"]
-#        blank_vals = dict( zip(keys, [""]*len(keys)) )
-#
-#        self._set_vals(blank_vals)
-#        self._update_ma_unit()
-#        
-#        # clear out effects stuff
-#        for metric in BINARY_ONE_ARM_METRICS + BINARY_TWO_ARM_METRICS:
-#            if ((self.cur_effect in BINARY_TWO_ARM_METRICS and metric in BINARY_TWO_ARM_METRICS) or
-#                (self.cur_effect in BINARY_ONE_ARM_METRICS and metric in BINARY_ONE_ARM_METRICS)):
-#                self.ma_unit.set_effect_and_ci(metric, self.group_str, None, None, None)
-#                self.ma_unit.set_display_effect_and_ci(metric, self.group_str, None, None, None)
-#            else:
-#                #TODO
-#                # do nothing for now..... treat the case where we have to switch group strings down the line
-#                pass
-#            
-#        # clear line edits
-#        self.set_current_effect()
+    def clear_form(self):
+        keys = ["c11", "c12", "r1sum", "c21", "c22", "r2sum", "c1sum", "c2sum", "total"]
+        blank_vals = dict( zip(keys, [""]*len(keys)) )
 
+        self._set_vals(blank_vals)
+        self._update_ma_unit()
+        
+        # clear out effects stuff
+        for metric in BINARY_ONE_ARM_METRICS + BINARY_TWO_ARM_METRICS:
+            if ((self.cur_effect in BINARY_TWO_ARM_METRICS and metric in BINARY_TWO_ARM_METRICS) or
+                (self.cur_effect in BINARY_ONE_ARM_METRICS and metric in BINARY_ONE_ARM_METRICS)):
+                self.ma_unit.set_effect_and_ci(metric, self.group_str, None, None, None)
+                self.ma_unit.set_display_effect_and_ci(metric, self.group_str, None, None, None)
+            else:
+                # TODO: Do nothing for now..... treat the case where we have to switch group strings down the line
+                pass
+            
+        # clear line edits
+        self.set_current_effect()
+        # TODO: Reset alpha thing to 95 %
+        self.save_form_state()
+        
+        self.reset_table_item_flags()
+        self.initialize_backup_structures()
+        self.enable_txt_box_input()
+        
+        
+    def enable_txt_box_input(self):
+        self.effect_txt_box.setEnabled(True)
+        self.low_txt_box.setEnabled(True)
+        self.high_txt_box.setEnabled(True)
+        
+    def reset_table_item_flags(self):
+        self.block_all_signals(True)
+        for row in range(3):
+            for col in range(3):
+                item = self.raw_data_table.item(row, col)
+                newflags = item.flags() | Qt.ItemIsEditable
+                item.setFlags(newflags)
+        self.block_all_signals(False)
+        
 class ChooseBackCalcResultForm(QDialog, ui_choose_bin_back_calc_result_form.Ui_ChooseBackCalcResultForm):
     def __init__(self, imputed_data, parent=None):
         super(ChooseBackCalcResultForm, self).__init__(parent)
