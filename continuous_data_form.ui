@@ -6,20 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>670</width>
-    <height>555</height>
+    <width>764</width>
+    <height>573</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>670</width>
     <height>0</height>
-   </size>
-  </property>
-  <property name="maximumSize">
-   <size>
-    <width>670</width>
-    <height>555</height>
    </size>
   </property>
   <property name="font">
@@ -31,7 +25,7 @@
    <string>Continuous Data</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="images/icons.qrc">
+   <iconset>
     <normaloff>:/images/meta.png</normaloff>:/images/meta.png</iconset>
   </property>
   <widget class="QDialogButtonBox" name="buttonBox">
@@ -473,8 +467,8 @@ p, li { white-space: pre-wrap; }
   <widget class="QLabel" name="ci_label">
    <property name="geometry">
     <rect>
-     <x>80</x>
-     <y>470</y>
+     <x>320</x>
+     <y>390</y>
      <width>251</width>
      <height>16</height>
     </rect>
@@ -654,6 +648,57 @@ p, li { white-space: pre-wrap; }
      <height>20</height>
     </size>
    </property>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>510</y>
+     <width>256</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QLabel" name="label_3">
+      <property name="text">
+       <string>Confidence Level:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QDoubleSpinBox" name="CI_spinbox">
+      <property name="suffix">
+       <string> %</string>
+      </property>
+      <property name="decimals">
+       <number>1</number>
+      </property>
+      <property name="minimum">
+       <double>40.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>100.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.100000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources>

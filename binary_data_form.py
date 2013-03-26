@@ -36,6 +36,7 @@ NUM_DIGITS = 4
 # when computing 2x2 data
 THRESHOLD = 1e-5
 
+DEFAULT_CONF_LEVEL = 95.0
 
 
 class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
@@ -54,14 +55,50 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.entry_widgets = [self.raw_data_table, self.low_txt_box,
                               self.high_txt_box, self.effect_txt_box]
         
+        self.CI_spinbox.setValue(DEFAULT_CONF_LEVEL)
+        self.ci_label.setText("{0:.1f}% Confidence Interval".format(self.CI_spinbox.value()))
+        
         self.setup_inconsistency_checking()
         self.initialize_backup_structures()
+        
+        # Color for clear_button_pallette
+        self.setup_clear_button_palettes()
+        
         self._update_raw_data()      # ma_unit --> table
         self._populate_effect_data() # make combo boxes for effects
         self.set_current_effect()    # fill in current effect data in line edits
         self._update_data_table()    # fill in 2x2
         self.enable_back_calculation_btn()
         self.save_form_state()
+
+    def setup_clear_button_palettes(self):
+        # Color for clear_button_pallette
+        self.orig_palette = self.clear_Btn.palette()
+        self.pushme_palette = QPalette()
+        self.pushme_palette.setColor(QPalette.ButtonText,Qt.red)
+        self.set_clear_btn_color()
+    
+    def set_clear_btn_color(self):
+        if self.input_fields_disabled():
+            self.clear_Btn.setPalette(self.pushme_palette)
+        else:
+            self.clear_Btn.setPalette(self.orig_palette)
+    
+    def input_fields_disabled(self):
+        table_disabled = True
+        for row in range(3):
+            for col in range(3):
+                item = self.raw_data_table.item(row, col)
+                if (item.flags() & Qt.ItemIsEditable) == Qt.ItemIsEditable:
+                    table_disabled = False
+                    
+        txt_boxes_disabled = not (self.effect_txt_box.isEnabled() or
+                                  self.low_txt_box.isEnabled() or
+                                  self.high_txt_box.isEnabled())
+
+        if table_disabled and txt_boxes_disabled:
+            return True
+        return False
         
     def print_effects_dict_from_ma_unit(self):
         print self.ma_unit.effects_dict
@@ -82,9 +119,8 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                 except:
                     d["%s" %  R_key] = None
             
-            # TODO: Make this depend on value displayed for alpha on form
-            alpha_dummy = 0.05
-            d["conf.level"] = (1.0-float(alpha_dummy))*100
+            x = self.CI_spinbox.value()
+            d["conf.level"] = x if _is_a_float(x) else None
             
             d["N_A"] = float(self._get_int(0,2)) if not self._is_empty(0,2) else None
             d["N_B"] = float(self._get_int(1,2)) if not self._is_empty(1,2) else None
@@ -110,6 +146,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             return None
         
         self.back_calc_btn.setEnabled(True)
+        self.set_clear_btn_color()
         
         if not engage:
             return None
@@ -140,6 +177,8 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self._update_data_table()
         self._update_ma_unit() # save in ma_unit
         self.save_form_state()
+        
+        self.set_clear_btn_color()
 
     def setup_inconsistency_checking(self):
         # set-up inconsistency label
@@ -192,7 +231,14 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         QObject.connect(self.high_txt_box,   SIGNAL("editingFinished()"), lambda: self.val_changed("upper") )
         
         QObject.connect(self.back_calc_btn, SIGNAL("clicked()"), lambda: self.enable_back_calculation_btn(engage=True) )
-                                                                                                                               
+        QObject.connect(self.CI_spinbox, SIGNAL("valueChanged(double)"), self._change_ci)
+    
+    def _change_ci(self,val):
+        self.ci_label.setText("{0:.1F} % Confidence Interval".format(val))
+        print("New CI val:",val)
+        
+        self.enable_back_calculation_btn()
+                                                                                                                  
     def _populate_effect_data(self):
         q_effects = sorted([QString(effect_str) for effect_str in self.ma_unit.effects_dict.keys()])
         self.effect_cbo_box.blockSignals(True)
@@ -223,6 +269,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.try_to_update_cur_outcome()
         self.set_current_effect()
         
+        self.enable_txt_box_input()
         self.enable_back_calculation_btn()
         
     def save_form_state(self):
@@ -246,12 +293,10 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             self.form_effects_dict[effect]["est"]   = self.effect_txt_box.text() 
             self.form_effects_dict[effect]["lower"] = self.low_txt_box.text()    
             self.form_effects_dict[effect]["upper"] = self.high_txt_box.text()    
-            #self.form_effects_dict["alpha"]      = self.alpha_edit.text() 
         
             self.candidate_est        = self.effect_txt_box.text()
             self.candidate_lower      = self.low_txt_box.text()
             self.candidate_upper      = self.high_txt_box.text()
-            #self.candidate_alpha      = self.alpha_edit.text()
 
         save_table_data()
         save_displayed_effects_data()
@@ -273,13 +318,11 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             
             self.effect_txt_box.setText(    self.form_effects_dict[self.cur_effect]["est"]  )    
             self.low_txt_box.setText(       self.form_effects_dict[self.cur_effect]["lower"])       
-            self.high_txt_box.setText(      self.form_effects_dict[self.cur_effect]["upper"])              
-            #self.alpha_edit.setText(        self.form_effects_dict["alpha"]                 )        
+            self.high_txt_box.setText(      self.form_effects_dict[self.cur_effect]["upper"])                     
             
             self.candidate_est        = self.effect_txt_box.text()
             self.candidate_lower      = self.low_txt_box.text()
             self.candidate_upper      = self.high_txt_box.text()
-            #self.candidate_alpha      = self.alpha_edit.text()
         
         def restore_table():
             #print "Table to restore:"
@@ -295,6 +338,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             #print("Backed-up table:")
             #self.print_backup_table()
         
+        self.CI_spinbox.setValue(DEFAULT_CONF_LEVEL)
         restore_displayed_effects_data()
         restore_table()
         self.enable_back_calculation_btn()
@@ -346,13 +390,6 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                     QMessageBox.warning(self.parent(), "whoops", msg)
                     raise Exception("error")
                 display_scale_val = float(self.candidate_upper)
-#            elif val_str == "alpha" and not _is_empty(self.candidate_alpha):
-#                if not _is_a_float(self.candidate_alpha):
-#                    QMessageBox.warning(self.parent(), "whoops", float_msg)
-#                    raise Exception("error")
-#                if _is_a_float(self.candidate_alpha) and not 0 < float(self.candidate_alpha) < 1:
-#                    QMessageBox.warning(self.parent(), "whoops", "Alpha must be between 0 and 1 (closer to zero please!")
-#                    raise Exception("error")
         except:
             print "Error flag is true"
             self.restore_form_state()
@@ -363,11 +400,9 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                 self.low_txt_box.setFocus()
             elif val_str == "upper":
                 self.high_txt_box.setFocus()
-            #elif val_str == "alpha":
-            #    self.alpha_edit.setFocus()
             self.block_all_signals(False)
             return
-            
+        
         self.block_all_signals(False)
         # If we got to this point it means everything is ok so far
         
@@ -391,7 +426,8 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         else:
             self.ma_unit.set_upper(self.cur_effect, self.group_str, calc_scale_val)
             self.ma_unit.set_display_upper(self.cur_effect, self.group_str, display_scale_val)
-            
+        
+        self.enable_txt_box_input()
         self.save_form_state()
         self.enable_back_calculation_btn()
     
@@ -485,6 +521,8 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         newflags = item.flags() & ~Qt.ItemIsEditable
         item.setFlags(newflags)
         self.block_all_signals(False)
+        
+        self.set_clear_btn_color()
         
     def _get_table_vals(self):
         ''' Package table from 2x2 table in to a dictionary'''
@@ -590,10 +628,10 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         if not (any([self._none_or_empty(x) for x in [e1, n1, e2, n2]]) or
                    (not any([self._none_or_empty(x) for x in [e1, n1]]) and self.cur_effect in BINARY_ONE_ARM_METRICS)):
             if self.cur_effect in BINARY_TWO_ARM_METRICS:
-                est_and_ci_d = meta_py_r.effect_for_study(e1, n1, e2, n2, metric=self.cur_effect)
+                est_and_ci_d = meta_py_r.effect_for_study(e1, n1, e2, n2, metric=self.cur_effect, conf_level=self.CI_spinbox.value())
             else:
                 # binary, one-arm
-                est_and_ci_d = meta_py_r.effect_for_study(e1, n1, two_arm=False, metric=self.cur_effect)
+                est_and_ci_d = meta_py_r.effect_for_study(e1, n1, two_arm=False, metric=self.cur_effect, conf_level=self.CI_spinbox.value())
         
             display_est, display_low, display_high = est_and_ci_d["display_scale"]
             self.ma_unit.set_display_effect_and_ci(self.cur_effect, self.group_str, display_est, display_low, display_high)                            
@@ -620,18 +658,16 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             
         # clear line edits
         self.set_current_effect()
-        # TODO: Reset alpha thing to 95 %
         self.save_form_state()
         
         self.reset_table_item_flags()
         self.initialize_backup_structures()
         self.enable_txt_box_input()
-        
+        self.CI_spinbox.setValue(DEFAULT_CONF_LEVEL)
         
     def enable_txt_box_input(self):
-        self.effect_txt_box.setEnabled(True)
-        self.low_txt_box.setEnabled(True)
-        self.high_txt_box.setEnabled(True)
+        meta_globals.enable_txt_box_input(self.effect_txt_box, self.low_txt_box,
+                                          self.high_txt_box)
         
     def reset_table_item_flags(self):
         self.block_all_signals(True)

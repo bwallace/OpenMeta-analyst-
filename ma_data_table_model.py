@@ -149,7 +149,7 @@ class DatasetModel(QAbstractTableModel):
         # from the view side of things
         current_data_type = self.get_current_outcome_type()
 
-        # offset corresonds to the first three columns, which 
+        # offset corresponds to the first three columns, which 
         # are include study, name, and year.
         offset = 3
         if current_data_type == "binary":

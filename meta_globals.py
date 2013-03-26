@@ -14,6 +14,7 @@ import os
 
 #import meta_py_r
 from PyQt4.Qt import QColor   #, QDialogButtonBox
+from PyQt4.Qt import QMessageBox
 
 # number of digits to display
 NUM_DIGITS = 3
@@ -133,6 +134,8 @@ THRESHOLD = 1e-5
 ERROR_COLOR = QColor("red")
 OK_COLOR = QColor("black")
 
+DEFAULT_CONF_LEVEL = 95.0
+
 '''
 some useful static methods
 '''
@@ -173,6 +176,9 @@ def _is_an_int(s):
         return False
     
 def is_NaN(x):
+    # there's no built-in for checking if a number is a NaN in
+    # Python < 2.6. checking if a number is equal to itself
+    # does the trick, though purportedly does not always work.
     return x != x
 
 
@@ -436,3 +442,126 @@ class ConsistencyChecker():
         val = self.table.item(i,j)
         return val is None or val.text() == ""
 ########################### END CONSISTENCY CHECKER ############################
+
+####### SHARED BINARY, CONTINUOUS, DIAGNOSTIC DATA FORM UTILITY FUNCTIONS#####
+def enable_txt_box_input(*args):
+    '''
+    Enables text boxes if they are empty, disables them otherwise
+    Input is textbox(es)
+    '''
+    
+    for text_box in args:
+        text_box.setEnabled(False)
+        if text_box.text() in EMPTY_VALS:
+            text_box.setEnabled(True)
+
+# WORK ON STANDARDIZING THIS LATER?
+#def validate_txt_box_input(box_data=None,
+#                           block_all_signals=None,
+#                           val_str=None,
+#                           parent=None,
+#                           *args):
+#    '''validates txt box input based on info for each field given by the dicts'''
+#    
+#    
+#    est_default = box_data['est']['default']
+#    low_default = box_data['low']['default']
+#    high_default = box_data['high']['default']
+#    
+#    def is_between_bounds(est=est_default, low=low_default, high=high_default):
+#        return between_bounds(est=est, low=low, high=high)
+#    
+#    # Make sure entered value is numeric and between the appropriate bounds
+#    block_all_signals(True)
+#    float_msg = "Must be numeric!"
+#    try:
+#        for box_key, box_info in box_data.iteritems():
+#            if val_str==box_key and not _is_empty(box_info['candidate']):
+#                # Check type
+#                if not _is_a_float(box_info['candidate']) :
+#                    QMessageBox.warning(self.parent(), "whoops", float_msg)
+#                    raise Exception("error")
+#                (good_result,msg) = is_between_bounds(est=self.candidate_est)
+#                if not good_result:
+#                    QMessageBox.warning(parent, "whoops", msg)
+#                    raise Exception("error")
+#                if (not 0 <= float(self.candidate_est) <= 1):
+#                    QMessageBox.warning(parent, "whoops", "Estimate must be between 0 and 1.")
+#                    raise Exception("error")
+#                display_scale_val = float(box_info['candidate'])
+#    
+#
+#    ###### ERROR CHECKING CODE#####
+#
+#    try:
+#        if val_str == "est" and not _is_empty(self.candidate_est):
+#            # Check type
+#            if not _is_a_float(self.candidate_est) :
+#                QMessageBox.warning(self.parent(), "whoops", float_msg)
+#                raise Exception("error")
+#            (good_result,msg) = is_between_bounds(est=self.candidate_est)
+#            if not good_result:
+#                QMessageBox.warning(self.parent(), "whoops", msg)
+#                raise Exception("error")
+#            if (not 0 <= float(self.candidate_est) <= 1):
+#                QMessageBox.warning(self.parent(), "whoops", "Estimate must be between 0 and 1.")
+#                raise Exception("error")
+#            display_scale_val = float(self.candidate_est)
+#        elif val_str == "lower" and not _is_empty(self.candidate_lower):
+#            if not _is_a_float(self.candidate_lower) :
+#                QMessageBox.warning(self.parent(), "whoops", float_msg)
+#                raise Exception("error")
+#            (good_result,msg) = is_between_bounds(low=self.candidate_lower)
+#            if not good_result:
+#                QMessageBox.warning(self.parent(), "whoops", msg)
+#                raise Exception("error")
+#            display_scale_val = float(self.candidate_lower)
+#        elif val_str == "upper" and not _is_empty(self.candidate_upper): 
+#            if not _is_a_float(self.candidate_upper) :
+#                QMessageBox.warning(self.parent(), "whoops", float_msg)
+#                raise Exception("error")
+#            (good_result,msg) = is_between_bounds(high=self.candidate_upper)
+#            if not good_result:
+#                QMessageBox.warning(self.parent(), "whoops", msg)
+#                raise Exception("error")
+#            display_scale_val = float(self.candidate_upper)
+#        elif val_str == "prevalence" and not _is_empty(self.candidate_prevalence):
+#            if not _is_a_float(self.candidate_prevalence):
+#                QMessageBox.warning(self.parent(), "whoops", float_msg)
+#                raise Exception("error")
+#            if _is_a_float(self.candidate_prevalence) and not 0 < float(self.candidate_prevalence) < 1:
+#                QMessageBox.warning(self.parent(), "whoops", "Prevalence must be between 0 and 1.")
+#                raise Exception("error")
+#    except:
+#        print "Error flag is true"
+#        self.restore_form_state()
+#        block_all_signals(True)
+#        if val_str == "est":
+#            self.effect_txt_box.setFocus()
+#        elif val_str == "lower":
+#            self.low_txt_box.setFocus()
+#        elif val_str == "upper":
+#            self.high_txt_box.setFocus()
+#        elif val_str == "prevalence":
+#            self.prevalence_txt_box.setFocus()
+#        block_all_signals(False)
+#        return
+#            
+#    block_all_signals(False)
+
+################FOR FROM BEGINNING OF val_changed of diagnostic_data_form######
+#        est_d = {'default':self.form_effects_dict[self.cur_effect]["est"],
+#                 'candidate':self.candidate_est,}
+#        low_d = {'default':self.form_effects_dict[self.cur_effect]["lower"],
+#                 'candidate':self.candidate_lower,}
+#        high_d = {'default':self.form_effects_dict[self.cur_effect]["upper"],
+#                  'candidate':self.candidate_upper,}
+#        
+#        box_data = {'est':est_d, 'low':low_d, 'high':high_d}
+#        
+#        meta_globals.validate_txt_box_input(box_data=box_data,
+#                                            block_all_signals=self.block_all_signals,
+#                                            val_str = val_str,
+#                                            parent=self.parent()
+#                                            )
+################################################################################
