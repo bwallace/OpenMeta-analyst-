@@ -460,18 +460,42 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         self.add_label(layout, cur_grid_row, self.param_d[name]["pretty.name"], \
                                 tool_tip_text=self.param_d[name]["description"])
         cbo_box = QComboBox()
-        for value in values:
-            cbo_box.addItem(value)
+        for index, value in enumerate(values):
+            name_str = self._get_enum_item_pretty_name(name,value)
+            cbo_box.addItem(name_str)  # TODO: replace value with pretty values
+            cbo_box.setItemData(index, QVariant(value))
 
         if self.current_defaults.has_key(name):
-            cbo_box.setCurrentIndex(cbo_box.findText(self.current_defaults[name]))
+            cbo_box.setCurrentIndex(cbo_box.findData(self.current_defaults[name]))
             self.current_param_vals[name] = self.current_defaults[name]
 
-        QObject.connect(cbo_box, QtCore.SIGNAL("currentIndexChanged(QString)"),
-                                 self.set_param_f(name))
+        QObject.connect(cbo_box, QtCore.SIGNAL("currentIndexChanged(int)"),
+                                 self.set_param_f_from_itemdata(name))
 
         self.current_widgets.append(cbo_box)
         layout.addWidget(cbo_box, cur_grid_row, 1)
+        
+    def _get_enum_item_pretty_name(self, enum_name, item_name):
+        if "rm.method.names" in self.param_d[enum_name]:
+            if item_name in self.param_d[enum_name]["rm.method.names"]:
+                return item_name + ": " + str(self.param_d[enum_name]["rm.method.names"][item_name])
+        return item_name
+    
+    @QtCore.pyqtSlot()
+    def set_param_f_from_itemdata(self, name, to_type=str):
+        '''
+        hackier version....
+        Returns a function f(x) such that f(x) will set the key
+        name in the parameters dictionary to the value x.
+        '''
+        
+        def set_param(index):
+            combo_box = self.sender()
+            x = combo_box.itemData(index).toString()
+            self.current_param_vals[name] = to_type(x)
+            print str(self.current_param_vals) + " -> weirdo sender thing"
+
+        return set_param
 
     def add_float_box(self, layout, cur_grid_row, name):
         self.add_label(layout, cur_grid_row, self.param_d[name]["pretty.name"],\

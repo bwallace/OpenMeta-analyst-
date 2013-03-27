@@ -553,7 +553,17 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         return sub_menu
            
     def add_metric_action(self, metric, menu):
-        metric_action = QAction(QString(metric), self)
+        metric_names = meta_globals.ALL_METRIC_NAMES
+        
+        #metric_action = QAction(QString(metric), self)
+        metric_action = QAction(QString(metric+": "+metric_names[metric]), self)
+        try:
+            if str(metric) in metric_names:
+                metric_action.setToolTip(metric_names[metric]) # doesn't do anything in OSX?
+                metric_action.setStatusTip(metric_names[metric])
+                metric_action.setData(QVariant(metric)) # store code for metric in here
+        except:
+            print("Could not set metric name tooltip")
         metric_action.setCheckable(True)
         QObject.connect(metric_action, \
                         SIGNAL("toggled(bool)"),\
@@ -584,8 +594,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # now select the newly chosen one.
         prev_metric_name = self.tableView.model().current_effect
         for action in menu.actions():
-            action_text = action.text()
-            if action_text == metric_name:
+            #action_text = action.text()
+            action_data = action.data().toString()
+            #if action_text == metric_name:
+            if action_data == metric_name:
                 action.blockSignals(True)
                 action.setChecked(True)
                 action.blockSignals(False)

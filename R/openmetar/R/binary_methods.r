@@ -637,9 +637,18 @@ binary.random.parameters <- function(){
 }
 
 binary.random.pretty.names <- function() {
+	# sort of redundant to have both this and rm_method_ls but whatever for now...
+	rm_method_names <- list(
+			HE="Hedges-Olkin",
+			DL = "DerSimonian-Laird",
+			SJ = "Sidik-Jonkman",
+			ML = "Maximum Likelihood",
+			REML = "Restricted Maximum Likelihood", 
+			EB = "Empirical Bayes")
+	
     pretty.names <- list("pretty.name"="Binary Random-Effects", 
                          "description" = "Performs random-effects meta-analysis.",
-                         "rm.method"=list("pretty.name"="Random-Effects method", "description"="Method for estimating between-studies heterogeneity"),                      
+                         "rm.method"=list("pretty.name"="Random-Effects method", "description"="Method for estimating between-studies heterogeneity", "rm.method.names"=rm_method_names),                      
                          "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
                          "digits"=list("pretty.name"="Number of digits of precision to display", "description"="Number of digits to display in results"),
                          "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),

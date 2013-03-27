@@ -77,6 +77,12 @@ DIAGNOSTIC_METRIC_NAMES = {"Sens":"Sensitivity",
                            "DOR":"Diagnostic Odds Ratio",
                            }
 
+# Construct dictionary of all the metric names
+ALL_METRIC_NAMES = {}
+ALL_METRIC_NAMES.update(BINARY_METRIC_NAMES)
+ALL_METRIC_NAMES.update(CONTINUOUS_METRIC_NAMES)
+ALL_METRIC_NAMES.update(DIAGNOSTIC_METRIC_NAMES)
+
 # enumeration of data types and dictionaries mapping both ways
 BINARY, CONTINUOUS, DIAGNOSTIC, OTHER = range(4)
 
