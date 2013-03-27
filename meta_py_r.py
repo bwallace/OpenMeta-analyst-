@@ -1130,7 +1130,7 @@ def diagnostic_effects_for_study(tp, fn, fp, tn, metrics=["Spec", "Sens"],
     
 def continuous_effect_for_study(n1, m1, sd1, se1=None, n2=None, m2=None,
                                 sd2=None, se2=None, metric="MD", two_arm=True,
-                                conf_level=.95):
+                                conf_level=95):
     
     point_est, se = None, None
     if two_arm:
@@ -1152,18 +1152,20 @@ def continuous_effect_for_study(n1, m1, sd1, se1=None, n2=None, m2=None,
     else:
         # only one-arm
         point_est = m1
-        se = sd1/n1
+        se = sd1/math.sqrt(n1)
     
     alpha = 1.0-(conf_level/100.0)
     r_str = "abs(qnorm(%s))" % str(alpha/2.0)
     mult = ro.r(r_str)[0]
+    print("Alpha:",alpha)
+    print("mult:" ,mult)
     lower, upper = (point_est-mult*se, point_est+mult*se)
     est_and_ci = (point_est, lower, upper)
     transformed_est_and_ci = continuous_convert_scale(est_and_ci, metric)
     return {"calc_scale":est_and_ci, "display_scale":transformed_est_and_ci}
     
 def effect_for_study(e1, n1, e2=None, n2=None, two_arm=True, 
-                metric="OR", conf_level=.95):
+                metric="OR", conf_level=95):
     '''
     Computes a point estimate, lower & upper bound for
     the parametric 2x2 *binary* table data.

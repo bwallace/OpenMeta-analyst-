@@ -75,21 +75,21 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.grp_2_lbl.setText(QString(self.cur_groups[1]))
         
         self.initialize_backup_structures()
+        # Color for clear_button_pallette
+        self.setup_clear_button_palettes()
         self._populate_effect_data()
         self.update_raw_data()
         self.enable_back_calculation_btn()
         self.save_form_state()
 
     def setup_signals_and_slots(self):
-        QObject.connect(self.simple_table, SIGNAL("cellChanged (int, int)"), 
-                                            self._cell_changed)
-        QObject.connect(self.CI_spinbox, SIGNAL("valueChanged(double)"), self._change_ci)                        
-        QObject.connect(self.g1_pre_post_table, SIGNAL("cellChanged (int, int)"),
-                                            lambda: self.impute_pre_post_data(self.g1_pre_post_table, 0))
-        QObject.connect(self.g2_pre_post_table, SIGNAL("cellChanged (int, int)"),
-                                            lambda: self.impute_pre_post_data(self.g2_pre_post_table, 1))
-        QObject.connect(self.effect_cbo_box, SIGNAL("currentIndexChanged(QString)"),
-                                                                                self.effect_changed) 
+        QObject.connect(self.simple_table, SIGNAL("cellChanged (int, int)"), self._cell_changed)
+        QObject.connect(self.g1_pre_post_table, SIGNAL("cellChanged (int, int)"), lambda: self.impute_pre_post_data(self.g1_pre_post_table, 0))
+        QObject.connect(self.g2_pre_post_table, SIGNAL("cellChanged (int, int)"), lambda: self.impute_pre_post_data(self.g2_pre_post_table, 1))
+        
+        QObject.connect(self.CI_spinbox, SIGNAL("valueChanged(double)"), self._change_ci) 
+        QObject.connect(self.effect_cbo_box, SIGNAL("currentIndexChanged(QString)"), self.effect_changed)
+        QObject.connect(self.clear_Btn, SIGNAL("clicked()"), self.clear_form)
                                                                                 
         QObject.connect(self.effect_txt_box, SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("est", new_text))
         QObject.connect(self.low_txt_box,    SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("lower", new_text))
@@ -100,6 +100,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         QObject.connect(self.low_txt_box,    SIGNAL("editingFinished()"), lambda: self.val_changed("lower") )
         QObject.connect(self.high_txt_box,   SIGNAL("editingFinished()"), lambda: self.val_changed("upper") )
         QObject.connect(self.correlation_pre_post, SIGNAL("editingFinished()"), lambda: self.val_changed("correlation_pre_post") )
+        
                                                                                 
     def _set_col_widths(self, table):
         for column in range(table.columnCount()):
@@ -125,6 +126,9 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.cur_effect = unicode(self.effect_cbo_box.currentText().toUtf8(), "utf-8")
         self.try_to_update_cur_outcome()
         self.set_current_effect()
+        
+        self.enable_txt_box_input()
+        self.enable_back_calculation_btn()
       
     def val_changed(self, val_str):
         def is_between_bounds(est=self.form_effects_dict[self.cur_effect]["est"], 
@@ -217,7 +221,6 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             self.impute_pre_post_data(self.g1_pre_post_table, 0)
             self.impute_pre_post_data(self.g2_pre_post_table, 1)
             
-    # Todo: Impute 2x2 from here if est,low,high all filled out
         self.enable_txt_box_input()
         self.save_form_state()
         self.enable_back_calculation_btn()
@@ -232,6 +235,42 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             self.candidate_upper = display_scale_val
         if val_str == "correlation_pre_post":
             self.candidate_correlation_pre_post = display_scale_val
+
+    def setup_clear_button_palettes(self):
+        # Color for clear_button_pallette
+        self.orig_palette = self.clear_Btn.palette()
+        self.pushme_palette = QPalette()
+        self.pushme_palette.setColor(QPalette.ButtonText,Qt.red)
+        self.set_clear_btn_color()
+        
+    def set_clear_btn_color(self):
+        if self.input_fields_disabled():
+            self.clear_Btn.setPalette(self.pushme_palette)
+        else:
+            self.clear_Btn.setPalette(self.orig_palette)
+            
+    def input_fields_disabled(self):
+        table_disabled = True
+        for row in range(3):
+            for col in range(3):
+                item = self.simple_table.item(row, col)
+                if item is None:
+                    continue
+                if (item.flags() & Qt.ItemIsEditable) == Qt.ItemIsEditable:
+                    table_disabled = False
+                    
+        txt_boxes_disabled = self._txt_boxes_disabled()
+
+        if table_disabled and txt_boxes_disabled:
+            self.CI_spinbox.setEnabled(False) # weird place for ?this? but whatever
+            return True
+        return False
+    
+    def _txt_boxes_disabled(self):
+        return not (self.effect_txt_box.isEnabled() or
+                    self.low_txt_box.isEnabled() or
+                    self.high_txt_box.isEnabled()) # or
+                    #self.correlation_pre_post.isEnabled())
 
     def set_current_effect(self):
         effect_dict = self.ma_unit.effects_dict[self.cur_effect][self.group_str]
@@ -310,24 +349,11 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         newflags = item.flags() & ~Qt.ItemIsEditable
         item.setFlags(newflags)
         self.block_all_signals(False)
+        
+        self.enable_txt_box_input() # if the effect was imputed
+        self.set_clear_btn_color()
     
     def _set_val(self, row_index, var_index, val):
-#        is_NaN = lambda x: x != x
-#        
-#        # need this to reset empty cells
-#        if val is None or val == "":
-#            self.simple_table.setItem(row_index, var_index, QTableWidgetItem(QString(""))) 
-#            return
-#        
-#        if not is_NaN(val):
-#            #self._set_table_cell(i, j, val)
-#            try:
-#                float_str = self.float_to_str(val)
-#                self.simple_table.setItem(row_index, var_index, QTableWidgetItem(QString(float_str))) 
-#            except:
-#                print "got to pass"
-#                pass
-#     ##########################################
         row,col = row_index, var_index    
         if meta_globals.is_NaN(val): # get out quick
             print "%s is not a number" % val
@@ -347,30 +373,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                 item.setFlags(newflags)
                 #self.block_all_signals(False)
         except:
-            print("Got to except in _set_val when trying to set (%d,%d)" % (row,col))      
-            
-            
-            
-            
-            
-    
-    
-    
-#    def _set_val(self, i, j, val):
-#        is_NaN = lambda x: x != x
-#        
-#        # need this to reset empty cells
-#        if val is None or val == "":
-#            self._set_table_cell(i, j, val)
-#            return
-#        if not is_NaN(val) and val >= 0:
-#            self._set_table_cell(i, j, val)
-#        
-#    def _set_table_cell(self, i, j, val):
-#        if val is None or val == "":
-#            self.raw_data_table.setItem(i, j, QTableWidgetItem(""))
-#            return
-    
+            print("Got to except in _set_val when trying to set (%d,%d)" % (row,col))
     
     def _update_ma_unit(self):
         for row_index, group_name in enumerate(self.cur_groups):
@@ -579,8 +582,9 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             for col in range(range_num):
                 # top table
                 item = table.item(row, col)
-                newflags = item.flags() | Qt.ItemIsEditable
-                item.setFlags(newflags)
+                if not item is None:
+                    newflags = item.flags() | Qt.ItemIsEditable
+                    item.setFlags(newflags)
         
         _reset_flags(self.simple_table,8)
         _reset_flags(self.g1_pre_post_table,7)
@@ -589,9 +593,48 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.block_all_signals(False)
         
     def enable_back_calculation_btn(self, engage = False):
+        
+        self.set_clear_btn_color()
         pass
         # TODO: Write body of function
         
+
+    def clear_form(self): 
+        self.block_all_signals(True)
+        # reset tables
+        for table in [self.simple_table, self.g1_pre_post_table, self.g2_pre_post_table]:
+            var_names = self.get_column_header_strs(table=table)
+            for row_index, group_name in enumerate(self.cur_groups):
+                for var_index, var_name in enumerate(var_names):  
+                    self._set_val(row_index, var_index, "")
+        self.block_all_signals(False)
+    
+        self._update_ma_unit()
+
+        # clear out effects stuff
+        for metric in CONTINUOUS_ONE_ARM_METRICS + CONTINUOUS_TWO_ARM_METRICS:
+            if ((self.cur_effect in CONTINUOUS_TWO_ARM_METRICS and metric in CONTINUOUS_TWO_ARM_METRICS) or
+                (self.cur_effect in CONTINUOUS_ONE_ARM_METRICS and metric in CONTINUOUS_ONE_ARM_METRICS)):
+                self.ma_unit.set_effect_and_ci(metric, self.group_str, None, None, None)
+                self.ma_unit.set_display_effect_and_ci(metric, self.group_str, None, None, None)
+            else:
+                # TODO: Do nothing for now..... treat the case where we have to switch group strings down the line
+                pass
+            
+        # clear line edits
+        self.set_current_effect()
+        self.block_all_signals(True)
+        self.correlation_pre_post.setText("")
+        self.block_all_signals(False)
+        
+        self.save_form_state()
+        
+        self.reset_table_item_flags()
+        self.initialize_backup_structures()
+        self.enable_txt_box_input()
+        self.CI_spinbox.setValue(meta_globals.DEFAULT_CONF_LEVEL)
+        self.CI_spinbox.setEnabled(True)
+
 
 
     def save_form_state(self):

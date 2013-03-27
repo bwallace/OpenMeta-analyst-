@@ -404,7 +404,7 @@ fillin.cont.1spell <- function(n=NA, mean=NA, sd=NA, se=NA, var=NA,
 
     # try the sd and the n
     if(is.na(se)) {
-        se=try(sqrt(sd^2)/(n-1), silent=TRUE)
+        se=try(sd/sqrt(n), silent=TRUE) # TODO: DISCUSS WITH ISSA & FRIENDS
     }
 
     # try both ends of the CI
@@ -461,7 +461,7 @@ fillin.cont.1spell <- function(n=NA, mean=NA, sd=NA, se=NA, var=NA,
     ##########################################################
     # if the sd is missing 
     if(is.na(sd)) {
-        sd=try( var*(n-1), silent=TRUE)
+        sd=try( var*(n-1), silent=TRUE)              # TODO: something
     }
 
     if(is.na(sd)) {

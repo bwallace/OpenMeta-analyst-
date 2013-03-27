@@ -36,7 +36,7 @@ NUM_DIGITS = 4
 # when computing 2x2 data
 THRESHOLD = 1e-5
 
-DEFAULT_CONF_LEVEL = 95.0
+#DEFAULT_CONF_LEVEL = 95.0
 
 
 class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
@@ -55,7 +55,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.entry_widgets = [self.raw_data_table, self.low_txt_box,
                               self.high_txt_box, self.effect_txt_box]
         
-        self.CI_spinbox.setValue(DEFAULT_CONF_LEVEL)
+        self.CI_spinbox.setValue(meta_globals.DEFAULT_CONF_LEVEL)
         self.ci_label.setText("{0:.1f}% Confidence Interval".format(self.CI_spinbox.value()))
         
         self.setup_inconsistency_checking()
@@ -89,16 +89,22 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         for row in range(3):
             for col in range(3):
                 item = self.raw_data_table.item(row, col)
+                if item is None:
+                    continue
                 if (item.flags() & Qt.ItemIsEditable) == Qt.ItemIsEditable:
                     table_disabled = False
                     
-        txt_boxes_disabled = not (self.effect_txt_box.isEnabled() or
-                                  self.low_txt_box.isEnabled() or
-                                  self.high_txt_box.isEnabled())
+        txt_boxes_disabled = self._txt_boxes_disabled()
 
         if table_disabled and txt_boxes_disabled:
+            self.CI_spinbox.setEnabled(False) # weird place for ?this? but whatever
             return True
         return False
+
+    def _txt_boxes_disabled(self):
+        return not (self.effect_txt_box.isEnabled() or
+                    self.low_txt_box.isEnabled() or
+                    self.high_txt_box.isEnabled())
         
     def print_effects_dict_from_ma_unit(self):
         print self.ma_unit.effects_dict
@@ -338,7 +344,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             #print("Backed-up table:")
             #self.print_backup_table()
         
-        self.CI_spinbox.setValue(DEFAULT_CONF_LEVEL)
+        self.CI_spinbox.setValue(meta_globals.DEFAULT_CONF_LEVEL)
         restore_displayed_effects_data()
         restore_table()
         self.enable_back_calculation_btn()
@@ -522,6 +528,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         item.setFlags(newflags)
         self.block_all_signals(False)
         
+        self.enable_txt_box_input() # if the effect was imputed
         self.set_clear_btn_color()
         
     def _get_table_vals(self):
@@ -663,19 +670,22 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.reset_table_item_flags()
         self.initialize_backup_structures()
         self.enable_txt_box_input()
-        self.CI_spinbox.setValue(DEFAULT_CONF_LEVEL)
+        self.CI_spinbox.setValue(meta_globals.DEFAULT_CONF_LEVEL)
+        self.CI_spinbox.setEnabled(True)
         
     def enable_txt_box_input(self):
         meta_globals.enable_txt_box_input(self.effect_txt_box, self.low_txt_box,
                                           self.high_txt_box)
+        print("Enabled text box input")
         
     def reset_table_item_flags(self):
         self.block_all_signals(True)
         for row in range(3):
             for col in range(3):
                 item = self.raw_data_table.item(row, col)
-                newflags = item.flags() | Qt.ItemIsEditable
-                item.setFlags(newflags)
+                if not item is None:
+                    newflags = item.flags() | Qt.ItemIsEditable
+                    item.setFlags(newflags)
         self.block_all_signals(False)
         
 class ChooseBackCalcResultForm(QDialog, ui_choose_bin_back_calc_result_form.Ui_ChooseBackCalcResultForm):

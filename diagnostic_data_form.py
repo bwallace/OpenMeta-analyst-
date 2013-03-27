@@ -90,10 +90,8 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self.table_backup = [[None,None,None],[None,None,None],[None,None,None]]
     
     def setup_signals_and_slots(self):
-        QObject.connect(self.two_by_two_table, SIGNAL("cellChanged (int, int)"), 
-                                            self.cell_changed)                          
-        QObject.connect(self.effect_cbo_box, SIGNAL("currentIndexChanged(QString)"),
-                                             self.effect_changed) 
+        QObject.connect(self.two_by_two_table, SIGNAL("cellChanged (int, int)"), self.cell_changed)                          
+        QObject.connect(self.effect_cbo_box, SIGNAL("currentIndexChanged(QString)"), self.effect_changed) 
         QObject.connect(self.clear_Btn, SIGNAL("clicked()"), self.clear_form)
         
         QObject.connect(self.effect_txt_box, SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("est", new_text))
@@ -247,6 +245,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         item.setFlags(newflags)
         self.block_all_signals(False)
     
+        self.enable_txt_box_input() # if the effect was imputed
         self.set_clear_btn_color()
         
     def save_form_state(self):
@@ -671,8 +670,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self.reset_table_item_flags()
         self.enable_txt_box_input()
         self.CI_spinbox.setValue(meta_globals.DEFAULT_CONF_LEVEL)
-        
-        ##self.print_backup_table()
+        self.CI_spinbox.setEnabled(True)
         
     def enable_txt_box_input(self):
         ''' Enables text boxes if they are empty, disables them otherwise '''
@@ -685,8 +683,9 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         for row in range(3):
             for col in range(3):
                 item = self.two_by_two_table.item(row, col)
-                newflags = item.flags() | Qt.ItemIsEditable
-                item.setFlags(newflags)
+                if not item is None:
+                    newflags = item.flags() | Qt.ItemIsEditable
+                    item.setFlags(newflags)
         self.block_all_signals(False)
     
     def input_fields_disabled(self):
@@ -699,14 +698,19 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
                 if (item.flags() & Qt.ItemIsEditable) == Qt.ItemIsEditable:
                     table_disabled = False
                     
-        txt_boxes_disabled = not (self.effect_txt_box.isEnabled() or
-                                  self.low_txt_box.isEnabled() or
-                                  self.high_txt_box.isEnabled() or
-                                  self.prevalence_txt_box.isEnabled())
+        txt_boxes_disabled = self._txt_boxes_disabled()
 
         if table_disabled and txt_boxes_disabled:
+            self.CI_spinbox.setEnabled(False) # weird place for ?this? but whatever
             return True
         return False
+    
+    
+    def _txt_boxes_disabled(self):
+        return not (self.effect_txt_box.isEnabled() or
+                    self.low_txt_box.isEnabled() or
+                    self.high_txt_box.isEnabled() or
+                    self.prevalence_txt_box.isEnabled())
     
     def set_clear_btn_color(self):
         if self.input_fields_disabled():

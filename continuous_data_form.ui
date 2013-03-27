@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>574</width>
-    <height>572</height>
+    <width>570</width>
+    <height>582</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -351,6 +351,13 @@ p, li { white-space: pre-wrap; }
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QPushButton" name="clear_Btn">
+          <property name="text">
+           <string>Clear Form</string>
+          </property>
+         </widget>
+        </item>
         <item>
          <spacer name="horizontalSpacer_3">
           <property name="orientation">

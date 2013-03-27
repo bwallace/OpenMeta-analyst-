@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'continuous_data_form.ui'
 #
-# Created: Tue Mar 26 16:58:25 2013
+# Created: Wed Mar 27 14:45:38 2013
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_ContinuousDataForm(object):
     def setupUi(self, ContinuousDataForm):
         ContinuousDataForm.setObjectName(_fromUtf8("ContinuousDataForm"))
-        ContinuousDataForm.resize(574, 572)
+        ContinuousDataForm.resize(570, 582)
         ContinuousDataForm.setMinimumSize(QtCore.QSize(570, 0))
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Verdana"))
@@ -163,6 +163,9 @@ class Ui_ContinuousDataForm(object):
         self.verticalLayout.addWidget(self.grp_2_lbl)
         self.horizontalLayout_3 = QtGui.QHBoxLayout()
         self.horizontalLayout_3.setObjectName(_fromUtf8("horizontalLayout_3"))
+        self.clear_Btn = QtGui.QPushButton(self.grp_box_pre_post)
+        self.clear_Btn.setObjectName(_fromUtf8("clear_Btn"))
+        self.horizontalLayout_3.addWidget(self.clear_Btn)
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_3.addItem(spacerItem)
         self.label = QtGui.QLabel(self.grp_box_pre_post)
@@ -347,6 +350,7 @@ class Ui_ContinuousDataForm(object):
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Verdana\'; font-size:8pt; font-weight:600; font-style:italic;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:7pt;\">group 2</span></p></body></html>", None))
+        self.clear_Btn.setText(_translate("ContinuousDataForm", "Clear Form", None))
         self.label.setText(_translate("ContinuousDataForm", "correlation:", None))
         self.correlation_pre_post.setText(_translate("ContinuousDataForm", "0.0", None))
         self.label_13.setText(_translate("ContinuousDataForm", "effect", None))
