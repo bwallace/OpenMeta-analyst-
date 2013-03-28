@@ -828,7 +828,8 @@ def parse_out_results(result):
     text_d = {}
     image_var_name_d, image_params_paths_d, image_path_d  = {}, {}, {}
     image_order = None
-
+    pyqtRemoveInputHook()
+    pdb.set_trace()
     for text_n, text in zip(list(result.names), list(result)):
         # some special cases, notably the plot names and the path for a forest
         # plot. TODO in the case of diagnostic data, we're probably going to 
@@ -838,7 +839,7 @@ def parse_out_results(result):
         if text_n == "images":
             image_path_d = _rls_to_pyd(text)
         elif text_n == "image_order":
-            image_order = [x for x in text]
+            image_order = list(text)
         elif text_n == "plot_names":
             if str(text) == "NULL":
                 image_var_name_d = {}
@@ -876,7 +877,6 @@ def parse_out_results(result):
                     pdb.set_trace()
                     
             
-
 
     return {"images":image_path_d,
             "image_var_names":image_var_name_d,
