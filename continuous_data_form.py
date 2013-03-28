@@ -373,8 +373,8 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                 item.setFlags(newflags)
                 #self.block_all_signals(False)
         except:
-            print("Got to except in _set_val when trying to set (%d,%d)" % (row,col))
-    
+            print("Got to except in _set_val when trying to set (%d,%d)" % (row,col))      
+
     def _update_ma_unit(self):
         for row_index, group_name in enumerate(self.cur_groups):
             grp_raw_data = self.raw_data_dict[group_name]
