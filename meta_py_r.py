@@ -15,23 +15,19 @@
 import math
 import os
 import pdb
-#import collections
 
 from PyQt4.QtCore import pyqtRemoveInputHook
 from meta_globals import (BASE_PATH,CONTINUOUS,ONE_ARM_METRICS,TWO_ARM_METRICS,
                           TYPE_TO_STR_DICT)
 
 try:
-    #import rpy2
-    # this line throws a segfault
+    # will fail if not properly configured
     from rpy2 import robjects as ro
 except Exception, e:
     raise Exception, "rpy2 not properly installed!"
     print e
     
 import rpy2.robjects
-#from rpy2.rinterface import NALogicalType
-#from rpy2.rinterface import NARealType
 
 try:
     # ascertain that R has write privledges
@@ -60,20 +56,9 @@ def reset_Rs_working_dir():
     print "resetting "
     ro.r("setwd('%s')" % BASE_PATH) 
 
-#def impute_two_by_two(bin_data_dict):
-#    print "computing 2x2 table via R..."
-#    print bin_data_dict
-#
-#    # rpy2 doesn't know how to handle None types.
-#    # we can just remove them from the dictionary.
-#    for param, val in bin_data_dict.items():
-#        if val is None:
-#            bin_data_dict.pop(param)
-#
-#    dataf = ro.r['data.frame'](**bin_data_dict)
-#    two_by_two = ro.r('impute.bin.data(bin.data=%s)' % dataf.r_repr())
-#    print two_by_two
-
+####
+# BCW -- George, remove this if you're finished
+###
 def OLDimpute_diag_data(diag_data_dict, metric):
     print "computing 2x2 table via R..."
     print diag_data_dict
@@ -103,11 +88,8 @@ def impute_diag_data(diag_data_dict):
     dataf = ro.r['data.frame'](**diag_data_dict)
     two_by_two = ro.r("gimpute.diagnostic.data(%s)" % (dataf.r_repr()))
     
-    
-    #print "Imputed 2by2:", _rls_to_pyd(two_by_two)
-    print "Imputed 2by2:", _grlist_to_pydict(two_by_two)
 
-    #return _rls_to_pyd(two_by_two)
+    print "Imputed 2x2:", _grlist_to_pydict(two_by_two)
     return _grlist_to_pydict(two_by_two)
 
 def impute_bin_data(bin_data_dict):
@@ -1149,7 +1131,9 @@ def continuous_effect_for_study(n1, m1, sd1, se1=None, n2=None, m2=None,
     else:
         # only one-arm
         point_est = m1
-        se = sd1/n1
+        # eesh; this was only over n until 
+        # 3/28/13.
+        se = sd1/math.sqrt(n1)
     
     alpha = 1.0-(conf_level/100.0)
     r_str = "abs(qnorm(%s))" % str(alpha/2.0)
