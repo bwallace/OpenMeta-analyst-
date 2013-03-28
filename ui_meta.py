@@ -2,19 +2,28 @@
 
 # Form implementation generated from reading ui file 'meta.ui'
 #
-# Created: Mon Apr 02 10:56:32 2012
-#      by: PyQt4 UI code generator 4.8.5
+# Created: Tue Mar 26 17:06:58 2013
+#      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
+
 from PyQt4 import QtCore, QtGui
 import ma_data_table_view
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
 
-print "OK!"
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
@@ -22,7 +31,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Verdana"))
         MainWindow.setFont(font)
-        MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "OpenMeta[analyst]", None, QtGui.QApplication.UnicodeUTF8))
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/images/meta.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
@@ -48,6 +56,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setContentsMargins(-1, -1, -1, 0)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
+        #self.tableView = QtGui.QTableView(self.nav_frame)
         self.tableView = ma_data_table_view.MADataTable(self.nav_frame)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -134,7 +143,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(9)
         self.label.setFont(font)
-        self.label.setText(QtGui.QApplication.translate("MainWindow", "outcome:", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setObjectName(_fromUtf8("label"))
         self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
         self.cur_outcome_lbl = QtGui.QLabel(self.layoutWidget)
@@ -148,7 +156,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(9)
         self.label_3.setFont(font)
-        self.label_3.setText(QtGui.QApplication.translate("MainWindow", "follow-up:", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setObjectName(_fromUtf8("label_3"))
         self.gridLayout.addWidget(self.label_3, 1, 0, 1, 1)
         self.cur_time_lbl = QtGui.QLabel(self.layoutWidget)
@@ -173,101 +180,70 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Verdana"))
         self.menu_file.setFont(font)
-        self.menu_file.setTitle(QtGui.QApplication.translate("MainWindow", "File", None, QtGui.QApplication.UnicodeUTF8))
         self.menu_file.setObjectName(_fromUtf8("menu_file"))
         self.action_open_recent_2 = QtGui.QMenu(self.menu_file)
-        self.action_open_recent_2.setTitle(QtGui.QApplication.translate("MainWindow", "open recent...", None, QtGui.QApplication.UnicodeUTF8))
         self.action_open_recent_2.setObjectName(_fromUtf8("action_open_recent_2"))
         self.menuAnalysis = QtGui.QMenu(self.menu_bar)
-        self.menuAnalysis.setTitle(QtGui.QApplication.translate("MainWindow", "Analysis", None, QtGui.QApplication.UnicodeUTF8))
         self.menuAnalysis.setObjectName(_fromUtf8("menuAnalysis"))
         self.menuMetric = QtGui.QMenu(self.menuAnalysis)
-        self.menuMetric.setTitle(QtGui.QApplication.translate("MainWindow", "metric", None, QtGui.QApplication.UnicodeUTF8))
         self.menuMetric.setObjectName(_fromUtf8("menuMetric"))
         self.menuDataset = QtGui.QMenu(self.menu_bar)
-        self.menuDataset.setTitle(QtGui.QApplication.translate("MainWindow", "Dataset", None, QtGui.QApplication.UnicodeUTF8))
         self.menuDataset.setObjectName(_fromUtf8("menuDataset"))
         self.menuEdit = QtGui.QMenu(self.menu_bar)
-        self.menuEdit.setTitle(QtGui.QApplication.translate("MainWindow", "Edit", None, QtGui.QApplication.UnicodeUTF8))
         self.menuEdit.setObjectName(_fromUtf8("menuEdit"))
         self.menuHelp = QtGui.QMenu(self.menu_bar)
-        self.menuHelp.setTitle(QtGui.QApplication.translate("MainWindow", "Help", None, QtGui.QApplication.UnicodeUTF8))
         self.menuHelp.setObjectName(_fromUtf8("menuHelp"))
         MainWindow.setMenuBar(self.menu_bar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
         MainWindow.setStatusBar(self.statusbar)
         self.action_save = QtGui.QAction(MainWindow)
-        self.action_save.setText(QtGui.QApplication.translate("MainWindow", "save", None, QtGui.QApplication.UnicodeUTF8))
         self.action_save.setObjectName(_fromUtf8("action_save"))
         self.action_open = QtGui.QAction(MainWindow)
-        self.action_open.setText(QtGui.QApplication.translate("MainWindow", "open...", None, QtGui.QApplication.UnicodeUTF8))
         self.action_open.setObjectName(_fromUtf8("action_open"))
         self.action_quit = QtGui.QAction(MainWindow)
-        self.action_quit.setText(QtGui.QApplication.translate("MainWindow", "quit", None, QtGui.QApplication.UnicodeUTF8))
         self.action_quit.setObjectName(_fromUtf8("action_quit"))
         self.action_go = QtGui.QAction(MainWindow)
-        self.action_go.setText(QtGui.QApplication.translate("MainWindow", "meta-analysis...", None, QtGui.QApplication.UnicodeUTF8))
         self.action_go.setObjectName(_fromUtf8("action_go"))
         self.action_edit = QtGui.QAction(MainWindow)
-        self.action_edit.setText(QtGui.QApplication.translate("MainWindow", "edit...", None, QtGui.QApplication.UnicodeUTF8))
         self.action_edit.setObjectName(_fromUtf8("action_edit"))
         self.action_view_network = QtGui.QAction(MainWindow)
-        self.action_view_network.setText(QtGui.QApplication.translate("MainWindow", "view network...", None, QtGui.QApplication.UnicodeUTF8))
         self.action_view_network.setObjectName(_fromUtf8("action_view_network"))
         self.action_add_covariate = QtGui.QAction(MainWindow)
-        self.action_add_covariate.setText(QtGui.QApplication.translate("MainWindow", "add covariate...", None, QtGui.QApplication.UnicodeUTF8))
         self.action_add_covariate.setObjectName(_fromUtf8("action_add_covariate"))
         self.action_cum_ma = QtGui.QAction(MainWindow)
-        self.action_cum_ma.setText(QtGui.QApplication.translate("MainWindow", "cumulative meta-analysis...", None, QtGui.QApplication.UnicodeUTF8))
         self.action_cum_ma.setObjectName(_fromUtf8("action_cum_ma"))
         self.action_loo_ma = QtGui.QAction(MainWindow)
-        self.action_loo_ma.setText(QtGui.QApplication.translate("MainWindow", "leave-one-out meta-analysis...", None, QtGui.QApplication.UnicodeUTF8))
         self.action_loo_ma.setObjectName(_fromUtf8("action_loo_ma"))
         self.actionOR = QtGui.QAction(MainWindow)
-        self.actionOR.setText(QtGui.QApplication.translate("MainWindow", "OR", None, QtGui.QApplication.UnicodeUTF8))
         self.actionOR.setObjectName(_fromUtf8("actionOR"))
         self.actionRR = QtGui.QAction(MainWindow)
-        self.actionRR.setText(QtGui.QApplication.translate("MainWindow", "RR", None, QtGui.QApplication.UnicodeUTF8))
         self.actionRR.setObjectName(_fromUtf8("actionRR"))
         self.actionTX_Mean_one_arm = QtGui.QAction(MainWindow)
-        self.actionTX_Mean_one_arm.setText(QtGui.QApplication.translate("MainWindow", "TX Mean (one-arm)", None, QtGui.QApplication.UnicodeUTF8))
         self.actionTX_Mean_one_arm.setObjectName(_fromUtf8("actionTX_Mean_one_arm"))
         self.actionYo = QtGui.QAction(MainWindow)
-        self.actionYo.setText(QtGui.QApplication.translate("MainWindow", "yo", None, QtGui.QApplication.UnicodeUTF8))
         self.actionYo.setObjectName(_fromUtf8("actionYo"))
         self.actionNew_dataset = QtGui.QAction(MainWindow)
-        self.actionNew_dataset.setText(QtGui.QApplication.translate("MainWindow", "new dataset...", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNew_dataset.setObjectName(_fromUtf8("actionNew_dataset"))
         self.action_new_dataset = QtGui.QAction(MainWindow)
-        self.action_new_dataset.setText(QtGui.QApplication.translate("MainWindow", "new dataset...", None, QtGui.QApplication.UnicodeUTF8))
         self.action_new_dataset.setObjectName(_fromUtf8("action_new_dataset"))
         self.action_meta_regression = QtGui.QAction(MainWindow)
-        self.action_meta_regression.setText(QtGui.QApplication.translate("MainWindow", "meta-regression", None, QtGui.QApplication.UnicodeUTF8))
         self.action_meta_regression.setObjectName(_fromUtf8("action_meta_regression"))
         self.action_undo = QtGui.QAction(MainWindow)
-        self.action_undo.setText(QtGui.QApplication.translate("MainWindow", "undo (ctrl + z)", None, QtGui.QApplication.UnicodeUTF8))
         self.action_undo.setObjectName(_fromUtf8("action_undo"))
         self.action_redo = QtGui.QAction(MainWindow)
-        self.action_redo.setText(QtGui.QApplication.translate("MainWindow", "redo (ctrl + y)", None, QtGui.QApplication.UnicodeUTF8))
         self.action_redo.setObjectName(_fromUtf8("action_redo"))
         self.action_copy = QtGui.QAction(MainWindow)
-        self.action_copy.setText(QtGui.QApplication.translate("MainWindow", "copy (ctrl + c)", None, QtGui.QApplication.UnicodeUTF8))
         self.action_copy.setObjectName(_fromUtf8("action_copy"))
         self.action_paste = QtGui.QAction(MainWindow)
-        self.action_paste.setText(QtGui.QApplication.translate("MainWindow", "paste (ctrl + v)", None, QtGui.QApplication.UnicodeUTF8))
         self.action_paste.setObjectName(_fromUtf8("action_paste"))
         self.action_subgroup_ma = QtGui.QAction(MainWindow)
-        self.action_subgroup_ma.setText(QtGui.QApplication.translate("MainWindow", "subgroup meta-analysis", None, QtGui.QApplication.UnicodeUTF8))
         self.action_subgroup_ma.setObjectName(_fromUtf8("action_subgroup_ma"))
         self.action_save_as = QtGui.QAction(MainWindow)
-        self.action_save_as.setText(QtGui.QApplication.translate("MainWindow", "save as...", None, QtGui.QApplication.UnicodeUTF8))
         self.action_save_as.setObjectName(_fromUtf8("action_save_as"))
         self.actionDfsf = QtGui.QAction(MainWindow)
-        self.actionDfsf.setText(QtGui.QApplication.translate("MainWindow", "(none)", None, QtGui.QApplication.UnicodeUTF8))
         self.actionDfsf.setObjectName(_fromUtf8("actionDfsf"))
         self.action_open_help = QtGui.QAction(MainWindow)
-        self.action_open_help.setText(QtGui.QApplication.translate("MainWindow", "open help", None, QtGui.QApplication.UnicodeUTF8))
         self.action_open_help.setObjectName(_fromUtf8("action_open_help"))
         self.action_open_recent_2.addAction(self.actionDfsf)
         self.menu_file.addAction(self.action_save)
@@ -304,8 +280,39 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        pass
+        MainWindow.setWindowTitle(_translate("MainWindow", "OpenMeta[analyst]", None))
+        self.label.setText(_translate("MainWindow", "outcome:", None))
+        self.label_3.setText(_translate("MainWindow", "follow-up:", None))
+        self.menu_file.setTitle(_translate("MainWindow", "File", None))
+        self.action_open_recent_2.setTitle(_translate("MainWindow", "open recent...", None))
+        self.menuAnalysis.setTitle(_translate("MainWindow", "Analysis", None))
+        self.menuMetric.setTitle(_translate("MainWindow", "metric", None))
+        self.menuDataset.setTitle(_translate("MainWindow", "Dataset", None))
+        self.menuEdit.setTitle(_translate("MainWindow", "Edit", None))
+        self.menuHelp.setTitle(_translate("MainWindow", "Help", None))
+        self.action_save.setText(_translate("MainWindow", "save", None))
+        self.action_open.setText(_translate("MainWindow", "open...", None))
+        self.action_quit.setText(_translate("MainWindow", "quit", None))
+        self.action_go.setText(_translate("MainWindow", "meta-analysis...", None))
+        self.action_edit.setText(_translate("MainWindow", "edit...", None))
+        self.action_view_network.setText(_translate("MainWindow", "view network...", None))
+        self.action_add_covariate.setText(_translate("MainWindow", "add covariate...", None))
+        self.action_cum_ma.setText(_translate("MainWindow", "cumulative meta-analysis...", None))
+        self.action_loo_ma.setText(_translate("MainWindow", "leave-one-out meta-analysis...", None))
+        self.actionOR.setText(_translate("MainWindow", "OR", None))
+        self.actionRR.setText(_translate("MainWindow", "RR", None))
+        self.actionTX_Mean_one_arm.setText(_translate("MainWindow", "TX Mean (one-arm)", None))
+        self.actionYo.setText(_translate("MainWindow", "yo", None))
+        self.actionNew_dataset.setText(_translate("MainWindow", "new dataset...", None))
+        self.action_new_dataset.setText(_translate("MainWindow", "new dataset...", None))
+        self.action_meta_regression.setText(_translate("MainWindow", "meta-regression", None))
+        self.action_undo.setText(_translate("MainWindow", "undo (ctrl + z)", None))
+        self.action_redo.setText(_translate("MainWindow", "redo (ctrl + y)", None))
+        self.action_copy.setText(_translate("MainWindow", "copy (ctrl + c)", None))
+        self.action_paste.setText(_translate("MainWindow", "paste (ctrl + v)", None))
+        self.action_subgroup_ma.setText(_translate("MainWindow", "subgroup meta-analysis", None))
+        self.action_save_as.setText(_translate("MainWindow", "save as...", None))
+        self.actionDfsf.setText(_translate("MainWindow", "(none)", None))
+        self.action_open_help.setText(_translate("MainWindow", "open help", None))
 
-print "importing icons???"
 import icons_rc
-print "success"

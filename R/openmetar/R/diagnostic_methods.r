@@ -433,7 +433,7 @@ diagnostic.fixed.inv.var.parameters <- function(){
     # parameters
     apply_adjustment_to = c("only0", "all")
 
-    params <- list("conf.level"="float", "digits"="float",
+    params <- list("conf.level"="float", "digits"="int",
                             "adjust"="float", "to"=apply_adjustment_to)
 
     # default values
@@ -558,7 +558,7 @@ diagnostic.fixed.mh.parameters <- function(){
     # parameters
     apply_adjustment_to = c("only0", "all")
     
-    params <- list("conf.level"="float", "digits"="float",
+    params <- list("conf.level"="float", "digits"="int",
                             "adjust"="float", "to"=apply_adjustment_to)
     
     # default values
@@ -689,7 +689,7 @@ diagnostic.fixed.peto.parameters <- function(){
   # parameters
   apply_adjustment_to = c("only0", "all")
   
-  params <- list( "conf.level"="float", "digits"="float",
+  params <- list( "conf.level"="float", "digits"="int",
                   "adjust"="float", "to"=apply_adjustment_to)
   
   # default values
@@ -801,7 +801,7 @@ diagnostic.random <- function(diagnostic.data, params){
 diagnostic.random.parameters <- function(){
     apply.adjustment.to = c("only0", "all")
     rm.method.ls <- c("HE", "DL", "SJ", "ML", "REML", "EB")
-    params <- list("rm.method"=rm.method.ls, "conf.level"="float", "digits"="float",
+    params <- list("rm.method"=rm.method.ls, "conf.level"="float", "digits"="int",
                             "adjust"="float", "to"=apply.adjustment.to)
     
     # default values
@@ -813,13 +813,22 @@ diagnostic.random.parameters <- function(){
 }
 
 diagnostic.random.pretty.names <- function() {
+	# sort of redundant to have both this and rm_method_ls but whatever for now...
+	rm_method_names <- list(
+			HE="Hedges-Olkin",
+			DL = "DerSimonian-Laird",
+			SJ = "Sidik-Jonkman",
+			ML = "Maximum Likelihood",
+			REML = "Restricted Maximum Likelihood", 
+			EB = "Empirical Bayes")
+	
     pretty.names <- list("pretty.name"="Diagnostic Random-Effects", 
                          "description" = "Performs random-effects meta-analysis.",
-                         "rm.method"=list("pretty.name"="Random method", "description"="Method for estimating between-studies heterogeneity"),                      
+                         "rm.method"=list("pretty.name"="Random-Effects method", "description"="Method for estimating between-studies heterogeneity", "rm.method.names"=rm_method_names),                      
                          "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
-                         "digits"=list("pretty.name"="Number of digits", "description"="Number of digits to display in results"),
+                         "digits"=list("pretty.name"="Number of digits of precision to display", "description"="Number of digits to display in results"),
                          "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
-                         "to"=list("pretty.name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
+                         "to"=list("pretty.name"="Cells to which correction factor should be added", "description"="When Add correction factor is set to \"only 0\", the correction factor
                                    is added to all cells of each two-by-two table that contains at leason one zero. When set to \"all\", the correction factor
                                    is added to all two-by-two tables if at least one table contains a zero."),
                          "measure"=list("Sens"="Sensitivity", "Spec"="Specificity", "DOR"="Odds Ratio", "PLR"="Positive Likelihood Ratio",

@@ -1,7 +1,8 @@
 #############################################################################
 #                                                                           #
 #  Byron C. Wallace                                                         #
-#  Tufts Medical Center                                                     #
+#  George Dietz                                                             #
+#  CEBM @ Brown                                                             #    
 #  OpenMeta[analyst]                                                        #
 #                                                                           #
 #  This is a proxy module that is responsible for communicating with R.     #
@@ -270,12 +271,12 @@ def get_params(method_name):
     if param_d.has_key("var_order"):
         order_vars = list(param_d["var_order"])
 
-    pretty_names_and_descriptions = get_pretty_names_and_descriptions_for_params(\
+    pretty_names_and_descriptions = get_pretty_names_and_descriptions_for_params(
                                         method_name, param_list)
 
-    return (_rlist_to_pydict(param_d['parameters'], recurse=False), \
-            _rlist_to_pydict(param_d['defaults']), \
-            order_vars,\
+    return (_rlist_to_pydict(param_d['parameters'], recurse=False),
+            _rlist_to_pydict(param_d['defaults']),
+            order_vars,
             pretty_names_and_descriptions)
             
 
@@ -853,36 +854,46 @@ def parse_out_results(result):
         else:
             text_d[text_n]=text
             # Construct List of Weights for studies
-            if text_n.rfind("Summary") != -1:
-                summary_dict = _grlist_to_pydict(text)
-                try:
-                    if "study.names" in summary_dict['MAResults']: # this is a silly thing to look for but its something I explicitly set in the random methods so I know it's there
-                        text_n_withoutSummary = text_n.replace("Summary","")
-                        text_n_withoutSummary.strip()
-                        key_name = text_n_withoutSummary + " Weights"
-                        key_name.strip()
-                        
-                        study_names = summary_dict['MAResults']['study.names']
-                        study_years = summary_dict['MAResults']['study.years']
-                        study_weights = summary_dict['MAResults']['study.weights']
-                        max_len = max([len(name) for name in study_names])
-                        weights_txt = "studies" + " "*(max_len-1) + "weights\n"
-                        
-                        for name,year,weight in zip(study_names, study_years, study_weights):
-                            weights_txt += "{0:{name_width}} {1} {2:4.1f}%\n".format(name, year, weight*100, name_width=max_len)
-                        text_d[key_name] = weights_txt
-                except:
-                    print("In parse-out results:")
-                    pyqtRemoveInputHook()
-                    pdb.set_trace()
-                    
-            
+            (key, astring) = make_weights_list(text_n,text)
+            if key is not None:
+                text_d[key] = astring
 
     return {"images":image_path_d,
             "image_var_names":image_var_name_d,
             "texts":text_d,
             "image_params_paths":image_params_paths_d,
             "image_order":image_order}
+    
+    
+def make_weights_list(text_n,text):
+    # Construct List of Weights for studies
+    try:
+        if text_n.find("Summary") != -1:
+            summary_dict = _grlist_to_pydict(text)
+    
+            if "study.names" in summary_dict['MAResults']: # this is a silly thing to look for but its something I explicitly set in the random methods so I know it's there
+                text_n_withoutSummary = text_n.replace("Summary","")
+                text_n_withoutSummary.strip()
+                key_name = text_n_withoutSummary + " Weights"
+                key_name.strip()
+                
+                study_names = summary_dict['MAResults']['study.names']
+                study_years = summary_dict['MAResults']['study.years']
+                study_weights = summary_dict['MAResults']['study.weights']
+                max_len = max([len(name) for name in study_names])
+                weights_txt = "studies" + " "*(max_len-1) + "weights\n"
+                
+                for name,year,weight in zip(study_names, study_years, study_weights):
+                    weights_txt += "{0:{name_width}} {1} {2:4.1f}%\n".format(name, year, weight*100, name_width=max_len)
+                return (key_name, weights_txt)
+            else:
+                print("study.names not found")
+                return(None,None)
+    except:
+        print("Something went wrong from make_weights_list: Are we in bivariate?? :)")
+        return (None,None)
+    
+
                 
                                        
 def run_binary_fixed_meta_regression(selected_cov, bin_data_name="tmp_obj", \
@@ -1083,7 +1094,8 @@ def _get_col(m, i):
         col_vals.append(x[i])
     return col_vals
 
-def diagnostic_effects_for_study(tp, fn, fp, tn, metrics=["Spec", "Sens"]):
+def diagnostic_effects_for_study(tp, fn, fp, tn, metrics=["Spec", "Sens"],
+                                 conf_level=95.0):
     # first create a diagnostic data object
     r_str = "diag.tmp <- new('DiagnosticData', TP=c(%s), FN=c(%s), TN=c(%s), FP=c(%s))" % \
                             (tp, fn, tn, fp)
@@ -1102,9 +1114,8 @@ def diagnostic_effects_for_study(tp, fn, fp, tn, metrics=["Spec", "Sens"]):
         # named list on the R side anew on each iteration
         #####
 
-        r_res = ro.r("get.res.for.one.diag.study(diag.tmp,\
-                        list('to'='only0', 'measure'='%s', 'conf.level'=95, 'adjust'=.5))" % metric)   
-        
+        r_res = ro.r("get.res.for.one.diag.study(diag.tmp, \
+                        list('to'='only0', 'measure'='{0}', 'conf.level'={1:.6f}, 'adjust'=.5))".format(metric, conf_level))
         est, lower, upper = r_res[0][0], r_res[1][0], r_res[2][0]
         calc_estimates = (est, lower, upper)
         disp_estimates = [diagnostic_convert_scale(x, metric) for x in calc_estimates]
@@ -1114,9 +1125,9 @@ def diagnostic_effects_for_study(tp, fn, fp, tn, metrics=["Spec", "Sens"]):
     return effects_dict
     
     
-def continuous_effect_for_study(n1, m1, sd1, se1=None, n2=None, \
-                                        m2=None, sd2=None, se2=None, \
-                                        metric="MD", two_arm=True, conf_level=.975):
+def continuous_effect_for_study(n1, m1, sd1, se1=None, n2=None, m2=None,
+                                sd2=None, se2=None, metric="MD", two_arm=True,
+                                conf_level=.95):
     
     point_est, se = None, None
     if two_arm:
@@ -1140,7 +1151,8 @@ def continuous_effect_for_study(n1, m1, sd1, se1=None, n2=None, \
         point_est = m1
         se = sd1/n1
     
-    r_str =  "qnorm(%s)" % conf_level
+    alpha = 1.0-(conf_level/100.0)
+    r_str = "abs(qnorm(%s))" % str(alpha/2.0)
     mult = ro.r(r_str)[0]
     lower, upper = (point_est-mult*se, point_est+mult*se)
     est_and_ci = (point_est, lower, upper)
@@ -1148,7 +1160,7 @@ def continuous_effect_for_study(n1, m1, sd1, se1=None, n2=None, \
     return {"calc_scale":est_and_ci, "display_scale":transformed_est_and_ci}
     
 def effect_for_study(e1, n1, e2=None, n2=None, two_arm=True, 
-                metric="OR", conf_level=.975):
+                metric="OR", conf_level=.95):
     '''
     Computes a point estimate, lower & upper bound for
     the parametric 2x2 *binary* table data.
@@ -1183,7 +1195,8 @@ def effect_for_study(e1, n1, e2=None, n2=None, two_arm=True,
     #print "var:", effect[1][0]
 
     # scalar for computing confidence interval
-    r_str = "qnorm(%s)" % conf_level
+    alpha = 1.0-(conf_level/100.0)
+    r_str = "abs(qnorm(%s))" % str(alpha/2.0)
     mult = ro.r(r_str)[0]
 
     # note that the point estimate, lower & upper are all computed

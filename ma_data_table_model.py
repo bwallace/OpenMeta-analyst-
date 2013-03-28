@@ -149,7 +149,7 @@ class DatasetModel(QAbstractTableModel):
         # from the view side of things
         current_data_type = self.get_current_outcome_type()
 
-        # offset corresonds to the first three columns, which 
+        # offset corresponds to the first three columns, which 
         # are include study, name, and year.
         offset = 3
         if current_data_type == "binary":
@@ -667,101 +667,194 @@ class DatasetModel(QAbstractTableModel):
         model class. This is responsible for providing header data for the
         respective columns.
         '''
+    
         
-        # for doing cool calculator icon
-        if orientation == Qt.Vertical:
-            if role == Qt.DecorationRole and section < len(self.dataset):
+        outcome_type = self.dataset.get_outcome_type(self.current_outcome)
+        
+        sectionOK = section < len(self.dataset)
+        ############################### TOOLTIPS ###############################
+        if role == Qt.ToolTipRole:
+            if orientation == QtCore.Qt.Horizontal:
+                #return QtCore.QString("Horizontal Header %s Tooltip" % str(section))
+                if section == self.INCLUDE_STUDY:
+                    return QString("Check if you want to include this study in the meta-analysis")
+                elif section == self.NAME:
+                    return QString("Name to identify the study")
+                elif section == self.YEAR:
+                    return QString("Year of publication")
+                elif self.current_outcome is not None and section in self.RAW_DATA:
+                    # switch on the outcome type 
+                    current_tx = self.current_txs[0] # i.e., the first group
+                    
+                    rename_col_msg = "\nRename group by right-clicking the column header and selecting 'rename group...'"
+                    sort_msg = "\nSort on this column by right-clicking the column header and selecting 'sort studies...'"
+                    if outcome_type == BINARY:
+                        if section in self.RAW_DATA[2:]:
+                            current_tx = self.current_txs[1]
+            
+                        if section in (self.RAW_DATA[0], self.RAW_DATA[2]):
+                            num_events_msg = "# of Events in group {0} (numerator)".format(current_tx)
+                            return QString(num_events_msg + rename_col_msg + sort_msg)
+                        else:
+                            num_sujets_msg = "# of Subjects in group {0} (numerator)".format(current_tx)
+                            return QString(num_sujets_msg + rename_col_msg + sort_msg)
+                    elif outcome_type == CONTINUOUS:
+                        # continuous data
+                        if section in self.RAW_DATA[3:]:
+                            current_tx = self.current_txs[1]
+                            
+                        if section in (self.RAW_DATA[0], self.RAW_DATA[3]):
+                            N_sujets_msg = "# Subjects in group {0}".format(current_tx)
+                            return QString(N_sujets_msg + rename_col_msg + sort_msg)
+                        elif section in (self.RAW_DATA[1], self.RAW_DATA[4]):
+                            mean_msg = "Mean of group %s" % current_tx
+                            return QString(mean_msg + rename_col_msg + sort_msg)
+                        else:
+                            sd_msg = "Standard Deviation of group %s" % current_tx
+                            return QString(sd_msg)
+                    elif outcome_type == DIAGNOSTIC:
+                        if section == self.RAW_DATA[0]:
+                            return QString("# True Positives"  + sort_msg)
+                        elif section == self.RAW_DATA[1]:
+                            return QString("# False Negatives" + sort_msg)
+                        elif section == self.RAW_DATA[2]:
+                            return QString("# False Positives" + sort_msg)
+                        else:
+                            return QString("# True Negatives"  + sort_msg)
+                elif section in self.OUTCOMES:
+                    help_msg = "For information about how the confidence interval was obtained,\n"
+                    help_msg += "please consult the the help at {0}".format(HELP_URL)
+                
+                    lower_msg = "Lower bound of confidence interval"
+                    lower_msg += "\n" + help_msg
+                    upper_msg = "Upper bound of confidence interval\n"
+                    upper_msg += "\n" + help_msg
+                    
+                    if outcome_type == BINARY:
+                        # effect size, lower CI, upper CI
+                        if section == self.OUTCOMES[0]:
+                            return QString(BINARY_METRIC_NAMES[self.current_effect])
+                        elif section == self.OUTCOMES[1]:
+                            return QString(lower_msg)
+                        else:
+                            return QString(upper_msg)
+                    elif outcome_type == CONTINUOUS:
+                        if section == self.OUTCOMES[0]:
+                            return QString(CONTINUOUS_METRIC_NAMES[self.current_effect])
+                        elif section == self.OUTCOMES[1]:
+                            return QString(lower_msg)
+                        else:
+                            return QString(upper_msg)
+                    elif outcome_type == DIAGNOSTIC:
+                        if section in (self.OUTCOMES[1],self.OUTCOMES[4]):
+                            return QString(lower_msg)
+                        elif section in (self.OUTCOMES[2],self.OUTCOMES[5]):
+                            return QString(upper_msg)
+                        else: # in metric name
+                            if section == self.OUTCOMES[0]: # Sens
+                                return QString(DIAGNOSTIC_METRIC_NAMES["Sens"])
+                            elif section == self.OUTCOMES[3]: # Spec
+                                return QString(DIAGNOSTIC_METRIC_NAMES["Spec"])
+                    
+            else: # vertical
+                if sectionOK:
+                    return QtCore.QString("Use calculator to fill-in missing information")
+                
+        # For cool calculator icon
+        if role == Qt.DecorationRole:
+            if orientation == Qt.Vertical and sectionOK:
                 return QIcon("images/calculator-34.png")
         
         if role == Qt.TextAlignmentRole:
             return QVariant(int(Qt.AlignLeft|Qt.AlignVCenter))
-        if role != Qt.DisplayRole:
-            return QVariant()
-        if orientation == Qt.Horizontal:
-            outcome_type = self.dataset.get_outcome_type(self.current_outcome)
-            if section == self.INCLUDE_STUDY:
-                return QVariant(self.headers[self.INCLUDE_STUDY])
-            elif section == self.NAME:
-                return QVariant(self.headers[self.NAME])
-            elif section == self.YEAR:
-                return QVariant(self.headers[self.YEAR])
-            # note that we're assuming here that raw data
-            # always shows only two tx groups at once.
-            elif self.current_outcome is not None and section in self.RAW_DATA:
-                # switch on the outcome type 
-                current_tx = self.current_txs[0] # i.e., the first group
-                if outcome_type== BINARY:
-                    if section in self.RAW_DATA[2:]:
-                        current_tx = self.current_txs[1]
-                        
-                    if section in (self.RAW_DATA[0], self.RAW_DATA[2]):
-                        return QVariant(current_tx + " n")
-                    else:
-                        return QVariant(current_tx + " N")
-                elif outcome_type == CONTINUOUS:
-                    # continuous data
-                    if section in self.RAW_DATA[3:]:
-                        current_tx = self.current_txs[1]
-                    if section in (self.RAW_DATA[0], self.RAW_DATA[3]):
-                        return QVariant(current_tx + " N")
-                    elif section in (self.RAW_DATA[1], self.RAW_DATA[4]):
-                        return QVariant(current_tx + " mean")
-                    else:
-                        return QVariant(current_tx + " SD")
-                elif outcome_type == DIAGNOSTIC:
-                    # ordering per sir Tom Trikalinos
-                    # "it makes sense -- it goes like this in the matrix!"
-                    #       - (said while making bizarre gesticulation) Tom.
-                    if section == self.RAW_DATA[0]:
-                        return QVariant("TP")
-                    elif section == self.RAW_DATA[1]:
-                        return QVariant("FN")
-                    elif section == self.RAW_DATA[2]:
-                        return QVariant("FP")
-                    else:
-                        return QVariant("TN")
-                        
-            elif section in self.OUTCOMES:
-                if outcome_type == BINARY:
-                    # effect size, lower CI, upper CI
-                    if section == self.OUTCOMES[0]:
-                        return QVariant(self.current_effect)
-                    elif section == self.OUTCOMES[1]:
-                        return QVariant("lower")
-                    else:
-                        return QVariant("upper")
-                elif outcome_type == CONTINUOUS:
-                    if section == self.OUTCOMES[0]:
-                        return QVariant(self.current_effect)
-                    elif section == self.OUTCOMES[1]:
-                        return QVariant("lower")
-                    else:
-                        return QVariant("upper")
-                elif outcome_type == DIAGNOSTIC:
-                    #### 
-                    # we're going to do three columns per outcome
-                    #   est, lower, upper
-                    outcome_index = section - self.OUTCOMES[0]
-                    outcome_headers = ["sens.", "lower", "upper", "spec.", "lower", "upper"]
-                    return QVariant(outcome_headers[outcome_index])
-            elif self.current_outcome is not None:
-                # then the column is to the right of the outcomes, and must
-                # be a covariate.
-                ### issue #156 -- always show covariate type
-                cur_cov = self.get_cov(section)
-                cov_name = cur_cov.name
-                cov_type = cur_cov.get_type_str()
-                # note that I'm only returning the *first* letter
-                # of the type (c or f) because the whole thing
-                # is too long..
-                return QVariant("%s (%s)" % (cov_name, cov_type[0]))
-            else:
-                # pass, basically
-                return QVariant("")
-            
-        # this is the vertical -- non-table header -- case.    
-        # we just show row numbers (not zero-based; hence the +1).
-        return QVariant(int(section+1))
+        #if role != Qt.DisplayRole:
+        #    return QVariant()
+        ############################# DISPLAY ROLE #############################
+        if role == Qt.DisplayRole:
+            if orientation == Qt.Horizontal:
+                if section == self.INCLUDE_STUDY:
+                    return QVariant(self.headers[self.INCLUDE_STUDY])
+                elif section == self.NAME:
+                    return QVariant(self.headers[self.NAME])
+                elif section == self.YEAR:
+                    return QVariant(self.headers[self.YEAR])
+                # note that we're assuming here that raw data
+                # always shows only two tx groups at once.
+                elif self.current_outcome is not None and section in self.RAW_DATA:
+                    # switch on the outcome type 
+                    current_tx = self.current_txs[0] # i.e., the first group
+                    if outcome_type == BINARY:
+                        if section in self.RAW_DATA[2:]:
+                            current_tx = self.current_txs[1]
+                            
+                        if section in (self.RAW_DATA[0], self.RAW_DATA[2]):
+                            return QVariant(current_tx + " n")
+                        else:
+                            return QVariant(current_tx + " N")
+                    elif outcome_type == CONTINUOUS:
+                        # continuous data
+                        if section in self.RAW_DATA[3:]:
+                            current_tx = self.current_txs[1]
+                        if section in (self.RAW_DATA[0], self.RAW_DATA[3]):
+                            return QVariant(current_tx + " N")
+                        elif section in (self.RAW_DATA[1], self.RAW_DATA[4]):
+                            return QVariant(current_tx + " mean")
+                        else:
+                            return QVariant(current_tx + " SD")
+                    elif outcome_type == DIAGNOSTIC:
+                        # ordering per sir Tom Trikalinos
+                        # "it makes sense -- it goes like this in the matrix!"
+                        #       - (said while making bizarre gesticulation) Tom.
+                        if section == self.RAW_DATA[0]:
+                            return QVariant("TP")
+                        elif section == self.RAW_DATA[1]:
+                            return QVariant("FN")
+                        elif section == self.RAW_DATA[2]:
+                            return QVariant("FP")
+                        else:
+                            return QVariant("TN")
+                            
+                elif section in self.OUTCOMES:
+                    if outcome_type == BINARY:
+                        # effect size, lower CI, upper CI
+                        if section == self.OUTCOMES[0]:
+                            return QVariant(self.current_effect)
+                        elif section == self.OUTCOMES[1]:
+                            return QVariant("lower")
+                        else:
+                            return QVariant("upper")
+                    elif outcome_type == CONTINUOUS:
+                        if section == self.OUTCOMES[0]:
+                            return QVariant(self.current_effect)
+                        elif section == self.OUTCOMES[1]:
+                            return QVariant("lower")
+                        else:
+                            return QVariant("upper")
+                    elif outcome_type == DIAGNOSTIC:
+                        #### 
+                        # we're going to do three columns per outcome
+                        #   est, lower, upper
+                        outcome_index = section - self.OUTCOMES[0]
+                        outcome_headers = ["sens.", "lower", "upper", "spec.", "lower", "upper"]
+                        return QVariant(outcome_headers[outcome_index])
+                elif self.current_outcome is not None:
+                    # then the column is to the right of the outcomes, and must
+                    # be a covariate.
+                    ### issue #156 -- always show covariate type
+                    cur_cov = self.get_cov(section)
+                    cov_name = cur_cov.name
+                    cov_type = cur_cov.get_type_str()
+                    # note that I'm only returning the *first* letter
+                    # of the type (c or f) because the whole thing
+                    # is too long..
+                    return QVariant("%s (%s)" % (cov_name, cov_type[0]))
+                else:
+                    # pass, basically
+                    return QVariant("")
+            else: # vertical case
+                # this is the vertical -- non-table header -- case.    
+                # we just show row numbers (not zero-based; hence the +1).
+                return QVariant(int(section+1))
 
 
     def flags(self, index):

@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>506</width>
-    <height>381</height>
+    <height>485</height>
    </rect>
   </property>
   <property name="font">
@@ -22,7 +22,7 @@
    <string>Method &amp; Parameters</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="images/icons.qrc">
+   <iconset>
     <normaloff>:/images/meta.png</normaloff>:/images/meta.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -111,6 +111,9 @@
            <layout class="QGridLayout" name="gridLayout_2">
             <item row="0" column="0">
              <widget class="QLabel" name="label_2">
+              <property name="toolTip">
+               <string>Text for column title that appears on forest plot</string>
+              </property>
               <property name="text">
                <string>col 1 label:</string>
               </property>
@@ -135,6 +138,9 @@
             </item>
             <item row="1" column="0">
              <widget class="QLabel" name="label_4">
+              <property name="toolTip">
+               <string>Text for column title that appears on forest plot</string>
+              </property>
               <property name="text">
                <string>col 2 label:</string>
               </property>
@@ -159,6 +165,9 @@
             </item>
             <item row="2" column="0">
              <widget class="QLabel" name="label_5">
+              <property name="toolTip">
+               <string>Text for column title that appears on forest plot</string>
+              </property>
               <property name="text">
                <string>col 3 label:</string>
               </property>
@@ -183,6 +192,9 @@
             </item>
             <item row="3" column="0">
              <widget class="QLabel" name="label_6">
+              <property name="toolTip">
+               <string>Text for column title that appears on forest plot</string>
+              </property>
               <property name="text">
                <string>col 4 label:</string>
               </property>
