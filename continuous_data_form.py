@@ -349,28 +349,6 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         except:
             print("Got to except in _set_val when trying to set (%d,%d)" % (row,col))      
             
-            
-            
-            
-            
-    
-    
-    
-#    def _set_val(self, i, j, val):
-#        is_NaN = lambda x: x != x
-#        
-#        # need this to reset empty cells
-#        if val is None or val == "":
-#            self._set_table_cell(i, j, val)
-#            return
-#        if not is_NaN(val) and val >= 0:
-#            self._set_table_cell(i, j, val)
-#        
-#    def _set_table_cell(self, i, j, val):
-#        if val is None or val == "":
-#            self.raw_data_table.setItem(i, j, QTableWidgetItem(""))
-#            return
-    
     
     def _update_ma_unit(self):
         for row_index, group_name in enumerate(self.cur_groups):
