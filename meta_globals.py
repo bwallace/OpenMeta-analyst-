@@ -460,6 +460,15 @@ def enable_txt_box_input(*args):
         text_box.setEnabled(False)
         if text_box.text() in EMPTY_VALS:
             text_box.setEnabled(True)
+            
+CHANGE_CI_ALERT_MSG = ("I see that you are changing the confidence level. You "
+                       "should know that when you close this form, the values "
+                       "computed with the new confidence level (usually the "
+                       "estimate and confidence interval) will be converted "
+                       "back to the global {0:.1%} confidence level.".format(DEFAULT_CONF_LEVEL/100.0))
+
+
+        
 
 # WORK ON STANDARDIZING THIS LATER?
 #def validate_txt_box_input(box_data=None,

@@ -92,6 +92,28 @@ def impute_diag_data(diag_data_dict):
     print "Imputed 2x2:", _grlist_to_pydict(two_by_two)
     return _grlist_to_pydict(two_by_two)
 
+def rescale_effect_and_ci_conf_level(data_dict):
+    print("Rescaling effect and CI confidence level")
+    
+    return R_fn_with_dataframe_arg(data_dict, "rescale.effect.and.ci.conf.level")
+
+def R_fn_with_dataframe_arg(data_dict, R_fn_name):
+    '''Calls an R function which takes a dataframe as its only argument w/
+    parameters within. Returns a python dictionary. Assumes R functin returns
+    an R list'''
+    
+    for param, val in data_dict.items():
+        if val is None:
+            data_dict.pop(param)
+
+    dataf = ro.r['data.frame'](**data_dict)
+    
+    r_string = R_fn_name + "(" + str(dataf.r_repr()) + ")"
+    R_result = ro.r(r_string)
+    
+    return _grlist_to_pydict(R_result)
+
+
 def impute_bin_data(bin_data_dict):
     for param, val in bin_data_dict.items():
         if val is None:

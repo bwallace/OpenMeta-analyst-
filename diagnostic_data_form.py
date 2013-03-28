@@ -45,6 +45,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self.entry_widgets = [self.two_by_two_table, self.prevalence_txt_box,
                               self.low_txt_box, self.high_txt_box,
                               self.effect_txt_box,]
+        self.already_showed_change_CI_alert = False
         
         # block all the widgets for a moment
         self.block_all_signals(True)
@@ -106,11 +107,13 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
 
         QObject.connect(self.back_calc_Btn, SIGNAL("clicked()"), lambda: self.enable_back_calculation_btn(engage=True) )
         QObject.connect(self.CI_spinbox, SIGNAL("valueChanged(double)"), self._change_ci)
+        QObject.connect(self, SIGNAL("accepted()"), self.reset_conf_level)
         
     def _change_ci(self,val):
         self.ci_label.setText("{0:.1F} % Confidence Interval".format(val))
         print("New CI val:",val)
         
+        self.change_CI_alert(val)
         self.enable_back_calculation_btn()
 
     def setup_inconsistency_checking(self):
@@ -457,40 +460,40 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             if val_str == "est" and not _is_empty(self.candidate_est):
                 # Check type
                 if not _is_a_float(self.candidate_est) :
-                    QMessageBox.warning(self.parent(), "whoops", float_msg)
+                    QMessageBox.warning(self, "whoops", float_msg)
                     raise Exception("error")
                 (good_result,msg) = is_between_bounds(est=self.candidate_est)
                 if not good_result:
-                    QMessageBox.warning(self.parent(), "whoops", msg)
+                    QMessageBox.warning(self, "whoops", msg)
                     raise Exception("error")
                 if (not 0 <= float(self.candidate_est) <= 1):
-                    QMessageBox.warning(self.parent(), "whoops", "Estimate must be between 0 and 1.")
+                    QMessageBox.warning(self, "whoops", "Estimate must be between 0 and 1.")
                     raise Exception("error")
                 display_scale_val = float(self.candidate_est)
             elif val_str == "lower" and not _is_empty(self.candidate_lower):
                 if not _is_a_float(self.candidate_lower) :
-                    QMessageBox.warning(self.parent(), "whoops", float_msg)
+                    QMessageBox.warning(self, "whoops", float_msg)
                     raise Exception("error")
                 (good_result,msg) = is_between_bounds(low=self.candidate_lower)
                 if not good_result:
-                    QMessageBox.warning(self.parent(), "whoops", msg)
+                    QMessageBox.warning(self, "whoops", msg)
                     raise Exception("error")
                 display_scale_val = float(self.candidate_lower)
             elif val_str == "upper" and not _is_empty(self.candidate_upper): 
                 if not _is_a_float(self.candidate_upper) :
-                    QMessageBox.warning(self.parent(), "whoops", float_msg)
+                    QMessageBox.warning(self, "whoops", float_msg)
                     raise Exception("error")
                 (good_result,msg) = is_between_bounds(high=self.candidate_upper)
                 if not good_result:
-                    QMessageBox.warning(self.parent(), "whoops", msg)
+                    QMessageBox.warning(self, "whoops", msg)
                     raise Exception("error")
                 display_scale_val = float(self.candidate_upper)
             elif val_str == "prevalence" and not _is_empty(self.candidate_prevalence):
                 if not _is_a_float(self.candidate_prevalence):
-                    QMessageBox.warning(self.parent(), "whoops", float_msg)
+                    QMessageBox.warning(self, "whoops", float_msg)
                     raise Exception("error")
                 if _is_a_float(self.candidate_prevalence) and not 0 < float(self.candidate_prevalence) < 1:
-                    QMessageBox.warning(self.parent(), "whoops", "Prevalence must be between 0 and 1.")
+                    QMessageBox.warning(self, "whoops", "Prevalence must be between 0 and 1.")
                     raise Exception("error")
         except:
             print "Error flag is true"
@@ -551,6 +554,9 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             self.candidate_prevalence = display_scale_val
 
     def effect_changed(self):
+        # Re-scale previous effect first
+        self.reset_conf_level()
+        
         self.cur_effect = str(self.effect_cbo_box.currentText()) 
         self.set_current_effect()
         
@@ -779,3 +785,33 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         #self.impute_effects_in_ma_unit() 
         #self.set_current_effect()
         #self.save_form_state()
+
+    def change_CI_alert(self,value=None):
+        if not self.already_showed_change_CI_alert:
+            QMessageBox.information(self, "Changing Confidence Level", meta_globals.CHANGE_CI_ALERT_MSG)
+            self.already_showed_change_CI_alert = True
+    
+    # TODO: should be refactored to shared function in meta_globals
+    def reset_conf_level(self):
+        print("Re-scaling est, low, high to standard confidence level")
+        
+        old_effect_and_ci = self.ma_unit.get_effect_and_ci(self.cur_effect, self.group_str)
+        
+        argument_d = {"est"  : old_effect_and_ci[0],
+                      "low"  : old_effect_and_ci[1],
+                      "high" : old_effect_and_ci[2],
+                      "orig.conf.level": self.CI_spinbox.value(),
+                      "target.conf.level": meta_globals.DEFAULT_CONF_LEVEL}
+        
+        res = meta_py_r.rescale_effect_and_ci_conf_level(argument_d)
+        if "FAIL" in res:
+            print("Could not reset confidence level")
+            return
+        
+        res["display_est"]  = meta_py_r.diagnostic_convert_scale(res["est"], self.cur_effect, convert_to="display.scale")
+        res["display_low"]  = meta_py_r.diagnostic_convert_scale(res["low"], self.cur_effect, convert_to="display.scale")
+        res["display_high"] = meta_py_r.diagnostic_convert_scale(res["high"], self.cur_effect, convert_to="display.scale")
+        
+        # Save results in ma_unit
+        self.ma_unit.set_effect_and_ci(self.cur_effect, self.group_str, res["est"],res["low"],res["high"])
+        self.ma_unit.set_display_effect_and_ci(self.cur_effect, self.group_str, res["display_est"],res["display_low"],res["display_high"])

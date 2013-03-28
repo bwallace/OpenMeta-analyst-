@@ -728,8 +728,6 @@ gimpute.diagnostic.data <- function(diag.data) {
 	TN.rnd.err <- abs(TN-round(TN,digits=0))
 	FP.rnd.err <- abs(FP-round(FP,digits=0))
 	
-  
-  
 	TP <- round(TP,digits=0)
 	FN <- round(FN,digits=0)
 	TN <- round(TN,digits=0)
@@ -772,6 +770,61 @@ calc.est.var <- function(ci.data) {
     est.var$var <- var
   }
   est.var
+}
+
+rescale.effect.and.ci.conf.level <- function(dataf.arg) {
+	# Rescales est,low,high to target confidence level
+	#  dataf.arg is a dataframe of arguments
+	
+	# est, low, high are assumed to be on the calc scale
+	# returns rescaled est,low,high also on calc scale
+	est = dataf.arg[["est"]]
+	low = dataf.arg[["low"]]
+	high = dataf.arg[["high"]] 
+	orig.conf.level = dataf.arg[["orig.conf.level"]]
+	target.conf.level = dataf.arg[["target.conf.level"]]
+	
+	
+	# Convert NULL to NA
+	if (is.null(est))  est  <- NA
+	if (is.null(low))  low  <- NA
+	if (is.null(high)) high <- NA
+	
+	# make sure we have the right inputs
+	num_na = 0
+	if (is.na(est)) {num_na = num_na + 1}
+	if (is.na(low)) {num_na = num_na + 1}
+	if (is.na(high)) {num_na = num_na + 1}
+	
+	if ((num_na > 1) || is.na(orig.conf.level) || is.na(target.conf.level)) {
+		return(list("FAIL"=NA)) # failure
+	}
+	
+	# make sure est, low, high are all not NA
+	if (is.na(est)) {
+		est = (high-low)/2.0
+	}
+
+	if (is.na(low)) {
+		low = est - (high-est)
+	}
+
+	if (is.na(high)) {
+		high = est + (est - low)	
+	}
+
+	old.alpha <- 1.0-(orig.conf.level/100.0)
+	new.alpha <- 1.0-(target.conf.level/100.0)
+	old.mult <- abs(qnorm(old.alpha/2.0))
+	new.mult <- abs(qnorm(new.alpha/2.0))
+	
+	se = (high-low)/(2*old.mult)
+	
+	new.est = est
+	new.low  = new.est - new.mult*se
+	new.high = new.est + new.mult*se
+	
+	return(list(est=new.est, low=new.low, high=new.high))
 }
 
 

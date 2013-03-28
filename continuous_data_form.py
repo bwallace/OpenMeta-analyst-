@@ -59,6 +59,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                               self.g2_pre_post_table, self.effect_txt_box,
                               self.low_txt_box, self.high_txt_box,
                               self.correlation_pre_post]
+        self.already_showed_change_CI_alert = False
         
         self.CI_spinbox.setValue(meta_globals.DEFAULT_CONF_LEVEL)
         self.ci_label.setText("{0:.1f}% Confidence Interval".format(self.CI_spinbox.value()))
@@ -101,6 +102,8 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         QObject.connect(self.high_txt_box,   SIGNAL("editingFinished()"), lambda: self.val_changed("upper") )
         QObject.connect(self.correlation_pre_post, SIGNAL("editingFinished()"), lambda: self.val_changed("correlation_pre_post") )
         
+        QObject.connect(self, SIGNAL("accepted()"), self.reset_conf_level)
+        
                                                                                 
     def _set_col_widths(self, table):
         for column in range(table.columnCount()):
@@ -110,6 +113,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.ci_label.setText("{0:.1F} % Confidence Interval".format(val))
         print("New CI val:",val)
         
+        self.change_CI_alert(val)
         self.enable_back_calculation_btn()
         
     def _populate_effect_data(self):
@@ -123,6 +127,9 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.set_current_effect()
         
     def effect_changed(self):
+        # Re-scale previous effect first
+        self.reset_conf_level()
+        
         self.cur_effect = unicode(self.effect_cbo_box.currentText().toUtf8(), "utf-8")
         self.try_to_update_cur_outcome()
         self.set_current_effect()
@@ -145,37 +152,37 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             if val_str == "est" and not _is_empty(self.candidate_est):
                 # Check type
                 if not _is_a_float(self.candidate_est) :
-                    QMessageBox.warning(self.parent(), "whoops", float_msg)
+                    QMessageBox.warning(self, "whoops", float_msg)
                     raise Exception("error")
                 (good_result,msg) = is_between_bounds(est=self.candidate_est)
                 if not good_result:
-                    QMessageBox.warning(self.parent(), "whoops", msg)
+                    QMessageBox.warning(self, "whoops", msg)
                     raise Exception("error")
                 display_scale_val = float(self.candidate_est)
             elif val_str == "lower" and not _is_empty(self.candidate_lower):
                 if not _is_a_float(self.candidate_lower) :
-                    QMessageBox.warning(self.parent(), "whoops", float_msg)
+                    QMessageBox.warning(self, "whoops", float_msg)
                     raise Exception("error")
                 (good_result,msg) = is_between_bounds(low=self.candidate_lower)
                 if not good_result:
-                    QMessageBox.warning(self.parent(), "whoops", msg)
+                    QMessageBox.warning(self, "whoops", msg)
                     raise Exception("error")
                 display_scale_val = float(self.candidate_lower)
             elif val_str == "upper" and not _is_empty(self.candidate_upper): 
                 if not _is_a_float(self.candidate_upper) :
-                    QMessageBox.warning(self.parent(), "whoops", float_msg)
+                    QMessageBox.warning(self, "whoops", float_msg)
                     raise Exception("error")
                 (good_result,msg) = is_between_bounds(high=self.candidate_upper)
                 if not good_result:
-                    QMessageBox.warning(self.parent(), "whoops", msg)
+                    QMessageBox.warning(self, "whoops", msg)
                     raise Exception("error")
                 display_scale_val = float(self.candidate_upper)
             elif val_str == "correlation_pre_post" and not _is_empty(self.candidate_correlation_pre_post):
                 if not _is_a_float(self.candidate_correlation_pre_post):
-                    QMessageBox.warning(self.parent(), "whoops", float_msg)
+                    QMessageBox.warning(self, "whoops", float_msg)
                     raise Exception("error")
                 if _is_a_float(self.candidate_correlation_pre_post) and not -1 <= float(self.candidate_correlation_pre_post) <= 1:
-                    QMessageBox.warning(self.parent(), "whoops", "Correlation must be between -1 and +1")
+                    QMessageBox.warning(self, "whoops", "Correlation must be between -1 and +1")
                     raise Exception("error")
         except:
             print "Error flag is true"
@@ -729,3 +736,33 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
     def block_all_signals(self,state):
         for widget in self.entry_widgets:
             widget.blockSignals(state)
+    
+    def change_CI_alert(self,value=None):
+        if not self.already_showed_change_CI_alert:
+            QMessageBox.information(self, "Changing Confidence Level", meta_globals.CHANGE_CI_ALERT_MSG)
+            self.already_showed_change_CI_alert = True
+    
+    # TODO: should be refactored to shared function in meta_globals
+    def reset_conf_level(self):
+        print("Re-scaling est, low, high to standard confidence level")
+        
+        old_effect_and_ci = self.ma_unit.get_effect_and_ci(self.cur_effect, self.group_str)
+        
+        argument_d = {"est"  : old_effect_and_ci[0],
+                      "low"  : old_effect_and_ci[1],
+                      "high" : old_effect_and_ci[2],
+                      "orig.conf.level": self.CI_spinbox.value(),
+                      "target.conf.level": meta_globals.DEFAULT_CONF_LEVEL}
+        
+        res = meta_py_r.rescale_effect_and_ci_conf_level(argument_d)
+        if "FAIL" in res:
+            print("Could not reset confidence level")
+            return
+        
+        res["display_est"]  = meta_py_r.continuous_convert_scale(res["est"], self.cur_effect, convert_to="display.scale")
+        res["display_low"]  = meta_py_r.continuous_convert_scale(res["low"], self.cur_effect, convert_to="display.scale")
+        res["display_high"] = meta_py_r.continuous_convert_scale(res["high"], self.cur_effect, convert_to="display.scale")
+        
+        # Save results in ma_unit
+        self.ma_unit.set_effect_and_ci(self.cur_effect, self.group_str, res["est"],res["low"],res["high"])
+        self.ma_unit.set_display_effect_and_ci(self.cur_effect, self.group_str, res["display_est"],res["display_low"],res["display_high"])

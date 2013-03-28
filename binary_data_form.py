@@ -54,6 +54,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.cur_effect = cur_effect
         self.entry_widgets = [self.raw_data_table, self.low_txt_box,
                               self.high_txt_box, self.effect_txt_box]
+        self.already_showed_change_CI_alert = False
         
         self.CI_spinbox.setValue(meta_globals.DEFAULT_CONF_LEVEL)
         self.ci_label.setText("{0:.1f}% Confidence Interval".format(self.CI_spinbox.value()))
@@ -222,10 +223,8 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         print "Current Item Data:",self.current_item_data
         
     def _setup_signals_and_slots(self):
-        QObject.connect(self.raw_data_table, SIGNAL("cellChanged (int, int)"), 
-                                                    self.cell_changed)
-        QObject.connect(self.effect_cbo_box, SIGNAL("currentIndexChanged(QString)"),
-                                                    self.effect_changed)
+        QObject.connect(self.raw_data_table, SIGNAL("cellChanged (int, int)"), self.cell_changed)
+        QObject.connect(self.effect_cbo_box, SIGNAL("currentIndexChanged(QString)"), self.effect_changed)
         QObject.connect(self.clear_Btn, SIGNAL("clicked()"), self.clear_form)
         
         QObject.connect(self.effect_txt_box, SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("est", new_text))
@@ -238,13 +237,16 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         
         QObject.connect(self.back_calc_btn, SIGNAL("clicked()"), lambda: self.enable_back_calculation_btn(engage=True) )
         QObject.connect(self.CI_spinbox, SIGNAL("valueChanged(double)"), self._change_ci)
+        
+        QObject.connect(self, SIGNAL("accepted()"), self.reset_conf_level)
     
     def _change_ci(self,val):
         self.ci_label.setText("{0:.1F} % Confidence Interval".format(val))
         print("New CI val:",val)
         
+        self.change_CI_alert(val)
         self.enable_back_calculation_btn()
-                                                                                                                  
+                                                                                              
     def _populate_effect_data(self):
         q_effects = sorted([QString(effect_str) for effect_str in self.ma_unit.effects_dict.keys()])
         self.effect_cbo_box.blockSignals(True)
@@ -271,6 +273,10 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             
     def effect_changed(self):
         '''Called when a new effect is selected in the combo box'''
+        
+        # Re-scale previous effect first
+        self.reset_conf_level()
+        
         self.cur_effect = unicode(self.effect_cbo_box.currentText().toUtf8(), "utf-8")
         self.try_to_update_cur_outcome()
         self.set_current_effect()
@@ -371,29 +377,29 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             if val_str == "est" and not _is_empty(self.candidate_est):
                 # Check type
                 if not _is_a_float(self.candidate_est) :
-                    QMessageBox.warning(self.parent(), "whoops", float_msg)
+                    QMessageBox.warning(self, "whoops", float_msg)
                     raise Exception("error")
                 (good_result,msg) = is_between_bounds(est=self.candidate_est)
                 if not good_result:
-                    QMessageBox.warning(self.parent(), "whoops", msg)
+                    QMessageBox.warning(self, "whoops", msg)
                     raise Exception("error")
                 display_scale_val = float(self.candidate_est)
             elif val_str == "lower" and not _is_empty(self.candidate_lower):
                 if not _is_a_float(self.candidate_lower) :
-                    QMessageBox.warning(self.parent(), "whoops", float_msg)
+                    QMessageBox.warning(self, "whoops", float_msg)
                     raise Exception("error")
                 (good_result,msg) = is_between_bounds(low=self.candidate_lower)
                 if not good_result:
-                    QMessageBox.warning(self.parent(), "whoops", msg)
+                    QMessageBox.warning(self, "whoops", msg)
                     raise Exception("error")
                 display_scale_val = float(self.candidate_lower)
             elif val_str == "upper" and not _is_empty(self.candidate_upper): 
                 if not _is_a_float(self.candidate_upper) :
-                    QMessageBox.warning(self.parent(), "whoops", float_msg)
+                    QMessageBox.warning(self, "whoops", float_msg)
                     raise Exception("error")
                 (good_result,msg) = is_between_bounds(high=self.candidate_upper)
                 if not good_result:
-                    QMessageBox.warning(self.parent(), "whoops", msg)
+                    QMessageBox.warning(self, "whoops", msg)
                     raise Exception("error")
                 display_scale_val = float(self.candidate_upper)
         except:
@@ -688,6 +694,37 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                     item.setFlags(newflags)
         self.block_all_signals(False)
         
+    def change_CI_alert(self,value=None):
+        if not self.already_showed_change_CI_alert:
+            QMessageBox.information(self, "Changing Confidence Level", meta_globals.CHANGE_CI_ALERT_MSG)
+            self.already_showed_change_CI_alert = True
+    
+    # TODO: should be refactored to shared function in meta_globals
+    def reset_conf_level(self):
+        print("Re-scaling est, low, high to standard confidence level")
+        
+        old_effect_and_ci = self.ma_unit.get_effect_and_ci(self.cur_effect, self.group_str)
+        
+        argument_d = {"est"  : old_effect_and_ci[0],
+                      "low"  : old_effect_and_ci[1],
+                      "high" : old_effect_and_ci[2],
+                      "orig.conf.level": self.CI_spinbox.value(),
+                      "target.conf.level": meta_globals.DEFAULT_CONF_LEVEL}
+        
+        res = meta_py_r.rescale_effect_and_ci_conf_level(argument_d)
+        if "FAIL" in res:
+            print("Could not reset confidence level")
+            return
+        
+        res["display_est"]  = meta_py_r.binary_convert_scale(res["est"], self.cur_effect, convert_to="display.scale")
+        res["display_low"]  = meta_py_r.binary_convert_scale(res["low"], self.cur_effect, convert_to="display.scale")
+        res["display_high"] = meta_py_r.binary_convert_scale(res["high"], self.cur_effect, convert_to="display.scale")
+        
+        # Save results in ma_unit
+        self.ma_unit.set_effect_and_ci(self.cur_effect, self.group_str, res["est"],res["low"],res["high"])
+        self.ma_unit.set_display_effect_and_ci(self.cur_effect, self.group_str, res["display_est"],res["display_low"],res["display_high"])
+        
+################################################################################
 class ChooseBackCalcResultForm(QDialog, ui_choose_bin_back_calc_result_form.Ui_ChooseBackCalcResultForm):
     def __init__(self, imputed_data, parent=None):
         super(ChooseBackCalcResultForm, self).__init__(parent)
@@ -713,3 +750,4 @@ class ChooseBackCalcResultForm(QDialog, ui_choose_bin_back_calc_result_form.Ui_C
             return choices[0] # op1
         else:
             return choices[1] # op2
+
