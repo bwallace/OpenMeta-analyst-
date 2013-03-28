@@ -404,7 +404,7 @@ fillin.cont.1spell <- function(n=NA, mean=NA, sd=NA, se=NA, var=NA,
 
     # try the sd and the n
     if(is.na(se)) {
-        se=try(sd/sqrt(n), silent=TRUE) # TODO: DISCUSS WITH ISSA & FRIENDS
+        se=try(sd/sqrt(n-1), silent=TRUE) # n-1 is to correct for bias in the ML estimate of SD
     }
 
     # try both ends of the CI
@@ -414,17 +414,17 @@ fillin.cont.1spell <- function(n=NA, mean=NA, sd=NA, se=NA, var=NA,
 
     # try low end of CI
     if(is.na(se)) {
-        se=try((mean-low)/z, silent=TRUE)
+        se=try(abs(mean-low)/z, silent=TRUE)
     }
 
     # try high end of CI
     if(is.na(se)) {
-        se=try((high-mean)/z, silent=TRUE)
+        se=try(abs(high-mean)/z, silent=TRUE)
     }
 
-    # try the 2 sided p-value 
+    # try the 2 sided p-value for the mean != 0
     if(is.na(se)) {
-        se=try( -mean/qnorm(pval/2) , silent=TRUE)
+        se=try( mean/abs(qnorm(pval/2)) , silent=TRUE)
     }
    
     # if the se is still missing, then abort 
@@ -461,7 +461,7 @@ fillin.cont.1spell <- function(n=NA, mean=NA, sd=NA, se=NA, var=NA,
     ##########################################################
     # if the sd is missing 
     if(is.na(sd)) {
-        sd=try( var*(n-1), silent=TRUE)              # TODO: something
+        sd=try( sqrt(var*(n-1)), silent=TRUE)
     }
 
     if(is.na(sd)) {
@@ -471,7 +471,7 @@ fillin.cont.1spell <- function(n=NA, mean=NA, sd=NA, se=NA, var=NA,
     ##########################################################
     # if the n is missing 
     if(is.na(n)) {
-        n=try( round( sd/var +1  ), silent=TRUE)
+        n=try( round( sd^2/var +1  ), silent=TRUE)
     }
 
     succeeded <- check.1spell.res(n=n, se=se)$succeeded

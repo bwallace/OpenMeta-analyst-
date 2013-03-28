@@ -382,9 +382,9 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                 cur_val = self._get_float(row_index, col_index)
                 self.raw_data_dict[group_name][col_index] = cur_val
 
-            # also check if SEs have been entered directly
-            se_index = 3
-            self.ma_unit.effects_dict[self.cur_effect][self.group_str]["SE"] = self._get_float(row_index, se_index)
+            ## also check if SEs have been entered directly
+            ##se_index = 3
+            ##self.ma_unit.effects_dict[self.cur_effect][self.group_str]["SE"] = self._get_float(row_index, se_index)
         
     def impute_data(self):
         ''' compute what we can for each study from what has been given in the table'''

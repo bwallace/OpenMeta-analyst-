@@ -102,9 +102,9 @@ get.res.for.one.binary.study <- function(binary.data, params) {
     res
 }
 
-convert.res.conf.level(data) {
-	
-}
+#convert.res.conf.level(data) {
+##	;
+##}
 
 
 
