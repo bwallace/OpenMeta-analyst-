@@ -42,20 +42,6 @@ gimpute.bin.data <- function(bin.data) {
 	if (is.null(lower)) lower <- NA
 	if (is.null(upper)) upper <- NA
 	
-	
-	
-	###############################
-#	print("just metric:")
-#	print(metric)
-#	cat("Metric",metric,
-#		"\nest",est,
-#		"\nlower",lower,
-#		"\nupper",upper,
-#		"\nN_1",N_1,
-#		"\nN_0",N_0,
-#		"Conf.level",conf.level)
-	###############################
-	
 	alpha <- 1.0-(conf.level/100.0)
 	mult <- abs(qnorm(alpha/2.0)) # 1.96 for 95% CI
 	n <- N_0 + N_1
@@ -352,10 +338,12 @@ check.1spell.res <- function(n, se) {
         }        
     }
 
-    if (se<=0) {
-        comment <- paste("se<=0", comment, sep=", ")
-        succeeded <- FALSE
-    }
+	if (!is.na(se)) {
+	    if (se<=0) {
+	        comment <- paste("se<=0", comment, sep=", ")
+	        succeeded <- FALSE
+		}
+	}
 
     return(list(succeeded=succeeded, comment=comment))
 
@@ -366,117 +354,158 @@ check.1spell.res <- function(n, se) {
 ########################################################################################
 ########################################################################################
 ########################################################################################
-
 fillin.cont.1spell <- function(n=NA, mean=NA, sd=NA, se=NA, var=NA, 
-                         low=NA, high=NA, pval=NA, alpha=0.05) {
-
+                         low=NA, high=NA, pval=NA, alpha=0.05) { 
+	# var is the SAMPLE variance NOT sampling variance:
+	#      var = sd^2 NOT se^2
+	#      se = sd/sqrt(n)
     succeeded <- FALSE 
     comment <- ""
-    res <- list(succeeded= succeeded)
+    res <- list(succeeded=succeeded)
 
     z <- abs(qnorm(alpha/2))
 
     input.vector <- c(n, mean, sd, se, var, low, high, pval)
     input.pattern <- !(is.na(input.vector))
-
-    ##########################################################
-    # check the mean first 
-    # If not calculate it from the CI
-
-    if(is.na(mean)) {
-        mean = try((high+low)/2, silent = TRUE)
-    }
-
-    # if mean is still missing, abort 
-    if(is.na(mean)) {
-        comment <- paste(comment, "no info on mean", sep="|")
-        return(c(res, comment=comment))
-    }
-
-
-    ##########################################################
-    # if se is missing
-    # try the variance 
-
-    if(is.na(se)) {
-        se=try(sqrt(var), silent=TRUE)
-    }
-
-    # try the sd and the n
-    if(is.na(se)) {
-        se=try(sd/sqrt(n-1), silent=TRUE) # n-1 is to correct for bias in the ML estimate of SD
-    }
-
-    # try both ends of the CI
-    if(is.na(se)) {
-        se=try(abs(high-low)/(2*z), silent=TRUE)
-    }
-
-    # try low end of CI
-    if(is.na(se)) {
-        se=try(abs(mean-low)/z, silent=TRUE)
-    }
-
-    # try high end of CI
-    if(is.na(se)) {
-        se=try(abs(high-mean)/z, silent=TRUE)
-    }
-
-    # try the 2 sided p-value for the mean != 0
-    if(is.na(se)) {
-        se=try( mean/abs(qnorm(pval/2)) , silent=TRUE)
-    }
-   
-    # if the se is still missing, then abort 
-    if(is.na(se)) {
-       comment <- paste(comment, "no info on dispersion", sep="|")
-        return(c(res, comment=comment))
-    }
-
-
-    ##########################################################
-    # if the variance is missing 
-    if(is.na(var)) {
-        var = se^2 
-    }
-    
-    ##########################################################
-    # if the lower CI is missing 
-    if(is.na(low)) {
-        low = mean - z* se 
-    }
-    
-    ##########################################################
-    # if the high CI is missing 
-    if(is.na(high)) {
-        high = mean + z* se 
-    }
-
-    ##########################################################
-    # if the 2 sided pval is missing 
-    if(is.na(pval)) {
-        pval = 2*pnorm(-abs(mean/se))
-    }
-
-    ##########################################################
-    # if the sd is missing 
-    if(is.na(sd)) {
-        sd=try( sqrt(var*(n-1)), silent=TRUE)
-    }
-
-    if(is.na(sd)) {
-        comment <- paste(comment, "{n & sd} missing")
-    }
-
-    ##########################################################
-    # if the n is missing 
-    if(is.na(n)) {
-        n=try( round( sd^2/var +1  ), silent=TRUE)
-    }
-
+	
+	print("Input vector:")
+	print(input.vector)
+	
+	get.mean <- function(high=NA, low=NA) {
+		if(is.na(mean))
+			mean = (high+low)/2
+		return(mean)
+	}
+	
+	get.se <- function(sd=NA, n=NA, low=NA, high=NA, mean=NA, pval=NA) {		
+		# try the sd and the n
+		if(is.na(se))
+			se <- try(  sd/sqrt(n)  , silent=TRUE)
+		
+		# try both ends of the CI
+		if(is.na(se))
+			se <- try(  abs(high-low)/(2*z)  ,silent=TRUE)
+		
+		# try low end of CI
+		if(is.na(se))
+			se <- try(  abs(mean-low)/z  ,silent=TRUE)
+		
+		# try high end of CI
+		if(is.na(se))
+			se <- try(  abs(high-mean)/z  ,silent=TRUE)
+		
+		# try the 2 sided p-value for the mean != 0
+		if(is.na(se))
+			se <- try(  mean/abs(qnorm(pval/2))  ,silent=TRUE)
+		
+		return(se)
+	}
+	
+	get.var <- function(sd=NA) {
+		# try sd
+		if (is.na(var))
+			var <- try(  sd^2  , silent=TRUE)
+		return(var)
+	}
+	
+	get.sd <- function(var=NA, n=NA, se=NA) {
+		# try var
+		if (is.na(sd))
+			sd <- try(  sqrt(var)  ,silent=TRUE)
+	
+		# try se and n
+		if (is.na(sd))
+			sd <- try(  sqrt(n)*se  ,silent=TRUE)
+		
+		return(sd)
+	}
+	
+	get.n <- function(sd=NA, se=NA, var=NA) {
+		if (is.na(n))
+			n <- (sd/se)^2
+		if (is.na(n))
+			n <- var/(se^2)
+		return(n)
+	}
+	
+	dirty = TRUE
+	while (dirty) {
+		dirty = FALSE
+		
+	    ##########################################################
+	    # check the mean first 
+	    # If not calculate it from the CI
+		if (is.na(mean)) {
+	    	mean = get.mean(high=high, low=low)
+			if (!is.na(mean))
+				dirty = TRUE # mean was changed
+		}	
+	    ##########################################################
+	    # if se is missing
+		if (is.na(se)) {
+			se = get.se(sd=sd, n=n, low=low, high=high, mean=mean, pval=pval)
+			if (!is.na(se))
+				dirty = TRUE # se was changed
+		}
+	    ##########################################################
+	    # if the SAMPLE variance is missing
+		if (is.na(var)) {
+			var = get.var(sd=sd)
+			if (!is.na(var))
+				dirty = TRUE # var was changed
+		}
+	    ##########################################################
+	    # if the lower CI is missing 
+	    if(is.na(low)) {
+	        low = mean - z*se
+			if (!is.na(low))
+				dirty = TRUE # low was changed
+	    }
+	    ##########################################################
+	    # if the high CI is missing 
+	    if(is.na(high)) {
+	        high = mean + z*se
+			if (!is.na(high))
+				dirty = TRUE # high was changed
+	    }
+	    ##########################################################
+	    # if the 2 sided pval is missing 
+	    if(is.na(pval)) {
+	        pval = 2*pnorm(-abs(mean/se))
+			if (!is.na(pval))
+				dirty = TRUE # pval was changed
+	    }
+	    ##########################################################
+	    # if the sd is missing 
+	    if(is.na(sd)) {
+	        sd = get.sd(var=var, n=n, se=se)
+			if (!is.na(sd))
+				dirty = TRUE # sd was changed
+		}
+	    ##########################################################
+	    # if the n is missing 
+		if(is.na(n)) {
+			sd = get.n(sd=sd, se=se, var=var)
+			if (!is.na(n))
+				dirty = TRUE # sd was changed
+		}
+	} # finished iterating
+	
+	# Do checks:
+	if (is.na(mean)) {
+		comment <- paste(comment, "no info on mean", sep="|")
+		#return(c(res, comment=comment))
+	}
+	# if the se is still missing, then abort 
+	if (is.na(se)) {
+		comment <- paste(comment, "no info on dispersion", sep="|")
+		#return(c(res, comment=comment))
+	}
+	if(is.na(sd)) {
+		comment <- paste(comment, "{n & sd} missing")
+	}
+	
     succeeded <- check.1spell.res(n=n, se=se)$succeeded
-
-
 
     output.vector <- c(n, mean, sd, se, var, low, high, pval)
     output.names <- c("n", "mean", "sd", "se", "var", "low", "high", "pval")
@@ -485,6 +514,88 @@ fillin.cont.1spell <- function(n=NA, mean=NA, sd=NA, se=NA, var=NA,
     res<- list(succeeded=succeeded, input.pattern=input.pattern, output=output.vector, comment=comment)
     return(res)
 
+}
+
+
+fillin.missing.effect.quantity <- function(est=NA, low=NA, high=NA) {
+	# Assumes CI is symmetric around estimate
+	
+	# low = est - diff, est, high = est + diff
+	diff <- high-est
+	if (is.na(diff))
+		diff <- est - low
+	
+	if (is.na(est))
+		est <- (high-low)/2.0
+	
+	if (is.na(low))
+		low <- est - diff
+	
+	if (is.na(high))
+		high <- est + diff
+	
+	return(list(est=est, low=low, high=high))
+}
+
+gimpute.continuous.data <- function(group1, group2, effect_data, alpha=0.05) {
+	# Tries to solve for one of n1,n2, mean1, mean2, sd1, sd2 based on the data
+	# in group1, group2, effect_data
+	
+	# Get 'more' local copies
+	n1    <- group1[["n"]]
+	n2    <- group2[["n"]]
+	mean1 <- group1[["mean"]]
+	mean2 <- group2[["mean"]]
+	sd1   <- group1[["sd"]]
+	sd2   <- group2[["sd"]]
+	est   <- effect_data[["est"]]
+	low   <- effect_data[["low"]]
+	high  <- effect_data[["high"]]
+	metric <- effect_data[["metric"]]
+			
+	# Convert nulls to NA
+	if (is.null(n1))    n1    <- NA
+	if (is.null(n2))    n2    <- NA
+	if (is.null(mean1)) mean1 <- NA
+	if (is.null(mean2)) mean2 <- NA
+	if (is.null(sd1))   sd1   <- NA
+	if (is.null(sd2))   sd2   <- NA
+	if (is.null(est))   est   <- NA
+	if (is.null(low))   low   <- NA
+	if (is.null(high))  high  <- NA
+	if (is.null(metric)) metric <- NA
+	
+	# Can't do anything if we don't know what metric we are using
+	if (is.na(metric)) {
+		return(list("FAIL"=NA))
+	}
+	
+	effect.and.ci <- fillin.missing.effect.quantity(est=est, low=low, high=high)
+	est  <- effect.and.ci[["est"]]
+	low  <- effect.and.ci[["low"]]
+	high <- effect.and.ci[["high"]]
+	
+	# If one of the means is not null 
+	impute.from.MD <- function() {
+		
+		
+		
+		1
+	}
+	impute.from.SMD <- function() {
+		2
+	}
+	
+	
+	#res <- switch(metric, "RD"=impute.from.RD(),
+	#	"OR"=impute.from.LOR(),
+	#	"RR"=impute.from.LRR())
+	
+	
+	
+	
+	
+	
 }
 
 ########################################################################################

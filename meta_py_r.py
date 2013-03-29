@@ -156,13 +156,6 @@ def fillin_2x2(table_data_dict):
     return toreturn
 
 def _gis_NA(x):
-    #print "Result of NA comparison:"
-    #print "Old:", type(x) in [rpy2.rinterface.NALogicalType, rpy2.rinterface.NARealType]
-    #print "New:", type(x) in [NALogicalType, NARealType]
-    #return type(x) in [rpy2.rinterface.NALogicalType, rpy2.rinterface.NARealType]
-    #print "TESTING NA"
-    
-    #return type(x) in [NALogicalType, NARealType]
     return str(x) == 'NA'
 
 # NOTE: CUSTOM VERSION......
@@ -174,12 +167,8 @@ def _grlist_to_pydict(r_ls, recurse=True):
     list, that list will be converted, too.
     '''
     
-    #pyqtRemoveInputHook()
-    #pdb.set_trace() 
-    
     def gis_a_list(x):
         # @TODO add additional vector types?
-        #return type(x) in [rpy2.robjects.vectors.StrVector, rpy2.robjects.vectors.ListVector]
         return type(x) in [rpy2.robjects.vectors.StrVector, 
                            rpy2.robjects.vectors.ListVector, 
                            rpy2.robjects.vectors.FloatVector,
@@ -212,6 +201,7 @@ def _grlist_to_pydict(r_ls, recurse=True):
                     d[name] = [convert_NA_to_None(x) for x in d[name][:]]
             except: # val is not iterable
                 d[name] = val
+                d[name] = convert_NA_to_None(d[name])
 
     return d
 
@@ -235,10 +225,12 @@ def impute_cont_data(cont_data_dict, alpha):
     
     print "attempting to execute: %s" % r_str
     c_data = ro.r(r_str)
+    results = _grlist_to_pydict(c_data,True)
+    
     #pyqtRemoveInputHook()
-    #pdb.set_trace() 
-    #return _rls_to_pyd(c_data)
-    return _grlist_to_pydict(c_data,True)
+    #pdb.set_trace()
+    
+    return results
     
 def impute_pre_post_cont_data(cont_data_dict, correlation, alpha):
     if len(cont_data_dict.items()) == 0:

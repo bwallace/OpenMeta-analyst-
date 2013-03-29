@@ -227,7 +227,8 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             # Recompute the estimates
             self.impute_pre_post_data(self.g1_pre_post_table, 0)
             self.impute_pre_post_data(self.g2_pre_post_table, 1)
-            
+        
+        self.impute_data() #### experimental
         self.enable_txt_box_input()
         self.save_form_state()
         self.enable_back_calculation_btn()
@@ -360,7 +361,10 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.enable_txt_box_input() # if the effect was imputed
         self.set_clear_btn_color()
     
-    def _set_val(self, row_index, var_index, val):
+    def _set_val(self, row_index, var_index, val, table=None):
+        if table == None:
+            table = self.simple_table
+        
         row,col = row_index, var_index    
         if meta_globals.is_NaN(val): # get out quick
             print "%s is not a number" % val
@@ -368,14 +372,14 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         
         try:
             str_val = "" if val in meta_globals.EMPTY_VALS else str(float(val))
-            if self.simple_table.item(row, col) == None:
-                self.simple_table.setItem(row, col, QTableWidgetItem(str_val))
+            if table.item(row, col) == None:
+                table.setItem(row, col, QTableWidgetItem(str_val))
             else:
-                self.simple_table.item(row, col).setText(str_val)
+                table.item(row, col).setText(str_val)
             
             if str_val != "": #disable item
                 #self.block_all_signals(True)
-                item = self.simple_table.item(row, col)
+                item = table.item(row, col)
                 newflags = item.flags() & ~Qt.ItemIsEditable
                 item.setFlags(newflags)
                 #self.block_all_signals(False)
@@ -399,11 +403,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         # note that we rely on the variable names corresponding to what
         # the meta_py_r routine expects.
         var_names = self.get_column_header_strs()
-        print "current groups: ", self.cur_groups #######################
-        print "----------------------------"      #######################
         for row_index, group_name in enumerate(self.cur_groups):
-            print "Group:",group_name             #######################
-            print "--------"                      #######################
             # assemble the fields in a dictionary; pass off to meta_py_r
             cur_dict = {}
             for var_index, var_name in enumerate(var_names):
@@ -413,7 +413,6 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
 
             # now pass off what we have for this study to the
             # imputation routine
-            #results_from_r = meta_py_r.impute_cont_data(cur_dict, self.alpha)
             results_from_r = meta_py_r.impute_cont_data(cur_dict, self.conf_level_to_alpha())
 
             print "Raw results from R (imputation): %s" % results_from_r
@@ -430,16 +429,16 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                 
                 print "Computed vals:",computed_vals
                 for var_index, var_name in enumerate(var_names):  
-                    float_str = self.float_to_str(float(computed_vals[var_name]))
-                    #self.simple_table.setItem(row_index, var_index, QTableWidgetItem(QString(float_str)))
-                    self._set_val(row_index, var_index, float_str)
+                    self._set_val(row_index, var_index, computed_vals[var_name])
 
                     # update the raw data for N, mean and SD fields (this is all that is actually stored)
                     if var_index < 3:
-                        #self.ma_unit.tx_groups[group_name].raw_data[var_index] = computed_vals[var_name]
                         self.raw_data_dict[group_name][var_index] = computed_vals[var_name]
                 self._update_ma_unit()
                 self.simple_table.blockSignals(False)
+    
+    #def build_data_dict(self):
+    #    
                 
     def conf_level_to_alpha(self):
         alpha = 1-self.CI_spinbox.value()/100.0
@@ -592,6 +591,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                 if not item is None:
                     newflags = item.flags() | Qt.ItemIsEditable
                     item.setFlags(newflags)
+
         
         _reset_flags(self.simple_table,8)
         _reset_flags(self.g1_pre_post_table,7)
@@ -613,7 +613,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             var_names = self.get_column_header_strs(table=table)
             for row_index, group_name in enumerate(self.cur_groups):
                 for var_index, var_name in enumerate(var_names):  
-                    self._set_val(row_index, var_index, "")
+                    self._set_val(row_index, var_index, "", table=table)
         self.block_all_signals(False)
     
         self._update_ma_unit()
@@ -702,9 +702,9 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             row = 0
             def _restore_table(table, table_backup, range_num):
                 for col in range(range_num):
-                    self.table.blocksSignals(True)
-                    self._set_val(row, col, self.table_backup[row][col])
-                    self.table.blockSignals(False)
+                    table.blockSignals(True)
+                    self._set_val(row, col, table_backup[row][col], table=table)
+                    table.blockSignals(False)
             _restore_table(self.simple_table, self.simple_table_backup, 8)
             _restore_table(self.g1_pre_post_table, self.g1_pre_post_table_backup, 7)
             _restore_table(self.g2_pre_post_table, self.g2_pre_post_table_backup, 7)
