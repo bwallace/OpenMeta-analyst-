@@ -22,7 +22,7 @@ from meta_globals import (BINARY_ONE_ARM_METRICS, BINARY_TWO_ARM_METRICS,
                           _is_a_float, _is_empty, EMPTY_VALS)
 
 import ui_binary_data_form
-import ui_choose_bin_back_calc_result_form
+import ui_choose_back_calc_result_form
 #from ui_binary_data_form import Ui_BinaryDataForm
 
 # @TODO this should be an *application global*. It is now a
@@ -725,7 +725,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.ma_unit.set_display_effect_and_ci(self.cur_effect, self.group_str, res["display_est"],res["display_low"],res["display_high"])
         
 ################################################################################
-class ChooseBackCalcResultForm(QDialog, ui_choose_bin_back_calc_result_form.Ui_ChooseBackCalcResultForm):
+class ChooseBackCalcResultForm(QDialog, ui_choose_back_calc_result_form.Ui_ChooseBackCalcResultForm):
     def __init__(self, imputed_data, parent=None):
         super(ChooseBackCalcResultForm, self).__init__(parent)
         self.setupUi(self)
@@ -742,6 +742,7 @@ class ChooseBackCalcResultForm(QDialog, ui_choose_bin_back_calc_result_form.Ui_C
         
         self.choice1_lbl.setText(option1_txt)
         self.choice2_lbl.setText(option2_txt)
+        self.info_label.setText("The back-calculation has resulted in two possible sets of choices for the counts.\n\nPlease choose one from below:")
 
     def getChoice(self):
         choices = ["op1", "op2"]

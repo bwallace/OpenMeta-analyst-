@@ -63,7 +63,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         
         self.CI_spinbox.setValue(meta_globals.DEFAULT_CONF_LEVEL)
         self.ci_label.setText("{0:.1f}% Confidence Interval".format(self.CI_spinbox.value()))
-        
+        self.metric_parameter = None
         
         # Set the table headers to reflect the group names
         groups_names = QStringList(self.cur_groups)
@@ -436,9 +436,6 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                         self.raw_data_dict[group_name][var_index] = computed_vals[var_name]
                 self._update_ma_unit()
                 self.simple_table.blockSignals(False)
-    
-    #def build_data_dict(self):
-    #    
                 
     def conf_level_to_alpha(self):
         alpha = 1-self.CI_spinbox.value()/100.0
@@ -605,6 +602,96 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         pass
         # TODO: Write body of function
         
+        #  gimpute.continuous.data <- function(group1, group2, effect_data, conf.level=95.0) {
+#  # Tries to solve for one of n1,n2, mean1, mean2, sd1, sd2 based on the data
+#  # in group1, group2, effect_data
+#  
+#  # Get 'more' local copies
+#  n1    <- group1[["n"]]
+#  n2    <- group2[["n"]]
+#  mean1 <- group1[["mean"]]
+#  mean2 <- group2[["mean"]]
+#  sd1   <- group1[["sd"]]
+#  sd2   <- group2[["sd"]]
+#  est   <- effect_data[["est"]]
+#  low   <- effect_data[["low"]]
+#  high  <- effect_data[["high"]]
+#  metric <- effect_data[["metric"]]
+#  met.param <- effect_data[["met.param"]] # metric specific-parameter
+
+        def build_data_dicts():
+            var_names = self.get_column_header_strs()
+            tmp = []
+            for row_index in range(2):
+                value = lambda x: self._get_float(row_index, x)
+                tmp.append([(var_name, value(i)) for i, var_name in enumerate(var_names) if value(i) is not None])
+            group1_data = dict(tmp[0])
+            group2_data = dict(tmp[1])
+            
+            tmp = self.ma_unit.get_effect_and_ci(self.cur_effect, self.group_str)
+            effect_data = {"est":tmp[0], "low":tmp[1], "high":tmp[2],
+                           "metric":self.cur_effect,
+                           "met.param":self.metric_parameter}
+            
+            print("Group 1 Data: ", group1_data)
+            print("Group 2 Data: ", group2_data)
+            print("Effect Data: ", effect_data)
+            
+            return (group1_data, group2_data, effect_data)
+        
+        if self.cur_effect not in ["MD", "SMD"]:
+            self.back_calc_btn.setVisible(False)
+        else:
+            self.back_calc_btn.setVisibile(True)
+            
+        (group1_data, group2_data, effect_data) = build_data_dicts()
+        imputed = meta_py_r.impute_cont_data(group1_data, group2_data, effect_data, self.conf_level_to_alpha())
+        print("Imputed data: ", imputed)
+        
+        # Leave if there was a failure
+        if "FAIL" in imputed:
+            print("Failure to impute")
+            self.back_calc_btn.setEnabled(False)
+            return None
+        
+        self.back_calc_btn.setEnabled(True)
+        self.set_clear_btn_color()
+        
+        if not engage:
+            return None
+        
+        ########################################################################
+        # Actually do stuff with imputed data here if we are 'engaged'
+        ########################################################################
+        #for x in range(3):
+         #   self.clear_column(x) # clear out the table
+         
+         
+
+#        if len(imputed.keys()) > 1:
+#            dialog = ChooseBackCalcResultForm(imputed, parent=self)
+#            if dialog.exec_():
+#                choice = dialog.getChoice()
+#            else: # don't do anything if cancelled
+#                return None
+#        else: # only one option
+#            choice = "op1"
+#            
+#            
+#        # set values in table & save in ma_unit
+#        self.raw_data_table.blockSignals(True)
+#        self._set_val(0, 0, int(round(imputed[choice]["a"]))  )
+#        self._set_val(0, 2, int(round(imputed[choice]["b"]))  )  
+#        self._set_val(1, 0, int(round(imputed[choice]["c"]))  ) 
+#        self._set_val(1, 2, int(round(imputed[choice]["d"]))  ) 
+#        self.raw_data_table.blockSignals(False)
+#        
+#        self._update_data_table()
+#        self._update_ma_unit() # save in ma_unit
+#        self.save_form_state()
+#        
+#        self.set_clear_btn_color()
+        
 
     def clear_form(self): 
         self.block_all_signals(True)
@@ -641,8 +728,8 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.enable_txt_box_input()
         self.CI_spinbox.setValue(meta_globals.DEFAULT_CONF_LEVEL)
         self.CI_spinbox.setEnabled(True)
-
-
+        
+        self.metric_parameter = None
 
     def save_form_state(self):
         ''' Saves the state of all objects on the form '''
@@ -766,3 +853,32 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         # Save results in ma_unit
         self.ma_unit.set_effect_and_ci(self.cur_effect, self.group_str, res["est"],res["low"],res["high"])
         self.ma_unit.set_display_effect_and_ci(self.cur_effect, self.group_str, res["display_est"],res["display_low"],res["display_high"])
+        
+        
+################################################################################
+class ChooseBackCalcResultForm(QDialog, ui_choose_back_calc_result_form.Ui_ChooseBackCalcResultForm):
+    def __init__(self, data, info_text, op1_txt, op2_txt, parent=None):
+        super(ChooseBackCalcResultForm, self).__init__(parent)
+        self.setupUi(self)
+#        
+#        #op1 = data["op1"] # option 1 data
+#        #a,b,c,d = op1["a"],op1["b"],op1["c"],op1["d"]
+#        #a,b,c,d = int(round(a)),int(round(b)),int(round(c)),int(round(d))
+#        #option1_txt = "Group 1:\n  #events: %d\n  Total: %d\nGroup 2:\n  #events: %d\n  Total: %d" % (a,b,c,d)
+#        
+#        #op2 = imputed_data["op2"]
+#        #a,b,c,d = op2["a"],op2["b"],op2["c"],op2["d"]
+#        #a,b,c,d = int(round(a)),int(round(b)),int(round(c)),int(round(d))
+#        #option2_txt = "Group 1:\n  #events: %d\n  Total: %d\nGroup 2:\n  #events: %d\n  Total: %d" % (a,b,c,d)
+#        
+#        self.choice1_lbl.setText(option1_txt)
+#        self.choice2_lbl.setText(option2_txt)
+#        self.info_label.setText("The back-calculation has resulted in two possible sets of choices for the counts.\n\nPlease choose one from below:")
+#
+#    def getChoice(self):
+#        #choices = ["op1", "op2"]
+#        #
+#        if self.choice1_btn.isChecked():
+#            return choices[0] # op1
+#        else:
+#            return choices[1] # op2

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'choose_bin_back_calc_result_form.ui'
+# Form implementation generated from reading ui file 'choose_back_calc_result_form.ui'
 #
-# Created: Tue Mar 19 14:22:54 2013
+# Created: Mon Apr  1 15:22:21 2013
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,13 +26,13 @@ except AttributeError:
 class Ui_ChooseBackCalcResultForm(object):
     def setupUi(self, ChooseBackCalcResultForm):
         ChooseBackCalcResultForm.setObjectName(_fromUtf8("ChooseBackCalcResultForm"))
-        ChooseBackCalcResultForm.resize(343, 297)
+        ChooseBackCalcResultForm.resize(429, 297)
         self.verticalLayout = QtGui.QVBoxLayout(ChooseBackCalcResultForm)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
-        self.label = QtGui.QLabel(ChooseBackCalcResultForm)
-        self.label.setWordWrap(True)
-        self.label.setObjectName(_fromUtf8("label"))
-        self.verticalLayout.addWidget(self.label)
+        self.info_label = QtGui.QLabel(ChooseBackCalcResultForm)
+        self.info_label.setWordWrap(True)
+        self.info_label.setObjectName(_fromUtf8("info_label"))
+        self.verticalLayout.addWidget(self.info_label)
         self.line_2 = QtGui.QFrame(ChooseBackCalcResultForm)
         self.line_2.setFrameShape(QtGui.QFrame.HLine)
         self.line_2.setFrameShadow(QtGui.QFrame.Sunken)
@@ -77,7 +77,7 @@ class Ui_ChooseBackCalcResultForm(object):
 
     def retranslateUi(self, ChooseBackCalcResultForm):
         ChooseBackCalcResultForm.setWindowTitle(_translate("ChooseBackCalcResultForm", "Choose Back Calculation Result", None))
-        self.label.setText(_translate("ChooseBackCalcResultForm", "The back-calculation has resulted in two possible sets of choices for the counts.\n"
+        self.info_label.setText(_translate("ChooseBackCalcResultForm", "The back-calculation has resulted in two possible sets of choices for the counts.\n"
 "\n"
 "Please choose one from below:", None))
         self.choice1_lbl.setText(_translate("ChooseBackCalcResultForm", "line1\n"

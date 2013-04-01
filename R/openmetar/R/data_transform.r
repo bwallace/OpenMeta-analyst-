@@ -3,6 +3,10 @@ isnt.null <- function(x){
     ! is.null(x)    
 }
 
+isnt.na <- function(x) {
+	!is.na()
+}
+
 
 ############################ 
 # Binary data calculation  #
@@ -15,9 +19,6 @@ gimpute.bin.data <- function(bin.data) {
 	# treated events, treated total, control events, and control total, respectively
 	#
 	# There will be two sets of possible results for each parameter since the solution involves a quadratic
-	
-#	print("Bin data in R:")
-#	print(bin.data)
 	
 	metric <- as.character(bin.data[["metric"]])
 	est    <- bin.data[["estimate"]]
@@ -78,28 +79,17 @@ gimpute.bin.data <- function(bin.data) {
 		res <- calc.d.and.b(d=log(est), d_L=log(lower), d_U=log(upper))
 		d <- res[["d"]]; b <- res[["b"]]
 		
-		#print("d: ")
-		#print(d)
-		#print("b: "); print(b)
-		
 		d <- exp(d) # convert OR back to normal scale (not log)
 		
 		A <- N_0*(1-d)^2+b*d*N_0*N_1
 		B <- -1*(2*N_0*(1-d)+b*d*N_0*N_1)
 		C <- N_0 + d*N_1
 		
-		#print("A: "); print(A);
-		#print("B: "); print(B);
-		#print("C: "); print(C);
-		
 		# calculate proportions
 		p0.op1 <- (-B+sqrt(B^2-4*A*C))/(2*A) 
 		p0.op2 <- (-B-sqrt(B^2-4*A*C))/(2*A) 
 		p1.op1 <- d*p0.op1/(d*p0.op1+1-p0.op1)
 		p1.op2 <- d*p0.op2/(d*p0.op2+1-p0.op2)
-		
-		#print("p0"); print(p0.op1); print(p0.op2);
-		#print("p1"); print(p1.op1); print(p1.op2);
 		
 		res <- list(op1=list(p0=p0.op1, p1=p1.op1), op2=list(p0=p0.op2, p1=p1.op2))
 		return(res)
@@ -114,9 +104,6 @@ gimpute.bin.data <- function(bin.data) {
 		# calculate proportions
 		p0.op1 <- (N_0+d*N_1)/(d*(b*N_1*N_0+N_1+N_0))
 		p1.op1 <- p0.op1*d
-		
-		#print("p0"); print(p0.op1);
-		#print("p1"); print(p1.op1); 
 		
 		res <- list(op1=list(p0=p0.op1, p1=p1.op1))
 	}
@@ -229,95 +216,6 @@ impute.bin.data <- function(bin.data){
     }
     data.frame(a=a, b=b, c=c, d=d)
 }
-
-# Not currently being used but its so cool nonetheless so don't get rid of it
-#fillin.2x2.simple <- function(c11=NA, c12=NA, c21=NA, c22=NA, 
-#                                                r1sum =NA, r2sum=NA, 
-#                                                c1sum=NA, c2sum=NA,
-#                                                total=NA, touse=rep(TRUE,9)){
-#	y <- c(
-#	rep(c11,4), 
-#	rep(c12,4),
-#	rep(c21,4), 
-#	res<-rep(c22,4),
-#	rep(r1sum,3), 
-#	rep(r2sum,3), 
-#	rep(c1sum,3), 
-#	rep(c2sum,3),
-#	rep(total,8)) 
-#
-#    select <- c(
-#		rep(touse[1],4), 
-#		rep(touse[2],4), 
-#		rep(touse[3],4), 
-#		rep(touse[4],4), 
-#		rep(touse[5],3), 
-#		rep(touse[6],3), 
-#		rep(touse[7],3), 
-#		rep(touse[8],3), 
-#		rep(touse[9],8))
-#
-#	X<- c(
-#	# c11, c12, c21, c22, r1sum, r2sum, c1sum, c2sum, total 
-#	    1,   0,   0,   0,     0,     0,     0,     0,     0,  #c11
-#	    0,  -1,   0,   0,     1,     0,     0,     0,     0,  #c11=r1sum-c12
-#	    0,   0,  -1,   0,     0,     0,     1,     0,     0,  #c11=c1sum-c21
-#	    0,  -1,  -1,  -1,     0,     0,     0,     0,     1,  #c11=total-c12-c21-c22
-#
-#	    0,   1,   0,   0,     0,     0,     0,     0,     0,  #c12
-#	   -1,   0,   0,   0,     1,     0,     0,     0,     0,  #c12=r1sum-c11
-#	    0,   0,   0,  -1,     0,     0,     0,     1,     0,  #c12=c2sum-c22
-#	   -1,   0,  -1,  -1,     0,     0,     0,     0,     1,  #c12=total-c11-c21-c22
-#
-#	    0,   0,   1,   0,     0,     0,     0,     0,     0,  #c21
-#	    0,   0,   0,  -1,     0,     1,     0,     0,     0,  #c21=r2sum-c22
-#	   -1,   0,   0,   0,     0,     0,     1,     0,     0,  #c21=c1sum-c11
-#	   -1,  -1,   0,  -1,     0,     0,     0,     0,     1,  #c21=total-c11-c12-c22
-#
-#	    0,   0,   0,   1,     0,     0,     0,     0,     0,  #c22
-#	    0,   0,  -1,   0,     0,     1,     0,     0,     0,  #c22=r2sum-c21
-#	    0,  -1,   0,   0,     0,     0,     0,     1,     0,  #c22=c2sum-c12
-#	   -1,  -1,  -1,   0,     0,     0,     0,     0,     1,  #c22=total-c11-c12-c21
-#	
-#	    0,   0,   0,   0,     1,     0,     0,     0,     0,  #r1sum
-#	    1,   1,   0,   0,     0,     0,     0,     0,     0,  #r1sum=c11+c12
-#	    0,   0,   0,   0,     0,    -1,     0,     0,     1,  #r1sum=total-r2sum
-#
-#	    0,   0,   0,   0,     0,     1,     0,     0,     0,  #r2sum
-#	    0,   0,   1,   1,     0,     0,     0,     0,     0,  #r2sum=c21+c22
-#	    0,   0,   0,   0,    -1,     0,     0,     0,     1,  #r2sum=total-r1sum
-#	    
-#	    0,   0,   0,   0,     0,     0,     1,     0,     0,  #c1sum
-#	    1,   0,   1,   0,     0,     0,     0,     0,     0,  #c1sum=c11+c21
-#	    0,   0,   0,   0,     0,     0,     0,    -1,     1,  #c1sum=total-c2sum
-#
-#	    0,   0,   0,   0,     0,     0,     0,     1,     0,  #c2sum
-#	    0,   1,   0,   1,     0,     0,     0,     0,     0,  #c2sum=c12+c22
-#	    0,   0,   0,   0,     0,     0,    -1,     0,     1,  #c2sum=total-c1sum
-#
-#	    0,   0,   0,   0,     0,     0,     0,     0,     1,  #total
-#	    1,   1,   1,   1,     0,     0,     0,     0,     0,  #total=c11+c12+c21+c22
-#	    0,   0,   0,   0,     1,     1,     0,     0,     0,  #total=r1sum+r2sum
-#	    0,   0,   0,   0,     0,     0,     1,     1,     0,  #total=c1sum+c2sum
-#	    0,   0,   1,   1,     1,     0,     0,     0,     0,  #total=r1sum+c21+c22
-#	    1,   1,   0,   0,     0,     1,     0,     0,     0,  #total=r2sum+c11+c12
-#	    0,   1,   0,   1,     0,     0,     1,     0,     0,  #total=c1sum+c12+c22
-#	    1,   0,   1,   0,     0,     0,     0,     1,     0   #total=c2sum+c11+c21
-#		)
-#
-#	X<-matrix(X,ncol=9, byrow=TRUE)
-#	my.frame <- as.data.frame(X)
-#	colnames(my.frame) <- c("c11", "c12", "c21", "c22", "r1sum", "r2sum", "c1sum", "c2sum", "total" )
-#	
-## add the responses y
-#	my.frame <- cbind(y, my.frame)
-#	
-#	res <- lm(y~ c11 + c12 + c21 + c22 + r1sum + r2sum + 
-#			  c1sum + c2sum + total + (-1) ,data=my.frame)
-#	
-#	return(res)
-#}
-
 
 #################################################
 #                                               #
@@ -537,7 +435,7 @@ fillin.missing.effect.quantity <- function(est=NA, low=NA, high=NA) {
 	return(list(est=est, low=low, high=high))
 }
 
-gimpute.continuous.data <- function(group1, group2, effect_data, alpha=0.05) {
+gimpute.continuous.data <- function(group1, group2, effect_data, conf.level=95.0) {
 	# Tries to solve for one of n1,n2, mean1, mean2, sd1, sd2 based on the data
 	# in group1, group2, effect_data
 	
@@ -552,6 +450,7 @@ gimpute.continuous.data <- function(group1, group2, effect_data, alpha=0.05) {
 	low   <- effect_data[["low"]]
 	high  <- effect_data[["high"]]
 	metric <- effect_data[["metric"]]
+	met.param <- effect_data[["met.param"]] # metric specific-parameter
 			
 	# Convert nulls to NA
 	if (is.null(n1))    n1    <- NA
@@ -564,9 +463,12 @@ gimpute.continuous.data <- function(group1, group2, effect_data, alpha=0.05) {
 	if (is.null(low))   low   <- NA
 	if (is.null(high))  high  <- NA
 	if (is.null(metric)) metric <- NA
+	if (is.null(met.param)) met.param <- NA
+	if (is.null(conf.level)) conf.level <- NA
 	
-	# Can't do anything if we don't know what metric we are using
-	if (is.na(metric)) {
+	# Can't do anything if we don't know what metric we are using or if we don't
+	# know alpha
+	if (is.na(metric) | is.na(conf.level)) {
 		return(list("FAIL"=NA))
 	}
 	
@@ -575,25 +477,99 @@ gimpute.continuous.data <- function(group1, group2, effect_data, alpha=0.05) {
 	low  <- effect.and.ci[["low"]]
 	high <- effect.and.ci[["high"]]
 	
-	# If one of the means is not null 
+	# Obtain standard error and variance from CI
+	alpha <- 1.0-(conf.level/100.0)
+	mult <- abs(qnorm(alpha/2.0))
+	se <- (high-low)/(2*mult)
+	var = se^2
+	
 	impute.from.MD <- function() {
+		# Formulas from "The Handbook of Research Synthesis and Meta-Analysis"
+	    #     2nd Ed. p. 224
 		
+		#######################################################################
+		# If one of the means is missing, solve for other mean
+		#   If we are in here, we already know the effect is mean difference
+	    #   D = (mean of group 1) - (mean of group 2)
+		D <- est; Y1 <- mean1; Y2 <- mean2;
 		
+		if (is.na(Y1) & isnt.na(Y2))
+			Y1 <- D + Y2
+		if (is.na(Y2) & isnt.na(Y1))
+			Y2 <- Y1 - D
+		#######################################################################
+		# For MD, the metric parameter is the assumption that the population SDs
+	    # are the same:
+		#     met.param == TRUE  # population SDs are the same
+	    #     met.param == FALSE # population SDs are not the same
+		if (met.param) { # population SDs are the same
+			if (is.na(n1)) {
+				if (isnt.na(n2) & isnt.na(sd1))
+				n1.op1 <- (1/2)*(n2*sd1^2-sd1^2-var*n2^2+2*var*n2+sd2^2*n2-sd2^2+sqrt(var^2*n2^4-4*var^2*n2^3+4*var^2*n2^2+sd1^4+sd2^4+n2^2*sd1^4+2*n2*sd1^4+2*sd1^2*sd2^2+sd2^4*n2^2-2*sd2^4*n2-2*n2^3*sd1^2*var+2*n2^2*sd1^2*var-2*n2^2*sd1^2*sd2^2-4*sd1^2*var*n2+2*var*n2^3*sd2^2+2*var*n2^2*sd2^2-4*var*n2*sd2^2))/(-sd1^2+var*n2)
+				n1.op2 <- -(1/2)*(-n2*sd1^2+sd1^2+var*n2^2-2*var*n2-sd2^2*n2+sd2^2+sqrt(var^2*n2^4-4*var^2*n2^3+4*var^2*n2^2+sd1^4+sd2^4+n2^2*sd1^4+2*n2*sd1^4+2*sd1^2*sd2^2+sd2^4*n2^2-2*sd2^4*n2-2*n2^3*sd1^2*var+2*n2^2*sd1^2*var-2*n2^2*sd1^2*sd2^2-4*sd1^2*var*n2+2*var*n2^3*sd2^2+2*var*n2^2*sd2^2-4*var*n2*sd2^2))/(-sd1^2+var*n2)
+				n1.op1 <- round(n1.op1, digits = 0)
+				n1.op2 <- round(n1.op2, digits = 0)
+				n1 <- c(n1.op1, n1.op2)
+			}
+			if (is.na(n2)) {
+				n2.op1 <- (1/2)*(n1*sd2^2-var*n1^2+2*var*n1+sd1^2*n1-sd1^2-sd2^2+sqrt(sd1^4+sd2^4+2*sd1^2*sd2^2+n1^2*sd2^4+2*n1*sd2^4+var^2*n1^4-4*var^2*n1^3+4*var^2*n1^2+sd1^4*n1^2-2*sd1^4*n1-2*n1^3*sd2^2*var+2*n1^2*sd2^2*var-2*n1^2*sd2^2*sd1^2+2*var*n1^3*sd1^2+2*var*n1^2*sd1^2-4*var*n1*sd1^2-4*var*n1*sd2^2))/(var*n1-sd2^2)
+				n2.op2 <- -(1/2)*(-n1*sd2^2+var*n1^2-2*var*n1-sd1^2*n1+sd1^2+sd2^2+sqrt(sd1^4+sd2^4+2*sd1^2*sd2^2+n1^2*sd2^4+2*n1*sd2^4+var^2*n1^4-4*var^2*n1^3+4*var^2*n1^2+sd1^4*n1^2-2*sd1^4*n1-2*n1^3*sd2^2*var+2*n1^2*sd2^2*var-2*n1^2*sd2^2*sd1^2+2*var*n1^3*sd1^2+2*var*n1^2*sd1^2-4*var*n1*sd1^2-4*var*n1*sd2^2))/(var*n1-sd2^2)
+				n2.op1 <- round(n2.op1, digits=0)
+				n2.op2 <- round(n2.op2, digits=0)
+				n2 <- c(n2.op1, n2.op2)
+			}
+			if (is.na(sd1)) {	
+				sd1.op1 <- sqrt((n1^2-n1+n1*n2-n2)*(var*n1^2*n2+var*n1*n2^2-2*var*n1*n2-n1*sd2^2*n2+n1*sd2^2-sd2^2*n2^2+sd2^2*n2))/(n1^2-n1+n1*n2-n2)
+				sd1.op2 <- -sqrt((n1^2-n1+n1*n2-n2)*(var*n1^2*n2+var*n1*n2^2-2*var*n1*n2-n1*sd2^2*n2+n1*sd2^2-sd2^2*n2^2+sd2^2*n2))/(n1^2-n1+n1*n2-n2)
+				sd1 <- c(sd1.op1, sd1.op2)
+			}
+			if (is.na(sd2)) {
+				sd2.op1 <- sqrt((n1*n2-n1+n2^2-n2)*(var*n1^2*n2+var*n1*n2^2-2*var*n1*n2-sd1^2*n1^2+sd1^2*n1-n2*sd1^2*n1+n2*sd1^2))/(n1*n2-n1+n2^2-n2)
+				sd2.op2 <- -sqrt((n1*n2-n1+n2^2-n2)*(var*n1^2*n2+var*n1*n2^2-2*var*n1*n2-sd1^2*n1^2+sd1^2*n1-n2*sd1^2*n1+n2*sd1^2))/(n1*n2-n1+n2^2-n2)
+				sd2 <- c(sd2.op1, sd2.op2)
+			}
+			
+			res <- list(n1=n1, n2=n2, mean1=Y1, mean2=Y2, sd1=sd1, sd2=sd2)
+			return(res)
+		}
+		else {  # population SDs are not the same
+			if (is.na(n1)) {
+				n1 <- n2*sd1^2/(var*n2-sd2^2)
+			}
+			if (is.na(n2)) {
+				n2 <- n1*sd2^2/(var*n1-sd1^2)
+			}
+			if (is.na(sd1)) {	
+				sd1.op1 <- sqrt(n2*n1*(var*n2-sd2^2))/n2
+				sd1.op2 <- -sqrt(n2*n1*(var*n2-sd2^2))/n2
+				sd1 <- c(sd1.op1, sd1.op2)
+			}
+			if (is.na(sd2)) {
+				sd2.op1 <- sqrt(n1*n2*(var*n1-sd1^2))/n1
+				sd2.op2 <- -sqrt(n1*n2*(var*n1-sd1^2))/n1
+				sd2 <- c(sd2.op1, sd2.op2)
+			}
+		}
 		
-		1
+		res <- list(n1=n1, n2=n2, mean1=Y1, mean2=Y2, sd1=sd1, sd2=sd2)
+		return(res)
 	}
+	
+	
+	
 	impute.from.SMD <- function() {
 		2
 	}
+	
+	# TODO: FINISH THIS
 	
 	
 	#res <- switch(metric, "RD"=impute.from.RD(),
 	#	"OR"=impute.from.LOR(),
 	#	"RR"=impute.from.LRR())
-	
-	
-	
-	
+
+	res <- switch(metric, "MD"=impute.from.MD())
+	return(res)
 	
 	
 }
@@ -895,7 +871,6 @@ rescale.effect.and.ci.conf.level <- function(dataf.arg) {
 	orig.conf.level = dataf.arg[["orig.conf.level"]]
 	target.conf.level = dataf.arg[["target.conf.level"]]
 	
-	
 	# Convert NULL to NA
 	if (is.null(est))  est  <- NA
 	if (is.null(low))  low  <- NA
@@ -913,15 +888,15 @@ rescale.effect.and.ci.conf.level <- function(dataf.arg) {
 	
 	# make sure est, low, high are all not NA
 	if (is.na(est)) {
-		est = (high-low)/2.0
+		est <- (high-low)/2.0
 	}
 
 	if (is.na(low)) {
-		low = est - (high-est)
+		low <- est - (high-est)
 	}
 
 	if (is.na(high)) {
-		high = est + (est - low)	
+		high <- est + (est - low)	
 	}
 
 	old.alpha <- 1.0-(orig.conf.level/100.0)
@@ -929,11 +904,11 @@ rescale.effect.and.ci.conf.level <- function(dataf.arg) {
 	old.mult <- abs(qnorm(old.alpha/2.0))
 	new.mult <- abs(qnorm(new.alpha/2.0))
 	
-	se = (high-low)/(2*old.mult)
+	se <- (high-low)/(2*old.mult)
 	
-	new.est = est
-	new.low  = new.est - new.mult*se
-	new.high = new.est + new.mult*se
+	new.est  <- est
+	new.low  <- new.est - new.mult*se
+	new.high <- new.est + new.mult*se
 	
 	return(list(est=new.est, low=new.low, high=new.high))
 }

@@ -1152,8 +1152,8 @@ def continuous_effect_for_study(n1, m1, sd1, se1=None, n2=None, m2=None,
     alpha = 1.0-(conf_level/100.0)
     r_str = "abs(qnorm(%s))" % str(alpha/2.0)
     mult = ro.r(r_str)[0]
-    print("Alpha:",alpha)
-    print("mult:" ,mult)
+    #print("Alpha:",alpha)
+    #print("mult:" ,mult)
     lower, upper = (point_est-mult*se, point_est+mult*se)
     est_and_ci = (point_est, lower, upper)
     transformed_est_and_ci = continuous_convert_scale(est_and_ci, metric)
@@ -1225,6 +1225,8 @@ def diagnostic_convert_scale(x, metric_name, convert_to="display.scale"):
 def generic_convert_scale(x, metric_name, data_type, convert_to="display.scale"):
     ro.r("trans.f <- %s.transform.f('%s')" % (data_type, metric_name))
 
+    if x is None:
+        return None
     islist = isinstance(x, list) or isinstance(x, tuple) # being loose with what qualifies as a 'list' here.
     if islist:
         ro.r("x <- c%s" % str(x))

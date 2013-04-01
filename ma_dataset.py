@@ -682,11 +682,11 @@ class MetaAnalyticUnit:
         self.effects_dict[effect][group_str]["display_upper"] = upper
         
     def get_effect_and_ci(self, effect, group_str):
-        return (self.effects_dict[effect][group_str]["est"], self.effects_dict[effect][group_str]["lower"], \
+        return (self.effects_dict[effect][group_str]["est"], self.effects_dict[effect][group_str]["lower"],
                     self.effects_dict[effect][group_str]["upper"])
                 
     def get_display_effect_and_ci(self, effect, group_str):
-        return (self.effects_dict[effect][group_str]["display_est"], self.effects_dict[effect][group_str]["display_lower"], \
+        return (self.effects_dict[effect][group_str]["display_est"], self.effects_dict[effect][group_str]["display_lower"],
                     self.effects_dict[effect][group_str]["display_upper"])
         
     def set_lower(self, effect, group_str, lower):
