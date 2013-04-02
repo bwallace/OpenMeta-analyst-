@@ -484,7 +484,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             if len(grp_list) >= 2:
                 new_state_dict["current_txs"] = grp_list[:2]
             else:
-                new_state_dict["current_txs"] = ["tx A", "tx B"]
+                # new_state_dict["current_txs"] = ["tx A", "tx B"]
+                new_state_dict["current_txs"] = meta_globals.DEFAULT_GROUP_NAMES
             modified_dataset = edit_window.dataset
             
             redo_f = lambda : self.set_model(modified_dataset, new_state_dict)

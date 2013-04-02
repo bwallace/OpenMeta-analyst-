@@ -743,7 +743,10 @@ class ChooseBackCalcResultForm(QDialog, ui_choose_back_calc_result_form.Ui_Choos
         
         self.choice1_lbl.setText(option1_txt)
         self.choice2_lbl.setText(option2_txt)
-        self.info_label.setText("The back-calculation has resulted in two possible sets of choices for the counts.\n\nPlease choose one from below:")
+        self.info_label.setText("The back-calculation has resulted in two "
+                                "possible sets of choices for the counts. Please"
+                                " choose one from below. These choices do not "
+                                "reflect possible corrections for zero counts.")
 
     def getChoice(self):
         choices = ["op1", "op2"]

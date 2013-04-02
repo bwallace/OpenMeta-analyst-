@@ -126,7 +126,7 @@ class DatasetModel(QAbstractTableModel):
             # make sure the indices are within range -- the
             # model may have changed without our knowing.
             # may have been nicer to have a notification
-            # framework here (i.e., have the udnerlying model
+            # framework here (i.e., have the underlying model
             # notify us when a group has been deleted) rather
             # than doing it on the fly...
             self.tx_index_a = self.tx_index_a % n_groups
@@ -136,7 +136,8 @@ class DatasetModel(QAbstractTableModel):
             self.current_txs = [group_names[self.tx_index_a], group_names[self.tx_index_b]]
         else:
             if not self.is_diag():
-                self.current_txs = ["tx A", "tx B"]
+                #self.current_txs = ["tx A", "tx B"]
+                self.current_txs = meta_globals.DEFAULT_GROUP_NAMES
             else:
                 self.current_txs = ["test 1"]
         self.previous_txs = self.current_txs
@@ -788,9 +789,9 @@ class DatasetModel(QAbstractTableModel):
                             current_tx = self.current_txs[1]
                             
                         if section in (self.RAW_DATA[0], self.RAW_DATA[2]):
-                            return QVariant(current_tx + " n")
+                            return QVariant(current_tx + " #evts")
                         else:
-                            return QVariant(current_tx + " N")
+                            return QVariant(current_tx + " #total")
                     elif outcome_type == CONTINUOUS:
                         # continuous data
                         if section in self.RAW_DATA[3:]:

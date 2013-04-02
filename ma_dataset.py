@@ -576,7 +576,8 @@ class MetaAnalyticUnit:
         self.outcome = outcome
 
         if group_names is None and not self.is_diag:
-            group_names = ["tx A", "tx B"]
+            #group_names = ["tx A", "tx B"]
+            group_names = meta_globals.DEFAULT_GROUP_NAMES
         elif group_names is None:
             group_names = ["test 1"]
 

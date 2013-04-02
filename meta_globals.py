@@ -141,6 +141,7 @@ ERROR_COLOR = QColor("red")
 OK_COLOR = QColor("black")
 
 DEFAULT_CONF_LEVEL = 95.0
+DEFAULT_GROUP_NAMES = ["Grp A", "Grp B"]
 
 '''
 some useful static methods
@@ -464,12 +465,16 @@ def enable_txt_box_input(*args):
             text_box.setEnabled(True)
             
         text_box.blockSignals(False)
-            
-CHANGE_CI_ALERT_MSG = ("I see that you are changing the confidence level. You "
-                       "should know that when you close this form, the values "
-                       "computed with the new confidence level (usually the "
-                       "estimate and confidence interval) will be converted "
-                       "back to the global {0:.1%} confidence level.".format(DEFAULT_CONF_LEVEL/100.0))
+        
+        
+        
+
+
+CHANGE_CI_ALERT_MSG = ("The size of the confidence level used for a particular "
+                       "study in this calculator need not correspond with the "
+                       "global confidence level (currently set at {0:.1%}) "
+                       "chosen for data display on spreadsheets and forest "
+                       "plots.".format(DEFAULT_CONF_LEVEL/100.0))
 
 
         
