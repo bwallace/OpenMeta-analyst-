@@ -4,7 +4,7 @@ isnt.null <- function(x){
 }
 
 isnt.na <- function(x) {
-	!is.na()
+	!is.na(x)
 }
 
 
@@ -326,67 +326,90 @@ fillin.cont.1spell <- function(n=NA, mean=NA, sd=NA, se=NA, var=NA,
 		return(n)
 	}
 	
-	dirty = TRUE
+	dirty <- TRUE
 	while (dirty) {
-		dirty = FALSE
+		print("Iterating in fillin.cont1")
+		dirty <- FALSE
 		
 	    ##########################################################
 	    # check the mean first 
 	    # If not calculate it from the CI
 		if (is.na(mean)) {
-	    	mean = get.mean(high=high, low=low)
-			if (!is.na(mean))
-				dirty = TRUE # mean was changed
+	    	mean <- get.mean(high=high, low=low)
+			if (!is.na(mean)) {
+				dirty <- TRUE # mean was changed
+				print("changed mean")
+			}
+				
 		}	
 	    ##########################################################
 	    # if se is missing
 		if (is.na(se)) {
-			se = get.se(sd=sd, n=n, low=low, high=high, mean=mean, pval=pval)
-			if (!is.na(se))
-				dirty = TRUE # se was changed
+			se <- get.se(sd=sd, n=n, low=low, high=high, mean=mean, pval=pval)
+			if (!is.na(se)) {
+				dirty <- TRUE # se was changed
+				print("changed se")
+			}
 		}
 	    ##########################################################
 	    # if the SAMPLE variance is missing
 		if (is.na(var)) {
-			var = get.var(sd=sd)
-			if (!is.na(var))
-				dirty = TRUE # var was changed
+			var <- get.var(sd=sd)
+			if (!is.na(var)) {
+				dirty <- TRUE # var was changed
+				print("changed var")
+			}
 		}
 	    ##########################################################
 	    # if the lower CI is missing 
 	    if(is.na(low)) {
-	        low = mean - z*se
-			if (!is.na(low))
-				dirty = TRUE # low was changed
+	        low <- mean - z*se
+			if (!is.na(low)) {
+				dirty <- TRUE # low was changed
+				print("changed low")
+			}
 	    }
 	    ##########################################################
 	    # if the high CI is missing 
 	    if(is.na(high)) {
-	        high = mean + z*se
-			if (!is.na(high))
-				dirty = TRUE # high was changed
+	        high <- mean + z*se
+			if (!is.na(high)) {
+				dirty <- TRUE # high was changed
+				print("changed high")
+			}
 	    }
 	    ##########################################################
 	    # if the 2 sided pval is missing 
 	    if(is.na(pval)) {
-	        pval = 2*pnorm(-abs(mean/se))
-			if (!is.na(pval))
-				dirty = TRUE # pval was changed
+	        pval <- 2*pnorm(-abs(mean/se))
+			if (!is.na(pval)) {
+				dirty <- TRUE # pval was changed
+				print("changed pval")
+			}
 	    }
 	    ##########################################################
 	    # if the sd is missing 
 	    if(is.na(sd)) {
 	        sd = get.sd(var=var, n=n, se=se)
-			if (!is.na(sd))
+			if (!is.na(sd)) {
 				dirty = TRUE # sd was changed
+				print("changed sd")
+			}
 		}
 	    ##########################################################
 	    # if the n is missing 
 		if(is.na(n)) {
-			sd = get.n(sd=sd, se=se, var=var)
-			if (!is.na(n))
-				dirty = TRUE # sd was changed
+			n <- get.n(sd=sd, se=se, var=var)
+			if (!is.na(n)) {
+				dirty <- TRUE # sd was changed
+				print("changed n")
+			}
 		}
+		
+		print("---------------")
+		print("Dirty at end:")
+		print(dirty)
+		print("--------------")
 	} # finished iterating
 	
 	# Do checks:
@@ -435,7 +458,7 @@ fillin.missing.effect.quantity <- function(est=NA, low=NA, high=NA) {
 	return(list(est=est, low=low, high=high))
 }
 
-gimpute.continuous.data <- function(group1, group2, effect_data, conf.level=95.0) {
+gimpute.cont.data <- function(group1, group2, effect_data, conf.level=95.0) {
 	# Tries to solve for one of n1,n2, mean1, mean2, sd1, sd2 based on the data
 	# in group1, group2, effect_data
 	
@@ -466,9 +489,23 @@ gimpute.continuous.data <- function(group1, group2, effect_data, conf.level=95.0
 	if (is.null(met.param)) met.param <- NA
 	if (is.null(conf.level)) conf.level <- NA
 	
+#	print("n1"); print(n1)
+#	print("n2"); print(n2)
+#	print("mean1"); print(mean1)
+#	print("mean2"); print(mean2)
+#	print("sd1"); print(sd1)
+#	print("sd2"); print(sd2)
+#	print("est"); print(est)
+#	print("low"); print(low)
+#	print("high"); print(low)
+#	print("metric"); print(metric)
+#	print("met.param"); print(met.param)
+#	print("conf.level"); print(conf.level)
+	
+	
 	# Can't do anything if we don't know what metric we are using or if we don't
-	# know alpha
-	if (is.na(metric) | is.na(conf.level)) {
+	# know the conf.level
+	if (is.na(metric) | is.na(conf.level) | is.na(met.param)) {
 		return(list("FAIL"=NA))
 	}
 	
@@ -482,6 +519,23 @@ gimpute.continuous.data <- function(group1, group2, effect_data, conf.level=95.0
 	mult <- abs(qnorm(alpha/2.0))
 	se <- (high-low)/(2*mult)
 	var = se^2
+	
+	print("se: "); print(se);
+	print("var: "); print(var);
+	
+	filter_neg_result <- function(a,b) {
+	# Ignore negative results, and condense NAs
+		res <- c(a,b)
+		
+		if (isnt.na(a) & a < 0)
+			res <- b
+		else if (isnt.na(b) & b < 0)
+			res <- a
+		else if (is.na(a) & is.na(b))
+			res <- NA
+			
+		return(res)
+	}
 	
 	impute.from.MD <- function() {
 		# Formulas from "The Handbook of Research Synthesis and Meta-Analysis"
@@ -503,51 +557,62 @@ gimpute.continuous.data <- function(group1, group2, effect_data, conf.level=95.0
 		#     met.param == TRUE  # population SDs are the same
 	    #     met.param == FALSE # population SDs are not the same
 		if (met.param) { # population SDs are the same
+			print("Assuming population SDs are the same")
 			if (is.na(n1)) {
-				if (isnt.na(n2) & isnt.na(sd1))
+				print("n1 is na")
 				n1.op1 <- (1/2)*(n2*sd1^2-sd1^2-var*n2^2+2*var*n2+sd2^2*n2-sd2^2+sqrt(var^2*n2^4-4*var^2*n2^3+4*var^2*n2^2+sd1^4+sd2^4+n2^2*sd1^4+2*n2*sd1^4+2*sd1^2*sd2^2+sd2^4*n2^2-2*sd2^4*n2-2*n2^3*sd1^2*var+2*n2^2*sd1^2*var-2*n2^2*sd1^2*sd2^2-4*sd1^2*var*n2+2*var*n2^3*sd2^2+2*var*n2^2*sd2^2-4*var*n2*sd2^2))/(-sd1^2+var*n2)
 				n1.op2 <- -(1/2)*(-n2*sd1^2+sd1^2+var*n2^2-2*var*n2-sd2^2*n2+sd2^2+sqrt(var^2*n2^4-4*var^2*n2^3+4*var^2*n2^2+sd1^4+sd2^4+n2^2*sd1^4+2*n2*sd1^4+2*sd1^2*sd2^2+sd2^4*n2^2-2*sd2^4*n2-2*n2^3*sd1^2*var+2*n2^2*sd1^2*var-2*n2^2*sd1^2*sd2^2-4*sd1^2*var*n2+2*var*n2^3*sd2^2+2*var*n2^2*sd2^2-4*var*n2*sd2^2))/(-sd1^2+var*n2)
+				print("n1op1"); print(n1.op1);
+				print("n1op2"); print(n1.op2);
 				n1.op1 <- round(n1.op1, digits = 0)
 				n1.op2 <- round(n1.op2, digits = 0)
-				n1 <- c(n1.op1, n1.op2)
+				n1 <- filter_neg_result(n1.op1,n1.op2)
 			}
 			if (is.na(n2)) {
+				print("n2 is na")
 				n2.op1 <- (1/2)*(n1*sd2^2-var*n1^2+2*var*n1+sd1^2*n1-sd1^2-sd2^2+sqrt(sd1^4+sd2^4+2*sd1^2*sd2^2+n1^2*sd2^4+2*n1*sd2^4+var^2*n1^4-4*var^2*n1^3+4*var^2*n1^2+sd1^4*n1^2-2*sd1^4*n1-2*n1^3*sd2^2*var+2*n1^2*sd2^2*var-2*n1^2*sd2^2*sd1^2+2*var*n1^3*sd1^2+2*var*n1^2*sd1^2-4*var*n1*sd1^2-4*var*n1*sd2^2))/(var*n1-sd2^2)
 				n2.op2 <- -(1/2)*(-n1*sd2^2+var*n1^2-2*var*n1-sd1^2*n1+sd1^2+sd2^2+sqrt(sd1^4+sd2^4+2*sd1^2*sd2^2+n1^2*sd2^4+2*n1*sd2^4+var^2*n1^4-4*var^2*n1^3+4*var^2*n1^2+sd1^4*n1^2-2*sd1^4*n1-2*n1^3*sd2^2*var+2*n1^2*sd2^2*var-2*n1^2*sd2^2*sd1^2+2*var*n1^3*sd1^2+2*var*n1^2*sd1^2-4*var*n1*sd1^2-4*var*n1*sd2^2))/(var*n1-sd2^2)
 				n2.op1 <- round(n2.op1, digits=0)
 				n2.op2 <- round(n2.op2, digits=0)
-				n2 <- c(n2.op1, n2.op2)
+				n2 <- filter_neg_result(n2.op1, n2.op2)
 			}
-			if (is.na(sd1)) {	
+			if (is.na(sd1)) {
+				print("sd1 is na")
 				sd1.op1 <- sqrt((n1^2-n1+n1*n2-n2)*(var*n1^2*n2+var*n1*n2^2-2*var*n1*n2-n1*sd2^2*n2+n1*sd2^2-sd2^2*n2^2+sd2^2*n2))/(n1^2-n1+n1*n2-n2)
 				sd1.op2 <- -sqrt((n1^2-n1+n1*n2-n2)*(var*n1^2*n2+var*n1*n2^2-2*var*n1*n2-n1*sd2^2*n2+n1*sd2^2-sd2^2*n2^2+sd2^2*n2))/(n1^2-n1+n1*n2-n2)
-				sd1 <- c(sd1.op1, sd1.op2)
+				sd1 <- filter_neg_result(sd1.op1, sd1.op2)
 			}
 			if (is.na(sd2)) {
+				print("sd2 is na")
 				sd2.op1 <- sqrt((n1*n2-n1+n2^2-n2)*(var*n1^2*n2+var*n1*n2^2-2*var*n1*n2-sd1^2*n1^2+sd1^2*n1-n2*sd1^2*n1+n2*sd1^2))/(n1*n2-n1+n2^2-n2)
 				sd2.op2 <- -sqrt((n1*n2-n1+n2^2-n2)*(var*n1^2*n2+var*n1*n2^2-2*var*n1*n2-sd1^2*n1^2+sd1^2*n1-n2*sd1^2*n1+n2*sd1^2))/(n1*n2-n1+n2^2-n2)
-				sd2 <- c(sd2.op1, sd2.op2)
+				sd2 <- filter_neg_result(sd2.op1, sd2.op2)
 			}
 			
 			res <- list(n1=n1, n2=n2, mean1=Y1, mean2=Y2, sd1=sd1, sd2=sd2)
 			return(res)
 		}
 		else {  # population SDs are not the same
+			print("Not assuming population SDs are the same")
 			if (is.na(n1)) {
+				print("n1 is na")
 				n1 <- n2*sd1^2/(var*n2-sd2^2)
 			}
 			if (is.na(n2)) {
+				print("n2 is na")
 				n2 <- n1*sd2^2/(var*n1-sd1^2)
 			}
-			if (is.na(sd1)) {	
+			if (is.na(sd1)) {
+				print("sd1 is na")
 				sd1.op1 <- sqrt(n2*n1*(var*n2-sd2^2))/n2
 				sd1.op2 <- -sqrt(n2*n1*(var*n2-sd2^2))/n2
-				sd1 <- c(sd1.op1, sd1.op2)
+				sd1 <- filter_neg_result(sd1.op1, sd1.op2)
 			}
 			if (is.na(sd2)) {
+				print("sd2 is na")
 				sd2.op1 <- sqrt(n1*n2*(var*n1-sd1^2))/n1
 				sd2.op2 <- -sqrt(n1*n2*(var*n1-sd1^2))/n1
-				sd2 <- c(sd2.op1, sd2.op2)
+				sd2 <- filter_neg_result(sd2.op1, sd2.op2)
 			}
 		}
 		

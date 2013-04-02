@@ -681,9 +681,10 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
     def enable_txt_box_input(self):
         ''' Enables text boxes if they are empty, disables them otherwise '''
         
-        meta_globals.enable_txt_box_input(self.effect_txt_box, self.low_txt_box,
-                                          self.high_txt_box, self.prevalence_txt_box)
-            
+        #meta_globals.enable_txt_box_input(self.effect_txt_box, self.low_txt_box,
+        #                                  self.high_txt_box, self.prevalence_txt_box)
+        pass
+           
     def reset_table_item_flags(self):
         self.block_all_signals(True)
         for row in range(3):

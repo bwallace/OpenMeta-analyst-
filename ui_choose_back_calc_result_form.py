@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'choose_back_calc_result_form.ui'
 #
-# Created: Mon Apr  1 15:22:21 2013
+# Created: Tue Apr  2 12:22:49 2013
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -43,6 +43,7 @@ class Ui_ChooseBackCalcResultForm(object):
         self.choice1_lbl = QtGui.QLabel(ChooseBackCalcResultForm)
         self.choice1_lbl.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
         self.choice1_lbl.setMouseTracking(False)
+        self.choice1_lbl.setWordWrap(True)
         self.choice1_lbl.setObjectName(_fromUtf8("choice1_lbl"))
         self.horizontalLayout.addWidget(self.choice1_lbl)
         self.line = QtGui.QFrame(ChooseBackCalcResultForm)
@@ -51,6 +52,7 @@ class Ui_ChooseBackCalcResultForm(object):
         self.line.setObjectName(_fromUtf8("line"))
         self.horizontalLayout.addWidget(self.line)
         self.choice2_lbl = QtGui.QLabel(ChooseBackCalcResultForm)
+        self.choice2_lbl.setWordWrap(True)
         self.choice2_lbl.setObjectName(_fromUtf8("choice2_lbl"))
         self.horizontalLayout.addWidget(self.choice2_lbl)
         self.verticalLayout.addLayout(self.horizontalLayout)

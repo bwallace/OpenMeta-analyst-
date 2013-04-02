@@ -680,9 +680,10 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.CI_spinbox.setEnabled(True)
         
     def enable_txt_box_input(self):
-        meta_globals.enable_txt_box_input(self.effect_txt_box, self.low_txt_box,
-                                          self.high_txt_box)
-        print("Enabled text box input")
+        #meta_globals.enable_txt_box_input(self.effect_txt_box, self.low_txt_box,
+        #                                  self.high_txt_box)
+        #print("Enabled text box input")
+        pass
         
     def reset_table_item_flags(self):
         self.block_all_signals(True)

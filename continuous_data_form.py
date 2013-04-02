@@ -29,7 +29,7 @@ import meta_globals
 #from meta_globals import *
 from meta_globals import CONTINUOUS_ONE_ARM_METRICS,CONTINUOUS_TWO_ARM_METRICS, _is_a_float,_is_empty
 import ui_continuous_data_form
-#from ui_continuous_data_form import Ui_ContinuousDataForm
+import ui_choose_back_calc_result_form
 
 # @TODO this should be an *application global*. It is now a
 # global here and in the data_table_view class. (However
@@ -91,6 +91,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         QObject.connect(self.CI_spinbox, SIGNAL("valueChanged(double)"), self._change_ci) 
         QObject.connect(self.effect_cbo_box, SIGNAL("currentIndexChanged(QString)"), self.effect_changed)
         QObject.connect(self.clear_Btn, SIGNAL("clicked()"), self.clear_form)
+        QObject.connect(self.back_calc_btn, SIGNAL("clicked()"), lambda: self.enable_back_calculation_btn(engage=True) )
                                                                                 
         QObject.connect(self.effect_txt_box, SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("est", new_text))
         QObject.connect(self.low_txt_box,    SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("lower", new_text))
@@ -371,6 +372,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             return
         
         try:
+            table.blockSignals(True)
             str_val = "" if val in meta_globals.EMPTY_VALS else str(float(val))
             if table.item(row, col) == None:
                 table.setItem(row, col, QTableWidgetItem(str_val))
@@ -383,6 +385,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                 newflags = item.flags() & ~Qt.ItemIsEditable
                 item.setFlags(newflags)
                 #self.block_all_signals(False)
+            table.blockSignals(True)
         except:
             print("Got to except in _set_val when trying to set (%d,%d)" % (row,col))      
 
@@ -572,24 +575,22 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
     
     def enable_txt_box_input(self):
         ''' Enables text boxes if they are empty, disables them otherwise '''
-        
-        meta_globals.enable_txt_box_input(self.effect_txt_box, self.low_txt_box,
-                                          self.high_txt_box, self.correlation_pre_post)
-    
+        pass
+        #meta_globals.enable_txt_box_input(self.effect_txt_box, self.low_txt_box,
+        #                                  self.high_txt_box, self.correlation_pre_post)
+
     def reset_table_item_flags(self):
-        row = 0
         
         self.block_all_signals(True)
-        
         def _reset_flags(table,range_num):
-            for col in range(range_num):
-                # top table
-                item = table.item(row, col)
-                if not item is None:
-                    newflags = item.flags() | Qt.ItemIsEditable
-                    item.setFlags(newflags)
+            for row in range(len(self.cur_groups)):
+                for col in range(range_num):
+                    # top table
+                    item = table.item(row, col)
+                    if item is not None:
+                        newflags = item.flags() | Qt.ItemIsEditable
+                        item.setFlags(newflags)
 
-        
         _reset_flags(self.simple_table,8)
         _reset_flags(self.g1_pre_post_table,7)
         _reset_flags(self.g2_pre_post_table,7)
@@ -597,27 +598,17 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.block_all_signals(False)
         
     def enable_back_calculation_btn(self, engage = False):
-        
-        self.set_clear_btn_color()
-        pass
-        # TODO: Write body of function
-        
-        #  gimpute.continuous.data <- function(group1, group2, effect_data, conf.level=95.0) {
-#  # Tries to solve for one of n1,n2, mean1, mean2, sd1, sd2 based on the data
-#  # in group1, group2, effect_data
-#  
-#  # Get 'more' local copies
-#  n1    <- group1[["n"]]
-#  n2    <- group2[["n"]]
-#  mean1 <- group1[["mean"]]
-#  mean2 <- group2[["mean"]]
-#  sd1   <- group1[["sd"]]
-#  sd2   <- group2[["sd"]]
-#  est   <- effect_data[["est"]]
-#  low   <- effect_data[["low"]]
-#  high  <- effect_data[["high"]]
-#  metric <- effect_data[["metric"]]
-#  met.param <- effect_data[["met.param"]] # metric specific-parameter
+        # Choose metric parameter if not already chosen
+        if (self.metric_parameter is None) and self.cur_effect in ["MD","SMD"]:
+            if self.cur_effect == "MD":
+                info = "In order to perform back-calculation most accurately, we need to know something about the assumptions about the two population standard deviations. Please choose from one of the following options:"
+                option0_txt = "Assume the population standard deviations are the same (as in most parametric data analysis techniques) (default)."
+                option1_txt = "Do not assume the population standard deviations are the same"
+                dialog = ChooseBackCalcResultForm(info, option0_txt, option1_txt) # TODO: rename this class to be more something more general i.e. a choice between two things
+                if dialog.exec_():
+                    self.metric_parameter = True if dialog.getChoice() == 0 else False
+            elif self.cur_effect == "SMD":
+                pass
 
         def build_data_dicts():
             var_names = self.get_column_header_strs()
@@ -642,10 +633,10 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         if self.cur_effect not in ["MD", "SMD"]:
             self.back_calc_btn.setVisible(False)
         else:
-            self.back_calc_btn.setVisibile(True)
+            self.back_calc_btn.setVisible(True)
             
         (group1_data, group2_data, effect_data) = build_data_dicts()
-        imputed = meta_py_r.impute_cont_data(group1_data, group2_data, effect_data, self.conf_level_to_alpha())
+        imputed = meta_py_r.back_calc_cont_data(group1_data, group2_data, effect_data, self.CI_spinbox.value())
         print("Imputed data: ", imputed)
         
         # Leave if there was a failure
@@ -663,36 +654,47 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         ########################################################################
         # Actually do stuff with imputed data here if we are 'engaged'
         ########################################################################
-        #for x in range(3):
-         #   self.clear_column(x) # clear out the table
-         
-         
-
-#        if len(imputed.keys()) > 1:
-#            dialog = ChooseBackCalcResultForm(imputed, parent=self)
-#            if dialog.exec_():
-#                choice = dialog.getChoice()
-#            else: # don't do anything if cancelled
-#                return None
-#        else: # only one option
-#            choice = "op1"
-#            
-#            
-#        # set values in table & save in ma_unit
-#        self.raw_data_table.blockSignals(True)
-#        self._set_val(0, 0, int(round(imputed[choice]["a"]))  )
-#        self._set_val(0, 2, int(round(imputed[choice]["b"]))  )  
-#        self._set_val(1, 0, int(round(imputed[choice]["c"]))  ) 
-#        self._set_val(1, 2, int(round(imputed[choice]["d"]))  ) 
-#        self.raw_data_table.blockSignals(False)
-#        
-#        self._update_data_table()
-#        self._update_ma_unit() # save in ma_unit
-#        self.save_form_state()
-#        
-#        self.set_clear_btn_color()
+        # Choose one of the values if multiple ones were returned in the output
+        keys_to_names = {"n1":"group 1 sample size",
+                         "n2":"group 2 sample size",
+                         "sd1":"group 1 standard deviation",
+                         "sd2":"group 2 standard deviation",
+                         "mean1":"group 1 mean",
+                         "mean2":"group 2 mean"}
+        for key,value in imputed.iteritems():
+            if is_list(value):
+                info = ("The back calculation has resulted in multiple results for "
+                        + keys_to_names[key] + "\n\nPlease choose one of the following:")
+                option0_txt = keys_to_names[key] + " = " + str(value[0])
+                option1_txt = keys_to_names[key] + " = " + str(value[1])
+                print("Options (0,1)", value[0], value[1])
+                
+                dialog = ChooseBackCalcResultForm(info, option0_txt, option1_txt) # TODO: rename this class to be more something more general i.e. a choice between two things
+                if dialog.exec_():
+                    imputed[key] = value[0] if dialog.getChoice() == 0 else value[1]
+                else: # pressed cancel
+                    return None # do nothing and leave
+    
+        # Write the data to the table
+        var_names = self.get_column_header_strs()
+        group1_data = {"n":imputed["n1"],
+                       "sd":imputed["sd1"],
+                       "mean":imputed["mean1"]}
+        group2_data = {"n":imputed["n2"],
+                       "sd":imputed["sd2"],
+                       "mean":imputed["mean2"]}
+        for row in range(len(self.cur_groups)):
+            for var_index, var_name in enumerate(var_names):
+                if var_name not in ["n","sd","mean"]:
+                    continue
+                val = group1_data[var_name] if row == 0 else group2_data[var_name]
+                self._set_val(row, var_index, val, self.simple_table)
         
-
+        self.impute_data()
+        self._update_ma_unit()
+        self.save_form_state()
+        self.set_clear_btn_color()
+        
     def clear_form(self): 
         self.block_all_signals(True)
         # reset tables
@@ -857,9 +859,12 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         
 ################################################################################
 class ChooseBackCalcResultForm(QDialog, ui_choose_back_calc_result_form.Ui_ChooseBackCalcResultForm):
-    def __init__(self, data, info_text, op1_txt, op2_txt, parent=None):
+    def __init__(self, info_text, op1_txt, op2_txt, parent=None):
         super(ChooseBackCalcResultForm, self).__init__(parent)
         self.setupUi(self)
+        
+#        if 
+        
 #        
 #        #op1 = data["op1"] # option 1 data
 #        #a,b,c,d = op1["a"],op1["b"],op1["c"],op1["d"]
@@ -871,14 +876,20 @@ class ChooseBackCalcResultForm(QDialog, ui_choose_back_calc_result_form.Ui_Choos
 #        #a,b,c,d = int(round(a)),int(round(b)),int(round(c)),int(round(d))
 #        #option2_txt = "Group 1:\n  #events: %d\n  Total: %d\nGroup 2:\n  #events: %d\n  Total: %d" % (a,b,c,d)
 #        
-#        self.choice1_lbl.setText(option1_txt)
-#        self.choice2_lbl.setText(option2_txt)
-#        self.info_label.setText("The back-calculation has resulted in two possible sets of choices for the counts.\n\nPlease choose one from below:")
-#
-#    def getChoice(self):
-#        #choices = ["op1", "op2"]
-#        #
-#        if self.choice1_btn.isChecked():
-#            return choices[0] # op1
-#        else:
-#            return choices[1] # op2
+        self.choice1_lbl.setText(op1_txt)
+        self.choice2_lbl.setText(op2_txt)
+        self.info_label.setText(info_text)
+
+    def getChoice(self):
+        # Choice data to be returned is index of data item
+        if self.choice1_btn.isChecked():
+            return 0
+        else:
+            return 1
+        
+def is_list(x):
+    try:
+        list(x)
+        return True
+    except:
+        return False

@@ -457,9 +457,13 @@ def enable_txt_box_input(*args):
     '''
     
     for text_box in args:
+        text_box.blockSignals(True)
+        
         text_box.setEnabled(False)
         if text_box.text() in EMPTY_VALS:
             text_box.setEnabled(True)
+            
+        text_box.blockSignals(False)
             
 CHANGE_CI_ALERT_MSG = ("I see that you are changing the confidence level. You "
                        "should know that when you close this form, the values "

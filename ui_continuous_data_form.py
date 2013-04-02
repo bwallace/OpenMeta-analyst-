@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'continuous_data_form.ui'
 #
-# Created: Wed Mar 27 14:45:38 2013
+# Created: Tue Apr  2 13:13:17 2013
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_ContinuousDataForm(object):
     def setupUi(self, ContinuousDataForm):
         ContinuousDataForm.setObjectName(_fromUtf8("ContinuousDataForm"))
-        ContinuousDataForm.resize(570, 582)
+        ContinuousDataForm.resize(570, 614)
         ContinuousDataForm.setMinimumSize(QtCore.QSize(570, 0))
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Verdana"))
@@ -163,9 +163,6 @@ class Ui_ContinuousDataForm(object):
         self.verticalLayout.addWidget(self.grp_2_lbl)
         self.horizontalLayout_3 = QtGui.QHBoxLayout()
         self.horizontalLayout_3.setObjectName(_fromUtf8("horizontalLayout_3"))
-        self.clear_Btn = QtGui.QPushButton(self.grp_box_pre_post)
-        self.clear_Btn.setObjectName(_fromUtf8("clear_Btn"))
-        self.horizontalLayout_3.addWidget(self.clear_Btn)
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_3.addItem(spacerItem)
         self.label = QtGui.QLabel(self.grp_box_pre_post)
@@ -178,6 +175,18 @@ class Ui_ContinuousDataForm(object):
         self.horizontalLayout_3.addWidget(self.correlation_pre_post)
         self.verticalLayout.addLayout(self.horizontalLayout_3)
         self.verticalLayout_2.addWidget(self.grp_box_pre_post)
+        self.horizontalLayout_6 = QtGui.QHBoxLayout()
+        self.horizontalLayout_6.setObjectName(_fromUtf8("horizontalLayout_6"))
+        self.clear_Btn = QtGui.QPushButton(ContinuousDataForm)
+        self.clear_Btn.setObjectName(_fromUtf8("clear_Btn"))
+        self.horizontalLayout_6.addWidget(self.clear_Btn)
+        spacerItem1 = QtGui.QSpacerItem(108, 18, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_6.addItem(spacerItem1)
+        self.back_calc_btn = QtGui.QPushButton(ContinuousDataForm)
+        self.back_calc_btn.setEnabled(False)
+        self.back_calc_btn.setObjectName(_fromUtf8("back_calc_btn"))
+        self.horizontalLayout_6.addWidget(self.back_calc_btn)
+        self.verticalLayout_2.addLayout(self.horizontalLayout_6)
         self.horizontalLayout_2 = QtGui.QHBoxLayout()
         self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
         self.label_13 = QtGui.QLabel(ContinuousDataForm)
@@ -192,18 +201,18 @@ class Ui_ContinuousDataForm(object):
         self.effect_cbo_box.setMaximumSize(QtCore.QSize(76, 20))
         self.effect_cbo_box.setObjectName(_fromUtf8("effect_cbo_box"))
         self.horizontalLayout_2.addWidget(self.effect_cbo_box)
-        spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_2.addItem(spacerItem1)
+        spacerItem2 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem2)
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
         self.gridLayout = QtGui.QGridLayout()
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
-        spacerItem2 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacerItem2, 0, 0, 2, 1)
+        spacerItem3 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.gridLayout.addItem(spacerItem3, 0, 0, 2, 1)
         self.ci_label = QtGui.QLabel(ContinuousDataForm)
         self.ci_label.setObjectName(_fromUtf8("ci_label"))
         self.gridLayout.addWidget(self.ci_label, 0, 2, 1, 1)
-        spacerItem3 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacerItem3, 0, 3, 2, 1)
+        spacerItem4 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.gridLayout.addItem(spacerItem4, 0, 3, 2, 1)
         self.horizontalLayout_4 = QtGui.QHBoxLayout()
         self.horizontalLayout_4.setObjectName(_fromUtf8("horizontalLayout_4"))
         self.label_14 = QtGui.QLabel(ContinuousDataForm)
@@ -267,8 +276,8 @@ class Ui_ContinuousDataForm(object):
         self.CI_spinbox.setProperty("value", 95.0)
         self.CI_spinbox.setObjectName(_fromUtf8("CI_spinbox"))
         self.horizontalLayout.addWidget(self.CI_spinbox)
-        spacerItem4 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem4)
+        spacerItem5 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem5)
         self.verticalLayout_2.addLayout(self.horizontalLayout)
         self.buttonBox = QtGui.QDialogButtonBox(ContinuousDataForm)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
@@ -350,9 +359,10 @@ class Ui_ContinuousDataForm(object):
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Verdana\'; font-size:8pt; font-weight:600; font-style:italic;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:7pt;\">group 2</span></p></body></html>", None))
-        self.clear_Btn.setText(_translate("ContinuousDataForm", "Clear Form", None))
         self.label.setText(_translate("ContinuousDataForm", "correlation:", None))
         self.correlation_pre_post.setText(_translate("ContinuousDataForm", "0.0", None))
+        self.clear_Btn.setText(_translate("ContinuousDataForm", "Clear Form", None))
+        self.back_calc_btn.setText(_translate("ContinuousDataForm", "back-calculate table", None))
         self.label_13.setText(_translate("ContinuousDataForm", "effect", None))
         self.ci_label.setText(_translate("ContinuousDataForm", "(X% confidence interval)", None))
         self.label_14.setText(_translate("ContinuousDataForm", "est.", None))

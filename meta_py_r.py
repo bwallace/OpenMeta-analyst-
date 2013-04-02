@@ -115,14 +115,35 @@ def R_fn_with_dataframe_arg(data_dict, R_fn_name):
 
 
 def impute_bin_data(bin_data_dict):
-    for param, val in bin_data_dict.items():
-        if val is None:
-            bin_data_dict.pop(param)
+    remove_value(None, bin_data_dict)
 
     dataf = ro.r['data.frame'](**bin_data_dict)
     two_by_two = ro.r("gimpute.bin.data(%s)" % (dataf.r_repr()))
     
     return _grlist_to_pydict(two_by_two)
+
+# meta_py_r.impute_cont_data(group1_data, group2_data, effect_data, self.conf_level_to_alpha())
+def back_calc_cont_data(group1_data, group2_data, effect_data, conf_level):
+    remove_value(None, group1_data)
+    remove_value(None, group2_data)
+    remove_value(None, effect_data)
+    
+    dataf_grp1 = ro.r['data.frame'](**group1_data)
+    dataf_grp2 = ro.r['data.frame'](**group2_data)
+    dataf_effect = ro.r['data.frame'](**effect_data)
+    
+    r_res = ro.r("gimpute.cont.data(%s,%s,%s,%s)" % (dataf_grp1.r_repr(),
+                                                     dataf_grp2.r_repr(),
+                                                     dataf_effect.r_repr(),
+                                                     str(conf_level)))
+    return _grlist_to_pydict(r_res)
+    
+
+def remove_value(toRemove, t_dict):
+    ''' Removes all entries in t_dict with value toRemove'''
+    for param, val in t_dict.items():
+        if val == toRemove:
+            t_dict.pop(param)
 
 def fillin_2x2(table_data_dict):
     #r_str = ["fillin.2x2.simple("]
@@ -205,6 +226,7 @@ def _grlist_to_pydict(r_ls, recurse=True):
 
     return d
 
+# This should be renamed as it is not doing back-calculation from effects
 def impute_cont_data(cont_data_dict, alpha):
     print "computing continuous data via R..."
     
@@ -226,9 +248,6 @@ def impute_cont_data(cont_data_dict, alpha):
     print "attempting to execute: %s" % r_str
     c_data = ro.r(r_str)
     results = _grlist_to_pydict(c_data,True)
-    
-    #pyqtRemoveInputHook()
-    #pdb.set_trace()
     
     return results
     
