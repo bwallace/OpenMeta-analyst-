@@ -141,7 +141,8 @@ ERROR_COLOR = QColor("red")
 OK_COLOR = QColor("black")
 
 DEFAULT_CONF_LEVEL = 95.0
-DEFAULT_GROUP_NAMES = ["Grp A", "Grp B"]
+#DEFAULT_GROUP_NAMES = ["Grp A", "Grp B"]
+DEFAULT_GROUP_NAMES = ["tx A", "tx B"]
 
 '''
 some useful static methods

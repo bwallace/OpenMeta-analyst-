@@ -1205,6 +1205,8 @@ class DatasetModel(QAbstractTableModel):
         # just pick a reasonable current effect,
         # given the outcome data type
         data_type = data_model.get_outcome_type(d["current_outcome"])
+        
+        #print("data_type: ", data_type)
 
         all_txs = data_model.get_group_names()
 

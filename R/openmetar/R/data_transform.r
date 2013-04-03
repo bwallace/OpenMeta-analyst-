@@ -7,6 +7,8 @@ isnt.na <- function(x) {
 	!is.na(x)
 }
 
+IMAGINARY.THRESHOLD <- 1E-8
+
 
 ############################ 
 # Binary data calculation  #
@@ -489,6 +491,8 @@ gimpute.cont.data <- function(group1, group2, effect_data, conf.level=95.0) {
 	if (is.null(met.param)) met.param <- NA
 	if (is.null(conf.level)) conf.level <- NA
 	
+	metric <- as.character(metric)
+	
 #	print("n1"); print(n1)
 #	print("n2"); print(n2)
 #	print("mean1"); print(mean1)
@@ -522,22 +526,22 @@ gimpute.cont.data <- function(group1, group2, effect_data, conf.level=95.0) {
 	
 	print("se: "); print(se);
 	print("var: "); print(var);
-	
-	filter_neg_result <- function(a,b) {
-	# Ignore negative results, and condense NAs
-		res <- c(a,b)
 		
-		if (isnt.na(a) & a < 0)
-			res <- b
-		else if (isnt.na(b) & b < 0)
-			res <- a
-		else if (is.na(a) & is.na(b))
-			res <- NA
-			
-		return(res)
+	filter_neg_result <- function(res.vector) {
+		# Ignore negative results, complex number results, and condense all NAs to a single one
+		res.vector <- res.vector[!is.na(res.vector)]
+		res.vector <- res.vector[Re(res.vector) > 0]
+		res.vector <- res.vector[abs(Im(res.vector)) < IMAGINARY.THRESHOLD] # imaginary part is very close to zero
+		res.vector <- Re(res.vector)
+		
+		#print("imaginary"); print(Im(res.vector))
+		if (length(res.vector)==0)
+			res.vector <- NA;
+		return(res.vector)
 	}
 	
 	impute.from.MD <- function() {
+		print("From MD")
 		# Formulas from "The Handbook of Research Synthesis and Meta-Analysis"
 	    #     2nd Ed. p. 224
 		
@@ -566,7 +570,7 @@ gimpute.cont.data <- function(group1, group2, effect_data, conf.level=95.0) {
 				print("n1op2"); print(n1.op2);
 				n1.op1 <- round(n1.op1, digits = 0)
 				n1.op2 <- round(n1.op2, digits = 0)
-				n1 <- filter_neg_result(n1.op1,n1.op2)
+				n1 <- filter_neg_result(c(n1.op1,n1.op2))
 			}
 			if (is.na(n2)) {
 				print("n2 is na")
@@ -574,23 +578,20 @@ gimpute.cont.data <- function(group1, group2, effect_data, conf.level=95.0) {
 				n2.op2 <- -(1/2)*(-n1*sd2^2+var*n1^2-2*var*n1-sd1^2*n1+sd1^2+sd2^2+sqrt(sd1^4+sd2^4+2*sd1^2*sd2^2+n1^2*sd2^4+2*n1*sd2^4+var^2*n1^4-4*var^2*n1^3+4*var^2*n1^2+sd1^4*n1^2-2*sd1^4*n1-2*n1^3*sd2^2*var+2*n1^2*sd2^2*var-2*n1^2*sd2^2*sd1^2+2*var*n1^3*sd1^2+2*var*n1^2*sd1^2-4*var*n1*sd1^2-4*var*n1*sd2^2))/(var*n1-sd2^2)
 				n2.op1 <- round(n2.op1, digits=0)
 				n2.op2 <- round(n2.op2, digits=0)
-				n2 <- filter_neg_result(n2.op1, n2.op2)
+				n2 <- filter_neg_result(c(n2.op1, n2.op2))
 			}
 			if (is.na(sd1)) {
 				print("sd1 is na")
 				sd1.op1 <- sqrt((n1^2-n1+n1*n2-n2)*(var*n1^2*n2+var*n1*n2^2-2*var*n1*n2-n1*sd2^2*n2+n1*sd2^2-sd2^2*n2^2+sd2^2*n2))/(n1^2-n1+n1*n2-n2)
 				sd1.op2 <- -sqrt((n1^2-n1+n1*n2-n2)*(var*n1^2*n2+var*n1*n2^2-2*var*n1*n2-n1*sd2^2*n2+n1*sd2^2-sd2^2*n2^2+sd2^2*n2))/(n1^2-n1+n1*n2-n2)
-				sd1 <- filter_neg_result(sd1.op1, sd1.op2)
+				sd1 <- filter_neg_result(c(sd1.op1, sd1.op2))
 			}
 			if (is.na(sd2)) {
 				print("sd2 is na")
 				sd2.op1 <- sqrt((n1*n2-n1+n2^2-n2)*(var*n1^2*n2+var*n1*n2^2-2*var*n1*n2-sd1^2*n1^2+sd1^2*n1-n2*sd1^2*n1+n2*sd1^2))/(n1*n2-n1+n2^2-n2)
 				sd2.op2 <- -sqrt((n1*n2-n1+n2^2-n2)*(var*n1^2*n2+var*n1*n2^2-2*var*n1*n2-sd1^2*n1^2+sd1^2*n1-n2*sd1^2*n1+n2*sd1^2))/(n1*n2-n1+n2^2-n2)
-				sd2 <- filter_neg_result(sd2.op1, sd2.op2)
+				sd2 <- filter_neg_result(c(sd2.op1, sd2.op2))
 			}
-			
-			res <- list(n1=n1, n2=n2, mean1=Y1, mean2=Y2, sd1=sd1, sd2=sd2)
-			return(res)
 		}
 		else {  # population SDs are not the same
 			print("Not assuming population SDs are the same")
@@ -606,37 +607,94 @@ gimpute.cont.data <- function(group1, group2, effect_data, conf.level=95.0) {
 				print("sd1 is na")
 				sd1.op1 <- sqrt(n2*n1*(var*n2-sd2^2))/n2
 				sd1.op2 <- -sqrt(n2*n1*(var*n2-sd2^2))/n2
-				sd1 <- filter_neg_result(sd1.op1, sd1.op2)
+				sd1 <- filter_neg_result(c(sd1.op1, sd1.op2))
 			}
 			if (is.na(sd2)) {
 				print("sd2 is na")
 				sd2.op1 <- sqrt(n1*n2*(var*n1-sd1^2))/n1
 				sd2.op2 <- -sqrt(n1*n2*(var*n1-sd1^2))/n1
-				sd2 <- filter_neg_result(sd2.op1, sd2.op2)
+				sd2 <- filter_neg_result(c(sd2.op1, sd2.op2))
 			}
 		}
 		
 		res <- list(n1=n1, n2=n2, mean1=Y1, mean2=Y2, sd1=sd1, sd2=sd2)
 		return(res)
-	}
-	
-	
+	} # end of impute.from.MD
 	
 	impute.from.SMD <- function() {
-		2
-	}
+		print("From SMD")
+		#######################################################################
+		# If one of the means is missing	
+		sdw <- sqrt(((n1-1)*sd1^2+(n2-1)*sd2^2)/(n1+n2-2)) # within-groups sd
+		D <- est; Y1 <- mean1; Y2 <- mean2;
+		
+		if (is.na(Y1)) Y1 <- D*sdw+Y2
+		if (is.na(Y2)) Y2 <- -D*sdw+Y1
+		#######################################################################
+		# First try some stuff that does not depend on the metric parameter
+		# From formula: d=(Y1-Y2)/SW, SW^2=((n1-1)*sd1^2+(n2-1)*sd2^2)/(n1+n2-2)
+		if (is.na(n1)) {
+			n1 <- -(-sd1^2*D^2+sd2^2*n2*D^2-sd2^2*D^2-n2*Y1^2+2*n2*Y1*Y2-n2*Y2^2+2*Y1^2-4*Y1*Y2+2*Y2^2)/(sd1^2*D^2-Y1^2+2*Y1*Y2-Y2^2)
+		}
+		if (is.na(n2)) {
+			n2 <- -(sd1^2*n1*D^2-sd1^2*D^2-sd2^2*D^2-n1*Y1^2+2*n1*Y1*Y2-n1*Y2^2+2*Y1^2-4*Y1*Y2+2*Y2^2)/(sd2^2*D^2-Y1^2+2*Y1*Y2-Y2^2)
+		}
+		if (is.na(sd1)) {
+			sd1.op1 <- (sqrt(-(n1-1)*(-n1*Y1^2+2*n1*Y1*Y2+sd2^2*n2*D^2-sd2^2*D^2+2*n2*Y1*Y2-n2*Y2^2-n1*Y2^2-n2*Y1^2+2*Y2^2+2*Y1^2-4*Y1*Y2)))/((n1-1)*D)
+			sd1.op2 <- -(sqrt(-(n1-1)*(-n1*Y1^2+2*n1*Y1*Y2+sd2^2*n2*D^2-sd2^2*D^2+2*n2*Y1*Y2-n2*Y2^2-n1*Y2^2-n2*Y1^2+2*Y2^2+2*Y1^2-4*Y1*Y2)))/((n1-1)*D)
+			sd1 <- filter_neg_result(c(sd1.op1, sd1.op2))
+		}
+		if (is.na(sd2)) {
+			sd2.op1 <- (sqrt(-(n2-1)*(sd1^2*n1*D^2-sd1^2*D^2-n1*Y2^2-n2*Y1^2-n1*Y1^2+2*n1*Y1*Y2+2*Y1^2-4*Y1*Y2+2*n2*Y1*Y2-n2*Y2^2+2*Y2^2)))/((n2-1)*D)
+			sd2.op2 <- -(sqrt(-(n2-1)*(sd1^2*n1*D^2-sd1^2*D^2-n1*Y2^2-n2*Y1^2-n1*Y1^2+2*n1*Y1*Y2+2*Y1^2-4*Y1*Y2+2*n2*Y1*Y2-n2*Y2^2+2*Y2^2)))/((n2-1)*D)
+			sd2 <- filter_neg_result(c(sd2.op1, sd2.op2))
+		}
+		#######################################################################
+		# For SMD, the metric parameter is whether hedges g is used
+		#     met.param == TRUE  # SMD is Hedges' g (corrected bias) (default)
+	    #     met.param == FALSE # SMD has uncorrected bias
+		if (met.param) { # using Hedges' g
+			print("Assuming SMD is Hedges' g")
+			if (is.na(n1)) {
+				tryCatch({n1 <- polyroot(c(96*n2^3-16*n2^4-144*n2^2, (81*var*n2^2-72*var*n2^3+48*D^2*n2^2-72*D^2*n2+16*var*n2^4-288*n2-64*n2^3+288*n2^2-8*n2^3*D^2), (48*D^2*n2+48*var*n2^3+288*n2-16*D^2*n2^2-144-144*var*n2^2+81*var*n2-96*n2^2), (96+48*var*n2^2-64*n2-8*D^2*n2-72*var*n2), (16*var*n2-16)));
+					}, error = function(e) {
+						print(e)
+						n1 <- NA
+					})
+				n1 <- filter_neg_result(n1)
+			}
+			if (is.na(n2)) {
+				tryCatch({  n2 <- polyroot(c(96*n1^3-16*n1^4-144*n1^2, (81*var*n1^2-72*var*n1^3+48*D^2*n1^2-72*D^2*n1+16*var*n1^4-288*n1-64*n1^3+288*n1^2-8*n1^3*D^2), (48*D^2*n1+48*var*n1^3+288*n1-16*D^2*n1^2-144-144*var*n1^2+81*var*n1-96*n1^2), (96+48*var*n1^2-64*n1-8*D^2*n1-72*var*n1), (16*var*n1-16)));
+					}, error = function(e) {
+						print(e)
+						n2 <- NA
+					})
+				n2 <- filter_neg_result(n2)
+			}
+		}
+		else { # not using Hedges' g
+			if (is.na(n1)) {
+				n1.op1 <- (1/4)*(-2*var*n2+4+d^2+sqrt(4*var^2*n2^2-4*d^2*n2*var+8*d^2+d^4))*n2/(var*n2-1)
+				n1.op2 <- -(1/4)*(2*var*n2-4-d^2+sqrt(4*var^2*n2^2-4*d^2*n2*var+8*d^2+d^4))*n2/(var*n2-1)
+				n1.op1 <- round(n1.op1, digits = 0)
+				n1.op2 <- round(n1.op2, digits = 0)
+				n1 <- filter_neg_result(c(n1.op1,n1.op2))
+			}
+			if (is.na(n2)) {
+				n2.op1 <- (1/4)*(-2*var*n1+d^2+4+sqrt(4*var^2*n1^2-4*var*n1*d^2+d^4+8*d^2))*n1/(-1+var*n1)
+				n2.op2 <- -(1/4)*(2*var*n1-d^2-4+sqrt(4*var^2*n1^2-4*var*n1*d^2+d^4+8*d^2))*n1/(-1+var*n1)
+				n2.op1 <- round(n2.op1, digits=0)
+				n2.op2 <- round(n2.op2, digits=0)
+				n2 <- filter_neg_result(c(n2.op1, n2.op2))
+			}
+		}
+		
+		res <- list(n1=n1, n2=n2, mean1=Y1, mean2=Y2, sd1=sd1, sd2=sd2)
+		return(res)
+	} # end of impute.from.smd
 	
-	# TODO: FINISH THIS
-	
-	
-	#res <- switch(metric, "RD"=impute.from.RD(),
-	#	"OR"=impute.from.LOR(),
-	#	"RR"=impute.from.LRR())
-
-	res <- switch(metric, "MD"=impute.from.MD())
+	res <- switch(metric, "MD"=impute.from.MD(), "SMD"=impute.from.SMD())
 	return(res)
-	
-	
 }
 
 ########################################################################################

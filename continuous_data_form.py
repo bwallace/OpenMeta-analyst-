@@ -137,6 +137,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         
         self.enable_txt_box_input()
         self.enable_back_calculation_btn()
+        self.metric_parameter = None
       
     def val_changed(self, val_str):
         def is_between_bounds(est=self.form_effects_dict[self.cur_effect]["est"], 
@@ -551,7 +552,6 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         se1, se2 = self._get_float(0, 3), self._get_float(1, 3)
         
         # here we check whether or not we have sufficient data to compute an outcome
-        ## TODO we should make this conditional more readable.
         if not any([self.no_val(x) for x in [n1, m1, sd1, n2, m2, sd2 ]]) or \
                     not any([self.no_val(x) for x in [m1, se1, m2, se2]]) and self.cur_effect=="MD" or \
                     not any([self.no_val(x) for x in [n1, m1, sd1]]) and self.cur_effect in CONTINUOUS_ONE_ARM_METRICS:
@@ -608,8 +608,13 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                 if dialog.exec_():
                     self.metric_parameter = True if dialog.getChoice() == 0 else False
             elif self.cur_effect == "SMD":
-                pass
-
+                info = "Has the bias in the SMD been corrected (Hedges' g)?"
+                option0_txt = "Yes, the slight bias in the SMD has been corrected (Hedges' g) (default)" 
+                option1_txt = "No, the bias is uncorrected"
+                dialog = ChooseBackCalcResultForm(info, option0_txt, option1_txt)
+                if dialog.exec_():
+                    self.metric_parameter = True if dialog.getChoice() == 0 else False
+                
         def build_data_dicts():
             var_names = self.get_column_header_strs()
             tmp = []
@@ -859,7 +864,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         
 ################################################################################
 class ChooseBackCalcResultForm(QDialog, ui_choose_back_calc_result_form.Ui_ChooseBackCalcResultForm):
-    def __init__(self, info_text, op1_txt, op2_txt, parent=None):
+    def __init__(self, info_text, op1_txt, op2_txt, parent=None, op3_txt=None, op4_txt=None):
         super(ChooseBackCalcResultForm, self).__init__(parent)
         self.setupUi(self)
         
