@@ -38,6 +38,23 @@ import ui_choose_back_calc_result_form
 NUM_DIGITS = 4 
 default_col_width = 65
 
+DEBUG_FLAG = True
+
+DEBUG_INDENT = 0
+def debug_msg(msg, entering = None):    
+    global DEBUG_INDENT
+    prefix = ""
+    
+    if DEBUG_FLAG:
+        if entering == True:
+            #prefix = "  "*DEBUG_INDENT
+            print(prefix + "--> " + msg + " -->")
+            #DEBUG_INDENT += 1
+        elif entering == False:
+            #prefix = "  "*(DEBUG_INDENT-1)
+            print(prefix + "<-- " + msg + " <--")
+            #DEBUG_INDENT -= 1
+
 # because the output from R is a string ("TRUE"/"FALSE")
 _is_true = lambda x: x == "TRUE"
 
@@ -45,6 +62,9 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
     def __init__(self, ma_unit, cur_txs, cur_group_str, cur_effect, parent=None):
         super(ContinuousDataForm, self).__init__(parent)
         self.setupUi(self)
+        
+        debug_msg("Entering __init__",True)
+        ########################################################################
         self.setup_signals_and_slots()
         self.ma_unit = ma_unit
         self.raw_data_dict = {}
@@ -54,6 +74,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.cur_groups = cur_txs
         self.cur_effect = cur_effect
         self.group_str = cur_group_str
+        self.metric_parameter = None
         
         self.entry_widgets = [self.simple_table, self.g1_pre_post_table,
                               self.g2_pre_post_table, self.effect_txt_box,
@@ -63,7 +84,6 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         
         self.CI_spinbox.setValue(meta_globals.DEFAULT_CONF_LEVEL)
         self.ci_label.setText("{0:.1f}% Confidence Interval".format(self.CI_spinbox.value()))
-        self.metric_parameter = None
         
         # Set the table headers to reflect the group names
         groups_names = QStringList(self.cur_groups)
@@ -75,14 +95,15 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.grp_1_lbl.setText(QString(self.cur_groups[0]))
         self.grp_2_lbl.setText(QString(self.cur_groups[1]))
         
+        self.setup_clear_button_palettes() # Color for clear_button_pallette
         self.initialize_backup_structures()
-        # Color for clear_button_pallette
-        self.setup_clear_button_palettes()
         self._populate_effect_data()
-        self.update_raw_data()
         self.enable_back_calculation_btn()
+        self.update_raw_data()
         self.save_form_state()
-
+        ########################################################################
+        debug_msg("Leaving __init__",False)
+        
     def setup_signals_and_slots(self):
         QObject.connect(self.simple_table, SIGNAL("cellChanged (int, int)"), self._cell_changed)
         QObject.connect(self.g1_pre_post_table, SIGNAL("cellChanged (int, int)"), lambda: self.impute_pre_post_data(self.g1_pre_post_table, 0))
@@ -118,6 +139,8 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.enable_back_calculation_btn()
         
     def _populate_effect_data(self):
+        debug_msg("Entering _populate_effect",True)
+        ########################################################################
         q_effects = sorted([QString(effect_str) for \
                              effect_str in self.ma_unit.effects_dict.keys()])
         self.effect_cbo_box.blockSignals(True)
@@ -126,18 +149,24 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.effect_cbo_box.setCurrentIndex(q_effects.index(QString(self.cur_effect)))
         # populate fields with current effect data
         self.set_current_effect()
+        #######################################################################
+        debug_msg("Leaving _populate_effect",False)
         
     def effect_changed(self):
+        debug_msg("Entering effect_changed",True)
+        ########################################################################
         # Re-scale previous effect first
         self.reset_conf_level()
         
         self.cur_effect = unicode(self.effect_cbo_box.currentText().toUtf8(), "utf-8")
         self.try_to_update_cur_outcome()
         self.set_current_effect()
-        
         self.enable_txt_box_input()
-        self.enable_back_calculation_btn()
-        self.metric_parameter = None
+        
+        self.metric_parameter = None       # zusammen
+        self.enable_back_calculation_btn() # zusammen
+        #######################################################################
+        debug_msg("Leaving effect_changed",False)
       
     def val_changed(self, val_str):
         def is_between_bounds(est=self.form_effects_dict[self.cur_effect]["est"], 
@@ -283,6 +312,9 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                     #self.correlation_pre_post.isEnabled())
 
     def set_current_effect(self):
+        debug_msg("Entering set_current_effect",True)
+        ########################################################################
+        self.block_all_signals(True)
         effect_dict = self.ma_unit.effects_dict[self.cur_effect][self.group_str]
         for s, txt_box in zip(['display_est', 'display_lower', 'display_upper'], \
                               [self.effect_txt_box, self.low_txt_box, self.high_txt_box]):
@@ -290,9 +322,14 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                 txt_box.setText(QString("%s" % round(effect_dict[s], NUM_DIGITS)))
             else:
                 txt_box.setText(QString(""))
+        self.block_all_signals(False)
+        ########################################################################
+        debug_msg("Leaving set_current_effect",False)
         
     def update_raw_data(self):
         '''Updates table widget with data from ma_unit'''
+        debug_msg("Entering update_raw_data", True)
+        ########################################################################
         self.simple_table.blockSignals(True)
         for row_index, group_name in enumerate(self.cur_groups):
             grp_raw_data = self.raw_data_dict[group_name]
@@ -309,6 +346,8 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                 
         self.impute_data()
         self.simple_table.blockSignals(False)
+        ########################################################################
+        debug_msg("Leaving update_raw_data",False)
         
     def _cell_data_not_valid(self, celldata_string, cell_header=None):
         # ignore blank entries
@@ -598,8 +637,11 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.block_all_signals(False)
         
     def enable_back_calculation_btn(self, engage = False):
+        debug_msg("Entering enable_back_calculation_btn",True)
+        ########################################################################
         # Choose metric parameter if not already chosen
         if (self.metric_parameter is None) and self.cur_effect in ["MD","SMD"]:
+            print("need to choose metric parameter because it is %s" % str(self.metric_parameter))
             if self.cur_effect == "MD":
                 info = "In order to perform back-calculation most accurately, we need to know something about the assumptions about the two population standard deviations. Please choose from one of the following options:"
                 option0_txt = "Assume the population standard deviations are the same (as in most parametric data analysis techniques) (default)."
@@ -614,6 +656,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                 dialog = ChooseBackCalcResultForm(info, option0_txt, option1_txt)
                 if dialog.exec_():
                     self.metric_parameter = True if dialog.getChoice() == 0 else False
+            print("metric_parameter is now %s" % str(self.metric_parameter))
                 
         def build_data_dicts():
             var_names = self.get_column_header_strs()
@@ -634,6 +677,31 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             print("Effect Data: ", effect_data)
             
             return (group1_data, group2_data, effect_data)
+        def new_data(g1_data, g2_data, imputed):
+            changed = False
+            
+            new_data = (imputed["n1"],
+                        imputed["sd1"],
+                        imputed["mean1"],
+                        imputed["n2"],
+                        imputed["sd2"],
+                        imputed["mean2"])
+            old_data = (g1_data["n"]    if "n"    in g1_data else None,
+                        g1_data["sd"]   if "sd"   in g1_data else None,
+                        g1_data["mean"] if "mean" in g1_data else None,
+                        g2_data["n"]    if "n"    in g2_data else None,
+                        g2_data["sd"]   if "sd"   in g2_data else None,
+                        g2_data["mean"] if "mean" in g2_data else None,
+                        )
+            now_available = lambda old, new: (old is None) and (new is not None)
+            comparison = [now_available(old_data[i], new_data[i]) for i in range(len(new_data))]
+            print("Comparison:", comparison)
+            if any(comparison):
+                changed = True
+            else:
+                changed = False
+            return changed
+            
         
         if self.cur_effect not in ["MD", "SMD"]:
             self.back_calc_btn.setVisible(False)
@@ -650,7 +718,10 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             self.back_calc_btn.setEnabled(False)
             return None
         
-        self.back_calc_btn.setEnabled(True)
+        if new_data(group1_data, group2_data, imputed):
+            self.back_calc_btn.setEnabled(True)
+        else:
+            self.back_calc_btn.setEnabled(False)
         self.set_clear_btn_color()
         
         if not engage:
@@ -705,8 +776,15 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self._update_ma_unit()
         self.save_form_state()
         self.set_clear_btn_color()
+        ########################################################################
+        debug_msg("Leaving enable_back_calculation_btn",False)
+        
+        
         
     def clear_form(self): 
+        self.metric_parameter = None  # } these two should go together
+        self.enable_txt_box_input()   # }
+        
         self.block_all_signals(True)
         # reset tables
         for table in [self.simple_table, self.g1_pre_post_table, self.g2_pre_post_table]:
@@ -735,18 +813,15 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.block_all_signals(False)
         
         self.save_form_state()
-        
         self.reset_table_item_flags()
         self.initialize_backup_structures()
-        self.enable_txt_box_input()
         self.CI_spinbox.setValue(meta_globals.DEFAULT_CONF_LEVEL)
         self.CI_spinbox.setEnabled(True)
-        
-        self.metric_parameter = None
 
     def save_form_state(self):
         ''' Saves the state of all objects on the form '''
-        
+        debug_msg("Entering save_form_state",True)
+        ########################################################################
         def save_table_data():
             row = 0
             def _backup_table(table,backup_table,range_num):
@@ -777,6 +852,9 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         save_table_data()
         save_displayed_effects_data()
         self.enable_back_calculation_btn()
+        ########################################################################
+        debug_msg("Leaving save_form_state",False)
+        
     
     def restore_form_state(self):
         ''' Restores the state of all objects on the form '''
@@ -819,6 +897,8 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.block_all_signals(False)
     
     def initialize_backup_structures(self):
+        debug_msg("Entering initalize_backup_structures",True)
+        ########################################################################
         # Stores form effect info as text
         self.form_effects_dict = {}
         for effect in self.get_effect_names():
@@ -828,6 +908,8 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.simple_table_backup = [[None,]*8]
         self.g1_pre_post_table_backup = [[None,]*7]
         self.g2_pre_post_table_backup = [[None,]*7]
+        ########################################################################
+        debug_msg("Leaving initalize_backup_structures",False)
         
     def get_effect_names(self):
         effects = self.ma_unit.effects_dict.keys()
@@ -884,6 +966,7 @@ class ChooseBackCalcResultForm(QDialog, ui_choose_back_calc_result_form.Ui_Choos
             return 0
         else:
             return 1
+################################################################################
         
 def is_list(x):
     try:

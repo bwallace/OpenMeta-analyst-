@@ -493,20 +493,6 @@ gimpute.cont.data <- function(group1, group2, effect_data, conf.level=95.0) {
 	
 	metric <- as.character(metric)
 	
-#	print("n1"); print(n1)
-#	print("n2"); print(n2)
-#	print("mean1"); print(mean1)
-#	print("mean2"); print(mean2)
-#	print("sd1"); print(sd1)
-#	print("sd2"); print(sd2)
-#	print("est"); print(est)
-#	print("low"); print(low)
-#	print("high"); print(low)
-#	print("metric"); print(metric)
-#	print("met.param"); print(met.param)
-#	print("conf.level"); print(conf.level)
-	
-	
 	# Can't do anything if we don't know what metric we are using or if we don't
 	# know the conf.level
 	if (is.na(metric) | is.na(conf.level) | is.na(met.param)) {
@@ -524,8 +510,8 @@ gimpute.cont.data <- function(group1, group2, effect_data, conf.level=95.0) {
 	se <- (high-low)/(2*mult)
 	var = se^2
 	
-	print("se: "); print(se);
-	print("var: "); print(var);
+	#print("se: "); print(se);
+	#print("var: "); print(var);
 		
 	filter_neg_result <- function(res.vector) {
 		# Ignore negative results, complex number results, and condense all NAs to a single one
@@ -563,7 +549,7 @@ gimpute.cont.data <- function(group1, group2, effect_data, conf.level=95.0) {
 		if (met.param) { # population SDs are the same
 			print("Assuming population SDs are the same")
 			if (is.na(n1)) {
-				print("n1 is na")
+				#print("n1 is na")
 				n1.op1 <- (1/2)*(n2*sd1^2-sd1^2-var*n2^2+2*var*n2+sd2^2*n2-sd2^2+sqrt(var^2*n2^4-4*var^2*n2^3+4*var^2*n2^2+sd1^4+sd2^4+n2^2*sd1^4+2*n2*sd1^4+2*sd1^2*sd2^2+sd2^4*n2^2-2*sd2^4*n2-2*n2^3*sd1^2*var+2*n2^2*sd1^2*var-2*n2^2*sd1^2*sd2^2-4*sd1^2*var*n2+2*var*n2^3*sd2^2+2*var*n2^2*sd2^2-4*var*n2*sd2^2))/(-sd1^2+var*n2)
 				n1.op2 <- -(1/2)*(-n2*sd1^2+sd1^2+var*n2^2-2*var*n2-sd2^2*n2+sd2^2+sqrt(var^2*n2^4-4*var^2*n2^3+4*var^2*n2^2+sd1^4+sd2^4+n2^2*sd1^4+2*n2*sd1^4+2*sd1^2*sd2^2+sd2^4*n2^2-2*sd2^4*n2-2*n2^3*sd1^2*var+2*n2^2*sd1^2*var-2*n2^2*sd1^2*sd2^2-4*sd1^2*var*n2+2*var*n2^3*sd2^2+2*var*n2^2*sd2^2-4*var*n2*sd2^2))/(-sd1^2+var*n2)
 				print("n1op1"); print(n1.op1);
@@ -571,23 +557,25 @@ gimpute.cont.data <- function(group1, group2, effect_data, conf.level=95.0) {
 				n1.op1 <- round(n1.op1, digits = 0)
 				n1.op2 <- round(n1.op2, digits = 0)
 				n1 <- filter_neg_result(c(n1.op1,n1.op2))
+                n1 <- round(n1)
 			}
 			if (is.na(n2)) {
-				print("n2 is na")
+				#print("n2 is na")
 				n2.op1 <- (1/2)*(n1*sd2^2-var*n1^2+2*var*n1+sd1^2*n1-sd1^2-sd2^2+sqrt(sd1^4+sd2^4+2*sd1^2*sd2^2+n1^2*sd2^4+2*n1*sd2^4+var^2*n1^4-4*var^2*n1^3+4*var^2*n1^2+sd1^4*n1^2-2*sd1^4*n1-2*n1^3*sd2^2*var+2*n1^2*sd2^2*var-2*n1^2*sd2^2*sd1^2+2*var*n1^3*sd1^2+2*var*n1^2*sd1^2-4*var*n1*sd1^2-4*var*n1*sd2^2))/(var*n1-sd2^2)
 				n2.op2 <- -(1/2)*(-n1*sd2^2+var*n1^2-2*var*n1-sd1^2*n1+sd1^2+sd2^2+sqrt(sd1^4+sd2^4+2*sd1^2*sd2^2+n1^2*sd2^4+2*n1*sd2^4+var^2*n1^4-4*var^2*n1^3+4*var^2*n1^2+sd1^4*n1^2-2*sd1^4*n1-2*n1^3*sd2^2*var+2*n1^2*sd2^2*var-2*n1^2*sd2^2*sd1^2+2*var*n1^3*sd1^2+2*var*n1^2*sd1^2-4*var*n1*sd1^2-4*var*n1*sd2^2))/(var*n1-sd2^2)
 				n2.op1 <- round(n2.op1, digits=0)
 				n2.op2 <- round(n2.op2, digits=0)
 				n2 <- filter_neg_result(c(n2.op1, n2.op2))
+                n2 <- round(n2)
 			}
 			if (is.na(sd1)) {
-				print("sd1 is na")
+				#print("sd1 is na")
 				sd1.op1 <- sqrt((n1^2-n1+n1*n2-n2)*(var*n1^2*n2+var*n1*n2^2-2*var*n1*n2-n1*sd2^2*n2+n1*sd2^2-sd2^2*n2^2+sd2^2*n2))/(n1^2-n1+n1*n2-n2)
 				sd1.op2 <- -sqrt((n1^2-n1+n1*n2-n2)*(var*n1^2*n2+var*n1*n2^2-2*var*n1*n2-n1*sd2^2*n2+n1*sd2^2-sd2^2*n2^2+sd2^2*n2))/(n1^2-n1+n1*n2-n2)
 				sd1 <- filter_neg_result(c(sd1.op1, sd1.op2))
 			}
 			if (is.na(sd2)) {
-				print("sd2 is na")
+				#print("sd2 is na")
 				sd2.op1 <- sqrt((n1*n2-n1+n2^2-n2)*(var*n1^2*n2+var*n1*n2^2-2*var*n1*n2-sd1^2*n1^2+sd1^2*n1-n2*sd1^2*n1+n2*sd1^2))/(n1*n2-n1+n2^2-n2)
 				sd2.op2 <- -sqrt((n1*n2-n1+n2^2-n2)*(var*n1^2*n2+var*n1*n2^2-2*var*n1*n2-sd1^2*n1^2+sd1^2*n1-n2*sd1^2*n1+n2*sd1^2))/(n1*n2-n1+n2^2-n2)
 				sd2 <- filter_neg_result(c(sd2.op1, sd2.op2))
@@ -596,21 +584,23 @@ gimpute.cont.data <- function(group1, group2, effect_data, conf.level=95.0) {
 		else {  # population SDs are not the same
 			print("Not assuming population SDs are the same")
 			if (is.na(n1)) {
-				print("n1 is na")
+				#print("n1 is na")
 				n1 <- n2*sd1^2/(var*n2-sd2^2)
+                n1 <- round(n1)
 			}
 			if (is.na(n2)) {
-				print("n2 is na")
+				#print("n2 is na")
 				n2 <- n1*sd2^2/(var*n1-sd1^2)
+                n2 <- round(n2)
 			}
 			if (is.na(sd1)) {
-				print("sd1 is na")
+				#print("sd1 is na")
 				sd1.op1 <- sqrt(n2*n1*(var*n2-sd2^2))/n2
 				sd1.op2 <- -sqrt(n2*n1*(var*n2-sd2^2))/n2
 				sd1 <- filter_neg_result(c(sd1.op1, sd1.op2))
 			}
 			if (is.na(sd2)) {
-				print("sd2 is na")
+				#print("sd2 is na")
 				sd2.op1 <- sqrt(n1*n2*(var*n1-sd1^2))/n1
 				sd2.op2 <- -sqrt(n1*n2*(var*n1-sd1^2))/n1
 				sd2 <- filter_neg_result(c(sd2.op1, sd2.op2))
@@ -635,9 +625,11 @@ gimpute.cont.data <- function(group1, group2, effect_data, conf.level=95.0) {
 		# From formula: d=(Y1-Y2)/SW, SW^2=((n1-1)*sd1^2+(n2-1)*sd2^2)/(n1+n2-2)
 		if (is.na(n1)) {
 			n1 <- -(-sd1^2*D^2+sd2^2*n2*D^2-sd2^2*D^2-n2*Y1^2+2*n2*Y1*Y2-n2*Y2^2+2*Y1^2-4*Y1*Y2+2*Y2^2)/(sd1^2*D^2-Y1^2+2*Y1*Y2-Y2^2)
+            n1 <- round(n1)
 		}
 		if (is.na(n2)) {
 			n2 <- -(sd1^2*n1*D^2-sd1^2*D^2-sd2^2*D^2-n1*Y1^2+2*n1*Y1*Y2-n1*Y2^2+2*Y1^2-4*Y1*Y2+2*Y2^2)/(sd2^2*D^2-Y1^2+2*Y1*Y2-Y2^2)
+            n2 <- round(n2)
 		}
 		if (is.na(sd1)) {
 			sd1.op1 <- (sqrt(-(n1-1)*(-n1*Y1^2+2*n1*Y1*Y2+sd2^2*n2*D^2-sd2^2*D^2+2*n2*Y1*Y2-n2*Y2^2-n1*Y2^2-n2*Y1^2+2*Y2^2+2*Y1^2-4*Y1*Y2)))/((n1-1)*D)
@@ -658,34 +650,38 @@ gimpute.cont.data <- function(group1, group2, effect_data, conf.level=95.0) {
 			if (is.na(n1)) {
 				tryCatch({n1 <- polyroot(c(96*n2^3-16*n2^4-144*n2^2, (81*var*n2^2-72*var*n2^3+48*D^2*n2^2-72*D^2*n2+16*var*n2^4-288*n2-64*n2^3+288*n2^2-8*n2^3*D^2), (48*D^2*n2+48*var*n2^3+288*n2-16*D^2*n2^2-144-144*var*n2^2+81*var*n2-96*n2^2), (96+48*var*n2^2-64*n2-8*D^2*n2-72*var*n2), (16*var*n2-16)));
 					}, error = function(e) {
-						print(e)
-						n1 <- NA
-					})
+						#print(e);
+						n1 <- NA;
+					});
 				n1 <- filter_neg_result(n1)
+        		n1 <- round(n1)
 			}
 			if (is.na(n2)) {
 				tryCatch({  n2 <- polyroot(c(96*n1^3-16*n1^4-144*n1^2, (81*var*n1^2-72*var*n1^3+48*D^2*n1^2-72*D^2*n1+16*var*n1^4-288*n1-64*n1^3+288*n1^2-8*n1^3*D^2), (48*D^2*n1+48*var*n1^3+288*n1-16*D^2*n1^2-144-144*var*n1^2+81*var*n1-96*n1^2), (96+48*var*n1^2-64*n1-8*D^2*n1-72*var*n1), (16*var*n1-16)));
 					}, error = function(e) {
-						print(e)
-						n2 <- NA
-					})
+						#print(e);
+						n2 <- NA;
+					});
 				n2 <- filter_neg_result(n2)
+       			n2 <- round(n2)
 			}
 		}
 		else { # not using Hedges' g
 			if (is.na(n1)) {
-				n1.op1 <- (1/4)*(-2*var*n2+4+d^2+sqrt(4*var^2*n2^2-4*d^2*n2*var+8*d^2+d^4))*n2/(var*n2-1)
-				n1.op2 <- -(1/4)*(2*var*n2-4-d^2+sqrt(4*var^2*n2^2-4*d^2*n2*var+8*d^2+d^4))*n2/(var*n2-1)
+				n1.op1 <- (1/4)*(-2*var*n2+4+D^2+sqrt(4*var^2*n2^2-4*D^2*n2*var+8*D^2+D^4))*n2/(var*n2-1)
+				n1.op2 <- -(1/4)*(2*var*n2-4-D^2+sqrt(4*var^2*n2^2-4*D^2*n2*var+8*D^2+D^4))*n2/(var*n2-1)
 				n1.op1 <- round(n1.op1, digits = 0)
 				n1.op2 <- round(n1.op2, digits = 0)
 				n1 <- filter_neg_result(c(n1.op1,n1.op2))
+                n1 <- round(n1)
 			}
 			if (is.na(n2)) {
-				n2.op1 <- (1/4)*(-2*var*n1+d^2+4+sqrt(4*var^2*n1^2-4*var*n1*d^2+d^4+8*d^2))*n1/(-1+var*n1)
-				n2.op2 <- -(1/4)*(2*var*n1-d^2-4+sqrt(4*var^2*n1^2-4*var*n1*d^2+d^4+8*d^2))*n1/(-1+var*n1)
+				n2.op1 <- (1/4)*(-2*var*n1+D^2+4+sqrt(4*var^2*n1^2-4*var*n1*D^2+D^4+8*D^2))*n1/(-1+var*n1)
+				n2.op2 <- -(1/4)*(2*var*n1-D^2-4+sqrt(4*var^2*n1^2-4*var*n1*D^2+D^4+8*D^2))*n1/(-1+var*n1)
 				n2.op1 <- round(n2.op1, digits=0)
 				n2.op2 <- round(n2.op2, digits=0)
 				n2 <- filter_neg_result(c(n2.op1, n2.op2))
+                n2 <- round(n2)
 			}
 		}
 		
