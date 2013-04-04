@@ -672,9 +672,9 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                            "metric":self.cur_effect,
                            "met.param":self.metric_parameter}
             
-            print("Group 1 Data: ", group1_data)
-            print("Group 2 Data: ", group2_data)
-            print("Effect Data: ", effect_data)
+            #print("Group 1 Data: ", group1_data)
+            #print("Group 2 Data: ", group2_data)
+            #print("Effect Data: ", effect_data)
             
             return (group1_data, group2_data, effect_data)
         def new_data(g1_data, g2_data, imputed):

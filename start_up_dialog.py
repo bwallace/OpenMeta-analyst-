@@ -77,6 +77,7 @@ class StartUp(QDialog, ui_start_upV2.Ui_WelcomeDialog):
             is_diag = dataset_info['data_type'] == "Diagnostic"
         
             self.parent.new_dataset(name=name, is_diag=is_diag)
+            print("error before here?")
             tmp = self.parent.cur_dimension
             self.parent.cur_dimension = "outcome"
             self.hide()

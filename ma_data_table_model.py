@@ -72,6 +72,10 @@ class DatasetModel(QAbstractTableModel):
         # update_column_indices method for more.
         self.INCLUDE_STUDY = 0
         self.NAME, self.YEAR = [col+1 for col in range(2)]
+        
+        print("calling update column indices from ma_data_table_model init")
+        # GD - Actually impossible for this to work from here.
+        # update_column_indices depends on there being a valid self.current_outcome
         self.update_column_indices()
          
          
@@ -148,7 +152,11 @@ class DatasetModel(QAbstractTableModel):
         # the type data being displayed, the number of covariates, etc. 
         # It is extremely important that these are updated as necessary
         # from the view side of things
+        
+        print("--> Entering update_column_indices -->")
+        #######################################################################
         current_data_type = self.get_current_outcome_type()
+        print("    "+"Current data type: "+str(current_data_type))
 
         # offset corresponds to the first three columns, which 
         # are include study, name, and year.
@@ -164,8 +172,9 @@ class DatasetModel(QAbstractTableModel):
             self.RAW_DATA = [col+offset for col in range(4)]
             # sensitivity & specificity? 
             self.OUTCOMES = [7, 8, 9, 10, 11, 12]
-    
-
+        
+        print("    "+"RAW_DATA at end: "+str(self.RAW_DATA))
+        
     def format_float(self, float_var, num_digits=None):
         ''' this method assumes the input can be cast to a float! '''
         float_var = float(float_var)
@@ -1206,7 +1215,7 @@ class DatasetModel(QAbstractTableModel):
         # given the outcome data type
         data_type = data_model.get_outcome_type(d["current_outcome"])
         
-        #print("data_type: ", data_type)
+        print("data_type: ", data_type)
 
         all_txs = data_model.get_group_names()
 

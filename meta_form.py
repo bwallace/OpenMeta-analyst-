@@ -80,7 +80,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
         # the nav_lbl text corresponds to the currently selected
         # 'dimension', e.g., outcome or treatment. New points
-        # can then be added tot his dimension, or it can be travelled
+        # can then be added to this dimension, or it can be travelled
         # along using the horizontal nav arrows (the vertical arrows
         # navigate along the *dimensions*)
         self.dimensions =["outcome", "follow-up", "group"]
@@ -932,6 +932,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         try:
             data_model = pickle.load(open(file_path, 'r'))
             print "successfully loaded data"
+            #pyqtRemoveInputHook()
+            #pdb.set_trace()
         except:
             return None
         
@@ -1054,6 +1056,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.data_dirtied()
 
     def set_model(self, data_model, state_dict=None, check_for_appropriate_metric=False):
+        
         ##
         # we explicitly append a blank study to the
         # dataset iff there is fewer than 1 study 
@@ -1083,6 +1086,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         if state_dict is not None:
             self.model.set_state(state_dict)
 
+
+        print("calling update col indices from meta form set_model()")
         self.tableView.model().update_column_indices()
         self.tableView.resizeColumnsToContents()
   
