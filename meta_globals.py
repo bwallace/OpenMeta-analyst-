@@ -119,11 +119,10 @@ HELP_URL = "http://www.cebm.brown.edu/open_meta"
 # the mteric names as they appear in the UI/ure
 # used here to the names used in the model.
 # see get_diag_metrics_to_run.
-DIAG_METRIC_NAMES_D = {
-                        "sens":["Sens"], 
-                        "spec":["Spec"],
-                        "dor":["DOR"],
-                        "lr":["PLR", "NLR"]
+DIAG_METRIC_NAMES_D = {"sens":["Sens"], 
+                       "spec":["Spec"],
+                       "dor":["DOR"],
+                       "lr":["PLR", "NLR"]
                       }
 
 DIAG_FIELDS_TO_RAW_INDICES = {"TP":0, "FN":1, "FP":2, "TN":3}

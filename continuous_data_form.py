@@ -667,6 +667,12 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                          "mean1":"group 1 mean",
                          "mean2":"group 2 mean"}
         for key,value in imputed.iteritems():
+            # todo (maybe).....: The R code which generates results can
+            # POTENTIALLY yield a maximum of 4 numbers for n1 and n2. However,
+            # empiricle testing has shown that this doesn't really happen.
+            # However, for completeness in the future the number of
+            # ChooseBackCalcResultForm options should be generated dynamically
+            
             if is_list(value):
                 info = ("The back calculation has resulted in multiple results for "
                         + keys_to_names[key] + "\n\nPlease choose one of the following:")
@@ -867,20 +873,7 @@ class ChooseBackCalcResultForm(QDialog, ui_choose_back_calc_result_form.Ui_Choos
     def __init__(self, info_text, op1_txt, op2_txt, parent=None, op3_txt=None, op4_txt=None):
         super(ChooseBackCalcResultForm, self).__init__(parent)
         self.setupUi(self)
-        
-#        if 
-        
-#        
-#        #op1 = data["op1"] # option 1 data
-#        #a,b,c,d = op1["a"],op1["b"],op1["c"],op1["d"]
-#        #a,b,c,d = int(round(a)),int(round(b)),int(round(c)),int(round(d))
-#        #option1_txt = "Group 1:\n  #events: %d\n  Total: %d\nGroup 2:\n  #events: %d\n  Total: %d" % (a,b,c,d)
-#        
-#        #op2 = imputed_data["op2"]
-#        #a,b,c,d = op2["a"],op2["b"],op2["c"],op2["d"]
-#        #a,b,c,d = int(round(a)),int(round(b)),int(round(c)),int(round(d))
-#        #option2_txt = "Group 1:\n  #events: %d\n  Total: %d\nGroup 2:\n  #events: %d\n  Total: %d" % (a,b,c,d)
-#        
+                
         self.choice1_lbl.setText(op1_txt)
         self.choice2_lbl.setText(op2_txt)
         self.info_label.setText(info_text)
