@@ -75,13 +75,11 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.cur_effect = cur_effect
         self.group_str = cur_group_str
         self.metric_parameter = None
-        
         self.entry_widgets = [self.simple_table, self.g1_pre_post_table,
                               self.g2_pre_post_table, self.effect_txt_box,
                               self.low_txt_box, self.high_txt_box,
                               self.correlation_pre_post]
         self.already_showed_change_CI_alert = False
-        
         self.CI_spinbox.setValue(meta_globals.DEFAULT_CONF_LEVEL)
         self.ci_label.setText("{0:.1f}% Confidence Interval".format(self.CI_spinbox.value()))
         
@@ -96,13 +94,22 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.grp_2_lbl.setText(QString(self.cur_groups[1]))
         
         self.setup_clear_button_palettes() # Color for clear_button_pallette
+        self.initialize_table_items() # initialize cells to empty items
         self.initialize_backup_structures()
+        self.update_raw_data()
         self._populate_effect_data()
         self.enable_back_calculation_btn()
-        self.update_raw_data()
         self.save_form_state()
         ########################################################################
         debug_msg("Leaving __init__",False)
+        
+    def initialize_table_items(self):
+        ''' Initialize all cells to empty items '''
+        for row in range(2):
+            for col in range(len(self.get_column_header_strs(self.simple_table))):
+                self._set_val(row, col, None)
+                self._set_val(row, col, None, self.g1_pre_post_table)
+                self._set_val(row, col, None, self.g2_pre_post_table)
         
     def setup_signals_and_slots(self):
         QObject.connect(self.simple_table, SIGNAL("cellChanged (int, int)"), self._cell_changed)
@@ -323,8 +330,28 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             else:
                 txt_box.setText(QString(""))
         self.block_all_signals(False)
+        
+        self.change_row_color_according_to_metric()
+        
         ########################################################################
         debug_msg("Leaving set_current_effect",False)
+    
+    def change_row_color_according_to_metric(self):
+        # Change color of bottom rows of table according one or two-arm metric
+        self.block_all_signals(True)
+        curr_effect_is_one_arm = self.cur_effect in CONTINUOUS_ONE_ARM_METRICS
+        row = 1
+        for col in range(len(self.get_column_header_strs(self.simple_table))):
+            item = self.simple_table.item(row, col)
+            if curr_effect_is_one_arm:
+                item.setBackground(QBrush(QColor(Qt.gray)))
+            else:
+                # just reset the item
+                text = item.text()
+                popped_item = self.simple_table.takeItem(row, col)
+                del popped_item
+                self._set_val(row, col, text, self.simple_table)
+        self.block_all_signals(False)
         
     def update_raw_data(self):
         '''Updates table widget with data from ma_unit'''
@@ -334,18 +361,20 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         for row_index, group_name in enumerate(self.cur_groups):
             grp_raw_data = self.raw_data_dict[group_name]
             for col in range(len(grp_raw_data)):
-                if grp_raw_data[col] is not None:
-                    val = QTableWidgetItem(str(grp_raw_data[col]))
-                    self.simple_table.setItem(row_index, col, val)
+#                if grp_raw_data[col] is not None:
+#                    val = QTableWidgetItem(str(grp_raw_data[col]))
+#                    self.simple_table.setItem(row_index, col, val)
+                self._set_val(row_index, col, grp_raw_data[col], self.simple_table)
             # also insert the SEs, if we have them
             se_col = 3
             se = self.ma_unit.effects_dict[self.cur_effect][self.group_str]["SE"]
-            if se is not None:
-                se_item = QTableWidgetItem(str(se))
-                self.simple_table.setItem(row_index, se_col, se_item)
-                
+#            if se is not None:
+#                se_item = QTableWidgetItem(str(se))
+#                self.simple_table.setItem(row_index, se_col, se_item)
+            self._set_val(row_index, col, grp_raw_data[col], self.simple_table)
+        self.simple_table.blockSignals(False) 
         self.impute_data()
-        self.simple_table.blockSignals(False)
+        
         ########################################################################
         debug_msg("Leaving update_raw_data",False)
         
@@ -420,11 +449,9 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                 table.item(row, col).setText(str_val)
             
             if str_val != "": #disable item
-                #self.block_all_signals(True)
                 item = table.item(row, col)
                 newflags = item.flags() & ~Qt.ItemIsEditable
                 item.setFlags(newflags)
-                #self.block_all_signals(False)
             table.blockSignals(True)
         except:
             print("Got to except in _set_val when trying to set (%d,%d)" % (row,col))      

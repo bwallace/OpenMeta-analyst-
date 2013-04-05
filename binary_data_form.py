@@ -13,7 +13,8 @@ import pdb
 
 # from PyQt4.Qt import *
 from PyQt4.Qt import (pyqtSignature, QDialog, QDialogButtonBox, QMessageBox,
-                      QObject, QPalette, QString, Qt, QTableWidgetItem, SIGNAL, pyqtRemoveInputHook)
+                      QObject, QPalette, QString, Qt, QTableWidgetItem, SIGNAL,
+                      pyqtRemoveInputHook, QColor, QBrush)
 # from PyQt4.QtGui import *
 
 import meta_py_r
@@ -59,6 +60,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.CI_spinbox.setValue(meta_globals.DEFAULT_CONF_LEVEL)
         self.ci_label.setText("{0:.1f}% Confidence Interval".format(self.CI_spinbox.value()))
         
+        self.initialize_table_items() # initialize all cell to empty items
         self.setup_inconsistency_checking()
         self.initialize_backup_structures()
         
@@ -71,6 +73,12 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self._update_data_table()  # fill in 2x2
         self.enable_back_calculation_btn()
         self.save_form_state()
+        
+    def initialize_table_items(self):
+        ''' Initialize all cells to empty items '''
+        for row in range(3):
+            for col in range(3):
+                self._set_val(row, col, None)
 
     def setup_clear_button_palettes(self):
         # Color for clear_button_pallette
@@ -312,6 +320,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         print("Entering set_current_effect")
         
         # Fill in text boxes with data from ma unit
+        self.block_all_signals(True)
         effect_dict = self.ma_unit.effects_dict[self.cur_effect][self.group_str]
         for s, txt_box in zip(['display_est', 'display_lower', 'display_upper'], \
                               [self.effect_txt_box, self.low_txt_box, self.high_txt_box]):
@@ -319,7 +328,31 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                 txt_box.setText(QString("%s" % round(effect_dict[s], NUM_DIGITS)))
             else:
                 txt_box.setText(QString(""))
-        # Change color of bottom row of table
+        self.block_all_signals(False)
+        
+        self.change_row_color_according_to_metric()
+        
+    def change_row_color_according_to_metric(self):
+        # Change color of bottom rows of table according one or two-arm metric
+        self.block_all_signals(True)
+        curr_effect_is_one_arm = self.cur_effect in BINARY_ONE_ARM_METRICS
+        #ungreyed_brush = self.raw_data_table.item(0,0).background()
+        for row in (1,2):
+            for col in range(3):
+                item = self.raw_data_table.item(row, col)
+                if curr_effect_is_one_arm:
+                    item.setBackground(QBrush(QColor(Qt.gray)))
+                else:
+                    # just reset the item
+                    text = item.text()
+                    popped_item = self.raw_data_table.takeItem(row, col)
+                    del popped_item
+                    self._set_val(row, col, text)
+                    
+        self.block_all_signals(False)
+                
+                
+                
             
     def effect_changed(self):
         '''Called when a new effect is selected in the combo box'''
@@ -505,19 +538,12 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
     def _update_raw_data(self):
         ''' Generates the 2x2 table with whatever parametric data was provided '''
         ''' Sets #events and #subjects in binary table'''
-        self.raw_data_table.blockSignals(True)
+
         for row, group in enumerate(self.cur_groups):
             for col in (0, 2):
                 adjusted_index = 0 if col == 0 else 1
                 val = self.raw_data_d[group][adjusted_index]
-                if val is not None:
-                    try:
-                        val = str(int(val))
-                    except:
-                        val = str(val)
-                    item = QTableWidgetItem(val)
-                    self.raw_data_table.setItem(row, col, item)
-        self.raw_data_table.blockSignals(False)
+                self._set_val(row, col, val)
       
     def _update_ma_unit(self):
         ''' Copy data from binary data table to the MA_unit'''
@@ -633,6 +659,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             return
         
         try:
+            self.raw_data_table.blockSignals(True)
             str_val = "" if val in EMPTY_VALS else str(int(val))
             if self.raw_data_table.item(row, col) == None:
                 self.raw_data_table.setItem(row, col, QTableWidgetItem(str_val))
@@ -644,6 +671,8 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                 item = self.raw_data_table.item(row, col)
                 newflags = item.flags() & ~Qt.ItemIsEditable
                 item.setFlags(newflags)
+                
+            self.raw_data_table.blockSignals(False)
         except:
             print("Got to except in _set_val when trying to set (%d,%d)" % (row, col))
             raise
