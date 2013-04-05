@@ -185,17 +185,19 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         
         try:
             str_val = "" if val in EMPTY_VALS else str(int(val))
+            self.two_by_two_table.blockSignals(True)
             if self.two_by_two_table.item(row, col) == None:
                 self.two_by_two_table.setItem(row, col, QTableWidgetItem(str_val))
             else:
                 self.two_by_two_table.item(row, col).setText(str_val)
+            self.two_by_two_table.blockSignals(False)
             
             if str_val != "": #disable item
-                #self.block_all_signals(True)
+                self.two_by_two_table.blockSignals(True)
                 item = self.two_by_two_table.item(row, col)
                 newflags = item.flags() & ~Qt.ItemIsEditable
                 item.setFlags(newflags)
-                #self.block_all_signals(False)
+                self.two_by_two_table.blockSignals(False)
         except:
             print("Got to except in _set_val when trying to set (%d,%d)" % (row,col)) 
     
@@ -399,6 +401,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         
         # reset relevant column and sums column if we have new data
         if imputed_dict["TP"] and imputed_dict["FN"]:
+            print("TP, FN:", imputed_dict["TP"],imputed_dict["FN"])
             print "clearing col 0 and 2"
             self.clear_column(0)
             self.clear_column(2)
@@ -407,7 +410,6 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             self.clear_column(1)
             self.clear_column(2)
         
-        self.two_by_two_table.blockSignals(True) 
         for field in ["FP", "TP", "TN", "FN"]:
             if (field in imputed_dict) and (not imputed_dict[field] is None):
                 row, col = self._get_row_col(field)
@@ -416,7 +418,6 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
                 raw_data_index = DIAG_FIELDS_TO_RAW_INDICES[field]
                 self.ma_unit.tx_groups[self.group_str].raw_data[raw_data_index] =\
                     None if not _is_a_float(imputed_dict[field]) else float(imputed_dict[field])
-        self.two_by_two_table.blockSignals(False)
     
     def _update_ma_unit(self):
         '''Copy data from data table to the MA_unit'''
@@ -639,11 +640,10 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         
     def clear_column(self,col):
         '''Clears out column in table and ma_unit'''
-
+        
+        print("Clearing column %d" % col)
         for row in range(3):
-            self.two_by_two_table.blockSignals(True)
             self._set_val(row, col, None)  
-            self.two_by_two_table.blockSignals(False)
         
         self._update_ma_unit()
         self.save_form_state()
@@ -751,7 +751,27 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             d.update(self.get_raw_diag_data())
             
             return d
-
+        
+        def new_data(diag_data, imputed):
+            new_data = (imputed["TP"],
+                        imputed["FP"],
+                        imputed["FN"],
+                        imputed["TN"])
+            old_data = (self._get_int(0,0),
+                        self._get_int(0,1),
+                        self._get_int(1,0),
+                        self._get_int(1,1),
+                        )
+            isBlank = lambda x: x in meta_globals.EMPTY_VALS
+            new_item_available = lambda old, new: isBlank(old) and not isBlank(new)
+            comparison = [new_item_available(old_data[i], new_data[i]) for i in range(len(new_data))]
+            print("Comparison:", comparison)
+            if any(comparison):
+                changed = True
+            else:
+                changed = False
+            return changed
+            
         diag_data = build_dict()
         print("Diagnostic Data for back-calculation: ", diag_data)
 
@@ -765,8 +785,11 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             print("Nothing could be imputed")
             self.back_calc_Btn.setEnabled(False)
             return None
-        
-        self.back_calc_Btn.setEnabled(True)
+    
+        if new_data(diag_data, imputed):
+            self.back_calc_Btn.setEnabled(True)
+        else:
+            self.back_calc_Btn.setEnabled(False)
         self.set_clear_btn_color()
             
         if not engage:
@@ -774,8 +797,6 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         ########################################################################
         # Actually do stuff with imputed data here if we are 'engaged'
         ########################################################################
-        for x in range(3):
-            self.clear_column(x) # clear out the table
         self.update_2x2_table(imputed)
         self._update_data_table()
         self.save_form_state()

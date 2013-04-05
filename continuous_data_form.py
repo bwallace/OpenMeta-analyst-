@@ -693,8 +693,8 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                         g2_data["sd"]   if "sd"   in g2_data else None,
                         g2_data["mean"] if "mean" in g2_data else None,
                         )
-            now_available = lambda old, new: (old is None) and (new is not None)
-            comparison = [now_available(old_data[i], new_data[i]) for i in range(len(new_data))]
+            new_item_available = lambda old, new: (old is None) and (new is not None)
+            comparison = [new_item_available(old_data[i], new_data[i]) for i in range(len(new_data))]
             print("Comparison:", comparison)
             if any(comparison):
                 changed = True
@@ -702,7 +702,6 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                 changed = False
             return changed
             
-        
         if self.cur_effect not in ["MD", "SMD"]:
             self.back_calc_btn.setVisible(False)
         else:
@@ -770,6 +769,8 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                 if var_name not in ["n","sd","mean"]:
                     continue
                 val = group1_data[var_name] if row == 0 else group2_data[var_name]
+                if var_name == 'n' and val not in meta_globals.EMPTY_VALS: 
+                    val = int(round(val)) # convert float to integer
                 self._set_val(row, var_index, val, self.simple_table)
         
         self.impute_data()

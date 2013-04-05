@@ -26,6 +26,8 @@ gimpute.bin.data <- function(bin.data) {
 	est    <- bin.data[["estimate"]]
 	lower  <- bin.data[["lower"]]
 	upper  <- bin.data[["upper"]]
+	#Ev_A   <- bin.data[["Ev_A"]]
+	#Ev_B   <- bin.data[["Ev_B"]]
 	N_1    <- bin.data[["N_A"]]
 	N_0    <- bin.data[["N_B"]]
 	conf.level <- bin.data[["conf.level"]]
@@ -812,38 +814,38 @@ gimpute.diagnostic.data <- function(diag.data) {
 
 	# TP,FN
 	if (case2a.condition) {
-		print("Entering 2a")
+		#print("Entering 2a")
 		TP <- if(is.null(TP)) case2res$TP
 		FN <- if(is.null(FN)) case2res$FN
 	} else if (case5a.condition) {
-		print("Entering 5a")
+		#print("Entering 5a")
 		TP <- if(is.null(TP)) case5res$TP
 		FN <- if(is.null(FN)) case5res$FN
 	} else if (case6b.condition) {
-		print("Entering 6b")
+		#print("Entering 6b")
 		TP <- if(is.null(TP)) case6res$TP
 		FN <- if(is.null(FN)) case6res$FN
 	} else if (case8a.condition) {
-		print("Entering 8a")
+		#print("Entering 8a")
 		TP <- if(is.null(TP)) case8res$TP
 		FN <- if(is.null(FN)) case8res$FN
 	}
 	
 	# TN,FP
 	if (case2b.condition) {
-		print("Entering 2b")
+		#print("Entering 2b")
 		TN <- if(is.null(TN)) case2res$TN
 	    FP <- if(is.null(FP)) case2res$FP
 	} else if (case5b.condition) {
-		print("Entering 5b")
+		#print("Entering 5b")
 		TN <- if(is.null(TN)) case5res$TN
 		FP <- if(is.null(FP)) case5res$FP
 	} else if (case6a.condition) {
-		print("Entering 6a")
+		#print("Entering 6a")
 		TN <- if(is.null(TN)) case6res$TN
 		FP <- if(is.null(FP)) case6res$FP
 	} else if (case8b.condition) {
-		print("Entering 8b")
+		#print("Entering 8b")
 		TN <- if(is.null(TN)) case8res$TN
 		FP <- if(is.null(FP)) case8res$FP
 	}
