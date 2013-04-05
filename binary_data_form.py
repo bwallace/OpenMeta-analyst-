@@ -175,10 +175,12 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                 changed = False
                 
             return changed
+        ### end of new_data() definition ####
             
         # Makes no sense to show the button on a form where the back calculation is not implemented
         if not self.cur_effect in ["OR", "RR", "RD"]:
             self.back_calc_btn.setVisible(False)
+            return None
         else:
             self.back_calc_btn.setVisible(True)
             
@@ -307,8 +309,9 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
     def set_current_effect(self):
         '''Fills in text boxes with data from ma unit'''
         
-        print("Setting current effect...")
+        print("Entering set_current_effect")
         
+        # Fill in text boxes with data from ma unit
         effect_dict = self.ma_unit.effects_dict[self.cur_effect][self.group_str]
         for s, txt_box in zip(['display_est', 'display_lower', 'display_upper'], \
                               [self.effect_txt_box, self.low_txt_box, self.high_txt_box]):
@@ -316,6 +319,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                 txt_box.setText(QString("%s" % round(effect_dict[s], NUM_DIGITS)))
             else:
                 txt_box.setText(QString(""))
+        # Change color of bottom row of table
             
     def effect_changed(self):
         '''Called when a new effect is selected in the combo box'''
@@ -678,15 +682,24 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         else:
             return None  # its good to be explicit
             
-    def _none_or_empty(self, x):
+    def _isBlank(self, x):
         return x is None or x == ""
         
     def try_to_update_cur_outcome(self):
+        print("Entering try_to_update_cur_outcome...")
+        print("    current effect: %s" % self.cur_effect)
+        
         e1, n1, e2, n2 = self.ma_unit.get_raw_data_for_groups(self.cur_groups)
+        print("    e1: %s, n1: %s, e2: %s, n2: %s" % (str(e1),str(n1),str(e2),str(n2)))
+        
+        two_arm_raw_data_ok = not any([self._isBlank(x) for x in [e1, n1, e2, n2]])
+        one_arm_raw_data_ok = not any([self._isBlank(x) for x in [e1, n1]])
+        curr_effect_is_one_arm = self.cur_effect in BINARY_ONE_ARM_METRICS
+        curr_effect_is_two_arm = self.cur_effect in BINARY_TWO_ARM_METRICS
+        
         # if None is in the raw data, should we clear out current outcome?
-        if not (any([self._none_or_empty(x) for x in [e1, n1, e2, n2]]) or
-                   (not any([self._none_or_empty(x) for x in [e1, n1]]) and self.cur_effect in BINARY_ONE_ARM_METRICS)):
-            if self.cur_effect in BINARY_TWO_ARM_METRICS:
+        if two_arm_raw_data_ok or (curr_effect_is_one_arm and one_arm_raw_data_ok):
+            if curr_effect_is_two_arm:
                 est_and_ci_d = meta_py_r.effect_for_study(e1, n1, e2, n2, metric=self.cur_effect, conf_level=self.CI_spinbox.value())
             else:
                 # binary, one-arm

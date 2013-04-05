@@ -704,6 +704,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             
         if self.cur_effect not in ["MD", "SMD"]:
             self.back_calc_btn.setVisible(False)
+            return None
         else:
             self.back_calc_btn.setVisible(True)
             

@@ -22,7 +22,7 @@ import pdb
 # home-grown
 from ma_dataset import Dataset,Outcome,Study,Covariate
 import meta_py_r
-import meta_globals 
+import meta_globals
 from meta_globals import *
 
 # number of (empty) rows in the spreadsheet to show

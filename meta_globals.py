@@ -232,27 +232,6 @@ def cast_to_int(value, name=None):
             print("Could not convert '%s' to int" % (str(value)))
         return None
 
-## For computing the 2x2 table in the binary and diagnostic case
-# Maybe bring back some version of this in the near future: DON'T DELETE ME BYRON!
-#def OLDcompute_2x2_table(params):
-#    ''' Computes values for the whole 2x2 table if possible based on partial values from the rest of the table'''
-#    
-#    computed = meta_py_r.fillin_2x2(params)
-#    print "Computed: ", computed 
-#    
-#    if computed != None: # more than one value entered
-#        abs_residuals = [abs(x) for x in computed['residuals'].values()]
-#        if max(abs_residuals ) > THRESHOLD:
-#            print "problem computing 2x2 table."
-#            print "max residual: %s" % max(computed['residuals'])
-#            print computed['residuals']
-#            print ("Coefficients: ", computed['coefficients'])
-#            return None
-#        else: # values are hunky-dory
-#            print "table computed successfully!"
-#            return computed["coefficients"]
-#    return None
-
 def compute_2x2_table(params):
     ''' Computes values for the whole 2x2 table if possible based on partial values from the rest of the table'''
     
@@ -452,10 +431,8 @@ class ConsistencyChecker():
 
 ####### SHARED BINARY, CONTINUOUS, DIAGNOSTIC DATA FORM UTILITY FUNCTIONS#####
 def enable_txt_box_input(*args):
-    '''
-    Enables text boxes if they are empty, disables them otherwise
-    Input is textbox(es)
-    '''
+    ''' Enables text boxes if they are empty, disables them otherwise
+        Input is textbox(es) '''
     
     for text_box in args:
         text_box.blockSignals(True)
@@ -465,19 +442,14 @@ def enable_txt_box_input(*args):
             text_box.setEnabled(True)
             
         text_box.blockSignals(False)
+####### end enable_txt_box_input #######
         
         
-        
-
-
 CHANGE_CI_ALERT_MSG = ("The size of the confidence level used for a particular "
                        "study in this calculator need not correspond with the "
                        "global confidence level (currently set at {0:.1%}) "
                        "chosen for data display on spreadsheets and forest "
                        "plots.".format(DEFAULT_CONF_LEVEL/100.0))
-
-
-        
 
 # WORK ON STANDARDIZING THIS LATER?
 #def validate_txt_box_input(box_data=None,
