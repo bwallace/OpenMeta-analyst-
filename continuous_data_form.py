@@ -166,6 +166,8 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.reset_conf_level()
         
         self.cur_effect = unicode(self.effect_cbo_box.currentText().toUtf8(), "utf-8")
+        self.group_str = self.get_cur_group_str()
+
         self.try_to_update_cur_outcome()
         self.set_current_effect()
         self.enable_txt_box_input()
@@ -338,7 +340,6 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
     
     def change_row_color_according_to_metric(self):
         # Change color of bottom rows of table according one or two-arm metric
-        self.block_all_signals(True)
         curr_effect_is_one_arm = self.cur_effect in CONTINUOUS_ONE_ARM_METRICS
         row = 1
         for col in range(len(self.get_column_header_strs(self.simple_table))):
@@ -348,10 +349,11 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             else:
                 # just reset the item
                 text = item.text()
+                self.simple_table.blockSignals(True)
                 popped_item = self.simple_table.takeItem(row, col)
+                self.simple_table.blockSignals(False)
                 del popped_item
                 self._set_val(row, col, text, self.simple_table)
-        self.block_all_signals(False)
         
     def update_raw_data(self):
         '''Updates table widget with data from ma_unit'''
@@ -395,10 +397,6 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
           
     def _cell_changed(self, row, col):
         # Just for simple_table for now
-        
-        print("CELL CHANGED: (ROW,COL)=(%d,%d)" % (row,col))
-        print "previous cell data:",self.current_item_data
-        print "new cell data:", self.simple_table.item(row, col).text()
         
         column_headers = self.get_column_header_strs()
         
@@ -977,6 +975,15 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         # Save results in ma_unit
         self.ma_unit.set_effect_and_ci(self.cur_effect, self.group_str, res["est"],res["low"],res["high"])
         self.ma_unit.set_display_effect_and_ci(self.cur_effect, self.group_str, res["display_est"],res["display_low"],res["display_high"])
+
+    def get_cur_group_str(self):
+        # Inspired from get_cur_group_str of ma_data_table_model
+
+        if self.cur_effect in CONTINUOUS_ONE_ARM_METRICS:
+            group_str = self.cur_groups[0]
+        else:
+            group_str = "-".join(self.cur_groups)
+        return group_str
         
         
 ################################################################################

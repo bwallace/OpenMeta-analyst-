@@ -51,6 +51,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             raw_data = self.ma_unit.get_raw_data_for_group(group)
             self.raw_data_d[group] = raw_data
         self.cur_groups = cur_txs
+        print("CUR TXS: ",cur_txs)
         self.group_str = cur_group_str
         self.cur_effect = cur_effect
         self.entry_widgets = [self.raw_data_table, self.low_txt_box,
@@ -76,6 +77,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         
     def initialize_table_items(self):
         ''' Initialize all cells to empty items '''
+        print("Entering initialize_table_items")
         for row in range(3):
             for col in range(3):
                 self._set_val(row, col, None)
@@ -334,7 +336,6 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         
     def change_row_color_according_to_metric(self):
         # Change color of bottom rows of table according one or two-arm metric
-        self.block_all_signals(True)
         curr_effect_is_one_arm = self.cur_effect in BINARY_ONE_ARM_METRICS
         #ungreyed_brush = self.raw_data_table.item(0,0).background()
         for row in (1,2):
@@ -345,15 +346,12 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                 else:
                     # just reset the item
                     text = item.text()
+                    self.raw_data_table.blockSignals(True)
                     popped_item = self.raw_data_table.takeItem(row, col)
+                    self.raw_data_table.blockSignals(False)
                     del popped_item
                     self._set_val(row, col, text)
-                    
-        self.block_all_signals(False)
-                
-                
-                
-            
+ 
     def effect_changed(self):
         '''Called when a new effect is selected in the combo box'''
         
@@ -361,6 +359,8 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.reset_conf_level()
         
         self.cur_effect = unicode(self.effect_cbo_box.currentText().toUtf8(), "utf-8")
+        self.group_str = self.get_cur_group_str()
+        
         self.try_to_update_cur_outcome()
         self.set_current_effect()
         
@@ -577,9 +577,12 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
     def cell_changed(self, row, col):
         # tries to make sense of user input before passing
         # on to the R routine
-        
-        print("Entering cell changed...")
-        print("New cell data(%d,%d): %s" % (row, col, self.raw_data_table.item(row, col).text()))   
+        try:
+            print("Entering cell changed...")
+            print("New cell data(%d,%d): %s" % (row, col, self.raw_data_table.item(row, col).text()))
+        except:
+            pyqtRemoveInputHook()
+            pdb.set_trace()
         
         try:
             # Test if entered data is valid (a number)
@@ -665,6 +668,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                 self.raw_data_table.setItem(row, col, QTableWidgetItem(str_val))
             else:
                 self.raw_data_table.item(row, col).setText(str_val)
+            print("    setting (%d,%d) to '%s'" % (row,col,str_val))
             
             # disable item
             if str_val != "": 
@@ -674,7 +678,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                 
             self.raw_data_table.blockSignals(False)
         except:
-            print("Got to except in _set_val when trying to set (%d,%d)" % (row, col))
+            print("    Got to except in _set_val when trying to set (%d,%d)" % (row, col))
             raise
  
     def _build_dict(self):
@@ -812,6 +816,16 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         # Save results in ma_unit
         self.ma_unit.set_effect_and_ci(self.cur_effect, self.group_str, res["est"], res["low"], res["high"])
         self.ma_unit.set_display_effect_and_ci(self.cur_effect, self.group_str, res["display_est"], res["display_low"], res["display_high"])
+        
+    def get_cur_group_str(self):
+        # Inspired from get_cur_group_str of ma_data_table_model
+        
+        if self.cur_effect in BINARY_ONE_ARM_METRICS:
+            group_str = self.cur_groups[0] 
+        else:
+            group_str = "-".join(self.cur_groups)
+        return group_str
+        
         
 ################################################################################
 class ChooseBackCalcResultForm(QDialog, ui_choose_back_calc_result_form.Ui_ChooseBackCalcResultForm):
