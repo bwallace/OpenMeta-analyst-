@@ -10,7 +10,6 @@
 
 #bd <- new('BinaryData', g1O1=c(30, 20, 10), g1O2=c(270, 180, 90), g2O1=c(35, 25, 15), g2O2=c(265, 175, 85), y=c(0.62962962963, 0.777777777778, 0.84126984127), SE=c(0.432831413165, 0.343592092809, 0.290047070662), study.names=c('lau', 'wallace', 'trik'), covariates=list(hi=c(1,2,3)))
 
-
 # bd <- new("BinaryData", g1O1=c(10, 20, 30), g1O2=c(90, 180, 270), g2O1=c(15, 25, 35), g2O2=c(85, 175, 265),                       study.names=c("1", "2", "3")
 # params <- list(measure="OR", conf.level=95, digits=3)
 
