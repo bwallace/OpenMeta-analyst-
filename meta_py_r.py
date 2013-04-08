@@ -92,15 +92,58 @@ def impute_diag_data(diag_data_dict):
     print "Imputed 2x2:", _grlist_to_pydict(two_by_two)
     return _grlist_to_pydict(two_by_two)
 
-def impute_bin_data(bin_data_dict):
-    for param, val in bin_data_dict.items():
+def rescale_effect_and_ci_conf_level(data_dict):
+    print("Rescaling effect and CI confidence level")
+    
+    return R_fn_with_dataframe_arg(data_dict, "rescale.effect.and.ci.conf.level")
+
+def R_fn_with_dataframe_arg(data_dict, R_fn_name):
+    '''Calls an R function which takes a dataframe as its only argument w/
+    parameters within. Returns a python dictionary. Assumes R functin returns
+    an R list'''
+    
+    for param, val in data_dict.items():
         if val is None:
-            bin_data_dict.pop(param)
+            data_dict.pop(param)
+
+    dataf = ro.r['data.frame'](**data_dict)
+    
+    r_string = R_fn_name + "(" + str(dataf.r_repr()) + ")"
+    R_result = ro.r(r_string)
+    
+    return _grlist_to_pydict(R_result)
+
+
+def impute_bin_data(bin_data_dict):
+    remove_value(None, bin_data_dict)
 
     dataf = ro.r['data.frame'](**bin_data_dict)
     two_by_two = ro.r("gimpute.bin.data(%s)" % (dataf.r_repr()))
     
     return _grlist_to_pydict(two_by_two)
+
+# meta_py_r.impute_cont_data(group1_data, group2_data, effect_data, self.conf_level_to_alpha())
+def back_calc_cont_data(group1_data, group2_data, effect_data, conf_level):
+    remove_value(None, group1_data)
+    remove_value(None, group2_data)
+    remove_value(None, effect_data)
+    
+    dataf_grp1 = ro.r['data.frame'](**group1_data)
+    dataf_grp2 = ro.r['data.frame'](**group2_data)
+    dataf_effect = ro.r['data.frame'](**effect_data)
+    
+    r_res = ro.r("gimpute.cont.data(%s,%s,%s,%s)" % (dataf_grp1.r_repr(),
+                                                     dataf_grp2.r_repr(),
+                                                     dataf_effect.r_repr(),
+                                                     str(conf_level)))
+    return _grlist_to_pydict(r_res)
+    
+
+def remove_value(toRemove, t_dict):
+    ''' Removes all entries in t_dict with value toRemove'''
+    for param, val in t_dict.items():
+        if val == toRemove:
+            t_dict.pop(param)
 
 def fillin_2x2(table_data_dict):
     #r_str = ["fillin.2x2.simple("]
@@ -134,13 +177,6 @@ def fillin_2x2(table_data_dict):
     return toreturn
 
 def _gis_NA(x):
-    #print "Result of NA comparison:"
-    #print "Old:", type(x) in [rpy2.rinterface.NALogicalType, rpy2.rinterface.NARealType]
-    #print "New:", type(x) in [NALogicalType, NARealType]
-    #return type(x) in [rpy2.rinterface.NALogicalType, rpy2.rinterface.NARealType]
-    #print "TESTING NA"
-    
-    #return type(x) in [NALogicalType, NARealType]
     return str(x) == 'NA'
 
 # NOTE: CUSTOM VERSION......
@@ -152,12 +188,8 @@ def _grlist_to_pydict(r_ls, recurse=True):
     list, that list will be converted, too.
     '''
     
-    #pyqtRemoveInputHook()
-    #pdb.set_trace() 
-    
     def gis_a_list(x):
         # @TODO add additional vector types?
-        #return type(x) in [rpy2.robjects.vectors.StrVector, rpy2.robjects.vectors.ListVector]
         return type(x) in [rpy2.robjects.vectors.StrVector, 
                            rpy2.robjects.vectors.ListVector, 
                            rpy2.robjects.vectors.FloatVector,
@@ -190,9 +222,11 @@ def _grlist_to_pydict(r_ls, recurse=True):
                     d[name] = [convert_NA_to_None(x) for x in d[name][:]]
             except: # val is not iterable
                 d[name] = val
+                d[name] = convert_NA_to_None(d[name])
 
     return d
 
+# This should be renamed as it is not doing back-calculation from effects
 def impute_cont_data(cont_data_dict, alpha):
     print "computing continuous data via R..."
     
@@ -213,10 +247,9 @@ def impute_cont_data(cont_data_dict, alpha):
     
     print "attempting to execute: %s" % r_str
     c_data = ro.r(r_str)
-    #pyqtRemoveInputHook()
-    #pdb.set_trace() 
-    #return _rls_to_pyd(c_data)
-    return _grlist_to_pydict(c_data,True)
+    results = _grlist_to_pydict(c_data,True)
+    
+    return results
     
 def impute_pre_post_cont_data(cont_data_dict, correlation, alpha):
     if len(cont_data_dict.items()) == 0:
@@ -1109,7 +1142,7 @@ def diagnostic_effects_for_study(tp, fn, fp, tn, metrics=["Spec", "Sens"],
     
 def continuous_effect_for_study(n1, m1, sd1, se1=None, n2=None, m2=None,
                                 sd2=None, se2=None, metric="MD", two_arm=True,
-                                conf_level=.95):
+                                conf_level=95):
     
     point_est, se = None, None
     if two_arm:
@@ -1138,13 +1171,15 @@ def continuous_effect_for_study(n1, m1, sd1, se1=None, n2=None, m2=None,
     alpha = 1.0-(conf_level/100.0)
     r_str = "abs(qnorm(%s))" % str(alpha/2.0)
     mult = ro.r(r_str)[0]
+    #print("Alpha:",alpha)
+    #print("mult:" ,mult)
     lower, upper = (point_est-mult*se, point_est+mult*se)
     est_and_ci = (point_est, lower, upper)
     transformed_est_and_ci = continuous_convert_scale(est_and_ci, metric)
     return {"calc_scale":est_and_ci, "display_scale":transformed_est_and_ci}
     
 def effect_for_study(e1, n1, e2=None, n2=None, two_arm=True, 
-                metric="OR", conf_level=.95):
+                metric="OR", conf_level=95):
     '''
     Computes a point estimate, lower & upper bound for
     the parametric 2x2 *binary* table data.
@@ -1209,6 +1244,8 @@ def diagnostic_convert_scale(x, metric_name, convert_to="display.scale"):
 def generic_convert_scale(x, metric_name, data_type, convert_to="display.scale"):
     ro.r("trans.f <- %s.transform.f('%s')" % (data_type, metric_name))
 
+    if x is None:
+        return None
     islist = isinstance(x, list) or isinstance(x, tuple) # being loose with what qualifies as a 'list' here.
     if islist:
         ro.r("x <- c%s" % str(x))

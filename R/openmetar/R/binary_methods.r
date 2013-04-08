@@ -102,6 +102,12 @@ get.res.for.one.binary.study <- function(binary.data, params) {
     res
 }
 
+#convert.res.conf.level(data) {
+##	;
+##}
+
+
+
 create.binary.data.array <- function(binary.data, params, res){
     # Extracts data from binary.data and puts it into an array for the the first summary display table.
     tx1.name <- "tx A"

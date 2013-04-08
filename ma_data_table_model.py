@@ -22,7 +22,7 @@ import pdb
 # home-grown
 from ma_dataset import Dataset,Outcome,Study,Covariate
 import meta_py_r
-import meta_globals 
+import meta_globals
 from meta_globals import *
 
 # number of (empty) rows in the spreadsheet to show
@@ -72,6 +72,10 @@ class DatasetModel(QAbstractTableModel):
         # update_column_indices method for more.
         self.INCLUDE_STUDY = 0
         self.NAME, self.YEAR = [col+1 for col in range(2)]
+        
+        print("calling update column indices from ma_data_table_model init")
+        # GD - Actually impossible for this to work from here.
+        # update_column_indices depends on there being a valid self.current_outcome
         self.update_column_indices()
          
          
@@ -126,7 +130,7 @@ class DatasetModel(QAbstractTableModel):
             # make sure the indices are within range -- the
             # model may have changed without our knowing.
             # may have been nicer to have a notification
-            # framework here (i.e., have the udnerlying model
+            # framework here (i.e., have the underlying model
             # notify us when a group has been deleted) rather
             # than doing it on the fly...
             self.tx_index_a = self.tx_index_a % n_groups
@@ -136,7 +140,8 @@ class DatasetModel(QAbstractTableModel):
             self.current_txs = [group_names[self.tx_index_a], group_names[self.tx_index_b]]
         else:
             if not self.is_diag():
-                self.current_txs = ["tx A", "tx B"]
+                #self.current_txs = ["tx A", "tx B"]
+                self.current_txs = meta_globals.DEFAULT_GROUP_NAMES
             else:
                 self.current_txs = ["test 1"]
         self.previous_txs = self.current_txs
@@ -147,7 +152,11 @@ class DatasetModel(QAbstractTableModel):
         # the type data being displayed, the number of covariates, etc. 
         # It is extremely important that these are updated as necessary
         # from the view side of things
+        
+        print("--> Entering update_column_indices -->")
+        #######################################################################
         current_data_type = self.get_current_outcome_type()
+        print("    "+"Current data type: "+str(current_data_type))
 
         # offset corresponds to the first three columns, which 
         # are include study, name, and year.
@@ -163,8 +172,9 @@ class DatasetModel(QAbstractTableModel):
             self.RAW_DATA = [col+offset for col in range(4)]
             # sensitivity & specificity? 
             self.OUTCOMES = [7, 8, 9, 10, 11, 12]
-    
-
+        
+        print("    "+"RAW_DATA at end: "+str(self.RAW_DATA))
+        
     def format_float(self, float_var, num_digits=None):
         ''' this method assumes the input can be cast to a float! '''
         float_var = float(float_var)
@@ -788,9 +798,9 @@ class DatasetModel(QAbstractTableModel):
                             current_tx = self.current_txs[1]
                             
                         if section in (self.RAW_DATA[0], self.RAW_DATA[2]):
-                            return QVariant(current_tx + " n")
+                            return QVariant(current_tx + " #evts")
                         else:
-                            return QVariant(current_tx + " N")
+                            return QVariant(current_tx + " #total")
                     elif outcome_type == CONTINUOUS:
                         # continuous data
                         if section in self.RAW_DATA[3:]:
@@ -1204,6 +1214,8 @@ class DatasetModel(QAbstractTableModel):
         # just pick a reasonable current effect,
         # given the outcome data type
         data_type = data_model.get_outcome_type(d["current_outcome"])
+        
+        print("data_type: ", data_type)
 
         all_txs = data_model.get_group_names()
 

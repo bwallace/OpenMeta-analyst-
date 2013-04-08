@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'create_new_projectdlg.ui'
 #
-# Created: Wed Feb 27 15:41:53 2013
+# Created: Thu Mar 28 15:30:28 2013
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -342,10 +342,13 @@ class Ui_newprojectdialog(object):
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
         self.cancel_Button = QtGui.QPushButton(newprojectdialog)
+        self.cancel_Button.setAutoDefault(False)
         self.cancel_Button.setObjectName(_fromUtf8("cancel_Button"))
         self.horizontalLayout.addWidget(self.cancel_Button)
         self.ok_Button = QtGui.QPushButton(newprojectdialog)
         self.ok_Button.setEnabled(False)
+        self.ok_Button.setAutoDefault(False)
+        self.ok_Button.setDefault(False)
         self.ok_Button.setObjectName(_fromUtf8("ok_Button"))
         self.horizontalLayout.addWidget(self.ok_Button)
         self.verticalLayout.addLayout(self.horizontalLayout)

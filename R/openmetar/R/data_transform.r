@@ -3,6 +3,12 @@ isnt.null <- function(x){
     ! is.null(x)    
 }
 
+isnt.na <- function(x) {
+	!is.na(x)
+}
+
+IMAGINARY.THRESHOLD <- 1E-8
+
 
 ############################ 
 # Binary data calculation  #
@@ -16,13 +22,12 @@ gimpute.bin.data <- function(bin.data) {
 	#
 	# There will be two sets of possible results for each parameter since the solution involves a quadratic
 	
-#	print("Bin data in R:")
-#	print(bin.data)
-	
 	metric <- as.character(bin.data[["metric"]])
 	est    <- bin.data[["estimate"]]
 	lower  <- bin.data[["lower"]]
 	upper  <- bin.data[["upper"]]
+	#Ev_A   <- bin.data[["Ev_A"]]
+	#Ev_B   <- bin.data[["Ev_B"]]
 	N_1    <- bin.data[["N_A"]]
 	N_0    <- bin.data[["N_B"]]
 	conf.level <- bin.data[["conf.level"]]
@@ -42,22 +47,8 @@ gimpute.bin.data <- function(bin.data) {
 	if (is.null(lower)) lower <- NA
 	if (is.null(upper)) upper <- NA
 	
-	
-	
-	###############################
-#	print("just metric:")
-#	print(metric)
-#	cat("Metric",metric,
-#		"\nest",est,
-#		"\nlower",lower,
-#		"\nupper",upper,
-#		"\nN_1",N_1,
-#		"\nN_0",N_0,
-#		"Conf.level",conf.level)
-	###############################
-	
 	alpha <- 1.0-(conf.level/100.0)
-	mult <- abs(qnorm(alpha/2.0)) # 1.96 for 95% CI
+	mult <- abs(qnorm(alpha/2.0))
 	n <- N_0 + N_1
 	
 	# Calculates the estimate, low, and high if one of the three is NA, assumes
@@ -92,28 +83,17 @@ gimpute.bin.data <- function(bin.data) {
 		res <- calc.d.and.b(d=log(est), d_L=log(lower), d_U=log(upper))
 		d <- res[["d"]]; b <- res[["b"]]
 		
-		#print("d: ")
-		#print(d)
-		#print("b: "); print(b)
-		
 		d <- exp(d) # convert OR back to normal scale (not log)
 		
 		A <- N_0*(1-d)^2+b*d*N_0*N_1
 		B <- -1*(2*N_0*(1-d)+b*d*N_0*N_1)
 		C <- N_0 + d*N_1
 		
-		#print("A: "); print(A);
-		#print("B: "); print(B);
-		#print("C: "); print(C);
-		
 		# calculate proportions
 		p0.op1 <- (-B+sqrt(B^2-4*A*C))/(2*A) 
 		p0.op2 <- (-B-sqrt(B^2-4*A*C))/(2*A) 
 		p1.op1 <- d*p0.op1/(d*p0.op1+1-p0.op1)
 		p1.op2 <- d*p0.op2/(d*p0.op2+1-p0.op2)
-		
-		#print("p0"); print(p0.op1); print(p0.op2);
-		#print("p1"); print(p1.op1); print(p1.op2);
 		
 		res <- list(op1=list(p0=p0.op1, p1=p1.op1), op2=list(p0=p0.op2, p1=p1.op2))
 		return(res)
@@ -128,9 +108,6 @@ gimpute.bin.data <- function(bin.data) {
 		# calculate proportions
 		p0.op1 <- (N_0+d*N_1)/(d*(b*N_1*N_0+N_1+N_0))
 		p1.op1 <- p0.op1*d
-		
-		#print("p0"); print(p0.op1);
-		#print("p1"); print(p1.op1); 
 		
 		res <- list(op1=list(p0=p0.op1, p1=p1.op1))
 	}
@@ -177,161 +154,6 @@ gimpute.bin.data <- function(bin.data) {
 	
 	return(res)
 }
-	
-	
-
-
-#### WTF??? #####
-impute.bin.data <- function(bin.data){
-    # this function imputes binary data (i.e., 2x2 tables) from the fields
-    # available in the bin.data data frame parameter.
-    #
-    # a,b,c and d are the respective entries for the 2-x-2 table. they denote 
-    # treated events, treated total, control events, and control total, respectively
-    a<-NULL; b<-NULL; c<-NULL; d<-NULL;
-    
-	if (is.null(bin.data$estimate)){
-	    # these are the trivial cases; everything was given in nearly the form we want
-	    if (isnt.null(bin.data$control.n.outcome) & isnt.null(bin.data$control.n.no.outcome) & 
-	        isnt.null(bin.data$tx.n.outcome) & isnt.null(bin.data$tx.n.no.outcome)) {
-	            a <- bin.data$tx.n.outcome
-	            b <- bin.data$tx.n.outcome + bin.data$tx.n.no.outcome
-	            c <- bin.data$control.n.outcome
-	            d <- bin.data$control.n.outcome+bin.data$control.n.no.outcome
-	    }
-	    else if (isnt.null(bin.data$control.n.outcome) & isnt.null(bin.data$control.N) &
-	               isnt.null(bin.data$tx.n.outcome) & isnt.null(bin.data$tx.N)) {
-	            a <- bin.data$tx.n.outcome
-	            b <- bin.data$tx.N
-	            c <- bin.data$control.n.outcome
-	            d <- bin.data$control.N                 
-	    }
-	    else if (isnt.null(bin.data$control.p.outcome) & isnt.null(bin.data$control.N) &
-	               isnt.null(bin.data$tx.p.outcome) & isnt.null(bin.data$tx.N)){
-	            a <- bin.data$tx.p.outcome * bin.data$tx.N
-	            b <- bin.data$tx.N
-	            c <- bin.data$control.p.outcome * bin.data$control.N
-	            d <- bin.data$control.N
-	    }           
-	}
-    else{
-        if (isnt.null(bin.data$estimate) & isnt.null(bin.data$l_ci) & isnt.null(bin.data$u_ci) &
-            isnt.null(bin.data$control.n.outcome) & isnt.null(bin.data$tx.n.outcome)){
-                a <- (bin.data$control.n.outcome + bin.data$tx.n.outcome)/2.0
-                b <- log(bin.data$estimate) 
-                c <- sqrt(a) * (ln(bin.data$u_ci) - b)/1.96 # TODO parameterize
-                # no d/x4 here? (total control)
-        }
-        else if(isnt.null(bin.data$estimate) & isnt.null(bin.data$pval) & 
-                  isnt.null(bin.data$control.n.outcome) & isnt.null(bin.data$tx.n.outcome)){
-                a <- (bin.data$control.n.outcome + bin.data$tx.n.outcome)/2.0
-                b <- log(bin.data$estimate)
-                c <- b * sqrt(a) / qnorm(bin.data$pval/2.0)
-        }
-        else if(isnt.null(bin.data$log.estimate) & isnt.null(bin.data$log.se) & 
-                  isnt.null(bin.data$control.n.outcome) & isnt.null(bin.data$tx.n.outcome)){
-                a <- (bin.data$control.n.outcome + bin.data$tx.n.outcome)/2.0
-                b <- bin.data$log.estimate
-                c <- bin.data$log.se * sqrt(a)
-        }
-        else if(isnt.null(bin.data$log_estimate) & isnt.null(bin.data$pval) &
-                  isnt.null(bin.data$control.n.outcome) & isnt.null(bin.data$tx.n.outcome)){
-                a <- (bin.data$control.n.outcome + bin.data$tx.n.outcome)/2.0 
-                b <- log(bin.data$log.estimate)
-                c <- b * sqrt(a) / qnorm(bin.data$pval/2.0)
-        }
-    }
-    data.frame(a=a, b=b, c=c, d=d)
-}
-
-# Not currently being used but its so cool nonetheless so don't get rid of it
-#fillin.2x2.simple <- function(c11=NA, c12=NA, c21=NA, c22=NA, 
-#                                                r1sum =NA, r2sum=NA, 
-#                                                c1sum=NA, c2sum=NA,
-#                                                total=NA, touse=rep(TRUE,9)){
-#	y <- c(
-#	rep(c11,4), 
-#	rep(c12,4),
-#	rep(c21,4), 
-#	res<-rep(c22,4),
-#	rep(r1sum,3), 
-#	rep(r2sum,3), 
-#	rep(c1sum,3), 
-#	rep(c2sum,3),
-#	rep(total,8)) 
-#
-#    select <- c(
-#		rep(touse[1],4), 
-#		rep(touse[2],4), 
-#		rep(touse[3],4), 
-#		rep(touse[4],4), 
-#		rep(touse[5],3), 
-#		rep(touse[6],3), 
-#		rep(touse[7],3), 
-#		rep(touse[8],3), 
-#		rep(touse[9],8))
-#
-#	X<- c(
-#	# c11, c12, c21, c22, r1sum, r2sum, c1sum, c2sum, total 
-#	    1,   0,   0,   0,     0,     0,     0,     0,     0,  #c11
-#	    0,  -1,   0,   0,     1,     0,     0,     0,     0,  #c11=r1sum-c12
-#	    0,   0,  -1,   0,     0,     0,     1,     0,     0,  #c11=c1sum-c21
-#	    0,  -1,  -1,  -1,     0,     0,     0,     0,     1,  #c11=total-c12-c21-c22
-#
-#	    0,   1,   0,   0,     0,     0,     0,     0,     0,  #c12
-#	   -1,   0,   0,   0,     1,     0,     0,     0,     0,  #c12=r1sum-c11
-#	    0,   0,   0,  -1,     0,     0,     0,     1,     0,  #c12=c2sum-c22
-#	   -1,   0,  -1,  -1,     0,     0,     0,     0,     1,  #c12=total-c11-c21-c22
-#
-#	    0,   0,   1,   0,     0,     0,     0,     0,     0,  #c21
-#	    0,   0,   0,  -1,     0,     1,     0,     0,     0,  #c21=r2sum-c22
-#	   -1,   0,   0,   0,     0,     0,     1,     0,     0,  #c21=c1sum-c11
-#	   -1,  -1,   0,  -1,     0,     0,     0,     0,     1,  #c21=total-c11-c12-c22
-#
-#	    0,   0,   0,   1,     0,     0,     0,     0,     0,  #c22
-#	    0,   0,  -1,   0,     0,     1,     0,     0,     0,  #c22=r2sum-c21
-#	    0,  -1,   0,   0,     0,     0,     0,     1,     0,  #c22=c2sum-c12
-#	   -1,  -1,  -1,   0,     0,     0,     0,     0,     1,  #c22=total-c11-c12-c21
-#	
-#	    0,   0,   0,   0,     1,     0,     0,     0,     0,  #r1sum
-#	    1,   1,   0,   0,     0,     0,     0,     0,     0,  #r1sum=c11+c12
-#	    0,   0,   0,   0,     0,    -1,     0,     0,     1,  #r1sum=total-r2sum
-#
-#	    0,   0,   0,   0,     0,     1,     0,     0,     0,  #r2sum
-#	    0,   0,   1,   1,     0,     0,     0,     0,     0,  #r2sum=c21+c22
-#	    0,   0,   0,   0,    -1,     0,     0,     0,     1,  #r2sum=total-r1sum
-#	    
-#	    0,   0,   0,   0,     0,     0,     1,     0,     0,  #c1sum
-#	    1,   0,   1,   0,     0,     0,     0,     0,     0,  #c1sum=c11+c21
-#	    0,   0,   0,   0,     0,     0,     0,    -1,     1,  #c1sum=total-c2sum
-#
-#	    0,   0,   0,   0,     0,     0,     0,     1,     0,  #c2sum
-#	    0,   1,   0,   1,     0,     0,     0,     0,     0,  #c2sum=c12+c22
-#	    0,   0,   0,   0,     0,     0,    -1,     0,     1,  #c2sum=total-c1sum
-#
-#	    0,   0,   0,   0,     0,     0,     0,     0,     1,  #total
-#	    1,   1,   1,   1,     0,     0,     0,     0,     0,  #total=c11+c12+c21+c22
-#	    0,   0,   0,   0,     1,     1,     0,     0,     0,  #total=r1sum+r2sum
-#	    0,   0,   0,   0,     0,     0,     1,     1,     0,  #total=c1sum+c2sum
-#	    0,   0,   1,   1,     1,     0,     0,     0,     0,  #total=r1sum+c21+c22
-#	    1,   1,   0,   0,     0,     1,     0,     0,     0,  #total=r2sum+c11+c12
-#	    0,   1,   0,   1,     0,     0,     1,     0,     0,  #total=c1sum+c12+c22
-#	    1,   0,   1,   0,     0,     0,     0,     1,     0   #total=c2sum+c11+c21
-#		)
-#
-#	X<-matrix(X,ncol=9, byrow=TRUE)
-#	my.frame <- as.data.frame(X)
-#	colnames(my.frame) <- c("c11", "c12", "c21", "c22", "r1sum", "r2sum", "c1sum", "c2sum", "total" )
-#	
-## add the responses y
-#	my.frame <- cbind(y, my.frame)
-#	
-#	res <- lm(y~ c11 + c12 + c21 + c22 + r1sum + r2sum + 
-#			  c1sum + c2sum + total + (-1) ,data=my.frame)
-#	
-#	return(res)
-#}
-
 
 #################################################
 #                                               #
@@ -352,10 +174,12 @@ check.1spell.res <- function(n, se) {
         }        
     }
 
-    if (se<=0) {
-        comment <- paste("se<=0", comment, sep=", ")
-        succeeded <- FALSE
-    }
+	if (!is.na(se)) {
+	    if (se<=0) {
+	        comment <- paste("se<=0", comment, sep=", ")
+	        succeeded <- FALSE
+		}
+	}
 
     return(list(succeeded=succeeded, comment=comment))
 
@@ -366,117 +190,181 @@ check.1spell.res <- function(n, se) {
 ########################################################################################
 ########################################################################################
 ########################################################################################
-
 fillin.cont.1spell <- function(n=NA, mean=NA, sd=NA, se=NA, var=NA, 
-                         low=NA, high=NA, pval=NA, alpha=0.05) {
-
+                         low=NA, high=NA, pval=NA, alpha=0.05) { 
+	# var is the SAMPLE variance NOT sampling variance:
+	#      var = sd^2 NOT se^2
+	#      se = sd/sqrt(n)
     succeeded <- FALSE 
     comment <- ""
-    res <- list(succeeded= succeeded)
+    res <- list(succeeded=succeeded)
 
     z <- abs(qnorm(alpha/2))
 
     input.vector <- c(n, mean, sd, se, var, low, high, pval)
     input.pattern <- !(is.na(input.vector))
-
-    ##########################################################
-    # check the mean first 
-    # If not calculate it from the CI
-
-    if(is.na(mean)) {
-        mean = try((high+low)/2, silent = TRUE)
-    }
-
-    # if mean is still missing, abort 
-    if(is.na(mean)) {
-        comment <- paste(comment, "no info on mean", sep="|")
-        return(c(res, comment=comment))
-    }
-
-
-    ##########################################################
-    # if se is missing
-    # try the variance 
-
-    if(is.na(se)) {
-        se=try(sqrt(var), silent=TRUE)
-    }
-
-    # try the sd and the n
-    if(is.na(se)) {
-        se=try(sqrt(sd^2)/(n-1), silent=TRUE)
-    }
-
-    # try both ends of the CI
-    if(is.na(se)) {
-        se=try(abs(high-low)/(2*z), silent=TRUE)
-    }
-
-    # try low end of CI
-    if(is.na(se)) {
-        se=try((mean-low)/z, silent=TRUE)
-    }
-
-    # try high end of CI
-    if(is.na(se)) {
-        se=try((high-mean)/z, silent=TRUE)
-    }
-
-    # try the 2 sided p-value 
-    if(is.na(se)) {
-        se=try( -mean/qnorm(pval/2) , silent=TRUE)
-    }
-   
-    # if the se is still missing, then abort 
-    if(is.na(se)) {
-       comment <- paste(comment, "no info on dispersion", sep="|")
-        return(c(res, comment=comment))
-    }
-
-
-    ##########################################################
-    # if the variance is missing 
-    if(is.na(var)) {
-        var = se^2 
-    }
-    
-    ##########################################################
-    # if the lower CI is missing 
-    if(is.na(low)) {
-        low = mean - z* se 
-    }
-    
-    ##########################################################
-    # if the high CI is missing 
-    if(is.na(high)) {
-        high = mean + z* se 
-    }
-
-    ##########################################################
-    # if the 2 sided pval is missing 
-    if(is.na(pval)) {
-        pval = 2*pnorm(-abs(mean/se))
-    }
-
-    ##########################################################
-    # if the sd is missing 
-    if(is.na(sd)) {
-        sd=try( var*(n-1), silent=TRUE)
-    }
-
-    if(is.na(sd)) {
-        comment <- paste(comment, "{n & sd} missing")
-    }
-
-    ##########################################################
-    # if the n is missing 
-    if(is.na(n)) {
-        n=try( round( sd/var +1  ), silent=TRUE)
-    }
-
+	
+	print("Input vector:")
+	print(input.vector)
+	
+	get.mean <- function(high=NA, low=NA) {
+		if(is.na(mean))
+			mean = (high+low)/2
+		return(mean)
+	}
+	
+	get.se <- function(sd=NA, n=NA, low=NA, high=NA, mean=NA, pval=NA) {		
+		# try the sd and the n
+		if(is.na(se))
+			se <- try(  sd/sqrt(n)  , silent=TRUE)
+		
+		# try both ends of the CI
+		if(is.na(se))
+			se <- try(  abs(high-low)/(2*z)  ,silent=TRUE)
+		
+		# try low end of CI
+		if(is.na(se))
+			se <- try(  abs(mean-low)/z  ,silent=TRUE)
+		
+		# try high end of CI
+		if(is.na(se))
+			se <- try(  abs(high-mean)/z  ,silent=TRUE)
+		
+		# try the 2 sided p-value for the mean != 0
+		if(is.na(se))
+			se <- try(  mean/abs(qnorm(pval/2))  ,silent=TRUE)
+		
+		return(se)
+	}
+	
+	get.var <- function(sd=NA) {
+		# try sd
+		if (is.na(var))
+			var <- try(  sd^2  , silent=TRUE)
+		return(var)
+	}
+	
+	get.sd <- function(var=NA, n=NA, se=NA) {
+		# try var
+		if (is.na(sd))
+			sd <- try(  sqrt(var)  ,silent=TRUE)
+	
+		# try se and n
+		if (is.na(sd))
+			sd <- try(  sqrt(n)*se  ,silent=TRUE)
+		
+		return(sd)
+	}
+	
+	get.n <- function(sd=NA, se=NA, var=NA) {
+		if (is.na(n))
+			n <- (sd/se)^2
+		if (is.na(n))
+			n <- var/(se^2)
+		return(n)
+	}
+	
+	dirty <- TRUE
+	while (dirty) {
+		print("Iterating in fillin.cont1")
+		dirty <- FALSE
+		
+	    ##########################################################
+	    # check the mean first 
+	    # If not calculate it from the CI
+		if (is.na(mean)) {
+	    	mean <- get.mean(high=high, low=low)
+			if (!is.na(mean)) {
+				dirty <- TRUE # mean was changed
+				print("changed mean")
+			}
+				
+		}	
+	    ##########################################################
+	    # if se is missing
+		if (is.na(se)) {
+			se <- get.se(sd=sd, n=n, low=low, high=high, mean=mean, pval=pval)
+			if (!is.na(se)) {
+				dirty <- TRUE # se was changed
+				print("changed se")
+			}
+		}
+	    ##########################################################
+	    # if the SAMPLE variance is missing
+		if (is.na(var)) {
+			var <- get.var(sd=sd)
+			if (!is.na(var)) {
+				dirty <- TRUE # var was changed
+				print("changed var")
+			}
+		}
+	    ##########################################################
+	    # if the lower CI is missing 
+	    if(is.na(low)) {
+	        low <- mean - z*se
+			if (!is.na(low)) {
+				dirty <- TRUE # low was changed
+				print("changed low")
+			}
+	    }
+	    ##########################################################
+	    # if the high CI is missing 
+	    if(is.na(high)) {
+	        high <- mean + z*se
+			if (!is.na(high)) {
+				dirty <- TRUE # high was changed
+				print("changed high")
+			}
+	    }
+	    ##########################################################
+	    # if the 2 sided pval is missing 
+	    if(is.na(pval)) {
+	        pval <- 2*pnorm(-abs(mean/se))
+			if (!is.na(pval)) {
+				dirty <- TRUE # pval was changed
+				print("changed pval")
+			}
+	    }
+	    ##########################################################
+	    # if the sd is missing 
+	    if(is.na(sd)) {
+	        sd = get.sd(var=var, n=n, se=se)
+			if (!is.na(sd)) {
+				dirty = TRUE # sd was changed
+				print("changed sd")
+			}
+		}
+	    ##########################################################
+	    # if the n is missing 
+		if(is.na(n)) {
+			n <- get.n(sd=sd, se=se, var=var)
+			if (!is.na(n)) {
+				dirty <- TRUE # sd was changed
+				print("changed n")
+			}
+		}
+		
+		print("---------------")
+		print("Dirty at end:")
+		print(dirty)
+		print("--------------")
+	} # finished iterating
+	
+	# Do checks:
+	if (is.na(mean)) {
+		comment <- paste(comment, "no info on mean", sep="|")
+		#return(c(res, comment=comment))
+	}
+	# if the se is still missing, then abort 
+	if (is.na(se)) {
+		comment <- paste(comment, "no info on dispersion", sep="|")
+		#return(c(res, comment=comment))
+	}
+	if(is.na(sd)) {
+		comment <- paste(comment, "{n & sd} missing")
+	}
+	
     succeeded <- check.1spell.res(n=n, se=se)$succeeded
-
-
 
     output.vector <- c(n, mean, sd, se, var, low, high, pval)
     output.names <- c("n", "mean", "sd", "se", "var", "low", "high", "pval")
@@ -485,6 +373,260 @@ fillin.cont.1spell <- function(n=NA, mean=NA, sd=NA, se=NA, var=NA,
     res<- list(succeeded=succeeded, input.pattern=input.pattern, output=output.vector, comment=comment)
     return(res)
 
+}
+
+
+fillin.missing.effect.quantity <- function(est=NA, low=NA, high=NA) {
+	# Assumes CI is symmetric around estimate
+	
+	# low = est - diff, est, high = est + diff
+	diff <- high-est
+	if (is.na(diff))
+		diff <- est - low
+	
+	if (is.na(est))
+		est <- (high-low)/2.0
+	
+	if (is.na(low))
+		low <- est - diff
+	
+	if (is.na(high))
+		high <- est + diff
+	
+	return(list(est=est, low=low, high=high))
+}
+
+gimpute.cont.data <- function(group1, group2, effect_data, conf.level=95.0) {
+	# Tries to solve for one of n1,n2, mean1, mean2, sd1, sd2 based on the data
+	# in group1, group2, effect_data
+	
+	# Get 'more' local copies
+	n1    <- group1[["n"]]
+	n2    <- group2[["n"]]
+	mean1 <- group1[["mean"]]
+	mean2 <- group2[["mean"]]
+	sd1   <- group1[["sd"]]
+	sd2   <- group2[["sd"]]
+	est   <- effect_data[["est"]]
+	low   <- effect_data[["low"]]
+	high  <- effect_data[["high"]]
+	metric <- effect_data[["metric"]]
+	met.param <- effect_data[["met.param"]] # metric specific-parameter
+			
+	# Convert nulls to NA
+	if (is.null(n1))    n1    <- NA
+	if (is.null(n2))    n2    <- NA
+	if (is.null(mean1)) mean1 <- NA
+	if (is.null(mean2)) mean2 <- NA
+	if (is.null(sd1))   sd1   <- NA
+	if (is.null(sd2))   sd2   <- NA
+	if (is.null(est))   est   <- NA
+	if (is.null(low))   low   <- NA
+	if (is.null(high))  high  <- NA
+	if (is.null(metric)) metric <- NA
+	if (is.null(met.param)) met.param <- NA
+	if (is.null(conf.level)) conf.level <- NA
+	
+	metric <- as.character(metric)
+	
+	# Can't do anything if we don't know what metric we are using or if we don't
+	# know the conf.level
+	if (is.na(metric) | is.na(conf.level) | is.na(met.param)) {
+		return(list("FAIL"=NA))
+	}
+	
+	effect.and.ci <- fillin.missing.effect.quantity(est=est, low=low, high=high)
+	est  <- effect.and.ci[["est"]]
+	low  <- effect.and.ci[["low"]]
+	high <- effect.and.ci[["high"]]
+	
+	# Obtain standard error and variance from CI
+	alpha <- 1.0-(conf.level/100.0)
+	mult <- abs(qnorm(alpha/2.0))
+	se <- (high-low)/(2*mult)
+	var = se^2
+	
+	#print("se: "); print(se);
+	#print("var: "); print(var);
+		
+	filter_neg_result <- function(res.vector) {
+		# Ignore negative results, complex number results, and condense all NAs to a single one
+		res.vector <- res.vector[!is.na(res.vector)]
+		res.vector <- res.vector[Re(res.vector) > 0]
+		res.vector <- res.vector[abs(Im(res.vector)) < IMAGINARY.THRESHOLD] # imaginary part is very close to zero
+		res.vector <- Re(res.vector)
+		
+		#print("imaginary"); print(Im(res.vector))
+		if (length(res.vector)==0)
+			res.vector <- NA;
+		return(res.vector)
+	}
+	
+	impute.from.MD <- function() {
+		print("From MD")
+		# Formulas from "The Handbook of Research Synthesis and Meta-Analysis"
+	    #     2nd Ed. p. 224
+		
+		#######################################################################
+		# If one of the means is missing, solve for other mean
+		#   If we are in here, we already know the effect is mean difference
+	    #   D = (mean of group 1) - (mean of group 2)
+		D <- est; Y1 <- mean1; Y2 <- mean2;
+		
+		if (is.na(Y1) & isnt.na(Y2))
+			Y1 <- D + Y2
+		if (is.na(Y2) & isnt.na(Y1))
+			Y2 <- Y1 - D
+		#######################################################################
+		# For MD, the metric parameter is the assumption that the population SDs
+	    # are the same:
+		#     met.param == TRUE  # population SDs are the same
+	    #     met.param == FALSE # population SDs are not the same
+		if (met.param) { # population SDs are the same
+			print("Assuming population SDs are the same")
+			if (is.na(n1)) {
+				#print("n1 is na")
+				n1.op1 <- (1/2)*(n2*sd1^2-sd1^2-var*n2^2+2*var*n2+sd2^2*n2-sd2^2+sqrt(var^2*n2^4-4*var^2*n2^3+4*var^2*n2^2+sd1^4+sd2^4+n2^2*sd1^4+2*n2*sd1^4+2*sd1^2*sd2^2+sd2^4*n2^2-2*sd2^4*n2-2*n2^3*sd1^2*var+2*n2^2*sd1^2*var-2*n2^2*sd1^2*sd2^2-4*sd1^2*var*n2+2*var*n2^3*sd2^2+2*var*n2^2*sd2^2-4*var*n2*sd2^2))/(-sd1^2+var*n2)
+				n1.op2 <- -(1/2)*(-n2*sd1^2+sd1^2+var*n2^2-2*var*n2-sd2^2*n2+sd2^2+sqrt(var^2*n2^4-4*var^2*n2^3+4*var^2*n2^2+sd1^4+sd2^4+n2^2*sd1^4+2*n2*sd1^4+2*sd1^2*sd2^2+sd2^4*n2^2-2*sd2^4*n2-2*n2^3*sd1^2*var+2*n2^2*sd1^2*var-2*n2^2*sd1^2*sd2^2-4*sd1^2*var*n2+2*var*n2^3*sd2^2+2*var*n2^2*sd2^2-4*var*n2*sd2^2))/(-sd1^2+var*n2)
+				print("n1op1"); print(n1.op1);
+				print("n1op2"); print(n1.op2);
+				n1.op1 <- round(n1.op1, digits = 0)
+				n1.op2 <- round(n1.op2, digits = 0)
+				n1 <- filter_neg_result(c(n1.op1,n1.op2))
+                n1 <- round(n1)
+			}
+			if (is.na(n2)) {
+				#print("n2 is na")
+				n2.op1 <- (1/2)*(n1*sd2^2-var*n1^2+2*var*n1+sd1^2*n1-sd1^2-sd2^2+sqrt(sd1^4+sd2^4+2*sd1^2*sd2^2+n1^2*sd2^4+2*n1*sd2^4+var^2*n1^4-4*var^2*n1^3+4*var^2*n1^2+sd1^4*n1^2-2*sd1^4*n1-2*n1^3*sd2^2*var+2*n1^2*sd2^2*var-2*n1^2*sd2^2*sd1^2+2*var*n1^3*sd1^2+2*var*n1^2*sd1^2-4*var*n1*sd1^2-4*var*n1*sd2^2))/(var*n1-sd2^2)
+				n2.op2 <- -(1/2)*(-n1*sd2^2+var*n1^2-2*var*n1-sd1^2*n1+sd1^2+sd2^2+sqrt(sd1^4+sd2^4+2*sd1^2*sd2^2+n1^2*sd2^4+2*n1*sd2^4+var^2*n1^4-4*var^2*n1^3+4*var^2*n1^2+sd1^4*n1^2-2*sd1^4*n1-2*n1^3*sd2^2*var+2*n1^2*sd2^2*var-2*n1^2*sd2^2*sd1^2+2*var*n1^3*sd1^2+2*var*n1^2*sd1^2-4*var*n1*sd1^2-4*var*n1*sd2^2))/(var*n1-sd2^2)
+				n2.op1 <- round(n2.op1, digits=0)
+				n2.op2 <- round(n2.op2, digits=0)
+				n2 <- filter_neg_result(c(n2.op1, n2.op2))
+                n2 <- round(n2)
+			}
+			if (is.na(sd1)) {
+				#print("sd1 is na")
+				sd1.op1 <- sqrt((n1^2-n1+n1*n2-n2)*(var*n1^2*n2+var*n1*n2^2-2*var*n1*n2-n1*sd2^2*n2+n1*sd2^2-sd2^2*n2^2+sd2^2*n2))/(n1^2-n1+n1*n2-n2)
+				sd1.op2 <- -sqrt((n1^2-n1+n1*n2-n2)*(var*n1^2*n2+var*n1*n2^2-2*var*n1*n2-n1*sd2^2*n2+n1*sd2^2-sd2^2*n2^2+sd2^2*n2))/(n1^2-n1+n1*n2-n2)
+				sd1 <- filter_neg_result(c(sd1.op1, sd1.op2))
+			}
+			if (is.na(sd2)) {
+				#print("sd2 is na")
+				sd2.op1 <- sqrt((n1*n2-n1+n2^2-n2)*(var*n1^2*n2+var*n1*n2^2-2*var*n1*n2-sd1^2*n1^2+sd1^2*n1-n2*sd1^2*n1+n2*sd1^2))/(n1*n2-n1+n2^2-n2)
+				sd2.op2 <- -sqrt((n1*n2-n1+n2^2-n2)*(var*n1^2*n2+var*n1*n2^2-2*var*n1*n2-sd1^2*n1^2+sd1^2*n1-n2*sd1^2*n1+n2*sd1^2))/(n1*n2-n1+n2^2-n2)
+				sd2 <- filter_neg_result(c(sd2.op1, sd2.op2))
+			}
+		}
+		else {  # population SDs are not the same
+			print("Not assuming population SDs are the same")
+			if (is.na(n1)) {
+				#print("n1 is na")
+				n1 <- n2*sd1^2/(var*n2-sd2^2)
+                n1 <- round(n1)
+			}
+			if (is.na(n2)) {
+				#print("n2 is na")
+				n2 <- n1*sd2^2/(var*n1-sd1^2)
+                n2 <- round(n2)
+			}
+			if (is.na(sd1)) {
+				#print("sd1 is na")
+				sd1.op1 <- sqrt(n2*n1*(var*n2-sd2^2))/n2
+				sd1.op2 <- -sqrt(n2*n1*(var*n2-sd2^2))/n2
+				sd1 <- filter_neg_result(c(sd1.op1, sd1.op2))
+			}
+			if (is.na(sd2)) {
+				#print("sd2 is na")
+				sd2.op1 <- sqrt(n1*n2*(var*n1-sd1^2))/n1
+				sd2.op2 <- -sqrt(n1*n2*(var*n1-sd1^2))/n1
+				sd2 <- filter_neg_result(c(sd2.op1, sd2.op2))
+			}
+		}
+		
+		res <- list(n1=n1, n2=n2, mean1=Y1, mean2=Y2, sd1=sd1, sd2=sd2)
+		return(res)
+	} # end of impute.from.MD
+	
+	impute.from.SMD <- function() {
+		print("From SMD")
+		#######################################################################
+		# If one of the means is missing	
+		sdw <- sqrt(((n1-1)*sd1^2+(n2-1)*sd2^2)/(n1+n2-2)) # within-groups sd
+		D <- est; Y1 <- mean1; Y2 <- mean2;
+		
+		if (is.na(Y1)) Y1 <- D*sdw+Y2
+		if (is.na(Y2)) Y2 <- -D*sdw+Y1
+		#######################################################################
+		# First try some stuff that does not depend on the metric parameter
+		# From formula: d=(Y1-Y2)/SW, SW^2=((n1-1)*sd1^2+(n2-1)*sd2^2)/(n1+n2-2)
+		if (is.na(n1)) {
+			n1 <- -(-sd1^2*D^2+sd2^2*n2*D^2-sd2^2*D^2-n2*Y1^2+2*n2*Y1*Y2-n2*Y2^2+2*Y1^2-4*Y1*Y2+2*Y2^2)/(sd1^2*D^2-Y1^2+2*Y1*Y2-Y2^2)
+            n1 <- round(n1)
+		}
+		if (is.na(n2)) {
+			n2 <- -(sd1^2*n1*D^2-sd1^2*D^2-sd2^2*D^2-n1*Y1^2+2*n1*Y1*Y2-n1*Y2^2+2*Y1^2-4*Y1*Y2+2*Y2^2)/(sd2^2*D^2-Y1^2+2*Y1*Y2-Y2^2)
+            n2 <- round(n2)
+		}
+		if (is.na(sd1)) {
+			sd1.op1 <- (sqrt(-(n1-1)*(-n1*Y1^2+2*n1*Y1*Y2+sd2^2*n2*D^2-sd2^2*D^2+2*n2*Y1*Y2-n2*Y2^2-n1*Y2^2-n2*Y1^2+2*Y2^2+2*Y1^2-4*Y1*Y2)))/((n1-1)*D)
+			sd1.op2 <- -(sqrt(-(n1-1)*(-n1*Y1^2+2*n1*Y1*Y2+sd2^2*n2*D^2-sd2^2*D^2+2*n2*Y1*Y2-n2*Y2^2-n1*Y2^2-n2*Y1^2+2*Y2^2+2*Y1^2-4*Y1*Y2)))/((n1-1)*D)
+			sd1 <- filter_neg_result(c(sd1.op1, sd1.op2))
+		}
+		if (is.na(sd2)) {
+			sd2.op1 <- (sqrt(-(n2-1)*(sd1^2*n1*D^2-sd1^2*D^2-n1*Y2^2-n2*Y1^2-n1*Y1^2+2*n1*Y1*Y2+2*Y1^2-4*Y1*Y2+2*n2*Y1*Y2-n2*Y2^2+2*Y2^2)))/((n2-1)*D)
+			sd2.op2 <- -(sqrt(-(n2-1)*(sd1^2*n1*D^2-sd1^2*D^2-n1*Y2^2-n2*Y1^2-n1*Y1^2+2*n1*Y1*Y2+2*Y1^2-4*Y1*Y2+2*n2*Y1*Y2-n2*Y2^2+2*Y2^2)))/((n2-1)*D)
+			sd2 <- filter_neg_result(c(sd2.op1, sd2.op2))
+		}
+		#######################################################################
+		# For SMD, the metric parameter is whether hedges g is used
+		#     met.param == TRUE  # SMD is Hedges' g (corrected bias) (default)
+	    #     met.param == FALSE # SMD has uncorrected bias
+		if (met.param) { # using Hedges' g
+			print("Assuming SMD is Hedges' g")
+			if (is.na(n1)) {
+				tryCatch({n1 <- polyroot(c(96*n2^3-16*n2^4-144*n2^2, (81*var*n2^2-72*var*n2^3+48*D^2*n2^2-72*D^2*n2+16*var*n2^4-288*n2-64*n2^3+288*n2^2-8*n2^3*D^2), (48*D^2*n2+48*var*n2^3+288*n2-16*D^2*n2^2-144-144*var*n2^2+81*var*n2-96*n2^2), (96+48*var*n2^2-64*n2-8*D^2*n2-72*var*n2), (16*var*n2-16)));
+					}, error = function(e) {
+						#print(e);
+						n1 <- NA;
+					});
+				n1 <- filter_neg_result(n1)
+        		n1 <- round(n1)
+			}
+			if (is.na(n2)) {
+				tryCatch({  n2 <- polyroot(c(96*n1^3-16*n1^4-144*n1^2, (81*var*n1^2-72*var*n1^3+48*D^2*n1^2-72*D^2*n1+16*var*n1^4-288*n1-64*n1^3+288*n1^2-8*n1^3*D^2), (48*D^2*n1+48*var*n1^3+288*n1-16*D^2*n1^2-144-144*var*n1^2+81*var*n1-96*n1^2), (96+48*var*n1^2-64*n1-8*D^2*n1-72*var*n1), (16*var*n1-16)));
+					}, error = function(e) {
+						#print(e);
+						n2 <- NA;
+					});
+				n2 <- filter_neg_result(n2)
+       			n2 <- round(n2)
+			}
+		}
+		else { # not using Hedges' g
+			if (is.na(n1)) {
+				n1.op1 <- (1/4)*(-2*var*n2+4+D^2+sqrt(4*var^2*n2^2-4*D^2*n2*var+8*D^2+D^4))*n2/(var*n2-1)
+				n1.op2 <- -(1/4)*(2*var*n2-4-D^2+sqrt(4*var^2*n2^2-4*D^2*n2*var+8*D^2+D^4))*n2/(var*n2-1)
+				n1.op1 <- round(n1.op1, digits = 0)
+				n1.op2 <- round(n1.op2, digits = 0)
+				n1 <- filter_neg_result(c(n1.op1,n1.op2))
+                n1 <- round(n1)
+			}
+			if (is.na(n2)) {
+				n2.op1 <- (1/4)*(-2*var*n1+D^2+4+sqrt(4*var^2*n1^2-4*var*n1*D^2+D^4+8*D^2))*n1/(-1+var*n1)
+				n2.op2 <- -(1/4)*(2*var*n1-D^2-4+sqrt(4*var^2*n1^2-4*var*n1*D^2+D^4+8*D^2))*n1/(-1+var*n1)
+				n2.op1 <- round(n2.op1, digits=0)
+				n2.op2 <- round(n2.op2, digits=0)
+				n2 <- filter_neg_result(c(n2.op1, n2.op2))
+                n2 <- round(n2)
+			}
+		}
+		
+		res <- list(n1=n1, n2=n2, mean1=Y1, mean2=Y2, sd1=sd1, sd2=sd2)
+		return(res)
+	} # end of impute.from.smd
+	
+	res <- switch(metric, "MD"=impute.from.MD(), "SMD"=impute.from.SMD())
+	return(res)
 }
 
 ########################################################################################
@@ -672,38 +814,38 @@ gimpute.diagnostic.data <- function(diag.data) {
 
 	# TP,FN
 	if (case2a.condition) {
-		print("Entering 2a")
+		#print("Entering 2a")
 		TP <- if(is.null(TP)) case2res$TP
 		FN <- if(is.null(FN)) case2res$FN
 	} else if (case5a.condition) {
-		print("Entering 5a")
+		#print("Entering 5a")
 		TP <- if(is.null(TP)) case5res$TP
 		FN <- if(is.null(FN)) case5res$FN
 	} else if (case6b.condition) {
-		print("Entering 6b")
+		#print("Entering 6b")
 		TP <- if(is.null(TP)) case6res$TP
 		FN <- if(is.null(FN)) case6res$FN
 	} else if (case8a.condition) {
-		print("Entering 8a")
+		#print("Entering 8a")
 		TP <- if(is.null(TP)) case8res$TP
 		FN <- if(is.null(FN)) case8res$FN
 	}
 	
 	# TN,FP
 	if (case2b.condition) {
-		print("Entering 2b")
+		#print("Entering 2b")
 		TN <- if(is.null(TN)) case2res$TN
 	    FP <- if(is.null(FP)) case2res$FP
 	} else if (case5b.condition) {
-		print("Entering 5b")
+		#print("Entering 5b")
 		TN <- if(is.null(TN)) case5res$TN
 		FP <- if(is.null(FP)) case5res$FP
 	} else if (case6a.condition) {
-		print("Entering 6a")
+		#print("Entering 6a")
 		TN <- if(is.null(TN)) case6res$TN
 		FP <- if(is.null(FP)) case6res$FP
 	} else if (case8b.condition) {
-		print("Entering 8b")
+		#print("Entering 8b")
 		TN <- if(is.null(TN)) case8res$TN
 		FP <- if(is.null(FP)) case8res$FP
 	}
@@ -728,8 +870,6 @@ gimpute.diagnostic.data <- function(diag.data) {
 	TN.rnd.err <- abs(TN-round(TN,digits=0))
 	FP.rnd.err <- abs(FP-round(FP,digits=0))
 	
-  
-  
 	TP <- round(TP,digits=0)
 	FN <- round(FN,digits=0)
 	TN <- round(TN,digits=0)
@@ -772,6 +912,60 @@ calc.est.var <- function(ci.data) {
     est.var$var <- var
   }
   est.var
+}
+
+rescale.effect.and.ci.conf.level <- function(dataf.arg) {
+	# Rescales est,low,high to target confidence level
+	#  dataf.arg is a dataframe of arguments
+	
+	# est, low, high are assumed to be on the calc scale
+	# returns rescaled est,low,high also on calc scale
+	est = dataf.arg[["est"]]
+	low = dataf.arg[["low"]]
+	high = dataf.arg[["high"]] 
+	orig.conf.level = dataf.arg[["orig.conf.level"]]
+	target.conf.level = dataf.arg[["target.conf.level"]]
+	
+	# Convert NULL to NA
+	if (is.null(est))  est  <- NA
+	if (is.null(low))  low  <- NA
+	if (is.null(high)) high <- NA
+	
+	# make sure we have the right inputs
+	num_na = 0
+	if (is.na(est)) {num_na = num_na + 1}
+	if (is.na(low)) {num_na = num_na + 1}
+	if (is.na(high)) {num_na = num_na + 1}
+	
+	if ((num_na > 1) || is.na(orig.conf.level) || is.na(target.conf.level)) {
+		return(list("FAIL"=NA)) # failure
+	}
+	
+	# make sure est, low, high are all not NA
+	if (is.na(est)) {
+		est <- (high-low)/2.0
+	}
+
+	if (is.na(low)) {
+		low <- est - (high-est)
+	}
+
+	if (is.na(high)) {
+		high <- est + (est - low)	
+	}
+
+	old.alpha <- 1.0-(orig.conf.level/100.0)
+	new.alpha <- 1.0-(target.conf.level/100.0)
+	old.mult <- abs(qnorm(old.alpha/2.0))
+	new.mult <- abs(qnorm(new.alpha/2.0))
+	
+	se <- (high-low)/(2*old.mult)
+	
+	new.est  <- est
+	new.low  <- new.est - new.mult*se
+	new.high <- new.est + new.mult*se
+	
+	return(list(est=new.est, low=new.low, high=new.high))
 }
 
 

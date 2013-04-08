@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>985</width>
-    <height>621</height>
+    <width>1000</width>
+    <height>618</height>
    </rect>
   </property>
   <property name="font">
@@ -19,7 +19,7 @@
    <string>OpenMeta[analyst]</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="images/icons.qrc">
+   <iconset>
     <normaloff>:/images/meta.png</normaloff>:/images/meta.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -131,7 +131,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="images/icons.qrc">
+              <iconset>
                <normaloff>:/images/left_arrow.png</normaloff>:/images/left_arrow.png</iconset>
              </property>
              <property name="iconSize">
@@ -157,7 +157,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="images/icons.qrc">
+              <iconset>
                <normaloff>:/images/up_arrow.png</normaloff>:/images/up_arrow.png</iconset>
              </property>
              <property name="iconSize">
@@ -183,7 +183,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="images/icons.qrc">
+              <iconset>
                <normaloff>:/images/down_arrow.png</normaloff>:/images/down_arrow.png</iconset>
              </property>
              <property name="iconSize">
@@ -238,7 +238,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="images/icons.qrc">
+              <iconset>
                <normaloff>:/images/right_arrow.png</normaloff>:/images/right_arrow.png</iconset>
              </property>
              <property name="iconSize">
@@ -264,7 +264,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="images/icons.qrc">
+              <iconset>
                <normaloff>:/images/function_icon_set/add_48.png</normaloff>:/images/function_icon_set/add_48.png</iconset>
              </property>
              <property name="iconSize">
@@ -338,6 +338,19 @@
              </item>
             </layout>
            </widget>
+           <widget class="QLabel" name="global_conf_level_lbl">
+            <property name="geometry">
+             <rect>
+              <x>690</x>
+              <y>20</y>
+              <width>181</width>
+              <height>16</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Global Confidence Level:</string>
+            </property>
+           </widget>
           </widget>
          </item>
         </layout>
@@ -359,8 +372,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>985</width>
-     <height>20</height>
+     <width>1000</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_file">
