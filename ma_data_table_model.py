@@ -239,8 +239,9 @@ class DatasetModel(QAbstractTableModel):
                             else:
                                 return QVariant(round(val, self.NUM_DIGITS))
                         except:
-                            pyqtRemoveInputHook()
-                            pdb.set_trace()
+                            #pyqtRemoveInputHook()
+                            #pdb.set_trace()
+                            pass
                     else:
                         return QVariant("")
                 else:

@@ -543,8 +543,8 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             ### 
             # first update the simple table
             computed_vals = results_from_r["output"]
-            pyqtRemoveInputHook()
-            pdb.set_trace()
+            #pyqtRemoveInputHook()
+            #pdb.set_trace()
             self.simple_table.blockSignals(True)
             for var_index, var_name in enumerate(self.get_column_header_strs()):
                 float_str = self.float_to_str(float(computed_vals[var_name]))
