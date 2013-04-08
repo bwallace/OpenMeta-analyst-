@@ -1316,10 +1316,12 @@ calc.tick.marks <- function(plot.range, scale) {
 calc.box.sizes <- function(forest.data, box.sca = 1) {
     # Calculates sizes for c.i. boxes and diamonds in forest plot.
    
+	
     # weights for the boxes
     # note that 1.96 is a convention [not necessary for the scaling]
     # the analysis functions determine the CI width (e.g. 95% or 99%)
     # this is just scaling the boxes according to the SE
+	mult <- 1.96
     precision <- NULL
     user.lb <- NULL
     user.ub <- NULL
@@ -1328,13 +1330,13 @@ calc.box.sizes <- function(forest.data, box.sca = 1) {
     # these will be expanded
     
     if (forest.data$scale == "log"){
-           precision <- sqrt(1 / ((effects$UL - effects$LL)/(2*1.96)))
+           precision <- sqrt(1 / ((effects$UL - effects$LL)/(2*mult)))
     } else if (forest.data$scale == "standard") {
-          precision <- sqrt(1 / ((effects$UL - effects$LL)/(2*1.96)))
+          precision <- sqrt(1 / ((effects$UL - effects$LL)/(2*mult)))
     } else if (forest.data$scale == "logit") {
-          precision <- sqrt(1 / ((effects$UL - effects$LL)/(2*1.96)))
+          precision <- sqrt(1 / ((effects$UL - effects$LL)/(2*mult)))
     } else if (forest.data$scale == "arcsine") {
-      precision <- sqrt(1 / ((effects$UL - effects$LL)/(2*1.96)))
+      precision <- sqrt(1 / ((effects$UL - effects$LL)/(2*mult)))
     }
     box.sizes <- box.sca * precision/max(precision)
     # sizes of the boxes in the forest plot - proportional to width of CI

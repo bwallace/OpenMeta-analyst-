@@ -19,8 +19,8 @@ from PyQt4.Qt import QMessageBox
 # number of digits to display
 NUM_DIGITS = 3
 
-# for calculating CIs (normal 95% CI)
-MULT = 1.96
+# Confidence level 
+DEFAULT_CONF_LEVEL = 95.0    # (normal 95% CI)
 
 # completely made up. need an actual versioning system.
 VERSION = .005 
@@ -139,7 +139,6 @@ THRESHOLD = 1e-5
 ERROR_COLOR = QColor("red")
 OK_COLOR = QColor("black")
 
-DEFAULT_CONF_LEVEL = 95.0
 DEFAULT_GROUP_NAMES = ["Grp A", "Grp B"]  # old: DEFAULT_GROUP_NAMES = ["tx A", "tx B"]
 
 

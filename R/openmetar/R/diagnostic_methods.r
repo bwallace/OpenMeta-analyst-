@@ -963,6 +963,9 @@ diagnostic.hsroc.ml.is.feasible <- function(diagnostic.data, metric){
 #   diagnostic biviariate        #
 ##################################
 diagnostic.bivariate.ml <- function(diagnostic.data, params){
+	alpha <- 1.0-(params$conf.level/100.0)
+	mult <- abs(qnorm(alpha/2.0))
+	
     library(boot)
 
     adjusted.counts <- adjust.raw.data(diagnostic.data, params)
@@ -980,13 +983,13 @@ diagnostic.bivariate.ml <- function(diagnostic.data, params){
 
     digits = 4
     sensitivity <- round(inv.logit(logit_sens), digits)
-    # hard-coding CI for now 
-    sens.low <- round(inv.logit(logit_sens - 1.96*se_logit_sens), digits)
-    sens.high <- round(inv.logit(logit_sens + 1.96*se_logit_sens), digits)
+	# Un-hard-coding CI.. issue # 214
+    sens.low <- round(inv.logit(logit_sens - mult*se_logit_sens), digits)
+    sens.high <- round(inv.logit(logit_sens + mult*se_logit_sens), digits)
 
     specificity <- round(inv.logit(logit_spec), digits)
-    spec.low <- round(inv.logit(logit_spec - 1.96*se_logit_spec), digits)
-    spec.high <- round(inv.logit(logit_spec + 1.96*se_logit_spec), digits)
+    spec.low <- round(inv.logit(logit_spec - mult*se_logit_spec), digits)
+    spec.high <- round(inv.logit(logit_spec + mult*se_logit_spec), digits)
 
     r <- round(biv.results$correlation, digits)
 
@@ -1016,12 +1019,12 @@ diagnostic.bivariate.ml <- function(diagnostic.data, params){
 diagnostic.bivariate.ml.parameters <- function(){
     apply_adjustment_to = c("only0", "all")
 
-    params <- list("adjust"="float", "to"=apply_adjustment_to)
+    params <- list("conf.level"="float", "adjust"="float", "to"=apply_adjustment_to)
 
     # default values
-    defaults <- list("adjust"=.5, "to"="only0")
+    defaults <- list("conf.level"=95, "adjust"=.5, "to"="only0")
 
-    var_order = c("adjust", "to")
+    var_order = c("conf.level", "adjust", "to")
 
     parameters <- list("parameters"=params, "defaults"=defaults, "var_order"=var_order)
 }
@@ -1030,7 +1033,8 @@ diagnostic.bivariate.ml.parameters <- function(){
 diagnostic.bivariate.ml.pretty.names <- function() {
     pretty.names <- list("pretty.name"="Bivariate (Maximum Likelihood)", 
                          "description" = "Bivariate analysis of sensitivity and specificity \n using maximum likelihood estimate.",
-                         "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
+						 "conf.level"=list("pretty.name"="Confidence level", "description"="Level at which to compute confidence intervals"), 
+						 "adjust"=list("pretty.name"="Correction factor", "description"="Constant c that is added to the entries of a two-by-two table."),
                          "to"=list("pretty.name"="Add correction factor to", "description"="When Add correction factor is set to \"only 0\", the correction factor
                                    is added to all cells of each two-by-two table that contains at leason one zero. When set to \"all\", the correction factor
                                    is added to all two-by-two tables if at least one table contains a zero.")

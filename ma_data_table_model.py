@@ -1465,14 +1465,12 @@ class DatasetModel(QAbstractTableModel):
         cur_ma_unit = self.get_current_ma_unit_for_study(study_index)
         effect = effect or self.current_effect
         
-
         est = cur_ma_unit.effects_dict[effect][group_str]["est"] 
 
         lower, upper = cur_ma_unit.effects_dict[effect][group_str]["lower"], \
                                 cur_ma_unit.effects_dict[effect][group_str]["upper"]
 
-
-        se = (upper-est)/MULT
+        se = (upper-est)/meta_py_r.get_mult(DEFAULT_CONF_LEVEL)
         return (est, se)
         
     def get_cur_ests_and_SEs(self, only_if_included=True, only_these_studies=None, effect=None):

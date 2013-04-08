@@ -100,6 +100,10 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self._populate_effect_data()
         self.enable_back_calculation_btn()
         self.save_form_state()
+        
+        # SET INVISIBLE UNTIL IMPLEMENTED FOR PRODUCTION
+        self.grp_box_pre_post.setVisible(False)
+        self.adjustSize()
         ########################################################################
         debug_msg("Leaving __init__",False)
         
@@ -539,9 +543,12 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             ### 
             # first update the simple table
             computed_vals = results_from_r["output"]
+            pyqtRemoveInputHook()
+            pdb.set_trace()
             self.simple_table.blockSignals(True)
             for var_index, var_name in enumerate(self.get_column_header_strs()):
                 float_str = self.float_to_str(float(computed_vals[var_name]))
+                #float_str = str(float(computed_vals[var_name]))
 
                 #self.simple_table.setItem(group_index, var_index, QTableWidgetItem(QString(float_str)))
                 self._set_val(group_index, var_index, float_str)
@@ -568,7 +575,8 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             
             
     def float_to_str(self, float_val):
-        float_str = "NA"
+        #float_str = "NA"
+        float_str = ""
         if not meta_globals.is_NaN(float_val):
             # TODO note the hard-coded number of digits here
             float_str = str(round(float_val, 4))
@@ -836,7 +844,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         # clear line edits
         self.set_current_effect()
         self.block_all_signals(True)
-        self.correlation_pre_post.setText("")
+        self.correlation_pre_post.setText("0.0")
         self.block_all_signals(False)
         
         self.save_form_state()
