@@ -56,25 +56,6 @@ def reset_Rs_working_dir():
     print "resetting "
     ro.r("setwd('%s')" % BASE_PATH) 
 
-####
-# BCW -- George, remove this if you're finished
-###
-def OLDimpute_diag_data(diag_data_dict, metric):
-    print "computing 2x2 table via R..."
-    print diag_data_dict
-
-    # rpy2 doesn't know how to handle None types.
-    # we can just remove them from the dictionary.
-    for param, val in diag_data_dict.items():
-        if val is None:
-            diag_data_dict.pop(param)
-
-    dataf = ro.r['data.frame'](**diag_data_dict)
-    two_by_two = ro.r("impute.diagnostic.data(%s, '%s')" % \
-                        (dataf.r_repr(), metric))
-
-    return _rls_to_pyd(two_by_two)
-
 def impute_diag_data(diag_data_dict):
     print "computing 2x2 table via R..."
     print diag_data_dict
@@ -263,7 +244,14 @@ def impute_pre_post_cont_data(cont_data_dict, correlation, alpha):
     r_str += "correlation=%s, alpha=%s)" % (correlation, alpha)
     print "attempting to execute: %s" % r_str
     c_data = ro.r(r_str)
-    return _rls_to_pyd(c_data)
+    #return _rls_to_pyd(c_data)
+    return _grlist_to_pydict(c_data, True)
+
+def get_mult(confidence_level):
+    alpha = 1-float(confidence_level)/100.0
+    r_str = "abs(qnorm(%s/2))" % str(alpha)
+    mult = ro.r(r_str)
+    return mult[0]
     
 def none_to_null(x):
     if x is None:
@@ -844,8 +832,8 @@ def parse_out_results(result):
     text_d = {}
     image_var_name_d, image_params_paths_d, image_path_d  = {}, {}, {}
     image_order = None
-    pyqtRemoveInputHook()
-    pdb.set_trace()
+    #pyqtRemoveInputHook()
+    #pdb.set_trace()
     for text_n, text in zip(list(result.names), list(result)):
         # some special cases, notably the plot names and the path for a forest
         # plot. TODO in the case of diagnostic data, we're probably going to 

@@ -412,9 +412,9 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             # type (float, list); if it is, we add it otherwise we pass. this isn't
             # the most efficient way to do things, but the number of parameters
             # is going to be relatively tiny anyway
-            ordered_types = [lambda x: isinstance(x, list), \
-                                        lambda x: isinstance(x, str) and x.lower()=="float"]
-    
+            ordered_types = [lambda x: isinstance(x, list),
+                             lambda x: isinstance(x, str) and x.lower()=="float"]
+
             for is_right_type in ordered_types:
                 for key, val in self.current_params.items():
                     if is_right_type(val):

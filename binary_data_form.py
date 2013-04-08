@@ -577,12 +577,9 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
     def cell_changed(self, row, col):
         # tries to make sense of user input before passing
         # on to the R routine
-        try:
-            print("Entering cell changed...")
-            print("New cell data(%d,%d): %s" % (row, col, self.raw_data_table.item(row, col).text()))
-        except:
-            pyqtRemoveInputHook()
-            pdb.set_trace()
+        
+        print("Entering cell changed...")
+        print("New cell data(%d,%d): %s" % (row, col, self.raw_data_table.item(row, col).text()))
         
         try:
             # Test if entered data is valid (a number)

@@ -636,8 +636,9 @@ gimpute.cont.data <- function(group1, group2, effect_data, conf.level=95.0) {
 fillin.cont.AminusB <- function(
     n.A=NA, mean.A=NA, sd.A=NA, se.A=NA, var.A=NA, low.A=NA, high.A=NA, pval.A=NA, 
     n.B=NA, mean.B=NA, sd.B=NA, se.B=NA, var.B=NA, low.B=NA, high.B=NA, pval.B=NA,
-    correlation = 0, alpha=0.05) {
+    correlation = 0, alpha=0.05, metric=NA) {
 
+	metric <- as.character(metric)
 
     succeeded <- TRUE  
     comment <- ""
@@ -667,23 +668,57 @@ fillin.cont.AminusB <- function(
     fillin.B <- fillin.cont.1spell(n.B, mean.B, sd.B, se.B, var.B, low.B, high.B, pval.B, alpha=alpha)
     comment <-paste(comment, paste("B", fillin.B$comment, sep=":"), sep="|")
 
+	fillins.succeeded <- identical( c(fillin.A$succeeded,fillin.B$succeeded), c(TRUE, TRUE))
+	nA.eq.nB <- identical(fillin.A$output["n"], fillin.B$output["n"])
+	
     # you do not need to tryCatch here
-    if (identical( c(fillin.A$succeeded,fillin.B$succeeded), c(TRUE, TRUE))) {
+    if (fillins.succeeded & nA.eq.nB) {
+		n.diff <- fillin.A$output["n"]
+		Y1 <- fillin.A$output["mean"]
+		Y2 <- fillin.B$output["mean"]
+		S1 <- fillin.A$output["sd"]
+		S2 <- fillin.B$output["sd"]
+		r <- correlation
+		
+		S.difference = sqrt(  (S1^2)+(S2^2)-(2*r*S1*S2)  )
+		
+		if (metric=="MD") {
+			# From Handbook of Research Synthesis and Meta-Analysis 2E p.225
+			mean.diff <- Y1 - Y2
+			sd.diff <- S.difference
+			# var.diff <- sd.diff^2/n # not used due to clash in formulas w/fillin.cont.1spell assuming a sample variance
+		}
+		#else if (metric=="SMD") {
+		#	mean.diff <- (Y1-Y2)/S
+		#	
+		#}
+	
+		# TODO: Finish later when i get more information about what/how to store info
+		
+		
 
-        mean.diff <- fillin.A$output["mean"] - fillin.B$output["mean"]
-        var.diff  <- (fillin.A$output["se"])^2 + (fillin.B$output["se"])^2 
-                     - 2*correlation*(fillin.A$output["se"])*(fillin.B$output["se"])
-
-        se.diff   <- sqrt(var.diff)
-        low.diff  <- mean.diff - z * se.diff
-        high.diff <- mean.diff + z * se.diff
-        pval.diff  <- 2*pnorm(-abs(mean.diff/se.diff))
-
-        # these are not of real interest
-        n.diff  <- try(min(fillin.A$output["n"], fillin.B$output["n"]), silent=TRUE)
-        sd.diff <- try(var.diff * (n.diff - 1) , silent=TRUE)
+	
+	
+		
+		
+		
+		
+		
+#        #var.diff  <- (fillin.A$output["se"])^2 + (fillin.B$output["se"])^2 
+#        #             - 2*correlation*(fillin.A$output["se"])*(fillin.B$output["se"])
+#		#
+#        #se.diff   <- sqrt(var.diff)
+#        #low.diff  <- mean.diff - z * se.diff
+#        #high.diff <- mean.diff + z * se.diff
+#        #pval.diff  <- 2*pnorm(-abs(mean.diff/se.diff))
+#
+#        # these are not of real interest
+#        #n.diff  <- try(min(fillin.A$output["n"], fillin.B$output["n"]), silent=TRUE)
+#        #sd.diff <- try(var.diff * (n.diff - 1) , silent=TRUE)
     } 
     else {
+		if (!nA.eq.nB)
+			comment <- paste(comment, "  n.A != n.B")
         succeeded <- FALSE 
     }
 

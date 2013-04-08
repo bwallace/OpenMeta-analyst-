@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'continuous_data_form.ui'
 #
-# Created: Tue Apr  2 13:13:17 2013
+# Created: Mon Apr  8 12:11:26 2013
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -27,6 +27,11 @@ class Ui_ContinuousDataForm(object):
     def setupUi(self, ContinuousDataForm):
         ContinuousDataForm.setObjectName(_fromUtf8("ContinuousDataForm"))
         ContinuousDataForm.resize(570, 614)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(ContinuousDataForm.sizePolicy().hasHeightForWidth())
+        ContinuousDataForm.setSizePolicy(sizePolicy)
         ContinuousDataForm.setMinimumSize(QtCore.QSize(570, 0))
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Verdana"))
@@ -73,6 +78,11 @@ class Ui_ContinuousDataForm(object):
         self.simple_table.setHorizontalHeaderItem(7, item)
         self.verticalLayout_2.addWidget(self.simple_table)
         self.grp_box_pre_post = QtGui.QGroupBox(ContinuousDataForm)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.grp_box_pre_post.sizePolicy().hasHeightForWidth())
+        self.grp_box_pre_post.setSizePolicy(sizePolicy)
         self.grp_box_pre_post.setObjectName(_fromUtf8("grp_box_pre_post"))
         self.verticalLayout = QtGui.QVBoxLayout(self.grp_box_pre_post)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
