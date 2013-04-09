@@ -1125,6 +1125,10 @@ draw.data.col <- function(forest.data, j, color.overall = "black",
                           summary.line.col = "darkred",
                           summary.line.pat = "dashed",
                           diam.size) {
+	#print("-----------FOREST DATA------------")
+	#print(forest.data)
+	#print("---------END FOREST DATA----------")
+					  
     # Draws the actual forest plot graph (excluding data columns)
     effects <- forest.data$effects
     plot.options <- forest.data$options
@@ -1315,13 +1319,13 @@ calc.tick.marks <- function(plot.range, scale) {
 
 calc.box.sizes <- function(forest.data, box.sca = 1) {
     # Calculates sizes for c.i. boxes and diamonds in forest plot.
-   
-	
+   	
     # weights for the boxes
     # note that 1.96 is a convention [not necessary for the scaling]
     # the analysis functions determine the CI width (e.g. 95% or 99%)
     # this is just scaling the boxes according to the SE
-	mult <- 1.96
+	# CHANGED as part of issue # 214
+	mult <- get.mult.from.conf.level()
     precision <- NULL
     user.lb <- NULL
     user.ub <- NULL

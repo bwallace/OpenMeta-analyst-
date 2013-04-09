@@ -50,8 +50,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         # block all the widgets for a moment
         self.block_all_signals(True)
         
-        self.CI_spinbox.setValue(meta_globals.DEFAULT_CONF_LEVEL)
-        self.ci_label.setText("{0:.1f}% Confidence Interval".format(self.CI_spinbox.value()))
+        meta_globals.init_ci_spinbox_and_label(self.CI_spinbox, self.ci_label)
         
         self.setup_inconsistency_checking()
         self.initialize_backup_structures()
@@ -316,7 +315,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             #print("Backed-up table:")
             #self.print_backup_table()
         
-        self.CI_spinbox.setValue(meta_globals.DEFAULT_CONF_LEVEL)
+        self.CI_spinbox.setValue(meta_py_r.get_global_conf_level())
         restore_displayed_effects_data()
         restore_table()
         self.enable_back_calculation_btn()
@@ -675,7 +674,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
 
         self.reset_table_item_flags()
         self.enable_txt_box_input()
-        self.CI_spinbox.setValue(meta_globals.DEFAULT_CONF_LEVEL)
+        self.CI_spinbox.setValue(meta_py_r.get_global_conf_level())
         self.CI_spinbox.setEnabled(True)
         
     def enable_txt_box_input(self):
@@ -823,7 +822,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
                       "low"  : old_effect_and_ci[1],
                       "high" : old_effect_and_ci[2],
                       "orig.conf.level": self.CI_spinbox.value(),
-                      "target.conf.level": meta_globals.DEFAULT_CONF_LEVEL}
+                      "target.conf.level": meta_py_r.get_global_conf_level()}
         
         res = meta_py_r.rescale_effect_and_ci_conf_level(argument_d)
         if "FAIL" in res:

@@ -12,7 +12,7 @@
 
 import os
 
-#import meta_py_r
+import meta_py_r
 from PyQt4.Qt import QColor   #, QDialogButtonBox
 from PyQt4.Qt import QMessageBox
 
@@ -441,14 +441,24 @@ def enable_txt_box_input(*args):
             text_box.setEnabled(True)
             
         text_box.blockSignals(False)
+        
+def init_ci_spinbox_and_label(ci_spinbox, ci_label, value=None):
+    if value is None:
+        value = meta_py_r.get_global_conf_level()
+    
+    ci_spinbox.blockSignals(True)
+    ci_spinbox.setValue(value)
+    ci_label.setText("{0:.1f}% Confidence Interval".format(ci_spinbox.value()))
+    ci_spinbox.blockSignals(False)
 ####### end enable_txt_box_input #######
-        
-        
-CHANGE_CI_ALERT_MSG = ("The size of the confidence level used for a particular "
-                       "study in this calculator need not correspond with the "
-                       "global confidence level (currently set at {0:.1%}) "
-                       "chosen for data display on spreadsheets and forest "
-                       "plots.".format(DEFAULT_CONF_LEVEL/100.0))
+ 
+CHANGE_CI_ALERT_BASE_MSG = (
+    "The size of the confidence level used for a particular study in this "
+    "calculator need not correspond with the global confidence level "
+    "(currently set at {0:.1%}) chosen for data display on spreadsheets and "
+    "forest plots.")
+def get_CHANGE_CI_ALERT_MSG():
+    return CHANGE_CI_ALERT_BASE_MSG.format(meta_py_r.get_global_conf_level()/100.0)
 
 # WORK ON STANDARDIZING THIS LATER?
 #def validate_txt_box_input(box_data=None,

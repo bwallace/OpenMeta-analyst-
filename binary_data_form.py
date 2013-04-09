@@ -32,13 +32,9 @@ import ui_choose_back_calc_result_form
 # levels of granularity).
 NUM_DIGITS = 4 
 
-
 # this is the maximum size of a residual that we're willing to accept
 # when computing 2x2 data
 THRESHOLD = 1e-5
-
-# DEFAULT_CONF_LEVEL = 95.0
-
 
 class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
     def __init__(self, ma_unit, cur_txs, cur_group_str, cur_effect, parent=None):
@@ -58,8 +54,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                               self.high_txt_box, self.effect_txt_box]
         self.already_showed_change_CI_alert = False
         
-        self.CI_spinbox.setValue(meta_globals.DEFAULT_CONF_LEVEL)
-        self.ci_label.setText("{0:.1f}% Confidence Interval".format(self.CI_spinbox.value()))
+        meta_globals.init_ci_spinbox_and_label(self.CI_spinbox, self.ci_label)
         
         self.initialize_table_items() # initialize all cell to empty items
         self.setup_inconsistency_checking()
@@ -433,12 +428,10 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
             # print("Backed-up table:")
             # self.print_backup_table()
         
-        self.CI_spinbox.setValue(meta_globals.DEFAULT_CONF_LEVEL)
+        self.CI_spinbox.setValue(meta_py_r.get_global_conf_level())
         restore_displayed_effects_data()
         restore_table()
         self.enable_back_calculation_btn()
-        
-        
         ########################################################################
         # Unblock the signals
         self.block_all_signals(False)
@@ -765,7 +758,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.reset_table_item_flags()
         self.initialize_backup_structures()
         self.enable_txt_box_input()
-        self.CI_spinbox.setValue(meta_globals.DEFAULT_CONF_LEVEL)
+        self.CI_spinbox.setValue(meta_py_r.get_global_conf_level())
         self.CI_spinbox.setEnabled(True)
         
     def enable_txt_box_input(self):
@@ -799,7 +792,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                       "low"  : old_effect_and_ci[1],
                       "high" : old_effect_and_ci[2],
                       "orig.conf.level": self.CI_spinbox.value(),
-                      "target.conf.level": meta_globals.DEFAULT_CONF_LEVEL}
+                      "target.conf.level": meta_py_r.get_global_conf_level()}
         
         res = meta_py_r.rescale_effect_and_ci_conf_level(argument_d)
         if "FAIL" in res:
