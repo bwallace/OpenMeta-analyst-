@@ -735,10 +735,9 @@ class DatasetModel(QAbstractTableModel):
                 elif section in self.OUTCOMES:
                     help_msg = "For information about how the confidence interval was obtained,\n"
                     help_msg += "please consult the the help at {0}".format(HELP_URL)
-                
-                    lower_msg = "Lower bound of confidence interval"
+                    lower_msg = "Lower bound of {0:.1%} confidence interval".format(meta_py_r.get_global_conf_level()/100.0)
                     lower_msg += "\n" + help_msg
-                    upper_msg = "Upper bound of confidence interval\n"
+                    upper_msg = "Upper bound of {0:.1%} confidence interval\n".format(meta_py_r.get_global_conf_level()/100.0)
                     upper_msg += "\n" + help_msg
                     
                     if outcome_type == BINARY:
