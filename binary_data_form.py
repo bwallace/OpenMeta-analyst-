@@ -779,7 +779,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         
     def change_CI_alert(self, value=None):
         if not self.already_showed_change_CI_alert:
-            QMessageBox.information(self, "Changing Confidence Level", meta_globals.CHANGE_CI_ALERT_MSG)
+            QMessageBox.information(self, "Changing Confidence Level", meta_globals.get_CHANGE_CI_ALERT_MSG())
             self.already_showed_change_CI_alert = True
     
     # TODO: should be refactored to shared function in meta_globals

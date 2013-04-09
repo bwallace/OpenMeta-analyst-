@@ -103,8 +103,9 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.save_form_state()
         
         # SET INVISIBLE UNTIL IMPLEMENTED FOR PRODUCTION
-        self.grp_box_pre_post.setVisible(False)
-        self.adjustSize()
+        if (self.cur_effect != "MD"):
+            self.grp_box_pre_post.setVisible(False)
+            self.adjustSize()
         ########################################################################
         debug_msg("Leaving __init__",False)
         
@@ -171,6 +172,15 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.reset_conf_level()
         
         self.cur_effect = unicode(self.effect_cbo_box.currentText().toUtf8(), "utf-8")
+        
+        # hide pre-post for SMD
+        if (self.cur_effect != "MD"):
+            self.grp_box_pre_post.setVisible(False)
+            self.adjustSize()
+        else:
+            self.grp_box_pre_post.setVisible(True)
+            self.adjustSize()
+        
         self.group_str = self.get_cur_group_str()
 
         self.try_to_update_cur_outcome()
@@ -957,7 +967,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
     
     def change_CI_alert(self,value=None):
         if not self.already_showed_change_CI_alert:
-            QMessageBox.information(self, "Changing Confidence Level", meta_globals.CHANGE_CI_ALERT_MSG)
+            QMessageBox.information(self, "Changing Confidence Level", meta_globals.get_CHANGE_CI_ALERT_MSG())
             self.already_showed_change_CI_alert = True
     
     # TODO: should be refactored to shared function in meta_globals
