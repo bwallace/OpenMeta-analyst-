@@ -204,9 +204,6 @@ fillin.cont.1spell <- function(n=NA, mean=NA, sd=NA, se=NA, var=NA,
     input.vector <- c(n, mean, sd, se, var, low, high, pval)
     input.pattern <- !(is.na(input.vector))
 	
-	print("Input vector:")
-	print(input.vector)
-	
 	get.mean <- function(high=NA, low=NA) {
 		if(is.na(mean))
 			mean = (high+low)/2
@@ -344,10 +341,6 @@ fillin.cont.1spell <- function(n=NA, mean=NA, sd=NA, se=NA, var=NA,
 			}
 		}
 		
-		print("---------------")
-		print("Dirty at end:")
-		print(dirty)
-		print("--------------")
 	} # finished iterating
 	
 	# Do checks:
@@ -660,6 +653,9 @@ fillin.cont.AminusB <- function(
 
     input.vector.A <- c(n.A, mean.A, sd.A, se.A, var.A, low.A, high.A, pval.A) 
     input.vector.B <- c(n.B, mean.B, sd.B, se.B, var.B, low.B, high.B, pval.B)
+	
+	cat("input.vector.A: ",input.vector.A,"\ninput.vector.B: ",input.vector.B,"\n")
+	
     input.pattern <- list(A=!(is.na(input.vector.A)), B=!(is.na(input.vector.B)))
 
     fillin.A <- fillin.cont.1spell(n.A, mean.A, sd.A, se.A, var.A, low.A, high.A, pval.A, alpha=alpha)
@@ -669,6 +665,15 @@ fillin.cont.AminusB <- function(
     comment <-paste(comment, paste("B", fillin.B$comment, sep=":"), sep="|")
 
 	fillins.succeeded <- identical( c(fillin.A$succeeded,fillin.B$succeeded), c(TRUE, TRUE))
+	
+	
+	if (isnt.na(fillin.A$output["n"]) & is.na(fillin.B$output["n"])) {
+		fillin.B$output["n"] <- fillin.A$output["n"];
+	}
+	else if (isnt.na(fillin.B$output["n"]) & is.na(fillin.A$output["n"])) {
+		fillin.A$output["n"] <- fillin.B$output["n"];
+	}
+	
 	nA.eq.nB <- identical(fillin.A$output["n"], fillin.B$output["n"])
 	
     # you do not need to tryCatch here
@@ -682,24 +687,27 @@ fillin.cont.AminusB <- function(
 		
 		S.difference = sqrt(  (S1^2)+(S2^2)-(2*r*S1*S2)  )
 		
-		#if (metric=="MD") {
+
+		if (metric=="MD") {
+			print("Entered MD")
 			# From Handbook of Research Synthesis and Meta-Analysis 2E p.225
-		#	mean.diff <- Y1 - Y2
-		#	sd.diff <- S.difference
+			mean.diff <- Y2-Y1
+			sd.diff <- S.difference
 			# var.diff <- sd.diff^2/n # not used due to clash in formulas w/fillin.cont.1spell assuming a sample variance
-		#	fillin.diff <- fillin.cont.1spell(n=n.diff, mean=mean.diff, sd=sd.diff, alpha=alpha)
-		#	if (fillin.diff$succeeded) {
-		#		se.diff <- fillin.diff$se
-		#		var.diff <- 
-		#		low.diff <-
-		#		high.diff <-
-		#		pval.diff<-
-		#	}
-		#}
+			fillin.diff <- fillin.cont.1spell(n=n.diff, mean=mean.diff, sd=sd.diff, alpha=alpha)
+			cat("Fillin.diff result: ", fillin.diff$output,"\n")
+			if (fillin.diff$succeeded) {
+				se.diff   <- fillin.diff$output["se"]
+				var.diff  <- fillin.diff$output["var"]
+				low.diff  <- fillin.diff$output["low"]
+				high.diff <- fillin.diff$output["high"]
+				pval.diff <- fillin.diff$output["pval"]
+			}
+		}
 		#else if (metric=="SMD") {
-		#	mean.diff <- (Y1-Y2)/S
-		#	
-		#}
+	#		mean.diff <- (Y1-Y2)/S
+	#		
+	#	}
 	
 		# TODO: Finish later when i get more information about what/how to store info
 #        #var.diff  <- (fillin.A$output["se"])^2 + (fillin.B$output["se"])^2 
@@ -713,16 +721,19 @@ fillin.cont.AminusB <- function(
 #        # these are not of real interest
 #        #n.diff  <- try(min(fillin.A$output["n"], fillin.B$output["n"]), silent=TRUE)
 #        #sd.diff <- try(var.diff * (n.diff - 1) , silent=TRUE)
-    } 
-    else {
+    } else {
 		if (!nA.eq.nB)
 			comment <- paste(comment, "  n.A != n.B")
         succeeded <- FALSE 
     }
+	
+	
 
-    output.vector <- c(n.diff, mean.diff, sd.diff, se.diff, var.diff, 
-                      low.diff, high.diff, pval.diff)
-    output.names <- c("n", "mean", "sd", "se", "var", "low", "high", "pval")
+    output.vector <- c(n.diff, mean.diff, sd.diff, se.diff, var.diff, low.diff, high.diff, pval.diff)
+    output.names  <- c(   "n",    "mean",    "sd",    "se",    "var",    "low",    "high",    "pval")
+	
+	cat("Output vector: ",output.vector,"\nOutput.names: ",output.names,"\n")
+	
     names(output.vector) <- output.names
     #names(fillin.A) <- output.names
     #names(fillin.B) <- output.names

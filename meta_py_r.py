@@ -245,8 +245,9 @@ def impute_pre_post_cont_data(cont_data_dict, correlation, alpha):
     r_str += "correlation=%s, alpha=%s)" % (correlation, alpha)
     print "attempting to execute: %s" % r_str
     c_data = ro.r(r_str)
+    pythonized_data = _grlist_to_pydict(c_data, True)
     #return _rls_to_pyd(c_data)
-    return _grlist_to_pydict(c_data, True)
+    return pythonized_data
 
 ##################### DEALING WITH CONFIDENCE LEVEL IN R #######################
 def get_mult(confidence_level):
