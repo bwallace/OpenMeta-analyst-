@@ -27,7 +27,8 @@ from PyQt4 import QtGui
 import meta_py_r
 import meta_globals
 #from meta_globals import *
-from meta_globals import CONTINUOUS_ONE_ARM_METRICS,CONTINUOUS_TWO_ARM_METRICS, _is_a_float,_is_empty
+from meta_globals import (CONTINUOUS_ONE_ARM_METRICS,CONTINUOUS_TWO_ARM_METRICS,
+                          _is_a_float,_is_empty)
 import ui_continuous_data_form
 import ui_choose_back_calc_result_form
 
@@ -80,8 +81,8 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                               self.low_txt_box, self.high_txt_box,
                               self.correlation_pre_post]
         self.already_showed_change_CI_alert = False
-        self.CI_spinbox.setValue(meta_globals.DEFAULT_CONF_LEVEL)
-        self.ci_label.setText("{0:.1f}% Confidence Interval".format(self.CI_spinbox.value()))
+        
+        meta_globals.init_ci_spinbox_and_label(self.CI_spinbox, self.ci_label)
         
         # Set the table headers to reflect the group names
         groups_names = QStringList(self.cur_groups)
@@ -102,8 +103,9 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.save_form_state()
         
         # SET INVISIBLE UNTIL IMPLEMENTED FOR PRODUCTION
-        self.grp_box_pre_post.setVisible(False)
-        self.adjustSize()
+        if (self.cur_effect != "MD"):
+            self.grp_box_pre_post.setVisible(False)
+            self.adjustSize()
         ########################################################################
         debug_msg("Leaving __init__",False)
         
@@ -170,6 +172,15 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.reset_conf_level()
         
         self.cur_effect = unicode(self.effect_cbo_box.currentText().toUtf8(), "utf-8")
+        
+        # hide pre-post for SMD
+        if (self.cur_effect != "MD"):
+            self.grp_box_pre_post.setVisible(False)
+            self.adjustSize()
+        else:
+            self.grp_box_pre_post.setVisible(True)
+            self.adjustSize()
+        
         self.group_str = self.get_cur_group_str()
 
         self.try_to_update_cur_outcome()
@@ -631,11 +642,11 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             if self.cur_effect in CONTINUOUS_TWO_ARM_METRICS:
                 est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1, se1=se1, \
                                                         n2=n2, m2=m2, sd2=sd2, se2=se2,\
-                                                        metric=self.cur_effect)
+                                                        metric=self.cur_effect, conf_level=meta_py_r.get_global_conf_level())
             else:
                 # continuous, one-arm metric
                 est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1, \
-                                      two_arm=False, metric=self.cur_effect)
+                                      two_arm=False, metric=self.cur_effect, conf_level=meta_py_r.get_global_conf_level())
             
             
             display_est, display_low, display_high = est_and_ci_d["display_scale"]
@@ -850,7 +861,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.save_form_state()
         self.reset_table_item_flags()
         self.initialize_backup_structures()
-        self.CI_spinbox.setValue(meta_globals.DEFAULT_CONF_LEVEL)
+        self.CI_spinbox.setValue(meta_py_r.get_global_conf_level())
         self.CI_spinbox.setEnabled(True)
 
     def save_form_state(self):
@@ -922,7 +933,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
             _restore_table(self.g1_pre_post_table, self.g1_pre_post_table_backup, 7)
             _restore_table(self.g2_pre_post_table, self.g2_pre_post_table_backup, 7)
         
-        self.CI_spinbox.setValue(meta_globals.DEFAULT_CONF_LEVEL)
+        self.CI_spinbox.setValue(meta_py_r.get_global_conf_level())
         restore_displayed_effects_data()
         restore_tables()
         self.enable_back_calculation_btn()
@@ -956,7 +967,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
     
     def change_CI_alert(self,value=None):
         if not self.already_showed_change_CI_alert:
-            QMessageBox.information(self, "Changing Confidence Level", meta_globals.CHANGE_CI_ALERT_MSG)
+            QMessageBox.information(self, "Changing Confidence Level", meta_globals.get_CHANGE_CI_ALERT_MSG())
             self.already_showed_change_CI_alert = True
     
     # TODO: should be refactored to shared function in meta_globals
@@ -969,7 +980,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                       "low"  : old_effect_and_ci[1],
                       "high" : old_effect_and_ci[2],
                       "orig.conf.level": self.CI_spinbox.value(),
-                      "target.conf.level": meta_globals.DEFAULT_CONF_LEVEL}
+                      "target.conf.level": meta_py_r.get_global_conf_level()}
         
         res = meta_py_r.rescale_effect_and_ci_conf_level(argument_d)
         if "FAIL" in res:

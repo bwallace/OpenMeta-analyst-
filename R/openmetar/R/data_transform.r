@@ -687,6 +687,14 @@ fillin.cont.AminusB <- function(
 			mean.diff <- Y1 - Y2
 			sd.diff <- S.difference
 			# var.diff <- sd.diff^2/n # not used due to clash in formulas w/fillin.cont.1spell assuming a sample variance
+			fillin.diff <- fillin.cont.1spell(n=n.diff, mean=mean.diff, sd=sd.diff, alpha=alpha)
+			if (fillin.diff$succeeded) {
+				se.diff <- fillin.diff$se
+				var.diff <- 
+				low.diff <-
+				high.diff <-
+				pval.diff<-
+			}
 		}
 		#else if (metric=="SMD") {
 		#	mean.diff <- (Y1-Y2)/S
@@ -694,16 +702,6 @@ fillin.cont.AminusB <- function(
 		#}
 	
 		# TODO: Finish later when i get more information about what/how to store info
-		
-		
-
-	
-	
-		
-		
-		
-		
-		
 #        #var.diff  <- (fillin.A$output["se"])^2 + (fillin.B$output["se"])^2 
 #        #             - 2*correlation*(fillin.A$output["se"])*(fillin.B$output["se"])
 #		#

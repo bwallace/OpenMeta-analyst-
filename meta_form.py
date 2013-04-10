@@ -64,6 +64,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         super(MetaForm, self).__init__(parent)
         self.setupUi(self)
         
+        meta_py_r.set_global_conf_level(meta_globals.DEFAULT_CONF_LEVEL)
 
         # TODO should also allow a (path to a) dataset
         # to be given on the console.
@@ -283,17 +284,23 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     def dataset_selected(self):
         dataset_path = QObject.sender(self).text()
         self.open(file_path=dataset_path)
+        
+    def _change_global_ci(self,confidence_level):
+        print("Changing global confidence level:")
+        print("   Previous Global Confidence level was: %f" % meta_py_r.get_global_conf_level())
+        meta_py_r.set_global_conf_level(confidence_level)
+        #meta_py_r.get_global_conf_level
+        print("   Global Confidence level is now: %f" % meta_py_r.get_global_conf_level())
 
     def _setup_connections(self, menu_actions=True):
         ''' Signals & slots '''
         QObject.connect(self.tableView.model(), SIGNAL("pyCellContentChanged(PyQt_PyObject, PyQt_PyObject, PyQt_PyObject, PyQt_PyObject)"),
                                                                 self.tableView.cell_content_changed)
 
-
-        QObject.connect(self.tableView.model(), SIGNAL("outcomeChanged()"),
-                                                                self.tableView.displayed_ma_changed)
-        QObject.connect(self.tableView.model(), SIGNAL("followUpChanged()"),
-                                                                self.tableView.displayed_ma_changed)
+        QObject.connect(self.tableView.model(), SIGNAL("outcomeChanged()"), self.tableView.displayed_ma_changed)
+        QObject.connect(self.tableView.model(), SIGNAL("followUpChanged()"), self.tableView.displayed_ma_changed)
+        
+        QObject.connect(self.global_ci_spinbox, SIGNAL("valueChanged(double)"), self._change_global_ci)
                                                                 
         ###
         # this is not ideal, but I couldn't get the rowsInserted methods working. 
