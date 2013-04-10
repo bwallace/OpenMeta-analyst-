@@ -682,20 +682,20 @@ fillin.cont.AminusB <- function(
 		
 		S.difference = sqrt(  (S1^2)+(S2^2)-(2*r*S1*S2)  )
 		
-		if (metric=="MD") {
+		#if (metric=="MD") {
 			# From Handbook of Research Synthesis and Meta-Analysis 2E p.225
-			mean.diff <- Y1 - Y2
-			sd.diff <- S.difference
+		#	mean.diff <- Y1 - Y2
+		#	sd.diff <- S.difference
 			# var.diff <- sd.diff^2/n # not used due to clash in formulas w/fillin.cont.1spell assuming a sample variance
-			fillin.diff <- fillin.cont.1spell(n=n.diff, mean=mean.diff, sd=sd.diff, alpha=alpha)
-			if (fillin.diff$succeeded) {
-				se.diff <- fillin.diff$se
-				var.diff <- 
-				low.diff <-
-				high.diff <-
-				pval.diff<-
-			}
-		}
+		#	fillin.diff <- fillin.cont.1spell(n=n.diff, mean=mean.diff, sd=sd.diff, alpha=alpha)
+		#	if (fillin.diff$succeeded) {
+		#		se.diff <- fillin.diff$se
+		#		var.diff <- 
+		#		low.diff <-
+		#		high.diff <-
+		#		pval.diff<-
+		#	}
+		#}
 		#else if (metric=="SMD") {
 		#	mean.diff <- (Y1-Y2)/S
 		#	
