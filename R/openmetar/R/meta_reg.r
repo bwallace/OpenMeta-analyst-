@@ -94,6 +94,7 @@ extract.cov.data <- function(reg.data) {
   # initialize names of continuous covariates to empty list
   cont.cov.names <- c()
   cont.cov.array <- NULL
+  factor.cov.array <- NULL
   for (n.covs in 1:length(reg.data@covariates)) {
     # put covariate data into two arrays, for continuous and factor covariates.
     cov <- reg.data@covariates[[n.covs]]
@@ -108,7 +109,7 @@ extract.cov.data <- function(reg.data) {
       cont.cov.names <- c(cont.cov.names, cov.name)
       n.cont.covs <- n.cont.covs + 1
     }
-    factor.cov.array <- NULL
+    #factor.cov.array <- NULL   # was this causing issue # 222 ?
     if (cov.type=="factor") {
       levels <- unique(cov.vals)
       # Remove "" from levels, if necessary.

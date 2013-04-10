@@ -65,6 +65,9 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.setupUi(self)
         
         meta_py_r.set_global_conf_level(meta_globals.DEFAULT_CONF_LEVEL)
+        # SET TO FALSE UNTIL PROPER BEHAVIOR IS REACHED FOR PRODUCTION PURPOSES
+        self.global_ci_spinbox.setVisible(False)
+        self.global_conf_level_lbl.setVisible(False)
 
         # TODO should also allow a (path to a) dataset
         # to be given on the console.

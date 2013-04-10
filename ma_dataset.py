@@ -710,15 +710,15 @@ class MetaAnalyticUnit:
         
     def add_group(self, name, raw_data=None):
         if len(self.tx_groups.keys()) == 0:
-            id = 0
+            grp_id = 0
         else:
-            id = max([group.id for group in self.tx_groups.values()]) + 1
+            grp_id = max([group.id for group in self.tx_groups.values()]) + 1
         if raw_data is None:
             raw_data = ["" for x in range(self.raw_data_length)]
         # Here we add this group to the set of group keys --
         # see inline documentation in this method for details
         self.update_effects_dict_with_group(name)
-        self.tx_groups[name] = TreatmentGroup(id, name, raw_data)
+        self.tx_groups[name] = TreatmentGroup(grp_id, name, raw_data)
         
         
     def remove_group(self, name):

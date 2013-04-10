@@ -8,7 +8,7 @@
 #  Proxy class, interfaces between the underlying representation (in ma_dataset.py)     #
 #  and the DataTableView UI. Basically deals with keeping track of which outcomes/      #
 #  follow-ups/treatments are being viewed. See Summerfield's chapters on M-V-C          #
-# in "Rapid GUI Programming with Python and QT" for an overview of the architecture.    #
+#  in "Rapid GUI Programming with Python and QT" for an overview of the architecture.   #
 #########################################################################################
 
 # core libraries

@@ -22,7 +22,7 @@ adjust.raw.data <- function(diagnostic.data, params) {
     TN <- diagnostic.data@TN 
     FP <- diagnostic.data@FP
     
-    if ("to" %in% names(params)){
+    if ("to" %in% names(params)) {
         if (params$to == "all") {
             TP <- TP + params$adjust
             FN <- FN + params$adjust
