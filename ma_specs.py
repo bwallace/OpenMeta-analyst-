@@ -1,7 +1,8 @@
 #############################################
 #                                           #
 #  Byron C. Wallace                         #
-#  Tufts Medical Center                     #
+#  George Dietz                             #
+#  CEBM @ Brown                             #
 #  This is the code for the ui dialog       #
 #  that handles the method selection        #
 #  and algorithm specifications             #

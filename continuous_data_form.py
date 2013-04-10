@@ -1,7 +1,7 @@
 ##################################################
 #
 #  Byron C. Wallace
-#  Tufts Medical Center
+#  George Dietz
 #  OpenMeta[analyst]
 #  ---
 #  Continuous data form module; for flexible entry of continuous

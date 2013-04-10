@@ -687,6 +687,7 @@ fillin.cont.AminusB <- function(
 		
 		S.difference = sqrt(  (S1^2)+(S2^2)-(2*r*S1*S2)  )
 		
+
 		if (metric=="MD") {
 			print("Entered MD")
 			# From Handbook of Research Synthesis and Meta-Analysis 2E p.225
@@ -720,8 +721,7 @@ fillin.cont.AminusB <- function(
 #        # these are not of real interest
 #        #n.diff  <- try(min(fillin.A$output["n"], fillin.B$output["n"]), silent=TRUE)
 #        #sd.diff <- try(var.diff * (n.diff - 1) , silent=TRUE)
-    } 
-    else {
+    } else {
 		if (!nA.eq.nB)
 			comment <- paste(comment, "  n.A != n.B")
         succeeded <- FALSE 
