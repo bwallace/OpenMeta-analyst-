@@ -20,6 +20,7 @@
 ##################################################
 
 import pdb
+import sys
 
 from PyQt4.Qt import *
 from PyQt4 import QtGui
@@ -57,6 +58,7 @@ def debug_msg(msg, entering = None):
             #DEBUG_INDENT -= 1
 
 # because the output from R is a string ("TRUE"/"FALSE")
+# Remove this? GD
 _is_true = lambda x: x == "TRUE"
 
 class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm):
@@ -118,14 +120,14 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                 self._set_val(row, col, None, self.g2_pre_post_table)
         
     def setup_signals_and_slots(self):
-        QObject.connect(self.simple_table, SIGNAL("cellChanged (int, int)"), self._cell_changed)
+        QObject.connect(self.simple_table,      SIGNAL("cellChanged (int, int)"), self._cell_changed)
         QObject.connect(self.g1_pre_post_table, SIGNAL("cellChanged (int, int)"), lambda: self.impute_pre_post_data(self.g1_pre_post_table, 0))
         QObject.connect(self.g2_pre_post_table, SIGNAL("cellChanged (int, int)"), lambda: self.impute_pre_post_data(self.g2_pre_post_table, 1))
         
-        QObject.connect(self.CI_spinbox, SIGNAL("valueChanged(double)"), self._change_ci) 
+        QObject.connect(self.CI_spinbox,     SIGNAL("valueChanged(double)"), self._change_ci) 
         QObject.connect(self.effect_cbo_box, SIGNAL("currentIndexChanged(QString)"), self.effect_changed)
-        QObject.connect(self.clear_Btn, SIGNAL("clicked()"), self.clear_form)
-        QObject.connect(self.back_calc_btn, SIGNAL("clicked()"), lambda: self.enable_back_calculation_btn(engage=True) )
+        QObject.connect(self.clear_Btn,      SIGNAL("clicked()"), self.clear_form)
+        QObject.connect(self.back_calc_btn,  SIGNAL("clicked()"), lambda: self.enable_back_calculation_btn(engage=True) )
                                                                                 
         QObject.connect(self.effect_txt_box, SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("est", new_text))
         QObject.connect(self.low_txt_box,    SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("lower", new_text))
@@ -307,16 +309,18 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         self.set_clear_btn_color()
         
     def set_clear_btn_color(self):
-        if self.input_fields_disabled():
+        if self._input_fields_disabled(self.simple_table):
             self.clear_Btn.setPalette(self.pushme_palette)
         else:
             self.clear_Btn.setPalette(self.orig_palette)
             
-    def input_fields_disabled(self):
+    def _input_fields_disabled(self, table):
+        #range(table.columnCount())
         table_disabled = True
-        for row in range(3):
-            for col in range(3):
-                item = self.simple_table.item(row, col)
+        num_cols = table.columnCount()
+        for row in range(2):
+            for col in range(num_cols):
+                item = table.item(row, col)
                 if item is None:
                     continue
                 if (item.flags() & Qt.ItemIsEditable) == Qt.ItemIsEditable:
@@ -456,18 +460,46 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         try:
             table.blockSignals(True)
             str_val = "" if val in meta_globals.EMPTY_VALS else str(float(val))
-            if table.item(row, col) == None:
+            if table.item(row, col) is None:
                 table.setItem(row, col, QTableWidgetItem(str_val))
             else:
                 table.item(row, col).setText(str_val)
+            table.blockSignals(False)
             
-            if str_val != "": #disable item
-                item = table.item(row, col)
-                newflags = item.flags() & ~Qt.ItemIsEditable
-                item.setFlags(newflags)
-            table.blockSignals(True)
+            self._disable_row_if_filled(table, row, col)
         except:
-            print("Got to except in _set_val when trying to set (%d,%d)" % (row,col))      
+            print "Unexpected error:", sys.exc_info()[0]
+            print("Got to except in _set_val when trying to set (%d,%d) to %s" % (row,col, str(val)))    
+            #raise  
+
+    def _disable_row_if_filled(self, table, row, col):
+        #if str_val != "": #disable item
+        table.blockSignals(True)
+        N_col = table.columnCount()
+        
+        print("Row is filled? %s" % str(self._table_row_filled(table, row)))
+        
+        if self._table_row_filled(table, row):
+            print("Disabling row... %d" % row)
+            for col in range(N_col):
+                self._disable_cell(table, row, col)
+        table.blockSignals(False)
+        
+    def _disable_cell(self, table, row, col):
+        table.blockSignals(True)
+        item = table.item(row, col)
+        newflags = item.flags() & ~Qt.ItemIsEditable
+        item.setFlags(newflags)
+        table.blockSignals(False)
+        
+    def _table_row_filled(self, table, row):
+        N_col = table.columnCount()
+        row_filled = True
+        for col in range(N_col):
+            item = table.item(row, col)
+            if item is None or item.text() == "":
+                row_filled = False
+        return row_filled
 
     def _update_ma_unit(self):
         for row_index, group_name in enumerate(self.cur_groups):
@@ -508,17 +540,10 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                 # populating the table with any available
                 # computed fields
             
-                self.simple_table.blockSignals(True)
-                
                 print "Computed vals:",computed_vals
                 for var_index, var_name in enumerate(var_names):  
                     self._set_val(row_index, var_index, computed_vals[var_name])
-
-                    # update the raw data for N, mean and SD fields (this is all that is actually stored)
-                    if var_index < 3:
-                        self.raw_data_dict[group_name][var_index] = computed_vals[var_name]
                 self._update_ma_unit()
-                self.simple_table.blockSignals(False)
                 
     def conf_level_to_alpha(self):
         alpha = 1-self.CI_spinbox.value()/100.0
@@ -541,6 +566,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                 var_value = self._get_float(a_b_index, var_index, table)
                 if var_value is not None:
                     params_dict["%s.%s" % (var_name, a_b_name)] = var_value
+        params_dict['metric']= ("'%s'" % self.cur_effect)
 
         # now pass off what we have for this study to the
         # imputation routine
@@ -549,20 +575,22 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                                         self.conf_level_to_alpha())
  
         print "imputation results from R: %s" % results_from_r
+        
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
+        
 
-        if _is_true(results_from_r["succeeded"]):
+        #if _is_true(results_from_r["succeeded"]):
+        if results_from_r["succeeded"]:
+            print("Prepost-imputation succeeded")
+            
             ### 
             # first update the simple table
             computed_vals = results_from_r["output"]
-            #pyqtRemoveInputHook()
-            #pdb.set_trace()
-            self.simple_table.blockSignals(True)
+            
             for var_index, var_name in enumerate(self.get_column_header_strs()):
-                float_str = self.float_to_str(float(computed_vals[var_name]))
-                #float_str = str(float(computed_vals[var_name]))
-
-                #self.simple_table.setItem(group_index, var_index, QTableWidgetItem(QString(float_str)))
-                self._set_val(group_index, var_index, float_str)
+                val = computed_vals[var_name]
+                self._set_val(group_index, var_index, val)
 
                 # update the raw data for N, mean and SD fields (this is all that is actually stored)
                 if var_index < 3:
@@ -570,21 +598,21 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                     self.raw_data_dict[group_name][var_index] = computed_vals[var_name]
             
             self.try_to_update_cur_outcome()        
-            self.simple_table.blockSignals(False)
             
             ###
             # also update the pre/post tables
             pre_vals = results_from_r["pre"]
             post_vals = results_from_r["post"]
-            table.blockSignals(True)
             for var_index, var_name in enumerate(var_names):
-                pre_val = self.float_to_str(float(pre_vals[var_name]))
-                post_val = self.float_to_str(float(post_vals[var_name]))
-                table.setItem(0, var_index, QTableWidgetItem(QString(pre_val)))
-                table.setItem(1, var_index, QTableWidgetItem(QString(post_val)))
-            table.blockSignals(False)
-            
-            
+                pre_val = pre_vals[var_name]
+                post_val = post_vals[var_name]
+                self._set_val(0, var_index, pre_val, table)
+                self._set_val(1, var_index, post_val, table)
+                
+            self._update_ma_unit()
+            self.save_form_state()
+            self.set_clear_btn_color()
+                 
     def float_to_str(self, float_val):
         #float_str = "NA"
         float_str = ""
