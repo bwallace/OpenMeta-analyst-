@@ -939,8 +939,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         try:
             data_model = pickle.load(open(file_path, 'r'))
             print "successfully loaded data"
-            #pyqtRemoveInputHook()
-            #pdb.set_trace()
         except:
             return None
         

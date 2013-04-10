@@ -803,6 +803,9 @@ class DatasetModel(QAbstractTableModel):
                             return QVariant(current_tx + " #total")
                     elif outcome_type == CONTINUOUS:
                         # continuous data
+                        if len(self.RAW_DATA) < 6:
+                            return QVariant("")
+                        
                         if section in self.RAW_DATA[3:]:
                             current_tx = self.current_txs[1]
                         if section in (self.RAW_DATA[0], self.RAW_DATA[3]):
