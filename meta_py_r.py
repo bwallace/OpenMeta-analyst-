@@ -91,6 +91,8 @@ def R_fn_with_dataframe_arg(data_dict, R_fn_name):
     dataf = ro.r['data.frame'](**data_dict)
     
     r_string = R_fn_name + "(" + str(dataf.r_repr()) + ")"
+    
+    print("executing (from R_fn_with_dataframe_arg: %s" % r_string)
     R_result = ro.r(r_string)
     
     return _grlist_to_pydict(R_result)
@@ -960,13 +962,16 @@ def run_meta_regression(dataset, study_names, cov_list, metric_name,\
     method_str = "FE" if fixed_effects else "DL"    
 
     # @TODO conf.level, digits should be user-specified
-    params = {"conf.level":get_global_conf_level(), "digits":3, "method":method_str, 
-                "rm.method":"ML", "measure":metric_name}
+    params = {"conf.level":get_global_conf_level(),
+              "digits":3,
+              "method":method_str,
+              "rm.method":"ML",
+              "measure":metric_name}
     params_df = ro.r['data.frame'](**params)
 
     # create a lit of covariate objects on the R side
     r_str = "%s<- meta.regression(%s, %s)" % \
-                            (results_name, data_name, params_df.r_repr())
+                            (results_name, data_name, str(params_df.r_repr()))
 
 
     print "\n\n(run_meta_regression): executing:\n %s\n" % r_str
