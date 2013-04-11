@@ -413,8 +413,17 @@ create.subgroup.display <- function(res, study.names, params, model.title, data.
       } else {
         zVal <- "NA"
       }
+	  
+	 # very hacky fix to issue where the function would die below. For some
+	 # reason when there is only a single study, the num.studies is NULL instead
+     # of one. This isn't really a bug with this function but rather should be
+     # solved elsewhere.....
+	  if (is.null(num.studies))
+	     num.studies <- 1;
+	  
       subgroup.array[count+1,] <- c(study.names[count], num.studies, y.disp, lb.disp, ub.disp, se.disp, pVal)
       het.array[count+1,] <- c(study.names[count], QE, QEp, I2)
+	  
     }
 
     table.titles <- c(" Model Results", "  Heterogeneity")
