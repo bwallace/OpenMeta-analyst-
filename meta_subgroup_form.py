@@ -4,6 +4,7 @@ import pdb
 import ui_cov_subgroup_dlg
 import meta_py_r
 import ma_specs
+from meta_globals import FACTOR
 
 class MetaSubgroupForm(QDialog, ui_cov_subgroup_dlg.Ui_cov_subgroup_dialog):
     
@@ -28,6 +29,8 @@ class MetaSubgroupForm(QDialog, ui_cov_subgroup_dlg.Ui_cov_subgroup_dialog):
         studies = self.model.get_studies(only_if_included=True)
         
         for cov in self.model.dataset.covariates:
+            if cov.get_data_type() != FACTOR:
+                continue
             cov_vals = [study.covariate_dict[cov.name] for study in studies]
             if not None in cov_vals:
                 self.cov_subgroup_cbo_box.addItem(cov.name)

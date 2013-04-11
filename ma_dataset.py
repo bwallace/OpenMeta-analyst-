@@ -814,6 +814,8 @@ class Covariate:
         
     def get_type_str(self):
         return {CONTINUOUS:"Continuous", FACTOR:"Factor"}[self.data_type]
+    def get_data_type(self):
+        return self.data_type
 
 class Link:
     pass
