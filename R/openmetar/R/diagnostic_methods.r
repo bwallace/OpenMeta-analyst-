@@ -351,6 +351,8 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
     graphics.off()
     results <- c(results, list("images"=images, "image_order"=image.order, "plot_names"=plot.names, 
                                "plot_params_paths"=plot.params.paths))
+	print("THESE ARE THE RESULTS FROM MULTIPLE DIAGNOSTIC")
+	print(results)
     results
 }
 
