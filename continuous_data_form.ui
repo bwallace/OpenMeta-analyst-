@@ -31,8 +31,8 @@
    <string>Continuous Data</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>:/images/meta.png</normaloff>:/images/meta.png</iconset>
+   <iconset resource="images/icons.qrc">
+    <normaloff>:/misc/meta.png</normaloff>:/misc/meta.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>

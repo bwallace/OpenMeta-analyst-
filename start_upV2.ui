@@ -56,7 +56,7 @@
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap>images/meta.png</pixmap>
+        <pixmap resource="images/icons.qrc">:/misc/meta.png</pixmap>
        </property>
        <property name="scaledContents">
         <bool>true</bool>
@@ -243,6 +243,11 @@ Contract No. HHSA 290 2007 10055 I; Task Order #2</string>
   <zorder>verticalSpacer</zorder>
   <zorder></zorder>
  </widget>
- <resources/>
+ <resources>
+  <include location="images/icons.qrc"/>
+  <include location="images/icons.qrc"/>
+  <include location="images/icons.qrc"/>
+  <include location="images/icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

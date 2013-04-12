@@ -72,8 +72,8 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset>
-            <normaloff>:/images/function_icon_set/add_48.png</normaloff>:/images/function_icon_set/add_48.png</iconset>
+           <iconset resource="images/icons.qrc">
+            <normaloff>:/function_icon_set/function_icon_set/add_48.png</normaloff>:/function_icon_set/function_icon_set/add_48.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -110,8 +110,8 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset>
-            <normaloff>:/images/function_icon_set/cancel_48.png</normaloff>:/images/function_icon_set/cancel_48.png</iconset>
+           <iconset resource="images/icons.qrc">
+            <normaloff>:/function_icon_set/function_icon_set/cancel_48.png</normaloff>:/function_icon_set/function_icon_set/cancel_48.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -168,8 +168,8 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset>
-            <normaloff>:/images/function_icon_set/cancel_48.png</normaloff>:/images/function_icon_set/cancel_48.png</iconset>
+           <iconset resource="images/icons.qrc">
+            <normaloff>:/function_icon_set/function_icon_set/cancel_48.png</normaloff>:/function_icon_set/function_icon_set/cancel_48.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -203,8 +203,8 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset>
-            <normaloff>:/images/function_icon_set/add_48.png</normaloff>:/images/function_icon_set/add_48.png</iconset>
+           <iconset resource="images/icons.qrc">
+            <normaloff>:/function_icon_set/function_icon_set/add_48.png</normaloff>:/function_icon_set/function_icon_set/add_48.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -261,8 +261,8 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset>
-            <normaloff>:/images/function_icon_set/add_48.png</normaloff>:/images/function_icon_set/add_48.png</iconset>
+           <iconset resource="images/icons.qrc">
+            <normaloff>:/function_icon_set/function_icon_set/add_48.png</normaloff>:/function_icon_set/function_icon_set/add_48.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -299,8 +299,8 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset>
-            <normaloff>:/images/function_icon_set/cancel_48.png</normaloff>:/images/function_icon_set/cancel_48.png</iconset>
+           <iconset resource="images/icons.qrc">
+            <normaloff>:/function_icon_set/function_icon_set/cancel_48.png</normaloff>:/function_icon_set/function_icon_set/cancel_48.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -345,8 +345,8 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset>
-             <normaloff>:/images/function_icon_set/add_48.png</normaloff>:/images/function_icon_set/add_48.png</iconset>
+            <iconset resource="images/icons.qrc">
+             <normaloff>:/function_icon_set/function_icon_set/add_48.png</normaloff>:/function_icon_set/function_icon_set/add_48.png</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -377,8 +377,8 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset>
-             <normaloff>:/images/function_icon_set/cancel_48.png</normaloff>:/images/function_icon_set/cancel_48.png</iconset>
+            <iconset resource="images/icons.qrc">
+             <normaloff>:/function_icon_set/function_icon_set/cancel_48.png</normaloff>:/function_icon_set/function_icon_set/cancel_48.png</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -424,8 +424,8 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset>
-             <normaloff>:/images/function_icon_set/add_48.png</normaloff>:/images/function_icon_set/add_48.png</iconset>
+            <iconset resource="images/icons.qrc">
+             <normaloff>:/function_icon_set/function_icon_set/add_48.png</normaloff>:/function_icon_set/function_icon_set/add_48.png</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -456,8 +456,8 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset>
-             <normaloff>:/images/function_icon_set/cancel_48.png</normaloff>:/images/function_icon_set/cancel_48.png</iconset>
+            <iconset resource="images/icons.qrc">
+             <normaloff>:/function_icon_set/function_icon_set/cancel_48.png</normaloff>:/function_icon_set/function_icon_set/cancel_48.png</iconset>
            </property>
            <property name="iconSize">
             <size>

@@ -396,7 +396,6 @@
        </layout>
       </item>
      </layout>
-     <zorder></zorder>
      <zorder>ci_label</zorder>
      <zorder>horizontalSpacer_7</zorder>
      <zorder>horizontalSpacer_6</zorder>

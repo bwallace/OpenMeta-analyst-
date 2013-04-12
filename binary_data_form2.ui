@@ -2,9 +2,6 @@
 <ui version="4.0">
  <class>BinaryDataForm</class>
  <widget class="QDialog" name="BinaryDataForm">
-  <property name="enabled">
-   <bool>true</bool>
-  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -13,23 +10,18 @@
     <height>419</height>
    </rect>
   </property>
-  <property name="font">
-   <font>
-    <family>Verdana</family>
-   </font>
-  </property>
   <property name="windowTitle">
    <string>Binary Data</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>:/images/meta.png</normaloff>:/images/meta.png</iconset>
+   <iconset resource="images/icons.qrc">
+    <normaloff>:/misc/meta.png</normaloff>:/misc/meta.png</iconset>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QVBoxLayout" name="verticalLayout_4">
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout">
+    <layout class="QVBoxLayout" name="verticalLayout_3">
      <item>
-      <layout class="QGridLayout" name="gridLayout">
+      <layout class="QGridLayout" name="gridLayout_5">
        <property name="bottomMargin">
         <number>9</number>
        </property>
@@ -37,7 +29,7 @@
         <number>4</number>
        </property>
        <item row="0" column="1">
-        <widget class="QLabel" name="event_lbl">
+        <widget class="QLabel" name="event_lbl_3">
          <property name="font">
           <font>
            <family>Verdana</family>
@@ -52,7 +44,7 @@
         </widget>
        </item>
        <item row="0" column="2">
-        <widget class="QLabel" name="label_6">
+        <widget class="QLabel" name="label_18">
          <property name="font">
           <font>
            <family>Verdana</family>
@@ -67,7 +59,7 @@
         </widget>
        </item>
        <item row="0" column="3">
-        <widget class="QLabel" name="label_10">
+        <widget class="QLabel" name="label_19">
          <property name="font">
           <font>
            <family>Verdana</family>
@@ -84,7 +76,7 @@
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QLabel" name="label_3">
+        <widget class="QLabel" name="label_20">
          <property name="font">
           <font>
            <family>Verdana</family>
@@ -99,7 +91,7 @@
         </widget>
        </item>
        <item row="1" column="1" rowspan="3" colspan="3">
-        <widget class="QTableWidget" name="raw_data_table">
+        <widget class="QTableWidget" name="raw_data_table_3">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -171,7 +163,7 @@
         </widget>
        </item>
        <item row="2" column="0">
-        <widget class="QLabel" name="label_4">
+        <widget class="QLabel" name="label_21">
          <property name="font">
           <font>
            <family>Verdana</family>
@@ -186,7 +178,7 @@
         </widget>
        </item>
        <item row="3" column="0">
-        <widget class="QLabel" name="label_9">
+        <widget class="QLabel" name="label_22">
          <property name="font">
           <font>
            <family>Verdana</family>
@@ -207,16 +199,16 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <layout class="QHBoxLayout" name="horizontalLayout_17">
      <item>
-      <widget class="QPushButton" name="clear_Btn">
+      <widget class="QPushButton" name="clear_Btn_3">
        <property name="text">
         <string>Clear Form</string>
        </property>
       </widget>
      </item>
      <item>
-      <spacer name="horizontalSpacer_3">
+      <spacer name="horizontalSpacer_17">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -229,7 +221,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="back_calc_btn">
+      <widget class="QPushButton" name="back_calc_btn_3">
        <property name="enabled">
         <bool>false</bool>
        </property>
@@ -241,12 +233,12 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_4">
+    <layout class="QHBoxLayout" name="horizontalLayout_13">
      <property name="spacing">
       <number>4</number>
      </property>
      <item>
-      <widget class="QLabel" name="label_13">
+      <widget class="QLabel" name="label_17">
        <property name="font">
         <font>
          <family>Verdana</family>
@@ -261,7 +253,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="effect_cbo_box">
+      <widget class="QComboBox" name="effect_cbo_box_3">
        <property name="minimumSize">
         <size>
          <width>76</width>
@@ -277,7 +269,7 @@
       </widget>
      </item>
      <item>
-      <spacer name="horizontalSpacer_2">
+      <spacer name="horizontalSpacer_13">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -296,9 +288,9 @@
      <property name="title">
       <string/>
      </property>
-     <layout class="QGridLayout" name="gridLayout_2">
+     <layout class="QGridLayout" name="gridLayout_6">
       <item row="0" column="0" rowspan="2">
-       <spacer name="horizontalSpacer_5">
+       <spacer name="horizontalSpacer_15">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -311,17 +303,17 @@
        </spacer>
       </item>
       <item row="0" column="2">
-       <widget class="QLabel" name="ci_label">
+       <widget class="QLabel" name="ci_label_3">
         <property name="toolTip">
          <string>Use the box to the left to set the % confidence interval</string>
         </property>
         <property name="text">
-         <string>X% Confidence Interval</string>
+         <string/>
         </property>
        </widget>
       </item>
       <item row="0" column="3" rowspan="2">
-       <spacer name="horizontalSpacer_4">
+       <spacer name="horizontalSpacer_16">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -334,9 +326,9 @@
        </spacer>
       </item>
       <item row="1" column="1">
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <layout class="QHBoxLayout" name="horizontalLayout_15">
         <item>
-         <widget class="QLabel" name="est_lbl">
+         <widget class="QLabel" name="est_lbl_3">
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -363,7 +355,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="effect_txt_box">
+         <widget class="QLineEdit" name="effect_txt_box_3">
           <property name="minimumSize">
            <size>
             <width>50</width>
@@ -381,9 +373,9 @@
        </layout>
       </item>
       <item row="1" column="2">
-       <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <layout class="QHBoxLayout" name="horizontalLayout_16">
         <item>
-         <widget class="QLabel" name="low_lbl">
+         <widget class="QLabel" name="low_lbl_3">
           <property name="maximumSize">
            <size>
             <width>16777215</width>
@@ -404,7 +396,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="low_txt_box">
+         <widget class="QLineEdit" name="low_txt_box_3">
           <property name="minimumSize">
            <size>
             <width>50</width>
@@ -420,14 +412,14 @@
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="label">
+         <widget class="QLabel" name="label_23">
           <property name="text">
            <string>,</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="high_txt_box">
+         <widget class="QLineEdit" name="high_txt_box_3">
           <property name="minimumSize">
            <size>
             <width>50</width>
@@ -443,7 +435,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="high_lbl">
+         <widget class="QLabel" name="high_lbl_3">
           <property name="maximumSize">
            <size>
             <width>16777215</width>
@@ -476,16 +468,16 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_6">
+    <layout class="QHBoxLayout" name="horizontalLayout_18">
      <item>
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="label_24">
        <property name="text">
         <string>Confidence Level:</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QDoubleSpinBox" name="CI_spinbox">
+      <widget class="QDoubleSpinBox" name="CI_spinbox_3">
        <property name="toolTip">
         <string>Use this box to set the % confidence interval</string>
        </property>
@@ -510,7 +502,7 @@
       </widget>
      </item>
      <item>
-      <spacer name="horizontalSpacer_6">
+      <spacer name="horizontalSpacer_18">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -525,9 +517,9 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="horizontalLayout_14">
      <item>
-      <widget class="QLabel" name="inconsistencyLabel">
+      <widget class="QLabel" name="inconsistencyLabel_3">
        <property name="font">
         <font>
          <weight>75</weight>
@@ -540,7 +532,7 @@
       </widget>
      </item>
      <item>
-      <spacer name="horizontalSpacer">
+      <spacer name="horizontalSpacer_14">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -553,7 +545,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QDialogButtonBox" name="buttonBox">
+      <widget class="QDialogButtonBox" name="buttonBox_3">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -566,39 +558,50 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>raw_data_table_3</tabstop>
+  <tabstop>clear_Btn_3</tabstop>
+  <tabstop>back_calc_btn_3</tabstop>
+  <tabstop>effect_cbo_box_3</tabstop>
+  <tabstop>effect_txt_box_3</tabstop>
+  <tabstop>low_txt_box_3</tabstop>
+  <tabstop>high_txt_box_3</tabstop>
+  <tabstop>CI_spinbox_3</tabstop>
+  <tabstop>buttonBox_3</tabstop>
+ </tabstops>
  <resources>
   <include location="images/icons.qrc"/>
  </resources>
  <connections>
   <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>BinaryDataForm</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>381</x>
-     <y>328</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>157</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
+   <sender>buttonBox_3</sender>
    <signal>rejected()</signal>
    <receiver>BinaryDataForm</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>381</x>
-     <y>328</y>
+     <x>300</x>
+     <y>388</y>
     </hint>
     <hint type="destinationlabel">
-     <x>286</x>
-     <y>274</y>
+     <x>327</x>
+     <y>341</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox_3</sender>
+   <signal>accepted()</signal>
+   <receiver>BinaryDataForm</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>222</x>
+     <y>398</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>245</x>
+     <y>343</y>
     </hint>
    </hints>
   </connection>

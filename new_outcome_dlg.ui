@@ -34,7 +34,7 @@
    <string>add new outcome</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="images/icons.qrc">
+   <iconset>
     <normaloff>:/images/meta.png</normaloff>:/images/meta.png</iconset>
   </property>
   <widget class="QDialogButtonBox" name="buttonBox">

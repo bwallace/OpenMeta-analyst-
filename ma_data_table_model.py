@@ -773,7 +773,7 @@ class DatasetModel(QAbstractTableModel):
         # For cool calculator icon
         if role == Qt.DecorationRole:
             if orientation == Qt.Vertical and sectionOK:
-                return QIcon("images/calculator-34.png")
+                return QIcon(":/misc/calculator-34.png")
         
         if role == Qt.TextAlignmentRole:
             return QVariant(int(Qt.AlignLeft|Qt.AlignVCenter))

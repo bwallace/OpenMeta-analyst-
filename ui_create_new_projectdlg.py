@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'create_new_projectdlg.ui'
 #
-# Created: Thu Mar 28 15:30:28 2013
+# Created: Fri Apr 12 14:30:03 2013
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -58,7 +58,7 @@ class Ui_newprojectdialog(object):
         self.onearm_single_reg_coef_Button.setMaximumSize(QtCore.QSize(120, 65))
         self.onearm_single_reg_coef_Button.setBaseSize(QtCore.QSize(10, 10))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8("images/startscreens/onearm/single_reg_coef.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/new_dataset/startscreens/single_reg_coef.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.onearm_single_reg_coef_Button.setIcon(icon)
         self.onearm_single_reg_coef_Button.setIconSize(QtCore.QSize(40, 40))
         self.onearm_single_reg_coef_Button.setCheckable(True)
@@ -73,7 +73,7 @@ class Ui_newprojectdialog(object):
         self.twoarm_smds_Button.setMaximumSize(QtCore.QSize(90, 65))
         self.twoarm_smds_Button.setBaseSize(QtCore.QSize(10, 10))
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(_fromUtf8("images/startscreens/twoarm/smd.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(_fromUtf8(":/new_dataset/startscreens/smd.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.twoarm_smds_Button.setIcon(icon1)
         self.twoarm_smds_Button.setIconSize(QtCore.QSize(40, 40))
         self.twoarm_smds_Button.setCheckable(True)
@@ -86,7 +86,7 @@ class Ui_newprojectdialog(object):
         self.onearm_generic_effect_size_Button.setMaximumSize(QtCore.QSize(90, 65))
         self.onearm_generic_effect_size_Button.setBaseSize(QtCore.QSize(10, 10))
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(_fromUtf8("images/startscreens/onearm/gen_eff_size.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap(_fromUtf8(":/new_dataset/startscreens/gen_eff_size.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.onearm_generic_effect_size_Button.setIcon(icon2)
         self.onearm_generic_effect_size_Button.setIconSize(QtCore.QSize(40, 40))
         self.onearm_generic_effect_size_Button.setCheckable(True)
@@ -100,7 +100,7 @@ class Ui_newprojectdialog(object):
         self.onearm_mean_Button.setMaximumSize(QtCore.QSize(90, 65))
         self.onearm_mean_Button.setBaseSize(QtCore.QSize(10, 10))
         icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap(_fromUtf8("images/startscreens/onearm/mean.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon3.addPixmap(QtGui.QPixmap(_fromUtf8(":/new_dataset/startscreens/mean.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.onearm_mean_Button.setIcon(icon3)
         self.onearm_mean_Button.setIconSize(QtCore.QSize(40, 40))
         self.onearm_mean_Button.setCheckable(True)
@@ -113,7 +113,7 @@ class Ui_newprojectdialog(object):
         self.onearm_proportion_Button.setMaximumSize(QtCore.QSize(90, 65))
         self.onearm_proportion_Button.setBaseSize(QtCore.QSize(10, 10))
         icon4 = QtGui.QIcon()
-        icon4.addPixmap(QtGui.QPixmap(_fromUtf8("images/startscreens/onearm/proportion.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon4.addPixmap(QtGui.QPixmap(_fromUtf8(":/new_dataset/startscreens/proportion.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.onearm_proportion_Button.setIcon(icon4)
         self.onearm_proportion_Button.setIconSize(QtCore.QSize(40, 40))
         self.onearm_proportion_Button.setCheckable(True)
@@ -130,7 +130,7 @@ class Ui_newprojectdialog(object):
         self.twoarm_proportions_Button.setMaximumSize(QtCore.QSize(90, 65))
         self.twoarm_proportions_Button.setBaseSize(QtCore.QSize(10, 10))
         icon5 = QtGui.QIcon()
-        icon5.addPixmap(QtGui.QPixmap(_fromUtf8("images/startscreens/twoarm/proportions.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon5.addPixmap(QtGui.QPixmap(_fromUtf8(":/new_dataset/startscreens/proportions.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.twoarm_proportions_Button.setIcon(icon5)
         self.twoarm_proportions_Button.setIconSize(QtCore.QSize(72, 44))
         self.twoarm_proportions_Button.setCheckable(True)
@@ -146,7 +146,7 @@ class Ui_newprojectdialog(object):
         self.diagnostic_Button.setMaximumSize(QtCore.QSize(90, 65))
         self.diagnostic_Button.setBaseSize(QtCore.QSize(10, 10))
         icon6 = QtGui.QIcon()
-        icon6.addPixmap(QtGui.QPixmap(_fromUtf8("images/startscreens/diagnostic.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon6.addPixmap(QtGui.QPixmap(_fromUtf8(":/new_dataset/startscreens/diagnostic.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.diagnostic_Button.setIcon(icon6)
         self.diagnostic_Button.setIconSize(QtCore.QSize(85, 44))
         self.diagnostic_Button.setCheckable(True)
@@ -169,7 +169,7 @@ class Ui_newprojectdialog(object):
         self.twoarm_means_Button.setMaximumSize(QtCore.QSize(90, 65))
         self.twoarm_means_Button.setBaseSize(QtCore.QSize(10, 10))
         icon7 = QtGui.QIcon()
-        icon7.addPixmap(QtGui.QPixmap(_fromUtf8("images/startscreens/twoarm/means.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon7.addPixmap(QtGui.QPixmap(_fromUtf8(":/new_dataset/startscreens/means.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.twoarm_means_Button.setIcon(icon7)
         self.twoarm_means_Button.setIconSize(QtCore.QSize(54, 40))
         self.twoarm_means_Button.setCheckable(True)
