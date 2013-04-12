@@ -14,4 +14,4 @@
 from distutils.core import setup
 import py2exe
 
-setup(windows{"script": "meta_form.py"}])
+setup(windows=[{"script": "meta_form.py"}])
