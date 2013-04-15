@@ -14,11 +14,31 @@ meta.regression <- function(reg.data, params) {
    cov.array <- cov.data$cov.array
    
    # remove when and if method dialog is added
-   method <- params$method
-
+   method <- as.character(params$method)
+   #method <- params$method
+   #cat("From meta.regression: method: ", method, "\n")
+   #cat("from meta.regression brackets: ", as.character(method), "\n")
+   
+	print("yi"); print(reg.data@y);
+	print("sei"); print(reg.data@SE);
+	print("slab"); print(reg.data@study.names);
+	
+	#params$method <- method
+	
+	cat("Level: ", params$conf.level, "\n")
+	cat("digits: ", params$digits, "\n")
+	cat("method: ", method, "\n")
+	cat("mods: ",cov.array)
+	
+	
+	
    res<-try(rma.uni(yi=reg.data@y, sei=reg.data@SE, slab=reg.data@study.names,
                                 level=params$conf.level, digits=params$digits,
                                 method=method, mods=cov.array))
+				
+	print("RES from meta_reg"); print(res);
+				
+				
    if (class(res)[1] != "try-error") {
        display.data <- cov.data$display.data
        reg.disp <- create.regression.display(res, params, display.data)
@@ -74,6 +94,7 @@ extract.cov.data <- function(reg.data) {
   # initialize names of continuous covariates to empty list
   cont.cov.names <- c()
   cont.cov.array <- NULL
+  factor.cov.array <- NULL
   for (n.covs in 1:length(reg.data@covariates)) {
     # put covariate data into two arrays, for continuous and factor covariates.
     cov <- reg.data@covariates[[n.covs]]
@@ -88,7 +109,7 @@ extract.cov.data <- function(reg.data) {
       cont.cov.names <- c(cont.cov.names, cov.name)
       n.cont.covs <- n.cont.covs + 1
     }
-    factor.cov.array <- NULL
+    #factor.cov.array <- NULL   # was this causing issue # 222 ?
     if (cov.type=="factor") {
       levels <- unique(cov.vals)
       # Remove "" from levels, if necessary.

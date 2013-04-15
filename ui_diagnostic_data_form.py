@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'diagnostic_data_form.ui'
 #
-# Created: Mon Mar 25 14:35:21 2013
+# Created: Fri Apr 12 15:38:25 2013
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!

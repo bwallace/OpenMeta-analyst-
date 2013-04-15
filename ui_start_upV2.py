@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'start_upV2.ui'
 #
-# Created: Tue Mar  5 15:55:49 2013
+# Created: Fri Apr 12 15:38:26 2013
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -43,7 +43,7 @@ class Ui_WelcomeDialog(object):
         self.logoLabel.setMinimumSize(QtCore.QSize(321, 241))
         self.logoLabel.setMaximumSize(QtCore.QSize(321, 241))
         self.logoLabel.setText(_fromUtf8(""))
-        self.logoLabel.setPixmap(QtGui.QPixmap(_fromUtf8("images/meta.png")))
+        self.logoLabel.setPixmap(QtGui.QPixmap(_fromUtf8(":/misc/meta.png")))
         self.logoLabel.setScaledContents(True)
         self.logoLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.logoLabel.setObjectName(_fromUtf8("logoLabel"))
@@ -101,7 +101,7 @@ class Ui_WelcomeDialog(object):
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.open_btn = QtGui.QPushButton(WelcomeDialog)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8("images/function_icon_set/folder_48.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/function_icon_set/function_icon_set/folder_48.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.open_btn.setIcon(icon)
         self.open_btn.setObjectName(_fromUtf8("open_btn"))
         self.horizontalLayout.addWidget(self.open_btn)
@@ -111,7 +111,7 @@ class Ui_WelcomeDialog(object):
         self.horizontalLayout.addWidget(self.open_recent_btn)
         self.create_new_btn = QtGui.QPushButton(WelcomeDialog)
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(_fromUtf8("images/function_icon_set/add_48.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(_fromUtf8(":/function_icon_set/function_icon_set/add_48.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.create_new_btn.setIcon(icon1)
         self.create_new_btn.setObjectName(_fromUtf8("create_new_btn"))
         self.horizontalLayout.addWidget(self.create_new_btn)
@@ -133,3 +133,4 @@ class Ui_WelcomeDialog(object):
         self.open_recent_btn.setText(_translate("WelcomeDialog", "open recent ...", None))
         self.create_new_btn.setText(_translate("WelcomeDialog", "Create a new Project", None))
 
+import icons_rc

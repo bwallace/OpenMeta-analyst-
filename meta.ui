@@ -19,8 +19,8 @@
    <string>OpenMeta[analyst]</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>:/images/meta.png</normaloff>:/images/meta.png</iconset>
+   <iconset resource="images/icons.qrc">
+    <normaloff>:/misc/meta.png</normaloff>:/misc/meta.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="font">
@@ -154,8 +154,8 @@
                   <string/>
                  </property>
                  <property name="icon">
-                  <iconset>
-                   <normaloff>:/images/left_arrow.png</normaloff>:/images/left_arrow.png</iconset>
+                  <iconset resource="images/icons.qrc">
+                   <normaloff>:/misc/left_arrow.png</normaloff>:/misc/left_arrow.png</iconset>
                  </property>
                  <property name="iconSize">
                   <size>
@@ -180,8 +180,8 @@
                   <string/>
                  </property>
                  <property name="icon">
-                  <iconset>
-                   <normaloff>:/images/up_arrow.png</normaloff>:/images/up_arrow.png</iconset>
+                  <iconset resource="images/icons.qrc">
+                   <normaloff>:/misc/up_arrow.png</normaloff>:/misc/up_arrow.png</iconset>
                  </property>
                  <property name="iconSize">
                   <size>
@@ -206,8 +206,8 @@
                   <string/>
                  </property>
                  <property name="icon">
-                  <iconset>
-                   <normaloff>:/images/down_arrow.png</normaloff>:/images/down_arrow.png</iconset>
+                  <iconset resource="images/icons.qrc">
+                   <normaloff>:/misc/down_arrow.png</normaloff>:/misc/down_arrow.png</iconset>
                  </property>
                  <property name="iconSize">
                   <size>
@@ -261,8 +261,8 @@
                   <string/>
                  </property>
                  <property name="icon">
-                  <iconset>
-                   <normaloff>:/images/right_arrow.png</normaloff>:/images/right_arrow.png</iconset>
+                  <iconset resource="images/icons.qrc">
+                   <normaloff>:/misc/right_arrow.png</normaloff>:/misc/right_arrow.png</iconset>
                  </property>
                  <property name="iconSize">
                   <size>
@@ -287,8 +287,8 @@
                   <string/>
                  </property>
                  <property name="icon">
-                  <iconset>
-                   <normaloff>:/images/function_icon_set/add_48.png</normaloff>:/images/function_icon_set/add_48.png</iconset>
+                  <iconset resource="images/icons.qrc">
+                   <normaloff>:/function_icon_set/function_icon_set/add_48.png</normaloff>:/function_icon_set/function_icon_set/add_48.png</iconset>
                  </property>
                  <property name="iconSize">
                   <size>

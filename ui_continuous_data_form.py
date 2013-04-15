@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'continuous_data_form.ui'
 #
-# Created: Mon Apr  8 12:11:26 2013
+# Created: Fri Apr 12 15:38:24 2013
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -37,7 +37,7 @@ class Ui_ContinuousDataForm(object):
         font.setFamily(_fromUtf8("Verdana"))
         ContinuousDataForm.setFont(font)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/images/meta.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/misc/meta.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         ContinuousDataForm.setWindowIcon(icon)
         self.verticalLayout_2 = QtGui.QVBoxLayout(ContinuousDataForm)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))

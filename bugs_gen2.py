@@ -184,8 +184,8 @@ def generate_model_file_binary(out_path, metric="or", cr="none", num_covs=0, is_
     # here we modify the  model for risk ratio
     #
     if metric == "rr":
-       out_str = out_str.replace("logit(pt[i]) <- mu[i] + d[i]",  "log(pt[i]) <- mu[i] - log(1 + exp(mu[i])) + d[i]");
-       out_str = out_str.replace("cr.bar <- exp(mu.bar) / (exp(mu.bar) + 1)",  "cr.bar <- exp(mu.bar)")
+        out_str = out_str.replace("logit(pt[i]) <- mu[i] + d[i]",  "log(pt[i]) <- mu[i] - log(1 + exp(mu[i])) + d[i]");
+        out_str = out_str.replace("cr.bar <- exp(mu.bar) / (exp(mu.bar) + 1)",  "cr.bar <- exp(mu.bar)")
        
     #
     # build string for covariate regression

@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'change_cov_type_form.ui'
 #
-# Created: Wed Jan 11 09:50:10 2012
-#      by: PyQt4 UI code generator 4.8.5
+# Created: Fri Apr 12 15:38:24 2013
+#      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,7 +12,16 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_ChangeCovTypeForm(object):
     def setupUi(self, ChangeCovTypeForm):
@@ -23,14 +32,12 @@ class Ui_ChangeCovTypeForm(object):
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Verdana"))
         ChangeCovTypeForm.setFont(font)
-        ChangeCovTypeForm.setWindowTitle(QtGui.QApplication.translate("ChangeCovTypeForm", "Change Covariate Type", None, QtGui.QApplication.UnicodeUTF8))
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/images/meta.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         ChangeCovTypeForm.setWindowIcon(icon)
         self.verticalLayout_2 = QtGui.QVBoxLayout(ChangeCovTypeForm)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
         self.grp_box_preview = QtGui.QGroupBox(ChangeCovTypeForm)
-        self.grp_box_preview.setTitle(QtGui.QApplication.translate("ChangeCovTypeForm", "values for new covariate", None, QtGui.QApplication.UnicodeUTF8))
         self.grp_box_preview.setObjectName(_fromUtf8("grp_box_preview"))
         self.verticalLayout = QtGui.QVBoxLayout(self.grp_box_preview)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
@@ -51,6 +58,7 @@ class Ui_ChangeCovTypeForm(object):
         QtCore.QMetaObject.connectSlotsByName(ChangeCovTypeForm)
 
     def retranslateUi(self, ChangeCovTypeForm):
-        pass
+        ChangeCovTypeForm.setWindowTitle(_translate("ChangeCovTypeForm", "Change Covariate Type", None))
+        self.grp_box_preview.setTitle(_translate("ChangeCovTypeForm", "values for new covariate", None))
 
 import icons_rc

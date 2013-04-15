@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'meta.ui'
 #
-# Created: Tue Apr  9 13:38:30 2013
+# Created: Fri Apr 12 14:25:48 2013
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -32,7 +32,7 @@ class Ui_MainWindow(object):
         font.setFamily(_fromUtf8("Verdana"))
         MainWindow.setFont(font)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/images/meta.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/misc/meta.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
         self.centralwidget = QtGui.QWidget(MainWindow)
         font = QtGui.QFont()
@@ -56,8 +56,9 @@ class Ui_MainWindow(object):
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setContentsMargins(-1, -1, -1, 0)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
+        #self.tableView = QtGui.QTableView(self.nav_frame)
         self.tableView = ma_data_table_view.MADataTable(self.nav_frame)
-	sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.tableView.sizePolicy().hasHeightForWidth())
@@ -92,7 +93,7 @@ class Ui_MainWindow(object):
         self.nav_left_btn.setGeometry(QtCore.QRect(0, 10, 20, 41))
         self.nav_left_btn.setText(_fromUtf8(""))
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(_fromUtf8(":/images/left_arrow.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(_fromUtf8(":/misc/left_arrow.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.nav_left_btn.setIcon(icon1)
         self.nav_left_btn.setIconSize(QtCore.QSize(64, 64))
         self.nav_left_btn.setAutoRaise(True)
@@ -101,7 +102,7 @@ class Ui_MainWindow(object):
         self.nav_up_btn.setGeometry(QtCore.QRect(40, 0, 51, 20))
         self.nav_up_btn.setText(_fromUtf8(""))
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(_fromUtf8(":/images/up_arrow.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap(_fromUtf8(":/misc/up_arrow.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.nav_up_btn.setIcon(icon2)
         self.nav_up_btn.setIconSize(QtCore.QSize(64, 64))
         self.nav_up_btn.setAutoRaise(True)
@@ -110,7 +111,7 @@ class Ui_MainWindow(object):
         self.nav_down_btn.setGeometry(QtCore.QRect(40, 40, 51, 20))
         self.nav_down_btn.setText(_fromUtf8(""))
         icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap(_fromUtf8(":/images/down_arrow.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon3.addPixmap(QtGui.QPixmap(_fromUtf8(":/misc/down_arrow.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.nav_down_btn.setIcon(icon3)
         self.nav_down_btn.setIconSize(QtCore.QSize(64, 64))
         self.nav_down_btn.setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
@@ -131,7 +132,7 @@ class Ui_MainWindow(object):
         self.nav_right_btn.setGeometry(QtCore.QRect(110, 10, 20, 41))
         self.nav_right_btn.setText(_fromUtf8(""))
         icon4 = QtGui.QIcon()
-        icon4.addPixmap(QtGui.QPixmap(_fromUtf8(":/images/right_arrow.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon4.addPixmap(QtGui.QPixmap(_fromUtf8(":/misc/right_arrow.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.nav_right_btn.setIcon(icon4)
         self.nav_right_btn.setIconSize(QtCore.QSize(64, 64))
         self.nav_right_btn.setAutoRaise(True)
@@ -140,7 +141,7 @@ class Ui_MainWindow(object):
         self.nav_add_btn.setGeometry(QtCore.QRect(130, 10, 51, 41))
         self.nav_add_btn.setText(_fromUtf8(""))
         icon5 = QtGui.QIcon()
-        icon5.addPixmap(QtGui.QPixmap(_fromUtf8(":/images/function_icon_set/add_48.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon5.addPixmap(QtGui.QPixmap(_fromUtf8(":/function_icon_set/function_icon_set/add_48.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.nav_add_btn.setIcon(icon5)
         self.nav_add_btn.setIconSize(QtCore.QSize(64, 64))
         self.nav_add_btn.setAutoRaise(True)

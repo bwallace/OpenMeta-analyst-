@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'change_group_name_dlg.ui'
 #
-# Created: Tue Dec 27 17:03:06 2011
-#      by: PyQt4 UI code generator 4.8.5
+# Created: Fri Apr 12 15:38:24 2013
+#      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,7 +12,16 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_group_name_dialog(object):
     def setupUi(self, group_name_dialog):
@@ -24,7 +33,6 @@ class Ui_group_name_dialog(object):
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Verdana"))
         group_name_dialog.setFont(font)
-        group_name_dialog.setWindowTitle(QtGui.QApplication.translate("group_name_dialog", "edit group name", None, QtGui.QApplication.UnicodeUTF8))
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/images/meta.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         group_name_dialog.setWindowIcon(icon)
@@ -37,7 +45,6 @@ class Ui_group_name_dialog(object):
         font.setFamily(_fromUtf8("Verdana"))
         font.setPointSize(10)
         self.field_lbl.setFont(font)
-        self.field_lbl.setText(QtGui.QApplication.translate("group_name_dialog", "group name:", None, QtGui.QApplication.UnicodeUTF8))
         self.field_lbl.setObjectName(_fromUtf8("field_lbl"))
         self.gridLayout.addWidget(self.field_lbl, 0, 0, 1, 1)
         self.group_name_le = QtGui.QLineEdit(group_name_dialog)
@@ -63,6 +70,7 @@ class Ui_group_name_dialog(object):
         QtCore.QMetaObject.connectSlotsByName(group_name_dialog)
 
     def retranslateUi(self, group_name_dialog):
-        pass
+        group_name_dialog.setWindowTitle(_translate("group_name_dialog", "edit group name", None))
+        self.field_lbl.setText(_translate("group_name_dialog", "group name:", None))
 
 import icons_rc

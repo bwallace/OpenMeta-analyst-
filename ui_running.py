@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'running.ui'
 #
-# Created: Wed Apr 11 15:12:46 2012
-#      by: PyQt4 UI code generator 4.8.5
+# Created: Fri Apr 12 15:38:26 2013
+#      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,17 +12,25 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_running(object):
     def setupUi(self, running):
         running.setObjectName(_fromUtf8("running"))
         running.setWindowModality(QtCore.Qt.ApplicationModal)
-        running.resize(468, 70)
+        running.resize(373, 70)
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Verdana"))
         running.setFont(font)
-        running.setWindowTitle(QtGui.QApplication.translate("running", "running analysis...", None, QtGui.QApplication.UnicodeUTF8))
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/images/meta.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         running.setWindowIcon(icon)
@@ -41,6 +49,6 @@ class Ui_running(object):
         QtCore.QMetaObject.connectSlotsByName(running)
 
     def retranslateUi(self, running):
-        pass
+        running.setWindowTitle(_translate("running", "running analysis...", None))
 
 import icons_rc

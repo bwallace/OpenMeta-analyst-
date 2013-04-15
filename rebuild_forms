@@ -1,0 +1,44 @@
+# Rebuild all the forms that don't require manual finagaling afterwards
+# ie. have to rebuild meta.ui and results_window.ui yourself
+
+
+
+
+
+
+pyuic4-2.7 binary_data_form2.ui            -o  ui_binary_data_form.py
+pyuic4-2.7 change_cov_type_form.ui         -o  ui_change_cov_type.py
+pyuic4-2.7 change_group_name_dlg.ui        -o  ui_edit_group_name.py
+pyuic4-2.7 choose_back_calc_result_form.ui -o  ui_choose_back_calc_result_form.py
+pyuic4-2.7 continuous_data_form.ui         -o  ui_continuous_data_form.py
+pyuic4-2.7 cov_reg_dlg2.ui                 -o  ui_meta_reg.py
+pyuic4-2.7 create_new_projectdlg.ui        -o  ui_create_new_projectdlg.py
+pyuic4-2.7 diag_explain_form.ui            -o  ui_diagnostic_explain_dlg.py
+pyuic4-2.7 diagnostic_data_form.ui         -o  ui_diagnostic_data_form.py
+pyuic4-2.7 diagnostic_metrics.ui           -o  ui_diagnostic_metrics.py
+pyuic4-2.7 edit_dialog2.ui                 -o  ui_edit_dialog.py
+pyuic4-2.7 edit_forest_plot.ui             -o  ui_edit_forest_plot.py
+pyuic4-2.7 ma_specs2.ui                    -o  ui_ma_specs.py
+pyuic4-2.7 network_view_window.ui          -o  ui_network_view.py
+pyuic4-2.7 new_covariate_dlg.ui            -o  ui_new_covariate.py
+pyuic4-2.7 new_follow_up_dlg.ui            -o  ui_new_follow_up.py
+pyuic4-2.7 new_group_dlg.ui                -o  ui_new_group.py
+pyuic4-2.7 new_outcome_dlg.ui              -o  ui_new_outcome.py
+pyuic4-2.7 new_study_dlg.ui                -o  ui_new_study.py
+pyuic4-2.7 running.ui                      -o  ui_running.py
+pyuic4-2.7 start_upV2.ui                   -o  ui_start_upV2.py
+
+#pyuic4-2.7 meta.ui                         -o  ui_meta.py
+#pyuic4-2.7 results_window.ui               -o  ui_results_window.py
+# MISSING cov_subgroup_dlg.ui  ###ui_cov_subgroup_dlg.py
+
+
+
+
+
+
+
+
+
+
+

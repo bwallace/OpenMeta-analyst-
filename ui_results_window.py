@@ -2,12 +2,13 @@
 
 # Form implementation generated from reading ui file 'results_window.ui'
 #
-# Created: Tue Mar 19 15:55:48 2013
+# Created: Fri Apr 12 14:25:48 2013
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
+import qconsole
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -61,7 +62,8 @@ class Ui_ResultsWindow(object):
         self.graphics_view.setToolTip(_fromUtf8(""))
         self.graphics_view.setObjectName(_fromUtf8("graphics_view"))
         self.horizontalLayout.addWidget(self.results_nav_splitter)
-        self.psuedo_console = QtGui.QTextEdit(self.splitter)
+        #self.psuedo_console = QtGui.QTextEdit(self.splitter)
+        self.psuedo_console = qconsole.QConsole(self.splitter)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)

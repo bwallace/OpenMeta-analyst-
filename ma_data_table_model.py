@@ -8,7 +8,7 @@
 #  Proxy class, interfaces between the underlying representation (in ma_dataset.py)     #
 #  and the DataTableView UI. Basically deals with keeping track of which outcomes/      #
 #  follow-ups/treatments are being viewed. See Summerfield's chapters on M-V-C          #
-# in "Rapid GUI Programming with Python and QT" for an overview of the architecture.    #
+#  in "Rapid GUI Programming with Python and QT" for an overview of the architecture.   #
 #########################################################################################
 
 # core libraries
@@ -773,7 +773,7 @@ class DatasetModel(QAbstractTableModel):
         # For cool calculator icon
         if role == Qt.DecorationRole:
             if orientation == Qt.Vertical and sectionOK:
-                return QIcon("images/calculator-34.png")
+                return QIcon(":/misc/calculator-34.png")
         
         if role == Qt.TextAlignmentRole:
             return QVariant(int(Qt.AlignLeft|Qt.AlignVCenter))

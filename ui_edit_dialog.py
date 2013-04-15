@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'edit_dialog2.ui'
 #
-# Created: Tue Dec 20 15:58:07 2011
-#      by: PyQt4 UI code generator 4.7.7
+# Created: Fri Apr 12 15:38:25 2013
+#      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,7 +12,16 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_edit_dialog(object):
     def setupUi(self, edit_dialog):
@@ -41,7 +50,7 @@ class Ui_edit_dialog(object):
         self.add_outcome_btn.setMaximumSize(QtCore.QSize(32, 32))
         self.add_outcome_btn.setText(_fromUtf8(""))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/images/function_icon_set/add_48.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/function_icon_set/function_icon_set/add_48.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.add_outcome_btn.setIcon(icon)
         self.add_outcome_btn.setIconSize(QtCore.QSize(32, 32))
         self.add_outcome_btn.setObjectName(_fromUtf8("add_outcome_btn"))
@@ -52,7 +61,7 @@ class Ui_edit_dialog(object):
         self.remove_outcome_btn.setMaximumSize(QtCore.QSize(32, 32))
         self.remove_outcome_btn.setText(_fromUtf8(""))
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(_fromUtf8(":/images/function_icon_set/cancel_48.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(_fromUtf8(":/function_icon_set/function_icon_set/cancel_48.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.remove_outcome_btn.setIcon(icon1)
         self.remove_outcome_btn.setIconSize(QtCore.QSize(32, 32))
         self.remove_outcome_btn.setObjectName(_fromUtf8("remove_outcome_btn"))
@@ -179,12 +188,12 @@ class Ui_edit_dialog(object):
         QtCore.QMetaObject.connectSlotsByName(edit_dialog)
 
     def retranslateUi(self, edit_dialog):
-        edit_dialog.setWindowTitle(QtGui.QApplication.translate("edit_dialog", "edit dataset", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_2.setTitle(QtGui.QApplication.translate("edit_dialog", "outcomes", None, QtGui.QApplication.UnicodeUTF8))
-        self.grpbox_follow_ups.setTitle(QtGui.QApplication.translate("edit_dialog", "follow ups", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox.setTitle(QtGui.QApplication.translate("edit_dialog", "tx groups", None, QtGui.QApplication.UnicodeUTF8))
-        self.edit_tab.setTabText(self.edit_tab.indexOf(self.tab), QtGui.QApplication.translate("edit_dialog", "outcomes/follow-ups/groups", None, QtGui.QApplication.UnicodeUTF8))
-        self.edit_tab.setTabText(self.edit_tab.indexOf(self.tab_2), QtGui.QApplication.translate("edit_dialog", "studies", None, QtGui.QApplication.UnicodeUTF8))
-        self.edit_tab.setTabText(self.edit_tab.indexOf(self.tab_3), QtGui.QApplication.translate("edit_dialog", "covariates", None, QtGui.QApplication.UnicodeUTF8))
+        edit_dialog.setWindowTitle(_translate("edit_dialog", "edit dataset", None))
+        self.groupBox_2.setTitle(_translate("edit_dialog", "outcomes", None))
+        self.grpbox_follow_ups.setTitle(_translate("edit_dialog", "follow ups", None))
+        self.groupBox.setTitle(_translate("edit_dialog", "tx groups", None))
+        self.edit_tab.setTabText(self.edit_tab.indexOf(self.tab), _translate("edit_dialog", "outcomes/follow-ups/groups", None))
+        self.edit_tab.setTabText(self.edit_tab.indexOf(self.tab_2), _translate("edit_dialog", "studies", None))
+        self.edit_tab.setTabText(self.edit_tab.indexOf(self.tab_3), _translate("edit_dialog", "covariates", None))
 
 import icons_rc

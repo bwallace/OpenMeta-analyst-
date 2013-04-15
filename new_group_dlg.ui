@@ -1,10 +1,11 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>new_group_dialog</class>
- <widget class="QDialog" name="new_group_dialog" >
-  <property name="enabled" >
+ <widget class="QDialog" name="new_group_dialog">
+  <property name="enabled">
    <bool>true</bool>
   </property>
-  <property name="geometry" >
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -12,32 +13,32 @@
     <height>132</height>
    </rect>
   </property>
-  <property name="minimumSize" >
+  <property name="minimumSize">
    <size>
     <width>301</width>
     <height>132</height>
    </size>
   </property>
-  <property name="maximumSize" >
+  <property name="maximumSize">
    <size>
     <width>301</width>
     <height>132</height>
    </size>
   </property>
-  <property name="font" >
+  <property name="font">
    <font>
     <family>Verdana</family>
    </font>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>add new tx group (arm)</string>
   </property>
-  <property name="windowIcon" >
-   <iconset resource="images/icons.qrc" >
+  <property name="windowIcon">
+   <iconset>
     <normaloff>:/images/meta.png</normaloff>:/images/meta.png</iconset>
   </property>
-  <widget class="QDialogButtonBox" name="buttonBox" >
-   <property name="geometry" >
+  <widget class="QDialogButtonBox" name="buttonBox">
+   <property name="geometry">
     <rect>
      <x>10</x>
      <y>90</y>
@@ -45,20 +46,20 @@
      <height>32</height>
     </rect>
    </property>
-   <property name="font" >
+   <property name="font">
     <font>
      <family>Verdana</family>
     </font>
    </property>
-   <property name="orientation" >
+   <property name="orientation">
     <enum>Qt::Horizontal</enum>
    </property>
-   <property name="standardButtons" >
+   <property name="standardButtons">
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
    </property>
   </widget>
-  <widget class="QWidget" name="layoutWidget" >
-   <property name="geometry" >
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
     <rect>
      <x>10</x>
      <y>10</y>
@@ -66,28 +67,28 @@
      <height>71</height>
     </rect>
    </property>
-   <layout class="QGridLayout" name="gridLayout" >
-    <item row="0" column="0" >
-     <widget class="QLabel" name="label_2" >
-      <property name="font" >
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_2">
+      <property name="font">
        <font>
         <family>Verdana</family>
         <pointsize>10</pointsize>
        </font>
       </property>
-      <property name="text" >
+      <property name="text">
        <string>tx group name:</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="1" >
-     <widget class="QLineEdit" name="group_name_le" >
-      <property name="font" >
+    <item row="0" column="1">
+     <widget class="QLineEdit" name="group_name_le">
+      <property name="font">
        <font>
         <family>Verdana</family>
        </font>
       </property>
-      <property name="alignment" >
+      <property name="alignment">
        <set>Qt::AlignCenter</set>
       </property>
      </widget>
@@ -96,7 +97,7 @@
   </widget>
  </widget>
  <resources>
-  <include location="images/icons.qrc" />
+  <include location="images/icons.qrc"/>
  </resources>
  <connections>
   <connection>
@@ -105,11 +106,11 @@
    <receiver>new_group_dialog</receiver>
    <slot>accept()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>248</x>
      <y>254</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>157</x>
      <y>274</y>
     </hint>
@@ -121,11 +122,11 @@
    <receiver>new_group_dialog</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>316</x>
      <y>260</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>286</x>
      <y>274</y>
     </hint>

@@ -22,7 +22,7 @@
    <string>running analysis...</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="images/icons.qrc">
+   <iconset>
     <normaloff>:/images/meta.png</normaloff>:/images/meta.png</iconset>
   </property>
   <property name="sizeGripEnabled">

@@ -65,6 +65,9 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.setupUi(self)
         
         meta_py_r.set_global_conf_level(meta_globals.DEFAULT_CONF_LEVEL)
+        # SET TO FALSE UNTIL PROPER BEHAVIOR IS REACHED FOR PRODUCTION PURPOSES
+        self.global_ci_spinbox.setVisible(False)
+        self.global_conf_level_lbl.setVisible(False)
 
         # TODO should also allow a (path to a) dataset
         # to be given on the console.
@@ -222,7 +225,17 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.action_cum_ma.setEnabled(enable)
         self.action_loo_ma.setEnabled(enable)
         self.action_meta_regression.setEnabled(enable)
-        self.action_subgroup_ma.setEnabled(enable)
+        #self.action_subgroup_ma.setEnabled(enable)
+        self._enable_action_subgroup_ma()
+        
+    def _enable_action_subgroup_ma(self):
+        ''' Enables action_subgroup_ma if there are suitable covariate(s)
+        i.e. of type Factor '''
+        
+        if any([cov.get_data_type() == FACTOR for cov in self.model.dataset.covariates]):
+            self.action_subgroup_ma.setEnabled(True)
+        else:
+            self.action_subgroup_ma.setEnabled(False)
         
     def disable_menu_options_that_require_dataset(self):
         self.toggle_menu_options_that_require_dataset(False)

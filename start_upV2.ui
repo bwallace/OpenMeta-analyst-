@@ -56,7 +56,7 @@
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap>images/meta.png</pixmap>
+        <pixmap resource="images/icons.qrc">:/misc/meta.png</pixmap>
        </property>
        <property name="scaledContents">
         <bool>true</bool>
@@ -206,8 +206,8 @@ Contract No. HHSA 290 2007 10055 I; Task Order #2</string>
         <string>Open an existing project</string>
        </property>
        <property name="icon">
-        <iconset>
-         <normaloff>images/function_icon_set/folder_48.png</normaloff>images/function_icon_set/folder_48.png</iconset>
+        <iconset resource="images/icons.qrc">
+         <normaloff>:/function_icon_set/function_icon_set/folder_48.png</normaloff>:/function_icon_set/function_icon_set/folder_48.png</iconset>
        </property>
       </widget>
      </item>
@@ -217,8 +217,8 @@ Contract No. HHSA 290 2007 10055 I; Task Order #2</string>
         <string>open recent ...</string>
        </property>
        <property name="icon">
-        <iconset>
-         <normaloff>images/function_icon_set/folder_48.png</normaloff>images/function_icon_set/folder_48.png</iconset>
+        <iconset resource="images/icons.qrc">
+         <normaloff>:/function_icon_set/function_icon_set/folder_48.png</normaloff>:/function_icon_set/function_icon_set/folder_48.png</iconset>
        </property>
       </widget>
      </item>
@@ -228,8 +228,8 @@ Contract No. HHSA 290 2007 10055 I; Task Order #2</string>
         <string>Create a new Project</string>
        </property>
        <property name="icon">
-        <iconset>
-         <normaloff>images/function_icon_set/add_48.png</normaloff>images/function_icon_set/add_48.png</iconset>
+        <iconset resource="images/icons.qrc">
+         <normaloff>:/function_icon_set/function_icon_set/add_48.png</normaloff>:/function_icon_set/function_icon_set/add_48.png</iconset>
        </property>
       </widget>
      </item>
@@ -243,6 +243,11 @@ Contract No. HHSA 290 2007 10055 I; Task Order #2</string>
   <zorder>verticalSpacer</zorder>
   <zorder></zorder>
  </widget>
- <resources/>
+ <resources>
+  <include location="images/icons.qrc"/>
+  <include location="images/icons.qrc"/>
+  <include location="images/icons.qrc"/>
+  <include location="images/icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

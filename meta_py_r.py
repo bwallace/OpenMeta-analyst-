@@ -91,6 +91,8 @@ def R_fn_with_dataframe_arg(data_dict, R_fn_name):
     dataf = ro.r['data.frame'](**data_dict)
     
     r_string = R_fn_name + "(" + str(dataf.r_repr()) + ")"
+    
+    print("executing (from R_fn_with_dataframe_arg: %s" % r_string)
     R_result = ro.r(r_string)
     
     return _grlist_to_pydict(R_result)
@@ -754,6 +756,9 @@ def run_diagnostic_multi(function_names, list_of_params, res_name="result", diag
     ro.r("f.names <- c(%s)" % ",".join(["'%s'" % f_name for f_name in function_names]))
     result = ro.r("multiple.diagnostic(f.names, list.of.params, %s)" % diag_data_name)
 
+    print("Got here is run diagnostic multi w/o error")
+    #pyqtRemoveInputHook()
+    #pdb.set_trace()
     return parse_out_results(result)
 
 def run_diagnostic_ma(function_name, params, res_name="result", diag_data_name="tmp_obj"):
@@ -848,8 +853,9 @@ def parse_out_results(result):
     text_d = {}
     image_var_name_d, image_params_paths_d, image_path_d  = {}, {}, {}
     image_order = None
-    #pyqtRemoveInputHook()
-    #pdb.set_trace()
+
+    
+    print("ENTERING PARSE OUT RESULTS")
     for text_n, text in zip(list(result.names), list(result)):
         # some special cases, notably the plot names and the path for a forest
         # plot. TODO in the case of diagnostic data, we're probably going to 
@@ -877,11 +883,13 @@ def parse_out_results(result):
             if key is not None:
                 text_d[key] = astring
 
-    return {"images":image_path_d,
-            "image_var_names":image_var_name_d,
-            "texts":text_d,
-            "image_params_paths":image_params_paths_d,
-            "image_order":image_order}
+    to_return = {"images":image_path_d,
+                 "image_var_names":image_var_name_d,
+                 "texts":text_d,
+                 "image_params_paths":image_params_paths_d,
+                 "image_order":image_order}
+    
+    return to_return
     
     
 def make_weights_list(text_n,text):
@@ -889,8 +897,9 @@ def make_weights_list(text_n,text):
     try:
         if text_n.find("Summary") != -1:
             summary_dict = _grlist_to_pydict(text)
-    
+            print("Found summary")
             if "study.names" in summary_dict['MAResults']: # this is a silly thing to look for but its something I explicitly set in the random methods so I know it's there
+                print("study.names found in maresults")
                 text_n_withoutSummary = text_n.replace("Summary","")
                 text_n_withoutSummary.strip()
                 key_name = text_n_withoutSummary + " Weights"
@@ -907,7 +916,7 @@ def make_weights_list(text_n,text):
                 return (key_name, weights_txt)
             else:
                 print("study.names not found")
-                return(None,None)
+        return(None,None)
     except:
         print("Something went wrong from make_weights_list: Are we in bivariate?? :)")
         return (None,None)
@@ -960,13 +969,16 @@ def run_meta_regression(dataset, study_names, cov_list, metric_name,\
     method_str = "FE" if fixed_effects else "DL"    
 
     # @TODO conf.level, digits should be user-specified
-    params = {"conf.level":get_global_conf_level(), "digits":3, "method":method_str, 
-                "rm.method":"ML", "measure":metric_name}
+    params = {"conf.level":get_global_conf_level(),
+              "digits":3,
+              "method":method_str,
+              "rm.method":"ML",
+              "measure":metric_name}
     params_df = ro.r['data.frame'](**params)
 
     # create a lit of covariate objects on the R side
     r_str = "%s<- meta.regression(%s, %s)" % \
-                            (results_name, data_name, params_df.r_repr())
+                            (results_name, data_name, str(params_df.r_repr()))
 
 
     print "\n\n(run_meta_regression): executing:\n %s\n" % r_str
