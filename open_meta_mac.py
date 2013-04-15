@@ -18,29 +18,49 @@ from ConsoleSetLibPath
 
 paths = os.environ.get("LD_LIBRARY_PATH", "").split(os.pathsep)
 if DIR_NAME not in paths:
+    print "setting ld path..."
     paths.insert(0, DIR_NAME)
     os.environ["LD_LIBRARY_PATH"] = os.pathsep.join(paths)
     # 8/21/12
+    print "setting (fallback) dyld path"
+    #print "*not* setting dydlib"
+    print "setting dydlib!!!"
     #os.environ["DYLD_LIBRARY_PATH"] = os.pathsep.join(paths)
+
+    os.environ["DYLD_FALLBACK_LIBRARY_PATH"] = os.pathsep.join(paths)
     os.execv(sys.executable, sys.argv)
 
-print "*not* setting dydlib"
 
 sys.frozen = True
 sys.path = sys.path[:4]
 ####
 # 8/21/12 -- TEMPORARY -- need to add this back!
 #print "\n\nok, mac user -- I'm setting your R path temporarily (this console only).\n\ns"
-#os.environ["R"] = os.path.join(DIR_NAME, "R_dist", "2.10", "Resources", "bin")
+os.environ["R"] = \
+    os.path.join(DIR_NAME, "R_dist", "2.13", "bin")
 
+os.environ["R_HOME"] = \
+    os.path.join(DIR_NAME, "R_dist", "2.13")
 
 os.environ["TCL_LIBRARY"] = os.path.join(DIR_NAME, "tcl")
 os.environ["TK_LIBRARY"] = os.path.join(DIR_NAME, "tk")
 
-m = __import__("__main__")
+#print "INITSCRIPT_ZIP_FILE_NAME:"
+#print INITSCRIPT_ZIP_FILE_NAME
+
+#print "DYLD_LIB... {0}".format(os.environ["DYLD_LIBRARY_PATH"])
+
+# commenting this block out on 9/13/12
+#m = __import__("__main__")
+print "importing??"
 importer = zipimport.zipimporter(INITSCRIPT_ZIP_FILE_NAME)
-code = importer.get_code(m.__name__)
-exec code in m.__dict__
+import meta_form
+
+#print "1"
+#importer = zipimport.zipimporter(INITSCRIPT_ZIP_FILE_NAME)
+#code = importer.get_code("meta_form")#m.__name__)
+#code = importer.get_code(m.__name__)
+#exec code in m.__dict__
 
 versionInfo = sys.version_info[:3]
 if versionInfo >= (2, 5, 0) and versionInfo <= (2, 6, 4):
@@ -50,8 +70,8 @@ if versionInfo >= (2, 5, 0) and versionInfo <= (2, 6, 4):
 
 
 '''
-OK
+OK???
 '''
-print "\n\nYEAH"
-import meta_form
+print "starting up..."
+
 meta_form.start()
