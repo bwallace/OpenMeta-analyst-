@@ -89,7 +89,7 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         self.y_coord += ROW_HEIGHT/2.0
 
         # additional padding for Windows..
-        # again, hueristic. I don't know
+        # again, heuristic. I don't know
         # why windows requires so much padding.
         if sys.platform.startswith('win'):
             self.y_coord += 2*ROW_HEIGHT
@@ -215,8 +215,8 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         # fix for issue #149; was formerly txt_item.boundingRect().size().height()
         
         self.y_coord += ROW_HEIGHT*text.count("\n")
-        self.scene.setSceneRect(0, 0, max(self.scene.width(), \
-                                          txt_item.boundingRect().size().width()),\
+        self.scene.setSceneRect(0, 0, max(self.scene.width(),
+                                          txt_item.boundingRect().size().width()),
                                           self.y_coord+padding)
         
 
