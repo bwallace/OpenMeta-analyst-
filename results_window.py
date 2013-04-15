@@ -188,18 +188,21 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
                 pass
 
     def add_title(self, title):
+        print("Adding title")
         text = QGraphicsTextItem()
         # I guess we should use a style sheet here,
         # but it seems like it'd be overkill.
-        html_str = \
-           '<p style="font-size: 14pt; color: black; face:verdana">%s</p>' % title
+        html_str = '<p style="font-size: 14pt; color: black; face:verdana">%s</p>' % title
         text.setHtml(html_str)
-        text.setPos(self.position())
-        print "title at: %s" % self.y_coord
-        self.y_coord += padding
+        #text.setPos(self.position())
+        print "  title at: %s" % self.y_coord
         self.scene.addItem(text)
         qt_item = QTreeWidgetItem(self.nav_tree, [title])
         self.scene.setSceneRect(0, 0, self.scene.width(), self.y_coord + padding)
+        print("  Setting position at (%d,%d)" % (self.x_coord, self.y_coord))                        
+        text.setPos(self.position()) #####
+        #self.y_coord += padding
+        self.y_coord += text.boundingRect().height()
         return qt_item
 
     def item_clicked(self, item, column):
@@ -214,13 +217,16 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         self.scene.addItem(txt_item)
         # fix for issue #149; was formerly txt_item.boundingRect().size().height()
         
-        self.y_coord += ROW_HEIGHT*text.count("\n")
+        #self.y_coord += txt_item.boundingRect.height()  #ROW_HEIGHT*text.count("\n")
         self.scene.setSceneRect(0, 0, max(self.scene.width(),
                                           txt_item.boundingRect().size().width()),
                                           self.y_coord+padding)
         
-
+        self.y_coord += txt_item.boundingRect().height() ###
         txt_item.setPos(position)
+
+
+
         return (txt_item.boundingRect(), position)
 
 
