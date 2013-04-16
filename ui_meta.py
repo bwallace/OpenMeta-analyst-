@@ -7,8 +7,11 @@
 #
 # WARNING! All changes made in this file will be lost!
 
+print("importing pyqt4 stuff from within ui_meta.py")
 from PyQt4 import QtCore, QtGui
+print("Importing ma datatable view from with ui_meta.py")
 import ma_data_table_view
+print("success imported ma_data_table_view from within ui_meta.py")
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8

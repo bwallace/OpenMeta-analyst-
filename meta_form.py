@@ -24,14 +24,19 @@ import copy
 #
 # hand-rolled modules
 #
+print("Importing ui_meta")
 import ui_meta
+print("yay, imported ui_meta")
 from ma_data_table_view import StudyDelegate
+print("importing ma_data_table_view")
 import ma_data_table_view
 from ma_data_table_model import *
 #import meta_globals
 from meta_globals import *
+print("Importing ma_dataset")
 import ma_dataset
 from ma_dataset import *
+print("Importing meta_py_r")
 import meta_py_r
 
 #

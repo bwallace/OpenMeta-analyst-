@@ -10,9 +10,11 @@
 
 import pdb
 
+print("In ma_data_table_view: Importing pyqt4 stuff"
 from PyQt4 import QtCore, QtGui
 from PyQt4.Qt import *
 
+print("In ma_data_table_view: importing forms")
 import binary_data_form
 import continuous_data_form
 import diagnostic_data_form
