@@ -918,7 +918,7 @@ def make_weights_list(text_n,text):
                 text_n_withoutSummary = text_n.replace("Summary","")
                 text_n_withoutSummary.strip()
                 key_name = text_n_withoutSummary + " Weights"
-                key_name.strip()
+                key_name = key_name.strip()
                 
                 study_names = summary_dict['MAResults']['study.names']
                 study_years = summary_dict['MAResults']['study.years']
