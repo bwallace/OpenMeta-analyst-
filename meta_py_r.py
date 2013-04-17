@@ -12,9 +12,14 @@
 #                                                                           #
 #############################################################################
 
+print("Entering meta_py_r for import probabaly")
+print("importing math")
 import math
+print("importing os")
 import os
+print("importing pdb")
 import pdb
+print("importing meta_globals")
 import meta_globals
 
 from PyQt4.QtCore import pyqtRemoveInputHook
@@ -22,13 +27,23 @@ from meta_globals import (BASE_PATH,CONTINUOUS,ONE_ARM_METRICS,TWO_ARM_METRICS,
                           TYPE_TO_STR_DICT)
 
 try:
+    print("importing from rpy2")
     # will fail if not properly configured
+    #pyqtRemoveInputHook()
+    #pdb.set_trace()
     from rpy2 import robjects as ro
+    print("succesfully imported from rpy2")
+
 except Exception, e:
+    print("rpy2 import problem")
+    pyqtRemoveInputHook()
+    pdb.set_trace()
     raise Exception, "rpy2 not properly installed!"
     print e
-    
+
+print("importing rpy2.robjects")
 import rpy2.robjects
+print("succesfully imported rpy2.robjects")
 
 try:
     # ascertain that R has write privledges
