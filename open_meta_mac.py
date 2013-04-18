@@ -5,6 +5,8 @@
 # no other directory is searched. It also sets the attribute sys.frozen so that
 # the Win32 extensions behave as expected.
 #------------------------------------------------------------------------------
+print("Entering open_meta_mac.py")
+
 import encodings
 import os
 import sys
@@ -21,6 +23,7 @@ if DIR_NAME not in paths:
     print "setting ld path..."
     paths.insert(0, DIR_NAME)
     os.environ["LD_LIBRARY_PATH"] = os.pathsep.join(paths)
+    print("Set LD_LIBRARY_PATH to %s" % os.pathsep.join(paths))
     # 8/21/12
     print "setting (fallback) dyld path"
     #print "*not* setting dydlib"
@@ -73,5 +76,5 @@ if versionInfo >= (2, 5, 0) and versionInfo <= (2, 6, 4):
 OK???
 '''
 print "starting up..."
-
 meta_form.start()
+
