@@ -356,14 +356,15 @@ class Dataset:
         # first check the effects. if *any* effect contains data
         # comparing these two groups, we return true.
         comp_str = "-".join(groups)
-        for effect in ma_unit.effects_dict.keys():
-            if comp_str in ma_unit.effects_dict[effect] and \
-                 ma_unit.effects_dict[effect][comp_str]['est'] is not None:
+        for effect in ma_unit.get_effect_names():
+            comp_str_present = comp_str in ma_unit.get_group_strings(effect)
+            est_not_None = ma_unit.get_estimate(effect, comp_str) is not None
+            if comp_str_present and est_not_None:
                 return True
 
         # now check if they all have raw data
         for group in groups:
-            if "" in ma_unit.tx_groups[group].raw_data:
+            if "" in ma_unit.get_raw_data_for_group(group):
                 return False
         return True
         
@@ -594,12 +595,12 @@ class MetaAnalyticUnit:
         else:
             raise Exception, "Unrecognized outcome data type, '%s' was given" % outcome.data_type
         
-        raw_data = raw_data or \
-                    [["" for n in range(self.raw_data_length)] for group in group_names]
+        # Makes list of (empty lists of length of raw_data): 
+        raw_data = raw_data or [["",]*self.raw_data_length]*len(group_names)
 
         self.effects_dict = {}
         
-        # now we intitialize the outcome dictionaries.
+        # now we initialize the outcome dictionaries.
         if self.outcome.data_type == BINARY:
             for effect in meta_globals.BINARY_TWO_ARM_METRICS + meta_globals.BINARY_ONE_ARM_METRICS:
                 self.effects_dict[effect]={}
@@ -618,11 +619,17 @@ class MetaAnalyticUnit:
             self.add_group(group)
             self.tx_groups[group].raw_data = raw_data[i]
  
-    def get_effect_d(self):
+    def get_init_effect_d(self):
         # these are the dictionaries that actually hold the effects (estimate, 
         # CI, etc.). note: *always* copy this dictionary, never use it directly.
-        return {"est":None, "lower":None, "upper":None, "SE":None,
-                "display_est":None, "display_lower":None, "display_upper":None}    
+        return {"est":None,
+                "lower":None,
+                "upper":None,
+                "SE":None,
+                "display_est":None,
+                "display_lower":None,
+                "display_upper":None,
+                }    
                 
     def update_effects_dict_with_group(self, new_group):
         '''
@@ -642,26 +649,26 @@ class MetaAnalyticUnit:
                     # order matters i.e., the effect for tx a v. tx b is different than the reverse.
                     # We take care of this by mapping strings `txA-txB` to effect dictionaries
                     groups_str = "-".join((new_group, group))
-                    self.effects_dict[effect][groups_str] = self.get_effect_d()
+                    self.effects_dict[effect][groups_str] = self.get_init_effect_d()
                     # ... and the reverse (see above comment)
                     groups_str = "-".join((group, new_group))
-                    self.effects_dict[effect][groups_str] = self.get_effect_d()
+                    self.effects_dict[effect][groups_str] = self.get_init_effect_d()
             for effect in meta_globals.BINARY_ONE_ARM_METRICS:
-                self.effects_dict[effect][new_group] = self.get_effect_d()
+                self.effects_dict[effect][new_group] = self.get_init_effect_d()
         elif self.outcome.data_type == CONTINUOUS:
             for effect in meta_globals.CONTINUOUS_TWO_ARM_METRICS:
                 for group in group_names:
                     groups_str = "-".join((new_group, group))
-                    self.effects_dict[effect][groups_str] = self.get_effect_d()
+                    self.effects_dict[effect][groups_str] = self.get_init_effect_d()
                     # and the reverse
                     groups_str = "-".join((group, new_group))
-                    self.effects_dict[effect][groups_str] = self.get_effect_d()                                           
+                    self.effects_dict[effect][groups_str] = self.get_init_effect_d()                                           
             for effect in meta_globals.CONTINUOUS_ONE_ARM_METRICS:
-                self.effects_dict[effect][new_group] = self.get_effect_d()
+                self.effects_dict[effect][new_group] = self.get_init_effect_d()
         elif self.outcome.data_type == DIAGNOSTIC:
             # diagnostic data
             for effect in meta_globals.DIAGNOSTIC_METRICS:
-                self.effects_dict[effect][new_group] = self.get_effect_d()
+                self.effects_dict[effect][new_group] = self.get_init_effect_d()
                     
     def set_effect(self, effect, group_str, value):
         self.effects_dict[effect][group_str]["est"] = value
@@ -702,8 +709,28 @@ class MetaAnalyticUnit:
     def set_display_upper(self, effect, group_str, upper):
         self.effects_dict[effect][group_str]["display_upper"] = upper
          
-    def get_effect(self, effect, group_str):
+    def get_estimate(self, effect, group_str):
         return self.effects_dict[effect][group_str]["est"]
+    def get_lower(self, effect, group_str):
+        return self.effects_dict[effect][group_str]["lower"]
+    def get_upper(self, effect, group_str):
+        return self.effects_dict[effect][group_str]["upper"]
+    def get_se(self, effect, group_str):
+        return self.effects_dict[effect][group_str]["SE"]
+    
+    def get_effect_dict(self, effect, group_str):
+        return self.effects_dict[effect][group_str]
+    
+    def get_group_strings(self, effect):
+        return self.effects_dict[effect].keys()
+    
+    def get_effects_dict(self):
+        ''' Be careful with using this because this returns the actual effects
+            dict, not a copy '''
+        return self.effects_dict
+    
+    def get_effect_names(self):
+        return self.effects_dict.keys()
     
     def type(self):
         return self.outcome.data_type

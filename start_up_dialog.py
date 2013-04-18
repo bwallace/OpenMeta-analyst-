@@ -1,5 +1,5 @@
 from PyQt4.Qt import *
-import pdb
+#import pdb
 import ui_start_upV2
 
 import create_new_project_dialog

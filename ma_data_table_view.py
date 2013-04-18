@@ -310,9 +310,9 @@ class MADataTable(QtGui.QTableView):
         elif data_type == "continuous":
             cur_raw_data_dict = {}
             for group_name in cur_txs:
-                cur_raw_data_dict[group_name] = list(ma_unit.tx_groups[group_name].raw_data)
+                cur_raw_data_dict[group_name] = list(ma_unit.get_raw_data_for_group(group_name))
                 
-            old_raw_data_dict = copy.deepcopy(cur_raw_data_dict)
+            #old_raw_data_dict = copy.deepcopy(cur_raw_data_dict)
             form = continuous_data_form.ContinuousDataForm(ma_unit, cur_txs, cur_group_str, cur_effect, parent=self)
             if form.exec_():
                 # update the model; push this event onto the stack
@@ -853,13 +853,15 @@ class CommandEditRawData(QUndoCommand):
     
     def undo(self):
         for group_name in self.group_names:
-            self.ma_unit.tx_groups[group_name].raw_data = self.old_raw_data_dict[group_name]
+            raw_data = self.old_raw_data_dict[group_name]
+            self.ma_unit.set_raw_data_for_group(group_name, raw_data)
         self.model.reset()
         self.ma_data_table_view.emit(SIGNAL("dataDirtied()"))
 
     def redo(self):
         for group_name in self.group_names:
-            self.ma_unit.tx_groups[group_name].raw_data = self.new_raw_data_dict[group_name]
+            raw_data = self.new_raw_data_dict[group_name]
+            self.ma_unit.set_raw_data_for_group(group_name, raw_data)
         self.model.reset()
         self.ma_data_table_view.emit(SIGNAL("dataDirtied()"))
 

@@ -543,7 +543,7 @@ class DatasetModel(QAbstractTableModel):
                         
                 adjusted_index = column-adjust_by
                 val = value.toDouble()[0] if value.toDouble()[1] else ""
-                ma_unit.tx_groups[group_name].raw_data[adjusted_index] = val
+                ma_unit.tx_groups[group_name].raw_data[adjusted_index] = val # TODO: ENC
                 # If a raw data column value is being edited, attempt to
                 # update the corresponding outcome (if data permits)
                 self.update_outcome_if_possible(index.row())
@@ -583,7 +583,7 @@ class DatasetModel(QAbstractTableModel):
                         ma_unit = self.get_current_ma_unit_for_study(index.row())
                         
                         # est, lower, upper
-                        cur_est, cur_lower, cur_upper = ma_unit.get_effect_and_ci(self.current_effect, group_str)
+                        #cur_est, cur_lower, cur_upper = ma_unit.get_effect_and_ci(self.current_effect, group_str)
         
                         if column == self.OUTCOMES[0]: # estimate
                             ma_unit.set_effect(self.current_effect, group_str, calc_scale_val)
@@ -1459,7 +1459,7 @@ class DatasetModel(QAbstractTableModel):
         effect = effect or self.current_effect
         cur_ma_unit = self.get_current_ma_unit_for_study(study_index)
         for x in ("est", "lower", "upper"):
-            if cur_ma_unit.effects_dict[effect][group_str][x] is None:
+            if cur_ma_unit.effects_dict[effect][group_str][x] is None: # TODO: ENC
                 print "study %s does not have a point estimate" % study_index
                 return False
         return "ok -- has all point estimates"
@@ -1470,10 +1470,9 @@ class DatasetModel(QAbstractTableModel):
         cur_ma_unit = self.get_current_ma_unit_for_study(study_index)
         effect = effect or self.current_effect
         
-        est = cur_ma_unit.effects_dict[effect][group_str]["est"] 
-
-        lower, upper = cur_ma_unit.effects_dict[effect][group_str]["lower"], \
-                                cur_ma_unit.effects_dict[effect][group_str]["upper"]
+        est = cur_ma_unit.get_estimate(effect, group_str)
+        #lower = cur_ma_unit.get_lower(effect, group_str)
+        upper = cur_ma_unit.get_upper(effect, group_str)
 
         se = (upper-est)/meta_py_r.get_mult(meta_py_r.get_global_conf_level())
         return (est, se)
