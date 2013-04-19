@@ -690,12 +690,17 @@ class MetaAnalyticUnit:
         self.effects_dict[effect][group_str]["display_upper"] = upper
         
     def get_effect_and_ci(self, effect, group_str):
-        return (self.effects_dict[effect][group_str]["est"], self.effects_dict[effect][group_str]["lower"],
-                    self.effects_dict[effect][group_str]["upper"])
-                
+        return (self.get_estimate(effect, group_str),
+                self.get_lower(effect, group_str),
+                self.get_upper(effect, group_str),
+                )
+
     def get_display_effect_and_ci(self, effect, group_str):
-        return (self.effects_dict[effect][group_str]["display_est"], self.effects_dict[effect][group_str]["display_lower"],
-                    self.effects_dict[effect][group_str]["display_upper"])
+        return (self.get_display_estimate(effect, group_str),
+                self.get_display_lower(effect, group_str),
+                self.get_display_upper(effect, group_str),
+                )
+            
         
     def set_lower(self, effect, group_str, lower):
         self.effects_dict[effect][group_str]["lower"] = lower
@@ -717,6 +722,13 @@ class MetaAnalyticUnit:
         return self.effects_dict[effect][group_str]["upper"]
     def get_se(self, effect, group_str):
         return self.effects_dict[effect][group_str]["SE"]
+    
+    def get_display_estimate(self, effect, group_str):
+        return self.effects_dict[effect][group_str]["display_est"]
+    def get_display_lower(self, effect, group_str):
+        return self.effects_dict[effect][group_str]["display_lower"]
+    def get_display_upper(self, effect, group_str):
+        return self.effects_dict[effect][group_str]["display_upper"]
     
     def get_effect_dict(self, effect, group_str):
         return self.effects_dict[effect][group_str]

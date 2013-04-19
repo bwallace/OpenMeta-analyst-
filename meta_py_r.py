@@ -36,8 +36,8 @@ try:
 
 except Exception, e:
     print("rpy2 import problem")
-    pyqtRemoveInputHook()
-    pdb.set_trace()
+    #pyqtRemoveInputHook()
+    #pdb.set_trace()
     raise Exception, "rpy2 not properly installed!"
     print e
 

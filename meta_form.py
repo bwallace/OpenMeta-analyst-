@@ -979,10 +979,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
         prev_dataset = self.model.dataset.copy()
         
-        undo_f = lambda : self.undo_set_model(prev_out_path, prev_state_dict, \
-                                                prev_dataset)
-        redo_f = lambda : self.set_model(data_model, state_dict, \
-                                            check_for_appropriate_metric=True)
+        undo_f = lambda: self.undo_set_model(prev_out_path, prev_state_dict,
+                                             prev_dataset)
+        redo_f = lambda: self.set_model(data_model, state_dict,
+                                        check_for_appropriate_metric=True)
         
         open_command = CommandGenericDo(redo_f, undo_f)
         self.tableView.undoStack.push(open_command)
