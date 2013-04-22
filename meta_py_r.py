@@ -29,6 +29,7 @@ from meta_globals import (BASE_PATH,CONTINUOUS,ONE_ARM_METRICS,TWO_ARM_METRICS,
 try:
     print("importing from rpy2")
     # will fail if not properly configured
+    # good place to debug when trying to get the mac build to work RRRrrrrrrgghhh!!!!
     #pyqtRemoveInputHook()
     #pdb.set_trace()
     from rpy2 import robjects as ro

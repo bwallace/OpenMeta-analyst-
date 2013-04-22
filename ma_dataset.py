@@ -63,7 +63,7 @@ class Dataset:
             
         for study in self.studies:
             if outcome is None and follow_up is None:
-                # if no outcome/follow-up was specified, we change *all* occurences of
+                # if no outcome/follow-up was specified, we change *all* occurrences of
                 # the old_group_name to the new_group_name
                 for outcome_name in study.outcomes_to_follow_ups.keys():
                     cur_outcome = study.outcomes_to_follow_ups[outcome_name]

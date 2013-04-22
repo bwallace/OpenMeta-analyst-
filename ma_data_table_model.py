@@ -166,7 +166,8 @@ class DatasetModel(QAbstractTableModel):
             self.OUTCOMES = [7, 8, 9]
         elif current_data_type == "continuous":
             self.RAW_DATA = [col+offset for col in range(6)]
-            self.OUTCOMES = [9, 10, 11] 
+            #self.OUTCOMES = [9, 10, 11]
+            self.OUTCOMES = [9,10,11,12]
         else:
             # diagnostic
             self.RAW_DATA = [col+offset for col in range(4)]
@@ -258,8 +259,14 @@ class DatasetModel(QAbstractTableModel):
                 outcome_index = column - self.OUTCOMES[0]
                 outcome_val = None
                 if not self.is_diag():
-                    est_and_ci = self.get_current_ma_unit_for_study(index.row()).\
-                                                    get_display_effect_and_ci(self.current_effect, group_str)
+                    ma_unit = self.get_current_ma_unit_for_study(index.row())
+                    est_and_ci = ma_unit.get_display_effect_and_ci(self.current_effect, group_str)
+                    
+                    #EXPERIMENTAL:
+                    est_and_ci = list(est_and_ci)
+                    print("Est and ci: %s" % str(est_and_ci))
+                    est_and_ci.append(666)
+                    ### END EXPERIMENTAL ####
                     
                     try:
                         outcome_val = est_and_ci[outcome_index]
@@ -280,9 +287,9 @@ class DatasetModel(QAbstractTableModel):
                     m_str = "Sens"
                     if column in self.OUTCOMES[3:]:
                         m_str = "Spec"
-                        
-                    est_and_ci = self.get_current_ma_unit_for_study(index.row()).\
-                                                    get_display_effect_and_ci(m_str, group_str)
+                    
+                    ma_unit = self.get_current_ma_unit_for_study(index.row())
+                    est_and_ci = ma_unit.get_display_effect_and_ci(m_str, group_str)
                                                     
                     outcome_val = est_and_ci[outcome_index % 3]
                     if outcome_val is None:
@@ -739,6 +746,7 @@ class DatasetModel(QAbstractTableModel):
                     lower_msg += "\n" + help_msg
                     upper_msg = "Upper bound of {0:.1%} confidence interval\n".format(meta_py_r.get_global_conf_level()/100.0)
                     upper_msg += "\n" + help_msg
+                    se_msg = "Standard Error"
                     
                     if outcome_type == BINARY:
                         # effect size, lower CI, upper CI
@@ -753,8 +761,11 @@ class DatasetModel(QAbstractTableModel):
                             return QString(CONTINUOUS_METRIC_NAMES[self.current_effect])
                         elif section == self.OUTCOMES[1]:
                             return QString(lower_msg)
-                        else:
+                        elif section == self.OUTCOMES[2]:
                             return QString(upper_msg)
+                        elif section == self.OUTCOMES[3]:
+                            return QString(se_msg)
+                        
                     elif outcome_type == DIAGNOSTIC:
                         if section in (self.OUTCOMES[1],self.OUTCOMES[4]):
                             return QString(lower_msg)
@@ -841,8 +852,10 @@ class DatasetModel(QAbstractTableModel):
                             return QVariant(self.current_effect)
                         elif section == self.OUTCOMES[1]:
                             return QVariant("lower")
-                        else:
+                        elif section == self.OUTCOMES[2]:
                             return QVariant("upper")
+                        elif section == self.OUTCOMES[3]:
+                            return QVariant("se")
                     elif outcome_type == DIAGNOSTIC:
                         #### 
                         # we're going to do three columns per outcome

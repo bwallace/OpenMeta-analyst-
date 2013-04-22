@@ -25,11 +25,13 @@ if DIR_NAME not in paths:
     os.environ["LD_LIBRARY_PATH"] = os.pathsep.join(paths)
     print("Set LD_LIBRARY_PATH to %s" % os.pathsep.join(paths))
     # 8/21/12
-    print "setting (fallback) dyld path"
+    
     #print "*not* setting dydlib"
     print "setting dydlib!!!"
-    #os.environ["DYLD_LIBRARY_PATH"] = os.pathsep.join(paths)
+    os.environ["DYLD_LIBRARY_PATH"] = os.pathsep.join(paths)
 
+    # this is probably not necessary now that the above is set but whatever
+    print "setting (fallback) dyld path" 
     os.environ["DYLD_FALLBACK_LIBRARY_PATH"] = os.pathsep.join(paths)
     os.execv(sys.executable, sys.argv)
 
