@@ -28,11 +28,14 @@ if DIR_NAME not in paths:
     
     #print "*not* setting dydlib"
     print "setting dydlib!!!"
+    executable_path = os.pathsep.join(paths)
+    print("Executable path is '%s'"% executable_path)
     os.environ["DYLD_LIBRARY_PATH"] = os.pathsep.join(paths)
 
     # this is probably not necessary now that the above is set but whatever
     print "setting (fallback) dyld path" 
     os.environ["DYLD_FALLBACK_LIBRARY_PATH"] = os.pathsep.join(paths)
+    
     os.execv(sys.executable, sys.argv)
 
 
@@ -46,6 +49,31 @@ os.environ["R"] = \
 
 os.environ["R_HOME"] = \
     os.path.join(DIR_NAME, "R_dist", "2.15")
+    
+print("Setting PANGO_RC file path")
+pangorc_path = os.path.join(DIR_NAME, "pangorc")
+os.environ["PANGO_RC_FILE"] = pangorc_path
+print("pango rc path is now: %s" % str(pangorc_path))    
+
+#print("Setting fontconig file path")
+#fonts_path = os.path.join(DIR_NAME, "fonts.conf")
+#os.environ["FONTCONFIG_FILE"] = fonts_path
+#print("fontconfig file path is now: %s", str(fonts_path))
+
+# Very hacky and bad thing but it makes things work...
+def create_pangorc():
+    '''Creates pangorc file with correct path to pango.modules'''
+    
+    contents = "[Pango]\nModuleFiles = " + os.path.join(DIR_NAME, "pango.modules")
+    f = open(pangorc_path, 'w')
+    f.write(contents)
+    f.close()
+    print("Wrote:\n" + contents + "\n to pangorc")
+
+create_pangorc()
+
+    
+    
 
 os.environ["TCL_LIBRARY"] = os.path.join(DIR_NAME, "tcl")
 os.environ["TK_LIBRARY"] = os.path.join(DIR_NAME, "tk")

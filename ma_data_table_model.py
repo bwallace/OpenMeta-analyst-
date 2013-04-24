@@ -264,7 +264,7 @@ class DatasetModel(QAbstractTableModel):
                     
                     #EXPERIMENTAL:
                     est_and_ci = list(est_and_ci)
-                    print("Est and ci: %s" % str(est_and_ci))
+                    #print("Est and ci: %s" % str(est_and_ci))
                     est_and_ci.append(666)
                     ### END EXPERIMENTAL ####
                     

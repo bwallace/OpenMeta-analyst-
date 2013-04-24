@@ -63,7 +63,7 @@ cp -v /opt/local/lib/libexpat.1.dylib libexpat.1.dylib
 # To solve the text showing up as boxes issue
 cp -v /opt/local/lib/pango/1.8.0/modules/* .
 cp -v /opt/local/etc/pango/* .
-cp -v /opt/local/etc/fonts/fonts.conf fonts.conf
+#cp -v /opt/local/etc/fonts/fonts.conf fonts.conf
 
 ###########################################
 
