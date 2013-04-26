@@ -799,7 +799,7 @@ class CommandPaste(QUndoCommand):
     def undo(self):
         if self.added_study is not None:
             self.ma_data_table_view.model().remove_study(self.added_study)
-        self.ma_data_table_view.main_gui.set_model(self.original_dataset,\
+        self.ma_data_table_view.main_gui.set_model(self.original_dataset,
                                  state_dict=self.original_state_dict)
 
 

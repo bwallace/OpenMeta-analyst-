@@ -103,7 +103,8 @@ STR_TO_TYPE_DICT = {u"binary":BINARY,
 TYPE_TO_STR_DICT = {BINARY:u"binary",
                     CONTINUOUS:u"continuous",
                     DIAGNOSTIC:u"diagnostic",
-					OTHER:u"OTHER", FACTOR:u"factor"
+					OTHER:u"OTHER",
+                    FACTOR:u"factor",
                     }
                                     
 # enumeration of meta-analytic types

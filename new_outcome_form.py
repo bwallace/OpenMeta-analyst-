@@ -10,7 +10,7 @@ class AddNewOutcomeForm(QDialog, ui_new_outcome.Ui_Dialog):
 
         
     def _populate_combo_box(self):
-        for name, id in zip([QString(s) for s in ["Binary", "Continuous", "Diagnostic", "Other"]],
+        for name, item_id in zip([QString(s) for s in ["Binary", "Continuous", "Diagnostic", "Other"]],
                                      [QVariant(i) for i in range(4)]):
-            self.datatype_cbo_box.addItem(name, id)
+            self.datatype_cbo_box.addItem(name, item_id)
         

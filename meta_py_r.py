@@ -283,7 +283,7 @@ def set_global_conf_level(conf_lev):
 def get_global_conf_level():
     r_str = "get.global.conf.level()"
     cl = ro.r(r_str)[0]
-    print("Retrieved the following confidence level from R: " + str(float(cl)))
+    #print("Retrieved the following confidence level from R: " + str(float(cl)))
     return float(cl)
 ################################################################################
     
@@ -314,7 +314,8 @@ def get_params(method_name):
     return (_rlist_to_pydict(param_d['parameters'], recurse=False),
             _rlist_to_pydict(param_d['defaults']),
             order_vars,
-            pretty_names_and_descriptions)
+            pretty_names_and_descriptions,
+            )
             
 
 def get_pretty_names_and_descriptions_for_params(method_name, param_list):
@@ -355,13 +356,12 @@ def get_available_methods(for_data_type=None, data_obj_name=None, metric=None):
     # start with the name of the data type. furthermore, the parameters
     # for those methods are returned by a method with a name
     # ending in ".parameters"
-    special_endings = [".parameters", ".is.feasible", ".overall", \
-                            ".regression", "transform.f", ".pretty.names"]
+    special_endings = [".parameters", ".is.feasible", ".overall",
+                       ".regression", "transform.f", ".pretty.names"]
     is_special = lambda f: any([f.endswith(ending) for ending in special_endings])
     all_methods = [method for method in method_list if not is_special(method)]
     if for_data_type is not None:
         all_methods = [method for method in all_methods if method.startswith(for_data_type)]
-
 
     # now, if a data object handle was provided, check which methods are feasible
     if data_obj_name is not None:
@@ -435,9 +435,8 @@ def draw_network(edge_list, unconnected_vertices, network_path = '"./r_tmp/netwo
     return "r_tmp/network.png"
     
 
-def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj", \
-                                                covs_to_include=None,
-                                                studies=None):
+def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj",
+                                         covs_to_include=None, studies=None):
     r_str = None
     
     if studies is None:
@@ -456,9 +455,9 @@ def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj", \
     ests_str = ", ".join(_to_strs(ests))
     SEs_str = ", ".join(_to_strs(SEs))
     
-    cov_str = list_of_cov_value_objects_str(table_model.dataset,\
-                                                study_ids,\
-                                                cov_list=covs_to_include)
+    cov_str = list_of_cov_value_objects_str(table_model.dataset,
+                                            study_ids,
+                                            cov_list=covs_to_include,)
 
 
     # first try and construct an object with raw data -- note that if
@@ -468,20 +467,20 @@ def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj", \
         print "we have raw data... parsing, parsing, parsing"
             
         raw_data = table_model.get_cur_raw_data(only_these_studies=study_ids)
-        Ns1_str = _get_str(raw_data, 0)
+        Ns1_str    = _get_str(raw_data, 0)
         means1_str = _get_str(raw_data, 1)
-        SDs1_str = _get_str(raw_data, 2)
-        Ns2_str = _get_str(raw_data, 3)
+        SDs1_str   = _get_str(raw_data, 2)
+        Ns2_str    = _get_str(raw_data, 3)
         means2_str = _get_str(raw_data, 4)
-        SDs2_str = _get_str(raw_data, 5)
+        SDs2_str   = _get_str(raw_data, 5)
 
         r_str = "%s <- new('ContinuousData', \
                                      N1=c(%s), mean1=c(%s), sd1=c(%s), \
                                      N2=c(%s), mean2=c(%s), sd2=c(%s), \
                                      y=c(%s), SE=c(%s), study.names=c(%s),\
                                     years=c(%s), covariates=%s)" \
-                        % (var_name, Ns1_str, means1_str, SDs1_str, \
-                            Ns2_str, means2_str, SDs2_str, \
+                        % (var_name, Ns1_str, means1_str, SDs1_str,
+                            Ns2_str, means2_str, SDs2_str,
                             ests_str, SEs_str, study_names, study_years, cov_str)
          
     else:
@@ -508,8 +507,8 @@ def _get_str(M, col_index, reverse=True):
     
     
 def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj", 
-                                        include_raw_data=True, covs_to_include=None,
-                                        studies=None):
+                                     include_raw_data=True, covs_to_include=None,
+                                     studies=None):
     '''
     This converts a DatasetModel to an OpenMetaData (OMData) R object. We use type DatasetModel
     rather than a DataSet model directly to access the current variables. Furthermore, this allows
@@ -542,9 +541,8 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj",
 
             
     # generate the covariate string
-    cov_str = list_of_cov_value_objects_str(table_model.dataset,\
-                                                study_ids,\
-                                                cov_list=covs_to_include)
+    cov_str = list_of_cov_value_objects_str(table_model.dataset, study_ids,
+                                            cov_list=covs_to_include)
     
 
     # first try and construct an object with raw data
@@ -610,10 +608,10 @@ def _sanitize_for_R(a_str):
     # may want to do something fancier in the future...
     return a_str.encode('latin-1', 'ignore')
 
-def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", \
-                                            metric="Sens", covs_to_include=None,
-                                            effects_on_disp_scale=False, 
-                                            studies=None):
+def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj",
+                                         metric="Sens", covs_to_include=None,
+                                         effects_on_disp_scale=False, 
+                                         studies=None):
     '''
     This converts a DatasetModel to an OpenMetaData (OMData) R object. We use type DatasetModel
     rather than a DataSet model directly to access the current variables. Furthermore, this allows
@@ -639,8 +637,8 @@ def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj", \
     y_SEs_str = ", ".join(_to_strs(y_SEs))
 
     # generate the covariate string
-    cov_str = list_of_cov_value_objects_str(table_model.dataset,\
-                                            study_ids, \
+    cov_str = list_of_cov_value_objects_str(table_model.dataset,
+                                            study_ids,
                                             cov_list=covs_to_include)
 
 
@@ -870,7 +868,6 @@ def parse_out_results(result):
     image_var_name_d, image_params_paths_d, image_path_d  = {}, {}, {}
     image_order = None
 
-    
     print("ENTERING PARSE OUT RESULTS")
     for text_n, text in zip(list(result.names), list(result)):
         # some special cases, notably the plot names and the path for a forest
@@ -914,7 +911,9 @@ def make_weights_list(text_n,text):
         if text_n.find("Summary") != -1:
             summary_dict = _grlist_to_pydict(text)
             print("Found summary")
-            if "study.names" in summary_dict['MAResults']: # this is a silly thing to look for but its something I explicitly set in the random methods so I know it's there
+            # this is a silly thing to look for but its something I explicitly
+            # set in the random methods so I know it's there
+            if "study.names" in summary_dict['MAResults']: 
                 print("study.names found in maresults")
                 text_n_withoutSummary = text_n.replace("Summary","")
                 text_n_withoutSummary.strip()
@@ -937,11 +936,8 @@ def make_weights_list(text_n,text):
         print("Something went wrong from make_weights_list: Are we in bivariate?? :)")
         return (None,None)
     
-
-                
-                                       
-def run_binary_fixed_meta_regression(selected_cov, bin_data_name="tmp_obj", \
-                                        res_name="result"):
+def run_binary_fixed_meta_regression(selected_cov, bin_data_name="tmp_obj",
+                                     res_name="result"):
     method_str = "FE"                                        
     # equiavlent to params <- list(conf.level=95, digits=3)
     params = {"conf.level":get_global_conf_level(), "digits":3, "method":method_str}
@@ -954,8 +950,8 @@ def run_binary_fixed_meta_regression(selected_cov, bin_data_name="tmp_obj", \
     return parse_out_results(result)
     
 def _gen_cov_vals_obj_str(cov, study_ids, dataset): 
-    values_str, cov_vals = cov_to_str(cov, study_ids, dataset, \
-                            named_list=False, return_cov_vals=True)
+    values_str, cov_vals = cov_to_str(cov, study_ids, dataset, named_list=False,
+                                      return_cov_vals=True)
     ref_var = cov_vals[0].replace("'", "") # arbitrary
 
     ## setting the reference variable to the first entry
@@ -978,8 +974,8 @@ def list_of_cov_value_objects_str(dataset, study_ids, cov_list=None):
 
     return r_cov_str
 
-def run_meta_regression(dataset, study_names, cov_list, metric_name,\
-                        data_name="tmp_obj", results_name="results_obj",\
+def run_meta_regression(dataset, study_names, cov_list, metric_name,
+                        data_name="tmp_obj", results_name="results_obj",
                         fixed_effects=False): 
                         
     method_str = "FE" if fixed_effects else "DL"    
@@ -1015,8 +1011,8 @@ def run_meta_regression(dataset, study_names, cov_list, metric_name,\
 
     return parsed_results
   
-def run_meta_method_diag(meta_function_name, function_names, list_of_params,\
-                            res_name="result", diag_data_name="tmp_obj"):
+def run_meta_method_diag(meta_function_name, function_names, list_of_params,
+                         res_name="result", diag_data_name="tmp_obj"):
     # list of parameter objects
     r_params_str = "list(%s)" % ",".join([_to_R_params(p) for p in list_of_params])
     ro.r("list.of.params <- %s" % r_params_str)
@@ -1174,7 +1170,7 @@ def diagnostic_effects_for_study(tp, fn, fp, tn, metrics=["Spec", "Sens"],
     
 def continuous_effect_for_study(n1, m1, sd1, se1=None, n2=None, m2=None,
                                 sd2=None, se2=None, metric="MD", two_arm=True,
-                                conf_level=95):
+                                conf_level=95.0):
     
     point_est, se = None, None
     if two_arm:

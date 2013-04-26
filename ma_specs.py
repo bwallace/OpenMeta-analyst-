@@ -238,9 +238,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                         "sorry, something has gone wrong with your analysis. here is a stack trace that probably won't be terribly useful.\n %s"  \
                                             % e
                 
-                    QMessageBox.critical(self,
-                                "analysis failed",
-                                error_message)
+                    QMessageBox.critical(self, "analysis failed", error_message)
                     bar.hide()
                     # reset Rs working directory 
                     meta_py_r.reset_Rs_working_dir()
@@ -251,7 +249,6 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
                 # of param values to the meta_method 
                 result = meta_py_r.run_meta_method_diag(\
                                 self.meta_f_str, method_names, list_of_param_vals)
-
 
         bar.hide()
 
@@ -601,7 +598,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
         
         # we're going to show another analysis details form for the
-        # liklihood ratio and diagnostic odds ratio analyses.
+        # likelihood ratio and diagnostic odds ratio analyses.
         # we pass along the parameters acquired for sens/spec
         # in the diag_metrics* dictionary.
         form =  MA_Specs(self.model, parent=self.parent(),

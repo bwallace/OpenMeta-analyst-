@@ -33,12 +33,10 @@ class StartUp(QDialog, ui_start_upV2.Ui_WelcomeDialog):
             self.adjustSize()
       
     def _setup_connections(self):
-        QObject.connect(self.create_new_btn, SIGNAL("pressed()"),
-                                    self.new_dataset)
-        QObject.connect(self.open_btn, SIGNAL("pressed()"),
-                                    self.open_dataset)
+        QObject.connect(self.create_new_btn, SIGNAL("pressed()"), self.new_dataset)
+        QObject.connect(self.open_btn, SIGNAL("pressed()"), self.open_dataset)
         #QObject.connect(self.chk_show,  SIGNAL("stateChanged(int)"),
-        #                    lambda: self.parent.update_user_prefs("splash", \
+        #                    lambda: self.parent.update_user_prefs("splash",
         #                            self.chk_show.isChecked()))
 
         if self.start_up and len(self.recent_datasets) > 0:
