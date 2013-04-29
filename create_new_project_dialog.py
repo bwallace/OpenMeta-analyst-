@@ -83,7 +83,7 @@ class CreateNewProjectDlg(QDialog, ui_create_new_projectdlg.Ui_newprojectdialog)
         if self.onearm_generic_effect_size_Button.isChecked():
             self.summary['arms'] = 'one'
             self.summary['data_type'] = 'Continuous'
-            self.summary['sub_type'] = 'generic_effect'
+            self.summary['sub_type'] = 'generic_effect' # TODO: Should disable_two-arm metrics for generic effect
     
         if self.twoarm_proportions_Button.isChecked(): 
             self.summary['arms'] = 'two'

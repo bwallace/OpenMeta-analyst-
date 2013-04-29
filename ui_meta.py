@@ -2,16 +2,13 @@
 
 # Form implementation generated from reading ui file 'meta.ui'
 #
-# Created: Fri Apr 12 14:25:48 2013
-#      by: PyQt4 UI code generator 4.9.6
+# Created: Mon Apr 29 14:16:33 2013
+#      by: PyQt4 UI code generator 4.10
 #
 # WARNING! All changes made in this file will be lost!
 
-print("importing pyqt4 stuff from within ui_meta.py")
 from PyQt4 import QtCore, QtGui
-print("Importing ma datatable view from with ui_meta.py")
 import ma_data_table_view
-print("success imported ma_data_table_view from within ui_meta.py")
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -212,17 +209,6 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addItem(spacerItem)
         self.ci_layot = QtGui.QHBoxLayout()
         self.ci_layot.setObjectName(_fromUtf8("ci_layot"))
-        self.global_conf_level_lbl = QtGui.QLabel(self.frame)
-        self.global_conf_level_lbl.setObjectName(_fromUtf8("global_conf_level_lbl"))
-        self.ci_layot.addWidget(self.global_conf_level_lbl)
-        self.global_ci_spinbox = QtGui.QDoubleSpinBox(self.frame)
-        self.global_ci_spinbox.setDecimals(1)
-        self.global_ci_spinbox.setMinimum(50.0)
-        self.global_ci_spinbox.setMaximum(99.9)
-        self.global_ci_spinbox.setSingleStep(0.1)
-        self.global_ci_spinbox.setProperty("value", 95.0)
-        self.global_ci_spinbox.setObjectName(_fromUtf8("global_ci_spinbox"))
-        self.ci_layot.addWidget(self.global_ci_spinbox)
         self.horizontalLayout.addLayout(self.ci_layot)
         self.verticalLayout.addWidget(self.frame)
         self.verticalLayout_2.addLayout(self.verticalLayout)
@@ -304,6 +290,8 @@ class Ui_MainWindow(object):
         self.actionDfsf.setObjectName(_fromUtf8("actionDfsf"))
         self.action_open_help = QtGui.QAction(MainWindow)
         self.action_open_help.setObjectName(_fromUtf8("action_open_help"))
+        self.action_change_conf_level = QtGui.QAction(MainWindow)
+        self.action_change_conf_level.setObjectName(_fromUtf8("action_change_conf_level"))
         self.action_open_recent_2.addAction(self.actionDfsf)
         self.menu_file.addAction(self.action_save)
         self.menu_file.addAction(self.action_save_as)
@@ -319,6 +307,7 @@ class Ui_MainWindow(object):
         self.menuAnalysis.addAction(self.action_subgroup_ma)
         self.menuAnalysis.addSeparator()
         self.menuAnalysis.addAction(self.action_meta_regression)
+        self.menuAnalysis.addAction(self.action_change_conf_level)
         self.menuDataset.addAction(self.action_new_dataset)
         self.menuDataset.addSeparator()
         self.menuDataset.addAction(self.action_edit)
@@ -342,8 +331,6 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "OpenMeta[analyst]", None))
         self.label.setText(_translate("MainWindow", "outcome:", None))
         self.label_3.setText(_translate("MainWindow", "follow-up:", None))
-        self.global_conf_level_lbl.setText(_translate("MainWindow", "Global Confidence Level:", None))
-        self.global_ci_spinbox.setSuffix(_translate("MainWindow", "%", None))
         self.menu_file.setTitle(_translate("MainWindow", "File", None))
         self.action_open_recent_2.setTitle(_translate("MainWindow", "open recent...", None))
         self.menuAnalysis.setTitle(_translate("MainWindow", "Analysis", None))
@@ -375,5 +362,6 @@ class Ui_MainWindow(object):
         self.action_save_as.setText(_translate("MainWindow", "save as...", None))
         self.actionDfsf.setText(_translate("MainWindow", "(none)", None))
         self.action_open_help.setText(_translate("MainWindow", "open help", None))
+        self.action_change_conf_level.setText(_translate("MainWindow", "change confidence level", None))
 
 import icons_rc

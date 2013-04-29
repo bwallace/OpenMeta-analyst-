@@ -42,9 +42,9 @@ except AttributeError:
 class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
 
     def __init__(self, model, parent=None, meta_f_str=None,
-                    external_params=None, diag_metrics=None,
-                    diag_metrics_to_analysis_details_d=None,
-                    fp_specs_only=False):
+                 external_params=None, diag_metrics=None,
+                 diag_metrics_to_analysis_details_d=None,
+                 fp_specs_only=False):
 
         super(MA_Specs, self).__init__(parent)
         self.setupUi(self)
@@ -506,6 +506,7 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
             finput.setText(str(self.current_defaults[name]))
             self.current_param_vals[name] = self.current_defaults[name]
 
+
         finput.setMaximumWidth(50)
         QObject.connect(finput, QtCore.SIGNAL("textChanged(QString)"),
                                  self.set_param_f(name, to_type=float))
@@ -583,6 +584,9 @@ class MA_Specs(QDialog, ui_ma_specs.Ui_Dialog):
         if self.current_method in method_params:
             print "loading default from user preferences!"
             self.current_defaults = method_params[self.current_method]
+            
+        # override conf.level with global conf.level
+        self.current_defaults['conf.level'] = meta_py_r.get_global_conf_level()
 
         print self.current_defaults
 

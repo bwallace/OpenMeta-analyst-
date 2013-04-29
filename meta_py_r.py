@@ -1267,7 +1267,6 @@ def continuous_convert_scale(x, metric_name, convert_to="display.scale"):
     
 def diagnostic_convert_scale(x, metric_name, convert_to="display.scale"):
     return generic_convert_scale(x, metric_name, "diagnostic", convert_to)
-
     
 def generic_convert_scale(x, metric_name, data_type, convert_to="display.scale"):
     ro.r("trans.f <- %s.transform.f('%s')" % (data_type, metric_name))

@@ -369,7 +369,6 @@ class DatasetModel(QAbstractTableModel):
         
 
     def _verify_raw_data(self, s, col, data_type, index_of_s=None):
-        
         # ignore blank entries
         if s.trimmed() == "" or s is None:
             return True, None
@@ -411,21 +410,34 @@ class DatasetModel(QAbstractTableModel):
 
 
     def _verify_outcome_data(self, s, col, row, data_type):
+        outcome_subtype = self.dataset.get_outcome_subtype(self.current_outcome)
+        
         if not meta_globals._is_a_float(s):
             return False, "Outcomes need to be numeric, you crazy person"
 
         ma_unit = self.get_current_ma_unit_for_study(row)
         group_str = self.get_cur_group_str()
         
+        ###binary_display_scale = meta_py_r.binary_convert_scale(x, metric_name, convert_to)
+        binary_display_scale = lambda x: meta_py_r.binary_convert_scale(x, self.current_effect, convert_to="display.scale")
+        continuous_display_scale = lambda x: meta_py_r.continuous_convert_scale(x, self.current_effect, convert_to="display.scale")
         
-        if data_type == BINARY or data_type == CONTINUOUS:
-            prev_est, prev_lower, prev_upper = ma_unit.get_display_effect_and_ci(self.current_effect, group_str)
-            #prev_est, prev_lower, prev_upper = ma_unit.get_effect_and_ci(self.current_effect, group_str)
-            
-            #meta_py_r.continuous_convert_scale(c_val, eff, convert_to="display.scale")
+        
+        if data_type in [BINARY, CONTINUOUS]: 
+            prev_est, prev_lower, prev_upper = ma_unit.get_effect_and_ci(self.current_effect, group_str)
+        if data_type == BINARY:
+            prev_est, prev_lower, prev_upper = [binary_display_scale(x) for x in [prev_est, prev_lower, prev_upper]]
+            print("Previous binary: %s" % str([prev_est, prev_lower, prev_upper]))
+        elif data_type == CONTINUOUS:
+            #prev_est, prev_lower, prev_upper = ma_unit.get_display_effect_and_ci(self.current_effect, group_str)
+            prev_est, prev_lower, prev_upper = [continuous_display_scale(x) for x in [prev_est, prev_lower, prev_upper]]
+            print("Previous continuous: %s" % str([prev_est, prev_lower, prev_upper]))
         elif data_type == DIAGNOSTIC:
             m_str = "Sens" if col in self.OUTCOMES[:3] else "Spec"
-            prev_est, prev_lower, prev_upper = ma_unit.get_display_effect_and_ci(m_str, group_str)
+            #prev_est, prev_lower, prev_upper = ma_unit.get_display_effect_and_ci(m_str, group_str)
+            prev_est, prev_lower, prev_upper = ma_unit.get_effect_and_ci(m_str, group_str)
+            prev_est, prev_lower, prev_upper = [meta_py_r.diagnostic_convert_scale(x, m_str, convert_to="display.scale") for x in [prev_est, prev_lower, prev_upper]]
+            print("Previous diagnostic: %s" % str([prev_est, prev_lower, prev_upper]))
             
         # here we check if there is raw data for this study; 
         # if there is, we don't allow entry of outcomes
@@ -452,7 +464,6 @@ class DatasetModel(QAbstractTableModel):
                 delta = abs(new_val - d[col])
                 print "new val {0}, prev val {1}".format(new_val, d[col])
                 print "DELTA {0}".format(delta)
-            
             epsilon = 10E-6 
             if delta > epsilon:
                 return False, '''You have already entered raw data for this study. If you want to enter the outcome directly, delete the raw data first.'''
@@ -461,7 +472,6 @@ class DatasetModel(QAbstractTableModel):
             # in this case, they've deleted a value
             # (i.e., left it blank) -- this is OK.
             return True, None 
-
         if self.current_effect in ("OR", "RR"):
             if float(s) < 0:
                 return False, "Ratios cannot be negative."
@@ -470,27 +480,26 @@ class DatasetModel(QAbstractTableModel):
         fields = ["est","lower","upper"]
         if data_type == DIAGNOSTIC:
             fields.extend(fields[:])
- 
         col_to_type = dict(zip(self.OUTCOMES,fields))
- 
         val_str = col_to_type[col]
-            
-        def is_between_bounds(est=prev_est, 
-                              low=prev_lower, 
-                              high=prev_upper):
-            return meta_globals.between_bounds(est=est, low=low, high=high)
         
-        good_result = None
-        if val_str == "est":
-            (good_result,msg) = is_between_bounds(est=float(s))
-        elif val_str == "lower":
-            (good_result,msg) = is_between_bounds(low=float(s))
-        elif val_str == "upper":
-            (good_result,msg) = is_between_bounds(high=float(s))
-        assert not good_result is None, "Why don't we have a result for what outcome we're in?"
-        
-        if not good_result:
-            return False, msg
+        if outcome_subtype == "generic_effect":
+            if col == self.OUTCOMES[1]: # se column
+                if float(s) < 0:
+                    return False, "Standard Error cannot be negative"
+        else:
+            def is_between_bounds(est=prev_est, low=prev_lower, high=prev_upper):
+                return meta_globals.between_bounds(est=est, low=low, high=high)
+            good_result = None
+            if val_str == "est":
+                (good_result,msg) = is_between_bounds(est=float(s))
+            elif val_str == "lower":
+                (good_result,msg) = is_between_bounds(low=float(s))
+            elif val_str == "upper":
+                (good_result,msg) = is_between_bounds(high=float(s))
+            assert not good_result is None, "Why don't we have a result for what outcome we're in?"
+            if not good_result:
+                return False, msg
 
         return True, None
 
@@ -636,6 +645,7 @@ class DatasetModel(QAbstractTableModel):
                                 #ma_unit.set_display_upper(self.current_effect, group_str, display_scale_val)
                             print("calculating se")
                             
+                            # in normal case, only calculate SE when all data is filled in
                             if None not in ma_unit.get_entered_effect_and_ci(self.current_effect, group_str):              
                                 se = ma_unit.calculate_SE_if_possible(self.current_effect, group_str)
                                 print("setting se to %s" % str(se))
@@ -704,18 +714,25 @@ class DatasetModel(QAbstractTableModel):
                 print group_str
                 print "ok checking it; cur outcome: %s. cur group: %s" % (self.current_outcome, group_str)
                 if self.current_outcome is not None:
-                    effect_d = self.get_current_ma_unit_for_study(index.row()).effects_dict[\
-                                          self.current_effect][group_str]
-                    
+                    effect_d = self.get_current_ma_unit_for_study(index.row()).effects_dict[self.current_effect][group_str]
                     print effect_d
-                    # if any of the effect values are empty, we cannot include this study in the analysis, so it
-                    # is automatically excluded.
-                    if any([val is None for val in [effect_d[effect_key] for effect_key in ("upper", "lower", "est")]]):
-                        study.include = False
+                    
+                    
                     # if the study has not been explicitly excluded by the user, then we automatically
                     # include it once it has sufficient data.
-                    elif not study.manually_excluded:
+                    if not study.manually_excluded:
                         study.include = True
+                        
+                    if current_data_type == CONTINUOUS and outcome_subtype == "generic_effect":
+                        if None in [effect_d[key] for key in ["est","SE"]]:
+                            study.include = False
+                    else: # normal case, binary or continuous
+                        # if any of the effect values are empty, we cannot include this study in the analysis, so it
+                        # is automatically excluded.
+                        if any([val is None for val in [effect_d[effect_key] for effect_key in ("upper", "lower", "est")]]):
+                            study.include = False
+                        
+                        
 
             return True
         return False
@@ -762,7 +779,8 @@ class DatasetModel(QAbstractTableModel):
                     elif outcome_type == CONTINUOUS:
                         # continuous data
                         if outcome_subtype == "generic_effect":
-                            return QString("leave me alone!") # TODO: finish later?
+                            # Logic note: we should never reach this point
+                            return QString("leave me alone!")
                             
                         else: # normal case with no outcome subtype
                             if section in self.RAW_DATA[3:]:
@@ -1539,10 +1557,11 @@ class DatasetModel(QAbstractTableModel):
         group_str = self.get_cur_group_str()
         effect = effect or self.current_effect
         cur_ma_unit = self.get_current_ma_unit_for_study(study_index)
-        for x in ("est", "lower", "upper"):
-            if cur_ma_unit.effects_dict[effect][group_str][x] is None: # TODO: ENC
-                print "study %s does not have a point estimate" % study_index
-                return False
+        
+        if None in cur_ma_unit.get_effect_and_se(effect, group_str):
+            print "study %s does not have a point estimate" % study_index
+            return False
+            
         return "ok -- has all point estimates"
         return True
         
@@ -1552,10 +1571,7 @@ class DatasetModel(QAbstractTableModel):
         effect = effect or self.current_effect
         
         est = cur_ma_unit.get_estimate(effect, group_str)
-        #lower = cur_ma_unit.get_lower(effect, group_str)
-        upper = cur_ma_unit.get_upper(effect, group_str)
-
-        se = (upper-est)/meta_py_r.get_mult(meta_py_r.get_global_conf_level())
+        se = cur_ma_unit.get_se(effect, group_str)
         return (est, se)
         
     def get_cur_ests_and_SEs(self, only_if_included=True, only_these_studies=None, effect=None):

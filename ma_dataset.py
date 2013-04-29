@@ -767,6 +767,11 @@ class MetaAnalyticUnit:
                 self.get_lower(effect, group_str),
                 self.get_upper(effect, group_str),
                 )
+    def get_effect_and_se(self, effect, group_str):
+        return (self.get_estimate(effect, group_str),
+                self.get_se(effect, group_str),
+                )
+        
     def get_entered_effect_and_ci(self, effect, group_str):
         return (self.effects_dict[effect][group_str]["est"],
                 self.effects_dict[effect][group_str]["lower"],

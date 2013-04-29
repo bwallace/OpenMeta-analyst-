@@ -54,6 +54,7 @@ import change_cov_type_form
 import network_view
 import start_up_dialog
 import create_new_project_dialog
+from conf_level_dialog import ChangeConfLevelDlg
 
 # for the help
 import webbrowser
@@ -70,9 +71,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.setupUi(self)
         
         meta_py_r.set_global_conf_level(meta_globals.DEFAULT_CONF_LEVEL)
-        # SET TO FALSE UNTIL PROPER BEHAVIOR IS REACHED FOR PRODUCTION PURPOSES
-        #self.global_ci_spinbox.setVisible(False)
-        #self.global_conf_level_lbl.setVisible(False)
+        self.cl_label=QLabel("confidence level: {:.1%}".format(meta_py_r.get_global_conf_level()/100.0))
+        self.cl_label.setAlignment(Qt.AlignRight)
+        self.statusbar.addWidget(self.cl_label,1)
+        
 
         # TODO should also allow a (path to a) dataset
         # to be given on the console.
@@ -148,6 +150,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 start_up_window.activateWindow()
       
             self.populate_open_recent_menu()
+        
+        
             
 
     def closeEvent(self, event):
@@ -302,12 +306,17 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         dataset_path = QObject.sender(self).text()
         self.open(file_path=dataset_path)
         
-    def _change_global_ci(self,confidence_level):
+    def _change_global_ci(self):
         print("Changing global confidence level:")
-        print("   Previous Global Confidence level was: %f" % meta_py_r.get_global_conf_level())
-        meta_py_r.set_global_conf_level(confidence_level)
-        #meta_py_r.get_global_conf_level
-        print("   Global Confidence level is now: %f" % meta_py_r.get_global_conf_level())
+        prev_conf_level = meta_py_r.get_global_conf_level()
+        print("   Previous Global Confidence level was: %f" % prev_conf_level)
+
+        dialog = ChangeConfLevelDlg(prev_conf_level, self)
+        if dialog.exec_():
+            meta_py_r.set_global_conf_level(dialog.get_value())
+            self.cl_label.setText("confidence level: {:.1%}".format(meta_py_r.get_global_conf_level()/100.0))
+            self.model.reset()
+            print("   Global Confidence level is now: %f" % meta_py_r.get_global_conf_level())
 
     def _setup_connections(self, menu_actions=True):
         ''' Signals & slots '''
@@ -317,7 +326,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         QObject.connect(self.tableView.model(), SIGNAL("outcomeChanged()"), self.tableView.displayed_ma_changed)
         QObject.connect(self.tableView.model(), SIGNAL("followUpChanged()"), self.tableView.displayed_ma_changed)
         
-        QObject.connect(self.global_ci_spinbox, SIGNAL("valueChanged(double)"), self._change_global_ci)
+        #QObject.connect(self.global_ci_spinbox, SIGNAL("valueChanged(double)"), self._change_global_ci)
                                                                 
         ###
         # this is not ideal, but I couldn't get the rowsInserted methods working. 
@@ -369,6 +378,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             QObject.connect(self.action_subgroup_ma, SIGNAL("triggered()"), self.meta_subgroup_get_cov)
 
             QObject.connect(self.action_open_help, SIGNAL("triggered()"), self.show_help)
+            QObject.connect(self.action_change_conf_level, SIGNAL("triggered()"), self._change_global_ci)
 
     def go(self):
         form = None
@@ -580,7 +590,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     def add_metric_action(self, metric, menu):
         metric_names = meta_globals.ALL_METRIC_NAMES
         
-        #metric_action = QAction(QString(metric), self)
         metric_action = QAction(QString(metric+": "+metric_names[metric]), self)
         try:
             if str(metric) in metric_names:
@@ -590,9 +599,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         except:
             print("Could not set metric name tooltip")
         metric_action.setCheckable(True)
-        QObject.connect(metric_action, \
-                        SIGNAL("toggled(bool)"),\
-                        lambda: self.metric_selected(metric, menu))
+        QObject.connect(metric_action,
+                        SIGNAL("toggled(bool)"),
+                        lambda: self.metric_selected(metric, menu)
+                        )
         menu.addAction(metric_action)     
         return metric_action
     
@@ -1460,4 +1470,6 @@ def start():
 #
 if __name__ == "__main__":
     start()
+
+
 
