@@ -21,12 +21,12 @@ from PyQt4.QtCore import pyqtRemoveInputHook
 from meta_globals import (BASE_PATH,CONTINUOUS,ONE_ARM_METRICS,TWO_ARM_METRICS,
                           TYPE_TO_STR_DICT)
 
-try:
+#try:
     # will fail if not properly configured
-    from rpy2 import robjects as ro
-except Exception, e:
-    raise Exception, "rpy2 not properly installed!"
-    print e
+from rpy2 import robjects as ro
+#except Exception, e:
+#    raise Exception, "rpy2 not properly installed!"
+#    print e
     
 import rpy2.robjects
 

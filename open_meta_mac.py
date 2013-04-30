@@ -37,10 +37,11 @@ sys.path = sys.path[:4]
 # 8/21/12 -- TEMPORARY -- need to add this back!
 #print "\n\nok, mac user -- I'm setting your R path temporarily (this console only).\n\ns"
 os.environ["R"] = \
-    os.path.join(DIR_NAME, "R_dist", "2.13", "bin")
+    os.path.join(DIR_NAME, "R_dist", "2.15", "bin")
+print os.environ["R"]
 
 os.environ["R_HOME"] = \
-    os.path.join(DIR_NAME, "R_dist", "2.13")
+    os.path.join(DIR_NAME, "R_dist", "2.15")
 
 os.environ["TCL_LIBRARY"] = os.path.join(DIR_NAME, "tcl")
 os.environ["TK_LIBRARY"] = os.path.join(DIR_NAME, "tk")

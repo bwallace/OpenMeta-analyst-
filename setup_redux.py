@@ -33,6 +33,7 @@ if sys.platform=='darwin':
 else:
     applicationBundle=False
 
+print "application bundle? {0}".format(applicationBundle)
 
 
 ## Includes and excludes
@@ -91,7 +92,7 @@ f = Freezer(    executables,
                 includes = includes,
                 excludes = [],#excludes,
                 targetDir = distDir,
-                initScript="/Users/george/git/OpenMeta-analyst-/open_meta_mac.py",
+                initScript="/Users/bwallace/dev/OpenMeta-analyst-/open_meta_mac.py",
                 copyDependentFiles = True,
 #                 appendScriptToExe=True,
 #                 optimizeFlag=1,
