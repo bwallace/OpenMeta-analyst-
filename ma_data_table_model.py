@@ -513,7 +513,7 @@ class DatasetModel(QAbstractTableModel):
         return True, None
 
 
-    def setData(self, index, value, role=Qt.EditRole):
+    def setData(self, index, value, role=Qt.EditRole, import_csv = False):
         '''
         Implementation of the AbstractDataTable method. The view uses this method
         to request data to display. Thus we here return values to render in the table
@@ -599,7 +599,7 @@ class DatasetModel(QAbstractTableModel):
                 else:
                     # sanity check -- is this a number?
                     data_ok, msg = self._verify_outcome_data(value.toString(), column, row, current_data_type)
-                    if not data_ok:
+                    if not data_ok and import_csv == False:
                         self.emit(SIGNAL("dataError(QString)"), QString(msg))
                         return False
 
@@ -731,9 +731,6 @@ class DatasetModel(QAbstractTableModel):
                         # is automatically excluded.
                         if any([val is None for val in [effect_d[effect_key] for effect_key in ("upper", "lower", "est")]]):
                             study.include = False
-                        
-                        
-
             return True
         return False
 
@@ -1181,7 +1178,11 @@ class DatasetModel(QAbstractTableModel):
             self.tx_index_a = 0
             
     def outcome_has_follow_up(self, outcome, follow_up):
+        if outcome is None:
+            print("Tried to reference None outcome")
+            return None
         outcome_d = self.dataset.outcome_names_to_follow_ups[outcome]
+
         return follow_up in outcome_d.keys()
         
     def outcome_fu_has_group(self, outcome, follow_up, group):

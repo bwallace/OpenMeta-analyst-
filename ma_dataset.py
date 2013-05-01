@@ -233,6 +233,9 @@ class Dataset:
             study.add_outcome(outcome, follow_up, group_names=cur_group_names)
     
     def remove_outcome(self, outcome_name):
+        if outcome_name is None:
+            print("Tried to remove a None outcome")
+            return
         self.outcome_names_to_follow_ups.pop(outcome_name)
         for study in self.studies:
             study.remove_outcome(outcome_name)
@@ -684,8 +687,8 @@ class MetaAnalyticUnit:
         mult = meta_py_r.get_mult(meta_py_r.get_global_conf_level())
         
         
-        print("Using the following values to calculate se:")
-        print("  (est,lower,upper) = (%s,%s,%s)" % (str(est),str(lower),str(upper)))
+        #print("Using the following values to calculate se:")
+        #print("  (est,lower,upper) = (%s,%s,%s)" % (str(est),str(lower),str(upper)))
         try:
             se = (upper - est)/mult
         except:

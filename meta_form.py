@@ -55,9 +55,23 @@ import network_view
 import start_up_dialog
 import create_new_project_dialog
 from conf_level_dialog import ChangeConfLevelDlg
+import import_csv_dlg
 
 # for the help
 import webbrowser
+
+import ui_running
+class ImportProgress(QDialog, ui_running.Ui_running):
+    def __init__(self, parent=None, min=0, max=10):
+        super(ImportProgress, self).__init__(parent)
+        self.setupUi(self)
+        
+        self.setWindowTitle("Importing from CSV...")
+        self.progress_bar.setRange(min,max)
+        
+    def setValue(self, value):
+        if self.progress_bar.minimum() <= value <= self.progress_bar.maximum():
+            self.progress_bar.setValue(value)
 
 class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
@@ -162,7 +176,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         print "*** goodbye, dear analyst. ***"
 
     ###    Should ask if user wants to save before making the new dataset.. GD
-    def create_new_dataset(self):
+    def create_new_dataset(self, use_undo_framework=True):
 #        new_data_window = start_up_dialog.StartUp(parent=self, \
 #                    recent_datasets=self.user_prefs['recent datasets'],
 #                    start_up=False)
@@ -174,11 +188,13 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         name = unicode("untitled_dataset", "utf-8")
         
         new_project_dialog = create_new_project_dialog.CreateNewProjectDlg(parent=self)
+        # TODO: if import_csv is true, change message on the form
+        
         if new_project_dialog.exec_():
             dataset_info = new_project_dialog.get_summary()
             is_diag = dataset_info['data_type'] == "Diagnostic"
         
-            self.new_dataset(name=name, is_diag=is_diag)
+            self.new_dataset(name=name, is_diag=is_diag, use_undo_framework=use_undo_framework)
             tmp = self.cur_dimension
             self.cur_dimension = "outcome"
             #self.hide()
@@ -204,15 +220,18 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 self.model.reset()
         
         
-    def new_dataset(self, name=None, is_diag=False):
+    def new_dataset(self, name=None, is_diag=False, use_undo_framework = True):
         data_model = Dataset(title=name, is_diag=is_diag)
         if self.model is not None:
-            original_dataset = copy.deepcopy(self.model.dataset)
-            old_state_dict = self.tableView.model().get_stateful_dict()
-            undo_f = lambda : self.set_model(original_dataset, old_state_dict) 
-            redo_f = lambda : self.set_model(data_model)
-            edit_command = CommandGenericDo(redo_f, undo_f)
-            self.tableView.undoStack.push(edit_command)
+            if use_undo_framework:
+                original_dataset = copy.deepcopy(self.model.dataset)
+                old_state_dict = self.tableView.model().get_stateful_dict()
+                undo_f = lambda : self.set_model(original_dataset, old_state_dict) 
+                redo_f = lambda : self.set_model(data_model)
+                edit_command = CommandGenericDo(redo_f, undo_f)
+                self.tableView.undoStack.push(edit_command)
+            else: # not using undo framework (probably when importing csv (it will handle it internally)
+                self.set_model(data_model)
         else:
             self.model = DatasetModel(dataset=data_model)
             # no dataset; disable saving, editing, etc.
@@ -317,6 +336,61 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.cl_label.setText("confidence level: {:.1%}".format(meta_py_r.get_global_conf_level()/100.0))
             self.model.reset()
             print("   Global Confidence level is now: %f" % meta_py_r.get_global_conf_level())
+            
+    def _import_csv(self):
+        
+#        original_dataset = copy.deepcopy(self.model.dataset)
+#        old_state_dict = self.tableView.model().get_stateful_dict()
+#        undo_f = lambda : self.set_model(original_dataset, old_state_dict) 
+#        redo_f = lambda : self.set_model(data_model)
+#        edit_command = CommandGenericDo(redo_f, undo_f)
+#        self.tableView.undoStack.push(edit_command)
+
+        self.create_new_dataset(use_undo_framework = False)
+        dialog = import_csv_dlg.ImportCsvDlg(self)
+        if dialog.exec_():
+            imported_data = dialog.csv_data()['data']
+            headers = dialog.csv_data()['headers']
+        
+            # TODO: Set up handing of covariates
+            #   extract covariate names from headers (if available, otherwise just call 'Covariate 1, 2, 3'')
+            #   extract covariate types from data (all numbers-->continuous), otherwise factor
+            #   create covariates
+            
+            # Set data in model:
+            print("DATA IMPORTED:")
+            print(imported_data)
+            num_rows = len(imported_data)
+            num_cols = len(imported_data[0])
+            
+            
+            progress_bar  = ImportProgress(self, 0, num_rows*num_cols)
+            progress_bar.setValue(0)
+            progress_bar.show()
+            for row in range(num_rows):
+                for col in range(num_cols):
+                    progress_bar.setValue(row*num_cols + col)
+                    QApplication.processEvents()
+                    print("bar_ value: %s" % str([progress_bar.progress_bar.value(),progress_bar.progress_bar.minimum(), progress_bar.progress_bar.maximum()]))
+                    value = QVariant(QString(imported_data[row][col]))
+                    self.model.setData(self.model.index(row,col+1), value, import_csv=True)
+            progress_bar.hide()
+        else:
+            # UNDO EVERYTHING?
+            pass
+            
+            
+            
+            
+            
+            
+        
+        # TODO: FINISH IMPORT CSV
+        # TODO: HANDLE UNDO OF IMPORT CSV
+        # TODO: WRITE NEW WIZARD FOR FRONT SCREEN
+        
+        
+
 
     def _setup_connections(self, menu_actions=True):
         ''' Signals & slots '''
@@ -379,6 +453,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
             QObject.connect(self.action_open_help, SIGNAL("triggered()"), self.show_help)
             QObject.connect(self.action_change_conf_level, SIGNAL("triggered()"), self._change_global_ci)
+            QObject.connect(self.action_import_csv, SIGNAL("triggered()"), self._import_csv)
 
     def go(self):
         form = None
@@ -1472,4 +1547,5 @@ if __name__ == "__main__":
     start()
 
 
+            
 
