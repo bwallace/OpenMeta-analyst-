@@ -237,7 +237,7 @@ class DatasetModel(QAbstractTableModel):
                 adjusted_index = column - 3
                 if self.current_outcome in study.outcomes_to_follow_ups:
                     ma_unit = self.get_current_ma_unit_for_study(index.row())
-                    cur_raw_data = ma_unit.get_raw_data_for_groups(self.current_txs)                                 
+                    cur_raw_data = ma_unit.get_raw_data_for_groups(self.current_txs)                            
                     if len(cur_raw_data) > adjusted_index:
                         val = cur_raw_data[adjusted_index]
                         if val == "" or val is None:
@@ -586,6 +586,7 @@ class DatasetModel(QAbstractTableModel):
                 adjusted_index = column-adjust_by
                 val = value.toDouble()[0] if value.toDouble()[1] else ""
                 ma_unit.tx_groups[group_name].raw_data[adjusted_index] = val # TODO: ENC
+                
                 # If a raw data column value is being edited, attempt to
                 # update the corresponding outcome (if data permits)
                 self.update_outcome_if_possible(index.row())
@@ -601,7 +602,7 @@ class DatasetModel(QAbstractTableModel):
                     data_ok, msg = self._verify_outcome_data(value.toString(), column, row, current_data_type)
                     if not data_ok and import_csv == False:
                         self.emit(SIGNAL("dataError(QString)"), QString(msg))
-                        return False
+                    return False
 
                     # the user can also explicitly set the effect size / CIs
                     # @TODO what to do if the entered estimate contradicts the raw data?
@@ -1625,22 +1626,23 @@ class DatasetModel(QAbstractTableModel):
         to initially populate this study with empty MetaAnalytic units reflecting the known
         outcomes, time points & tx groups, as they will be added 'on-demand' here.
         '''
+        study = self.dataset.studies[study_index]
         
         # first check to see that the current outcome is contained in this study
-        if not self.current_outcome in self.dataset.studies[study_index].outcomes_to_follow_ups:
+        if not self.current_outcome in study.outcomes_to_follow_ups:
             ###
             # Issue 7 (RESOLVED) http://github.com/bwallace/OpenMeta-analyst-/issues/#issue/7
-            self.dataset.studies[study_index].add_outcome(self.dataset.get_outcome_obj(self.current_outcome), \
-                                                            group_names=self.dataset.get_group_names())
+            study.add_outcome(self.dataset.get_outcome_obj(self.current_outcome),
+                              group_names=self.dataset.get_group_names())
         
         # we must also make sure the time point exists. note that we use the *name* rather than the 
         # index of the current time/follow up
-        if not self.get_current_follow_up_name() in self.dataset.studies[study_index].outcomes_to_follow_ups[self.current_outcome]:
-            self.dataset.studies[study_index].add_outcome_at_follow_up(
-                                self.dataset.get_outcome_obj(self.current_outcome), self.get_current_follow_up_name())
+        if not self.get_current_follow_up_name() in study.outcomes_to_follow_ups[self.current_outcome]:
+            study.add_outcome_at_follow_up(self.dataset.get_outcome_obj(self.current_outcome),
+                                           self.get_current_follow_up_name())
         
         # finally, make sure the studies contain the currently selected tx groups; if not, add them
-        ma_unit = self.dataset.studies[study_index].outcomes_to_follow_ups[self.current_outcome][self.get_current_follow_up_name()]
+        ma_unit = study.outcomes_to_follow_ups[self.current_outcome][self.get_current_follow_up_name()]
         for tx_group in self.current_txs:
             if not tx_group in ma_unit.get_group_names():
                 ma_unit.add_group(tx_group)

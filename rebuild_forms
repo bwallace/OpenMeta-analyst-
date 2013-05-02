@@ -27,6 +27,9 @@ pyuic4-2.7 new_outcome_dlg.ui              -o  ui_new_outcome.py
 pyuic4-2.7 new_study_dlg.ui                -o  ui_new_study.py
 pyuic4-2.7 running.ui                      -o  ui_running.py
 pyuic4-2.7 start_upV2.ui                   -o  ui_start_upV2.py
+pyuic4-2.7 import_csv_dlg.ui               -o ui_import_csv_dlg.py
+
+
 
 #pyuic4-2.7 meta.ui                         -o  ui_meta.py
 #pyuic4-2.7 results_window.ui               -o  ui_results_window.py

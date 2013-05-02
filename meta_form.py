@@ -379,13 +379,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             # UNDO EVERYTHING?
             pass
             
-            
-            
-            
-            
-            
-        
-        # TODO: FINISH IMPORT CSV
         # TODO: HANDLE UNDO OF IMPORT CSV
         # TODO: WRITE NEW WIZARD FOR FRONT SCREEN
         

@@ -483,12 +483,12 @@
      <property name="title">
       <string>open recent...</string>
      </property>
-     <addaction name="actionDfsf"/>
     </widget>
     <addaction name="action_save"/>
     <addaction name="action_save_as"/>
     <addaction name="action_open"/>
     <addaction name="action_open_recent_2"/>
+    <addaction name="action_import_csv"/>
     <addaction name="action_quit"/>
    </widget>
    <widget class="QMenu" name="menuAnalysis">
@@ -653,11 +653,6 @@
     <string>save as...</string>
    </property>
   </action>
-  <action name="actionDfsf">
-   <property name="text">
-    <string>(none)</string>
-   </property>
-  </action>
   <action name="action_open_help">
    <property name="text">
     <string>open help</string>
@@ -666,6 +661,11 @@
   <action name="action_change_conf_level">
    <property name="text">
     <string>change confidence level</string>
+   </property>
+  </action>
+  <action name="action_import_csv">
+   <property name="text">
+    <string>import CSV</string>
    </property>
   </action>
  </widget>

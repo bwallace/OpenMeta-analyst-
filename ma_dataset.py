@@ -574,9 +574,9 @@ class MetaAnalyticUnit:
         outcome -- Outcome object, this tells us what sort of data type
                             we have
         raw_data -- If provided, it is assumed to be a nested list, where
-                            the first sublist is the raw data (num_events, num_total) 
-                            for the treated group and the second corresponds to the
-                            control group (if applicable)
+                    the first sublist is the raw data (num_events, num_total) 
+                    for the treated group and the second corresponds to the
+                    control group (if applicable)
         '''
         # diagnostic outcome?
         self.is_diag = outcome.data_type == DIAGNOSTIC
@@ -602,7 +602,8 @@ class MetaAnalyticUnit:
             raise Exception, "Unrecognized outcome data type, '%s' was given" % outcome.data_type
         
         # Makes list of (empty lists of length of raw_data): 
-        raw_data = raw_data or [["",]*self.raw_data_length]*len(group_names)
+        raw_data = raw_data or \
+                    [["" for n in range(self.raw_data_length)] for group in group_names]
 
         self.effects_dict = {}
         

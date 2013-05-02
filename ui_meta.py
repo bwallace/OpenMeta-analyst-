@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'meta.ui'
 #
-# Created: Mon Apr 29 14:16:33 2013
+# Created: Mon Apr 29 15:26:58 2013
 #      by: PyQt4 UI code generator 4.10
 #
 # WARNING! All changes made in this file will be lost!
@@ -286,17 +286,17 @@ class Ui_MainWindow(object):
         self.action_subgroup_ma.setObjectName(_fromUtf8("action_subgroup_ma"))
         self.action_save_as = QtGui.QAction(MainWindow)
         self.action_save_as.setObjectName(_fromUtf8("action_save_as"))
-        self.actionDfsf = QtGui.QAction(MainWindow)
-        self.actionDfsf.setObjectName(_fromUtf8("actionDfsf"))
         self.action_open_help = QtGui.QAction(MainWindow)
         self.action_open_help.setObjectName(_fromUtf8("action_open_help"))
         self.action_change_conf_level = QtGui.QAction(MainWindow)
         self.action_change_conf_level.setObjectName(_fromUtf8("action_change_conf_level"))
-        self.action_open_recent_2.addAction(self.actionDfsf)
+        self.action_import_csv = QtGui.QAction(MainWindow)
+        self.action_import_csv.setObjectName(_fromUtf8("action_import_csv"))
         self.menu_file.addAction(self.action_save)
         self.menu_file.addAction(self.action_save_as)
         self.menu_file.addAction(self.action_open)
         self.menu_file.addAction(self.action_open_recent_2.menuAction())
+        self.menu_file.addAction(self.action_import_csv)
         self.menu_file.addAction(self.action_quit)
         self.menuAnalysis.addAction(self.menuMetric.menuAction())
         self.menuAnalysis.addSeparator()
@@ -360,8 +360,8 @@ class Ui_MainWindow(object):
         self.action_paste.setText(_translate("MainWindow", "paste (ctrl + v)", None))
         self.action_subgroup_ma.setText(_translate("MainWindow", "subgroup meta-analysis", None))
         self.action_save_as.setText(_translate("MainWindow", "save as...", None))
-        self.actionDfsf.setText(_translate("MainWindow", "(none)", None))
         self.action_open_help.setText(_translate("MainWindow", "open help", None))
         self.action_change_conf_level.setText(_translate("MainWindow", "change confidence level", None))
+        self.action_import_csv.setText(_translate("MainWindow", "import CSV", None))
 
 import icons_rc

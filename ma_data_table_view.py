@@ -699,7 +699,6 @@ class CommandCellEdit(QUndoCommand):
             self.ma_data_table_view.model().reset()
         
         self.ma_data_table_view._enable_analysis_menus_if_appropriate()
-           
         self.ma_data_table_view.resizeColumnsToContents()
 
         # let everyone know that the data is dirty
