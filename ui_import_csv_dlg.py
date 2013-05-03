@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'import_csv_dlg.ui'
 #
-# Created: Tue Apr 30 15:42:08 2013
+# Created: Fri May  3 18:07:21 2013
 #      by: PyQt4 UI code generator 4.10
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,10 +26,11 @@ except AttributeError:
 class Ui_ImportCsvDlg(object):
     def setupUi(self, ImportCsvDlg):
         ImportCsvDlg.setObjectName(_fromUtf8("ImportCsvDlg"))
-        ImportCsvDlg.resize(704, 529)
+        ImportCsvDlg.resize(679, 648)
         self.verticalLayout_2 = QtGui.QVBoxLayout(ImportCsvDlg)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
         self.instructions = QtGui.QLabel(ImportCsvDlg)
+        self.instructions.setWordWrap(True)
         self.instructions.setObjectName(_fromUtf8("instructions"))
         self.verticalLayout_2.addWidget(self.instructions)
         self.groupBox = QtGui.QGroupBox(ImportCsvDlg)
@@ -152,7 +153,11 @@ class Ui_ImportCsvDlg(object):
     def retranslateUi(self, ImportCsvDlg):
         ImportCsvDlg.setWindowTitle(_translate("ImportCsvDlg", "Import CSV", None))
         self.instructions.setText(_translate("ImportCsvDlg", "Please select a csv file to import:\n"
-"The CSV must match the format of the spreadsheet currently displayed. Don\'t worry if the column titles are ", None))
+"The CSV should match the format of the spreadsheet currently displayed under \"required CSV format\". Don\'t worry if the column titles are not the same, these can be changed later.\n"
+"\n"
+"Also, things will be OK if you don\'t have data for all the columns, however if you have data for a column to the right of a column for which you do not have data, the left hand column(s) must exist (but have blank cells).\n"
+"\n"
+"Additional columns will be treated as covariates.", None))
         self.groupBox.setTitle(_translate("ImportCsvDlg", "Import Options", None))
         self.from_excel_chkbx.setText(_translate("ImportCsvDlg", "csv exported from excel?", None))
         self.has_headers_chkbx.setText(_translate("ImportCsvDlg", "Has column labels?", None))

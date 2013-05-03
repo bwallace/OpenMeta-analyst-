@@ -320,54 +320,43 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             print("   Global Confidence level is now: %f" % meta_py_r.get_global_conf_level())
             
     def _import_csv(self):
+        '''Import data from csv file'''
         
-#        original_dataset = copy.deepcopy(self.model.dataset)
-#        old_state_dict = self.tableView.model().get_stateful_dict()
-#        undo_f = lambda : self.set_model(original_dataset, old_state_dict) 
-#        redo_f = lambda : self.set_model(data_model)
-#        edit_command = CommandGenericDo(redo_f, undo_f)
-#        self.tableView.undoStack.push(edit_command)
+        # Back-up original dataset
+        original_dataset = copy.deepcopy(self.model.dataset)
+        old_state_dict = self.tableView.model().get_stateful_dict()
+        original_model = copy.deepcopy(self.model)
 
         self.create_new_dataset(use_undo_framework = False)
+        new_dataset = copy.deepcopy(self.model.dataset)
+        new_state_dict = self.tableView.model().get_stateful_dict()
+        new_model = copy.deepcopy(self.model)
+        
         dialog = import_csv_dlg.ImportCsvDlg(self)
         if dialog.exec_():
             imported_data = dialog.csv_data()['data']
-            headers = dialog.csv_data()['headers']
-            expected_headers = dialog.csv_data()['expected_headers']
+            #headers = dialog.csv_data()['headers']
+            #expected_headers = dialog.csv_data()['expected_headers']
             covariate_names = dialog.csv_data()['covariate_names']
             covariate_types = dialog.csv_data()['covariate_types']
+        
+            #Undo/redo stuff
+            importcsv_command = CommandImportCSV(
+                    original_dataset=original_dataset,
+                    old_state_dict=old_state_dict,
+                    original_model=original_model,
+                    new_dataset=new_dataset,
+                    new_state_dict=new_state_dict,
+                    new_model=new_model,
+                    imported_data=imported_data,
+                    main_form=self,
+                    covariate_names=covariate_names,
+                    covariate_types=covariate_types)
+            self.tableView.undoStack.push(importcsv_command)
             
-            # TODO: Set up handing of covariates
-            #   extract covariate names from headers (if available, otherwise just call 'Covariate 1, 2, 3'')
-            #   extract covariate types from data (all numbers-->continuous), otherwise factor
-            #   create covariates
             
-            # Set data in model:
-            print("DATA IMPORTED:")
-            print(imported_data)
-            num_rows = len(imported_data)
-            num_cols = len(imported_data[0])
             
-            # Handle covariates
-            if covariate_names != []:
-                for name, type in zip(covariate_names, covariate_types):
-                    self._add_new_covariate(name, type)
-   
-            # Copy data into table
-            progress_bar  = ImportProgress(self, 0, num_rows*num_cols)
-            progress_bar.setValue(0)
-            progress_bar.show()
-            for row in range(num_rows):
-                for col in range(num_cols):
-                    progress_bar.setValue(row*num_cols + col)
-                    QApplication.processEvents()
-                    print("bar_ value: %s" % str([progress_bar.progress_bar.value(),progress_bar.progress_bar.minimum(), progress_bar.progress_bar.maximum()]))
-                    value = QVariant(QString(imported_data[row][col]))
-                    self.model.setData(self.model.index(row,col+1), value, import_csv=True)
-            progress_bar.hide() # we are done
-        else:
-            # UNDO EVERYTHING?
-            pass
+            
             
         # TODO: HANDLE UNDO OF IMPORT CSV
         # TODO: WRITE NEW WIZARD FOR FRONT SCREEN
@@ -1359,6 +1348,65 @@ class CommandGenericDo(QUndoCommand):
         
     def undo(self):
         self.undo_f()
+
+class CommandImportCSV(QUndoCommand):
+    def __init__(self,
+                 original_dataset=None, old_state_dict=None, original_model=None,
+                 new_dataset=None, new_state_dict=None, new_model = None,
+                 main_form=None,
+                 imported_data=None,
+                 covariate_names=None, covariate_types=None,
+                 description="Import a CSV file"):
+        super(CommandImportCSV, self).__init__(description)
+        self.imported_data = imported_data
+        self.covariate_names = covariate_names
+        self.covariate_types = covariate_types
+        self.main_form = main_form
+        
+        # Undo / redo stuff
+        self.original_dataset = original_dataset
+        self.old_state_dict = old_state_dict
+        self.original_model = original_model
+        
+        self.new_dataset = new_dataset
+        self.new_state_dict = new_state_dict
+        self.new_model = new_model
+        
+    def redo(self):
+        #self.main_form.set_model(self.new_dataset, self.new_state_dict)
+        self.main_form.m
+        self.main_form.model.reset()
+        QApplication.processEvents()
+        
+        # Set data in model:
+        print("DATA IMPORTED:")
+        print(self.imported_data)
+        num_rows = len(self.imported_data)
+        num_cols = len(self.imported_data[0])
+        
+        # Handle covariates
+        if self.covariate_names != []:
+            for name, cov_type in zip(self.covariate_names, self.covariate_types):
+                self.main_form._add_new_covariate(name, cov_type)
+
+        # Copy data into table
+        progress_bar  = ImportProgress(self.main_form, 0, num_rows*num_cols)
+        progress_bar.setValue(0)
+        progress_bar.show()
+        for row in range(num_rows):
+            for col in range(num_cols):
+                progress_bar.setValue(row*num_cols + col)
+                QApplication.processEvents()
+                print("bar_ value: %s" % str([progress_bar.progress_bar.value(),progress_bar.progress_bar.minimum(), progress_bar.progress_bar.maximum()]))
+                value = QVariant(QString(self.imported_data[row][col]))
+                self.main_form.model.setData(self.main_form.model.index(row,col+1), value, import_csv=True)
+        progress_bar.hide() # we are done
+        
+    def undo(self):
+        self.main_form.set_model(self.original_dataset, self.old_state_dict)
+        self.main_form.model.reset()
+        QApplication.processEvents()
+        
     
 class CommandNext(QUndoCommand):
     '''

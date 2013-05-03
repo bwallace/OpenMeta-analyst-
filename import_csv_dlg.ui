@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>693</width>
-    <height>628</height>
+    <width>679</width>
+    <height>648</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,9 @@
       <string>Please select a csv file to import:
 The CSV should match the format of the spreadsheet currently displayed under &quot;required CSV format&quot;. Don't worry if the column titles are not the same, these can be changed later.
 
-Also, things will be OK if you don't have data for all the columns, however if you have data for a column to the right of a column for which you do not have data, the left hand column must exist (but have blank cells).</string>
+Also, things will be OK if you don't have data for all the columns, however if you have data for a column to the right of a column for which you do not have data, the left hand column(s) must exist (but have blank cells).
+
+Additional columns will be treated as covariates.</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
@@ -200,8 +202,6 @@ Also, things will be OK if you don't have data for all the columns, however if y
        </widget>
       </item>
      </layout>
-     <zorder>required_fmt_table</zorder>
-     <zorder>required_fmt_table</zorder>
     </widget>
    </item>
    <item>
@@ -260,8 +260,8 @@ Also, things will be OK if you don't have data for all the columns, however if y
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>169</x>
-     <y>524</y>
+     <x>175</x>
+     <y>623</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -276,8 +276,8 @@ Also, things will be OK if you don't have data for all the columns, however if y
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>169</x>
-     <y>524</y>
+     <x>175</x>
+     <y>623</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>
