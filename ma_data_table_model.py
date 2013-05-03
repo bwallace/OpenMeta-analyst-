@@ -1050,8 +1050,8 @@ class DatasetModel(QAbstractTableModel):
         self.dataset.remove_follow_up_from_outcome(follow_up_name, outcome_name)
         
     def add_covariate(self, covariate_name, covariate_type, cov_values=None):
-        self.dataset.add_covariate(Covariate(covariate_name, covariate_type), \
-                            cov_values=cov_values)
+        self.dataset.add_covariate(Covariate(covariate_name, covariate_type),
+                                   cov_values=cov_values)
         self.reset()
     
     def remove_covariate(self, covariate_name):

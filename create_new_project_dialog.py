@@ -9,6 +9,7 @@ from PyQt4.QtGui import *
 #from PyQt4.QtCore import *
 
 import ui_create_new_projectdlg
+import meta_globals
 
 class CreateNewProjectDlg(QDialog, ui_create_new_projectdlg.Ui_newprojectdialog):
     
@@ -21,6 +22,8 @@ class CreateNewProjectDlg(QDialog, ui_create_new_projectdlg.Ui_newprojectdialog)
         
         pal = self.outcome_name_LineEdit.palette()
         self.orignal_background_color = pal.color(self.outcome_name_LineEdit.backgroundRole())
+        self.metric_choice_frame.setVisible(False)
+        self.adjustSize()
     
     
     def _setup_connections(self):
@@ -34,6 +37,11 @@ class CreateNewProjectDlg(QDialog, ui_create_new_projectdlg.Ui_newprojectdialog)
         QObject.connect(self.twoarm_means_Button              , SIGNAL("toggled(bool)"), self._project_button_toggled)
         QObject.connect(self.twoarm_proportions_Button        , SIGNAL("toggled(bool)"), self._project_button_toggled)
         QObject.connect(self.twoarm_smds_Button               , SIGNAL("toggled(bool)"), self._project_button_toggled)
+        
+        QObject.connect(self.metric_cbo_box, SIGNAL("currentIndexChanged(int)"), self._metric_choice_changed)
+        
+    def _metric_choice_changed(self, newindex):
+        self.summary['effect'] = str(self.metric_cbo_box.itemData(newindex).toString())
         
     def _set_outcome_name(self,outcome_name):
         if outcome_name != "":
@@ -71,32 +79,79 @@ class CreateNewProjectDlg(QDialog, ui_create_new_projectdlg.Ui_newprojectdialog)
         self.summary['arms'] = None
         self.summary['data_type'] = None
         self.summary['sub_type'] = None
+        metric_choices = []
+        #one_arm
         if self.onearm_proportion_Button.isChecked():
             self.summary['arms'] = 'one'
             self.summary['data_type'] = 'Binary'
+            self.summary['sub_type'] = 'proportion'
+            default_effect = "PR"
+            metric_choices = meta_globals.BINARY_ONE_ARM_METRICS
         if self.onearm_mean_Button.isChecked():    
             self.summary['arms'] = 'one'
             self.summary['data_type'] = 'Continuous'
+            self.summary['sub_type'] = 'mean'
+            default_effect = meta_globals.DEFAULT_CONTINUOUS_ONE_ARM
+            metric_choices = meta_globals.CONTINUOUS_ONE_ARM_METRICS
         if self.onearm_single_reg_coef_Button.isChecked():
             self.summary['arms'] = 'one'
             self.summary['data_type'] = 'Continuous'
+            self.summary['sub_type'] = 'reg_coef'
+            default_effect = meta_globals.DEFAULT_CONTINUOUS_ONE_ARM
+            metric_choices = meta_globals.CONTINUOUS_ONE_ARM_METRICS
         if self.onearm_generic_effect_size_Button.isChecked():
             self.summary['arms'] = 'one'
             self.summary['data_type'] = 'Continuous'
             self.summary['sub_type'] = 'generic_effect' # TODO: Should disable_two-arm metrics for generic effect
-    
+            default_effect = meta_globals.DEFAULT_CONTINUOUS_ONE_ARM
+            metric_choices = meta_globals.CONTINUOUS_ONE_ARM_METRICS
+        #twoarm
         if self.twoarm_proportions_Button.isChecked(): 
             self.summary['arms'] = 'two'
             self.summary['data_type'] = 'Binary'
+            self.summary['sub_type'] = 'proportions'
+            default_effect = "OR"
+            metric_choices = meta_globals.BINARY_TWO_ARM_METRICS
         if self.twoarm_means_Button.isChecked():
             self.summary['arms'] = 'two'     
-            self.summary['data_type'] = 'Continuous'     
-        if self.twoarm_smds_Button.isChecked():
-            self.summary['arms'] = 'two' 
             self.summary['data_type'] = 'Continuous'
-            
+            self.summary['sub_type'] = 'means'
+            default_effect = "MD"
+            metric_choices = meta_globals.CONTINUOUS_TWO_ARM_METRICS
+        if self.twoarm_smds_Button.isChecked():
+            self.summary['arms']      = 'two' 
+            self.summary['data_type'] = 'Continuous'
+            self.summary['sub_type']  = 'smd'
+            default_effect = "SMD"
+            metric_choices = meta_globals.CONTINUOUS_TWO_ARM_METRICS
+        #diagnostic
         if self.diagnostic_Button.isChecked():
             self.summary['data_type'] = 'Diagnostic'
+        
+        if 'default_effect' in locals():
+            self.summary['effect'] = default_effect
+        
+        # Add metric choices to combo box
+        self.metric_cbo_box.blockSignals(True)
+        self.metric_cbo_box.clear()
+        self.metric_cbo_box.blockSignals(False)
+        if self.summary['data_type'] != 'Diagnostic':
+            self.metric_cbo_box.blockSignals(True)
+            for metric in metric_choices:
+                metric_pretty_name = meta_globals.ALL_METRIC_NAMES[metric]
+                self.metric_cbo_box.addItem(QString(metric + ": " + metric_pretty_name), userData=QVariant(QString(metric)))
+            index_of_default = self.metric_cbo_box.findData(QVariant(QString(default_effect)))
+            self.metric_cbo_box.setCurrentIndex(index_of_default)
+            
+            default_item_text = self.metric_cbo_box.itemText(index_of_default)
+            default_item_text += QString(" (DEFAULT)")
+            self.metric_cbo_box.setItemText(index_of_default, default_item_text)
+            # Make the combo box visible and resize the dialog
+            self.metric_choice_frame.setVisible(True)
+            self.metric_cbo_box.blockSignals(False)
+        else:
+            self.metric_choice_frame.setVisible(False)
+        self.adjustSize()
             
     def get_summary(self):
         # Summary results:

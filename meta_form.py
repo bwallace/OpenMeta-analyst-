@@ -177,14 +177,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
     ###    Should ask if user wants to save before making the new dataset.. GD
     def create_new_dataset(self, use_undo_framework=True):
-#        new_data_window = start_up_dialog.StartUp(parent=self, \
-#                    recent_datasets=self.user_prefs['recent datasets'],
-#                    start_up=False)
-#        new_data_window.show()
-#        ## arg -- this won't work!
-#        new_data_window.setFocus()
-#        new_data_window.dataset_name_le.setFocus()
-        
         name = unicode("untitled_dataset", "utf-8")
         
         new_project_dialog = create_new_project_dialog.CreateNewProjectDlg(parent=self)
@@ -202,19 +194,9 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.cur_dimension = tmp
             #self.close()
             
-            # SET DEFAULT METRICS
-            if dataset_info['data_type'] == "Binary":
-                if dataset_info['arms'] == "one":
-                    self.model.current_effect = meta_globals.DEFAULT_BINARY_ONE_ARM
-                elif dataset_info['arms'] == "two":
-                    self.model.current_effect = meta_globals.DEFAULT_BINARY_TWO_ARM
-            if dataset_info['data_type'] == "Continuous":
-                if dataset_info['arms'] == "one":
-                    self.model.current_effect = meta_globals.DEFAULT_CONTINUOUS_ONE_ARM
-                elif dataset_info['arms'] == "two":
-                    self.model.current_effect = meta_globals.DEFAULT_CONTINUOUS_TWO_ARM
             # Put this stuff in an if just in case...
             if dataset_info['data_type'] == "Binary" or dataset_info['data_type'] == "Continuous":
+                self.model.current_effect = dataset_info['effect']
                 self.populate_metrics_menu(metric_to_check=self.model.current_effect)
                 self.model.try_to_update_outcomes()
                 self.model.reset()
@@ -351,7 +333,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         if dialog.exec_():
             imported_data = dialog.csv_data()['data']
             headers = dialog.csv_data()['headers']
-        
+            expected_headers = dialog.csv_data()['expected_headers']
+            covariate_names = dialog.csv_data()['covariate_names']
+            covariate_types = dialog.csv_data()['covariate_types']
+            
             # TODO: Set up handing of covariates
             #   extract covariate names from headers (if available, otherwise just call 'Covariate 1, 2, 3'')
             #   extract covariate types from data (all numbers-->continuous), otherwise factor
@@ -363,7 +348,12 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             num_rows = len(imported_data)
             num_cols = len(imported_data[0])
             
-            
+            # Handle covariates
+            if covariate_names != []:
+                for name, type in zip(covariate_names, covariate_types):
+                    self._add_new_covariate(name, type)
+   
+            # Copy data into table
             progress_bar  = ImportProgress(self, 0, num_rows*num_cols)
             progress_bar.setValue(0)
             progress_bar.show()
@@ -374,7 +364,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                     print("bar_ value: %s" % str([progress_bar.progress_bar.value(),progress_bar.progress_bar.minimum(), progress_bar.progress_bar.maximum()]))
                     value = QVariant(QString(imported_data[row][col]))
                     self.model.setData(self.model.index(row,col+1), value, import_csv=True)
-            progress_bar.hide()
+            progress_bar.hide() # we are done
         else:
             # UNDO EVERYTHING?
             pass
@@ -384,6 +374,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         
         
 
+         
 
     def _setup_connections(self, menu_actions=True):
         ''' Signals & slots '''
