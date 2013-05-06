@@ -156,12 +156,15 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 ###
                 # fix for issue #158
                 # formerly .show()
-                start_up_window.exec_()
-
-                ## arg -- this won't work!
-                start_up_window.setFocus()
-                start_up_window.raise_()
-                start_up_window.activateWindow()
+                if start_up_window.exec_():
+                    ## arg -- this won't work!
+                    start_up_window.setFocus()
+                    start_up_window.raise_()
+                    start_up_window.activateWindow()
+                    print("Got passed start_up_window.exec_()")
+                else:
+                    print("I quit!")
+                    quit()
       
             self.populate_open_recent_menu()
         
@@ -200,6 +203,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 self.populate_metrics_menu(metric_to_check=self.model.current_effect)
                 self.model.try_to_update_outcomes()
                 self.model.reset()
+            return True # everything went ok
+        else:
+            print("Cancelled out of new_project_dialog")
+            return False
         
         
     def new_dataset(self, name=None, is_diag=False, use_undo_framework = True):
@@ -325,46 +332,41 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # Back-up original dataset
         original_dataset = copy.deepcopy(self.model.dataset)
         old_state_dict = self.tableView.model().get_stateful_dict()
-        original_model = copy.deepcopy(self.model)
+        
+        get_out = False
+        while get_out is False:
+            print("get out is %s" % str(get_out))
+            if self.create_new_dataset(use_undo_framework=False) is False:
+                return False
+            new_dataset = copy.deepcopy(self.model.dataset)
+            new_state_dict = self.tableView.model().get_stateful_dict()
+            
+            dialog = import_csv_dlg.ImportCsvDlg(self)
+            if dialog.exec_():
+                imported_data = dialog.csv_data()['data']
+                #headers = dialog.csv_data()['headers']
+                #expected_headers = dialog.csv_data()['expected_headers']
+                covariate_names = dialog.csv_data()['covariate_names']
+                covariate_types = dialog.csv_data()['covariate_types']
+            
+                #Undo/redo stuff
+                importcsv_command = CommandImportCSV(
+                        original_dataset=original_dataset,
+                        old_state_dict=old_state_dict,
+                        new_dataset=new_dataset,
+                        new_state_dict=new_state_dict,
+                        imported_data=imported_data,
+                        main_form=self,
+                        covariate_names=covariate_names,
+                        covariate_types=covariate_types)
+                self.tableView.undoStack.push(importcsv_command)
+                get_out = True # we can leave since something good happened
+                return True
+            else:
+                print("Cancelled out of import_csv_dialog")
 
-        self.create_new_dataset(use_undo_framework = False)
-        new_dataset = copy.deepcopy(self.model.dataset)
-        new_state_dict = self.tableView.model().get_stateful_dict()
-        new_model = copy.deepcopy(self.model)
-        
-        dialog = import_csv_dlg.ImportCsvDlg(self)
-        if dialog.exec_():
-            imported_data = dialog.csv_data()['data']
-            #headers = dialog.csv_data()['headers']
-            #expected_headers = dialog.csv_data()['expected_headers']
-            covariate_names = dialog.csv_data()['covariate_names']
-            covariate_types = dialog.csv_data()['covariate_types']
-        
-            #Undo/redo stuff
-            importcsv_command = CommandImportCSV(
-                    original_dataset=original_dataset,
-                    old_state_dict=old_state_dict,
-                    original_model=original_model,
-                    new_dataset=new_dataset,
-                    new_state_dict=new_state_dict,
-                    new_model=new_model,
-                    imported_data=imported_data,
-                    main_form=self,
-                    covariate_names=covariate_names,
-                    covariate_types=covariate_types)
-            self.tableView.undoStack.push(importcsv_command)
-            
-            
-            
-            
-            
-        # TODO: HANDLE UNDO OF IMPORT CSV
         # TODO: WRITE NEW WIZARD FOR FRONT SCREEN
         
-        
-
-         
-
     def _setup_connections(self, menu_actions=True):
         ''' Signals & slots '''
         QObject.connect(self.tableView.model(), SIGNAL("pyCellContentChanged(PyQt_PyObject, PyQt_PyObject, PyQt_PyObject, PyQt_PyObject)"),
@@ -1351,8 +1353,8 @@ class CommandGenericDo(QUndoCommand):
 
 class CommandImportCSV(QUndoCommand):
     def __init__(self,
-                 original_dataset=None, old_state_dict=None, original_model=None,
-                 new_dataset=None, new_state_dict=None, new_model = None,
+                 original_dataset=None, old_state_dict=None,
+                 new_dataset=None, new_state_dict=None,
                  main_form=None,
                  imported_data=None,
                  covariate_names=None, covariate_types=None,
@@ -1366,17 +1368,27 @@ class CommandImportCSV(QUndoCommand):
         # Undo / redo stuff
         self.original_dataset = original_dataset
         self.old_state_dict = old_state_dict
-        self.original_model = original_model
-        
         self.new_dataset = new_dataset
         self.new_state_dict = new_state_dict
-        self.new_model = new_model
+        
+        self.new_dataset_has_imported_data = False
         
     def redo(self):
-        #self.main_form.set_model(self.new_dataset, self.new_state_dict)
-        self.main_form.m
+        if self.new_dataset_has_imported_data: #already imported once before, this is a real 'redo'
+            self.main_form.set_model(self.new_dataset, self.new_state_dict)
+        else: # this a first run
+            self._import_data_into_new_dataset()
+            self.new_dataset = copy.deepcopy(self.main_form.model.dataset)
+            self.new_state_dict = self.main_form.tableView.model().get_stateful_dict()
+            self.new_dataset_has_imported_data = True
+        
+    def undo(self):
+        self.main_form.set_model(self.original_dataset, self.old_state_dict)
         self.main_form.model.reset()
         QApplication.processEvents()
+        
+    def _import_data_into_new_dataset(self):
+        self.main_form.set_model(self.new_dataset, self.new_state_dict)
         
         # Set data in model:
         print("DATA IMPORTED:")
@@ -1401,11 +1413,6 @@ class CommandImportCSV(QUndoCommand):
                 value = QVariant(QString(self.imported_data[row][col]))
                 self.main_form.model.setData(self.main_form.model.index(row,col+1), value, import_csv=True)
         progress_bar.hide() # we are done
-        
-    def undo(self):
-        self.main_form.set_model(self.original_dataset, self.old_state_dict)
-        self.main_form.model.reset()
-        QApplication.processEvents()
         
     
 class CommandNext(QUndoCommand):

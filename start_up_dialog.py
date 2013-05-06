@@ -11,7 +11,6 @@ class StartUp(QDialog, ui_start_upV2.Ui_WelcomeDialog):
 
         super(StartUp, self).__init__(parent)
         self.recent_datasets = recent_datasets or []
-        ###
         # most recently accessed dataset first
         self.recent_datasets.reverse()
         self.setupUi(self)
@@ -38,7 +37,11 @@ class StartUp(QDialog, ui_start_upV2.Ui_WelcomeDialog):
         #QObject.connect(self.chk_show,  SIGNAL("stateChanged(int)"),
         #                    lambda: self.parent.update_user_prefs("splash",
         #                            self.chk_show.isChecked()))
+        self._setup_open_recent_btn()
+        QObject.connect(self.import_csv_btn, SIGNAL("pressed()"), self.import_csv)
 
+            
+    def _setup_open_recent_btn(self):
         if self.start_up and len(self.recent_datasets) > 0:
             ### 
             # then add a drop-down to the 'open recent' 
@@ -56,13 +59,17 @@ class StartUp(QDialog, ui_start_upV2.Ui_WelcomeDialog):
             self.open_recent_btn.setMenu(qm)
         else:
             self.open_recent_btn.setEnabled(False)
+    
+    def import_csv(self):
+        if self.parent._import_csv():
+            self.accept()
        
     def dataset_selected(self):
         # we use the sender method to see which menu item was
         # triggered
         dataset_path = QObject.sender(self).text()
         self.parent.open(file_path=dataset_path)
-        self.close()
+        self.accept()
         
     def new_dataset(self):
         #name = unicode(self.dataset_name_le.text().toUtf8(), "utf-8")
@@ -78,7 +85,7 @@ class StartUp(QDialog, ui_start_upV2.Ui_WelcomeDialog):
             print("error before here?")
             tmp = self.parent.cur_dimension
             self.parent.cur_dimension = "outcome"
-            self.hide()
+            #self.hide()
             self.parent.add_new(dataset_info)        
             self.parent.cur_dimension = tmp
             
@@ -98,12 +105,12 @@ class StartUp(QDialog, ui_start_upV2.Ui_WelcomeDialog):
                 self.parent.populate_metrics_menu(metric_to_check=self.parent.model.current_effect)
                 self.parent.model.try_to_update_outcomes()
                 self.parent.model.reset()
-            
-            
-            self.close()
+            self.accept()
+        else:
+            return False
     
     def open_dataset(self):
         # fix for issue #61 -keep dialog open if the 
         # user cancels.
         if self.parent.open():
-            self.close()
+            self.accept()

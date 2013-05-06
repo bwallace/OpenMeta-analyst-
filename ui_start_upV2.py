@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'start_upV2.ui'
 #
-# Created: Wed Apr 17 14:37:20 2013
+# Created: Mon May  6 09:49:56 2013
 #      by: PyQt4 UI code generator 4.10
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_WelcomeDialog(object):
     def setupUi(self, WelcomeDialog):
         WelcomeDialog.setObjectName(_fromUtf8("WelcomeDialog"))
-        WelcomeDialog.resize(591, 442)
+        WelcomeDialog.resize(739, 455)
         WelcomeDialog.setSizeGripEnabled(False)
         self.verticalLayout = QtGui.QVBoxLayout(WelcomeDialog)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
@@ -109,10 +109,16 @@ class Ui_WelcomeDialog(object):
         self.open_recent_btn.setIcon(icon)
         self.open_recent_btn.setObjectName(_fromUtf8("open_recent_btn"))
         self.horizontalLayout.addWidget(self.open_recent_btn)
-        self.create_new_btn = QtGui.QPushButton(WelcomeDialog)
+        self.import_csv_btn = QtGui.QPushButton(WelcomeDialog)
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(_fromUtf8(":/function_icon_set/function_icon_set/add_48.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.create_new_btn.setIcon(icon1)
+        icon1.addPixmap(QtGui.QPixmap(_fromUtf8(":/function_icon_set/function_icon_set/box_download_48.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.import_csv_btn.setIcon(icon1)
+        self.import_csv_btn.setObjectName(_fromUtf8("import_csv_btn"))
+        self.horizontalLayout.addWidget(self.import_csv_btn)
+        self.create_new_btn = QtGui.QPushButton(WelcomeDialog)
+        icon2 = QtGui.QIcon()
+        icon2.addPixmap(QtGui.QPixmap(_fromUtf8(":/function_icon_set/function_icon_set/add_48.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.create_new_btn.setIcon(icon2)
         self.create_new_btn.setObjectName(_fromUtf8("create_new_btn"))
         self.horizontalLayout.addWidget(self.create_new_btn)
         self.verticalLayout.addLayout(self.horizontalLayout)
@@ -131,6 +137,7 @@ class Ui_WelcomeDialog(object):
         self.label.setText(_translate("WelcomeDialog", "I want to:", None))
         self.open_btn.setText(_translate("WelcomeDialog", "Open an existing project", None))
         self.open_recent_btn.setText(_translate("WelcomeDialog", "open recent ...", None))
+        self.import_csv_btn.setText(_translate("WelcomeDialog", "Import CSV", None))
         self.create_new_btn.setText(_translate("WelcomeDialog", "Create a new Project", None))
 
 import icons_rc

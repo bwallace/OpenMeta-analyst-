@@ -4,7 +4,7 @@
 
 
 
-
+# TODO: rebuild only the forms whose ui files have changed (git diff shows something for them)
 
 pyuic4-2.7 binary_data_form2.ui            -o  ui_binary_data_form.py
 pyuic4-2.7 change_cov_type_form.ui         -o  ui_change_cov_type.py

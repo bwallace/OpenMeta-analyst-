@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>591</width>
-    <height>442</height>
+    <width>739</width>
+    <height>455</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -223,6 +223,17 @@ Contract No. HHSA 290 2007 10055 I; Task Order #2</string>
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="import_csv_btn">
+       <property name="text">
+        <string>Import CSV</string>
+       </property>
+       <property name="icon">
+        <iconset resource="images/icons.qrc">
+         <normaloff>:/function_icon_set/function_icon_set/box_download_48.png</normaloff>:/function_icon_set/function_icon_set/box_download_48.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="create_new_btn">
        <property name="text">
         <string>Create a new Project</string>
@@ -242,6 +253,7 @@ Contract No. HHSA 290 2007 10055 I; Task Order #2</string>
   <zorder></zorder>
   <zorder>verticalSpacer</zorder>
   <zorder></zorder>
+  <zorder>import_csv_btn</zorder>
  </widget>
  <resources>
   <include location="images/icons.qrc"/>
