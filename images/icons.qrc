@@ -1,15 +1,50 @@
 <RCC>
   <qresource prefix="misc">
+    <file>splash.png</file>
     <file>calculator-34.png</file>
     <file>down_arrow.png</file>
     <file>left_arrow.png</file>
     <file>meta.bmp</file>
+    <file>ci_icon.png</file>
     <file>meta.ico</file>
     <file>meta.png</file>
     <file>meta.svg</file>
     <file>ometa.png</file>
     <file>right_arrow.png</file>
     <file>up_arrow.png</file>
+  </qresource>
+  <qresource prefix="toolbar-icons">
+    <file>toolbar-icons/back.png</file>
+    <file>toolbar-icons/book.png</file>
+    <file>toolbar-icons/clock.png</file>
+    <file>toolbar-icons/color-palette.png</file>
+    <file>toolbar-icons/comment.png</file>
+    <file>toolbar-icons/cut.png</file>
+    <file>toolbar-icons/downloads.png</file>
+    <file>toolbar-icons/flag.png</file>
+    <file>toolbar-icons/folder.png</file>
+    <file>toolbar-icons/font.png</file>
+    <file>toolbar-icons/forward.png</file>
+    <file>toolbar-icons/heart.png</file>
+    <file>toolbar-icons/help.png</file>
+    <file>toolbar-icons/home.png</file>
+    <file>toolbar-icons/link.png</file>
+    <file>toolbar-icons/lock.png</file>
+    <file>toolbar-icons/mail.png</file>
+    <file>toolbar-icons/page.png</file>
+    <file>toolbar-icons/paste.png</file>
+    <file>toolbar-icons/photos.png</file>
+    <file>toolbar-icons/print.png</file>
+    <file>toolbar-icons/quit.png</file>
+    <file>toolbar-icons/rubbish-bin.png</file>
+    <file>toolbar-icons/search.png</file>
+    <file>toolbar-icons/settings.png</file>
+    <file>toolbar-icons/sound.png</file>
+    <file>toolbar-icons/star.png</file>
+    <file>toolbar-icons/stop.png</file>
+    <file>toolbar-icons/tools.png</file>
+    <file>toolbar-icons/undo.png</file>
+    <file>toolbar-icons/user.png</file>
   </qresource>
   <qresource prefix="new_dataset">
     <file>startscreens/diagnostic.png</file>

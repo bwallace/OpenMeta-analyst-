@@ -21,27 +21,15 @@ print "success!"
 #import nose # for unit tests
 import copy
 
-#
-# hand-rolled modules
-#
-print("Importing ui_meta")
+## hand-rolled modules
 import ui_meta
-print("yay, imported ui_meta")
-from ma_data_table_view import StudyDelegate
-print("importing ma_data_table_view")
-import ma_data_table_view
-from ma_data_table_model import *
-#import meta_globals
-from meta_globals import *
-print("Importing ma_dataset")
-import ma_dataset
-from ma_dataset import *
-print("Importing meta_py_r")
 import meta_py_r
+import ma_data_table_view
+import ma_data_table_model
+import meta_globals
+import ma_dataset
 
-#
 # additional forms
-#
 import add_new_dialogs
 import results_window
 import ma_specs 
@@ -54,8 +42,17 @@ import change_cov_type_form
 import network_view
 import start_up_dialog
 import create_new_project_dialog
-from conf_level_dialog import ChangeConfLevelDlg
+import conf_level_dialog
 import import_csv_dlg
+
+#def import_everything():
+#    print("Importing everything")
+#    global ui_meta, meta_py_r, ma_data_table_view, ma_data_table_model, meta_globals, ma_dataset
+#    import ui_meta, meta_py_r, ma_data_table_view, ma_data_table_model, meta_globals, ma_dataset
+#                                       
+#    global add_new_dialogs, results_window, ma_specs, diag_metrics, meta_reg_form, meta_subgroup_form, edit_dialog, edit_group_name_form, change_cov_type_form, network_view, start_up_dialog, create_new_project_dialog, conf_level_dialog, import_csv_dlg     
+#    import add_new_dialogs, results_window, ma_specs, diag_metrics, meta_reg_form, meta_subgroup_form, edit_dialog, edit_group_name_form, change_cov_type_form, network_view, start_up_dialog, create_new_project_dialog, conf_level_dialog, import_csv_dlg
+#    
 
 # for the help
 import webbrowser
@@ -72,6 +69,13 @@ class ImportProgress(QDialog, ui_running.Ui_running):
     def setValue(self, value):
         if self.progress_bar.minimum() <= value <= self.progress_bar.maximum():
             self.progress_bar.setValue(value)
+    
+    def minimum(self):
+        return self.progress_bar.minimum()
+    def maximum(self):
+        return self.progress_bar.maximum()
+    def value(self):
+        return self.progress_bar.value()
 
 class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
@@ -101,7 +105,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
         self.tableView.setModel(self.model)
         # attach a delegate for editing
-        self.tableView.setItemDelegate(StudyDelegate(self))
+        self.tableView.setItemDelegate(ma_data_table_view.StudyDelegate(self))
 
         # the nav_lbl text corresponds to the currently selected
         # 'dimension', e.g., outcome or treatment. New points
@@ -125,7 +129,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
         self.out_path = None                              # path to output file
         self.metric_menu_is_set_for = None  # BINARY, CONTINUOUS, or DIAGNOSTIC
-        self.raise_()
+        #self.raise_()
 
         # by default, disable meta-regression (until we
         # have covariates)
@@ -138,7 +142,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         if len(sys.argv)>1 and sys.argv[-1]=="--toy-data":
             # toy data for now
             data_model = _gen_some_data()
-            self.model = DatasetModel(dataset=data_model)
+            self.model = ma_data_table_model.DatasetModel(dataset=data_model)
             self.display_outcome("death")
             self.model.set_current_time_point(0)
             self.model.current_effect = "OR"
@@ -156,6 +160,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 ###
                 # fix for issue #158
                 # formerly .show()
+                self.show()
                 if start_up_window.exec_():
                     ## arg -- this won't work!
                     start_up_window.setFocus()
@@ -210,7 +215,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         
         
     def new_dataset(self, name=None, is_diag=False, use_undo_framework = True):
-        data_model = Dataset(title=name, is_diag=is_diag)
+        data_model = ma_dataset.Dataset(title=name, is_diag=is_diag)
         if self.model is not None:
             if use_undo_framework:
                 original_dataset = copy.deepcopy(self.model.dataset)
@@ -222,7 +227,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             else: # not using undo framework (probably when importing csv (it will handle it internally)
                 self.set_model(data_model)
         else:
-            self.model = DatasetModel(dataset=data_model)
+            self.model = ma_data_table_model.DatasetModel(dataset=data_model)
             # no dataset; disable saving, editing, etc.
             self.disable_menu_options_that_require_dataset()
         # set the out_path to None; this (new) dataset is unsaved.
@@ -248,7 +253,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         ''' Enables action_subgroup_ma if there are suitable covariate(s)
         i.e. of type Factor '''
         
-        if any([cov.get_data_type() == FACTOR for cov in self.model.dataset.covariates]):
+        if any([cov.get_data_type() == meta_globals.FACTOR for cov in self.model.dataset.covariates]):
             self.action_subgroup_ma.setEnabled(True)
         else:
             self.action_subgroup_ma.setEnabled(False)
@@ -319,7 +324,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         prev_conf_level = meta_py_r.get_global_conf_level()
         print("   Previous Global Confidence level was: %f" % prev_conf_level)
 
-        dialog = ChangeConfLevelDlg(prev_conf_level, self)
+        dialog = conf_level_dialog.ChangeConfLevelDlg(prev_conf_level, self)
         if dialog.exec_():
             meta_py_r.set_global_conf_level(dialog.get_value())
             self.cl_label.setText("confidence level: {:.1%}".format(meta_py_r.get_global_conf_level()/100.0))
@@ -364,6 +369,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 return True
             else:
                 print("Cancelled out of import_csv_dialog")
+        return False
 
         # TODO: WRITE NEW WIZARD FOR FRONT SCREEN
         
@@ -508,7 +514,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         form.show()
 
     def show_help(self):
-        webbrowser.open(PATH_TO_HELP)
+        webbrowser.open(meta_globals.PATH_TO_HELP)
 
     def meta_subgroup(self, selected_cov):
         form = None
@@ -584,22 +590,23 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         Populates the `metric` sub-menu with available metrics for the
         current datatype.
         '''
+        
         self.menuMetric.clear()
         self.menuMetric.setDisabled(False)
 
         if self.model.get_current_outcome_type()=="binary":
             self.add_binary_metrics(metric_to_check=metric_to_check)
-            self.metric_menu_is_set_for = BINARY
+            self.metric_menu_is_set_for = meta_globals.BINARY
 
         elif self.model.get_current_outcome_type()=="continuous":
             self.add_continuous_metrics(metric_to_check=metric_to_check)
-            self.metric_menu_is_set_for = CONTINUOUS
+            self.metric_menu_is_set_for = meta_globals.CONTINUOUS
         
         else:
             # diagnostic data; deactive metrics option
             # we always show sens. + spec. for diag. data.
             self.menuMetric.setDisabled(True)
-            self.metric_menu_is_set_for = DIAGNOSTIC
+            self.metric_menu_is_set_for = meta_globals.DIAGNOSTIC
 
                 
     def add_binary_metrics(self, metric_to_check=None):
@@ -663,7 +670,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # straight forward way of doing this, 
         # unfortunately.
         data_type = self.tableView.model().get_current_outcome_type(get_str=False)
-        if data_type in (BINARY, CONTINUOUS):
+        if data_type in (meta_globals.BINARY, meta_globals.CONTINUOUS):
             # then there are sub-menus (one-group, two-group)
             for sub_menu in self.menuMetric.actions():
                 sub_menu = sub_menu.menu()
@@ -1117,7 +1124,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         cov_vals_d = self.model.dataset.get_values_for_cov(covariate.name)
         undo_f = lambda : \
                     self.model.add_covariate(covariate.name, \
-                                COV_INTS_TO_STRS[covariate.data_type], \
+                                meta_globals.COV_INTS_TO_STRS[covariate.data_type], \
                                 cov_values=cov_vals_d)
         redo_f = lambda : self.model.remove_covariate(covariate)
         delete_command = CommandGenericDo(redo_f, undo_f)
@@ -1143,7 +1150,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # in the dataset. in this case, the only 
         # row is essentially a blank study. 
         add_blank_study = len(data_model) < 1
-        self.model = DatasetModel(dataset=data_model, 
+        self.model = ma_data_table_model.DatasetModel(dataset=data_model, 
                                     add_blank_study=add_blank_study)
 
         self._disconnections()
@@ -1219,7 +1226,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         
         
     def undo_set_model(self, out_path, state_dict, dataset):
-        self.model = DatasetModel(dataset)
+        self.model = ma_data_table_model.DatasetModel(dataset)
         self.model.set_state(state_dict)
         self.out_path = out_path
         self._disconnections()
@@ -1296,9 +1303,9 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         '''
         
         self.user_prefs = {}
-        if os.path.exists(PREFS_PATH):
+        if os.path.exists(meta_globals.PREFS_PATH):
             try:
-                self.user_prefs = pickle.load(open(PREFS_PATH))
+                self.user_prefs = pickle.load(open(meta_globals.PREFS_PATH))
             except:
                 print "preferences dictionary is corrupt! using defaults"
                 self.user_prefs = self._default_user_prefs()
@@ -1322,7 +1329,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
     def _save_user_prefs(self):
         try:
-            fout = open(PREFS_PATH, 'wb')
+            fout = open(meta_globals.PREFS_PATH, 'wb')
             pickle.dump(self.user_prefs, fout)
             fout.close()
         except:
@@ -1402,16 +1409,20 @@ class CommandImportCSV(QUndoCommand):
                 self.main_form._add_new_covariate(name, cov_type)
 
         # Copy data into table
-        progress_bar  = ImportProgress(self.main_form, 0, num_rows*num_cols)
+        progress_bar  = ImportProgress(self.main_form, 0, num_rows*num_cols-1)
+        
+        
+        
         progress_bar.setValue(0)
         progress_bar.show()
         for row in range(num_rows):
             for col in range(num_cols):
                 progress_bar.setValue(row*num_cols + col)
                 QApplication.processEvents()
-                print("bar_ value: %s" % str([progress_bar.progress_bar.value(),progress_bar.progress_bar.minimum(), progress_bar.progress_bar.maximum()]))
+                print("bar_ value: %s" % str([progress_bar.value(),progress_bar.minimum(), progress_bar.maximum()]))
                 value = QVariant(QString(self.imported_data[row][col]))
                 self.main_form.model.setData(self.main_form.model.index(row,col+1), value, import_csv=True)
+        
         progress_bar.hide() # we are done
         
     
@@ -1442,22 +1453,22 @@ class CommandNext(QUndoCommand):
 ##############################################################################
 def _gen_some_data():
     ''' For testing purposes. Generates a toy dataset.'''
-    dataset = Dataset()
-    studies = [Study(i, name=study, year=y) for i, study, y in zip(range(3),
+    dataset = ma_dataset.Dataset()
+    studies = [ma_dataset.Study(i, name=study, year=y) for i, study, y in zip(range(3),
                         ["trik", "wallace", "lau"], [1984, 1990, 2000])]
     raw_data = [
                                 [ [10, 100] , [15, 100] ], [ [20, 200] , [25, 200] ],
                                 [ [30, 300] , [35, 300] ]
                       ]
   
-    outcome = Outcome("death", BINARY)
+    outcome = ma_dataset.Outcome("death", meta_globals.BINARY)
     dataset.add_outcome(outcome)
 
     for study in studies:
         dataset.add_study(study)
     
     for study,data in zip(dataset.studies, raw_data):
-        study.add_ma_unit(MetaAnalyticUnit(outcome, raw_data=data), "baseline")
+        study.add_ma_unit(ma_dataset.MetaAnalyticUnit(outcome, raw_data=data), "baseline")
     
     return dataset
 
@@ -1516,7 +1527,7 @@ def copy_paste_test():
 def test_add_new_outcome():
     meta, app = _setup_app()
     data_model = _gen_some_data()
-    test_model = DatasetModel(dataset=data_model)
+    test_model = ma_data_table_model.DatasetModel(dataset=data_model)
     meta.tableView.setModel(test_model)
     new_outcome_name = u"test outcome"
     new_outcome_type = "binary"
@@ -1527,7 +1538,7 @@ def test_add_new_outcome():
 def test_remove_outcome():
     meta, app = _setup_app()
     data_model = _gen_some_data()
-    test_model = DatasetModel(dataset=data_model)
+    test_model = ma_data_table_model.DatasetModel(dataset=data_model)
     meta.tableView.setModel(test_model)
     new_outcome_name = u"test outcome"
     new_outcome_type = "binary"
@@ -1541,7 +1552,7 @@ def paste_from_excel_test():
     meta, app = _setup_app()
 
     #set up the tableview model with a blank model
-    test_model = DatasetModel()
+    test_model = ma_data_table_model.DatasetModel()
     meta.tableView.setModel(test_model)
     upper_left_index = meta.tableView.model().createIndex(0, 1)
     # copied from an Excel spreadsheet
@@ -1574,9 +1585,36 @@ def start():
     print "".join(["*" for x in range(len(welcome_str))])
 
     app = QtGui.QApplication(sys.argv)
+    
+    splash_pixmap = QPixmap(":/misc/splash.png")
+    splash = QSplashScreen(splash_pixmap)
+    splash.show()
+    app.processEvents()
+    
+    
+    #import_everything()
+    
+    
     meta = MetaForm()
     meta.show()
+    splash.finish(meta)
     sys.exit(app.exec_())
+    
+    
+    
+#     QApplication app(argc, argv);
+#     QPixmap pixmap(":/splash.png");
+#     QSplashScreen splash(pixmap);
+#     splash.show();
+#     app.processEvents();
+#     ...
+#     QMainWindow window;
+#     window.show();
+#     splash.finish(&window);
+#     return app.exec();
+    
+    
+    
     
 #
 # to launch:
