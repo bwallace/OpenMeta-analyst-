@@ -559,6 +559,11 @@
    <addaction name="action_save"/>
    <addaction name="separator"/>
    <addaction name="action_change_conf_level"/>
+   <addaction name="action_go"/>
+   <addaction name="action_cum_ma"/>
+   <addaction name="action_subgroup_ma"/>
+   <addaction name="action_meta_regression"/>
+   <addaction name="action_loo_ma"/>
    <addaction name="separator"/>
    <addaction name="action_undo"/>
    <addaction name="action_redo"/>
@@ -596,6 +601,10 @@
    </property>
   </action>
   <action name="action_go">
+   <property name="icon">
+    <iconset resource="images/icons.qrc">
+     <normaloff>:/misc/meta_analysis.png</normaloff>:/misc/meta_analysis.png</iconset>
+   </property>
    <property name="text">
     <string>meta-analysis...</string>
    </property>
@@ -616,11 +625,19 @@
    </property>
   </action>
   <action name="action_cum_ma">
+   <property name="icon">
+    <iconset resource="images/icons.qrc">
+     <normaloff>:/misc/cum_meta_analysis.png</normaloff>:/misc/cum_meta_analysis.png</iconset>
+   </property>
    <property name="text">
     <string>cumulative meta-analysis...</string>
    </property>
   </action>
   <action name="action_loo_ma">
+   <property name="icon">
+    <iconset resource="images/icons.qrc">
+     <normaloff>:/misc/leave_one_out.png</normaloff>:/misc/leave_one_out.png</iconset>
+   </property>
    <property name="text">
     <string>leave-one-out meta-analysis...</string>
    </property>
@@ -660,6 +677,10 @@
    </property>
   </action>
   <action name="action_meta_regression">
+   <property name="icon">
+    <iconset resource="images/icons.qrc">
+     <normaloff>:/misc/meta_reg.png</normaloff>:/misc/meta_reg.png</iconset>
+   </property>
    <property name="text">
     <string>meta-regression</string>
    </property>
@@ -685,7 +706,7 @@
   <action name="action_copy">
    <property name="icon">
     <iconset resource="images/icons.qrc">
-     <normaloff>:/toolbar-icons/toolbar-icons/cut.png</normaloff>:/toolbar-icons/toolbar-icons/cut.png</iconset>
+     <normaloff>:/misc/copy.png</normaloff>:/misc/copy.png</iconset>
    </property>
    <property name="text">
     <string>copy (ctrl + c)</string>
@@ -701,6 +722,10 @@
    </property>
   </action>
   <action name="action_subgroup_ma">
+   <property name="icon">
+    <iconset resource="images/icons.qrc">
+     <normaloff>:/misc/subgroup_ma.png</normaloff>:/misc/subgroup_ma.png</iconset>
+   </property>
    <property name="text">
     <string>subgroup meta-analysis</string>
    </property>

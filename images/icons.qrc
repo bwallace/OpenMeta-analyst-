@@ -1,5 +1,11 @@
 <RCC>
   <qresource prefix="misc">
+    <file>copy.png</file>
+    <file>leave_one_out.png</file>
+    <file>meta_reg.png</file>
+    <file>subgroup_ma.png</file>
+    <file>cum_meta_analysis.png</file>
+    <file>meta_analysis.png</file>
     <file>splash.png</file>
     <file>calculator-34.png</file>
     <file>down_arrow.png</file>
@@ -11,7 +17,6 @@
     <file>meta.svg</file>
     <file>ometa.png</file>
     <file>right_arrow.png</file>
-    <file>meta_analysis.png</file>
     <file>up_arrow.png</file>
   </qresource>
   <qresource prefix="toolbar-icons">
