@@ -383,6 +383,15 @@ class Dataset:
         we assume it's a covariate and sort by that. ordered_list allows
         you to sort arbitrarily in the order specified by the list.
         '''
+        
+        outcome_name = directions_to_ma_unit['outcome_name']
+        follow_up = directions_to_ma_unit['follow_up']
+        current_groups = directions_to_ma_unit['current_groups']
+        data_index = directions_to_ma_unit['data_index']
+        current_effect = directions_to_ma_unit['current_effect']
+        group_str = directions_to_ma_unit['group_str']
+        outcome_type = directions_to_ma_unit['outcome_type']
+        
         if compare_by == "name":
             return lambda study_a, study_b : self._meta_cmp_wrapper(study_a, study_b,\
                                                             study_a.name, study_b.name, reverse)
@@ -391,34 +400,46 @@ class Dataset:
                                                                     study_b.year, reverse)
         elif compare_by == 'raw_data':
             def f(study_a, study_b):
-                ma_unit_A = study_a.get_ma_unit(directions_to_ma_unit['outcome_name'],directions_to_ma_unit['follow_up'])
-                ma_unit_B = study_b.get_ma_unit(directions_to_ma_unit['outcome_name'],directions_to_ma_unit['follow_up'])
-                raw_data_A = ma_unit_A.get_raw_data_for_groups(directions_to_ma_unit['current_groups'])
-                raw_data_B = ma_unit_B.get_raw_data_for_groups(directions_to_ma_unit['current_groups'])
-                study_a_val = raw_data_A[directions_to_ma_unit['data_index']]
-                study_b_val = raw_data_B[directions_to_ma_unit['data_index']]
+                ma_unit_A = study_a.get_ma_unit(outcome_name,follow_up)
+                ma_unit_B = study_b.get_ma_unit(outcome_name,follow_up)
+                raw_data_A = ma_unit_A.get_raw_data_for_groups(current_groups)
+                raw_data_B = ma_unit_B.get_raw_data_for_groups(current_groups)
+                study_a_val = raw_data_A[data_index]
+                study_b_val = raw_data_B[data_index]
                 return self._meta_cmp_wrapper(study_a, study_b, study_a_val, study_b_val, reverse)
             return f
         elif compare_by == 'outcomes':
             def f(study_a, study_b):
-                ma_unit_A = study_a.get_ma_unit(directions_to_ma_unit['outcome_name'],directions_to_ma_unit['follow_up'])
-                ma_unit_B = study_b.get_ma_unit(directions_to_ma_unit['outcome_name'],directions_to_ma_unit['follow_up'])
-
-                if directions_to_ma_unit['outcome_type'] in (BINARY,CONTINUOUS):
-                    outcome_data_A = ma_unit_A.get_display_effect_and_ci(directions_to_ma_unit['current_effect'], directions_to_ma_unit['group_str']) 
-                    outcome_data_B = ma_unit_B.get_display_effect_and_ci(directions_to_ma_unit['current_effect'], directions_to_ma_unit['group_str'])
-                elif directions_to_ma_unit['outcome_type'] == DIAGNOSTIC:
+                ma_unit_A = study_a.get_ma_unit(outcome_name,follow_up)
+                ma_unit_B = study_b.get_ma_unit(outcome_name,follow_up)
+                
+                if outcome_type is BINARY:
+                    to_display_scale = lambda x: meta_py_r.binary_convert_scale(x, current_effect, convert_to="display.scale")
+                elif outcome_type is CONTINUOUS:
+                    to_display_scale = lambda x: meta_py_r.continuous_convert_scale(x, current_effect, convert_to="display.scale")
+                elif outcome_type is DIAGNOSTIC:
+                    to_display_scale = lambda x: meta_py_r.diagnostic_convert_scale(x, current_effect, convert_to="display.scale")
+                
+                if outcome_type in (BINARY,CONTINUOUS):
+                    outcome_data_A = ma_unit_A.get_effect_and_ci(current_effect, group_str)
+                    outcome_data_B = ma_unit_B.get_effect_and_ci(current_effect, group_str)                    
+                    outcome_data_A = [to_display_scale(c_val) for c_val in outcome_data_A]
+                    outcome_data_B = [to_display_scale(c_val) for c_val in outcome_data_B]
+                elif outcome_type == DIAGNOSTIC:
                     #                                  /\/\/\/\
                     (outcome_data_A, outcome_data_B) = ([],[])
                     #                                     |
                     #                                  \_____/
                     for diag_metric in ["Sens","Spec"]: # this order corresponds to the order displayed on the spreadsheet
-                        est_and_ci_A = ma_unit_A.get_display_effect_and_ci(diag_metric, directions_to_ma_unit['group_str'])
-                        est_and_ci_B = ma_unit_B.get_display_effect_and_ci(diag_metric, directions_to_ma_unit['group_str'])
+                        est_and_ci_A = ma_unit_A.get_effect_and_ci(diag_metric, group_str)
+                        est_and_ci_B = ma_unit_B.get_effect_and_ci(diag_metric, group_str)
+                        est_and_ci_A = [to_display_scale(c_val) for c_val in est_and_ci_A]
+                        est_and_ci_B = [to_display_scale(c_val) for c_val in est_and_ci_B]
+                        
                         outcome_data_A.extend(est_and_ci_A)
                         outcome_data_B.extend(est_and_ci_B)
-                study_a_val = outcome_data_A[directions_to_ma_unit['data_index']]
-                study_b_val = outcome_data_B[directions_to_ma_unit['data_index']]
+                study_a_val = outcome_data_A[data_index]
+                study_b_val = outcome_data_B[data_index]
                 
                 return self._meta_cmp_wrapper(study_a, study_b, study_a_val, study_b_val, reverse)
             return f

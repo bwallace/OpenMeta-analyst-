@@ -11,6 +11,7 @@
     <file>meta.svg</file>
     <file>ometa.png</file>
     <file>right_arrow.png</file>
+    <file>meta_analysis.png</file>
     <file>up_arrow.png</file>
   </qresource>
   <qresource prefix="toolbar-icons">

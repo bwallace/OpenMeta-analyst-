@@ -88,6 +88,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         super(MetaForm, self).__init__(parent)
         self.setupUi(self)
         
+        
         meta_py_r.set_global_conf_level(meta_globals.DEFAULT_CONF_LEVEL)
         self.cl_label=QLabel("confidence level: {:.1%}".format(meta_py_r.get_global_conf_level()/100.0))
         self.cl_label.setAlignment(Qt.AlignRight)
@@ -131,8 +132,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.metric_menu_is_set_for = None  # BINARY, CONTINUOUS, or DIAGNOSTIC
         #self.raise_()
 
-        # by default, disable meta-regression (until we
-        # have covariates)
+        # by default, disable meta-regression (until we have covariates)
         self.action_meta_regression.setEnabled(False)
 
         ####################################################
@@ -183,7 +183,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 event.ignore()
         print "*** goodbye, dear analyst. ***"
 
-    ###    Should ask if user wants to save before making the new dataset.. GD
+    ### TODO: Should ask if user wants to save before making the new dataset.. GD
     def create_new_dataset(self, use_undo_framework=True):
         name = unicode("untitled_dataset", "utf-8")
         
