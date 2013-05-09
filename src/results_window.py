@@ -213,7 +213,7 @@ class ResultsWindow(QMainWindow, forms.ui_results_window.Ui_ResultsWindow):
         txt_item = QGraphicsTextItem(QString(text))
         txt_item.setFont(QFont("courier", 12))
         txt_item.setToolTip("To copy the text:\n1) Right click on the text and choose \"Select All\".\n2) Right click again and choose \"Copy\".")
-        txt_item.setTextInteractionFlags(Qt.TextEditable)
+        txt_item.setTextInteractionFlags(Qt.TextSelectableByMouse)
         self.scene.addItem(txt_item)
         # fix for issue #149; was formerly txt_item.boundingRect().size().height()
         
@@ -224,11 +224,8 @@ class ResultsWindow(QMainWindow, forms.ui_results_window.Ui_ResultsWindow):
         
         self.y_coord += txt_item.boundingRect().height() ###
         txt_item.setPos(position)
-
-
-
+        
         return (txt_item.boundingRect(), position)
-
 
     def process_console_input(self):
         res = meta_py_r.evaluate_in_r(self.current_line())

@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>504</width>
+    <width>528</width>
     <height>720</height>
    </rect>
   </property>
@@ -86,7 +86,7 @@
          <string>regression coefficient</string>
         </property>
         <property name="icon">
-         <iconset resource="images/icons.qrc">
+         <iconset resource="../images/icons.qrc">
           <normaloff>:/new_dataset/startscreens/single_reg_coef.png</normaloff>:/new_dataset/startscreens/single_reg_coef.png</iconset>
         </property>
         <property name="iconSize">
@@ -130,7 +130,7 @@
          <string>SMD</string>
         </property>
         <property name="icon">
-         <iconset resource="images/icons.qrc">
+         <iconset resource="../images/icons.qrc">
           <normaloff>:/new_dataset/startscreens/smd.png</normaloff>:/new_dataset/startscreens/smd.png</iconset>
         </property>
         <property name="iconSize">
@@ -175,7 +175,7 @@
 effect size</string>
         </property>
         <property name="icon">
-         <iconset resource="images/icons.qrc">
+         <iconset resource="../images/icons.qrc">
           <normaloff>:/new_dataset/startscreens/gen_eff_size.png</normaloff>:/new_dataset/startscreens/gen_eff_size.png</iconset>
         </property>
         <property name="iconSize">
@@ -222,7 +222,7 @@ effect size</string>
          <string>mean</string>
         </property>
         <property name="icon">
-         <iconset resource="images/icons.qrc">
+         <iconset resource="../images/icons.qrc">
           <normaloff>:/new_dataset/startscreens/mean.png</normaloff>:/new_dataset/startscreens/mean.png</iconset>
         </property>
         <property name="iconSize">
@@ -266,7 +266,7 @@ effect size</string>
          <string>proportion</string>
         </property>
         <property name="icon">
-         <iconset resource="images/icons.qrc">
+         <iconset resource="../images/icons.qrc">
           <normaloff>:/new_dataset/startscreens/proportion.png</normaloff>:/new_dataset/startscreens/proportion.png</iconset>
         </property>
         <property name="iconSize">
@@ -320,7 +320,7 @@ effect size</string>
          <string>proportions</string>
         </property>
         <property name="icon">
-         <iconset resource="images/icons.qrc">
+         <iconset resource="../images/icons.qrc">
           <normaloff>:/new_dataset/startscreens/proportions.png</normaloff>:/new_dataset/startscreens/proportions.png</iconset>
         </property>
         <property name="iconSize">
@@ -371,7 +371,7 @@ effect size</string>
          <string>diagnostic</string>
         </property>
         <property name="icon">
-         <iconset resource="images/icons.qrc">
+         <iconset resource="../images/icons.qrc">
           <normaloff>:/new_dataset/startscreens/diagnostic.png</normaloff>:/new_dataset/startscreens/diagnostic.png</iconset>
         </property>
         <property name="iconSize">
@@ -429,7 +429,7 @@ effect size</string>
          <string>means</string>
         </property>
         <property name="icon">
-         <iconset resource="images/icons.qrc">
+         <iconset resource="../images/icons.qrc">
           <normaloff>:/new_dataset/startscreens/means.png</normaloff>:/new_dataset/startscreens/means.png</iconset>
         </property>
         <property name="iconSize">
@@ -1037,7 +1037,7 @@ Note, however, that if you are importing data via a CSV and you have effect data
   </layout>
  </widget>
  <resources>
-  <include location="images/icons.qrc"/>
+  <include location="../images/icons.qrc"/>
  </resources>
  <connections>
   <connection>

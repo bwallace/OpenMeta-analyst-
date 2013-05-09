@@ -56,7 +56,7 @@
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap resource="images/icons.qrc">:/misc/meta.png</pixmap>
+        <pixmap resource="../images/icons.qrc">:/misc/meta.png</pixmap>
        </property>
        <property name="scaledContents">
         <bool>true</bool>
@@ -206,7 +206,7 @@ Contract No. HHSA 290 2007 10055 I; Task Order #2</string>
         <string>Open an existing project</string>
        </property>
        <property name="icon">
-        <iconset resource="images/icons.qrc">
+        <iconset resource="../images/icons.qrc">
          <normaloff>:/function_icon_set/function_icon_set/folder_48.png</normaloff>:/function_icon_set/function_icon_set/folder_48.png</iconset>
        </property>
       </widget>
@@ -217,7 +217,7 @@ Contract No. HHSA 290 2007 10055 I; Task Order #2</string>
         <string>open recent ...</string>
        </property>
        <property name="icon">
-        <iconset resource="images/icons.qrc">
+        <iconset resource="../images/icons.qrc">
          <normaloff>:/function_icon_set/function_icon_set/folder_48.png</normaloff>:/function_icon_set/function_icon_set/folder_48.png</iconset>
        </property>
       </widget>
@@ -228,7 +228,7 @@ Contract No. HHSA 290 2007 10055 I; Task Order #2</string>
         <string>Import CSV</string>
        </property>
        <property name="icon">
-        <iconset resource="images/icons.qrc">
+        <iconset resource="../images/icons.qrc">
          <normaloff>:/function_icon_set/function_icon_set/box_download_48.png</normaloff>:/function_icon_set/function_icon_set/box_download_48.png</iconset>
        </property>
       </widget>
@@ -239,7 +239,7 @@ Contract No. HHSA 290 2007 10055 I; Task Order #2</string>
         <string>Create a new Project</string>
        </property>
        <property name="icon">
-        <iconset resource="images/icons.qrc">
+        <iconset resource="../images/icons.qrc">
          <normaloff>:/function_icon_set/function_icon_set/add_48.png</normaloff>:/function_icon_set/function_icon_set/add_48.png</iconset>
        </property>
       </widget>
@@ -253,12 +253,12 @@ Contract No. HHSA 290 2007 10055 I; Task Order #2</string>
   <zorder></zorder>
   <zorder>verticalSpacer</zorder>
   <zorder></zorder>
-  <zorder>import_csv_btn</zorder>
  </widget>
  <resources>
-  <include location="images/icons.qrc"/>
-  <include location="images/icons.qrc"/>
-  <include location="images/icons.qrc"/>
+  <include location="../images/icons.qrc"/>
+  <include location="../images/icons.qrc"/>
+  <include location="../images/icons.qrc"/>
+  <include location="../images/icons.qrc"/>
   <include location="images/icons.qrc"/>
  </resources>
  <connections/>

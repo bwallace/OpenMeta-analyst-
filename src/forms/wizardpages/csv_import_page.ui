@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ImportCsvDlg</class>
- <widget class="QDialog" name="ImportCsvDlg">
+ <class>WizardPage</class>
+ <widget class="QWizardPage" name="WizardPage">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>679</width>
-    <height>648</height>
+    <width>733</width>
+    <height>618</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Import CSV</string>
+   <string>WizardPage</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
@@ -162,7 +162,7 @@ Additional columns will be treated as covariates.</string>
            <string>select csv file ...</string>
           </property>
           <property name="icon">
-           <iconset resource="../images/icons.qrc">
+           <iconset resource="../../images/icons.qrc">
             <normaloff>:/function_icon_set/function_icon_set/folder_48.png</normaloff>:/function_icon_set/function_icon_set/folder_48.png</iconset>
           </property>
          </widget>
@@ -230,60 +230,10 @@ Additional columns will be treated as covariates.</string>
      </layout>
     </widget>
    </item>
-   <item>
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
-   </item>
   </layout>
  </widget>
- <tabstops>
-  <tabstop>from_excel_chkbx</tabstop>
-  <tabstop>has_headers_chkbx</tabstop>
-  <tabstop>delimter_le</tabstop>
-  <tabstop>select_file_btn</tabstop>
-  <tabstop>buttonBox</tabstop>
- </tabstops>
  <resources>
-  <include location="../images/icons.qrc"/>
+  <include location="../../images/icons.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>ImportCsvDlg</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>175</x>
-     <y>623</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>157</x>
-     <y>247</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>ImportCsvDlg</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>175</x>
-     <y>623</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>247</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
