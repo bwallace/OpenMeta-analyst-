@@ -11,11 +11,8 @@
 
 #import pdb
 
-# from PyQt4.Qt import *
-from PyQt4.Qt import (pyqtSignature, QDialog, QDialogButtonBox, QMessageBox,
-                      QObject, QPalette, QString, Qt, QTableWidgetItem, SIGNAL,
-                      pyqtRemoveInputHook, QColor, QBrush)
-# from PyQt4.QtGui import *
+from PyQt4.Qt import *
+from PyQt4.QtGui import *
 
 import meta_py_r
 import meta_globals

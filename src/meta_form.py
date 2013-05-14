@@ -1342,6 +1342,18 @@ class MetaForm(QtGui.QMainWindow, forms.ui_meta.Ui_MainWindow):
                 "recent datasets":[], 
                 "method_params":{},
                 }
+    
+    # TODO: HIGH PRIORITY IMPLEMENT HANDLING OF wizard results
+    def _handle_wizard_results(self, wizard_data):
+        route = wizard_data['wizard_path'] # route through wizard
+        
+        if route == None:
+            pass
+        elif route == "open":
+            file_path = wizard_data['file_path']
+            self.open(file_path=file_path)
+        
+        
         
 class CommandGenericDo(QUndoCommand):
     '''
@@ -1359,6 +1371,7 @@ class CommandGenericDo(QUndoCommand):
     def undo(self):
         self.undo_f()
 
+######################### Undo Command for Import CSV #########################
 class CommandImportCSV(QUndoCommand):
     def __init__(self,
                  original_dataset=None, old_state_dict=None,
@@ -1425,7 +1438,7 @@ class CommandImportCSV(QUndoCommand):
                 self.main_form.model.setData(self.main_form.model.index(row,col+1), value, import_csv=True)
         
         progress_bar.hide() # we are done
-        
+####################### END Undo Command for Import CSV #######################
     
 class CommandNext(QUndoCommand):
     '''
