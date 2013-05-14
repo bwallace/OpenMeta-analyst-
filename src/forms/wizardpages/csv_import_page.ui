@@ -6,12 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>733</width>
-    <height>618</height>
+    <width>646</width>
+    <height>630</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>500</width>
+    <height>630</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>WizardPage</string>
+  </property>
+  <property name="title">
+   <string>Choose CSV file</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
@@ -31,6 +40,18 @@ Additional columns will be treated as covariates.</string>
    </item>
    <item>
     <widget class="QGroupBox" name="groupBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>200</height>
+      </size>
+     </property>
      <property name="title">
       <string>Import Options</string>
      </property>
@@ -174,6 +195,12 @@ Additional columns will be treated as covariates.</string>
    </item>
    <item>
     <widget class="QGroupBox" name="groupBox_2">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>120</height>
+      </size>
+     </property>
      <property name="title">
       <string>Required CSV format</string>
      </property>
