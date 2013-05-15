@@ -10,7 +10,7 @@ from PyQt4.QtGui import *
 
 import forms.ui_create_new_projectdlg
 import meta_globals
-from meta_globals import BINARY, CONTINUOUS
+#from meta_globals import BINARY, CONTINUOUS
 
 class CreateNewProjectDlg(QDialog, forms.ui_create_new_projectdlg.Ui_newprojectdialog):
     
@@ -84,50 +84,50 @@ class CreateNewProjectDlg(QDialog, forms.ui_create_new_projectdlg.Ui_newprojectd
         #one_arm
         if self.onearm_proportion_Button.isChecked():
             self.summary['arms'] = 'one'
-            self.summary['data_type'] = 'Binary'
+            self.summary['data_type'] = 'binary'
             self.summary['sub_type'] = 'proportion'
             default_effect = "PR"
             metric_choices = meta_globals.BINARY_ONE_ARM_METRICS
         if self.onearm_mean_Button.isChecked():    
             self.summary['arms'] = 'one'
-            self.summary['data_type'] = 'Continuous'
+            self.summary['data_type'] = 'continuous'
             self.summary['sub_type'] = 'mean'
             default_effect = meta_globals.DEFAULT_CONTINUOUS_ONE_ARM
             metric_choices = meta_globals.CONTINUOUS_ONE_ARM_METRICS
         if self.onearm_single_reg_coef_Button.isChecked():
             self.summary['arms'] = 'one'
-            self.summary['data_type'] = 'Continuous'
+            self.summary['data_type'] = 'continuous'
             self.summary['sub_type'] = 'reg_coef'
             default_effect = meta_globals.DEFAULT_CONTINUOUS_ONE_ARM
             metric_choices = meta_globals.CONTINUOUS_ONE_ARM_METRICS
         if self.onearm_generic_effect_size_Button.isChecked():
             self.summary['arms'] = 'one'
-            self.summary['data_type'] = 'Continuous'
+            self.summary['data_type'] = 'continuous'
             self.summary['sub_type'] = 'generic_effect' # TODO: Should disable_two-arm metrics for generic effect
             default_effect = meta_globals.DEFAULT_CONTINUOUS_ONE_ARM
             metric_choices = meta_globals.CONTINUOUS_ONE_ARM_METRICS
         #twoarm
         if self.twoarm_proportions_Button.isChecked(): 
             self.summary['arms'] = 'two'
-            self.summary['data_type'] = 'Binary'
+            self.summary['data_type'] = 'binary'
             self.summary['sub_type'] = 'proportions'
             default_effect = "OR"
             metric_choices = meta_globals.BINARY_TWO_ARM_METRICS
         if self.twoarm_means_Button.isChecked():
             self.summary['arms'] = 'two'     
-            self.summary['data_type'] = 'Continuous'
+            self.summary['data_type'] = 'continuous'
             self.summary['sub_type'] = 'means'
             default_effect = "MD"
             metric_choices = meta_globals.CONTINUOUS_TWO_ARM_METRICS
         if self.twoarm_smds_Button.isChecked():
             self.summary['arms']      = 'two' 
-            self.summary['data_type'] = 'Continuous'
+            self.summary['data_type'] = 'continuous'
             self.summary['sub_type']  = 'smd'
             default_effect = "SMD"
             metric_choices = meta_globals.CONTINUOUS_TWO_ARM_METRICS
         #diagnostic
         if self.diagnostic_Button.isChecked():
-            self.summary['data_type'] = 'Diagnostic'
+            self.summary['data_type'] = 'diagnostic'
         
         if 'default_effect' in locals():
             self.summary['effect'] = default_effect
@@ -136,7 +136,7 @@ class CreateNewProjectDlg(QDialog, forms.ui_create_new_projectdlg.Ui_newprojectd
         self.metric_cbo_box.blockSignals(True)
         self.metric_cbo_box.clear()
         self.metric_cbo_box.blockSignals(False)
-        if self.summary['data_type'] != 'Diagnostic':
+        if self.summary['data_type'] != 'diagnostic':
             self.metric_cbo_box.blockSignals(True)
             for metric in metric_choices:
                 metric_pretty_name = meta_globals.ALL_METRIC_NAMES[metric]
@@ -157,7 +157,7 @@ class CreateNewProjectDlg(QDialog, forms.ui_create_new_projectdlg.Ui_newprojectd
     def get_summary(self):
         # Summary results:
         #  name: Outcome name
-        #  data_type: Binary, Continuous, or Diagnostic
+        #  data_type: binary, continuous, or diagnostic
         #  sub_type: more specific than just data_type
         #  arms: one or two
         # 

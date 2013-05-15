@@ -177,8 +177,8 @@ class ImportCsvDlg(QDialog, forms.ui_import_csv_dlg.Ui_ImportCsvDlg):
                 try:
                     float(x)
                 except ValueError:
-                    return "Factor" # these types are important to get right (look in covariate constructor)
-            return "Continuous"     #
+                    return "factor" # these types are important to get right (look in covariate constructor)
+            return "continuous"     #
 
         index_offset = len(expected_headers)
         for cov_index in range(len(covariate_names)):

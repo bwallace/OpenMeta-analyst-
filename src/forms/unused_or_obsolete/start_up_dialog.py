@@ -79,7 +79,7 @@ class StartUp(QDialog, forms.ui_start_upV2.Ui_WelcomeDialog):
         new_project_dialog = create_new_project_dialog.CreateNewProjectDlg(parent=self)
         if new_project_dialog.exec_():
             dataset_info = new_project_dialog.get_summary()
-            is_diag = dataset_info['data_type'] == "Diagnostic"
+            is_diag = dataset_info['data_type'] == "diagnostic"
         
             self.parent.new_dataset(name=name, is_diag=is_diag)
             print("error before here?")
@@ -90,18 +90,18 @@ class StartUp(QDialog, forms.ui_start_upV2.Ui_WelcomeDialog):
             self.parent.cur_dimension = tmp
             
             # SET DEFAULT METRICS
-            if dataset_info['data_type'] == "Binary":
+            if dataset_info['data_type'] == "binary":
                 if dataset_info['arms'] == "one":
                     self.parent.model.current_effect = meta_globals.DEFAULT_BINARY_ONE_ARM
                 elif dataset_info['arms'] == "two":
                     self.parent.model.current_effect = meta_globals.DEFAULT_BINARY_TWO_ARM
-            if dataset_info['data_type'] == "Continuous":
+            if dataset_info['data_type'] == "continuous":
                 if dataset_info['arms'] == "one":
                     self.parent.model.current_effect = meta_globals.DEFAULT_CONTINUOUS_ONE_ARM
                 elif dataset_info['arms'] == "two":
                     self.parent.model.current_effect = meta_globals.DEFAULT_CONTINUOUS_TWO_ARM
             # Put this stuff in an if just in case...
-            if dataset_info['data_type'] == "Binary" or dataset_info['data_type'] == "Continuous":
+            if dataset_info['data_type'] == "binary" or dataset_info['data_type'] == "continuous":
                 self.parent.populate_metrics_menu(metric_to_check=self.parent.model.current_effect)
                 self.parent.model.try_to_update_outcomes()
                 self.parent.model.reset()

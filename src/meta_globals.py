@@ -94,7 +94,7 @@ BINARY, CONTINUOUS, DIAGNOSTIC, OTHER = range(4)
 FACTOR = 4
 
 # making life easier
-COV_INTS_TO_STRS = {4:"Factor", 1:"Continuous"}
+COV_INTS_TO_STRS = {4:"factor", 1:"continuous"}
 
 STR_TO_TYPE_DICT = {u"binary":BINARY,
                     u"continuous":CONTINUOUS, 

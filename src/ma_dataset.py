@@ -604,7 +604,6 @@ class MetaAnalyticUnit:
         self.outcome = outcome
 
         if group_names is None and not self.is_diag:
-            #group_names = ["tx A", "tx B"]
             group_names = meta_globals.DEFAULT_GROUP_NAMES
         elif group_names is None:
             group_names = ["test 1"]
@@ -919,18 +918,14 @@ class Outcome:
 class Covariate:
     ''' Meta-data about covariates. '''
     def __init__(self, name, data_type):
-        # annoying case conversion -- you see we 
-        # assume the first letter is capitalized (below)
-        data_type = data_type.capitalize()
-
-        if not data_type in ("Factor", "Continuous"):
+        if not data_type in ("factor", "continuous"):
             raise Exception, \
-                "covariates need to have associated type Factor or Continuous; %s was given" % data_type
+                "covariates need to have associated type factor or continuous; %s was given" % data_type
         self.name = name
-        self.data_type = CONTINUOUS if data_type == "Continuous" else FACTOR
+        self.data_type = CONTINUOUS if data_type == "continuous" else FACTOR
         
     def get_type_str(self):
-        return {CONTINUOUS:"Continuous", FACTOR:"Factor"}[self.data_type]
+        return {CONTINUOUS:"continuous", FACTOR:"factor"}[self.data_type]
     def get_data_type(self):
         return self.data_type
 

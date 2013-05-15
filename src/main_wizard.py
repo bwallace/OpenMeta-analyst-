@@ -10,16 +10,17 @@ from PyQt4 import QtCore, QtGui
 import pdb
 import meta_py_r
 import meta_globals
+from ma_data_table_model import DatasetModel
 
 
 class WelcomePage(QWizardPage, forms.wizardpages.ui_welcome_page.Ui_WizardPage):
-    def __init__(self, parent=None, recent_datasets=None, start_up=True):
+    def __init__(self, parent=None, recent_datasets=[]):
         super(WelcomePage, self).__init__(parent)
         self.setupUi(self)
         
         #print("Parent of page is %s" % str(self.parent))
         
-        self.recent_datasets = recent_datasets or []
+        self.recent_datasets = recent_datasets
         self.recent_datasets.reverse() # most recently accessed dataset first
         #self.start_up = start_up #???
         
@@ -46,7 +47,6 @@ class WelcomePage(QWizardPage, forms.wizardpages.ui_welcome_page.Ui_WizardPage):
         QObject.connect(self.open_btn,       SIGNAL("clicked()"), self.open_dataset)
         self._setup_open_recent_btn()
         QObject.connect(self.import_csv_btn, SIGNAL("clicked()"), self.import_csv)
-
             
     def _setup_open_recent_btn(self):
         if len(self.recent_datasets) > 0:
@@ -74,6 +74,7 @@ class WelcomePage(QWizardPage, forms.wizardpages.ui_welcome_page.Ui_WizardPage):
         # triggered
         dataset_path = QObject.sender(self).text()
         self.selected_dataset = dataset_path
+        self.wizard().set_selected_dataset(self.selected_dataset)
         self.wizard().accept()
         
     def open_dataset(self):
@@ -83,30 +84,18 @@ class WelcomePage(QWizardPage, forms.wizardpages.ui_welcome_page.Ui_WizardPage):
                                     "OpenMeta[analyst] - Open File", ".", 
                                     "open meta files (*.oma)"))
         if self.selected_dataset != '':
+            self.wizard().set_selected_dataset(self.selected_dataset)
             self.wizard().accept()
 
     def import_csv(self):
         self.wizard().set_wizard_path("csv_import")
         self.wizard().next()
         
-        # TODO: import csv Do more here.....???
-        
     def new_dataset(self):
-        self.wizard().set_wizard_path("new_outcome")
+        self.wizard().set_wizard_path("new_dataset")
         self.wizard().next()
         
 ################################################################################
-
-class ProjectInfo:
-    # Just a little class to store some info related to the new dataset outcome
-    def __init__(self, arms=None, data_type=None, sub_type=None, effect=None,
-                 metric_choices=[], outcome_name=None):
-        self.arms = arms
-        self.data_type = data_type
-        self.sub_type = sub_type
-        self.effect = effect
-        self.metric_choices = metric_choices
-        self.outcome_name = outcome_name
         
 class DataTypePage(QWizardPage, forms.wizardpages.ui_data_type_page.Ui_DataTypePage):
     def __init__(self, parent=None):
@@ -114,7 +103,7 @@ class DataTypePage(QWizardPage, forms.wizardpages.ui_data_type_page.Ui_DataTypeP
         self.setupUi(self)
         
         self.selected_datatype = None
-        self.summary = ProjectInfo()
+        self.summary = dict(arms=None, data_type=None, sub_type=None, effect=None, metric_choices=[], name=None) #ProjectInfo()
         
         QObject.connect(self.buttonGroup, SIGNAL("buttonClicked(QAbstractButton*)"), self._button_selected)
     
@@ -125,51 +114,51 @@ class DataTypePage(QWizardPage, forms.wizardpages.ui_data_type_page.Ui_DataTypeP
         #print("button clicked %s" % str(button))
         
         if button == self.onearm_proportion_Button:
-            self.summary.arms      = 'one'
-            self.summary.data_type = 'Binary'
-            self.summary.sub_type  = 'proportion'
-            self.summary.effect    = "PR" # default effect
-            self.summary.metric_choices = meta_globals.BINARY_ONE_ARM_METRICS
+            self.summary['arms']           = 'one'
+            self.summary['data_type']      = 'binary'
+            self.summary['sub_type']       = 'proportion'
+            self.summary['effect']         = "PR" # default effect
+            self.summary['metric_choices'] = meta_globals.BINARY_ONE_ARM_METRICS
         elif button == self.onearm_mean_Button:
-            self.summary.arms      = 'one'
-            self.summary.data_type = 'Continuous'
-            self.summary.sub_type  = 'mean'
-            self.summary.effect    = meta_globals.DEFAULT_CONTINUOUS_ONE_ARM
-            self.summary.metric_choices = meta_globals.CONTINUOUS_ONE_ARM_METRICS
+            self.summary['arms']           = 'one'
+            self.summary['data_type']      = 'continuous'
+            self.summary['sub_type']       = 'mean'
+            self.summary['effect']         = meta_globals.DEFAULT_CONTINUOUS_ONE_ARM
+            self.summary['metric_choices'] = meta_globals.CONTINUOUS_ONE_ARM_METRICS
         elif button == self.onearm_single_reg_coef_Button:
-            self.summary.arms      = 'one'
-            self.summary.data_type = 'Continuous'
-            self.summary.sub_type  = 'reg_coef'
-            self.summary.effect    = meta_globals.DEFAULT_CONTINUOUS_ONE_ARM
-            self.summary.metric_choices = meta_globals.CONTINUOUS_ONE_ARM_METRICS
+            self.summary['arms']           = 'one'
+            self.summary['data_type']      = 'continuous'
+            self.summary['sub_type']       = 'reg_coef'
+            self.summary['effect']         = meta_globals.DEFAULT_CONTINUOUS_ONE_ARM
+            self.summary['metric_choices'] = meta_globals.CONTINUOUS_ONE_ARM_METRICS
         elif button == self.onearm_generic_effect_size_Button:
-            self.summary.arms      = 'one'
-            self.summary.data_type = 'Continuous'
-            self.summary.sub_type  = 'generic_effect' # TODO: Should disable_two-arm metrics for generic effect
-            self.summary.effect    = meta_globals.DEFAULT_CONTINUOUS_ONE_ARM
-            self.summary.metric_choices = meta_globals.CONTINUOUS_ONE_ARM_METRICS
+            self.summary['arms']           = 'one'
+            self.summary['data_type']      = 'continuous'
+            self.summary['sub_type']       = 'generic_effect' # TODO: Should disable_two-arm metrics for generic effect
+            self.summary['effect']         = meta_globals.DEFAULT_CONTINUOUS_ONE_ARM
+            self.summary['metric_choices'] = meta_globals.CONTINUOUS_ONE_ARM_METRICS
         #twoarm
         elif button == self.twoarm_proportions_Button:
-            self.summary.arms      = 'two'
-            self.summary.data_type = 'Binary'
-            self.summary.sub_type  = 'proportions'
-            self.summary.effect    = "OR"
-            self.summary.metric_choices = meta_globals.BINARY_TWO_ARM_METRICS
+            self.summary['arms']           = 'two'
+            self.summary['data_type']      = 'binary'
+            self.summary['sub_type']       = 'proportions'
+            self.summary['effect']         = "OR"
+            self.summary['metric_choices'] = meta_globals.BINARY_TWO_ARM_METRICS
         elif button == self.twoarm_means_Button:
-            self.summary.arms      = 'two'     
-            self.summary.data_type = 'Continuous'
-            self.summary.sub_type  = 'means'
-            self.summary.effect    = "MD"
-            self.summary.metric_choices = meta_globals.CONTINUOUS_TWO_ARM_METRICS
+            self.summary['arms']           = 'two'     
+            self.summary['data_type']      = 'continuous'
+            self.summary['sub_type']       = 'means'
+            self.summary['effect']         = "MD"
+            self.summary['metric_choices'] = meta_globals.CONTINUOUS_TWO_ARM_METRICS
         elif button == self.twoarm_smds_Button:
-            self.summary.arms      = 'two' 
-            self.summary.data_type = 'Continuous'
-            self.summary.sub_type  = 'smd'
-            self.summary.effect    = "SMD"
-            self.summary.metric_choices = meta_globals.CONTINUOUS_TWO_ARM_METRICS
+            self.summary['arms']           = 'two' 
+            self.summary['data_type']      = 'continuous'
+            self.summary['sub_type']       = 'smd'
+            self.summary['effect']         = "SMD"
+            self.summary['metric_choices'] = meta_globals.CONTINUOUS_TWO_ARM_METRICS
         #diagnostic
         elif button == self.diagnostic_Button:
-            self.summary.data_type = 'Diagnostic'
+            self.summary['data_type'] = 'diagnostic'
             
         # Put information from pressing the button into the wizard storage area
         self.wizard().set_dataset_info(self.summary)
@@ -184,7 +173,7 @@ class DataTypePage(QWizardPage, forms.wizardpages.ui_data_type_page.Ui_DataTypeP
             return False
         
     def nextId(self):
-        if self.wizard().get_dataset_info() and self.wizard().get_dataset_info().data_type == 'Diagnostic':
+        if self.wizard().get_dataset_info() and self.wizard().get_dataset_info()['data_type'] == 'diagnostic':
             return Page_OutcomeName
         else: #normal case
             return Page_ChooseMetric
@@ -201,15 +190,15 @@ class ChooseMetricPage(QtGui.QWizardPage, forms.wizardpages.ui_choose_metric_pag
         QObject.connect(self.metric_cbo_box, SIGNAL("currentIndexChanged(int)"), self._metric_choice_changed)
         
     def initializePage(self):
-        data_type = self.wizard().get_dataset_info().data_type
-        metric_choices = self.wizard().get_dataset_info().metric_choices
-        default_effect = self.wizard().get_dataset_info().effect
+        data_type = self.wizard().get_dataset_info()['data_type']
+        metric_choices = self.wizard().get_dataset_info()['metric_choices']
+        default_effect = self.wizard().get_dataset_info()['effect']
         
         # Add metric choices to combo box
         self.metric_cbo_box.blockSignals(True)
         self.metric_cbo_box.clear()
         self.metric_cbo_box.blockSignals(False)
-        if data_type != 'Diagnostic':
+        if data_type != 'diagnostic':
             self.metric_cbo_box.blockSignals(True)
             for metric in metric_choices:
                 metric_pretty_name = meta_globals.ALL_METRIC_NAMES[metric]
@@ -234,22 +223,21 @@ class ChooseMetricPage(QtGui.QWizardPage, forms.wizardpages.ui_choose_metric_pag
 
 import csv
 
-YEAR = 1
 class CsvImportPage(QWizardPage, forms.wizardpages.ui_csv_import_page.Ui_WizardPage):
     def __init__(self, parent=None):
         super(CsvImportPage, self).__init__(parent)
         self.setupUi(self)
-        
-        ######################################################
-        self.file_path = None
-        self._reset_data()  # self.headers, self.covariate_names, self.covariate_types, self.imported_data, self.imported_data_ok
-        ######################################################
     
         self.connect(self.select_file_btn, SIGNAL("clicked()"), self._select_file)
         self.connect(self.from_excel_chkbx,  SIGNAL("stateChanged(int)"), self._rebuild_display)
         self.connect(self.has_headers_chkbx, SIGNAL("stateChanged(int)"), self._rebuild_display)
     
     def initializePage(self):
+        ######################################################
+        self.file_path = None
+        self._reset_data()
+        ######################################################
+        
         self.required_header_labels = self._get_required_header_labels()
         self.required_fmt_table.setRowCount(2)
         self.required_fmt_table.setColumnCount(len(self.required_header_labels))
@@ -270,6 +258,7 @@ class CsvImportPage(QWizardPage, forms.wizardpages.ui_csv_import_page.Ui_WizardP
             return False 
             
         if self.imported_data_ok:
+            self.wizard().set_csv_data(self.csv_data()) # stick csv data into wizard
             return True
         else:
             return False
@@ -287,7 +276,8 @@ class CsvImportPage(QWizardPage, forms.wizardpages.ui_csv_import_page.Ui_WizardP
         if self.file_path:
             self.file_path_lbl.setText(QString(self.file_path))
         
-        self._rebuild_display()
+        if self.file_path:
+            self._rebuild_display()
         
     def _rebuild_display(self):
         self._reset_data()
@@ -344,7 +334,7 @@ class CsvImportPage(QWizardPage, forms.wizardpages.ui_csv_import_page.Ui_WizardP
         # Are the years integers?
         for row in range(len(self.imported_data)):
             try:
-                int(self.imported_data[row][YEAR])
+                int(self.imported_data[row][DatasetModel.YEAR])
             except ValueError:
                 QMessageBox.warning(self, "Whoops", "The year at row " + str(row+1) + " is not an integer number.")
                 self.imported_data_ok = False
@@ -355,51 +345,27 @@ class CsvImportPage(QWizardPage, forms.wizardpages.ui_csv_import_page.Ui_WizardP
         '''
         Provides column header labels based on chosen datatype and subtype
         ** Must be updated if header_data() is ma_data_table_model is changed
-        '''
-        # TODO: Make this follow what is in header_data w/o having to make a new model
-        # maybe make a static function in ma_data_table_model that takes
-        # data_type, subtype, and effect as arguments and returns header_data info...
-        # header_data in ma_data_table_model would then call this function
+        ''' 
         
+        data_type = self.wizard().get_dataset_info()['data_type']
+        data_subtype = self.wizard().get_dataset_info()['sub_type']
+        effect = self.wizard().get_dataset_info()['effect']
+        raw_cols, outcome_cols = DatasetModel.get_column_indices(data_type, data_subtype)
         
-        data_type = self.wizard().get_dataset_info().data_type
-        data_subtype = self.wizard().get_dataset_info().sub_type
-        effect = self.wizard().get_dataset_info().effect
+        header_labels = []
         
-        print("data type: %s\nsubtype: %s\neffect: %s" % (data_type, data_subtype, effect))
+        model_cols = [DatasetModel.NAME, DatasetModel.YEAR]
+        model_cols.extend(raw_cols)
+        model_cols.extend(outcome_cols)
         
-        header_labels = ["study name", "year"]
-        raw_labels = []
-        outcome_labels = []
-        grp_names = meta_globals.DEFAULT_GROUP_NAMES
-        bin_raw_suffixes = [" #evts", " #total"]
-        cont_raw_suffixes = [" N", " mean", " SD"]
-        
-        regular_outcome_prefixes = [effect,"lower","upper"]
-       
-        
-        
-        if data_type == "Binary":
-            raw_prefixes = [0,0,1,1]
-            raw_suffixes = [0,1,0,1]
-            raw_labels = [grp_names[i] + bin_raw_suffixes[j] for i,j in zip(raw_prefixes, raw_suffixes)]
-            outcome_labels = regular_outcome_prefixes
-        elif data_type == "Continuous":
-            if data_subtype == "generic_effect":
-                raw_labels = []
-                outcome_labels = [effect, "se"]
-            else:
-                raw_prefixes = [0,0,0,1,1,1]
-                raw_suffixes = [0,1,2,0,1,2]
-                raw_labels = [grp_names[i]+cont_raw_suffixes[j] for i,j in zip(raw_prefixes, raw_suffixes)]
-                outcome_labels = regular_outcome_prefixes
-        else: #diagnostic
-            raw_labels = ["TP","FN","FP","TN"]
-            outcome_labels = ["sens.", "lower", "upper", "spec.", "lower", "upper"]
-            
-            
-        header_labels.extend(raw_labels)
-        header_labels.extend(outcome_labels)
+        for col in model_cols:
+            col_name = DatasetModel.helper_basic_horizontal_headerData(
+                            section=col, data_type=meta_globals.STR_TO_TYPE_DICT[data_type], sub_type=data_subtype,
+                            raw_columns=raw_cols, outcome_columns=outcome_cols,
+                            current_effect=effect,
+                            groups=meta_globals.DEFAULT_GROUP_NAMES)
+            col_name = str(col_name.toString())
+            header_labels.append(col_name)
         return header_labels
     
     def csv_data(self):
@@ -440,8 +406,8 @@ class CsvImportPage(QWizardPage, forms.wizardpages.ui_csv_import_page.Ui_WizardP
                 try:
                     float(x)
                 except ValueError:
-                    return "Factor" # these types are important to get right (look in covariate constructor)
-            return "Continuous"     #
+                    return "factor" # these types are important to get right (look in covariate constructor)
+            return "continuous"     #
 
         index_offset = len(expected_headers)
         for cov_index in range(len(covariate_names)):
@@ -473,9 +439,6 @@ class CsvImportPage(QWizardPage, forms.wizardpages.ui_csv_import_page.Ui_WizardP
         print(self.headers)
         for row in self.imported_data:
             print(str(row))
-            
-    def accept(self):
-        QDialog.accept(self)
 
     def _get_filepath(self):
         return str(self.file_path)
@@ -506,21 +469,26 @@ class OutcomeNamePage(QWizardPage, forms.wizardpages.ui_outcome_name_page.Ui_Wiz
 ################################################################################          
 Page_Welcome, Page_DataType, Page_ChooseMetric, Page_OutcomeName, Page_CsvImport = range(5)
 class MainWizard(QtGui.QWizard):
-    def __init__(self, parent=None, mode=None):
+    def __init__(self, parent=None, path=None, recent_datasets=[]):
         super(MainWizard, self).__init__(parent)
         
-        self.mode = mode
         self.info_d = {}
-
-        self.setPage(Page_Welcome, WelcomePage())
+        self.info_d['path'] = path
+        self.setPage(Page_Welcome, WelcomePage(recent_datasets=recent_datasets))
         self.setPage(Page_DataType, DataTypePage())
         self.setPage(Page_ChooseMetric, ChooseMetricPage())
         self.setPage(Page_OutcomeName, OutcomeNamePage())
         self.setPage(Page_CsvImport, CsvImportPage())
         
-        if mode is None:
+        if path is None:
             self.setStartId(Page_Welcome)
             self.setWindowTitle("Open Meta-Analyst")
+        elif path is "csv_import":
+            self.setStartId(Page_DataType)
+            self.setWindowTitle("Import a CSV")
+        elif path is "new_dataset":
+            self.setStartId(Page_DataType)
+            self.setWindowTitle("Create a new dataset")
  
 
         #self.setPixmap(QtGui.QWizard.BannerPixmap,
@@ -528,26 +496,6 @@ class MainWizard(QtGui.QWizard):
         #self.setPixmap(QtGui.QWizard.BackgroundPixmap,
         #               QtGui.QPixmap(':/misc/meta.png'))
 
-#    def nextId(self):
-#        page_id = self.currentId()
-#        
-#        if page_id == Page_Welcome:
-#            if self.get_wizard_path() == "open":
-#                return -1
-#            else:
-#                return Page_DataType
-#        elif page_id == Page_DataType:
-#            return Page_ChooseMetric
-#        elif page_id == Page_ChooseMetric:
-#            return Page_OutcomeName
-#        elif page_id == Page_OutcomeName:
-#            if self.get_wizard_path() == "csv_import":
-#                return Page_CsvImport
-#            else:
-#                return -1 #end
-#        else: # Unrecognized pageID (shouldn't get here)
-#            print("Unrecognized Page ID")
-#            return -1
     
     def set_wizard_path(self, path):
         self.info_d['path']=path
@@ -559,24 +507,50 @@ class MainWizard(QtGui.QWizard):
     
     def set_dataset_info(self, outcome_info):
         self.info_d['outcome_info'] = outcome_info
+        
     def get_dataset_info(self):
         if 'outcome_info' in self.info_d:
             return self.info_d['outcome_info']
         else:
             return None
+        
+    def set_selected_dataset(self, dataset):
+        self.info_d['selected_dataset'] = dataset
+    def get_selected_dataset(self):
+        if 'selected_dataset' in self.info_d:
+            return self.info_d['selected_dataset']
+        else:
+            return None
+        
     def set_effect(self, effect_name):
-        self.info_d['outcome_info'].effect = effect_name
+        self.info_d['outcome_info']['effect'] = effect_name
+    
     def get_effect(self):
-        return self.info_d['outcome_info'].effect
+        return self.info_d['outcome_info']['effect']
+    
+    def set_csv_data(self, csv_data):
+        self.info_d['csv_data'] = csv_data
+        
+    def get_csv_data(self):
+        if 'csv_data' in self.info_d:
+            return self.info_d['csv_data']
+        else:
+            return None
+    
+    
     
     def get_results(self):
         information = {}
-        information['path']=self.info_d['path']
-        information['outcome_name']=self.field("outcomeName")
-        information['arms'] = self.info_d['outcome_info'].arms
-        information['data_type'] = self.info_d['outcome_info'].data_type
-        information['sub_type'] = self.info_d['outcome_info'].sub_type
-        information['effect'] = self.info_d['outcome_info'].effect
+        information['path']=self.get_wizard_path()
+        information['outcome_info']=self.get_dataset_info()
+        # set outcome name
+        if information['outcome_info'] is not None:
+            information['outcome_info']['name']=self.field("outcomeName").toString()
+        information['selected_dataset'] = self.get_selected_dataset()
+        information['csv_data'] = self.get_csv_data()
+        
+        print("Information from wizard: %s" % str(information))
+        return information
         
 if __name__ == '__main__':
 

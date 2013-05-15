@@ -41,22 +41,13 @@ import edit_dialog
 import edit_group_name_form
 import change_cov_type_form
 import network_view
-import start_up_dialog
-import create_new_project_dialog
 import conf_level_dialog
-import import_csv_dlg
-
-#def import_everything():
-#    print("Importing everything")
-#    global ui_meta, meta_py_r, ma_data_table_view, ma_data_table_model, meta_globals, ma_dataset
-#    import ui_meta, meta_py_r, ma_data_table_view, ma_data_table_model, meta_globals, ma_dataset
-#                                       
-#    global add_new_dialogs, results_window, ma_specs, diag_metrics, meta_reg_form, meta_subgroup_form, edit_dialog, edit_group_name_form, change_cov_type_form, network_view, start_up_dialog, create_new_project_dialog, conf_level_dialog, import_csv_dlg     
-#    import add_new_dialogs, results_window, ma_specs, diag_metrics, meta_reg_form, meta_subgroup_form, edit_dialog, edit_group_name_form, change_cov_type_form, network_view, start_up_dialog, create_new_project_dialog, conf_level_dialog, import_csv_dlg
-#    
+import main_wizard
 
 # for the help
 import webbrowser
+
+DEFAULT_DATASET_NAME = unicode("untitled_dataset", "utf-8")
 
 import forms.ui_running
 class ImportProgress(QDialog, forms.ui_running.Ui_running):
@@ -77,6 +68,8 @@ class ImportProgress(QDialog, forms.ui_running.Ui_running):
         return self.progress_bar.maximum()
     def value(self):
         return self.progress_bar.value()
+    
+###############################################################################
 
 class MetaForm(QtGui.QMainWindow, forms.ui_meta.Ui_MainWindow):
 
@@ -154,23 +147,19 @@ class MetaForm(QtGui.QMainWindow, forms.ui_meta.Ui_MainWindow):
             ###
             # show the welcome dialog 
             self.load_user_prefs()
-            if self.user_prefs["splash"]:
-                start_up_window = start_up_dialog.StartUp(parent=self,
-                            recent_datasets=self.user_prefs['recent datasets'])
-                
-                ###
-                # fix for issue #158
-                # formerly .show()
-                self.show()
-                if start_up_window.exec_():
-                    ## arg -- this won't work!
-                    start_up_window.setFocus()
-                    start_up_window.raise_()
-                    start_up_window.activateWindow()
-                    print("Got passed start_up_window.exec_()")
-                else:
-                    print("I quit!")
-                    quit()
+            start_up_wizard = main_wizard.MainWizard(parent=self, 
+                        recent_datasets=self.user_prefs['recent datasets'])
+            
+            ###
+            # fix for issue #158
+            # formerly .show()
+            self.show()
+            if start_up_wizard.exec_():
+                wizard_data = start_up_wizard.get_results()
+                self._handle_wizard_results(wizard_data)
+            else:
+                print("I quit!")
+                quit()
       
             self.populate_open_recent_menu()
         
@@ -186,36 +175,12 @@ class MetaForm(QtGui.QMainWindow, forms.ui_meta.Ui_MainWindow):
 
     ### TODO: Should ask if user wants to save before making the new dataset.. GD
     def create_new_dataset(self, use_undo_framework=True):
-        name = unicode("untitled_dataset", "utf-8")
+        wizard = main_wizard.MainWizard(parent=self, path="new_dataset")
+        if wizard.exec_():
+            wizard_data = wizard.get_results()
+            self._handle_wizard_results(wizard_data)
         
-        new_project_dialog = create_new_project_dialog.CreateNewProjectDlg(parent=self)
-        # TODO: if import_csv is true, change message on the form
-        
-        if new_project_dialog.exec_():
-            dataset_info = new_project_dialog.get_summary()
-            is_diag = dataset_info['data_type'] == "Diagnostic"
-        
-            self.new_dataset(name=name, is_diag=is_diag, use_undo_framework=use_undo_framework)
-            tmp = self.cur_dimension
-            self.cur_dimension = "outcome"
-            #self.hide()
-            self.add_new(dataset_info)        
-            self.cur_dimension = tmp
-            #self.close()
-            
-            # Put this stuff in an if just in case...
-            if dataset_info['data_type'] == "Binary" or dataset_info['data_type'] == "Continuous":
-                self.model.current_effect = dataset_info['effect']
-                self.populate_metrics_menu(metric_to_check=self.model.current_effect)
-                self.model.try_to_update_outcomes()
-                self.model.reset()
-            return True # everything went ok
-        else:
-            print("Cancelled out of new_project_dialog")
-            return False
-        
-        
-    def new_dataset(self, name=None, is_diag=False, use_undo_framework = True):
+    def new_dataset(self, name=DEFAULT_DATASET_NAME, is_diag=False, use_undo_framework = True):
         data_model = ma_dataset.Dataset(title=name, is_diag=is_diag)
         if self.model is not None:
             if use_undo_framework:
@@ -334,45 +299,10 @@ class MetaForm(QtGui.QMainWindow, forms.ui_meta.Ui_MainWindow):
             
     def _import_csv(self):
         '''Import data from csv file'''
-        
-        # Back-up original dataset
-        original_dataset = copy.deepcopy(self.model.dataset)
-        old_state_dict = self.tableView.model().get_stateful_dict()
-        
-        get_out = False
-        while get_out is False:
-            print("get out is %s" % str(get_out))
-            if self.create_new_dataset(use_undo_framework=False) is False:
-                return False
-            new_dataset = copy.deepcopy(self.model.dataset)
-            new_state_dict = self.tableView.model().get_stateful_dict()
-            
-            dialog = import_csv_dlg.ImportCsvDlg(self)
-            if dialog.exec_():
-                imported_data = dialog.csv_data()['data']
-                #headers = dialog.csv_data()['headers']
-                #expected_headers = dialog.csv_data()['expected_headers']
-                covariate_names = dialog.csv_data()['covariate_names']
-                covariate_types = dialog.csv_data()['covariate_types']
-            
-                #Undo/redo stuff
-                importcsv_command = CommandImportCSV(
-                        original_dataset=original_dataset,
-                        old_state_dict=old_state_dict,
-                        new_dataset=new_dataset,
-                        new_state_dict=new_state_dict,
-                        imported_data=imported_data,
-                        main_form=self,
-                        covariate_names=covariate_names,
-                        covariate_types=covariate_types)
-                self.tableView.undoStack.push(importcsv_command)
-                get_out = True # we can leave since something good happened
-                return True
-            else:
-                print("Cancelled out of import_csv_dialog")
-        return False
-
-        # TODO: WRITE NEW WIZARD FOR FRONT SCREEN
+        wizard = main_wizard.MainWizard(parent=self, path="csv_import")
+        if wizard.exec_():
+            wizard_data = wizard.get_results()
+            self._handle_wizard_results(wizard_data)
         
     def _setup_connections(self, menu_actions=True):
         ''' Signals & slots '''
@@ -381,8 +311,6 @@ class MetaForm(QtGui.QMainWindow, forms.ui_meta.Ui_MainWindow):
 
         QObject.connect(self.tableView.model(), SIGNAL("outcomeChanged()"), self.tableView.displayed_ma_changed)
         QObject.connect(self.tableView.model(), SIGNAL("followUpChanged()"), self.tableView.displayed_ma_changed)
-        
-        #QObject.connect(self.global_ci_spinbox, SIGNAL("valueChanged(double)"), self._change_global_ci)
                                                                 
         ###
         # this is not ideal, but I couldn't get the rowsInserted methods working. 
@@ -782,7 +710,11 @@ class MetaForm(QtGui.QMainWindow, forms.ui_meta.Ui_MainWindow):
         elif self.cur_dimension == "outcome" and startup_outcome: # For dealing with outcomes from the startup form
             new_outcome_name = unicode(startup_outcome['name'].toUtf8(), "utf-8")
             new_outcome_type = str(startup_outcome['data_type'])
-            new_outcome_subtype = startup_outcome['sub_type']
+            try:
+                new_outcome_subtype = startup_outcome['sub_type']
+            except:
+                pyqtRemoveInputHook()
+                pdb.set_trace()
             print 'Startup Outcome',startup_outcome
             redo_f = lambda: self._add_new_outcome(new_outcome_name, new_outcome_type, new_outcome_subtype)
             prev_outcome = str(self.model.current_outcome)
@@ -1342,16 +1274,70 @@ class MetaForm(QtGui.QMainWindow, forms.ui_meta.Ui_MainWindow):
                 "recent datasets":[], 
                 "method_params":{},
                 }
+        
+    def _make_new_dataset_and_setup_spreadsheet(self,dataset_info):
+        is_diag = dataset_info['data_type'] == "diagnostic"
+        self.new_dataset(is_diag=is_diag)
+        
+        tmp = self.cur_dimension
+        self.cur_dimension = "outcome"
+        self.add_new(dataset_info) # add the outcome
+        self.cur_dimension = tmp
+         
+        if dataset_info['data_type'] in ["binary", "continuous"]:
+            self.model.current_effect = dataset_info['effect'] # set current effect
+            self.populate_metrics_menu(metric_to_check=self.model.current_effect)
+            self.model.try_to_update_outcomes()
+            self.model.reset()
     
     # TODO: HIGH PRIORITY IMPLEMENT HANDLING OF wizard results
     def _handle_wizard_results(self, wizard_data):
-        route = wizard_data['wizard_path'] # route through wizard
+        path = wizard_data['path'] # route through wizard
         
-        if route == None:
-            pass
-        elif route == "open":
-            file_path = wizard_data['file_path']
-            self.open(file_path=file_path)
+        #desired_keys = ['outcome_name','arms','data_type','sub_type']
+        #dataset_info = dict([(k,v) for k,v in wizard_data.items() if k in desired_keys])
+        #dataset_info['name']=dataset_info['outcome_name'] # renaming
+        #del dataset_info['outcome_name']
+        
+        dataset_info = wizard_data['outcome_info']
+        
+        if path == "open":
+            self.open(file_path=wizard_data['selected_dataset'])
+        elif path == "new_dataset":
+            self._make_new_dataset_and_setup_spreadsheet(dataset_info)
+
+        elif path == "csv_import":
+            csv_data = wizard_data['csv_data']
+        
+            # Back-up original dataset
+            original_dataset = copy.deepcopy(self.model.dataset)
+            old_state_dict = self.tableView.model().get_stateful_dict()
+            
+            self._make_new_dataset_and_setup_spreadsheet(dataset_info)
+            
+            new_dataset = copy.deepcopy(self.model.dataset)
+            new_state_dict = self.tableView.model().get_stateful_dict()
+            
+            imported_data = csv_data['data']
+            # Note: may want at some point to access the headers provided in the CSV;
+            #     these are accessible at csv_data['headers'] and
+            #     csv_data['expected_headers']
+            covariate_names = csv_data['covariate_names']
+            covariate_types = csv_data['covariate_types']
+            
+            print("Data to import: %s\ncovariate names: %s\ncovariate_types: %s" % (str(imported_data),str(covariate_names),str(covariate_types) ))
+        
+            #Undo/redo stuff
+            importcsv_command = CommandImportCSV(
+                    original_dataset=original_dataset,
+                    old_state_dict=old_state_dict,
+                    new_dataset=new_dataset,
+                    new_state_dict=new_state_dict,
+                    imported_data=imported_data,
+                    main_form=self,
+                    covariate_names=covariate_names,
+                    covariate_types=covariate_types)
+            self.tableView.undoStack.push(importcsv_command)
         
         
         
@@ -1412,8 +1398,6 @@ class CommandImportCSV(QUndoCommand):
         self.main_form.set_model(self.new_dataset, self.new_state_dict)
         
         # Set data in model:
-        print("DATA IMPORTED:")
-        print(self.imported_data)
         num_rows = len(self.imported_data)
         num_cols = len(self.imported_data[0])
         
@@ -1605,30 +1589,10 @@ def start():
     splash.show()
     app.processEvents()
     
-    
-    #import_everything()
-    
-    
     meta = MetaForm()
     meta.show()
     splash.finish(meta)
     sys.exit(app.exec_())
-    
-    
-    
-#     QApplication app(argc, argv);
-#     QPixmap pixmap(":/splash.png");
-#     QSplashScreen splash(pixmap);
-#     splash.show();
-#     app.processEvents();
-#     ...
-#     QMainWindow window;
-#     window.show();
-#     splash.finish(&window);
-#     return app.exec();
-    
-    
-    
     
 #
 # to launch:
