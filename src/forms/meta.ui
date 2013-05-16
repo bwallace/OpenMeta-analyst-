@@ -19,7 +19,7 @@
    <string>OpenMeta[analyst]</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="images/icons.qrc">
+   <iconset resource="../images/icons.qrc">
     <normaloff>:/misc/meta.png</normaloff>:/misc/meta.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -154,7 +154,7 @@
                   <string/>
                  </property>
                  <property name="icon">
-                  <iconset resource="images/icons.qrc">
+                  <iconset resource="../images/icons.qrc">
                    <normaloff>:/misc/left_arrow.png</normaloff>:/misc/left_arrow.png</iconset>
                  </property>
                  <property name="iconSize">
@@ -180,7 +180,7 @@
                   <string/>
                  </property>
                  <property name="icon">
-                  <iconset resource="images/icons.qrc">
+                  <iconset resource="../images/icons.qrc">
                    <normaloff>:/misc/up_arrow.png</normaloff>:/misc/up_arrow.png</iconset>
                  </property>
                  <property name="iconSize">
@@ -206,7 +206,7 @@
                   <string/>
                  </property>
                  <property name="icon">
-                  <iconset resource="images/icons.qrc">
+                  <iconset resource="../images/icons.qrc">
                    <normaloff>:/misc/down_arrow.png</normaloff>:/misc/down_arrow.png</iconset>
                  </property>
                  <property name="iconSize">
@@ -261,7 +261,7 @@
                   <string/>
                  </property>
                  <property name="icon">
-                  <iconset resource="images/icons.qrc">
+                  <iconset resource="../images/icons.qrc">
                    <normaloff>:/misc/right_arrow.png</normaloff>:/misc/right_arrow.png</iconset>
                  </property>
                  <property name="iconSize">
@@ -287,7 +287,7 @@
                   <string/>
                  </property>
                  <property name="icon">
-                  <iconset resource="images/icons.qrc">
+                  <iconset resource="../images/icons.qrc">
                    <normaloff>:/function_icon_set/function_icon_set/add_48.png</normaloff>:/function_icon_set/function_icon_set/add_48.png</iconset>
                  </property>
                  <property name="iconSize">
@@ -575,7 +575,7 @@
   </widget>
   <action name="action_save">
    <property name="icon">
-    <iconset resource="images/icons.qrc">
+    <iconset resource="../images/icons.qrc">
      <normaloff>:/function_icon_set/function_icon_set/floppy_disk_48.png</normaloff>:/function_icon_set/function_icon_set/floppy_disk_48.png</iconset>
    </property>
    <property name="text">
@@ -584,7 +584,7 @@
   </action>
   <action name="action_open">
    <property name="icon">
-    <iconset resource="images/icons.qrc">
+    <iconset resource="../images/icons.qrc">
      <normaloff>:/function_icon_set/function_icon_set/folder_48.png</normaloff>:/function_icon_set/function_icon_set/folder_48.png</iconset>
    </property>
    <property name="text">
@@ -593,7 +593,7 @@
   </action>
   <action name="action_quit">
    <property name="icon">
-    <iconset resource="images/icons.qrc">
+    <iconset resource="../images/icons.qrc">
      <normaloff>:/toolbar-icons/toolbar-icons/quit.png</normaloff>:/toolbar-icons/toolbar-icons/quit.png</iconset>
    </property>
    <property name="text">
@@ -602,7 +602,7 @@
   </action>
   <action name="action_go">
    <property name="icon">
-    <iconset resource="images/icons.qrc">
+    <iconset resource="../images/icons.qrc">
      <normaloff>:/misc/meta_analysis.png</normaloff>:/misc/meta_analysis.png</iconset>
    </property>
    <property name="text">
@@ -626,7 +626,7 @@
   </action>
   <action name="action_cum_ma">
    <property name="icon">
-    <iconset resource="images/icons.qrc">
+    <iconset resource="../images/icons.qrc">
      <normaloff>:/misc/cum_meta_analysis.png</normaloff>:/misc/cum_meta_analysis.png</iconset>
    </property>
    <property name="text">
@@ -635,7 +635,7 @@
   </action>
   <action name="action_loo_ma">
    <property name="icon">
-    <iconset resource="images/icons.qrc">
+    <iconset resource="../images/icons.qrc">
      <normaloff>:/misc/leave_one_out.png</normaloff>:/misc/leave_one_out.png</iconset>
    </property>
    <property name="text">
@@ -669,7 +669,7 @@
   </action>
   <action name="action_new_dataset">
    <property name="icon">
-    <iconset resource="images/icons.qrc">
+    <iconset resource="../images/icons.qrc">
      <normaloff>:/function_icon_set/function_icon_set/add_48.png</normaloff>:/function_icon_set/function_icon_set/add_48.png</iconset>
    </property>
    <property name="text">
@@ -678,7 +678,7 @@
   </action>
   <action name="action_meta_regression">
    <property name="icon">
-    <iconset resource="images/icons.qrc">
+    <iconset resource="../images/icons.qrc">
      <normaloff>:/misc/meta_reg.png</normaloff>:/misc/meta_reg.png</iconset>
    </property>
    <property name="text">
@@ -687,7 +687,7 @@
   </action>
   <action name="action_undo">
    <property name="icon">
-    <iconset resource="images/icons.qrc">
+    <iconset resource="../images/icons.qrc">
      <normaloff>:/toolbar-icons/toolbar-icons/back.png</normaloff>:/toolbar-icons/toolbar-icons/back.png</iconset>
    </property>
    <property name="text">
@@ -696,7 +696,7 @@
   </action>
   <action name="action_redo">
    <property name="icon">
-    <iconset resource="images/icons.qrc">
+    <iconset resource="../images/icons.qrc">
      <normaloff>:/toolbar-icons/toolbar-icons/forward.png</normaloff>:/toolbar-icons/toolbar-icons/forward.png</iconset>
    </property>
    <property name="text">
@@ -705,7 +705,7 @@
   </action>
   <action name="action_copy">
    <property name="icon">
-    <iconset resource="images/icons.qrc">
+    <iconset resource="../images/icons.qrc">
      <normaloff>:/misc/copy.png</normaloff>:/misc/copy.png</iconset>
    </property>
    <property name="text">
@@ -714,7 +714,7 @@
   </action>
   <action name="action_paste">
    <property name="icon">
-    <iconset resource="images/icons.qrc">
+    <iconset resource="../images/icons.qrc">
      <normaloff>:/toolbar-icons/toolbar-icons/paste.png</normaloff>:/toolbar-icons/toolbar-icons/paste.png</iconset>
    </property>
    <property name="text">
@@ -723,7 +723,7 @@
   </action>
   <action name="action_subgroup_ma">
    <property name="icon">
-    <iconset resource="images/icons.qrc">
+    <iconset resource="../images/icons.qrc">
      <normaloff>:/misc/subgroup_ma.png</normaloff>:/misc/subgroup_ma.png</iconset>
    </property>
    <property name="text">
@@ -742,7 +742,7 @@
   </action>
   <action name="action_change_conf_level">
    <property name="icon">
-    <iconset resource="images/icons.qrc">
+    <iconset resource="../images/icons.qrc">
      <normaloff>:/misc/ci_icon.png</normaloff>:/misc/ci_icon.png</iconset>
    </property>
    <property name="text">
@@ -751,7 +751,7 @@
   </action>
   <action name="action_import_csv">
    <property name="icon">
-    <iconset resource="images/icons.qrc">
+    <iconset resource="../images/icons.qrc">
      <normaloff>:/function_icon_set/function_icon_set/box_download_48.png</normaloff>:/function_icon_set/function_icon_set/box_download_48.png</iconset>
    </property>
    <property name="text">
@@ -760,7 +760,7 @@
   </action>
  </widget>
  <resources>
-  <include location="images/icons.qrc"/>
+  <include location="../images/icons.qrc"/>
  </resources>
  <connections/>
 </ui>

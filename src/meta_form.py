@@ -43,6 +43,7 @@ import change_cov_type_form
 import network_view
 import conf_level_dialog
 import main_wizard
+import easter_egg
 
 # for the help
 import webbrowser
@@ -128,7 +129,21 @@ class MetaForm(QtGui.QMainWindow, forms.ui_meta.Ui_MainWindow):
 
         # by default, disable meta-regression (until we have covariates)
         self.action_meta_regression.setEnabled(False)
+        
+        self.load_user_prefs()
+        self.populate_open_recent_menu()
+        
+        # The most important code of the entire application
+        show_tom = QAction(self)
+        show_tom.setShortcut(QKeySequence(QtCore.Qt.SHIFT+QtCore.Qt.Key_T, QtCore.Qt.SHIFT+QtCore.Qt.Key_O, QtCore.Qt.SHIFT+QtCore.Qt.Key_M))
+        #self.easteregg_btn.addAction(show_tom)
+        self.addAction(show_tom)
+        QObject.connect(show_tom, SIGNAL("triggered()"), self._show_tom)
+        
+        
 
+
+    def start(self):
         ####################################################
         # this (toy-data) is almost certainly antiquated   #
         # and should be removed or updated                 #
@@ -146,26 +161,19 @@ class MetaForm(QtGui.QMainWindow, forms.ui_meta.Ui_MainWindow):
         else:
             ###
             # show the welcome dialog 
-            self.load_user_prefs()
             start_up_wizard = main_wizard.MainWizard(parent=self, 
                         recent_datasets=self.user_prefs['recent datasets'])
             
             ###
             # fix for issue #158
             # formerly .show()
-            self.show()
+            #self.show()
             if start_up_wizard.exec_():
                 wizard_data = start_up_wizard.get_results()
                 self._handle_wizard_results(wizard_data)
             else:
-                print("I quit!")
                 quit()
-      
-            self.populate_open_recent_menu()
-        
-        
             
-
     def closeEvent(self, event):
         if self.current_data_unsaved:
             if not self.user_is_going_to_lose_data():
@@ -1251,7 +1259,12 @@ class MetaForm(QtGui.QMainWindow, forms.ui_meta.Ui_MainWindow):
 
         self._save_user_prefs()
         print "loaded user preferences: %s" % self.user_prefs
-
+        
+    def _show_tom(self):
+        tom_dlg = easter_egg.TomDialog()
+        tom_dlg.exec_()
+        
+        
 
     def update_user_prefs(self, field, value):
         self.user_prefs[field] = value
@@ -1576,30 +1589,14 @@ b	1785
 
 
 
-def start():
-    welcome_str = "** welcome to OpenMeta; version %s **" % meta_globals.VERSION
-    print "".join(["*" for x in range(len(welcome_str))])
-    print welcome_str
-    print "".join(["*" for x in range(len(welcome_str))])
 
-    app = QtGui.QApplication(sys.argv)
-    
-    splash_pixmap = QPixmap(":/misc/splash.png")
-    splash = QSplashScreen(splash_pixmap)
-    splash.show()
-    app.processEvents()
-    
-    meta = MetaForm()
-    meta.show()
-    splash.finish(meta)
-    sys.exit(app.exec_())
     
 #
 # to launch:
 #   >python meta_form.py
 #
-if __name__ == "__main__":
-    start()
+#if __name__ == "__main__":
+#    start()
 
 
             

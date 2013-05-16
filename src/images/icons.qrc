@@ -18,6 +18,15 @@
     <file>ometa.png</file>
     <file>right_arrow.png</file>
     <file>up_arrow.png</file>
+    <file>tom.jpg</file>
+  </qresource>
+  <qresource prefix="wizard_images">
+    <file>wizard_images/catfishtank.jpg</file>
+    <file>wizard_images/airy.jpg</file>
+    <file>wizard_images/fisher.jpg</file>
+    <file>wizard_images/cochran.jpg</file>
+    <file>wizard_images/laplace.jpg</file>
+    <file>wizard_images/forest.jpg</file>
   </qresource>
   <qresource prefix="toolbar-icons">
     <file>toolbar-icons/back.png</file>

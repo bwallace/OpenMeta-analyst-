@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'data_type_page.ui'
 #
-# Created: Fri May 10 10:15:04 2013
+# Created: Thu May 16 11:02:35 2013
 #      by: PyQt4 UI code generator 4.10
 #
 # WARNING! All changes made in this file will be lost!
@@ -40,13 +40,11 @@ class Ui_DataTypePage(object):
         self.onearm_proportion_Button = QtGui.QToolButton(DataTypePage)
         self.onearm_proportion_Button.setMinimumSize(QtCore.QSize(90, 65))
         self.onearm_proportion_Button.setMaximumSize(QtCore.QSize(90, 65))
-        self.onearm_proportion_Button.setBaseSize(QtCore.QSize(10, 10))
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/new_dataset/startscreens/proportion.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.onearm_proportion_Button.setIcon(icon)
         self.onearm_proportion_Button.setIconSize(QtCore.QSize(40, 40))
         self.onearm_proportion_Button.setCheckable(True)
-        self.onearm_proportion_Button.setChecked(False)
         self.onearm_proportion_Button.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.onearm_proportion_Button.setObjectName(_fromUtf8("onearm_proportion_Button"))
         self.buttonGroup = QtGui.QButtonGroup(DataTypePage)

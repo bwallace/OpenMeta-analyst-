@@ -11,6 +11,7 @@ import pdb
 import meta_py_r
 import meta_globals
 from ma_data_table_model import DatasetModel
+import forms.icons_rc
 
 
 class WelcomePage(QWizardPage, forms.wizardpages.ui_welcome_page.Ui_WizardPage):
@@ -18,14 +19,12 @@ class WelcomePage(QWizardPage, forms.wizardpages.ui_welcome_page.Ui_WizardPage):
         super(WelcomePage, self).__init__(parent)
         self.setupUi(self)
         
-        #print("Parent of page is %s" % str(self.parent))
-        
         self.recent_datasets = recent_datasets
         self.recent_datasets.reverse() # most recently accessed dataset first
-        #self.start_up = start_up #???
         
         self.selected_dataset = None
-        ###self.registerField("selected_dataset", self.selected_dataset)
+        
+        self.setPixmap(QtGui.QWizard.BackgroundPixmap, QtGui.QPixmap(':/wizard_images/wizard_images/forest.jpg'))
 
         self._setup_connections()
         
@@ -106,9 +105,12 @@ class DataTypePage(QWizardPage, forms.wizardpages.ui_data_type_page.Ui_DataTypeP
         self.summary = dict(arms=None, data_type=None, sub_type=None, effect=None, metric_choices=[], name=None) #ProjectInfo()
         
         QObject.connect(self.buttonGroup, SIGNAL("buttonClicked(QAbstractButton*)"), self._button_selected)
+        
+        self.setPixmap(QtGui.QWizard.BackgroundPixmap, QtGui.QPixmap(':/wizard_images/wizard_images/laplace.jpg'))
     
     def initializePage(self):
         self.wizard().adjustSize()
+        self.setFocus()
     
     def _button_selected(self, button):
         #print("button clicked %s" % str(button))
@@ -211,7 +213,8 @@ class ChooseMetricPage(QtGui.QWizardPage, forms.wizardpages.ui_choose_metric_pag
             self.metric_cbo_box.setItemText(index_of_default, default_item_text)
             # Resize the dialog
             self.metric_cbo_box.blockSignals(False)
-            
+        
+        self.setPixmap(QtGui.QWizard.BackgroundPixmap, QtGui.QPixmap(':/wizard_images/wizard_images/airy.jpg'))
         self.wizard().adjustSize()
         
     def _metric_choice_changed(self, newindex):
@@ -231,6 +234,8 @@ class CsvImportPage(QWizardPage, forms.wizardpages.ui_csv_import_page.Ui_WizardP
         self.connect(self.select_file_btn, SIGNAL("clicked()"), self._select_file)
         self.connect(self.from_excel_chkbx,  SIGNAL("stateChanged(int)"), self._rebuild_display)
         self.connect(self.has_headers_chkbx, SIGNAL("stateChanged(int)"), self._rebuild_display)
+        
+        self.setPixmap(QtGui.QWizard.BackgroundPixmap, QtGui.QPixmap(':/wizard_images/wizard_images/cochran.jpg'))
     
     def initializePage(self):
         ######################################################
@@ -455,6 +460,8 @@ class OutcomeNamePage(QWizardPage, forms.wizardpages.ui_outcome_name_page.Ui_Wiz
     def __init__(self, parent=None):
         super(OutcomeNamePage, self).__init__(parent)
         self.setupUi(self)
+        
+        self.setPixmap(QtGui.QWizard.BackgroundPixmap, QtGui.QPixmap(':/wizard_images/wizard_images/fisher.jpg'))
         
         self.registerField("outcomeName*", self.outcome_name_LineEdit)
         

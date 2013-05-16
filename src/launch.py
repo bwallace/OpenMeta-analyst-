@@ -52,8 +52,9 @@ def start():
     
     import meta_form # TODO: metaform shows itself and the default wizard in init.... this probably shouldn't be allowed
     meta = meta_form.MetaForm()
-    meta.show()
     splash.finish(meta)
+    meta.show()
+    meta.start()
     sys.exit(app.exec_())
 
 if __name__ == "__main__":
