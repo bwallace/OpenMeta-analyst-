@@ -7,7 +7,7 @@ import time
 
 import meta_py_r
 
-SPLASH_DISPLAY_TIME = 0 # TODO: change to 5 seconds in production version
+SPLASH_DISPLAY_TIME = 5 # TODO: change to 5 seconds in production version
 
 def load_R_libraries(app, splash):
     ''' Loads the R libraries while updating the splash screen'''
