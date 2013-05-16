@@ -135,8 +135,7 @@ class MetaForm(QtGui.QMainWindow, forms.ui_meta.Ui_MainWindow):
         
         # The most important code of the entire application
         show_tom = QAction(self)
-        show_tom.setShortcut(QKeySequence(QtCore.Qt.SHIFT+QtCore.Qt.Key_T, QtCore.Qt.SHIFT+QtCore.Qt.Key_O, QtCore.Qt.SHIFT+QtCore.Qt.Key_M))
-        #show_tom.setShortcut(QKeySequence(QtCore.Qt.Key_T, QtCore.Qt.Key_O, QtCore.Qt.Key_M))
+        show_tom.setShortcut(QKeySequence("T, Shift+O, M"))
         self.addAction(show_tom)
         QObject.connect(show_tom, SIGNAL("triggered()"), self._show_tom)
     
@@ -1259,8 +1258,11 @@ class MetaForm(QtGui.QMainWindow, forms.ui_meta.Ui_MainWindow):
         print "loaded user preferences: %s" % self.user_prefs
         
     def _show_tom(self):
-        tom_dlg = easter_egg.TomDialog()
+        tom_dlg = easter_egg.TomDialog(parent=self)
         tom_dlg.exec_()
+        
+    #def _show_picture(self, person):
+    #    persondlg = easter_egg.PersonDialog(parent=self, person=person)
         
         
 

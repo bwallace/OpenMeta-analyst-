@@ -294,6 +294,9 @@ class ResultsWindow(QMainWindow, forms.ui_results_window.Ui_ResultsWindow):
 
     def _make_context_menu(self, params_path, title, png_path, 
                            qpixmap_item, plot_type="forest"):
+        plot_img = QImage(png_path)
+        
+        
         def _graphics_item_context_menu(event):
             if params_path:
                 action = QAction("save image as...", self)
@@ -317,7 +320,7 @@ class ResultsWindow(QMainWindow, forms.ui_results_window.Ui_ResultsWindow):
                 
                 QObject.connect(action, SIGNAL("triggered()"), \
                             lambda : self.save_image_as(params_path, title, 
-                                            plot_type=plot_type, png_path=png_path))
+                                            plot_type=plot_type, unscaled_image = plot_img))
                 context_menu = QMenu(self)
                 context_menu.addAction(action)
 
@@ -331,9 +334,9 @@ class ResultsWindow(QMainWindow, forms.ui_results_window.Ui_ResultsWindow):
     def _is_side_by_side_fp(self, title):
         return any([side_by_side in title for side_by_side in SIDE_BY_SIDE_FOREST_PLOTS])
 
-    def save_image_as(self, params_path, title, plot_type="forest", png_path=None):
+    def save_image_as(self, params_path, title, plot_type="forest", unscaled_image=None):
         
-        if not png_path:
+        if not unscaled_image:
             # note that the params object will, by convention,
             # have the (generic) name 'plot.data' -- after this
             # call, this object will be in the namespace
@@ -361,8 +364,8 @@ class ResultsWindow(QMainWindow, forms.ui_results_window.Ui_ResultsWindow):
                     print "sorry -- I don't know how to draw %s plots!" % plot_type
         else: # case where we just have the png and can't regenerate the pdf from plot data
             default_path = '.'.join([title.replace(' ','_'),"png"])
-            file_path = unicode(QFileDialog.getSaveFileName(self, "OpenMeta[Analyst] -- save plot as", default_path))
-            shutil.copy(png_path, file_path)
+            file_path = unicode(QFileDialog.getSaveFileName(self, "OpenMeta[Analyst] -- save plot as", QString(default_path)))
+            unscaled_image.save(QString(file_path),"PNG")
             
 
     def edit_image(self, params_path, title, png_path, pixmap_item):
