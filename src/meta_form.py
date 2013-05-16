@@ -123,7 +123,7 @@ class MetaForm(QtGui.QMainWindow, forms.ui_meta.Ui_MainWindow):
         self.tableView.resizeColumnsToContents()
     
 
-        self.out_path = None                              # path to output file
+        self.out_path = None                # path to output file
         self.metric_menu_is_set_for = None  # BINARY, CONTINUOUS, or DIAGNOSTIC
         #self.raise_()
 
@@ -136,12 +136,10 @@ class MetaForm(QtGui.QMainWindow, forms.ui_meta.Ui_MainWindow):
         # The most important code of the entire application
         show_tom = QAction(self)
         show_tom.setShortcut(QKeySequence(QtCore.Qt.SHIFT+QtCore.Qt.Key_T, QtCore.Qt.SHIFT+QtCore.Qt.Key_O, QtCore.Qt.SHIFT+QtCore.Qt.Key_M))
-        #self.easteregg_btn.addAction(show_tom)
+        #show_tom.setShortcut(QKeySequence(QtCore.Qt.Key_T, QtCore.Qt.Key_O, QtCore.Qt.Key_M))
         self.addAction(show_tom)
         QObject.connect(show_tom, SIGNAL("triggered()"), self._show_tom)
-        
-        
-
+    
 
     def start(self):
         ####################################################

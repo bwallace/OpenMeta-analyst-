@@ -17,6 +17,7 @@ import sys
 import forms.ui_results_window
 import edit_forest_plot_form
 import meta_py_r
+import shutil
 
 PageSize = (612, 792)
 padding = 25
@@ -283,31 +284,41 @@ class ResultsWindow(QMainWindow, forms.ui_results_window.Ui_ResultsWindow):
 
         # attach event handler for mouse-clicks, i.e., to handle
         # user right-clicks
-        if params_path is not None:
-            item.contextMenuEvent = self._make_context_menu(\
-                            params_path, title, image_path, item,
-                            plot_type=plot_type)
+        item.contextMenuEvent = self._make_context_menu(
+                params_path, title, image_path, item, plot_type=plot_type)
 
         return (item.boundingRect().size(), position, item)
 
 
-    def _make_context_menu(self, params_path, title, png_path, 
-                                qpixmap_item, plot_type="forest"):
-        def _graphics_item_context_menu(event):
-            action = QAction("save image as...", self)
-            QObject.connect(action, SIGNAL("triggered()"), \
-                        lambda : self.save_image_as(params_path, title, 
-                                        plot_type=plot_type))
-            context_menu = QMenu(self)
-            context_menu.addAction(action)
 
-            # only know how to edit *simple* (i.e., _not_ side-by-side, as 
-            # in sens and spec plotted on the same canvass) forest plots for now
-            if plot_type == "forest" and not self._is_side_by_side_fp(title):
-                action = QAction("edit plot...", self)
+
+    def _make_context_menu(self, params_path, title, png_path, 
+                           qpixmap_item, plot_type="forest"):
+        def _graphics_item_context_menu(event):
+            if params_path:
+                action = QAction("save image as...", self)
                 QObject.connect(action, SIGNAL("triggered()"), \
-                            lambda : self.edit_image(\
-                                       params_path, title, png_path, qpixmap_item))
+                            lambda : self.save_image_as(params_path, title, 
+                                            plot_type=plot_type))
+                context_menu = QMenu(self)
+                context_menu.addAction(action)
+    
+                # only know how to edit *simple* (i.e., _not_ side-by-side, as 
+                # in sens and spec plotted on the same canvass) forest plots for now
+                if plot_type == "forest" and not self._is_side_by_side_fp(title):
+                    action = QAction("edit plot...", self)
+                    QObject.connect(action, SIGNAL("triggered()"), \
+                                lambda : self.edit_image(\
+                                           params_path, title, png_path, qpixmap_item))
+                    context_menu.addAction(action)
+            else: # no params path given, just give them the png
+                action = QAction("save image as...", self)
+                print("THe plot type and title are tittle is: (%s,%s)" % (plot_type, title))
+                
+                QObject.connect(action, SIGNAL("triggered()"), \
+                            lambda : self.save_image_as(params_path, title, 
+                                            plot_type=plot_type, png_path=png_path))
+                context_menu = QMenu(self)
                 context_menu.addAction(action)
 
             pos = event.screenPos()
@@ -320,32 +331,39 @@ class ResultsWindow(QMainWindow, forms.ui_results_window.Ui_ResultsWindow):
     def _is_side_by_side_fp(self, title):
         return any([side_by_side in title for side_by_side in SIDE_BY_SIDE_FOREST_PLOTS])
 
-    def save_image_as(self, params_path, title, plot_type="forest"):
-        # note that the params object will, by convention,
-        # have the (generic) name 'plot.data' -- after this
-        # call, this object will be in the namespace
-        meta_py_r.load_in_R("%s.plotdata" % params_path)
-
-        default_path = \
-            {"forest":"forest_plot.pdf", \
-             "regression":"regression.pdf"}[plot_type]
-
-        # where to save the graphic?
-        file_path = unicode(QFileDialog.getSaveFileName(self, 
-                                                        "OpenMeta[Analyst] -- save plot as", 
-                                                        default_path))
-
-        # now we re-generate it, unless they canceled, of course
-        if file_path != "":
-            if plot_type == "forest":
-                if self._is_side_by_side_fp(title):
-                    meta_py_r.generate_forest_plot(file_path, side_by_side=True)
+    def save_image_as(self, params_path, title, plot_type="forest", png_path=None):
+        
+        if not png_path:
+            # note that the params object will, by convention,
+            # have the (generic) name 'plot.data' -- after this
+            # call, this object will be in the namespace
+            meta_py_r.load_in_R("%s.plotdata" % params_path)
+    
+            default_path = \
+                {"forest":"forest_plot.pdf", \
+                 "regression":"regression.pdf"}[plot_type]
+    
+            # where to save the graphic?
+            file_path = unicode(QFileDialog.getSaveFileName(self, 
+                                                            "OpenMeta[Analyst] -- save plot as", 
+                                                            default_path))
+    
+            # now we re-generate it, unless they canceled, of course
+            if file_path != "":
+                if plot_type == "forest":
+                    if self._is_side_by_side_fp(title):
+                        meta_py_r.generate_forest_plot(file_path, side_by_side=True)
+                    else:
+                        meta_py_r.generate_forest_plot(file_path)
+                elif plot_type == "regression":
+                    meta_py_r.generate_reg_plot(file_path)
                 else:
-                    meta_py_r.generate_forest_plot(file_path)
-            elif plot_type == "regression":
-                meta_py_r.generate_reg_plot(file_path)
-            else:
-                print "sorry -- I don't know how to draw %s plots!" % plot_type
+                    print "sorry -- I don't know how to draw %s plots!" % plot_type
+        else: # case where we just have the png and can't regenerate the pdf from plot data
+            default_path = '.'.join([title.replace(' ','_'),"png"])
+            file_path = unicode(QFileDialog.getSaveFileName(self, "OpenMeta[Analyst] -- save plot as", default_path))
+            shutil.copy(png_path, file_path)
+            
 
     def edit_image(self, params_path, title, png_path, pixmap_item):
         plot_editor_window = edit_forest_plot_form.EditPlotWindow(\
