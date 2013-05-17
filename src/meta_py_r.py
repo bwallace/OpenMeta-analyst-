@@ -617,7 +617,7 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj",
         # @TODO complain to the user here
     
 
-    ###
+    ### Relevant for Issue #73
     # ok, it seems R uses latin-1 for its unicode encodings,
     # whereas QT uses UTF8. this can cause situations where
     # rpy2 throws up on this call due to it not being able
@@ -631,7 +631,12 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj",
 
 def _sanitize_for_R(a_str):
     # may want to do something fancier in the future...
-    return a_str.encode('latin-1', 'ignore')
+    #return a_str.encode('latin-1', 'ignore')
+    
+    # Mysterious fix for issue #73. For some reason, R doesn't throw up anymore
+    # when non-latin characters are given. Maybe this was fixed in R at some
+    # point by a 3rd party.
+    return a_str
 
 def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj",
                                          metric="Sens", covs_to_include=None,
@@ -893,7 +898,6 @@ def parse_out_results(result):
     image_var_name_d, image_params_paths_d, image_path_d  = {}, {}, {}
     image_order = None
 
-    print("ENTERING PARSE OUT RESULTS")
     for text_n, text in zip(list(result.names), list(result)):
         # some special cases, notably the plot names and the path for a forest
         # plot. TODO in the case of diagnostic data, we're probably going to 
