@@ -23,7 +23,6 @@ import meta_py_r
 import meta_globals
 from meta_globals import (_is_a_float, _is_empty, NUM_DIGITS,
                           DIAGNOSTIC_METRICS, DIAG_FIELDS_TO_RAW_INDICES,EMPTY_VALS)
-#import ui_continuous_data_form
 from forms.ui_diagnostic_data_form import Ui_DiagnosticDataForm
 
 BACK_CALCULATABLE_DIAGNOSTIC_EFFECTS = ["Sens", "Spec"]
@@ -216,8 +215,6 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self.two_by_two_table.blockSignals(False)
 
     def cell_changed(self, row, col):
-        print "Beginning of cell_changed"
-        
         try:
             # Test if entered data is valid (a number)
             warning_msg = self.cell_data_invalid(self.two_by_two_table.item(row, col).text())
@@ -385,8 +382,6 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             
             est, lower, upper = ests_and_cis[metric]["calc_scale"]
             self.ma_unit.set_effect_and_ci(metric, self.group_str, est, lower, upper)
-            disp_est, disp_lower, disp_upper = ests_and_cis[metric]["display_scale"]
-            self.ma_unit.set_display_effect_and_ci(metric, self.group_str, disp_est, disp_lower, disp_upper)
 
     def _get_row_col(self, field):
         row = 0 if field in ("FP", "TP") else 1
@@ -524,19 +519,17 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             # should probably clear out the box here, too.
             print "fail."
             return None
-            
-        calc_scale_val = meta_py_r.binary_convert_scale(display_scale_val, \
+        
+
+        calc_scale_val = meta_py_r.diagnostic_convert_scale(display_scale_val,
                                         self.cur_effect, convert_to="calc.scale")
         
         if val_str == "est":
             self.ma_unit.set_effect(self.cur_effect, self.group_str, calc_scale_val)
-            self.ma_unit.set_display_effect(self.cur_effect, self.group_str, display_scale_val)
         elif val_str == "lower":
             self.ma_unit.set_lower(self.cur_effect, self.group_str, calc_scale_val)
-            self.ma_unit.set_display_lower(self.cur_effect, self.group_str, display_scale_val)
         elif val_str == "upper":
             self.ma_unit.set_upper(self.cur_effect, self.group_str, calc_scale_val)
-            self.ma_unit.set_display_upper(self.cur_effect, self.group_str, display_scale_val)
         elif val_str == "prevalence":
             pass
 
@@ -592,16 +585,10 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
     
     def set_current_effect(self):
         '''Fill in effect text boxes with data from ma_unit'''
-        effect_dict = self.ma_unit.effects_dict[self.cur_effect][self.group_str]
-        for s, txt_box in zip(['display_est', 'display_lower', 'display_upper'],
-                              [self.effect_txt_box, self.low_txt_box, self.high_txt_box]):
-            txt_box.blockSignals(True)
-            if effect_dict[s] is not None:
-                txt_box.setText(QString("%s" % round(effect_dict[s], NUM_DIGITS)))
-                print("From set_current effect: %s=%s" %(s, round(effect_dict[s], NUM_DIGITS)))
-            else:
-                txt_box.setText(QString(""))
-            txt_box.blockSignals(False)
+        txt_boxes = dict(effect=self.effect_txt_box, lower=self.low_txt_box, upper=self.high_txt_box)
+        meta_globals.helper_set_current_effect(ma_unit=self.ma_unit,
+            txt_boxes=txt_boxes, current_effect=self.cur_effect,
+            group_str=self.group_str, data_type="diagnostic")
     
     def print_effects_dict_from_ma_unit(self):
         print self.ma_unit.get_effects_dict()
@@ -659,7 +646,6 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         # clear out effects stuff
         for metric in DIAGNOSTIC_METRICS:
             self.ma_unit.set_effect_and_ci(metric, self.group_str, None, None, None)
-            self.ma_unit.set_display_effect_and_ci(metric, self.group_str, None, None, None)
             
         # clear line edits
         self.set_current_effect()
@@ -831,10 +817,5 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             print("Could not reset confidence level")
             return
         
-        res["display_est"]  = meta_py_r.diagnostic_convert_scale(res["est"], self.cur_effect, convert_to="display.scale")
-        res["display_low"]  = meta_py_r.diagnostic_convert_scale(res["low"], self.cur_effect, convert_to="display.scale")
-        res["display_high"] = meta_py_r.diagnostic_convert_scale(res["high"], self.cur_effect, convert_to="display.scale")
-        
         # Save results in ma_unit
         self.ma_unit.set_effect_and_ci(self.cur_effect, self.group_str, res["est"],res["low"],res["high"])
-        self.ma_unit.set_display_effect_and_ci(self.cur_effect, self.group_str, res["display_est"],res["display_low"],res["display_high"])

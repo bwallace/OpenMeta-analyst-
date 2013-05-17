@@ -762,16 +762,7 @@ class MetaAnalyticUnit:
             return None
         return  (est+mult*se)
     def get_se(self, effect, group_str):
-        return self.effects_dict[effect][group_str]["SE"]
-    
-#    def get_display_estimate(self, effect, group_str):
-#        return self.effects_dict[effect][group_str]["display_est"]
-#    def get_display_lower(self, effect, group_str):
-#        return self.effects_dict[effect][group_str]["display_lower"]
-#    def get_display_upper(self, effect, group_str):
-#        return self.effects_dict[effect][group_str]["display_upper"]
-#    def get_display_se(self, effect, group_str):
-#        return self.effects_dict[effect][group_str]["display_se"]    
+        return self.effects_dict[effect][group_str]["SE"]   
          
     def set_effect_and_ci(self, effect, group_str, est, lower, upper):
         self.set_effect(effect, group_str, est)
@@ -780,11 +771,6 @@ class MetaAnalyticUnit:
         
         se = self.calculate_SE_if_possible(effect, group_str, est, lower, upper)
         self.set_SE(effect, group_str, se)
-       
-#    def set_display_effect_and_ci(self, effect, group_str, est, lower, upper):
-#        self.effects_dict[effect][group_str]["display_est"] = est
-#        self.effects_dict[effect][group_str]["display_lower"] = lower
-#        self.effects_dict[effect][group_str]["display_upper"] = upper
         
     def get_effect_and_ci(self, effect, group_str):
         return (self.get_estimate(effect, group_str),
@@ -800,12 +786,6 @@ class MetaAnalyticUnit:
         return (self.effects_dict[effect][group_str]["est"],
                 self.effects_dict[effect][group_str]["lower"],
                 self.effects_dict[effect][group_str]["upper"],)
-
-#    def get_display_effect_and_ci(self, effect, group_str):
-#        return (self.get_display_estimate(effect, group_str),
-#                self.get_display_lower(effect, group_str),
-#                self.get_display_upper(effect, group_str),
-#                )
             
     def get_effect_dict(self, effect, group_str):
         return self.effects_dict[effect][group_str]

@@ -42,20 +42,20 @@ default_col_width = 65
 
 DEBUG_FLAG = True
 
-DEBUG_INDENT = 0
-def debug_msg(msg, entering = None):    
-    global DEBUG_INDENT
-    prefix = ""
-    
-    if DEBUG_FLAG:
-        if entering == True:
-            #prefix = "  "*DEBUG_INDENT
-            print(prefix + "--> " + msg + " -->")
-            #DEBUG_INDENT += 1
-        elif entering == False:
-            #prefix = "  "*(DEBUG_INDENT-1)
-            print(prefix + "<-- " + msg + " <--")
-            #DEBUG_INDENT -= 1
+#DEBUG_INDENT = 0
+#def debug_msg(msg, entering = None):    
+#    global DEBUG_INDENT
+#    prefix = ""
+#    
+#    if DEBUG_FLAG:
+#        if entering == True:
+#            #prefix = "  "*DEBUG_INDENT
+#            print(prefix + "--> " + msg + " -->")
+#            #DEBUG_INDENT += 1
+#        elif entering == False:
+#            #prefix = "  "*(DEBUG_INDENT-1)
+#            print(prefix + "<-- " + msg + " <--")
+#            #DEBUG_INDENT -= 1
 
 # because the output from R is a string ("TRUE"/"FALSE")
 # Remove this? GD
@@ -66,8 +66,6 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         super(ContinuousDataForm, self).__init__(parent)
         self.setupUi(self)
         
-        debug_msg("Entering __init__",True)
-        ########################################################################
         self.setup_signals_and_slots()
         self.ma_unit = ma_unit
         self.raw_data_dict = {}
@@ -108,8 +106,6 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         if (self.cur_effect != "MD"):
             self.grp_box_pre_post.setVisible(False)
             self.adjustSize()
-        ########################################################################
-        debug_msg("Leaving __init__",False)
         
     def initialize_table_items(self):
         ''' Initialize all cells to empty items '''
@@ -154,8 +150,6 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         self.enable_back_calculation_btn()
         
     def _populate_effect_data(self):
-        debug_msg("Entering _populate_effect",True)
-        ########################################################################
         effect_names = self.ma_unit.get_effect_names()
         q_effects = sorted([QString(effect_str) for effect_str in effect_names])
         self.effect_cbo_box.blockSignals(True)
@@ -164,12 +158,9 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         self.effect_cbo_box.setCurrentIndex(q_effects.index(QString(self.cur_effect)))
         # populate fields with current effect data
         self.set_current_effect()
-        #######################################################################
-        debug_msg("Leaving _populate_effect",False)
+
         
     def effect_changed(self):
-        debug_msg("Entering effect_changed",True)
-        ########################################################################
         # Re-scale previous effect first
         self.reset_conf_level()
         
@@ -191,8 +182,6 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         
         self.metric_parameter = None       # zusammen
         self.enable_back_calculation_btn() # zusammen
-        #######################################################################
-        debug_msg("Leaving effect_changed",False)
       
     def val_changed(self, val_str):
         def is_between_bounds(est=self.form_effects_dict[self.cur_effect]["est"], 
@@ -266,19 +255,16 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
             # should probably clear out the box here, too.
             print "fail."
             return None
-            
-        calc_scale_val = meta_py_r.binary_convert_scale(display_scale_val, \
+        
+        calc_scale_val = meta_py_r.continuous_convert_scale(display_scale_val,
                                         self.cur_effect, convert_to="calc.scale")
                       
         if val_str == "est":
             self.ma_unit.set_effect(self.cur_effect, self.group_str, calc_scale_val)
-            self.ma_unit.set_display_effect(self.cur_effect, self.group_str, display_scale_val)
         elif val_str == "lower":
             self.ma_unit.set_lower(self.cur_effect, self.group_str, calc_scale_val)
-            self.ma_unit.set_display_lower(self.cur_effect, self.group_str, display_scale_val)
         elif val_str == "upper":
             self.ma_unit.set_upper(self.cur_effect, self.group_str, calc_scale_val)
-            self.ma_unit.set_display_upper(self.cur_effect, self.group_str, display_scale_val)
         elif val_str == "correlation_pre_post":
             print "ok -- correlation set to %s" % self.correlation_pre_post.text()
             # Recompute the estimates
@@ -340,23 +326,12 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
                     #self.correlation_pre_post.isEnabled())
 
     def set_current_effect(self):
-        debug_msg("Entering set_current_effect",True)
-        ########################################################################
-        self.block_all_signals(True)
-        effect_dict = self.ma_unit.get_effect_dict(self.cur_effect, self.group_str)
-        display_keys = ['display_est', 'display_lower', 'display_upper']
-        txt_boxes = [self.effect_txt_box, self.low_txt_box, self.high_txt_box]
-        for s, txt_box in zip(display_keys, txt_boxes):
-            if effect_dict[s] is not None:
-                txt_box.setText(QString("%s" % round(effect_dict[s], NUM_DIGITS)))
-            else:
-                txt_box.setText(QString(""))
-        self.block_all_signals(False)
+        txt_boxes = dict(effect=self.effect_txt_box, lower=self.low_txt_box, upper=self.high_txt_box)
+        meta_globals.helper_set_current_effect(ma_unit=self.ma_unit,
+            txt_boxes=txt_boxes, current_effect=self.cur_effect,
+            group_str=self.group_str, data_type="continuous")
         
         self.change_row_color_according_to_metric()
-        
-        ########################################################################
-        debug_msg("Leaving set_current_effect",False)
     
     def change_row_color_according_to_metric(self):
         # Change color of bottom rows of table according one or two-arm metric
@@ -377,28 +352,19 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         
     def update_raw_data(self):
         '''Updates table widget with data from ma_unit'''
-        debug_msg("Entering update_raw_data", True)
-        ########################################################################
+
         self.simple_table.blockSignals(True)
         for row_index, group_name in enumerate(self.cur_groups):
             grp_raw_data = self.raw_data_dict[group_name]
             for col in range(len(grp_raw_data)):
-#                if grp_raw_data[col] is not None:
-#                    val = QTableWidgetItem(str(grp_raw_data[col]))
-#                    self.simple_table.setItem(row_index, col, val)
                 self._set_val(row_index, col, grp_raw_data[col], self.simple_table)
             # also insert the SEs, if we have them
             se_col = 3
             se = self.ma_unit.get_se(self.cur_effect, self.group_str)
-#            if se is not None:
-#                se_item = QTableWidgetItem(str(se))
-#                self.simple_table.setItem(row_index, se_col, se_item)
             self._set_val(row_index, col, grp_raw_data[col], self.simple_table)
         self.simple_table.blockSignals(False) 
         self.impute_data()
-        
-        ########################################################################
-        debug_msg("Leaving update_raw_data",False)
+
         
     def _cell_data_not_valid(self, celldata_string, cell_header=None):
         # ignore blank entries
@@ -659,7 +625,6 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         return x is None or x == ""
         
     def try_to_update_cur_outcome(self):
-
         n1, m1, sd1, n2, m2, sd2 = self.ma_unit.get_raw_data_for_groups(self.cur_groups)
         se1, se2 = self._get_float(0, 3), self._get_float(1, 3)
         
@@ -669,17 +634,14 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
                     not any([self.no_val(x) for x in [n1, m1, sd1]]) and self.cur_effect in CONTINUOUS_ONE_ARM_METRICS:
             est_and_ci_d = None
             if self.cur_effect in CONTINUOUS_TWO_ARM_METRICS:
-                est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1, se1=se1, \
-                                                        n2=n2, m2=m2, sd2=sd2, se2=se2,\
-                                                        metric=self.cur_effect, conf_level=meta_py_r.get_global_conf_level())
+                est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1, se1=se1, 
+                                                                     n2=n2, m2=m2, sd2=sd2, se2=se2,
+                                                                     metric=self.cur_effect,
+                                                                     conf_level=meta_py_r.get_global_conf_level())
             else:
                 # continuous, one-arm metric
-                est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1, \
-                                      two_arm=False, metric=self.cur_effect, conf_level=meta_py_r.get_global_conf_level())
-            
-            
-            display_est, display_low, display_high = est_and_ci_d["display_scale"]
-            self.ma_unit.set_display_effect_and_ci(self.cur_effect, self.group_str, display_est, display_low, display_high)                            
+                est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1,
+                                      two_arm=False, metric=self.cur_effect, conf_level=meta_py_r.get_global_conf_level())                          
             
             est, low, high = est_and_ci_d["calc_scale"] # calculation (e.g., log) scale
             self.ma_unit.set_effect_and_ci(self.cur_effect, self.group_str, est, low, high)    
@@ -710,8 +672,6 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         self.block_all_signals(False)
         
     def enable_back_calculation_btn(self, engage = False):
-        debug_msg("Entering enable_back_calculation_btn",True)
-        ########################################################################
         # Choose metric parameter if not already chosen
         if (self.metric_parameter is None) and self.cur_effect in ["MD","SMD"]:
             print("need to choose metric parameter because it is %s" % str(self.metric_parameter))
@@ -723,7 +683,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
                 if dialog.exec_():
                     self.metric_parameter = True if dialog.getChoice() == 0 else False
             elif self.cur_effect == "SMD":
-                info = "Has the bias in the SMD been corrected (Hedges' g)?"
+                info = "In order to perform back-calculation most accurately, we need to know if the the bias in the SMD been corrected (Hedges' g)?"
                 option0_txt = "Yes, the slight bias in the SMD has been corrected (Hedges' g) (default)" 
                 option1_txt = "No, the bias is uncorrected"
                 dialog = ChooseBackCalcResultForm(info, option0_txt, option1_txt)
@@ -811,9 +771,9 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
                          "mean1":"group 1 mean",
                          "mean2":"group 2 mean"}
         for key,value in imputed.iteritems():
-            # todo (maybe).....: The R code which generates results can
+            # TODO: (maybe).....: The R code which generates results can
             # POTENTIALLY yield a maximum of 4 numbers for n1 and n2. However,
-            # empiricle testing has shown that this doesn't really happen.
+            # empirical testing has shown that this doesn't really happen.
             # However, for completeness in the future the number of
             # ChooseBackCalcResultForm options should be generated dynamically
             
@@ -851,11 +811,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         self._update_ma_unit()
         self.save_form_state()
         self.set_clear_btn_color()
-        ########################################################################
-        debug_msg("Leaving enable_back_calculation_btn",False)
-        
-        
-        
+         
     def clear_form(self): 
         self.metric_parameter = None  # } these two should go together
         self.enable_txt_box_input()   # }
@@ -876,7 +832,6 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
             if ((self.cur_effect in CONTINUOUS_TWO_ARM_METRICS and metric in CONTINUOUS_TWO_ARM_METRICS) or
                 (self.cur_effect in CONTINUOUS_ONE_ARM_METRICS and metric in CONTINUOUS_ONE_ARM_METRICS)):
                 self.ma_unit.set_effect_and_ci(metric, self.group_str, None, None, None)
-                self.ma_unit.set_display_effect_and_ci(metric, self.group_str, None, None, None)
             else:
                 # TODO: Do nothing for now..... treat the case where we have to switch group strings down the line
                 pass
@@ -895,8 +850,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
 
     def save_form_state(self):
         ''' Saves the state of all objects on the form '''
-        debug_msg("Entering save_form_state",True)
-        ########################################################################
+        
         def save_table_data():
             row = 0
             def _backup_table(table,backup_table,range_num):
@@ -926,10 +880,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
 
         save_table_data()
         save_displayed_effects_data()
-        self.enable_back_calculation_btn()
-        ########################################################################
-        debug_msg("Leaving save_form_state",False)
-        
+        self.enable_back_calculation_btn()  
     
     def restore_form_state(self):
         ''' Restores the state of all objects on the form '''
@@ -972,8 +923,6 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         self.block_all_signals(False)
     
     def initialize_backup_structures(self):
-        debug_msg("Entering initalize_backup_structures",True)
-        ########################################################################
         # Stores form effect info as text
         self.form_effects_dict = {}
         for effect in self.get_effect_names():
@@ -983,8 +932,6 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         self.simple_table_backup = [[None,]*8]
         self.g1_pre_post_table_backup = [[None,]*7]
         self.g2_pre_post_table_backup = [[None,]*7]
-        ########################################################################
-        debug_msg("Leaving initalize_backup_structures",False)
         
     def get_effect_names(self):
         effects = self.ma_unit.get_effect_names()
@@ -1016,13 +963,8 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
             print("Could not reset confidence level")
             return
         
-        res["display_est"]  = meta_py_r.continuous_convert_scale(res["est"], self.cur_effect, convert_to="display.scale")
-        res["display_low"]  = meta_py_r.continuous_convert_scale(res["low"], self.cur_effect, convert_to="display.scale")
-        res["display_high"] = meta_py_r.continuous_convert_scale(res["high"], self.cur_effect, convert_to="display.scale")
-        
         # Save results in ma_unit
         self.ma_unit.set_effect_and_ci(self.cur_effect, self.group_str, res["est"],res["low"],res["high"])
-        self.ma_unit.set_display_effect_and_ci(self.cur_effect, self.group_str, res["display_est"],res["display_low"],res["display_high"])
 
     def get_cur_group_str(self):
         # Inspired from get_cur_group_str of ma_data_table_model

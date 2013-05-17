@@ -17,7 +17,7 @@ import sys
 import forms.ui_results_window
 import edit_forest_plot_form
 import meta_py_r
-import shutil
+#import shutil
 
 PageSize = (612, 792)
 padding = 25
@@ -257,7 +257,7 @@ class ResultsWindow(QMainWindow, forms.ui_results_window.Ui_ResultsWindow):
     def create_pixmap_item(self, pixmap, position, title, image_path,\
                              params_path=None, matrix=QMatrix()):
         item = QGraphicsPixmapItem(pixmap)
-        item.setToolTip("To save the image:\nright-click on the image and choose \"save image as\".")
+        item.setToolTip("To save the image:\nright-click on the image and choose \"save image as\".\nSave as png will correctly render non-latin fonts but does not respect changes to plot made through 'edit_plot ...'")
         
         
         self.y_coord += item.boundingRect().size().height()
@@ -298,31 +298,36 @@ class ResultsWindow(QMainWindow, forms.ui_results_window.Ui_ResultsWindow):
         
         
         def _graphics_item_context_menu(event):
-            if params_path:
-                action = QAction("save image as...", self)
-                QObject.connect(action, SIGNAL("triggered()"), \
+            def add_save_as_pdf_menu_action(menu):
+                action = QAction("save pdf image as...", self)
+                QObject.connect(action, SIGNAL("triggered()"),
+                                lambda : self.save_image_as(params_path, title, 
+                                plot_type=plot_type))
+                menu.addAction(action)
+            def add_save_as_png_menu_action(menu):
+                action = QAction("save png image as...", self)
+                QObject.connect(action, SIGNAL("triggered()"),
                             lambda : self.save_image_as(params_path, title, 
-                                            plot_type=plot_type))
-                context_menu = QMenu(self)
-                context_menu.addAction(action)
-    
+                                            plot_type=plot_type,
+                                            unscaled_image = plot_img))
+                menu.addAction(action)
+            def add_edit_plot_menu_action(menu):
                 # only know how to edit *simple* (i.e., _not_ side-by-side, as 
                 # in sens and spec plotted on the same canvass) forest plots for now
                 if plot_type == "forest" and not self._is_side_by_side_fp(title):
                     action = QAction("edit plot...", self)
-                    QObject.connect(action, SIGNAL("triggered()"), \
-                                lambda : self.edit_image(\
-                                           params_path, title, png_path, qpixmap_item))
-                    context_menu.addAction(action)
+                    QObject.connect(action, SIGNAL("triggered()"),
+                            lambda : self.edit_image(params_path, title,
+                                                     png_path, qpixmap_item))
+                    menu.addAction(action)
+            
+            context_menu = QMenu(self)
+            if params_path:
+                add_save_as_pdf_menu_action(context_menu)
+                add_save_as_png_menu_action(context_menu) 
+                add_edit_plot_menu_action(context_menu)
             else: # no params path given, just give them the png
-                action = QAction("save image as...", self)
-                print("THe plot type and title are tittle is: (%s,%s)" % (plot_type, title))
-                
-                QObject.connect(action, SIGNAL("triggered()"), \
-                            lambda : self.save_image_as(params_path, title, 
-                                            plot_type=plot_type, unscaled_image = plot_img))
-                context_menu = QMenu(self)
-                context_menu.addAction(action)
+                add_save_as_png_menu_action(context_menu)
 
             pos = event.screenPos()
             context_menu.popup(pos)
@@ -342,14 +347,13 @@ class ResultsWindow(QMainWindow, forms.ui_results_window.Ui_ResultsWindow):
             # call, this object will be in the namespace
             meta_py_r.load_in_R("%s.plotdata" % params_path)
     
-            default_path = \
-                {"forest":"forest_plot.pdf", \
-                 "regression":"regression.pdf"}[plot_type]
+            default_path = {"forest":"forest_plot.pdf",
+                            "regression":"regression.pdf"}[plot_type]
     
             # where to save the graphic?
             file_path = unicode(QFileDialog.getSaveFileName(self, 
                                                             "OpenMeta[Analyst] -- save plot as", 
-                                                            default_path))
+                                                            QString(default_path)))
     
             # now we re-generate it, unless they canceled, of course
             if file_path != "":

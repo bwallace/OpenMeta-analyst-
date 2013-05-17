@@ -309,19 +309,11 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
     
     def set_current_effect(self):
         '''Fills in text boxes with data from ma unit'''
-        
-        print("Entering set_current_effect")
-        
-        # Fill in text boxes with data from ma unit
-        self.block_all_signals(True)
-        effect_dict = self.ma_unit.get_effect_dict(self.cur_effect, self.group_str)
-        for s, txt_box in zip(['display_est', 'display_lower', 'display_upper'], \
-                              [self.effect_txt_box, self.low_txt_box, self.high_txt_box]):
-            if effect_dict[s] is not None:
-                txt_box.setText(QString("%s" % round(effect_dict[s], NUM_DIGITS)))
-            else:
-                txt_box.setText(QString(""))
-        self.block_all_signals(False)
+
+        txt_boxes = dict(effect=self.effect_txt_box, lower=self.low_txt_box, upper=self.high_txt_box)
+        meta_globals.helper_set_current_effect(ma_unit=self.ma_unit,
+            txt_boxes=txt_boxes, current_effect=self.cur_effect,
+            group_str=self.group_str, data_type="binary")
         
         self.change_row_color_according_to_metric()
         
@@ -503,13 +495,10 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
                       
         if val_str == "est":
             self.ma_unit.set_effect(self.cur_effect, self.group_str, calc_scale_val)
-            self.ma_unit.set_display_effect(self.cur_effect, self.group_str, display_scale_val)
         elif val_str == "lower":
             self.ma_unit.set_lower(self.cur_effect, self.group_str, calc_scale_val)
-            self.ma_unit.set_display_lower(self.cur_effect, self.group_str, display_scale_val)
         else:
             self.ma_unit.set_upper(self.cur_effect, self.group_str, calc_scale_val)
-            self.ma_unit.set_display_upper(self.cur_effect, self.group_str, display_scale_val)
         
         self.enable_txt_box_input()
         self.save_form_state()
@@ -702,9 +691,6 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
         return x is None or x == ""
         
     def try_to_update_cur_outcome(self):
-        print("Entering try_to_update_cur_outcome...")
-        print("    current effect: %s" % self.cur_effect)
-        
         e1, n1, e2, n2 = self.ma_unit.get_raw_data_for_groups(self.cur_groups)
         print("    e1: %s, n1: %s, e2: %s, n2: %s" % (str(e1),str(n1),str(e2),str(n2)))
         
@@ -720,9 +706,7 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
             else:
                 # binary, one-arm
                 est_and_ci_d = meta_py_r.effect_for_study(e1, n1, two_arm=False, metric=self.cur_effect, conf_level=self.CI_spinbox.value())
-        
-            display_est, display_low, display_high = est_and_ci_d["display_scale"]
-            self.ma_unit.set_display_effect_and_ci(self.cur_effect, self.group_str, display_est, display_low, display_high)                            
+                                    
             est, low, high = est_and_ci_d["calc_scale"]  # calculation (e.g., log) scale
             self.ma_unit.set_effect_and_ci(self.cur_effect, self.group_str, est, low, high)
             self.set_current_effect()
@@ -739,7 +723,6 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
             if ((self.cur_effect in BINARY_TWO_ARM_METRICS and metric in BINARY_TWO_ARM_METRICS) or
                 (self.cur_effect in BINARY_ONE_ARM_METRICS and metric in BINARY_ONE_ARM_METRICS)):
                 self.ma_unit.set_effect_and_ci(metric, self.group_str, None, None, None)
-                self.ma_unit.set_display_effect_and_ci(metric, self.group_str, None, None, None)
             else:
                 # TODO: Do nothing for now..... treat the case where we have to switch group strings down the line
                 pass
@@ -792,13 +775,8 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
             print("Could not reset confidence level")
             return
         
-        res["display_est"] = meta_py_r.binary_convert_scale(res["est"], self.cur_effect, convert_to="display.scale")
-        res["display_low"] = meta_py_r.binary_convert_scale(res["low"], self.cur_effect, convert_to="display.scale")
-        res["display_high"] = meta_py_r.binary_convert_scale(res["high"], self.cur_effect, convert_to="display.scale")
-        
         # Save results in ma_unit
         self.ma_unit.set_effect_and_ci(self.cur_effect, self.group_str, res["est"], res["low"], res["high"])
-        self.ma_unit.set_display_effect_and_ci(self.cur_effect, self.group_str, res["display_est"], res["display_low"], res["display_high"])
         
     def get_cur_group_str(self):
         # Inspired from get_cur_group_str of ma_data_table_model

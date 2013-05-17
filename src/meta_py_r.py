@@ -65,24 +65,7 @@ class RlibLoader:
         except:
             raise Exception("The %s R package is not installed.\nPlease \
 install this package and then re-start OpenMeta.")
-            
-    
-    
-#    def load_R_libraries(self):
-#        try:
-#            # ascertain that R has write privledges
-#            print "\nloading R libraries..."
-#            ro.r("library(metafor)")
-#            ro.r("library(openmetar)")
-#            print "openmetaR package succesfully loaded"
-#        except:
-#            raise Exception, "Either the metafor or openmetar R package is not installed.\nPlease install these packages and then re-start OpenMeta."
-#        
-#        try:
-#            ro.r("library(igraph)")
-#            ro.r("library(grid)")
-#        except:
-#            raise Exception, "igraph library not available!"
+
 #################### END OF R Library Loader ####################
 
         
@@ -122,7 +105,7 @@ def rescale_effect_and_ci_conf_level(data_dict):
 
 def R_fn_with_dataframe_arg(data_dict, R_fn_name):
     '''Calls an R function which takes a dataframe as its only argument w/
-    parameters within. Returns a python dictionary. Assumes R functin returns
+    parameters within. Returns a python dictionary. Assumes R function returns
     an R list'''
     
     for param, val in data_dict.items():
@@ -147,7 +130,6 @@ def impute_bin_data(bin_data_dict):
     
     return _grlist_to_pydict(two_by_two)
 
-# meta_py_r.impute_cont_data(group1_data, group2_data, effect_data, self.conf_level_to_alpha())
 def back_calc_cont_data(group1_data, group2_data, effect_data, conf_level):
     remove_value(None, group1_data)
     remove_value(None, group2_data)
@@ -170,36 +152,34 @@ def remove_value(toRemove, t_dict):
         if val == toRemove:
             t_dict.pop(param)
 
-def fillin_2x2(table_data_dict):
-    #r_str = ["fillin.2x2.simple("]
-    ro.r("source('sandbox.r')")
-    r_str = ["fillin.2x2.simpler("]
-    
-    # construct argument list if argument is not None
-    for param, val in table_data_dict.items():
-        if val is not None:
-            r_str.append("%s=%s," % (param, val))
-        
-    # drop the last comma, close the function call
-    r_str = "".join(r_str)[:-1] if r_str[-1].endswith(",") else "".join(r_str)
-    r_str += ")"
-    res = ro.r(r_str)
-    #if "NA" in str(res).split(" "):
-    #    return None
-    
-    print "\n\n*****"
-    print r_str
-    #print res
-    print "*****\n\n"
-    
-    
-    # CONVERT res to python DICT using the fact that the r objects are iterable
-    #for (name, index, value) in zip(enumerate(res.names)
-
-    if len(res) == 1 and _gis_NA(res[0]):
-        return None
-    toreturn = _grlist_to_pydict(res,True)
-    return toreturn
+#def fillin_2x2(table_data_dict):
+#    ro.r("source('sandbox.r')")
+#    r_str = ["fillin.2x2.simpler("]
+#    
+#    # construct argument list if argument is not None
+#    for param, val in table_data_dict.items():
+#        if val is not None:
+#            r_str.append("%s=%s," % (param, val))
+#        
+#    # drop the last comma, close the function call
+#    r_str = "".join(r_str)[:-1] if r_str[-1].endswith(",") else "".join(r_str)
+#    r_str += ")"
+#    res = ro.r(r_str)
+#    #if "NA" in str(res).split(" "):
+#    #    return None
+#    
+#    print "\n\n*****"
+#    print r_str
+#    #print res
+#    print "*****\n\n"
+#    
+#    # CONVERT res to python DICT using the fact that the r objects are iterable
+#    #for (name, index, value) in zip(enumerate(res.names)
+#
+#    if len(res) == 1 and _gis_NA(res[0]):
+#        return None
+#    toreturn = _grlist_to_pydict(res,True)
+#    return toreturn
 
 def _gis_NA(x):
     return str(x) == 'NA'
@@ -888,6 +868,7 @@ def generate_forest_plot(file_path, side_by_side=False, params_name="plot.data")
         print "generating a side-by-side forest plot..."
         ro.r("two.forest.plots(%s, '%s')" % (params_name, file_path))
     else:
+        print("generating a forest plot....")
         ro.r("forest.plot(%s, '%s')" % (params_name, file_path))
 
 def parse_out_results(result):
@@ -1298,7 +1279,8 @@ def diagnostic_convert_scale(x, metric_name, convert_to="display.scale"):
     return generic_convert_scale(x, metric_name, "diagnostic", convert_to)
     
 def generic_convert_scale(x, metric_name, data_type, convert_to="display.scale"):
-    ro.r("trans.f <- %s.transform.f('%s')" % (data_type, metric_name))
+    r_str = "trans.f <- %s.transform.f('%s')" % (data_type, metric_name)
+    ro.r(r_str)
 
     if x is None:
         return None
