@@ -44,12 +44,10 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self.entry_widgets = [self.two_by_two_table, self.prevalence_txt_box,
                               self.low_txt_box, self.high_txt_box,
                               self.effect_txt_box,]
-        self.already_showed_change_CI_alert = False
+        self.ci_label.setText("{0:.1f}% Confidence Interval".format(meta_py_r.get_global_conf_level()))
         
         # block all the widgets for a moment
         self.block_all_signals(True)
-        
-        meta_globals.init_ci_spinbox_and_label(self.CI_spinbox, self.ci_label)
         
         self.setup_inconsistency_checking()
         self.initialize_backup_structures()
@@ -104,15 +102,6 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         QObject.connect(self.prevalence_txt_box, SIGNAL("editingFinished()"), lambda: self.val_changed("prevalence") )
 
         QObject.connect(self.back_calc_Btn, SIGNAL("clicked()"), lambda: self.enable_back_calculation_btn(engage=True) )
-        QObject.connect(self.CI_spinbox, SIGNAL("valueChanged(double)"), self._change_ci)
-        QObject.connect(self, SIGNAL("accepted()"), self.reset_conf_level)
-        
-    def _change_ci(self,val):
-        self.ci_label.setText("{0:.1F} % Confidence Interval".format(val))
-        print("New CI val:",val)
-        
-        self.change_CI_alert(val)
-        self.enable_back_calculation_btn()
 
     def setup_inconsistency_checking(self):
         # set-up inconsistency label
@@ -299,9 +288,6 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             self.candidate_prevalence = self.prevalence_txt_box.text()
         
         def restore_table():
-            #print "Table to restore:"
-            #self.print_backup_table()
-        
             for row in range(3):
                 for col in range(3):
                     self.two_by_two_table.blockSignals(True)
@@ -309,10 +295,6 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
                     self.two_by_two_table.blockSignals(False)
             self.check_table_consistency.run()
             
-            #print("Backed-up table:")
-            #self.print_backup_table()
-        
-        self.CI_spinbox.setValue(meta_py_r.get_global_conf_level())
         restore_displayed_effects_data()
         restore_table()
         self.enable_back_calculation_btn()
@@ -370,7 +352,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         # sensitivity and specificity
         ests_and_cis = meta_py_r.diagnostic_effects_for_study(
                                 tp, fn, fp, tn, metrics=DIAGNOSTIC_METRICS,
-                                conf_level=self.CI_spinbox.value())
+                                conf_level=meta_py_r.get_global_conf_level())
         
         # now we're going to set the effect estimate/CI on the MA object.
         for metric in DIAGNOSTIC_METRICS:
@@ -549,9 +531,6 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             self.candidate_prevalence = display_scale_val
 
     def effect_changed(self):
-        # Re-scale previous effect first
-        self.reset_conf_level()
-        
         self.cur_effect = str(self.effect_cbo_box.currentText()) 
         self.set_current_effect()
         
@@ -662,8 +641,6 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
 
         self.reset_table_item_flags()
         self.enable_txt_box_input()
-        self.CI_spinbox.setValue(meta_py_r.get_global_conf_level())
-        self.CI_spinbox.setEnabled(True)
         
     def enable_txt_box_input(self):
         ''' Enables text boxes if they are empty, disables them otherwise '''
@@ -695,7 +672,6 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         txt_boxes_disabled = self._txt_boxes_disabled()
 
         if table_disabled and txt_boxes_disabled:
-            self.CI_spinbox.setEnabled(False) # weird place for ?this? but whatever
             return True
         return False
     
@@ -731,8 +707,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             x = self.prevalence_txt_box.text()
             d["prev"] = float(x) if _is_a_float(x) else None
 
-            x = self.CI_spinbox.value()
-            d["conf.level"] = x if _is_a_float(x) else None
+            d["conf.level"] = meta_py_r.get_global_conf_level()
     
             # now grab the raw data, if available
             d.update(self.get_raw_diag_data())
@@ -794,28 +769,3 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         #self.impute_effects_in_ma_unit() 
         #self.set_current_effect()
         #self.save_form_state()
-
-    def change_CI_alert(self,value=None):
-        if not self.already_showed_change_CI_alert:
-            QMessageBox.information(self, "Changing Confidence Level", meta_globals.get_CHANGE_CI_ALERT_MSG())
-            self.already_showed_change_CI_alert = True
-    
-    # TODO: should be refactored to shared function in meta_globals
-    def reset_conf_level(self):
-        print("Re-scaling est, low, high to standard confidence level")
-        
-        old_effect_and_ci = self.ma_unit.get_effect_and_ci(self.cur_effect, self.group_str)
-        
-        argument_d = {"est"  : old_effect_and_ci[0],
-                      "low"  : old_effect_and_ci[1],
-                      "high" : old_effect_and_ci[2],
-                      "orig.conf.level": self.CI_spinbox.value(),
-                      "target.conf.level": meta_py_r.get_global_conf_level()}
-        
-        res = meta_py_r.rescale_effect_and_ci_conf_level(argument_d)
-        if "FAIL" in res:
-            print("Could not reset confidence level")
-            return
-        
-        # Save results in ma_unit
-        self.ma_unit.set_effect_and_ci(self.cur_effect, self.group_str, res["est"],res["low"],res["high"])

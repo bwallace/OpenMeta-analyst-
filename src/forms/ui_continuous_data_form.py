@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'continuous_data_form.ui'
 #
-# Created: Wed Apr 17 14:37:19 2013
+# Created: Mon May 20 09:43:45 2013
 #      by: PyQt4 UI code generator 4.10
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_ContinuousDataForm(object):
     def setupUi(self, ContinuousDataForm):
         ContinuousDataForm.setObjectName(_fromUtf8("ContinuousDataForm"))
-        ContinuousDataForm.resize(570, 614)
+        ContinuousDataForm.resize(570, 565)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -273,22 +273,6 @@ class Ui_ContinuousDataForm(object):
         self.horizontalLayout_5.addWidget(self.label_16)
         self.gridLayout.addLayout(self.horizontalLayout_5, 1, 2, 1, 1)
         self.verticalLayout_2.addLayout(self.gridLayout)
-        self.horizontalLayout = QtGui.QHBoxLayout()
-        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        self.label_3 = QtGui.QLabel(ContinuousDataForm)
-        self.label_3.setObjectName(_fromUtf8("label_3"))
-        self.horizontalLayout.addWidget(self.label_3)
-        self.CI_spinbox = QtGui.QDoubleSpinBox(ContinuousDataForm)
-        self.CI_spinbox.setDecimals(1)
-        self.CI_spinbox.setMinimum(40.0)
-        self.CI_spinbox.setMaximum(100.0)
-        self.CI_spinbox.setSingleStep(0.1)
-        self.CI_spinbox.setProperty("value", 95.0)
-        self.CI_spinbox.setObjectName(_fromUtf8("CI_spinbox"))
-        self.horizontalLayout.addWidget(self.CI_spinbox)
-        spacerItem5 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem5)
-        self.verticalLayout_2.addLayout(self.horizontalLayout)
         self.buttonBox = QtGui.QDialogButtonBox(ContinuousDataForm)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
@@ -379,7 +363,5 @@ class Ui_ContinuousDataForm(object):
         self.label_15.setText(_translate("ContinuousDataForm", "[", None))
         self.label_2.setText(_translate("ContinuousDataForm", ",", None))
         self.label_16.setText(_translate("ContinuousDataForm", "]", None))
-        self.label_3.setText(_translate("ContinuousDataForm", "Confidence Level:", None))
-        self.CI_spinbox.setSuffix(_translate("ContinuousDataForm", " %", None))
 
 import icons_rc

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'diagnostic_data_form.ui'
 #
-# Created: Wed Apr 17 14:37:19 2013
+# Created: Mon May 20 09:43:57 2013
 #      by: PyQt4 UI code generator 4.10
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_DiagnosticDataForm(object):
     def setupUi(self, DiagnosticDataForm):
         DiagnosticDataForm.setObjectName(_fromUtf8("DiagnosticDataForm"))
-        DiagnosticDataForm.resize(380, 449)
+        DiagnosticDataForm.resize(380, 412)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/images/meta.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         DiagnosticDataForm.setWindowIcon(icon)
@@ -168,22 +168,6 @@ class Ui_DiagnosticDataForm(object):
         self.line.setFrameShadow(QtGui.QFrame.Sunken)
         self.line.setObjectName(_fromUtf8("line"))
         self.verticalLayout.addWidget(self.line)
-        self.horizontalLayout = QtGui.QHBoxLayout()
-        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        self.label_2 = QtGui.QLabel(DiagnosticDataForm)
-        self.label_2.setObjectName(_fromUtf8("label_2"))
-        self.horizontalLayout.addWidget(self.label_2)
-        self.CI_spinbox = QtGui.QDoubleSpinBox(DiagnosticDataForm)
-        self.CI_spinbox.setDecimals(1)
-        self.CI_spinbox.setMinimum(40.0)
-        self.CI_spinbox.setMaximum(100.0)
-        self.CI_spinbox.setSingleStep(0.1)
-        self.CI_spinbox.setProperty("value", 95.0)
-        self.CI_spinbox.setObjectName(_fromUtf8("CI_spinbox"))
-        self.horizontalLayout.addWidget(self.CI_spinbox)
-        spacerItem6 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem6)
-        self.verticalLayout.addLayout(self.horizontalLayout)
         self.horizontalLayout_4 = QtGui.QHBoxLayout()
         self.horizontalLayout_4.setObjectName(_fromUtf8("horizontalLayout_4"))
         self.inconsistencyLabel = QtGui.QLabel(DiagnosticDataForm)
@@ -193,8 +177,8 @@ class Ui_DiagnosticDataForm(object):
         self.inconsistencyLabel.setFont(font)
         self.inconsistencyLabel.setObjectName(_fromUtf8("inconsistencyLabel"))
         self.horizontalLayout_4.addWidget(self.inconsistencyLabel)
-        spacerItem7 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_4.addItem(spacerItem7)
+        spacerItem6 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_4.addItem(spacerItem6)
         self.buttonBox = QtGui.QDialogButtonBox(DiagnosticDataForm)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
@@ -211,8 +195,7 @@ class Ui_DiagnosticDataForm(object):
         DiagnosticDataForm.setTabOrder(self.clear_Btn, self.back_calc_Btn)
         DiagnosticDataForm.setTabOrder(self.back_calc_Btn, self.prevalence_txt_box)
         DiagnosticDataForm.setTabOrder(self.prevalence_txt_box, self.effect_cbo_box)
-        DiagnosticDataForm.setTabOrder(self.effect_cbo_box, self.CI_spinbox)
-        DiagnosticDataForm.setTabOrder(self.CI_spinbox, self.buttonBox)
+        DiagnosticDataForm.setTabOrder(self.effect_cbo_box, self.buttonBox)
 
     def retranslateUi(self, DiagnosticDataForm):
         DiagnosticDataForm.setWindowTitle(_translate("DiagnosticDataForm", "Dialog", None))
@@ -238,9 +221,6 @@ class Ui_DiagnosticDataForm(object):
         self.label.setText(_translate("DiagnosticDataForm", "[", None))
         self.label_4.setText(_translate("DiagnosticDataForm", ",", None))
         self.label_3.setText(_translate("DiagnosticDataForm", "]", None))
-        self.label_2.setText(_translate("DiagnosticDataForm", "Confidence Level:", None))
-        self.CI_spinbox.setToolTip(_translate("DiagnosticDataForm", "Use this box to set the % confidence interval", None))
-        self.CI_spinbox.setSuffix(_translate("DiagnosticDataForm", " %", None))
         self.inconsistencyLabel.setText(_translate("DiagnosticDataForm", "INCONSISTENT FORM", None))
 
 import icons_rc

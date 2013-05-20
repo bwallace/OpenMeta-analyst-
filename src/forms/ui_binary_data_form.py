@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'binary_data_form2.ui'
 #
-# Created: Wed Apr 17 14:37:19 2013
+# Created: Mon May 20 09:43:29 2013
 #      by: PyQt4 UI code generator 4.10
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_BinaryDataForm(object):
     def setupUi(self, BinaryDataForm):
         BinaryDataForm.setObjectName(_fromUtf8("BinaryDataForm"))
-        BinaryDataForm.resize(394, 419)
+        BinaryDataForm.resize(394, 382)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/misc/meta.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         BinaryDataForm.setWindowIcon(icon)
@@ -150,7 +150,6 @@ class Ui_BinaryDataForm(object):
         spacerItem2 = QtGui.QSpacerItem(32, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.gridLayout_6.addItem(spacerItem2, 0, 0, 2, 1)
         self.ci_label = QtGui.QLabel(self.groupBox)
-        self.ci_label.setText(_fromUtf8(""))
         self.ci_label.setObjectName(_fromUtf8("ci_label"))
         self.gridLayout_6.addWidget(self.ci_label, 0, 2, 1, 1)
         spacerItem3 = QtGui.QSpacerItem(32, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
@@ -210,22 +209,6 @@ class Ui_BinaryDataForm(object):
         self.line.setFrameShadow(QtGui.QFrame.Sunken)
         self.line.setObjectName(_fromUtf8("line"))
         self.verticalLayout_4.addWidget(self.line)
-        self.horizontalLayout_18 = QtGui.QHBoxLayout()
-        self.horizontalLayout_18.setObjectName(_fromUtf8("horizontalLayout_18"))
-        self.label_24 = QtGui.QLabel(BinaryDataForm)
-        self.label_24.setObjectName(_fromUtf8("label_24"))
-        self.horizontalLayout_18.addWidget(self.label_24)
-        self.CI_spinbox = QtGui.QDoubleSpinBox(BinaryDataForm)
-        self.CI_spinbox.setDecimals(1)
-        self.CI_spinbox.setMinimum(40.0)
-        self.CI_spinbox.setMaximum(100.0)
-        self.CI_spinbox.setSingleStep(0.1)
-        self.CI_spinbox.setProperty("value", 95.0)
-        self.CI_spinbox.setObjectName(_fromUtf8("CI_spinbox"))
-        self.horizontalLayout_18.addWidget(self.CI_spinbox)
-        spacerItem4 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_18.addItem(spacerItem4)
-        self.verticalLayout_4.addLayout(self.horizontalLayout_18)
         self.horizontalLayout_14 = QtGui.QHBoxLayout()
         self.horizontalLayout_14.setObjectName(_fromUtf8("horizontalLayout_14"))
         self.inconsistencyLabel = QtGui.QLabel(BinaryDataForm)
@@ -235,8 +218,8 @@ class Ui_BinaryDataForm(object):
         self.inconsistencyLabel.setFont(font)
         self.inconsistencyLabel.setObjectName(_fromUtf8("inconsistencyLabel"))
         self.horizontalLayout_14.addWidget(self.inconsistencyLabel)
-        spacerItem5 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_14.addItem(spacerItem5)
+        spacerItem4 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_14.addItem(spacerItem4)
         self.buttonBox = QtGui.QDialogButtonBox(BinaryDataForm)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
@@ -254,8 +237,7 @@ class Ui_BinaryDataForm(object):
         BinaryDataForm.setTabOrder(self.effect_cbo_box, self.effect_txt_box)
         BinaryDataForm.setTabOrder(self.effect_txt_box, self.low_txt_box)
         BinaryDataForm.setTabOrder(self.low_txt_box, self.high_txt_box)
-        BinaryDataForm.setTabOrder(self.high_txt_box, self.CI_spinbox)
-        BinaryDataForm.setTabOrder(self.CI_spinbox, self.buttonBox)
+        BinaryDataForm.setTabOrder(self.high_txt_box, self.buttonBox)
 
     def retranslateUi(self, BinaryDataForm):
         BinaryDataForm.setWindowTitle(_translate("BinaryDataForm", "Binary Data", None))
@@ -269,13 +251,11 @@ class Ui_BinaryDataForm(object):
         self.back_calc_btn.setText(_translate("BinaryDataForm", "back-calculate table", None))
         self.label_17.setText(_translate("BinaryDataForm", "effect", None))
         self.ci_label.setToolTip(_translate("BinaryDataForm", "Use the box to the left to set the % confidence interval", None))
+        self.ci_label.setText(_translate("BinaryDataForm", "X% Confidence Interval", None))
         self.est_lbl.setText(_translate("BinaryDataForm", "est.", None))
         self.low_lbl.setText(_translate("BinaryDataForm", "[", None))
         self.label_23.setText(_translate("BinaryDataForm", ",", None))
         self.high_lbl.setText(_translate("BinaryDataForm", "]", None))
-        self.label_24.setText(_translate("BinaryDataForm", "Confidence Level:", None))
-        self.CI_spinbox.setToolTip(_translate("BinaryDataForm", "Use this box to set the % confidence interval", None))
-        self.CI_spinbox.setSuffix(_translate("BinaryDataForm", " %", None))
         self.inconsistencyLabel.setText(_translate("BinaryDataForm", "INCONSISTENT FORM", None))
 
 import icons_rc

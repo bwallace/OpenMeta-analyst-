@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>380</width>
-    <height>449</height>
+    <height>412</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -409,55 +409,6 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Confidence Level:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QDoubleSpinBox" name="CI_spinbox">
-       <property name="toolTip">
-        <string>Use this box to set the % confidence interval</string>
-       </property>
-       <property name="suffix">
-        <string> %</string>
-       </property>
-       <property name="decimals">
-        <number>1</number>
-       </property>
-       <property name="minimum">
-        <double>40.000000000000000</double>
-       </property>
-       <property name="maximum">
-        <double>100.000000000000000</double>
-       </property>
-       <property name="singleStep">
-        <double>0.100000000000000</double>
-       </property>
-       <property name="value">
-        <double>95.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
-   </item>
-   <item>
     <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
       <widget class="QLabel" name="inconsistencyLabel">
@@ -505,11 +456,10 @@
   <tabstop>back_calc_Btn</tabstop>
   <tabstop>prevalence_txt_box</tabstop>
   <tabstop>effect_cbo_box</tabstop>
-  <tabstop>CI_spinbox</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>
-  <include location="images/icons.qrc"/>
+  <include location="../images/icons.qrc"/>
  </resources>
  <connections>
   <connection>

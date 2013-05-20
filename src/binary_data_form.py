@@ -49,9 +49,7 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
         self.cur_effect = cur_effect
         self.entry_widgets = [self.raw_data_table, self.low_txt_box,
                               self.high_txt_box, self.effect_txt_box]
-        self.already_showed_change_CI_alert = False
-        
-        meta_globals.init_ci_spinbox_and_label(self.CI_spinbox, self.ci_label)
+        self.ci_label.setText("{0:.1f}% Confidence Interval".format(meta_py_r.get_global_conf_level()))
         
         self.initialize_table_items() # initialize all cell to empty items
         self.setup_inconsistency_checking()
@@ -100,7 +98,6 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
         txt_boxes_disabled = self._txt_boxes_disabled()
 
         if table_disabled and txt_boxes_disabled:
-            self.CI_spinbox.setEnabled(False)  # weird place for ?this? but whatever
             return True
         return False
 
@@ -128,8 +125,7 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
                 except:
                     d["%s" % R_key] = None
             
-            x = self.CI_spinbox.value()
-            d["conf.level"] = x if _is_a_float(x) else None
+            d["conf.level"] = meta_py_r.get_global_conf_level()
             
             d["Ev_A"] = float(self._get_int(0, 0)) if not self._is_empty(0, 0) else None
             d["N_A"] = float(self._get_int(0, 2)) if not self._is_empty(0, 2) else None
@@ -260,7 +256,6 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
     def initialize_backup_structures(self):
         # Stores form effect info as text
         self.form_effects_dict = {}
-        # self.form_effects_dict["alpha"] = ""
         for effect in self.get_effect_names():
             self.form_effects_dict[effect] = {"est":"", "lower":"", "upper":""}
         
@@ -286,16 +281,6 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
         QObject.connect(self.high_txt_box, SIGNAL("editingFinished()"), lambda: self.val_changed("upper"))
         
         QObject.connect(self.back_calc_btn, SIGNAL("clicked()"), lambda: self.enable_back_calculation_btn(engage=True))
-        QObject.connect(self.CI_spinbox, SIGNAL("valueChanged(double)"), self._change_ci)
-        
-        QObject.connect(self, SIGNAL("accepted()"), self.reset_conf_level)
-    
-    def _change_ci(self, val):
-        self.ci_label.setText("{0:.1F} % Confidence Interval".format(val))
-        print("New CI val:", val)
-        
-        self.change_CI_alert(val)
-        self.enable_back_calculation_btn()
                                                                                               
     def _populate_effect_data(self):
         q_effects = sorted([QString(effect_str) for effect_str in self.ma_unit.effects_dict.keys()])
@@ -337,9 +322,6 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
  
     def effect_changed(self):
         '''Called when a new effect is selected in the combo box'''
-        
-        # Re-scale previous effect first
-        self.reset_conf_level()
         
         self.cur_effect = unicode(self.effect_cbo_box.currentText().toUtf8(), "utf-8")
         self.group_str = self.get_cur_group_str()
@@ -403,24 +385,17 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
             self.candidate_upper = self.high_txt_box.text()
         
         def restore_table():
-            # print "Table to restore:"
-            # self.print_backup_table()
-        
             for row in range(3):
                 for col in range(3):
                     self.raw_data_table.blockSignals(True)
                     self._set_val(row, col, self.table_backup[row][col])
                     self.raw_data_table.blockSignals(False)
             self.check_table_consistency.run()
-            
-            # print("Backed-up table:")
-            # self.print_backup_table()
         
-        self.CI_spinbox.setValue(meta_py_r.get_global_conf_level())
         restore_displayed_effects_data()
         restore_table()
         self.enable_back_calculation_btn()
-        ########################################################################
+
         # Unblock the signals
         self.block_all_signals(False)
         
@@ -702,10 +677,10 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
         # if None is in the raw data, should we clear out current outcome?
         if two_arm_raw_data_ok or (curr_effect_is_one_arm and one_arm_raw_data_ok):
             if curr_effect_is_two_arm:
-                est_and_ci_d = meta_py_r.effect_for_study(e1, n1, e2, n2, metric=self.cur_effect, conf_level=self.CI_spinbox.value())
+                est_and_ci_d = meta_py_r.effect_for_study(e1, n1, e2, n2, metric=self.cur_effect, conf_level=meta_py_r.get_global_conf_level())
             else:
                 # binary, one-arm
-                est_and_ci_d = meta_py_r.effect_for_study(e1, n1, two_arm=False, metric=self.cur_effect, conf_level=self.CI_spinbox.value())
+                est_and_ci_d = meta_py_r.effect_for_study(e1, n1, two_arm=False, metric=self.cur_effect, conf_level=meta_py_r.get_global_conf_level())
                                     
             est, low, high = est_and_ci_d["calc_scale"]  # calculation (e.g., log) scale
             self.ma_unit.set_effect_and_ci(self.cur_effect, self.group_str, est, low, high)
@@ -734,8 +709,6 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
         self.reset_table_item_flags()
         self.initialize_backup_structures()
         self.enable_txt_box_input()
-        self.CI_spinbox.setValue(meta_py_r.get_global_conf_level())
-        self.CI_spinbox.setEnabled(True)
         
     def enable_txt_box_input(self):
         # meta_globals.enable_txt_box_input(self.effect_txt_box, self.low_txt_box,
@@ -752,31 +725,6 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
                     newflags = item.flags() | Qt.ItemIsEditable
                     item.setFlags(newflags)
         self.block_all_signals(False)
-        
-    def change_CI_alert(self, value=None):
-        if not self.already_showed_change_CI_alert:
-            QMessageBox.information(self, "Changing Confidence Level", meta_globals.get_CHANGE_CI_ALERT_MSG())
-            self.already_showed_change_CI_alert = True
-    
-    # TODO: should be refactored to shared function in meta_globals
-    def reset_conf_level(self):
-        print("Re-scaling est, low, high to standard confidence level")
-        
-        old_effect_and_ci = self.ma_unit.get_effect_and_ci(self.cur_effect, self.group_str)
-        
-        argument_d = {"est"  : old_effect_and_ci[0],
-                      "low"  : old_effect_and_ci[1],
-                      "high" : old_effect_and_ci[2],
-                      "orig.conf.level": self.CI_spinbox.value(),
-                      "target.conf.level": meta_py_r.get_global_conf_level()}
-        
-        res = meta_py_r.rescale_effect_and_ci_conf_level(argument_d)
-        if "FAIL" in res:
-            print("Could not reset confidence level")
-            return
-        
-        # Save results in ma_unit
-        self.ma_unit.set_effect_and_ci(self.cur_effect, self.group_str, res["est"], res["low"], res["high"])
         
     def get_cur_group_str(self):
         # Inspired from get_cur_group_str of ma_data_table_model

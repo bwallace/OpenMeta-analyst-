@@ -7,14 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>394</width>
-    <height>419</height>
+    <height>382</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Binary Data</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="images/icons.qrc">
+   <iconset resource="../images/icons.qrc">
     <normaloff>:/misc/meta.png</normaloff>:/misc/meta.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -308,7 +308,7 @@
          <string>Use the box to the left to set the % confidence interval</string>
         </property>
         <property name="text">
-         <string/>
+         <string>X% Confidence Interval</string>
         </property>
        </widget>
       </item>
@@ -468,55 +468,6 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_18">
-     <item>
-      <widget class="QLabel" name="label_24">
-       <property name="text">
-        <string>Confidence Level:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QDoubleSpinBox" name="CI_spinbox">
-       <property name="toolTip">
-        <string>Use this box to set the % confidence interval</string>
-       </property>
-       <property name="suffix">
-        <string> %</string>
-       </property>
-       <property name="decimals">
-        <number>1</number>
-       </property>
-       <property name="minimum">
-        <double>40.000000000000000</double>
-       </property>
-       <property name="maximum">
-        <double>100.000000000000000</double>
-       </property>
-       <property name="singleStep">
-        <double>0.100000000000000</double>
-       </property>
-       <property name="value">
-        <double>95.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer_18">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
-   </item>
-   <item>
     <layout class="QHBoxLayout" name="horizontalLayout_14">
      <item>
       <widget class="QLabel" name="inconsistencyLabel">
@@ -566,11 +517,10 @@
   <tabstop>effect_txt_box</tabstop>
   <tabstop>low_txt_box</tabstop>
   <tabstop>high_txt_box</tabstop>
-  <tabstop>CI_spinbox</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>
-  <include location="images/icons.qrc"/>
+  <include location="../images/icons.qrc"/>
  </resources>
  <connections>
   <connection>

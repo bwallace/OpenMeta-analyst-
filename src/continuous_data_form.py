@@ -40,23 +40,6 @@ import forms.ui_choose_back_calc_result_form
 NUM_DIGITS = 4 
 default_col_width = 65
 
-DEBUG_FLAG = True
-
-#DEBUG_INDENT = 0
-#def debug_msg(msg, entering = None):    
-#    global DEBUG_INDENT
-#    prefix = ""
-#    
-#    if DEBUG_FLAG:
-#        if entering == True:
-#            #prefix = "  "*DEBUG_INDENT
-#            print(prefix + "--> " + msg + " -->")
-#            #DEBUG_INDENT += 1
-#        elif entering == False:
-#            #prefix = "  "*(DEBUG_INDENT-1)
-#            print(prefix + "<-- " + msg + " <--")
-#            #DEBUG_INDENT -= 1
-
 # because the output from R is a string ("TRUE"/"FALSE")
 # Remove this? GD
 _is_true = lambda x: x == "TRUE"
@@ -80,9 +63,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
                               self.g2_pre_post_table, self.effect_txt_box,
                               self.low_txt_box, self.high_txt_box,
                               self.correlation_pre_post]
-        self.already_showed_change_CI_alert = False
-        
-        meta_globals.init_ci_spinbox_and_label(self.CI_spinbox, self.ci_label)
+        self.ci_label.setText("{0:.1f}% Confidence Interval".format(meta_py_r.get_global_conf_level()))
         
         # Set the table headers to reflect the group names
         groups_names = QStringList(self.cur_groups)
@@ -120,7 +101,6 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         QObject.connect(self.g1_pre_post_table, SIGNAL("cellChanged (int, int)"), lambda: self.impute_pre_post_data(self.g1_pre_post_table, 0))
         QObject.connect(self.g2_pre_post_table, SIGNAL("cellChanged (int, int)"), lambda: self.impute_pre_post_data(self.g2_pre_post_table, 1))
         
-        QObject.connect(self.CI_spinbox,     SIGNAL("valueChanged(double)"), self._change_ci) 
         QObject.connect(self.effect_cbo_box, SIGNAL("currentIndexChanged(QString)"), self.effect_changed)
         QObject.connect(self.clear_Btn,      SIGNAL("clicked()"), self.clear_form)
         QObject.connect(self.back_calc_btn,  SIGNAL("clicked()"), lambda: self.enable_back_calculation_btn(engage=True) )
@@ -133,21 +113,11 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         QObject.connect(self.effect_txt_box, SIGNAL("editingFinished()"), lambda: self.val_changed("est")   )
         QObject.connect(self.low_txt_box,    SIGNAL("editingFinished()"), lambda: self.val_changed("lower") )
         QObject.connect(self.high_txt_box,   SIGNAL("editingFinished()"), lambda: self.val_changed("upper") )
-        QObject.connect(self.correlation_pre_post, SIGNAL("editingFinished()"), lambda: self.val_changed("correlation_pre_post") )
-        
-        QObject.connect(self, SIGNAL("accepted()"), self.reset_conf_level)
-        
+        QObject.connect(self.correlation_pre_post, SIGNAL("editingFinished()"), lambda: self.val_changed("correlation_pre_post") )        
                                                                                 
     def _set_col_widths(self, table):
         for column in range(table.columnCount()):
             table.setColumnWidth(column, default_col_width)
-    
-    def _change_ci(self,val):
-        self.ci_label.setText("{0:.1F} % Confidence Interval".format(val))
-        print("New CI val:",val)
-        
-        self.change_CI_alert(val)
-        self.enable_back_calculation_btn()
         
     def _populate_effect_data(self):
         effect_names = self.ma_unit.get_effect_names()
@@ -161,9 +131,6 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
 
         
     def effect_changed(self):
-        # Re-scale previous effect first
-        self.reset_conf_level()
-        
         self.cur_effect = unicode(self.effect_cbo_box.currentText().toUtf8(), "utf-8")
         
         # hide pre-post for SMD
@@ -315,7 +282,6 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         txt_boxes_disabled = self._txt_boxes_disabled()
 
         if table_disabled and txt_boxes_disabled:
-            self.CI_spinbox.setEnabled(False) # weird place for ?this? but whatever
             return True
         return False
     
@@ -514,7 +480,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
                 self._update_ma_unit()
                 
     def conf_level_to_alpha(self):
-        alpha = 1-self.CI_spinbox.value()/100.0
+        alpha = 1-meta_py_r.get_global_conf_level()/100.0
         return alpha
            
     def impute_pre_post_data(self, table, group_index):
@@ -742,7 +708,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
             self.back_calc_btn.setVisible(True)
             
         (group1_data, group2_data, effect_data) = build_data_dicts()
-        imputed = meta_py_r.back_calc_cont_data(group1_data, group2_data, effect_data, self.CI_spinbox.value())
+        imputed = meta_py_r.back_calc_cont_data(group1_data, group2_data, effect_data, meta_py_r.get_global_conf_level())
         print("Imputed data: ", imputed)
         
         # Leave if there was a failure
@@ -845,8 +811,6 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         self.save_form_state()
         self.reset_table_item_flags()
         self.initialize_backup_structures()
-        self.CI_spinbox.setValue(meta_py_r.get_global_conf_level())
-        self.CI_spinbox.setEnabled(True)
 
     def save_form_state(self):
         ''' Saves the state of all objects on the form '''
@@ -913,7 +877,6 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
             _restore_table(self.g1_pre_post_table, self.g1_pre_post_table_backup, 7)
             _restore_table(self.g2_pre_post_table, self.g2_pre_post_table_backup, 7)
         
-        self.CI_spinbox.setValue(meta_py_r.get_global_conf_level())
         restore_displayed_effects_data()
         restore_tables()
         self.enable_back_calculation_btn()
@@ -940,31 +903,6 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
     def block_all_signals(self,state):
         for widget in self.entry_widgets:
             widget.blockSignals(state)
-    
-    def change_CI_alert(self,value=None):
-        if not self.already_showed_change_CI_alert:
-            QMessageBox.information(self, "Changing Confidence Level", meta_globals.get_CHANGE_CI_ALERT_MSG())
-            self.already_showed_change_CI_alert = True
-    
-    # TODO: should be refactored to shared function in meta_globals
-    def reset_conf_level(self):
-        print("Re-scaling est, low, high to standard confidence level")
-        
-        old_effect_and_ci = self.ma_unit.get_effect_and_ci(self.cur_effect, self.group_str)
-        
-        argument_d = {"est"  : old_effect_and_ci[0],
-                      "low"  : old_effect_and_ci[1],
-                      "high" : old_effect_and_ci[2],
-                      "orig.conf.level": self.CI_spinbox.value(),
-                      "target.conf.level": meta_py_r.get_global_conf_level()}
-        
-        res = meta_py_r.rescale_effect_and_ci_conf_level(argument_d)
-        if "FAIL" in res:
-            print("Could not reset confidence level")
-            return
-        
-        # Save results in ma_unit
-        self.ma_unit.set_effect_and_ci(self.cur_effect, self.group_str, res["est"],res["low"],res["high"])
 
     def get_cur_group_str(self):
         # Inspired from get_cur_group_str of ma_data_table_model

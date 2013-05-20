@@ -1516,16 +1516,16 @@ class DatasetModel(QAbstractTableModel):
                     est_and_ci_d = meta_py_r.effect_for_study(e1, n1, e2, n2, metric=self.current_effect, conf_level=meta_py_r.get_global_conf_level())
                 else:
                     # binary, one-arm
-                    est_and_ci_d = meta_py_r.effect_for_study(e1, n1, \
+                    est_and_ci_d = meta_py_r.effect_for_study(e1, n1,
                                         two_arm=False, metric=self.current_effect, conf_level=meta_py_r.get_global_conf_level())
             elif data_type == CONTINUOUS:
                 n1, m1, sd1, n2, m2, sd2 = self.get_cur_raw_data_for_study(study_index)
                 if self.current_effect in CONTINUOUS_TWO_ARM_METRICS:
-                    est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1, \
+                    est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1,
                                         n2=n2, m2=m2, sd2=sd2, metric=self.current_effect, conf_level=meta_py_r.get_global_conf_level())
                 else:
                     # continuous, one-arm metric
-                    est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1, \
+                    est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1,
                                           two_arm=False, metric=self.current_effect, conf_level=meta_py_r.get_global_conf_level())
                 
             elif data_type == DIAGNOSTIC: 
