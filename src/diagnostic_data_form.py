@@ -13,16 +13,15 @@
 
 
 import pdb
+import copy
 
-#from PyQt4.Qt import *
-from PyQt4.Qt import (QDialog, QDialogButtonBox, QMessageBox, QObject, QPalette,
-                      QString, Qt, QTableWidgetItem, SIGNAL)
-#from PyQt4 import QtGui
+from PyQt4.Qt import *
 
 import meta_py_r
 import meta_globals
-from meta_globals import (_is_a_float, _is_empty, NUM_DIGITS,
-                          DIAGNOSTIC_METRICS, DIAG_FIELDS_TO_RAW_INDICES,EMPTY_VALS)
+from meta_globals import (_is_a_float, _is_empty, DIAGNOSTIC_METRICS,
+                          DIAG_FIELDS_TO_RAW_INDICES,EMPTY_VALS)
+import calculator_routines as calc_fncs
 from forms.ui_diagnostic_data_form import Ui_DiagnosticDataForm
 
 BACK_CALCULATABLE_DIAGNOSTIC_EFFECTS = ["Sens", "Spec"]
@@ -32,76 +31,96 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         super(DiagnosticDataForm, self).__init__(parent)
         self.setupUi(self)
         self.setup_signals_and_slots()
+        
+        # Assign stuff
         self.ma_unit = ma_unit
-        self.raw_data_dict = {}
-        for group in cur_txs:
-            raw_data = self.ma_unit.get_raw_data_for_group(group)
-            self.raw_data_dict[group] = raw_data
         self.cur_groups = cur_txs
         self.group_str = cur_group_str
         self.cur_effect = "Sens" # arbitrary
-        
         self.entry_widgets = [self.two_by_two_table, self.prevalence_txt_box,
                               self.low_txt_box, self.high_txt_box,
                               self.effect_txt_box,]
+        self.text_boxes = [self.low_txt_box, self.high_txt_box,
+                           self.effect_txt_box, self.prevalence_txt_box]
+        
         self.ci_label.setText("{0:.1f}% Confidence Interval".format(meta_py_r.get_global_conf_level()))
-        
-        # block all the widgets for a moment
-        self.block_all_signals(True)
-        
+        self.initialize_form()
         self.setup_inconsistency_checking()
-        self.initialize_backup_structures()
-        self.setup_clear_button_palettes()
+        self.undoStack = QUndoStack(self)
         
-        self.setup_table_effect_dict()         # gather effect info from ma_unit
-        self._read_in_table_data_from_MAunit() # populate table items from raw data in ma_unit
+        #self.setup_clear_button_palettes()
+        #DELETE##self.setup_table_effect_dict()         # gather effect info from ma_unit
+        self._update_raw_data()    # ma_unit -> table
         self._populate_effect_cmbo_box()     # make cmbo box entries for effects
-        self._update_data_table()         # fill in the rest of the data table
-        self.set_current_effect()         # fill in current effect data in line edits
+        self.set_current_effect()   # fill in current effect data in line edits
+        self._update_data_table()          # fill in the rest of the data table
         self.enable_back_calculation_btn()
-        self.enable_txt_box_input()
-        self.save_form_state()
+        
+        self.current_prevalence = self._get_prevalence_str()
+        
+#        # Color for clear_button_pallette
+#        self.orig_palette = self.clear_Btn.palette()
+#        self.pushme_palette = QPalette()
+#        self.pushme_palette.setColor(QPalette.ButtonText,Qt.red)
+#        self.set_clear_btn_color()
+        
+#    def setup_clear_button_palettes(self):
+#        # Color for clear_button_pallette
+#        self.orig_palette = self.clear_Btn.palette()
+#        self.pushme_palette = QPalette()
+#        self.pushme_palette.setColor(QPalette.ButtonText,Qt.red)
+#        self.set_clear_btn_color()
 
-        # unblock
-        self.block_all_signals(False)
+# DELETE
+#    def initialize_backup_structures(self):
+#        # Stores form effect info as text
+#        self.form_effects_dict = {"Sens":{"est":"","lower":"","upper":""},
+#                                  "Spec":{"est":"","lower":"","upper":""},
+#                                  "prevalence":""}
+#        # Stores table items as text
+#        self.table_backup = [[None,None,None],[None,None,None],[None,None,None]]
+
+    def initialize_form(self):
+        ''' Initialize all cells to empty items '''
         
-        # Color for clear_button_pallette
-        self.orig_palette = self.clear_Btn.palette()
-        self.pushme_palette = QPalette()
-        self.pushme_palette.setColor(QPalette.ButtonText,Qt.red)
-        self.set_clear_btn_color()
+        nrows = self.two_by_two_table.rowCount()
+        ncols = self.two_by_two_table.columnCount()
         
-    def setup_clear_button_palettes(self):
-        # Color for clear_button_pallette
-        self.orig_palette = self.clear_Btn.palette()
-        self.pushme_palette = QPalette()
-        self.pushme_palette.setColor(QPalette.ButtonText,Qt.red)
-        self.set_clear_btn_color()
-        
-    def initialize_backup_structures(self):
-        # Stores form effect info as text
-        self.form_effects_dict = {"Sens":{"est":"","lower":"","upper":""},
-                                  "Spec":{"est":"","lower":"","upper":""},
-                                  "prevalence":""}
-        # Stores table items as text
-        self.table_backup = [[None,None,None],[None,None,None],[None,None,None]]
+        for row in range(nrows):
+            for col in range(ncols):
+                self._set_val(row, col, None)
+
+        for txt_box in self.text_boxes:
+            txt_box.setText(QString(""))
     
     def setup_signals_and_slots(self):
         QObject.connect(self.two_by_two_table, SIGNAL("cellChanged (int, int)"), self.cell_changed)                          
         QObject.connect(self.effect_cbo_box, SIGNAL("currentIndexChanged(QString)"), self.effect_changed) 
         QObject.connect(self.clear_Btn, SIGNAL("clicked()"), self.clear_form)
+        QObject.connect(self.back_calc_Btn, SIGNAL("clicked()"), lambda: self.enable_back_calculation_btn(engage=True))
         
-        QObject.connect(self.effect_txt_box, SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("est", new_text))
-        QObject.connect(self.low_txt_box,    SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("lower", new_text))
-        QObject.connect(self.high_txt_box,   SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("upper", new_text))
-        QObject.connect(self.prevalence_txt_box, SIGNAL("textEdited(QString)"), lambda new_text : self.val_edit("prevalence", new_text))
-        
-        QObject.connect(self.effect_txt_box, SIGNAL("editingFinished()"), lambda: self.val_changed("est")   )
-        QObject.connect(self.low_txt_box,    SIGNAL("editingFinished()"), lambda: self.val_changed("lower") )
-        QObject.connect(self.high_txt_box,   SIGNAL("editingFinished()"), lambda: self.val_changed("upper") )
-        QObject.connect(self.prevalence_txt_box, SIGNAL("editingFinished()"), lambda: self.val_changed("prevalence") )
+        QObject.connect(self.effect_txt_box, SIGNAL("editingFinished()"),   lambda: self.val_changed("est"))
+        QObject.connect(self.low_txt_box,    SIGNAL("editingFinished()"),   lambda: self.val_changed("lower"))
+        QObject.connect(self.high_txt_box,   SIGNAL("editingFinished()"),   lambda: self.val_changed("upper"))
+        QObject.connect(self.prevalence_txt_box, SIGNAL("editingFinished()"),   lambda: self.val_changed("prevalence"))
 
-        QObject.connect(self.back_calc_Btn, SIGNAL("clicked()"), lambda: self.enable_back_calculation_btn(engage=True) )
+        # Add undo/redo actions
+        undo = QAction(self)
+        redo = QAction(self)
+        undo.setShortcut(QKeySequence.Undo)
+        redo.setShortcut(QKeySequence.Redo)
+        self.addAction(undo)
+        self.addAction(redo)
+        QObject.connect(undo, SIGNAL("triggered()"), self.undo)
+        QObject.connect(redo, SIGNAL("triggered()"), self.redo)
+        
+        
+    @pyqtSignature("int, int, int, int")
+    def on_two_by_two_table_currentCellChanged(self,currentRow,currentColumn,previousRow,previousColumn):
+        self.current_item_data = self._get_int(currentRow, currentColumn)
+        print("Current item data @ (%d, %d) is: %s" % (currentRow,
+                                                       currentColumn,
+                                                       str(self.current_item_data)))
 
     def setup_inconsistency_checking(self):
         # set-up inconsistency label
@@ -118,7 +137,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             self.inconsistencyLabel.setVisible(True)
             self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(False)
         
-        self.check_table_consistency = meta_globals.ConsistencyChecker(
+        self.check_table_consistency = calc_fncs.ConsistencyChecker(
                             fn_consistent=action_consistent_table,
                             fn_inconsistent=action_inconsistent_table,
                             table_2x2 = self.two_by_two_table)
@@ -202,8 +221,18 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self._set_val(2, 1, computed_d["c2sum"])  
         self._set_val(2, 2, computed_d["total"])  
         self.two_by_two_table.blockSignals(False)
+        
+    def _get_prevalence_str(self):
+        return str(self.prevalence_txt_box.text())
 
     def cell_changed(self, row, col):
+        old_ma_unit, old_table = self._save_ma_unit_and_table_state(
+                                        table = self.two_by_two_table,
+                                        ma_unit = self.ma_unit, 
+                                        old_value = self.current_item_data,
+                                        row = row, col = col, use_old_value=True)
+        old_prevalence = self._get_prevalence_str()
+        
         try:
             # Test if entered data is valid (a number)
             warning_msg = self.cell_data_invalid(self.two_by_two_table.item(row, col).text())
@@ -217,93 +246,63 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         except Exception as e:
             msg = e.args[0]
             QMessageBox.warning(self.parent(), "whoops", msg) #popup warning
-            self.restore_form_state() # brings things back to the way they were
+            self.restore_ma_unit_and_table(old_ma_unit,old_table) # brings things back to the way they were
             return                    # and leave
         
         # if we got here, everything seems ok
-        self.save_form_state()
         self._update_ma_unit()           # 2x2 table --> ma_unit
         self.impute_effects_in_ma_unit() # effects   --> ma_unit
         self.set_current_effect()        # ma_unit   --> effects
-        self.enable_back_calculation_btn()
-        self.save_form_state()
-        
-        # disable just-edited cell
-        self.block_all_signals(True)
-        item = self.two_by_two_table.item(row, col)
-        newflags = item.flags() & ~Qt.ItemIsEditable
-        item.setFlags(newflags)
-        self.block_all_signals(False)
     
-        self.enable_txt_box_input() # if the effect was imputed
-        self.set_clear_btn_color()
+        new_ma_unit, new_table = self._save_ma_unit_and_table_state(
+                                    table = self.two_by_two_table,
+                                    ma_unit = self.ma_unit, 
+                                    row = row, col = col,
+                                    use_old_value = False)
+        new_prevalence = self._get_prevalence_str()
+        restore_old_f = lambda: self.restore_ma_unit_and_table(old_ma_unit, old_table, old_prevalence)
+        restore_new_f = lambda: self.restore_ma_unit_and_table(new_ma_unit, new_table, new_prevalence)
+        command = calc_fncs.CommandFieldChanged(restore_new_f=restore_new_f, restore_old_f=restore_old_f, parent=self)
+        self.undoStack.push(command)
         
-    def save_form_state(self):
-        ''' Saves the state of all objects on the form '''
-        def save_table_data():
-            for row in range(3):
-                for col in range(3):
-                    item = self.two_by_two_table.item(row, col)
-                    contents = "" if item is None else item.text()
-                    self.table_backup[row][col]=contents
-                    
-        def save_displayed_effects_data(effect=None):
-            print "Saving Displayed Effects data...."
-            
-            if effect is None:
-                effect = self.cur_effect
-            
-            self.form_effects_dict[effect]["est"]   = self.effect_txt_box.text() 
-            self.form_effects_dict[effect]["lower"] = self.low_txt_box.text()    
-            self.form_effects_dict[effect]["upper"] = self.high_txt_box.text()    
-            self.form_effects_dict["prevalence"] = self.prevalence_txt_box.text() 
+    def restore_ma_unit(self, old_ma_unit):
+        ''' Restores the ma_unit data and resets the form'''
+        self.ma_unit.__dict__ = copy.deepcopy(old_ma_unit.__dict__)
+        print("Restored ma_unit data: %s" % str(self.ma_unit.get_raw_data_for_groups(self.cur_groups)))
         
-            self.candidate_est        = self.effect_txt_box.text()
-            self.candidate_lower      = self.low_txt_box.text()
-            self.candidate_upper      = self.high_txt_box.text()
-            self.candidate_prevalence = self.prevalence_txt_box.text()
-
-        save_table_data()
-        save_displayed_effects_data()
+        self.initialize_form() # clear form first
+        self._update_raw_data()
+        self.set_current_effect()
+        self._update_data_table()
         self.enable_back_calculation_btn()
-    
-    def restore_form_state(self):
-        ''' Restores the state of all objects on the form '''
         
-        # Block all signals on the form 
-        self.block_all_signals(True)
-        ########################################################################
+    def restore_table(self, old_table_data):
+        nrows = len(old_table_data)
+        ncols = len(old_table_data[0])
         
-        def restore_displayed_effects_data():
-            print "Restoring displayed effects data..."
-            
-            self.effect_txt_box.setText(    self.form_effects_dict[self.cur_effect]["est"]  )    
-            self.low_txt_box.setText(       self.form_effects_dict[self.cur_effect]["lower"])       
-            self.high_txt_box.setText(      self.form_effects_dict[self.cur_effect]["upper"])                    
-            self.prevalence_txt_box.setText(self.form_effects_dict["prevalence"]            )
-            
-            self.candidate_est        = self.effect_txt_box.text()
-            self.candidate_lower      = self.low_txt_box.text()
-            self.candidate_upper      = self.high_txt_box.text()
-            self.candidate_prevalence = self.prevalence_txt_box.text()
-        
-        def restore_table():
-            for row in range(3):
-                for col in range(3):
+        for row in range(nrows):
+                for col in range(ncols):
                     self.two_by_two_table.blockSignals(True)
-                    self._set_val(row, col, self.table_backup[row][col])
+                    self._set_val(row, col, old_table_data[row][col])
                     self.two_by_two_table.blockSignals(False)
-            self.check_table_consistency.run()
-            
-        restore_displayed_effects_data()
-        restore_table()
-        self.enable_back_calculation_btn()
+        self.check_table_consistency.run()
         
+    def restore_ma_unit_and_table(self, old_ma_unit, old_table, old_prevalence):
+        self.restore_ma_unit(old_ma_unit)
+        self.restore_table(old_table)
+        self.prevalence_txt_box.setText(old_prevalence)
         
-        ########################################################################
-        # Unblock the signals
-        self.block_all_signals(False)
-                    
+    def _save_ma_unit_and_table_state(self, table, ma_unit, row=None, col=None,
+                                      old_value=None, use_old_value=True):
+        # Make backup of table info...
+        old_table = calc_fncs.save_table_data(table)
+        if use_old_value:
+            old_table[row][col] = old_value   # ...from BEFORE the cell changed
+        
+        # Make backup copy of ma_unit
+        old_ma_unit = copy.deepcopy(ma_unit)
+        return old_ma_unit, old_table
+
     
     def getTotalSubjects(self):
         try:
@@ -422,61 +421,90 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
     def block_all_signals(self,state):
         for widget in self.entry_widgets:
             widget.blockSignals(state)
-
-    def val_changed(self, val_str):
-        print "--------------\nEntering val_changed...."
+            
+    def _text_box_value_is_between_bounds(self, val_str, new_text):
+        display_scale_val = ""
         
-        def is_between_bounds(est=self.form_effects_dict[self.cur_effect]["est"], 
-                              low=self.form_effects_dict[self.cur_effect]["lower"], 
-                              high=self.form_effects_dict[self.cur_effect]["upper"]):
-            return meta_globals.between_bounds(est=est, low=low, high=high)
-
+        est,lower,upper = self.ma_unit.get_effect_and_ci(self.cur_effect, self.group_str) # calc scale
+        conv_to_disp_scale = lambda x: meta_py_r.diagnostic_convert_scale(x, self.cur_effect, convert_to="display.scale")
+        d_est,d_lower,d_upper = [conv_to_disp_scale(x) for x in (est,lower,upper)]
+        def is_between_bounds(est=d_est,low=d_lower,high=d_upper):
+            return calc_fncs.between_bounds(est=est, low=low, high=high)
+        
         ###### ERROR CHECKING CODE#####
         # Make sure entered value is numeric and between the appropriate bounds
-        self.block_all_signals(True)
         float_msg = "Must be numeric!"
+        self.block_all_signals(True)
         try:
-            if val_str == "est" and not _is_empty(self.candidate_est):
+            if val_str == "est" and not _is_empty(new_text):
                 # Check type
-                if not _is_a_float(self.candidate_est) :
+                if not _is_a_float(new_text) :
                     QMessageBox.warning(self, "whoops", float_msg)
                     raise Exception("error")
-                (good_result,msg) = is_between_bounds(est=self.candidate_est)
+                (good_result,msg) = is_between_bounds(est=new_text)
                 if not good_result:
                     QMessageBox.warning(self, "whoops", msg)
                     raise Exception("error")
-                if (not 0 <= float(self.candidate_est) <= 1):
+                if (not 0 <= float(new_text) <= 1):
                     QMessageBox.warning(self, "whoops", "Estimate must be between 0 and 1.")
                     raise Exception("error")
-                display_scale_val = float(self.candidate_est)
-            elif val_str == "lower" and not _is_empty(self.candidate_lower):
-                if not _is_a_float(self.candidate_lower) :
+                display_scale_val = float(new_text)
+            elif val_str == "lower" and not _is_empty(new_text):
+                if not _is_a_float(new_text) :
                     QMessageBox.warning(self, "whoops", float_msg)
                     raise Exception("error")
-                (good_result,msg) = is_between_bounds(low=self.candidate_lower)
+                (good_result,msg) = is_between_bounds(low=new_text)
                 if not good_result:
                     QMessageBox.warning(self, "whoops", msg)
                     raise Exception("error")
-                display_scale_val = float(self.candidate_lower)
-            elif val_str == "upper" and not _is_empty(self.candidate_upper): 
-                if not _is_a_float(self.candidate_upper) :
+                display_scale_val = float(new_text)
+            elif val_str == "upper" and not _is_empty(new_text): 
+                if not _is_a_float(new_text) :
                     QMessageBox.warning(self, "whoops", float_msg)
                     raise Exception("error")
-                (good_result,msg) = is_between_bounds(high=self.candidate_upper)
+                (good_result,msg) = is_between_bounds(high=new_text)
                 if not good_result:
                     QMessageBox.warning(self, "whoops", msg)
                     raise Exception("error")
-                display_scale_val = float(self.candidate_upper)
-            elif val_str == "prevalence" and not _is_empty(self.candidate_prevalence):
-                if not _is_a_float(self.candidate_prevalence):
+                display_scale_val = float(new_text)
+            elif val_str == "prevalence" and not _is_empty(new_text):
+                if not _is_a_float(new_text):
                     QMessageBox.warning(self, "whoops", float_msg)
                     raise Exception("error")
-                if _is_a_float(self.candidate_prevalence) and not 0 < float(self.candidate_prevalence) < 1:
+                if _is_a_float(new_text) and not 0 < float(new_text) < 1:
                     QMessageBox.warning(self, "whoops", "Prevalence must be between 0 and 1.")
                     raise Exception("error")
         except:
-            print "Error flag is true"
-            self.restore_form_state()
+            self.block_all_signals(False)
+            return False, False
+        self.block_all_signals(False)
+        return True, display_scale_val
+
+    def _get_txt_from_val_str(self, val_str):
+        if val_str == "est":
+            return str(self.effect_txt_box.text())
+        elif val_str == "lower":
+            return str(self.low_txt_box.text())
+        elif val_str == "upper":
+            return str(self.high_txt_box.text())
+        elif val_str == "prevalence":
+            return str(self.prevalence_txt_box.text())
+        return None # should never happen
+        
+
+    def val_changed(self, val_str):
+        # Backup form state
+        old_ma_unit, old_table = self._save_ma_unit_and_table_state(
+                                table = self.two_by_two_table,
+                                ma_unit = self.ma_unit, 
+                                use_old_value=False)
+        old_prevalence = self.current_prevalence
+        
+        new_text = self._get_txt_from_val_str(val_str)
+        
+        no_errors, display_scale_val = self._text_box_value_is_between_bounds(val_str, new_text)
+        if no_errors is False: # There are errors
+            self.restore_ma_unit_and_table(old_ma_unit,old_table)
             self.block_all_signals(True)
             if val_str == "est":
                 self.effect_txt_box.setFocus()
@@ -488,15 +516,14 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
                 self.prevalence_txt_box.setFocus()
             self.block_all_signals(False)
             return
-                
-        self.block_all_signals(False)
         
-        # If we got to this point it means everything is ok so far
-        #######self._save_displayed_effects_data()
-        
+        # If we got to this point it means everything is ok so far        
         try:
-            display_scale_val = float(display_scale_val)
-        except:
+            if display_scale_val not in meta_globals.EMPTY_VALS:
+                display_scale_val = float(display_scale_val)
+            else:
+                display_scale_val = None
+        except ValueError:
             # a number wasn't entered; ignore
             # should probably clear out the box here, too.
             print "fail."
@@ -515,20 +542,16 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         elif val_str == "prevalence":
             pass
 
-        self.enable_txt_box_input()
-        self.save_form_state()
-        self.enable_back_calculation_btn()
+        new_ma_unit, new_table = self._save_ma_unit_and_table_state(
+                table = self.two_by_two_table, ma_unit = self.ma_unit,
+                use_old_value=False)
+        new_prevalence = self._get_prevalence_str()
+        restore_old_f = lambda: self.restore_ma_unit_and_table(old_ma_unit, old_table, old_prevalence)
+        restore_new_f = lambda: self.restore_ma_unit_and_table(new_ma_unit, new_table, new_prevalence)
+        command = calc_fncs.CommandFieldChanged(restore_new_f=restore_new_f, restore_old_f=restore_old_f, parent=self)
+        self.undoStack.push(command)
         
-    def val_edit(self, val_str, display_scale_val):
-        print "Editing %s with value: %s" % (val_str,display_scale_val)
-        if val_str == "est":
-            self.candidate_est = display_scale_val
-        if val_str == "lower":
-            self.candidate_lower = display_scale_val
-        if val_str == "upper":
-            self.candidate_upper = display_scale_val
-        if val_str == "prevalence":
-            self.candidate_prevalence = display_scale_val
+        self.current_prevalence = new_prevalence
 
     def effect_changed(self):
         self.cur_effect = str(self.effect_cbo_box.currentText()) 
@@ -537,13 +560,14 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self.enable_txt_box_input()
         self.enable_back_calculation_btn()
             
-    def _read_in_table_data_from_MAunit(self):
+    def _update_raw_data(self):
         ''' populates the 2x2 table with whatever parametric data was provided '''
         self.two_by_two_table.blockSignals(True) 
         field_index = 0
         for col in (0,1):
             for row in (0,1):
-                val = self.raw_data_dict[self.group_str][field_index]
+                ##val = self.raw_data_dict[self.group_str][field_index] DELETE
+                val = self.ma_unit.get_raw_data_for_group(self.group_str)[field_index]
                 if val is not None:
                     try:
                         val = str(int(val))
@@ -565,25 +589,26 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
     def set_current_effect(self):
         '''Fill in effect text boxes with data from ma_unit'''
         txt_boxes = dict(effect=self.effect_txt_box, lower=self.low_txt_box, upper=self.high_txt_box)
-        meta_globals.helper_set_current_effect(ma_unit=self.ma_unit,
+        calc_fncs.helper_set_current_effect(ma_unit=self.ma_unit,
             txt_boxes=txt_boxes, current_effect=self.cur_effect,
             group_str=self.group_str, data_type="diagnostic")
     
     def print_effects_dict_from_ma_unit(self):
         print self.ma_unit.get_effects_dict()
-            
-    def setup_table_effect_dict(self):
-        '''Fill in local copy of table-effects dict w/ data from ma_unit'''
-        
-        print "effects dict from ma unit:"
-        self.print_effects_dict_from_ma_unit() 
-        
-        for effect in BACK_CALCULATABLE_DIAGNOSTIC_EFFECTS:
-            effects_dict = self.ma_unit.effects_dict[effect][self.group_str]
-            for keyA,keyB in zip(['display_est', 'display_lower', 'display_upper'],["est","lower","upper"]):
-                self.form_effects_dict[effect][keyB] = str(effects_dict[keyA])
-                
-        print "Form effects dict:",self.form_effects_dict
+
+# DELETE
+#    def setup_table_effect_dict(self):
+#        '''Fill in local copy of table-effects dict w/ data from ma_unit'''
+#        
+#        print "effects dict from ma unit:"
+#        self.print_effects_dict_from_ma_unit() 
+#        
+#        for effect in BACK_CALCULATABLE_DIAGNOSTIC_EFFECTS:
+#            effects_dict = self.ma_unit.effects_dict[effect][self.group_str]
+#            for keyA,keyB in zip(['display_est', 'display_lower', 'display_upper'],["est","lower","upper"]):
+#                self.form_effects_dict[effect][keyB] = str(effects_dict[keyA])
+#                
+#        print "Form effects dict:",self.form_effects_dict
 
     def _update_data_table(self):
         '''Try to calculate rest of 2x2 table from existing cells'''
@@ -591,7 +616,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self.block_all_signals(True)
         
         params = self._get_table_vals()
-        computed_params = meta_globals.compute_2x2_table(params)
+        computed_params = calc_fncs.compute_2x2_table(params)
         print "Computed Params", computed_params
         if computed_params:
             self._set_vals(computed_params) # computed --> table widget
@@ -682,11 +707,11 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
                     self.high_txt_box.isEnabled() or
                     self.prevalence_txt_box.isEnabled())
     
-    def set_clear_btn_color(self):
-        if self.input_fields_disabled():
-            self.clear_Btn.setPalette(self.pushme_palette)
-        else:
-            self.clear_Btn.setPalette(self.orig_palette)
+#    def set_clear_btn_color(self):
+#        if self.input_fields_disabled():
+#            self.clear_Btn.setPalette(self.pushme_palette)
+#        else:
+#            self.clear_Btn.setPalette(self.orig_palette)
             
     def enable_back_calculation_btn(self, engage = False):
         print("Enabling back-calculation button...")
@@ -694,10 +719,13 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         def build_dict():
             d = {}
 
-            for effect in BACK_CALCULATABLE_DIAGNOSTIC_EFFECTS:
-                for key,Rsubkey in zip(["est","lower","upper"],["",".lb",".ub"]):
+            for effect in BACK_CALCULATABLE_DIAGNOSTIC_EFFECTS:    
+                est,lower,upper = self.ma_unit.get_effect_and_ci(effect, self.group_str)
+                conv_to_disp_scale = lambda x: meta_py_r.diagnostic_convert_scale(x, effect, convert_to="display.scale")
+                d_est,d_lower,d_upper = [conv_to_disp_scale(x) for x in [est,lower,upper]]
+                for i,Rsubkey in enumerate(["",".lb",".ub"]):
                     try:
-                        d["%s%s" % (effect.lower(), Rsubkey)] = float(self.form_effects_dict[effect][key])
+                        d["%s%s" % (effect.lower(), Rsubkey)] = float([d_est,d_lower,d_upper][i])
                     except:
                         pass
             
@@ -752,7 +780,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             self.back_calc_Btn.setEnabled(True)
         else:
             self.back_calc_Btn.setEnabled(False)
-        self.set_clear_btn_color()
+        #self.set_clear_btn_color()
             
         if not engage:
             return None
@@ -761,11 +789,15 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         ########################################################################
         self.update_2x2_table(imputed)
         self._update_data_table()
-        self.save_form_state()
+        self._update_ma_unit()
+        #self.set_clear_btn_color()
         
-        self.set_clear_btn_color()
-
-        # Go backward in case we have a missing effect
-        #self.impute_effects_in_ma_unit() 
-        #self.set_current_effect()
-        #self.save_form_state()
+    ####### Undo framework ############
+    def undo(self):
+        print("undoing....")
+        self.undoStack.undo()
+        
+    def redo(self):
+        print("redoing....")
+        self.undoStack.redo()
+    #################################

@@ -24,6 +24,7 @@ from ma_dataset import Dataset,Outcome,Study,Covariate
 import meta_py_r
 import meta_globals
 from meta_globals import *
+import calculator_routines as calc_fncs
 
 # number of (empty) rows in the spreadsheet to show
 # following the last study.
@@ -500,7 +501,7 @@ class DatasetModel(QAbstractTableModel):
                     return False, "Standard Error cannot be negative"
         else:
             def is_between_bounds(est=prev_est, low=prev_lower, high=prev_upper):
-                return meta_globals.between_bounds(est=est, low=low, high=high)
+                return calc_fncs.between_bounds(est=est, low=low, high=high)
             good_result = None
             if val_str == "est":
                 (good_result,msg) = is_between_bounds(est=float(s))

@@ -27,6 +27,7 @@ import meta_py_r
 import ma_data_table_view
 import ma_data_table_model
 import meta_globals
+from meta_globals import CommandGenericDo
 import ma_dataset
 
 # additional forms
@@ -1353,21 +1354,21 @@ class MetaForm(QtGui.QMainWindow, forms.ui_meta.Ui_MainWindow):
         
         
         
-class CommandGenericDo(QUndoCommand):
-    '''
-   This is a generic undo/redo command that takes two unevaluated lambdas --
-   thunks, if you will -- one for doing and one for undoing.
-    '''
-    def __init__(self, redo_f, undo_f, description=""):
-        super(CommandGenericDo, self).__init__(description)
-        self.redo_f = redo_f
-        self.undo_f = undo_f
-        
-    def redo(self):
-        self.redo_f()
-        
-    def undo(self):
-        self.undo_f()
+#class CommandGenericDo(QUndoCommand):
+#    '''
+#   This is a generic undo/redo command that takes two unevaluated lambdas --
+#   thunks, if you will -- one for doing and one for undoing.
+#    '''
+#    def __init__(self, redo_f, undo_f, description=""):
+#        super(CommandGenericDo, self).__init__(description)
+#        self.redo_f = redo_f
+#        self.undo_f = undo_f
+#        
+#    def redo(self):
+#        self.redo_f()
+#        
+#    def undo(self):
+#        self.undo_f()
 
 ######################### Undo Command for Import CSV #########################
 class CommandImportCSV(QUndoCommand):
