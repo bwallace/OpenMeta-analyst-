@@ -343,8 +343,10 @@ class CommandFieldChanged(QUndoCommand):
         else:
             print("Restoring new ma_unit")
             self.restore_new_f()
+            #self.parent.enable_back_calculation_btn() ##
             
     def undo(self):
         print("Restoring old ma_unit")
         self.restore_old_f()
+        #self.parent.enable_back_calculation_btn() ##
         

@@ -115,6 +115,12 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
         print self.ma_unit.get_effects_dict()
 
     def enable_back_calculation_btn(self, engage=False):
+        # For undo/redo
+        old_ma_unit, old_table = self._save_ma_unit_and_table_state(
+                        table = self.raw_data_table,
+                        ma_unit = self.ma_unit, 
+                        use_old_value=False)
+        
         def build_back_calc_args_dict():
 
             d = {}
@@ -232,6 +238,15 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
         self._update_data_table()
         self._update_ma_unit()  # save in ma_unit
         #self.set_clear_btn_color()
+        
+        # for undo/redo
+        new_ma_unit, new_table = self._save_ma_unit_and_table_state(
+                table = self.raw_data_table, ma_unit = self.ma_unit,
+                use_old_value=False)
+        restore_old_f = lambda: self.restore_ma_unit_and_table(old_ma_unit, old_table)
+        restore_new_f = lambda: self.restore_ma_unit_and_table(new_ma_unit, new_table)
+        command = calc_fncs.CommandFieldChanged(restore_new_f=restore_new_f, restore_old_f=restore_old_f, parent=self)
+        self.undoStack.push(command)
 
     def setup_inconsistency_checking(self):
         # set-up inconsistency label
@@ -399,6 +414,7 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
                                 table = self.raw_data_table,
                                 ma_unit = self.ma_unit, 
                                 use_old_value=False)
+        
         new_text = self._get_txt_from_val_str(val_str)
         
         no_errors, display_scale_val = self._text_box_value_is_between_bounds(val_str, new_text)
@@ -685,6 +701,12 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
             self.set_current_effect()
            
     def clear_form(self):
+        # For undo/redo
+        old_ma_unit, old_table = self._save_ma_unit_and_table_state(
+                        table = self.raw_data_table,
+                        ma_unit = self.ma_unit, 
+                        use_old_value=False)
+        
         blank_vals = {"c11"  : "",
                       "c12"  : "",
                       "r1sum": "",
@@ -709,9 +731,16 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
             
         # clear line edits
         self.set_current_effect()
-        
         ####self.reset_table_item_flags()
-        self.enable_txt_box_input()
+        ####self.enable_txt_box_input()
+        
+        new_ma_unit, new_table = self._save_ma_unit_and_table_state(
+                table = self.raw_data_table, ma_unit = self.ma_unit,
+                use_old_value=False)
+        restore_old_f = lambda: self.restore_ma_unit_and_table(old_ma_unit, old_table)
+        restore_new_f = lambda: self.restore_ma_unit_and_table(new_ma_unit, new_table)
+        command = calc_fncs.CommandFieldChanged(restore_new_f=restore_new_f, restore_old_f=restore_old_f, parent=self)
+        self.undoStack.push(command)
         
     def enable_txt_box_input(self):
         # meta_globals.enable_txt_box_input(self.effect_txt_box, self.low_txt_box,

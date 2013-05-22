@@ -440,7 +440,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         except Exception as e:
             msg = e.args[0]
             QMessageBox.warning(self.parent(), "whoops", msg)
-            self.restore_ma_unit_and_tables(old_ma_unit, old_tables_data)
+            self.restore_ma_unit_and_tables(old_ma_unit, old_tables_data, old_correlation)
             return
         
         self._update_ma_unit() # table --> ma_unit
@@ -817,6 +817,15 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         self.block_all_signals(False)
         
     def enable_back_calculation_btn(self, engage = False):
+        # For undo/redo
+        old_ma_unit, old_tables_data = self._save_ma_unit_and_table_states(
+                                tables = [self.simple_table,
+                                          self.g1_pre_post_table,
+                                          self.g2_pre_post_table],
+                                ma_unit = self.ma_unit, 
+                                use_old_value=False)
+        old_correlation = self._get_correlation_str()
+        
         # Choose metric parameter if not already chosen
         if (self.metric_parameter is None) and self.cur_effect in ["MD","SMD"]:
             print("need to choose metric parameter because it is %s" % str(self.metric_parameter))
@@ -954,9 +963,34 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         
         self.impute_data()
         self._update_ma_unit()
-        self.set_clear_btn_color()
+        #self.set_clear_btn_color()
+        
+        # For undo/redo
+        self.enable_back_calculation_btn()
+        new_ma_unit, new_tables_data = self._save_ma_unit_and_table_states(
+                                            tables = [self.simple_table,
+                                                      self.g1_pre_post_table,
+                                                      self.g2_pre_post_table],
+                                            ma_unit = self.ma_unit, 
+                                            use_old_value=False)
+        new_correlation = self._get_correlation_str()
+        restore_old_f = lambda: self.restore_ma_unit_and_tables(old_ma_unit, old_tables_data, old_correlation)
+        restore_new_f = lambda: self.restore_ma_unit_and_tables(new_ma_unit, new_tables_data, new_correlation)
+        command = calc_fncs.CommandFieldChanged(restore_new_f=restore_new_f,
+                                                restore_old_f=restore_old_f,
+                                                parent=self)
+        self.undoStack.push(command)
          
-    def clear_form(self): 
+    def clear_form(self):
+        # For undo/redo
+        old_ma_unit, old_tables_data = self._save_ma_unit_and_table_states(
+                                tables = [self.simple_table,
+                                          self.g1_pre_post_table,
+                                          self.g2_pre_post_table],
+                                ma_unit = self.ma_unit, 
+                                use_old_value=False)
+        old_correlation = self._get_correlation_str()
+        
         self.metric_parameter = None  # } these two should go together
         self.enable_txt_box_input()   # }
         
@@ -985,7 +1019,21 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         self.correlation_pre_post.setText("0.0")
         self.block_all_signals(False)
         
+        # For undo/redo
         self.enable_back_calculation_btn()
+        new_ma_unit, new_tables_data = self._save_ma_unit_and_table_states(
+                                            tables = [self.simple_table,
+                                                      self.g1_pre_post_table,
+                                                      self.g2_pre_post_table],
+                                            ma_unit = self.ma_unit, 
+                                            use_old_value=False)
+        new_correlation = self._get_correlation_str()
+        restore_old_f = lambda: self.restore_ma_unit_and_tables(old_ma_unit, old_tables_data, old_correlation)
+        restore_new_f = lambda: self.restore_ma_unit_and_tables(new_ma_unit, new_tables_data, new_correlation)
+        command = calc_fncs.CommandFieldChanged(restore_new_f=restore_new_f,
+                                                restore_old_f=restore_old_f,
+                                                parent=self)
+        self.undoStack.push(command)
         
         
     def get_effect_names(self):

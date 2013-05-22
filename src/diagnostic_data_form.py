@@ -246,7 +246,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         except Exception as e:
             msg = e.args[0]
             QMessageBox.warning(self.parent(), "whoops", msg) #popup warning
-            self.restore_ma_unit_and_table(old_ma_unit,old_table) # brings things back to the way they were
+            self.restore_ma_unit_and_table(old_ma_unit,old_table, old_prevalence) # brings things back to the way they were
             return                    # and leave
         
         # if we got here, everything seems ok
@@ -504,7 +504,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         
         no_errors, display_scale_val = self._text_box_value_is_between_bounds(val_str, new_text)
         if no_errors is False: # There are errors
-            self.restore_ma_unit_and_table(old_ma_unit,old_table)
+            self.restore_ma_unit_and_table(old_ma_unit,old_table, old_prevalence)
             self.block_all_signals(True)
             if val_str == "est":
                 self.effect_txt_box.setFocus()
@@ -638,9 +638,15 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             self._set_val(row, col, None)  
         
         self._update_ma_unit()
-        self.save_form_state()
         
     def clear_form(self):
+        # For undo/redo
+        old_ma_unit, old_table = self._save_ma_unit_and_table_state(
+                                table = self.two_by_two_table,
+                                ma_unit = self.ma_unit, 
+                                use_old_value=False)
+        old_prevalence = self._get_prevalence_str()
+        
         keys = ["c11", "c12", "r1sum", "c21", "c22", "r2sum", "c1sum", "c2sum", "total"]
         blank_vals = dict( zip(keys, [""]*len(keys)) )
 
@@ -656,16 +662,18 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self.prevalence_txt_box.blockSignals(True)
         self.prevalence_txt_box.setText("")
         self.prevalence_txt_box.blockSignals(False)
-        
-        self.save_form_state()
-       
-        # reset form_effects_dict (backup)
-        self.form_effects_dict = {"Sens":{"est":"","lower":"","upper":"",},
-                                  "Spec":{"est":"","lower":"","upper":"",},
-                                  "prevalence":""}
 
-        self.reset_table_item_flags()
-        self.enable_txt_box_input()
+        #self.reset_table_item_flags()
+        #self.enable_txt_box_input()
+        
+        new_ma_unit, new_table = self._save_ma_unit_and_table_state(
+                        table = self.two_by_two_table, ma_unit = self.ma_unit,
+                        use_old_value=False)
+        new_prevalence = self._get_prevalence_str()
+        restore_old_f = lambda: self.restore_ma_unit_and_table(old_ma_unit, old_table, old_prevalence)
+        restore_new_f = lambda: self.restore_ma_unit_and_table(new_ma_unit, new_table, new_prevalence)
+        command = calc_fncs.CommandFieldChanged(restore_new_f=restore_new_f, restore_old_f=restore_old_f, parent=self)
+        self.undoStack.push(command)
         
     def enable_txt_box_input(self):
         ''' Enables text boxes if they are empty, disables them otherwise '''
@@ -714,7 +722,12 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
 #            self.clear_Btn.setPalette(self.orig_palette)
             
     def enable_back_calculation_btn(self, engage = False):
-        print("Enabling back-calculation button...")
+        # For undo/redo
+        old_ma_unit, old_table = self._save_ma_unit_and_table_state(
+                                table = self.two_by_two_table,
+                                ma_unit = self.ma_unit, 
+                                use_old_value=False)
+        old_prevalence = self._get_prevalence_str()
         
         def build_dict():
             d = {}
@@ -791,6 +804,16 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self._update_data_table()
         self._update_ma_unit()
         #self.set_clear_btn_color()
+        
+        # For undo/redo
+        new_ma_unit, new_table = self._save_ma_unit_and_table_state(
+                table = self.two_by_two_table, ma_unit = self.ma_unit,
+                use_old_value=False)
+        new_prevalence = self._get_prevalence_str()
+        restore_old_f = lambda: self.restore_ma_unit_and_table(old_ma_unit, old_table, old_prevalence)
+        restore_new_f = lambda: self.restore_ma_unit_and_table(new_ma_unit, new_table, new_prevalence)
+        command = calc_fncs.CommandFieldChanged(restore_new_f=restore_new_f, restore_old_f=restore_old_f, parent=self)
+        self.undoStack.push(command)
         
     ####### Undo framework ############
     def undo(self):
