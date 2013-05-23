@@ -14,6 +14,7 @@
 
 import pdb
 import copy
+from functools import partial
 
 from PyQt4.Qt import *
 
@@ -49,7 +50,6 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self.undoStack = QUndoStack(self)
         
         #self.setup_clear_button_palettes()
-        #DELETE##self.setup_table_effect_dict()         # gather effect info from ma_unit
         self._update_raw_data()    # ma_unit -> table
         self._populate_effect_cmbo_box()     # make cmbo box entries for effects
         self.set_current_effect()   # fill in current effect data in line edits
@@ -71,14 +71,6 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
 #        self.pushme_palette.setColor(QPalette.ButtonText,Qt.red)
 #        self.set_clear_btn_color()
 
-# DELETE
-#    def initialize_backup_structures(self):
-#        # Stores form effect info as text
-#        self.form_effects_dict = {"Sens":{"est":"","lower":"","upper":""},
-#                                  "Spec":{"est":"","lower":"","upper":""},
-#                                  "prevalence":""}
-#        # Stores table items as text
-#        self.table_backup = [[None,None,None],[None,None,None],[None,None,None]]
 
     def initialize_form(self):
         ''' Initialize all cells to empty items '''
@@ -417,67 +409,33 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         d["FP"] = float(self._get_int(0,1)) if not self._is_empty(0,1) else NoneValue
         d["TN"] = float(self._get_int(1,1)) if not self._is_empty(1,1) else NoneValue
         return d
-
-    def block_all_signals(self,state):
-        for widget in self.entry_widgets:
-            widget.blockSignals(state)
             
     def _text_box_value_is_between_bounds(self, val_str, new_text):
         display_scale_val = ""
         
-        est,lower,upper = self.ma_unit.get_effect_and_ci(self.cur_effect, self.group_str) # calc scale
-        conv_to_disp_scale = lambda x: meta_py_r.diagnostic_convert_scale(x, self.cur_effect, convert_to="display.scale")
-        d_est,d_lower,d_upper = [conv_to_disp_scale(x) for x in (est,lower,upper)]
-        def is_between_bounds(est=d_est,low=d_lower,high=d_upper):
-            return calc_fncs.between_bounds(est=est, low=low, high=high)
+        get_disp_scale_val_if_valid = partial(
+                calc_fncs.evaluate, new_text=new_text, ma_unit=self.ma_unit,
+                curr_effect=self.cur_effect, group_str=self.group_str,
+                conv_to_disp_scale = partial(meta_py_r.diagnostic_convert_scale,
+                                             metric_name=self.cur_effect,
+                                             convert_to="display.scale"),
+                parent=self)
         
-        ###### ERROR CHECKING CODE#####
-        # Make sure entered value is numeric and between the appropriate bounds
-        float_msg = "Must be numeric!"
-        self.block_all_signals(True)
+        calc_fncs.block_signals(self.entry_widgets, True)
         try:
             if val_str == "est" and not _is_empty(new_text):
-                # Check type
-                if not _is_a_float(new_text) :
-                    QMessageBox.warning(self, "whoops", float_msg)
-                    raise Exception("error")
-                (good_result,msg) = is_between_bounds(est=new_text)
-                if not good_result:
-                    QMessageBox.warning(self, "whoops", msg)
-                    raise Exception("error")
-                if (not 0 <= float(new_text) <= 1):
-                    QMessageBox.warning(self, "whoops", "Estimate must be between 0 and 1.")
-                    raise Exception("error")
-                display_scale_val = float(new_text)
+                display_scale_val = get_disp_scale_val_if_valid(ci_param='est')
             elif val_str == "lower" and not _is_empty(new_text):
-                if not _is_a_float(new_text) :
-                    QMessageBox.warning(self, "whoops", float_msg)
-                    raise Exception("error")
-                (good_result,msg) = is_between_bounds(low=new_text)
-                if not good_result:
-                    QMessageBox.warning(self, "whoops", msg)
-                    raise Exception("error")
-                display_scale_val = float(new_text)
-            elif val_str == "upper" and not _is_empty(new_text): 
-                if not _is_a_float(new_text) :
-                    QMessageBox.warning(self, "whoops", float_msg)
-                    raise Exception("error")
-                (good_result,msg) = is_between_bounds(high=new_text)
-                if not good_result:
-                    QMessageBox.warning(self, "whoops", msg)
-                    raise Exception("error")
-                display_scale_val = float(new_text)
+                display_scale_val = get_disp_scale_val_if_valid(ci_param='low')
+            elif val_str == "upper" and not _is_empty(new_text):
+                display_scale_val = get_disp_scale_val_if_valid(ci_param='high')
             elif val_str == "prevalence" and not _is_empty(new_text):
-                if not _is_a_float(new_text):
-                    QMessageBox.warning(self, "whoops", float_msg)
-                    raise Exception("error")
-                if _is_a_float(new_text) and not 0 < float(new_text) < 1:
-                    QMessageBox.warning(self, "whoops", "Prevalence must be between 0 and 1.")
-                    raise Exception("error")
+                get_disp_scale_val_if_valid(opt_cmp_fn = lambda x: 0 <= float(x) <= 1,
+                                            opt_cmp_msg="Prevalence must be between 0 and 1.")
         except:
-            self.block_all_signals(False)
+            calc_fncs.block_signals(self.entry_widgets, False)
             return False, False
-        self.block_all_signals(False)
+        calc_fncs.block_signals(self.entry_widgets, False)
         return True, display_scale_val
 
     def _get_txt_from_val_str(self, val_str):
@@ -505,7 +463,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         no_errors, display_scale_val = self._text_box_value_is_between_bounds(val_str, new_text)
         if no_errors is False: # There are errors
             self.restore_ma_unit_and_table(old_ma_unit,old_table, old_prevalence)
-            self.block_all_signals(True)
+            calc_fncs.block_signals(self.entry_widgets, True)
             if val_str == "est":
                 self.effect_txt_box.setFocus()
             elif val_str == "lower":
@@ -514,7 +472,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
                 self.high_txt_box.setFocus()
             elif val_str == "prevalence":
                 self.prevalence_txt_box.setFocus()
-            self.block_all_signals(False)
+            calc_fncs.block_signals(self.entry_widgets, False)
             return
         
         # If we got to this point it means everything is ok so far        
@@ -566,7 +524,6 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         field_index = 0
         for col in (0,1):
             for row in (0,1):
-                ##val = self.raw_data_dict[self.group_str][field_index] DELETE
                 val = self.ma_unit.get_raw_data_for_group(self.group_str)[field_index]
                 if val is not None:
                     try:
@@ -596,24 +553,10 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
     def print_effects_dict_from_ma_unit(self):
         print self.ma_unit.get_effects_dict()
 
-# DELETE
-#    def setup_table_effect_dict(self):
-#        '''Fill in local copy of table-effects dict w/ data from ma_unit'''
-#        
-#        print "effects dict from ma unit:"
-#        self.print_effects_dict_from_ma_unit() 
-#        
-#        for effect in BACK_CALCULATABLE_DIAGNOSTIC_EFFECTS:
-#            effects_dict = self.ma_unit.effects_dict[effect][self.group_str]
-#            for keyA,keyB in zip(['display_est', 'display_lower', 'display_upper'],["est","lower","upper"]):
-#                self.form_effects_dict[effect][keyB] = str(effects_dict[keyA])
-#                
-#        print "Form effects dict:",self.form_effects_dict
-
     def _update_data_table(self):
         '''Try to calculate rest of 2x2 table from existing cells'''
         
-        self.block_all_signals(True)
+        calc_fncs.block_signals(self.entry_widgets, True)
         
         params = self._get_table_vals()
         computed_params = calc_fncs.compute_2x2_table(params)
@@ -628,7 +571,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             self.prevalence_txt_box.setText("%s" % prev_str)
             self.enable_txt_box_input()
         
-        self.block_all_signals(False)
+        calc_fncs.block_signals(self.entry_widgets, False)
         
     def clear_column(self,col):
         '''Clears out column in table and ma_unit'''
@@ -663,7 +606,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self.prevalence_txt_box.setText("")
         self.prevalence_txt_box.blockSignals(False)
 
-        #self.reset_table_item_flags()
+        calc_fncs.reset_table_item_flags(self.two_by_two_table)
         #self.enable_txt_box_input()
         
         new_ma_unit, new_table = self._save_ma_unit_and_table_state(
@@ -681,42 +624,9 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         #meta_globals.enable_txt_box_input(self.effect_txt_box, self.low_txt_box,
         #                                  self.high_txt_box, self.prevalence_txt_box)
         pass
-           
-    def reset_table_item_flags(self):
-        self.block_all_signals(True)
-        for row in range(3):
-            for col in range(3):
-                item = self.two_by_two_table.item(row, col)
-                if not item is None:
-                    newflags = item.flags() | Qt.ItemIsEditable
-                    item.setFlags(newflags)
-        self.block_all_signals(False)
-    
-    def input_fields_disabled(self):
-        table_disabled = True
-        for row in range(3):
-            for col in range(3):
-                item = self.two_by_two_table.item(row, col)
-                if item is None:
-                    continue
-                if (item.flags() & Qt.ItemIsEditable) == Qt.ItemIsEditable:
-                    table_disabled = False
-                    
-        txt_boxes_disabled = self._txt_boxes_disabled()
-
-        if table_disabled and txt_boxes_disabled:
-            return True
-        return False
-    
-    
-    def _txt_boxes_disabled(self):
-        return not (self.effect_txt_box.isEnabled() or
-                    self.low_txt_box.isEnabled() or
-                    self.high_txt_box.isEnabled() or
-                    self.prevalence_txt_box.isEnabled())
     
 #    def set_clear_btn_color(self):
-#        if self.input_fields_disabled():
+#        if calc_fncs._input_fields_disabled(self.two_by_two_table, self.text_boxes):
 #            self.clear_Btn.setPalette(self.pushme_palette)
 #        else:
 #            self.clear_Btn.setPalette(self.orig_palette)

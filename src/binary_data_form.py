@@ -11,6 +11,7 @@
 
 #import pdb
 import copy
+from functools import partial
 
 from PyQt4.Qt import *
 from PyQt4.QtGui import *
@@ -56,13 +57,6 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
         self._update_data_table()   # fill in 2x2
         self.enable_back_calculation_btn()
 
-    def _get_raw_data(self):
-        raw_data_dict = {}
-        for group in self.cur_groups:
-            raw_data = self.ma_unit.get_raw_data_for_group(group)
-            raw_data_dict[group] = raw_data
-        return raw_data_dict
-
     def initialize_form(self):
         ''' Initialize all cells to empty items '''
         print("Entering initialize_table_items")
@@ -85,31 +79,10 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
 #        #self.set_clear_btn_color()
 
 #    def set_clear_btn_color(self):
-#        if self.input_fields_disabled():
+#        if calc_fncs._input_fields_disabled(self.raw_data_table, self.text_boxes):
 #            self.clear_Btn.setPalette(self.pushme_palette)
 #        else:
 #            self.clear_Btn.setPalette(self.orig_palette)
-
-#    def input_fields_disabled(self):
-#        table_disabled = True
-#        for row in range(3):
-#            for col in range(3):
-#                item = self.raw_data_table.item(row, col)
-#                if item is None:
-#                    continue
-#                if (item.flags() & Qt.ItemIsEditable) == Qt.ItemIsEditable:
-#                    table_disabled = False
-
-#        txt_boxes_disabled = self._txt_boxes_disabled()
-#
-#        if table_disabled and txt_boxes_disabled:
-#            return True
-#        return False
-
-    def _txt_boxes_disabled(self):
-        return not (self.effect_txt_box.isEnabled() or
-                    self.low_txt_box.isEnabled() or
-                    self.high_txt_box.isEnabled())
 
     def print_effects_dict_from_ma_unit(self):
         print self.ma_unit.get_effects_dict()
@@ -342,58 +315,30 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
         
         self.enable_txt_box_input()
         self.enable_back_calculation_btn()
-    
-    def block_all_signals(self, state):
-        for widget in self.entry_widgets:
-            widget.blockSignals(state)
             
     def _text_box_value_is_between_bounds(self, val_str, new_text):
         display_scale_val = ""
         
-        est,lower,upper = self.ma_unit.get_effect_and_ci(self.cur_effect, self.group_str) # calc scale
-        conv_to_disp_scale = lambda x: meta_py_r.binary_convert_scale(x, self.cur_effect, convert_to="display.scale")
-        d_est,d_lower,d_upper = [conv_to_disp_scale(x) for x in (est,lower,upper)]
-        def is_between_bounds(est=d_est,low=d_lower,high=d_upper):
-            return calc_fncs.between_bounds(est=est, low=low, high=high)
+        get_disp_scale_val_if_valid = partial(
+                calc_fncs.evaluate, new_text=new_text, ma_unit=self.ma_unit,
+                curr_effect=self.cur_effect, group_str=self.group_str,
+                conv_to_disp_scale = partial(meta_py_r.binary_convert_scale,
+                                             metric_name=self.cur_effect,
+                                             convert_to="display.scale"),
+                parent=self)
         
-        ###### ERROR CHECKING CODE#####
-        # Make sure entered value is numeric and between the appropriate bounds
-        float_msg = "Must be numeric!"
-        self.block_all_signals(True)
-
+        calc_fncs.block_signals(self.entry_widgets, True)
         try:
             if val_str == "est" and not _is_empty(new_text):
-                # Check type
-                if not _is_a_float(new_text) :
-                    QMessageBox.warning(self, "whoops", float_msg)
-                    raise Exception("error")
-                (good_result, msg) = is_between_bounds(est=new_text)
-                if not good_result:
-                    QMessageBox.warning(self, "whoops", msg)
-                    raise Exception("error")
-                display_scale_val = float(new_text)
+                display_scale_val = get_disp_scale_val_if_valid(ci_param='est')
             elif val_str == "lower" and not _is_empty(new_text):
-                if not _is_a_float(new_text) :
-                    QMessageBox.warning(self, "whoops", float_msg)
-                    raise Exception("error")
-                (good_result, msg) = is_between_bounds(low=new_text)
-                if not good_result:
-                    QMessageBox.warning(self, "whoops", msg)
-                    raise Exception("error")
-                display_scale_val = float(new_text)
-            elif val_str == "upper" and not _is_empty(new_text): 
-                if not _is_a_float(new_text) :
-                    QMessageBox.warning(self, "whoops", float_msg)
-                    raise Exception("error")
-                (good_result, msg) = is_between_bounds(high=new_text)
-                if not good_result:
-                    QMessageBox.warning(self, "whoops", msg)
-                    raise Exception("error")
-                display_scale_val = float(new_text)
-        except:
-            self.block_all_signals(False)
+                display_scale_val = get_disp_scale_val_if_valid(ci_param='low')
+            elif val_str == "upper" and not _is_empty(new_text):
+                display_scale_val = get_disp_scale_val_if_valid(ci_param='high')
+        except Exception:
+            calc_fncs.block_signals(self.entry_widgets, False)
             return False,False
-        self.block_all_signals(False)
+        calc_fncs.block_signals(self.entry_widgets, False)
         print("Val_str: %s" % val_str)
         return True,display_scale_val
     
@@ -420,14 +365,14 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
         no_errors, display_scale_val = self._text_box_value_is_between_bounds(val_str, new_text)
         if no_errors is False: # There are errors
             self.restore_ma_unit_and_table(old_ma_unit,old_table)
-            self.block_all_signals(True)
+            calc_fncs.block_signals(self.entry_widgets, True)
             if val_str == "est":
                 self.effect_txt_box.setFocus()
             elif val_str == "lower":
                 self.low_txt_box.setFocus()
             elif val_str == "upper":
                 self.high_txt_box.setFocus()
-            self.block_all_signals(False)
+            calc_fncs.block_signals(self.entry_widgets, False)
             return
         
         # If we got to this point it means everything is ok so far
@@ -484,7 +429,7 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
                 self.ma_unit.get_raw_data_for_group(self.cur_groups[row])[adjusted_col] = self._get_int(row, col)
                 
                 print "%s, %s: %s" % (row, col, self._get_int(row, col))
-        print "ok -- raw data is now: %s" % self._get_raw_data()
+        print "ok -- raw data is now: %s" % calc_fncs.get_raw_data(self.ma_unit, self.cur_groups)
         
     def _cell_data_not_valid(self, celldata_string):
         # ignore blank entries
@@ -731,8 +676,9 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
             
         # clear line edits
         self.set_current_effect()
-        ####self.reset_table_item_flags()
+        calc_fncs.reset_table_item_flags(self.raw_data_table)
         ####self.enable_txt_box_input()
+        
         
         new_ma_unit, new_table = self._save_ma_unit_and_table_state(
                 table = self.raw_data_table, ma_unit = self.ma_unit,
@@ -747,16 +693,6 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
         #                                  self.high_txt_box)
         # print("Enabled text box input")
         pass
-        
-#    def reset_table_item_flags(self):
-#        self.block_all_signals(True)
-#        for row in range(3):
-#            for col in range(3):
-#                item = self.raw_data_table.item(row, col)
-#                if not item is None:
-#                    newflags = item.flags() | Qt.ItemIsEditable
-#                    item.setFlags(newflags)
-#        self.block_all_signals(False)
         
     def get_cur_group_str(self):
         # Inspired from get_cur_group_str of ma_data_table_model

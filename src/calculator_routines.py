@@ -10,21 +10,19 @@
 #  outcome data                                               #
 ###############################################################
 
-from PyQt4.Qt import QString
+from PyQt4.Qt import *
+from functools import partial
 
 from meta_globals import *
-from meta_globals import _is_a_float
+from meta_globals import _is_a_float, _is_empty
 
-# These two functions started life in the diagnostic data form used for checking
-#  that low < effect < high
-def my_lt(a,b):
-    if _is_a_float(a) and _is_a_float(b):
-        return float(a) < float(b)
-    else:
-        return None
-def between_bounds(est=None, 
-                   low=None, 
-                   high=None):
+def between_bounds(est=None, low=None, high=None):
+    def my_lt(a,b):
+        if _is_a_float(a) and _is_a_float(b):
+            return float(a) < float(b)
+        else:
+            return None
+        
     good_result = my_lt(low,est)
     okay = True if not (good_result is None) else False
     if okay and not good_result:
@@ -349,4 +347,81 @@ class CommandFieldChanged(QUndoCommand):
         print("Restoring old ma_unit")
         self.restore_old_f()
         #self.parent.enable_back_calculation_btn() ##
+
+# Currently unused?
+def reset_table_item_flags(table):
+    nrows = table.rowCount()
+    ncols = table.columnCount()
+    
+    table.blockSignals(True)
+    for row in range(nrows):
+        for col in range(ncols):
+            item = table.item(row, col)
+            if not item is None:
+                newflags = item.flags() | Qt.ItemIsEditable
+                item.setFlags(newflags)
+    table.blockSignals(False)
+    
+def block_signals(widgets, state):
+    for widget in widgets:
+        widget.blockSignals(state)
+
+# Only used in binary and continuous?     
+def get_raw_data(ma_unit, groups):
+    raw_data_dict = {}
+    for group in groups:
+        raw_data = ma_unit.get_raw_data_for_group(group)
+        raw_data_dict[group] = raw_data
+    return raw_data_dict
+
+def _input_fields_disabled(table, text_boxes):
+    table_disabled = table_cells_editable(table)
+    txt_boxes_disabled = _txt_boxes_disabled(text_boxes)
+
+    if table_disabled and txt_boxes_disabled:
+        return True
+    return False
+
+def table_cells_editable(table):
+    cells_uneditable = True
+    nrows = table.rowCount()
+    ncols = table.columnCount()
+    for row in range(nrows):
+        for col in range(ncols):
+            item = table.item(row, col)
+            if item is None:
+                continue
+            if (item.flags() & Qt.ItemIsEditable) == Qt.ItemIsEditable:
+                cells_uneditable = False
+    return cells_uneditable
+    
+def _txt_boxes_disabled(text_boxes):
+    return not any([box.isEnabled() for box in text_boxes])
+
+# Function for testing validity and range conditions in form txt boxes
+def evaluate(new_text, ma_unit, curr_effect, group_str, conv_to_disp_scale, ci_param = None,
+             parent=None, opt_cmp_fn=None, opt_cmp_msg=None):
+    '''opt_cmp_fn i.e. 'Optional Compare Function' should return True when the
+    desired condition is met and False otherwise. It is a function of new_text:
+    opt_cmp_fn(new_text)'''
         
+    est,lower,upper = ma_unit.get_effect_and_ci(curr_effect, group_str) # calc scale
+    d_est,d_lower,d_upper = [conv_to_disp_scale(x) for x in (est,lower,upper)]
+    is_between_bounds = partial(between_bounds, est=d_est, low=d_lower, high=d_upper)
+    ###### ERROR CHECKING CODE#####
+        # Make sure entered value is numeric and between the appropriate bounds
+    if not _is_a_float(new_text) :
+        QMessageBox.warning(parent, "whoops", "Must be numeric!")
+        raise Exception("error")
+    if not opt_cmp_fn: # est, lower, upper
+        (good_result, msg) = is_between_bounds(**{ci_param:new_text})
+        if not good_result:
+            QMessageBox.warning(parent, "whoops", msg)
+            raise Exception("error")
+    else: # something other than est, lower, upper (like correlation or prevalence)
+        print("Result of correlation evalauation is: %s" % str(opt_cmp_fn(new_text)))
+        if not opt_cmp_fn(new_text):
+            QMessageBox.warning(parent, "whoops", opt_cmp_msg)
+            print("raising exception")
+            raise Exception("error")
+    return float(new_text) # display_scale_val
