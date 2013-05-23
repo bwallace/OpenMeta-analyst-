@@ -24,6 +24,7 @@ import sys
 import copy
 
 from PyQt4.Qt import *
+from functools import partial
 import calculator_routines as calc_fncs
 
 import meta_py_r
@@ -93,13 +94,6 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
             self.adjustSize()
             
         self.current_correlation = self._get_correlation_str()
-            
-    def _get_raw_data(self):
-        raw_data_dict = {}
-        for group in self.cur_groups:
-            raw_data = self.ma_unit.get_raw_data_for_group(group)
-            raw_data_dict[group] = raw_data
-        return raw_data_dict
         
     def initialize_form(self, table=None):
         ''' Initialize all cells to empty items
@@ -182,58 +176,29 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
     def _text_box_value_is_between_bounds(self, val_str, new_text):
         display_scale_val = ""
         
-        est,lower,upper = self.ma_unit.get_effect_and_ci(self.cur_effect, self.group_str) # calc scale
-        conv_to_disp_scale = lambda x: meta_py_r.continuous_convert_scale(x, self.cur_effect, convert_to="display.scale")
-        d_est,d_lower,d_upper = [conv_to_disp_scale(x) for x in (est,lower,upper)]
-        
-        def is_between_bounds(est=d_est,low=d_lower,high=d_upper):
-            return calc_fncs.between_bounds(est=est, low=low, high=high)
+        get_disp_scale_val_if_valid = partial(
+                calc_fncs.evaluate, new_text=new_text, ma_unit=self.ma_unit,
+                curr_effect=self.cur_effect, group_str=self.group_str,
+                conv_to_disp_scale = partial(meta_py_r.continuous_convert_scale,
+                                             metric_name=self.cur_effect,
+                                             convert_to="display.scale"),
+                parent=self)
 
-        ###### ERROR CHECKING CODE#####
-        # Make sure entered value is numeric and between the appropriate bounds
-        float_msg = "Must be numeric!"
-        self.block_all_signals(True)
-        
+        calc_fncs.block_signals(self.entry_widgets, True)
         try:
             if val_str == "est" and not _is_empty(new_text):
-                # Check type
-                if not _is_a_float(new_text) :
-                    QMessageBox.warning(self, "whoops", float_msg)
-                    raise Exception("error")
-                (good_result,msg) = is_between_bounds(est=new_text)
-                if not good_result:
-                    QMessageBox.warning(self, "whoops", msg)
-                    raise Exception("error")
-                display_scale_val = float(new_text)
+                display_scale_val = get_disp_scale_val_if_valid(ci_param='est')
             elif val_str == "lower" and not _is_empty(new_text):
-                if not _is_a_float(new_text) :
-                    QMessageBox.warning(self, "whoops", float_msg)
-                    raise Exception("error")
-                (good_result,msg) = is_between_bounds(low=new_text)
-                if not good_result:
-                    QMessageBox.warning(self, "whoops", msg)
-                    raise Exception("error")
-                display_scale_val = float(new_text)
-            elif val_str == "upper" and not _is_empty(new_text): 
-                if not _is_a_float(new_text) :
-                    QMessageBox.warning(self, "whoops", float_msg)
-                    raise Exception("error")
-                (good_result,msg) = is_between_bounds(high=new_text)
-                if not good_result:
-                    QMessageBox.warning(self, "whoops", msg)
-                    raise Exception("error")
-                display_scale_val = float(new_text)
+                display_scale_val = get_disp_scale_val_if_valid(ci_param='low')
+            elif val_str == "upper" and not _is_empty(new_text):
+                display_scale_val = get_disp_scale_val_if_valid(ci_param='high')
             elif val_str == "correlation_pre_post" and not _is_empty(new_text):
-                if not _is_a_float(new_text):
-                    QMessageBox.warning(self, "whoops", float_msg)
-                    raise Exception("error")
-                if _is_a_float(new_text) and not -1 <= float(new_text) <= 1:
-                    QMessageBox.warning(self, "whoops", "Correlation must be between -1 and +1")
-                    raise Exception("error")
+                get_disp_scale_val_if_valid(opt_cmp_fn = lambda x: -1<=float(x)<=1,
+                                            opt_cmp_msg="Correlation must be between -1 and +1")
         except:
-            self.block_all_signals(False)
+            calc_fncs.block_signals(self.entry_widgets, False)
             return False, False
-        self.block_all_signals(False)
+        calc_fncs.block_signals(self.entry_widgets, False)
         print("Val_str: %s" % val_str)
         return True,display_scale_val
     
@@ -264,8 +229,8 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         no_errors, display_scale_val = self._text_box_value_is_between_bounds(val_str, new_text)
         if no_errors is False:
             print("There was an error while in val_changed")
-            self.restore_ma_unit_and_tables(old_ma_unit,old_tables_data)
-            self.block_all_signals(True)
+            self.restore_ma_unit_and_tables(old_ma_unit,old_tables_data, old_correlation)
+            calc_fncs.block_signals(self.entry_widgets, True)
             if val_str == "est":
                 self.effect_txt_box.setFocus()
             elif val_str == "lower":
@@ -274,7 +239,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
                 self.high_txt_box.setFocus()
             elif val_str == "correlation_pre_post":
                 self.correlation_pre_post.setFocus()
-            self.block_all_signals(False)
+            calc_fncs.block_signals(self.entry_widgets, False)
             return
         
         # If we got to this point it means everything is ok so far
@@ -331,34 +296,10 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         self.set_clear_btn_color()
         
     def set_clear_btn_color(self):
-        if self._input_fields_disabled(self.simple_table):
+        if calc_fncs._input_fields_disabled(self.simple_table, [self.effect_txt_box, self.low_txt_box, self.high_txt_box]):
             self.clear_Btn.setPalette(self.pushme_palette)
         else:
             self.clear_Btn.setPalette(self.orig_palette)
-            
-    def _input_fields_disabled(self, table):
-        #range(table.columnCount())
-        table_disabled = True
-        num_cols = table.columnCount()
-        for row in range(2):
-            for col in range(num_cols):
-                item = table.item(row, col)
-                if item is None:
-                    continue
-                if (item.flags() & Qt.ItemIsEditable) == Qt.ItemIsEditable:
-                    table_disabled = False
-                    
-        txt_boxes_disabled = self._txt_boxes_disabled()
-
-        if table_disabled and txt_boxes_disabled:
-            return True
-        return False
-    
-    def _txt_boxes_disabled(self):
-        return not (self.effect_txt_box.isEnabled() or
-                    self.low_txt_box.isEnabled() or
-                    self.high_txt_box.isEnabled()) # or
-                    #self.correlation_pre_post.isEnabled())
 
     def set_current_effect(self):
         txt_boxes = dict(effect=self.effect_txt_box, lower=self.low_txt_box, upper=self.high_txt_box)
@@ -797,24 +738,6 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         pass
         #meta_globals.enable_txt_box_input(self.effect_txt_box, self.low_txt_box,
         #                                  self.high_txt_box, self.correlation_pre_post)
-
-    def reset_table_item_flags(self):
-        
-        self.block_all_signals(True)
-        def _reset_flags(table,range_num):
-            for row in range(len(self.cur_groups)):
-                for col in range(range_num):
-                    # top table
-                    item = table.item(row, col)
-                    if item is not None:
-                        newflags = item.flags() | Qt.ItemIsEditable
-                        item.setFlags(newflags)
-
-        _reset_flags(self.simple_table,8)
-        _reset_flags(self.g1_pre_post_table,7)
-        _reset_flags(self.g2_pre_post_table,7)
-
-        self.block_all_signals(False)
         
     def enable_back_calculation_btn(self, engage = False):
         # For undo/redo
@@ -994,13 +917,13 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         self.metric_parameter = None  # } these two should go together
         self.enable_txt_box_input()   # }
         
-        self.block_all_signals(True)
+        calc_fncs.block_signals(self.entry_widgets, True)
         # reset tables
         for table in self.tables:
             for row_index in range(len(self.cur_groups)):
                 for var_index in range(table.columnCount()):
                     self._set_val(row_index, var_index, "", table=table)
-        self.block_all_signals(False)
+        calc_fncs.block_signals(self.entry_widgets, False)
     
         self._update_ma_unit()
 
@@ -1015,9 +938,9 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
             
         # clear line edits
         self.set_current_effect()
-        self.block_all_signals(True)
+        calc_fncs.block_signals(self.entry_widgets, True)
         self.correlation_pre_post.setText("0.0")
-        self.block_all_signals(False)
+        calc_fncs.block_signals(self.entry_widgets, False)
         
         # For undo/redo
         self.enable_back_calculation_btn()
@@ -1039,10 +962,6 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
     def get_effect_names(self):
         effects = self.ma_unit.get_effect_names()
         return effects
-        
-    def block_all_signals(self,state):
-        for widget in self.entry_widgets:
-            widget.blockSignals(state)
 
     def get_cur_group_str(self):
         # Inspired from get_cur_group_str of ma_data_table_model
