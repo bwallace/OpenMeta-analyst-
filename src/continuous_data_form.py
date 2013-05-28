@@ -89,7 +89,9 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         self.impute_data()
         self.enable_back_calculation_btn()
         
-        if (self.cur_effect != "MD"):
+        print("current effect: %s" % str(self.cur_effect))
+        # Hide pre-post for SMD until it is implemented
+        if self.cur_effect not in ["MD","SMD"]:
             self.grp_box_pre_post.setVisible(False)
             self.adjustSize()
             
@@ -156,7 +158,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         self.cur_effect = unicode(self.effect_cbo_box.currentText().toUtf8(), "utf-8")
         
         # hide pre-post for SMD
-        if (self.cur_effect != "MD"):
+        if self.cur_effect not in ["MD","SMD"]:
             self.grp_box_pre_post.setVisible(False)
             self.adjustSize()
         else:

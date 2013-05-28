@@ -64,7 +64,7 @@ class RlibLoader:
             return (True, msg)
         except:
             raise Exception("The %s R package is not installed.\nPlease \
-install this package and then re-start OpenMeta.")
+install this package and then re-start OpenMeta." % name)
 
 #################### END OF R Library Loader ####################
 
