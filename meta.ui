@@ -442,37 +442,7 @@
              </spacer>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="ci_layot">
-              <item>
-               <widget class="QLabel" name="global_conf_level_lbl">
-                <property name="text">
-                 <string>Global Confidence Level:</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QDoubleSpinBox" name="global_ci_spinbox">
-                <property name="suffix">
-                 <string>%</string>
-                </property>
-                <property name="decimals">
-                 <number>1</number>
-                </property>
-                <property name="minimum">
-                 <double>50.000000000000000</double>
-                </property>
-                <property name="maximum">
-                 <double>99.900000000000006</double>
-                </property>
-                <property name="singleStep">
-                 <double>0.100000000000000</double>
-                </property>
-                <property name="value">
-                 <double>95.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-             </layout>
+             <layout class="QHBoxLayout" name="ci_layot"/>
             </item>
            </layout>
           </widget>
@@ -539,6 +509,7 @@
     <addaction name="action_subgroup_ma"/>
     <addaction name="separator"/>
     <addaction name="action_meta_regression"/>
+    <addaction name="action_change_conf_level"/>
    </widget>
    <widget class="QMenu" name="menuDataset">
     <property name="title">
@@ -690,6 +661,11 @@
   <action name="action_open_help">
    <property name="text">
     <string>open help</string>
+   </property>
+  </action>
+  <action name="action_change_conf_level">
+   <property name="text">
+    <string>change confidence level</string>
    </property>
   </action>
  </widget>

@@ -5,6 +5,8 @@
 # no other directory is searched. It also sets the attribute sys.frozen so that
 # the Win32 extensions behave as expected.
 #------------------------------------------------------------------------------
+print("Entering open_meta_mac.py")
+
 import encodings
 import os
 import sys
@@ -21,13 +23,19 @@ if DIR_NAME not in paths:
     print "setting ld path..."
     paths.insert(0, DIR_NAME)
     os.environ["LD_LIBRARY_PATH"] = os.pathsep.join(paths)
+    print("Set LD_LIBRARY_PATH to %s" % os.pathsep.join(paths))
     # 8/21/12
-    print "setting (fallback) dyld path"
+    
     #print "*not* setting dydlib"
     print "setting dydlib!!!"
-    #os.environ["DYLD_LIBRARY_PATH"] = os.pathsep.join(paths)
+    executable_path = os.pathsep.join(paths)
+    print("Executable path is '%s'"% executable_path)
+    os.environ["DYLD_LIBRARY_PATH"] = os.pathsep.join(paths)
 
+    # this is probably not necessary now that the above is set but whatever
+    print "setting (fallback) dyld path" 
     os.environ["DYLD_FALLBACK_LIBRARY_PATH"] = os.pathsep.join(paths)
+    
     os.execv(sys.executable, sys.argv)
 
 
@@ -38,10 +46,41 @@ sys.path = sys.path[:4]
 #print "\n\nok, mac user -- I'm setting your R path temporarily (this console only).\n\ns"
 os.environ["R"] = \
     os.path.join(DIR_NAME, "R_dist", "2.15", "bin")
+<<<<<<< HEAD
 print os.environ["R"]
 
 os.environ["R_HOME"] = \
     os.path.join(DIR_NAME, "R_dist", "2.15")
+=======
+
+os.environ["R_HOME"] = \
+    os.path.join(DIR_NAME, "R_dist", "2.15")
+    
+print("Setting PANGO_RC file path")
+pangorc_path = os.path.join(DIR_NAME, "pangorc")
+os.environ["PANGO_RC_FILE"] = pangorc_path
+print("pango rc path is now: %s" % str(pangorc_path))    
+
+#print("Setting fontconig file path")
+#fonts_path = os.path.join(DIR_NAME, "fonts.conf")
+#os.environ["FONTCONFIG_FILE"] = fonts_path
+#print("fontconfig file path is now: %s", str(fonts_path))
+
+# Very hacky and bad thing but it makes things work...
+def create_pangorc():
+    '''Creates pangorc file with correct path to pango.modules'''
+    
+    contents = "[Pango]\nModuleFiles = " + os.path.join(DIR_NAME, "pango.modules")
+    f = open(pangorc_path, 'w')
+    f.write(contents)
+    f.close()
+    print("Wrote:\n" + contents + "\n to pangorc")
+
+create_pangorc()
+
+    
+    
+>>>>>>> 805a10c14dd21b8b69abf53d268dd6e1302c8bf0
 
 os.environ["TCL_LIBRARY"] = os.path.join(DIR_NAME, "tcl")
 os.environ["TK_LIBRARY"] = os.path.join(DIR_NAME, "tk")
@@ -74,5 +113,5 @@ if versionInfo >= (2, 5, 0) and versionInfo <= (2, 6, 4):
 OK???
 '''
 print "starting up..."
-
 meta_form.start()
+

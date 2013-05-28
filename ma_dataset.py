@@ -59,11 +59,10 @@ class Dataset:
         if (outcome is None and follow_up is not None) or (follow_up is None and outcome is not None):
             raise Exception, "dataset -- change_group_name -- either both outcome and follow_up should be None, \
                                             or else neither should."
-        
-            
+    
         for study in self.studies:
             if outcome is None and follow_up is None:
-                # if no outcome/follow-up was specified, we change *all* occurences of
+                # if no outcome/follow-up was specified, we change *all* occurrences of
                 # the old_group_name to the new_group_name
                 for outcome_name in study.outcomes_to_follow_ups.keys():
                     cur_outcome = study.outcomes_to_follow_ups[outcome_name]
@@ -72,8 +71,7 @@ class Dataset:
             else:
                 ma_unit = study.outcomes_to_follow_ups[outcome][follow_up]
                 ma_unit.rename_group(old_group_name, new_group_name)
-        
-                            
+            
     def change_outcome_name(self, old_outcome_name, new_outcome_name):
         self.outcome_names_to_follow_ups[new_outcome_name] = \
                 self.outcome_names_to_follow_ups.pop(old_outcome_name)
@@ -113,6 +111,11 @@ class Dataset:
         if outcome is None: 
             return None
         return outcome.data_type if not get_string else TYPE_TO_STR_DICT[outcome.data_type]
+    def get_outcome_subtype(self, outcome_name):
+        outcome = self.get_outcome_obj(outcome_name)
+        if outcome is None or not hasattr(outcome, 'sub_type'):
+            return None
+        return outcome.sub_type
         
     def get_outcome_obj(self, outcome_name):
         for study in self.studies:
@@ -356,14 +359,15 @@ class Dataset:
         # first check the effects. if *any* effect contains data
         # comparing these two groups, we return true.
         comp_str = "-".join(groups)
-        for effect in ma_unit.effects_dict.keys():
-            if comp_str in ma_unit.effects_dict[effect] and \
-                 ma_unit.effects_dict[effect][comp_str]['est'] is not None:
+        for effect in ma_unit.get_effect_names():
+            comp_str_present = comp_str in ma_unit.get_group_strings(effect)
+            est_not_None = ma_unit.get_estimate(effect, comp_str) is not None
+            if comp_str_present and est_not_None:
                 return True
 
         # now check if they all have raw data
         for group in groups:
-            if "" in ma_unit.tx_groups[group].raw_data:
+            if "" in ma_unit.get_raw_data_for_group(group):
                 return False
         return True
         
@@ -594,12 +598,12 @@ class MetaAnalyticUnit:
         else:
             raise Exception, "Unrecognized outcome data type, '%s' was given" % outcome.data_type
         
-        raw_data = raw_data or \
-                    [["" for n in range(self.raw_data_length)] for group in group_names]
+        # Makes list of (empty lists of length of raw_data): 
+        raw_data = raw_data or [["",]*self.raw_data_length]*len(group_names)
 
         self.effects_dict = {}
         
-        # now we intitialize the outcome dictionaries.
+        # now we initialize the outcome dictionaries.
         if self.outcome.data_type == BINARY:
             for effect in meta_globals.BINARY_TWO_ARM_METRICS + meta_globals.BINARY_ONE_ARM_METRICS:
                 self.effects_dict[effect]={}
@@ -618,11 +622,17 @@ class MetaAnalyticUnit:
             self.add_group(group)
             self.tx_groups[group].raw_data = raw_data[i]
  
-    def get_effect_d(self):
+    def get_init_effect_d(self):
         # these are the dictionaries that actually hold the effects (estimate, 
         # CI, etc.). note: *always* copy this dictionary, never use it directly.
-        return {"est":None, "lower":None, "upper":None, "SE":None,
-                "display_est":None, "display_lower":None, "display_upper":None}    
+        return {"est":None,
+                "lower":None,
+                "upper":None,
+                "SE":None,
+                "display_est":None,
+                "display_lower":None,
+                "display_upper":None,
+                }    
                 
     def update_effects_dict_with_group(self, new_group):
         '''
@@ -642,68 +652,150 @@ class MetaAnalyticUnit:
                     # order matters i.e., the effect for tx a v. tx b is different than the reverse.
                     # We take care of this by mapping strings `txA-txB` to effect dictionaries
                     groups_str = "-".join((new_group, group))
-                    self.effects_dict[effect][groups_str] = self.get_effect_d()
+                    self.effects_dict[effect][groups_str] = self.get_init_effect_d()
                     # ... and the reverse (see above comment)
                     groups_str = "-".join((group, new_group))
-                    self.effects_dict[effect][groups_str] = self.get_effect_d()
+                    self.effects_dict[effect][groups_str] = self.get_init_effect_d()
             for effect in meta_globals.BINARY_ONE_ARM_METRICS:
-                self.effects_dict[effect][new_group] = self.get_effect_d()
+                self.effects_dict[effect][new_group] = self.get_init_effect_d()
         elif self.outcome.data_type == CONTINUOUS:
             for effect in meta_globals.CONTINUOUS_TWO_ARM_METRICS:
                 for group in group_names:
                     groups_str = "-".join((new_group, group))
-                    self.effects_dict[effect][groups_str] = self.get_effect_d()
+                    self.effects_dict[effect][groups_str] = self.get_init_effect_d()
                     # and the reverse
                     groups_str = "-".join((group, new_group))
-                    self.effects_dict[effect][groups_str] = self.get_effect_d()                                           
+                    self.effects_dict[effect][groups_str] = self.get_init_effect_d()                                           
             for effect in meta_globals.CONTINUOUS_ONE_ARM_METRICS:
-                self.effects_dict[effect][new_group] = self.get_effect_d()
+                self.effects_dict[effect][new_group] = self.get_init_effect_d()
         elif self.outcome.data_type == DIAGNOSTIC:
             # diagnostic data
             for effect in meta_globals.DIAGNOSTIC_METRICS:
-                self.effects_dict[effect][new_group] = self.get_effect_d()
+                self.effects_dict[effect][new_group] = self.get_init_effect_d()
+                
+    def calculate_SE_if_possible(self, effect, group_str, est=None, lower=None, upper=None):
+        # get SE
+        if est is None:
+            est = self.effects_dict[effect][group_str]["est"]
+        if lower is None:
+            lower = self.effects_dict[effect][group_str]["lower"]
+        if  upper is None:
+            upper = self.effects_dict[effect][group_str]["upper"]
+        mult = meta_py_r.get_mult(meta_py_r.get_global_conf_level())
+        
+        
+        print("Using the following values to calculate se:")
+        print("  (est,lower,upper) = (%s,%s,%s)" % (str(est),str(lower),str(upper)))
+        try:
+            se = (upper - est)/mult
+        except:
+            try:
+                se = (est - lower)/mult
+            except:
+                try:
+                    se = (upper - lower)/(2*mult)
+                except:
+                    se = None  
+        return se
                     
     def set_effect(self, effect, group_str, value):
         self.effects_dict[effect][group_str]["est"] = value
-       
+    def set_lower(self, effect, group_str, lower):
+        self.effects_dict[effect][group_str]["lower"] = lower
+    def set_upper(self, effect, group_str, upper):
+        self.effects_dict[effect][group_str]["upper"] = upper
     def set_SE(self, effect, group_str, se):
         self.effects_dict[effect][group_str]["SE"] = se
         
-    def set_display_effect(self, effect, group_str, value):
-        self.effects_dict[effect][group_str]["display_est"] = value
+#    def set_display_effect(self, effect, group_str, value):
+#        self.effects_dict[effect][group_str]["display_est"] = value
+#    def set_display_lower(self, effect, group_str, lower):
+#        self.effects_dict[effect][group_str]["display_lower"] = lower
+#    def set_display_upper(self, effect, group_str, upper):
+#        self.effects_dict[effect][group_str]["display_upper"] = upper
+#    def set_display_se(self, effect, group_str, se):
+#        self.effects_dict[effect][group_str]["display_se"] = se
+         
+    def get_estimate(self, effect, group_str):
+        return self.effects_dict[effect][group_str]["est"]
+    def get_lower(self, effect, group_str):
+        if self.get_se(effect, group_str) is None:
+            return self.effects_dict[effect][group_str]["lower"]
+        est = self.get_estimate(effect, group_str)
+        se  = self.get_se(effect, group_str)
+        mult = meta_py_r.get_mult(meta_py_r.get_global_conf_level())
+        if est is None or se is None:
+            return None
+        return  (est-mult*se)
+        
+    def get_upper(self, effect, group_str):
+        if self.get_se(effect, group_str) is None:
+            return self.effects_dict[effect][group_str]["upper"]
+        est = self.get_estimate(effect, group_str)
+        se  = self.get_se(effect, group_str)
+        mult = meta_py_r.get_mult(meta_py_r.get_global_conf_level())
+        if est is None or se is None:
+            return None
+        return  (est+mult*se)
+    def get_se(self, effect, group_str):
+        return self.effects_dict[effect][group_str]["SE"]
+    
+#    def get_display_estimate(self, effect, group_str):
+#        return self.effects_dict[effect][group_str]["display_est"]
+#    def get_display_lower(self, effect, group_str):
+#        return self.effects_dict[effect][group_str]["display_lower"]
+#    def get_display_upper(self, effect, group_str):
+#        return self.effects_dict[effect][group_str]["display_upper"]
+#    def get_display_se(self, effect, group_str):
+#        return self.effects_dict[effect][group_str]["display_se"]    
          
     def set_effect_and_ci(self, effect, group_str, est, lower, upper):
         self.set_effect(effect, group_str, est)
         self.effects_dict[effect][group_str]["lower"] = lower
         self.effects_dict[effect][group_str]["upper"] = upper
+        
+        se = self.calculate_SE_if_possible(effect, group_str, est, lower, upper)
+        self.set_SE(effect, group_str, se)
        
-    def set_display_effect_and_ci(self, effect, group_str, est, lower, upper):
-        self.effects_dict[effect][group_str]["display_est"] = est
-        self.effects_dict[effect][group_str]["display_lower"] = lower
-        self.effects_dict[effect][group_str]["display_upper"] = upper
+#    def set_display_effect_and_ci(self, effect, group_str, est, lower, upper):
+#        self.effects_dict[effect][group_str]["display_est"] = est
+#        self.effects_dict[effect][group_str]["display_lower"] = lower
+#        self.effects_dict[effect][group_str]["display_upper"] = upper
         
     def get_effect_and_ci(self, effect, group_str):
-        return (self.effects_dict[effect][group_str]["est"], self.effects_dict[effect][group_str]["lower"],
-                    self.effects_dict[effect][group_str]["upper"])
-                
-    def get_display_effect_and_ci(self, effect, group_str):
-        return (self.effects_dict[effect][group_str]["display_est"], self.effects_dict[effect][group_str]["display_lower"],
-                    self.effects_dict[effect][group_str]["display_upper"])
+        return (self.get_estimate(effect, group_str),
+                self.get_lower(effect, group_str),
+                self.get_upper(effect, group_str),
+                )
+    def get_effect_and_se(self, effect, group_str):
+        return (self.get_estimate(effect, group_str),
+                self.get_se(effect, group_str),
+                )
         
-    def set_lower(self, effect, group_str, lower):
-        self.effects_dict[effect][group_str]["lower"] = lower
-        
-    def set_display_lower(self, effect, group_str, lower):
-        self.effects_dict[effect][group_str]["display_lower"] = lower
-        
-    def set_upper(self, effect, group_str, upper):
-        self.effects_dict[effect][group_str]["upper"] = upper
-       
-    def set_display_upper(self, effect, group_str, upper):
-        self.effects_dict[effect][group_str]["display_upper"] = upper
-         
-    def get_effect(self, effect, group_str):
-        return self.effects_dict[effect][group_str]["est"]
+    def get_entered_effect_and_ci(self, effect, group_str):
+        return (self.effects_dict[effect][group_str]["est"],
+                self.effects_dict[effect][group_str]["lower"],
+                self.effects_dict[effect][group_str]["upper"],)
+
+#    def get_display_effect_and_ci(self, effect, group_str):
+#        return (self.get_display_estimate(effect, group_str),
+#                self.get_display_lower(effect, group_str),
+#                self.get_display_upper(effect, group_str),
+#                )
+            
+    def get_effect_dict(self, effect, group_str):
+        return self.effects_dict[effect][group_str]
+    
+    def get_group_strings(self, effect):
+        return self.effects_dict[effect].keys()
+    
+    def get_effects_dict(self):
+        ''' Be careful with using this because this returns the actual effects
+            dict, not a copy '''
+        return self.effects_dict
+    
+    def get_effect_names(self):
+        return self.effects_dict.keys()
     
     def type(self):
         return self.outcome.data_type
@@ -793,16 +885,16 @@ class TreatmentGroup:
             
 class Outcome:
     ''' Holds a few fields that define outcomes. '''
-    def __init__(self, name, data_type, links=None):
+    def __init__(self, name, data_type, links=None, sub_type=None):
         self.name = name
-        
         self.data_type = data_type
         self.links = links
+        self.sub_type = sub_type # more specific than just binary, cont, diag, etc.
        
 class Covariate:
     ''' Meta-data about covariates. '''
     def __init__(self, name, data_type):
-        # annoying case converstion -- you see we 
+        # annoying case conversion -- you see we 
         # assume the first letter is capitalized (below)
         data_type = data_type.capitalize()
 

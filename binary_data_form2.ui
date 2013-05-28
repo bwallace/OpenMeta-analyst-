@@ -91,7 +91,7 @@
         </widget>
        </item>
        <item row="1" column="1" rowspan="3" colspan="3">
-        <widget class="QTableWidget" name="raw_data_table_3">
+        <widget class="QTableWidget" name="raw_data_table">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -201,7 +201,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_17">
      <item>
-      <widget class="QPushButton" name="clear_Btn_3">
+      <widget class="QPushButton" name="clear_Btn">
        <property name="text">
         <string>Clear Form</string>
        </property>
@@ -221,7 +221,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="back_calc_btn_3">
+      <widget class="QPushButton" name="back_calc_btn">
        <property name="enabled">
         <bool>false</bool>
        </property>
@@ -253,7 +253,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="effect_cbo_box_3">
+      <widget class="QComboBox" name="effect_cbo_box">
        <property name="minimumSize">
         <size>
          <width>76</width>
@@ -303,7 +303,7 @@
        </spacer>
       </item>
       <item row="0" column="2">
-       <widget class="QLabel" name="ci_label_3">
+       <widget class="QLabel" name="ci_label">
         <property name="toolTip">
          <string>Use the box to the left to set the % confidence interval</string>
         </property>
@@ -328,7 +328,7 @@
       <item row="1" column="1">
        <layout class="QHBoxLayout" name="horizontalLayout_15">
         <item>
-         <widget class="QLabel" name="est_lbl_3">
+         <widget class="QLabel" name="est_lbl">
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -355,7 +355,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="effect_txt_box_3">
+         <widget class="QLineEdit" name="effect_txt_box">
           <property name="minimumSize">
            <size>
             <width>50</width>
@@ -375,7 +375,7 @@
       <item row="1" column="2">
        <layout class="QHBoxLayout" name="horizontalLayout_16">
         <item>
-         <widget class="QLabel" name="low_lbl_3">
+         <widget class="QLabel" name="low_lbl">
           <property name="maximumSize">
            <size>
             <width>16777215</width>
@@ -396,7 +396,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="low_txt_box_3">
+         <widget class="QLineEdit" name="low_txt_box">
           <property name="minimumSize">
            <size>
             <width>50</width>
@@ -419,7 +419,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="high_txt_box_3">
+         <widget class="QLineEdit" name="high_txt_box">
           <property name="minimumSize">
            <size>
             <width>50</width>
@@ -435,7 +435,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="high_lbl_3">
+         <widget class="QLabel" name="high_lbl">
           <property name="maximumSize">
            <size>
             <width>16777215</width>
@@ -477,7 +477,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QDoubleSpinBox" name="CI_spinbox_3">
+      <widget class="QDoubleSpinBox" name="CI_spinbox">
        <property name="toolTip">
         <string>Use this box to set the % confidence interval</string>
        </property>
@@ -519,7 +519,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_14">
      <item>
-      <widget class="QLabel" name="inconsistencyLabel_3">
+      <widget class="QLabel" name="inconsistencyLabel">
        <property name="font">
         <font>
          <weight>75</weight>
@@ -545,7 +545,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QDialogButtonBox" name="buttonBox_3">
+      <widget class="QDialogButtonBox" name="buttonBox">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -559,22 +559,22 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>raw_data_table_3</tabstop>
-  <tabstop>clear_Btn_3</tabstop>
-  <tabstop>back_calc_btn_3</tabstop>
-  <tabstop>effect_cbo_box_3</tabstop>
-  <tabstop>effect_txt_box_3</tabstop>
-  <tabstop>low_txt_box_3</tabstop>
-  <tabstop>high_txt_box_3</tabstop>
-  <tabstop>CI_spinbox_3</tabstop>
-  <tabstop>buttonBox_3</tabstop>
+  <tabstop>raw_data_table</tabstop>
+  <tabstop>clear_Btn</tabstop>
+  <tabstop>back_calc_btn</tabstop>
+  <tabstop>effect_cbo_box</tabstop>
+  <tabstop>effect_txt_box</tabstop>
+  <tabstop>low_txt_box</tabstop>
+  <tabstop>high_txt_box</tabstop>
+  <tabstop>CI_spinbox</tabstop>
+  <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>
   <include location="images/icons.qrc"/>
  </resources>
  <connections>
   <connection>
-   <sender>buttonBox_3</sender>
+   <sender>buttonBox</sender>
    <signal>rejected()</signal>
    <receiver>BinaryDataForm</receiver>
    <slot>reject()</slot>
@@ -590,7 +590,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>buttonBox_3</sender>
+   <sender>buttonBox</sender>
    <signal>accepted()</signal>
    <receiver>BinaryDataForm</receiver>
    <slot>accept()</slot>

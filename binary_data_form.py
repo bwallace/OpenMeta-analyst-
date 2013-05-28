@@ -9,7 +9,7 @@
 #  outcome data                                               #
 ###############################################################
 
-import pdb
+#import pdb
 
 # from PyQt4.Qt import *
 from PyQt4.Qt import (pyqtSignature, QDialog, QDialogButtonBox, QMessageBox,
@@ -113,7 +113,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
                     self.high_txt_box.isEnabled())
         
     def print_effects_dict_from_ma_unit(self):
-        print self.ma_unit.effects_dict
+        print self.ma_unit.get_effects_dict()
     
     def enable_back_calculation_btn(self, engage=False):
         print("Enabling back-calculation button...")
@@ -308,8 +308,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         self.effect_cbo_box.setCurrentIndex(q_effects.index(QString(self.cur_effect)))
         
     def get_effect_names(self):
-        effects = self.ma_unit.effects_dict.keys()
-        return effects
+        return self.ma_unit.get_effect_names()
     
     def set_current_effect(self):
         '''Fills in text boxes with data from ma unit'''
@@ -318,7 +317,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         
         # Fill in text boxes with data from ma unit
         self.block_all_signals(True)
-        effect_dict = self.ma_unit.effects_dict[self.cur_effect][self.group_str]
+        effect_dict = self.ma_unit.get_effect_dict(self.cur_effect, self.group_str)
         for s, txt_box in zip(['display_est', 'display_lower', 'display_upper'], \
                               [self.effect_txt_box, self.low_txt_box, self.high_txt_box]):
             if effect_dict[s] is not None:
@@ -548,7 +547,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
         for row in range(2):
             for col in (0, 2):
                 adjusted_col = 1 if col == 2 else 0
-                self.raw_data_d[self.cur_groups[row]][adjusted_col] = self._get_int(row, col)
+                self.raw_data_d[self.cur_groups[row]][adjusted_col] = self._get_int(row, col)  # TODO: ENC
                 print "%s, %s: %s" % (row, col, self._get_int(row, col))
         print "ok -- raw data is now: %s" % self.raw_data_d
         
@@ -673,10 +672,7 @@ class BinaryDataForm2(QDialog, ui_binary_data_form.Ui_BinaryDataForm):
  
     def _build_dict(self):
         d = dict(zip(["control.n.outcome", "control.N", "tx.n.outcome", "tx.N"], self.raw_data))
-        print "\n!%s" % self.ma_unit.effects_dict[self.cur_effect]
-        d["estimate"] = self.ma_unit.effects_dict[self.cur_effect][self.group_str]['est']
-        print d["estimate"] == ""
-        print d["estimate"] is None
+        d["estimate"] = self.ma_unit.get_estimate(self.cur_effect, self.group_str)
         return d
         
     def _update_data_table(self):        

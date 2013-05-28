@@ -415,6 +415,8 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
                 self._set_val(row, col, imputed_dict[field])
                 # here we update the MA unit
                 raw_data_index = DIAG_FIELDS_TO_RAW_INDICES[field]
+                
+                # TODO: ENC
                 self.ma_unit.tx_groups[self.group_str].raw_data[raw_data_index] =\
                     None if not _is_a_float(imputed_dict[field]) else float(imputed_dict[field])
     
@@ -425,7 +427,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         raw_dict = self.get_raw_diag_data() # values are floats or None
         for field in raw_dict.iterkeys():
             i = DIAG_FIELDS_TO_RAW_INDICES[field]
-            self.ma_unit.tx_groups[self.group_str].raw_data[i] = raw_dict[field]
+            self.ma_unit.tx_groups[self.group_str].raw_data[i] = raw_dict[field]  # TODO: ENC
     
     def get_raw_diag_data(self,convert_None_to_NA_string=False):
         '''Returns a dictionary of the raw data in the table (TP,FN,FP,TN), 
@@ -602,13 +604,13 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             txt_box.blockSignals(False)
     
     def print_effects_dict_from_ma_unit(self):
-        print self.ma_unit.effects_dict
+        print self.ma_unit.get_effects_dict()
             
     def setup_table_effect_dict(self):
         '''Fill in local copy of table-effects dict w/ data from ma_unit'''
         
         print "effects dict from ma unit:"
-        self.print_effects_dict_from_ma_unit()
+        self.print_effects_dict_from_ma_unit() 
         
         for effect in BACK_CALCULATABLE_DIAGNOSTIC_EFFECTS:
             effects_dict = self.ma_unit.effects_dict[effect][self.group_str]

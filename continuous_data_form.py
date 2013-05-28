@@ -19,11 +19,11 @@
 #
 ##################################################
 
-import pdb
+#import pdb
 import sys
 
 from PyQt4.Qt import *
-from PyQt4 import QtGui
+#from PyQt4 import QtGui
 
 import meta_py_r
 import meta_globals
@@ -156,8 +156,8 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
     def _populate_effect_data(self):
         debug_msg("Entering _populate_effect",True)
         ########################################################################
-        q_effects = sorted([QString(effect_str) for \
-                             effect_str in self.ma_unit.effects_dict.keys()])
+        effect_names = self.ma_unit.get_effect_names()
+        q_effects = sorted([QString(effect_str) for effect_str in effect_names])
         self.effect_cbo_box.blockSignals(True)
         self.effect_cbo_box.addItems(q_effects)
         self.effect_cbo_box.blockSignals(False)
@@ -343,9 +343,10 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         debug_msg("Entering set_current_effect",True)
         ########################################################################
         self.block_all_signals(True)
-        effect_dict = self.ma_unit.effects_dict[self.cur_effect][self.group_str]
-        for s, txt_box in zip(['display_est', 'display_lower', 'display_upper'], \
-                              [self.effect_txt_box, self.low_txt_box, self.high_txt_box]):
+        effect_dict = self.ma_unit.get_effect_dict(self.cur_effect, self.group_str)
+        display_keys = ['display_est', 'display_lower', 'display_upper']
+        txt_boxes = [self.effect_txt_box, self.low_txt_box, self.high_txt_box]
+        for s, txt_box in zip(display_keys, txt_boxes):
             if effect_dict[s] is not None:
                 txt_box.setText(QString("%s" % round(effect_dict[s], NUM_DIGITS)))
             else:
@@ -388,7 +389,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
                 self._set_val(row_index, col, grp_raw_data[col], self.simple_table)
             # also insert the SEs, if we have them
             se_col = 3
-            se = self.ma_unit.effects_dict[self.cur_effect][self.group_str]["SE"]
+            se = self.ma_unit.get_se(self.cur_effect, self.group_str)
 #            if se is not None:
 #                se_item = QTableWidgetItem(str(se))
 #                self.simple_table.setItem(row_index, se_col, se_item)
@@ -510,8 +511,8 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
 
             ## also check if SEs have been entered directly
             ##se_index = 3
-            ##self.ma_unit.effects_dict[self.cur_effect][self.group_str]["SE"] = self._get_float(row_index, se_index)
-        
+            ##se = self._get_float(row_index, se_index)
+            ##self.ma_unit.set_SE(self.cur_effect, self.group_str, se):
     def impute_data(self):
         ''' compute what we can for each study from what has been given in the table'''
         
@@ -528,7 +529,8 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
 
             # now pass off what we have for this study to the
             # imputation routine
-            results_from_r = meta_py_r.impute_cont_data(cur_dict, self.conf_level_to_alpha())
+            alpha = self.conf_level_to_alpha()
+            results_from_r = meta_py_r.impute_cont_data(cur_dict, alpha)
 
             print "Raw results from R (imputation): %s" % results_from_r
             print results_from_r
@@ -594,8 +596,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
 
                 # update the raw data for N, mean and SD fields (this is all that is actually stored)
                 if var_index < 3:
-                    #self.ma_unit.tx_groups[group_name].raw_data[var_index] = computed_vals[var_name]
-                    self.raw_data_dict[group_name][var_index] = computed_vals[var_name]
+                    self.raw_data_dict[group_name][var_index] = computed_vals[var_name] # TODO: ENC
             
             self.try_to_update_cur_outcome()        
             
@@ -986,7 +987,7 @@ class ContinuousDataForm(QDialog, ui_continuous_data_form.Ui_ContinuousDataForm)
         debug_msg("Leaving initalize_backup_structures",False)
         
     def get_effect_names(self):
-        effects = self.ma_unit.effects_dict.keys()
+        effects = self.ma_unit.get_effect_names()
         return effects
         
     def block_all_signals(self,state):

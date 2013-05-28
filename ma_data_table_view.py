@@ -10,9 +10,11 @@
 
 import pdb
 
+print("In ma_data_table_view: Importing pyqt4 stuff")
 from PyQt4 import QtCore, QtGui
 from PyQt4.Qt import *
 
+print("In ma_data_table_view: importing forms")
 import binary_data_form
 import continuous_data_form
 import diagnostic_data_form
@@ -51,8 +53,8 @@ class MADataTable(QtGui.QTableView):
 
         self.vert_header = self.verticalHeader()
         
-        self.connect(self.vert_header, SIGNAL("sectionClicked(int)"), \
-                            self.row_header_clicked)
+        self.connect(self.vert_header, SIGNAL("sectionClicked(int)"),
+                     self.row_header_clicked)
     
         ## TODO need to add covariate indices here, as needed
         self.reverse_column_sorts = {0: False, 1: False}
@@ -69,7 +71,6 @@ class MADataTable(QtGui.QTableView):
     def _make_context_menu(self):
         def _context_menu(event):
             context_menu = QMenu(self)
-
             study_index = self.rowAt(event.y())
 
             ### if this is a dummy row, it doesn't make
@@ -137,8 +138,7 @@ class MADataTable(QtGui.QTableView):
             col_name = {1:"study name", 2:"year"}[column_clicked]
             action_sort = QAction("sort studies by %s" % col_name, self)
             
-            QObject.connect(action_sort, SIGNAL("triggered()"), \
-                        lambda : self.sort_by_col(column_clicked))
+            QObject.connect(action_sort, SIGNAL("triggered()"), lambda: self.sort_by_col(column_clicked))
             context_menu.addAction(action_sort)
 
         elif column_clicked in raw_data_columns and not data_type == "diagnostic":
@@ -152,27 +152,27 @@ class MADataTable(QtGui.QTableView):
             
             #renaming
             action_rename = QAction("rename group %s..." % corresponding_tx_group, self)
-            QObject.connect(action_rename, SIGNAL("triggered()"), \
+            QObject.connect(action_rename, SIGNAL("triggered()"),
                         lambda : self.main_gui.edit_group_name(corresponding_tx_group))
             context_menu.addAction(action_rename)
             # sorting
             col_name = self.model().headerData(column_clicked, Qt.Horizontal).toString()
             action_sort = QAction("sort studies by %s" % col_name, self)
-            QObject.connect(action_sort, SIGNAL("triggered()"), \
+            QObject.connect(action_sort, SIGNAL("triggered()"),
                         lambda : self.sort_by_col(column_clicked))
             context_menu.addAction(action_sort)
         elif column_clicked in raw_data_columns and data_type == "diagnostic":
             # sorting
             col_name = self.model().headerData(column_clicked, Qt.Horizontal).toString()
             action_sort = QAction("sort studies by %s" % col_name, self)
-            QObject.connect(action_sort, SIGNAL("triggered()"), \
+            QObject.connect(action_sort, SIGNAL("triggered()"),
                         lambda : self.sort_by_col(column_clicked))
             context_menu.addAction(action_sort)
         elif column_clicked in outcomes_columns:
             # sorting
             col_name = self.model().headerData(column_clicked, Qt.Horizontal).toString()
             action_sort = QAction("sort studies by %s" % col_name, self)
-            QObject.connect(action_sort, SIGNAL("triggered()"), \
+            QObject.connect(action_sort, SIGNAL("triggered()"),
                         lambda : self.sort_by_col(column_clicked))
             context_menu.addAction(action_sort)
         elif column_clicked in covariate_columns:
@@ -180,18 +180,18 @@ class MADataTable(QtGui.QTableView):
 
             # and for sorting (issue #142)
             action_sort = QAction("sort studies by %s" % cov.name, self)
-            QObject.connect(action_sort, SIGNAL("triggered()"), \
+            QObject.connect(action_sort, SIGNAL("triggered()"),
                         lambda : self.sort_by_col(column_clicked))
             context_menu.addAction(action_sort)
 
             action_ren = QAction("rename covariate %s" % cov.name, self)
-            QObject.connect(action_ren, SIGNAL("triggered()"), \
+            QObject.connect(action_ren, SIGNAL("triggered()"),
                         lambda : self.main_gui.rename_covariate(cov))
             context_menu.addAction(action_ren)
 
             # allow deletion of covariate
             action_del = QAction("delete covariate %s" % cov.name, self)
-            QObject.connect(action_del, SIGNAL("triggered()"), \
+            QObject.connect(action_del, SIGNAL("triggered()"),
                         lambda : self.main_gui.delete_covariate(cov))
             context_menu.addAction(action_del)
 
@@ -200,7 +200,7 @@ class MADataTable(QtGui.QTableView):
                 convert_to_str = "*factor*"
 
             action_change = QAction("create a %s copy of %s" % (convert_to_str, cov.name), self)
-            QObject.connect(action_change, SIGNAL("triggered()"), \
+            QObject.connect(action_change, SIGNAL("triggered()"),
                         lambda : self.main_gui.change_cov_type(cov))
             context_menu.addAction(action_change)
             
@@ -258,16 +258,16 @@ class MADataTable(QtGui.QTableView):
     def copy(self):
         # copy/paste: these only happen if at least one cell is selected
         selected_indexes = self.selectionModel().selectedIndexes()
-        upper_left_index, lower_right_index = (self._upper_left(selected_indexes),
-                                               self._lower_right(selected_indexes))    
+        upper_left_index  = self._upper_left(selected_indexes)
+        lower_right_index = self._lower_right(selected_indexes)  
         self.copy_contents_in_range(upper_left_index, lower_right_index,
-                                                to_clipboard=True)   
+                                    to_clipboard=True)   
                                                                                     
     def paste(self):
         # copy/paste: these only happen if at least one cell is selected
         selected_indexes = self.selectionModel().selectedIndexes()
-        upper_left_index, lower_right_index = (self._upper_left(selected_indexes),
-                                               self._lower_right(selected_indexes))
+        upper_left_index  = self._upper_left(selected_indexes)
+        lower_right_index = self._lower_right(selected_indexes)
 
         self.paste_from_clipboard(upper_left_index)     
         self._enable_analysis_menus_if_appropriate()
@@ -308,9 +308,9 @@ class MADataTable(QtGui.QTableView):
         elif data_type == "continuous":
             cur_raw_data_dict = {}
             for group_name in cur_txs:
-                cur_raw_data_dict[group_name] = list(ma_unit.tx_groups[group_name].raw_data)
+                cur_raw_data_dict[group_name] = list(ma_unit.get_raw_data_for_group(group_name))
                 
-            old_raw_data_dict = copy.deepcopy(cur_raw_data_dict)
+            #old_raw_data_dict = copy.deepcopy(cur_raw_data_dict)
             form = continuous_data_form.ContinuousDataForm(ma_unit, cur_txs, cur_group_str, cur_effect, parent=self)
             if form.exec_():
                 # update the model; push this event onto the stack
@@ -344,10 +344,11 @@ class MADataTable(QtGui.QTableView):
         if metric_changed:
             new_metric = self.model().current_effect
             
-
-        cell_edit = CommandCellEdit(self, index, old_val, new_val, added_study=study_added,\
-                                        metric_changed=metric_changed, old_metric=old_metric,\
-                                        new_metric=new_metric)
+        cell_edit = CommandCellEdit(self, index, old_val, new_val,
+                                    added_study=study_added,
+                                    metric_changed=metric_changed,
+                                    old_metric=old_metric,
+                                    new_metric=new_metric)
         self.undoStack.push(cell_edit)
 
     def change_metric_if_appropriate(self):
@@ -798,7 +799,7 @@ class CommandPaste(QUndoCommand):
     def undo(self):
         if self.added_study is not None:
             self.ma_data_table_view.model().remove_study(self.added_study)
-        self.ma_data_table_view.main_gui.set_model(self.original_dataset,\
+        self.ma_data_table_view.main_gui.set_model(self.original_dataset,
                                  state_dict=self.original_state_dict)
 
 
@@ -851,13 +852,15 @@ class CommandEditRawData(QUndoCommand):
     
     def undo(self):
         for group_name in self.group_names:
-            self.ma_unit.tx_groups[group_name].raw_data = self.old_raw_data_dict[group_name]
+            raw_data = self.old_raw_data_dict[group_name]
+            self.ma_unit.set_raw_data_for_group(group_name, raw_data)
         self.model.reset()
         self.ma_data_table_view.emit(SIGNAL("dataDirtied()"))
 
     def redo(self):
         for group_name in self.group_names:
-            self.ma_unit.tx_groups[group_name].raw_data = self.new_raw_data_dict[group_name]
+            raw_data = self.new_raw_data_dict[group_name]
+            self.ma_unit.set_raw_data_for_group(group_name, raw_data)
         self.model.reset()
         self.ma_data_table_view.emit(SIGNAL("dataDirtied()"))
 
@@ -882,7 +885,6 @@ class StudyDelegate(QItemDelegate):
 
     def __init__(self, parent=None):
         super(StudyDelegate, self).__init__(parent)
-
 
     def createEditor(self, parent, *args):
         le = QLineEdit(parent)

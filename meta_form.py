@@ -24,14 +24,19 @@ import copy
 #
 # hand-rolled modules
 #
+print("Importing ui_meta")
 import ui_meta
+print("yay, imported ui_meta")
 from ma_data_table_view import StudyDelegate
+print("importing ma_data_table_view")
 import ma_data_table_view
 from ma_data_table_model import *
 #import meta_globals
 from meta_globals import *
+print("Importing ma_dataset")
 import ma_dataset
 from ma_dataset import *
+print("Importing meta_py_r")
 import meta_py_r
 
 #
@@ -49,6 +54,7 @@ import change_cov_type_form
 import network_view
 import start_up_dialog
 import create_new_project_dialog
+from conf_level_dialog import ChangeConfLevelDlg
 
 # for the help
 import webbrowser
@@ -58,16 +64,17 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     def __init__(self, parent=None):
         #
         # We follow the advice given by Mark Summerfield in his Python QT book: 
-        # Namely, we use multiple inheritence to gain access to the ui. We take
+        # Namely, we use multiple inheritance to gain access to the ui. We take
         # this approach throughout OpenMeta.
         #
         super(MetaForm, self).__init__(parent)
         self.setupUi(self)
         
         meta_py_r.set_global_conf_level(meta_globals.DEFAULT_CONF_LEVEL)
-        # SET TO FALSE UNTIL PROPER BEHAVIOR IS REACHED FOR PRODUCTION PURPOSES
-        self.global_ci_spinbox.setVisible(False)
-        self.global_conf_level_lbl.setVisible(False)
+        self.cl_label=QLabel("confidence level: {:.1%}".format(meta_py_r.get_global_conf_level()/100.0))
+        self.cl_label.setAlignment(Qt.AlignRight)
+        self.statusbar.addWidget(self.cl_label,1)
+        
 
         # TODO should also allow a (path to a) dataset
         # to be given on the console.
@@ -84,12 +91,12 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
         # the nav_lbl text corresponds to the currently selected
         # 'dimension', e.g., outcome or treatment. New points
-        # can then be added to this dimension, or it can be travelled
+        # can then be added to this dimension, or it can be traveled
         # along using the horizontal nav arrows (the vertical arrows
         # navigate along the *dimensions*)
         self.dimensions =["outcome", "follow-up", "group"]
         self.cur_dimension_index = 0
-        self.cur_dimension = "outcome"
+        ###self.cur_dimension = "outcome"             DELETE
         self.update_dimension()
         self._setup_connections()
         self.tableView.setSelectionMode(QTableView.ContiguousSelection)
@@ -102,18 +109,18 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.tableView.resizeColumnsToContents()
     
 
-        self.out_path = None
-        self.metric_menu_is_set_for = None
+        self.out_path = None                              # path to output file
+        self.metric_menu_is_set_for = None  # BINARY, CONTINUOUS, or DIAGNOSTIC
         self.raise_()
 
         # by default, disable meta-regression (until we
         # have covariates)
         self.action_meta_regression.setEnabled(False)
 
-        ####
-        # this (toy-data) is almost certainly antiquated 
-        # and should be removed or updated
-        ####
+        ####################################################
+        # this (toy-data) is almost certainly antiquated   #
+        # and should be removed or updated                 #
+        ####################################################
         if len(sys.argv)>1 and sys.argv[-1]=="--toy-data":
             # toy data for now
             data_model = _gen_some_data()
@@ -129,7 +136,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             # show the welcome dialog 
             self.load_user_prefs()
             if self.user_prefs["splash"]:
-                start_up_window =  start_up_dialog.StartUp(parent=self, \
+                start_up_window = start_up_dialog.StartUp(parent=self,
                             recent_datasets=self.user_prefs['recent datasets'])
                 
                 ###
@@ -139,11 +146,12 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
                 ## arg -- this won't work!
                 start_up_window.setFocus()
-                #start_up_window.dataset_name_le.setFocus()  ######## DELETE LATER? OBSOLETE?
                 start_up_window.raise_()
                 start_up_window.activateWindow()
       
             self.populate_open_recent_menu()
+        
+        
             
 
     def closeEvent(self, event):
@@ -262,12 +270,12 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         _setup_connections (with menu_actiosn set to False) should subsequently be invoked. 
         '''
         QObject.disconnect(self.tableView.model(), SIGNAL("pyCellContentChanged(PyQt_PyObject, PyQt_PyObject, PyQt_PyObject, PyQt_PyObject)"),
-                                                                self.tableView.cell_content_changed)
+                           self.tableView.cell_content_changed)
 
         QObject.disconnect(self.tableView.model(), SIGNAL("outcomeChanged()"),
-                                                                self.tableView.displayed_ma_changed)
+                           self.tableView.displayed_ma_changed)
         QObject.disconnect(self.tableView.model(), SIGNAL("followUpChanged()"),
-                                                                self.tableView.displayed_ma_changed)
+                           self.tableView.displayed_ma_changed)
                                                                  
         QObject.disconnect(self.tableView, SIGNAL("dataDirtied()"), self.data_dirtied)
 
@@ -298,12 +306,17 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         dataset_path = QObject.sender(self).text()
         self.open(file_path=dataset_path)
         
-    def _change_global_ci(self,confidence_level):
+    def _change_global_ci(self):
         print("Changing global confidence level:")
-        print("   Previous Global Confidence level was: %f" % meta_py_r.get_global_conf_level())
-        meta_py_r.set_global_conf_level(confidence_level)
-        #meta_py_r.get_global_conf_level
-        print("   Global Confidence level is now: %f" % meta_py_r.get_global_conf_level())
+        prev_conf_level = meta_py_r.get_global_conf_level()
+        print("   Previous Global Confidence level was: %f" % prev_conf_level)
+
+        dialog = ChangeConfLevelDlg(prev_conf_level, self)
+        if dialog.exec_():
+            meta_py_r.set_global_conf_level(dialog.get_value())
+            self.cl_label.setText("confidence level: {:.1%}".format(meta_py_r.get_global_conf_level()/100.0))
+            self.model.reset()
+            print("   Global Confidence level is now: %f" % meta_py_r.get_global_conf_level())
 
     def _setup_connections(self, menu_actions=True):
         ''' Signals & slots '''
@@ -313,7 +326,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         QObject.connect(self.tableView.model(), SIGNAL("outcomeChanged()"), self.tableView.displayed_ma_changed)
         QObject.connect(self.tableView.model(), SIGNAL("followUpChanged()"), self.tableView.displayed_ma_changed)
         
-        QObject.connect(self.global_ci_spinbox, SIGNAL("valueChanged(double)"), self._change_global_ci)
+        #QObject.connect(self.global_ci_spinbox, SIGNAL("valueChanged(double)"), self._change_global_ci)
                                                                 
         ###
         # this is not ideal, but I couldn't get the rowsInserted methods working. 
@@ -365,6 +378,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             QObject.connect(self.action_subgroup_ma, SIGNAL("triggered()"), self.meta_subgroup_get_cov)
 
             QObject.connect(self.action_open_help, SIGNAL("triggered()"), self.show_help)
+            QObject.connect(self.action_change_conf_level, SIGNAL("triggered()"), self._change_global_ci)
 
     def go(self):
         form = None
@@ -576,7 +590,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     def add_metric_action(self, metric, menu):
         metric_names = meta_globals.ALL_METRIC_NAMES
         
-        #metric_action = QAction(QString(metric), self)
         metric_action = QAction(QString(metric+": "+metric_names[metric]), self)
         try:
             if str(metric) in metric_names:
@@ -586,9 +599,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         except:
             print("Could not set metric name tooltip")
         metric_action.setCheckable(True)
-        QObject.connect(metric_action, \
-                        SIGNAL("toggled(bool)"),\
-                        lambda: self.metric_selected(metric, menu))
+        QObject.connect(metric_action,
+                        SIGNAL("toggled(bool)"),
+                        lambda: self.metric_selected(metric, menu)
+                        )
         menu.addAction(metric_action)     
         return metric_action
     
@@ -710,8 +724,9 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         elif self.cur_dimension == "outcome" and startup_outcome: # For dealing with outcomes from the startup form
             new_outcome_name = unicode(startup_outcome['name'].toUtf8(), "utf-8")
             new_outcome_type = str(startup_outcome['data_type'])
+            new_outcome_subtype = startup_outcome['sub_type']
             print 'Startup Outcome',startup_outcome
-            redo_f = lambda: self._add_new_outcome(new_outcome_name, new_outcome_type)
+            redo_f = lambda: self._add_new_outcome(new_outcome_name, new_outcome_type, new_outcome_subtype)
             prev_outcome = str(self.model.current_outcome)
             undo_f = lambda: self._undo_add_new_outcome(new_outcome_name, prev_outcome)
         elif self.cur_dimension == "group":
@@ -763,8 +778,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # (see Issue 4: http://github.com/bwallace/OpenMeta-analyst-/issues#issue/4)
         self.display_outcome(previously_displayed_outcome)
     
-    def _add_new_outcome(self, outcome_name, outcome_type):
-        self.model.add_new_outcome(outcome_name, outcome_type)
+    def _add_new_outcome(self, outcome_name, outcome_type, sub_type=None):
+        self.model.add_new_outcome(outcome_name, outcome_type, sub_type=sub_type)
         self.display_outcome(outcome_name)
         
     def _add_new_follow_up_for_cur_outcome(self, follow_up_lbl):
@@ -974,10 +989,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
         prev_dataset = self.model.dataset.copy()
         
-        undo_f = lambda : self.undo_set_model(prev_out_path, prev_state_dict, \
-                                                prev_dataset)
-        redo_f = lambda : self.set_model(data_model, state_dict, \
-                                            check_for_appropriate_metric=True)
+        undo_f = lambda: self.undo_set_model(prev_out_path, prev_state_dict,
+                                             prev_dataset)
+        redo_f = lambda: self.set_model(data_model, state_dict,
+                                        check_for_appropriate_metric=True)
         
         open_command = CommandGenericDo(redo_f, undo_f)
         self.tableView.undoStack.push(open_command)
@@ -995,14 +1010,12 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         delete_command = CommandGenericDo(redo_f, undo_f)
         self.tableView.undoStack.push(delete_command)
     
-
     def change_cov_type(self, covariate):
         cur_dataset = copy.deepcopy(self.model.dataset)
         # keep the current study order, because we're going to sort the studies
         # on the change_cov_form but we want to revert to the ordering
         # they came in with when we're done.
-        original_study_order = \
-                [study.name for study in self.model.dataset.studies]
+        original_study_order = [study.name for study in self.model.dataset.studies]
 
         change_type_form = \
             change_cov_type_form.ChangeCovTypeForm(cur_dataset, covariate, parent=self)
@@ -1014,7 +1027,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                     cmp=modified_dataset.cmp_studies(compare_by="ordered_list",\
                                         ordered_list=original_study_order))
             
-
             ### use the same state dict as before.
             old_state_dict = self.tableView.model().get_stateful_dict()
             new_state_dict = copy.deepcopy(old_state_dict)
@@ -1267,8 +1279,11 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             print "failed to write preferences data!"
         
     def _default_user_prefs(self):       
-        return {"splash":True, "digits":3, "recent datasets":[], 
-                    "method_params":{}}
+        return {"splash":True,
+                "digits":3,
+                "recent datasets":[], 
+                "method_params":{},
+                }
         
 class CommandGenericDo(QUndoCommand):
     '''
@@ -1455,4 +1470,6 @@ def start():
 #
 if __name__ == "__main__":
     start()
+
+
 

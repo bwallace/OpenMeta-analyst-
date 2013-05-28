@@ -70,6 +70,7 @@ class CreateNewProjectDlg(QDialog, ui_create_new_projectdlg.Ui_newprojectdialog)
         
         self.summary['arms'] = None
         self.summary['data_type'] = None
+        self.summary['sub_type'] = None
         if self.onearm_proportion_Button.isChecked():
             self.summary['arms'] = 'one'
             self.summary['data_type'] = 'Binary'
@@ -81,7 +82,8 @@ class CreateNewProjectDlg(QDialog, ui_create_new_projectdlg.Ui_newprojectdialog)
             self.summary['data_type'] = 'Continuous'
         if self.onearm_generic_effect_size_Button.isChecked():
             self.summary['arms'] = 'one'
-            self.summary['data_type'] = 'Continuous'   
+            self.summary['data_type'] = 'Continuous'
+            self.summary['sub_type'] = 'generic_effect' # TODO: Should disable_two-arm metrics for generic effect
     
         if self.twoarm_proportions_Button.isChecked(): 
             self.summary['arms'] = 'two'
@@ -100,6 +102,7 @@ class CreateNewProjectDlg(QDialog, ui_create_new_projectdlg.Ui_newprojectdialog)
         # Summary results:
         #  name: Outcome name
         #  data_type: Binary, Continuous, or Diagnostic
+        #  sub_type: more specific than just data_type
         #  arms: one or two
         # 
         return self.summary

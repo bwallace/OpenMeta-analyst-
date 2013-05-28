@@ -1,11 +1,14 @@
-from PyQt4.Qt import *
-from meta_globals import *
+#from PyQt4.Qt import *
+from PyQt4.Qt import QDialog, QString, QVariant
+#from meta_globals import *
+from meta_globals import DIAGNOSTIC
 import ui_new_group
 import ui_new_follow_up
 import ui_new_outcome
 import ui_new_covariate
 import ui_new_study
-import pdb
+
+#import pdb
 
 class AddNewGroupForm(QDialog, ui_new_group.Ui_new_group_dialog):
     
