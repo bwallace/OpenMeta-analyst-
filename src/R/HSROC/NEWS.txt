@@ -1,0 +1,144 @@
+		#===================================================
+		#
+		#		2012-03-26 (Version 2.0.5 submitted to Cran)
+		#
+		#===================================================
+--- HSROC function display a warning if there are chances that the maximum memory allocation be attained.  
+
+
+
+		#===================================================
+		#
+		#		2012-03-21 (Version 2.0.0 not published)
+		#
+		#===================================================
+--- HSROC function now writes every posterior estimate in binary files rather than text files
+--- HSROCSummary function reads binary files created by HSROC to calculate estimates rather than the old text files provided by HSROC
+
+
+
+		#===================================================
+		#
+		#		2012-03-05 (Version 1.5.6 not published)
+		#
+		#===================================================
+
+--- Added error messages to break the Gibbs sampler loop once NaN values are being generated.
+--- Attempt at fixing bugs regarding the posterior estimate of beta parameter generating some Nan values at "random time" during simulation
+--- In the creation of the SROC curve, the program was going through 90% of the total range of the credible interval of THETA and at each point calculating S and C.  The range has now being increased to 95%
+
+		#===================================================
+		#
+		#		2012-02-22 (Version 1.5.5 not published)
+		#
+		#===================================================
+
+--- Attempt at fixing bugs regarding the program still running while NaN values are being generated
+
+		#===================================================
+		#
+		#		2012-02-07 (Version 1.5.0 not published)
+		#
+		#===================================================
+
+--- Implemented the Gibbs sampler in C++
+--- Remove a feature where the same cutoff could be used for all studies (however, most of the code is still there and should be removed)
+
+		#===================================================
+		#
+		#		2011-10-19 (Version 1.1.0)
+		#
+		#===================================================
+
+--- Renamed the "i" argument of the HSROCSummary function to a more meaningful one : "iter.keep"
+
+--- Changed the default values of arguments prior_LAMBDA, prior_THETA and prior_beta of function HSROC to reflect the narrower priors used in the paper.
+
+--- Changed the TP, FP, FN, TN labels of the In.house and MRI dataset to ++, +-, -+, --
+
+--- Fixed the trace and density plot titles for reference standard parameters.  
+
+--- Lowered the number of studies of the In.house dataset from 12 to 11 by removing the Parandaman study
+
+
+
+		#===================================================
+		#
+		#		2011-07-07 (version 1.0.7 not published)
+		#
+		#===================================================
+
+--- Brought correction to the Metropolis-Hasting algorithm (beta parameter).  
+
+--- Brought correction to the truncation of the full conditional distribution of beta.
+
+
+
+		#===================================================
+		#
+		#		2011-06-30 (version 1.0.65 not published)
+		#
+		#===================================================
+
+
+-- Changed the range of the latent variable r_ij to depend on LAMBDA and beta
+
+
+
+		#===================================================
+		#
+		#		2011-06-29 (version 1.0.6 not published)
+		#
+		#===================================================
+
+
+--- Changed range of the latent variable r_ij
+
+
+
+
+		#===================================================
+		#
+		#		2011-06-27 (version 1.0.5 not published)
+		#
+		#===================================================
+
+
+--- It is now possible to bound the alpha i and theta i when creating a dataset with the 'simdata' function through the range.L and range.T arguments.
+
+--- Fixed a bug regarding the multiple chain trace plots.  
+
+
+		#===================================================
+		#
+		#		2011-06-20 (version 1.0.11 not published)
+		#
+		#===================================================
+
+
+
+--- Changed range of the latent variable r_ij
+
+
+
+		#===================================================
+		#
+		#		2011-06-17 (version 1.0.1 not published)
+		#
+		#===================================================
+
+
+
+--- Added posterior predictive values of sensitivity and specificity of a new study that has not yet taken place.
+
+--- Added the possibility to put prior on sigma (noted "sd"), sigma_squared (noted "v") or 1/sigma_squared (precision, noted "p") for both sigma_alpha and sigma_theta.    
+
+--- Fixed the following : If the HSROC function crashes before the requested number of iterations, the last iteration estimates are being saved in the "REstarting_values", "REstarting_values2", ... files, such that the function can be re-run from where it crashes using the "first.run=FALSE" argument.
+
+
+
+
+
+
+
+

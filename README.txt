@@ -12,6 +12,8 @@ Otherwise, you'll need to install the necessary R packages. To this end, you'll 
 
     > R CMD BUILD openmetar
     > R CMD INSTALL openmetar
+    
+To simplify this, you can just call ./reinstallopenmetar in the R directory which does these two operations
 
 On this branch, we have moved to R 2.15!
 
@@ -26,6 +28,6 @@ At the Python console.
 
 That should be all you need. Once everything is setup, you can launch the program by typing:
 
-    > python meta_form.py
+    > python launch.py
 
 At the console. This should fire up the GUI.

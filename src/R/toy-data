@@ -1,0 +1,1 @@
+tmp_obj <- new('BinaryData', g1O1=c(30, 20, 10), g1O2=c(270, 180, 90), g2O1=c(35, 25, 15), g2O2=c(265, 175, 85), studyNames=c('lau', 'wallace', 'trik'))
