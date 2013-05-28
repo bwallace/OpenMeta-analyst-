@@ -430,4 +430,4 @@ class Ui_MainWindow(object):
         self.action_change_conf_level.setText(_translate("MainWindow", "change confidence level", None))
         self.action_import_csv.setText(_translate("MainWindow", "import CSV", None))
 
-import icons_rc
+import forms.icons_rc

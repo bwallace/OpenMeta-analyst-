@@ -22,7 +22,7 @@ print "success!"
 import copy
 
 ## hand-rolled modules
-import forms.ui_meta
+import ui_meta
 import meta_py_r
 import ma_data_table_view
 import ma_data_table_model
@@ -72,7 +72,7 @@ class ImportProgress(QDialog, forms.ui_running.Ui_running):
     
 ###############################################################################
 
-class MetaForm(QtGui.QMainWindow, forms.ui_meta.Ui_MainWindow):
+class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
     def __init__(self, parent=None):
         #

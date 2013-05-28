@@ -14,7 +14,7 @@ from PyQt4.Qt import *
 import pdb
 import os
 import sys
-import forms.ui_results_window
+import ui_results_window
 import edit_forest_plot_form
 import meta_py_r
 #import shutil
@@ -29,7 +29,7 @@ SCALE_P = .5 # percent images are to be scaled
 SIDE_BY_SIDE_FOREST_PLOTS = ("NLR and PLR Forest Plot", "Sensitivity and Specificity")
 ROW_HEIGHT = 15 # by trial-and-error; seems to work very well
 
-class ResultsWindow(QMainWindow, forms.ui_results_window.Ui_ResultsWindow):
+class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
     def __init__(self, results, parent=None):
 
