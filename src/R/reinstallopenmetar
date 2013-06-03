@@ -1,2 +1,2 @@
-R CMD BUILD openmetar
-sudo R CMD INSTALL openmetar
+R CMD build openmetar
+sudo R CMD INSTALL openmetar_1.0.tar.gz

@@ -744,7 +744,6 @@ def run_binary_ma(function_name, params, res_name="result", bin_data_name="tmp_o
     r_str = "%s<-%s(%s, %s)" % (res_name, function_name, bin_data_name,\
                                     params_df.r_repr())
     print "\n\n(run_binary_ma): executing:\n %s\n" % r_str
-
     ro.r(r_str)
     result = ro.r("%s" % res_name)
     return parse_out_results(result)
@@ -781,8 +780,6 @@ def run_diagnostic_multi(function_names, list_of_params, res_name="result", diag
     result = ro.r("multiple.diagnostic(f.names, list.of.params, %s)" % diag_data_name)
 
     print("Got here is run diagnostic multi w/o error")
-    #pyqtRemoveInputHook()
-    #pdb.set_trace()
     return parse_out_results(result)
 
 def run_diagnostic_ma(function_name, params, res_name="result", diag_data_name="tmp_obj"):
@@ -1296,3 +1293,5 @@ def generic_convert_scale(x, metric_name, data_type, convert_to="display.scale")
         return transformed_ls[0]
     return transformed_ls
     
+def turn_off_R_graphics():
+    ro.r("graphics.off()")

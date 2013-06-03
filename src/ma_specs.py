@@ -181,6 +181,7 @@ class MA_Specs(QDialog, forms.ui_ma_specs.Ui_Dialog):
             meta_py_r.ma_dataset_to_simple_binary_robj(self.model)
             if self.meta_f_str is None:
                 result = meta_py_r.run_binary_ma(self.current_method, self.current_param_vals)
+                #pass
             else:
                 result = meta_py_r.run_meta_method(self.meta_f_str, self.current_method, self.current_param_vals)
         elif self.data_type == "continuous":
@@ -258,6 +259,8 @@ class MA_Specs(QDialog, forms.ui_ma_specs.Ui_Dialog):
         current_dict[self.current_method] = self.current_param_vals
         self.parent().update_user_prefs("method_params", current_dict)
         self.parent().analysis(result)
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
         self.accept()
 
     def enable_diagnostic_fields(self):

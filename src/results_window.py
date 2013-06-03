@@ -101,6 +101,11 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         # reset the scene
         self.graphics_view.setScene(self.scene)
         self.graphics_view.ensureVisible(QRectF(0,0,0,0))
+        
+        # Experimental
+        print("About to turn off R graphics")
+        #meta_py_r.turn_off_R_graphics()
+        print("R graphics turned off")
 
 
     def f(self):

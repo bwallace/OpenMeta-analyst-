@@ -718,8 +718,9 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             try:
                 new_outcome_subtype = startup_outcome['sub_type']
             except:
-                pyqtRemoveInputHook()
-                pdb.set_trace()
+                print("ERROR: No outcome subtype detected.")
+                #pyqtRemoveInputHook()
+                #pdb.set_trace()
             print 'Startup Outcome',startup_outcome
             redo_f = lambda: self._add_new_outcome(new_outcome_name, new_outcome_type, new_outcome_subtype)
             prev_outcome = str(self.model.current_outcome)
@@ -1351,7 +1352,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                     covariate_names=covariate_names,
                     covariate_types=covariate_types)
             self.tableView.undoStack.push(importcsv_command)
-        
+            
         
         
 #class CommandGenericDo(QUndoCommand):
