@@ -298,21 +298,11 @@ class DatasetModel(QAbstractTableModel):
                         conv_to_disp_scale = lambda x: meta_py_r.continuous_convert_scale(x, eff, convert_to="display.scale")
                     
                     if current_data_type == CONTINUOUS and outcome_subtype == 'generic_effect':
-                        est_and_se = (ma_unit.get_estimate(eff, grp),
-                                      ma_unit.get_se(eff, grp))
-                        c_val = est_and_se[outcome_index] # calc scale value
+                        d_est_and_se = ma_unit.get_display_effect_and_se(eff, grp, conv_to_disp_scale)
+                        outcome_val = d_est_and_se[outcome_index]
                     else: # normal case of no outcome subtype
-                        est_and_ci = ma_unit.get_effect_and_ci(eff, grp)
-                        c_val = est_and_ci[outcome_index]
                         d_est_and_ci = ma_unit.get_display_effect_and_ci(eff, grp, conv_to_disp_scale)
                         outcome_val = d_est_and_ci[outcome_index]
-                        
-                    #outcome_val = conv_to_disp_scale(x)
-                        
-#                    if current_data_type == BINARY:
-#                        outcome_val = meta_py_r.binary_convert_scale(c_val, eff, convert_to="display.scale")
-#                    elif current_data_type == CONTINUOUS:
-#                        outcome_val = meta_py_r.continuous_convert_scale(c_val, eff, convert_to="display.scale")
                     
                     if outcome_val is None:
                         return QVariant("")
