@@ -45,10 +45,10 @@ sys.path = sys.path[:4]
 # 8/21/12 -- TEMPORARY -- need to add this back!
 #print "\n\nok, mac user -- I'm setting your R path temporarily (this console only).\n\ns"
 os.environ["R"] = \
-    os.path.join(DIR_NAME, "R_dist", "2.15", "bin")
+    os.path.join(DIR_NAME, "R_dist", "3.0.1", "bin")
 
 os.environ["R_HOME"] = \
-    os.path.join(DIR_NAME, "R_dist", "2.15")
+    os.path.join(DIR_NAME, "R_dist", "3.0.1")
     
 print("Setting PANGO_RC file path")
 pangorc_path = os.path.join(DIR_NAME, "pangorc")
