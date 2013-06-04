@@ -299,6 +299,7 @@ class DatasetModel(QAbstractTableModel):
                     
                     if current_data_type == CONTINUOUS and outcome_subtype == 'generic_effect':
                         d_est_and_se = ma_unit.get_display_effect_and_se(eff, grp, conv_to_disp_scale)
+                        print("DEST AND SE: %s" % str(d_est_and_se))
                         outcome_val = d_est_and_se[outcome_index]
                     else: # normal case of no outcome subtype
                         d_est_and_ci = ma_unit.get_display_effect_and_ci(eff, grp, conv_to_disp_scale)
@@ -634,10 +635,12 @@ class DatasetModel(QAbstractTableModel):
                             if current_data_type == BINARY:
                                 calc_scale_val = meta_py_r.binary_convert_scale(display_scale_val,
                                                             self.current_effect, convert_to="calc.scale")
+                                conv_to_disp_scale = lambda x: meta_py_r.binary_convert_scale(x, self.current_effect, convert_to="display.scale")
                             else:
                                 ## assuming continuous here
                                 calc_scale_val = meta_py_r.continuous_convert_scale(display_scale_val,
                                                             self.current_effect, convert_to="calc.scale")
+                                conv_to_disp_scale = lambda x: meta_py_r.continuous_convert_scale(x, self.current_effect, convert_to="display.scale")
                                                         
                         ma_unit = self.get_current_ma_unit_for_study(index.row())
         
@@ -668,6 +671,7 @@ class DatasetModel(QAbstractTableModel):
                             else:
                                 se = None
                             ma_unit.set_SE(self.current_effect, group_str, se)
+                        ma_unit.calculate_display_effect_and_ci(self.current_effect, group_str, conv_to_disp_scale)
                                 
                     else: #outcome is diagnostic
                         ma_unit = self.get_current_ma_unit_for_study(index.row())
