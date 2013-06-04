@@ -154,6 +154,13 @@ OK_COLOR = QColor("black")
 DEFAULT_GROUP_NAMES = ["Grp A", "Grp B"]  # old: DEFAULT_GROUP_NAMES = ["tx A", "tx B"]
 
 
+def equal_close_enough(x,y):
+    THRESHOLD = 1e-4
+    if abs(x-y) < THRESHOLD:
+        return True
+    else:
+        return False
+
 ### CONFIDENCE LEVEL STUFF #####
 # Confidence level 
 DEFAULT_CONF_LEVEL = 95.0    # (normal 95% CI)

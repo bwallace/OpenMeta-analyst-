@@ -94,12 +94,19 @@ except:
 #        return res
 #    return _RfunctionExecuter
 
-#@RfunctionExecuter
+def RfunctionCaller(function):
+    def _RfunctionCaller(*args, **kw):
+        print("Using rpy2 interface to R to call %s" % function.func_name)
+        res = function(*args, **kw)
+        return res
+    return _RfunctionCaller
+
+@RfunctionCaller
 def reset_Rs_working_dir():
     print "resetting "
     ro.r("setwd('%s')" % BASE_PATH) 
 
-#@RfunctionExecuter
+@RfunctionCaller
 def impute_diag_data(diag_data_dict):
     print "computing 2x2 table via R..."
     print diag_data_dict
@@ -122,7 +129,7 @@ def rescale_effect_and_ci_conf_level(data_dict):
     
     return R_fn_with_dataframe_arg(data_dict, "rescale.effect.and.ci.conf.level")
 
-#@RfunctionExecuter
+@RfunctionCaller
 def R_fn_with_dataframe_arg(data_dict, R_fn_name):
     '''Calls an R function which takes a dataframe as its only argument w/
     parameters within. Returns a python dictionary. Assumes R function returns
@@ -141,7 +148,7 @@ def R_fn_with_dataframe_arg(data_dict, R_fn_name):
     
     return _grlist_to_pydict(R_result)
 
-#@RfunctionExecuter
+@RfunctionCaller
 def impute_bin_data(bin_data_dict):
     remove_value(None, bin_data_dict)
 
@@ -150,7 +157,7 @@ def impute_bin_data(bin_data_dict):
     
     return _grlist_to_pydict(two_by_two)
 
-#@RfunctionExecuter
+@RfunctionCaller
 def back_calc_cont_data(group1_data, group2_data, effect_data, conf_level):
     remove_value(None, group1_data)
     remove_value(None, group2_data)
@@ -253,7 +260,7 @@ def _grlist_to_pydict(r_ls, recurse=True):
     return d
 
 # This should be renamed as it is not doing back-calculation from effects
-#@RfunctionExecuter
+@RfunctionCaller
 def impute_cont_data(cont_data_dict, alpha):
     print "computing continuous data via R..."
     
@@ -278,7 +285,7 @@ def impute_cont_data(cont_data_dict, alpha):
     
     return results
 
-#@RfunctionExecuter
+@RfunctionCaller
 def impute_pre_post_cont_data(cont_data_dict, correlation, alpha):
     if len(cont_data_dict.items()) == 0:
         return {"succeeded":False}
@@ -296,7 +303,7 @@ def impute_pre_post_cont_data(cont_data_dict, correlation, alpha):
     return pythonized_data
 
 ##################### DEALING WITH CONFIDENCE LEVEL IN R #######################
-#@RfunctionExecuter
+@RfunctionCaller
 def get_mult_from_r(confidence_level):
     alpha = 1-float(confidence_level)/100.0
     r_str = "abs(qnorm(%s/2))" % str(alpha)
@@ -304,13 +311,13 @@ def get_mult_from_r(confidence_level):
     return mult[0]
 ################################################################################
 
-#@RfunctionExecuter
+@RfunctionCaller
 def none_to_null(x):
     if x is None:
         return ro.r['as.null']()
     return x
 
-#@RfunctionExecuter
+@RfunctionCaller
 def evaluate_in_r(r_str):
     res = ro.r(r_str)
     return str(res)
@@ -337,7 +344,7 @@ def get_params(method_name):
             )
 
      
-#@RfunctionExecuter
+@RfunctionCaller
 def get_pretty_names_and_descriptions_for_params(method_name, param_list):
     method_list = ro.r("lsf.str('package:openmetar')")
     pretty_names_f = "%s.pretty.names" % method_name
@@ -361,7 +368,7 @@ def get_pretty_names_and_descriptions_for_params(method_name, param_list):
     return params_d
 
 
-#@RfunctionExecuter
+@RfunctionCaller
 def get_available_methods(for_data_type=None, data_obj_name=None, metric=None):
     '''
     Returns a list of methods available in OpenMeta for the particular data_type
@@ -416,7 +423,7 @@ def get_available_methods(for_data_type=None, data_obj_name=None, metric=None):
                     feasible_methods[method] = method
     return feasible_methods
 
-#@RfunctionExecuter
+@RfunctionCaller
 def get_method_description(method_name):
     pretty_names_f = "%s.pretty.names" % method_name
     method_list = ro.r("lsf.str('package:openmetar')")
@@ -433,7 +440,7 @@ def ma_dataset_to_binary_robj(table_model, var_name):
     pass
 
 
-#@RfunctionExecuter
+@RfunctionCaller
 def draw_network(edge_list, unconnected_vertices, network_path = '"./r_tmp/network.png"'):
     '''
     This draws the parametric network specified by edge_list.
@@ -460,7 +467,7 @@ def draw_network(edge_list, unconnected_vertices, network_path = '"./r_tmp/netwo
     ro.r("dev.off()")
     return "r_tmp/network.png"
     
-#@RfunctionExecuter
+@RfunctionCaller
 def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj",
                                          covs_to_include=None, studies=None):
     r_str = None
@@ -532,7 +539,7 @@ def _get_str(M, col_index, reverse=True):
     return ", ".join(_to_strs(x))
     
 
-#@RfunctionExecuter
+@RfunctionCaller
 def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj", 
                                      include_raw_data=True, covs_to_include=None,
                                      studies=None):
@@ -641,7 +648,7 @@ def _sanitize_for_R(a_str):
     return a_str
 
 
-#@RfunctionExecuter
+@RfunctionCaller
 def ma_dataset_to_simple_diagnostic_robj(table_model, var_name="tmp_obj",
                                          metric="Sens", covs_to_include=None,
                                          effects_on_disp_scale=False, 
@@ -755,7 +762,7 @@ def cov_to_str(cov, study_ids, dataset, \
     return cov_str
         
 
-#@RfunctionExecuter
+@RfunctionCaller
 def run_continuous_ma(function_name, params, res_name = "result", cont_data_name="tmp_obj"):
     params_df = ro.r['data.frame'](**params)
     r_str = "%s<-%s(%s, %s)" % (res_name, function_name, cont_data_name, params_df.r_repr())
@@ -765,7 +772,7 @@ def run_continuous_ma(function_name, params, res_name = "result", cont_data_name
     return parse_out_results(result)
 
 
-#@RfunctionExecuter
+@RfunctionCaller
 def run_binary_ma(function_name, params, res_name="result", bin_data_name="tmp_obj"):
     params_df = ro.r['data.frame'](**params)
     r_str = "%s<-%s(%s, %s)" % (res_name, function_name, bin_data_name,\
@@ -801,7 +808,7 @@ def _to_R_params(params):
     return params_str
 
 
-#@RfunctionExecuter
+@RfunctionCaller
 def run_diagnostic_multi(function_names, list_of_params, res_name="result", diag_data_name="tmp_obj"):
     r_params_str = "list(%s)" % ",".join([_to_R_params(p) for p in list_of_params])
     ro.r("list.of.params <- %s" % r_params_str)
@@ -812,7 +819,7 @@ def run_diagnostic_multi(function_names, list_of_params, res_name="result", diag
     return parse_out_results(result)
 
 
-#@RfunctionExecuter
+@RfunctionCaller
 def run_diagnostic_ma(function_name, params, res_name="result", diag_data_name="tmp_obj"):
     params_str = _to_R_params(params)
 
@@ -825,7 +832,7 @@ def run_diagnostic_ma(function_name, params, res_name="result", diag_data_name="
     return parse_out_results(result)
 
 
-#@RfunctionExecuter
+@RfunctionCaller
 def load_vars_for_plot(params_path, return_params_dict=False):
     ''' 
     loads the three necessary (for plot generation) variables
@@ -847,18 +854,18 @@ def load_vars_for_plot(params_path, return_params_dict=False):
     return True
 
 
-#@RfunctionExecuter
+@RfunctionCaller
 def write_out_plot_data(params_out_path, plot_data_name="plot.data"):
     ro.r("save.plot.data(%s, '%s')" % (plot_data_name, params_out_path))
 
 
-#@RfunctionExecuter
+@RfunctionCaller
 def load_in_R(fpath):
     ''' loads what is presumed to be .Rdata into the R environment '''
     ro.r("load('%s')" % fpath)
 
 
-#@RfunctionExecuter
+@RfunctionCaller
 def update_plot_params(plot_params, plot_params_name="params", \
                         write_them_out=False, outpath=None):
     # first cast the params to an R data frame to make it
@@ -874,7 +881,7 @@ def update_plot_params(plot_params, plot_params_name="params", \
         ro.r("save(tmp.params, file='%s')" % outpath)
 
 
-#@RfunctionExecuter
+@RfunctionCaller
 def regenerate_plot_data(om_data_name="om.data", res_name="res",           
                             plot_params_name="params", plot_data_name="plot.data"):
     
@@ -896,12 +903,12 @@ def regenerate_plot_data(om_data_name="om.data", res_name="res",
         ro.r("plot.data<-create.plot.data.diagnostic(%s, %s, %s)" % \
                             (om_data_name, plot_params_name, res_name))
 
-#@RfunctionExecuter
+@RfunctionCaller
 def generate_reg_plot(file_path, params_name="plot.data"): 
     ro.r("meta.regression.plot(%s, '%s')" % (params_name, file_path))
 
 
-#@RfunctionExecuter
+@RfunctionCaller
 def generate_forest_plot(file_path, side_by_side=False, params_name="plot.data"):
     if side_by_side:
         print "generating a side-by-side forest plot..."
@@ -986,7 +993,7 @@ def make_weights_list(text_n,text):
         return (None,None)
 
 
-#@RfunctionExecuter
+@RfunctionCaller
 def run_binary_fixed_meta_regression(selected_cov, bin_data_name="tmp_obj",
                                      res_name="result"):
     method_str = "FE"                                        
@@ -1027,7 +1034,7 @@ def list_of_cov_value_objects_str(dataset, study_ids, cov_list=None):
     return r_cov_str
 
 
-#@RfunctionExecuter
+@RfunctionCaller
 def run_meta_regression(dataset, study_names, cov_list, metric_name,
                         data_name="tmp_obj", results_name="results_obj",
                         fixed_effects=False): 
@@ -1066,7 +1073,7 @@ def run_meta_regression(dataset, study_names, cov_list, metric_name,
     return parsed_results
 
 
-#@RfunctionExecuter
+@RfunctionCaller
 def run_meta_method_diag(meta_function_name, function_names, list_of_params,
                          res_name="result", diag_data_name="tmp_obj"):
     # list of parameter objects
@@ -1084,7 +1091,7 @@ def run_meta_method_diag(meta_function_name, function_names, list_of_params,
     return parse_out_results(result)
         
 
-#@RfunctionExecuter
+@RfunctionCaller
 def run_meta_method(meta_function_name, function_name, params, \
                         res_name="result", data_name="tmp_obj"):
     '''
@@ -1197,7 +1204,7 @@ def _get_col(m, i):
     return col_vals
 
 
-#@RfunctionExecuter
+@RfunctionCaller
 def diagnostic_effects_for_study(tp, fn, fp, tn, metrics=["Spec", "Sens"],
                                  conf_level=95.0):
     # first create a diagnostic data object
@@ -1229,7 +1236,7 @@ def diagnostic_effects_for_study(tp, fn, fp, tn, metrics=["Spec", "Sens"],
     return effects_dict
     
 
-#@RfunctionExecuter
+@RfunctionCaller
 def continuous_effect_for_study(n1, m1, sd1, se1=None, n2=None, m2=None,
                                 sd2=None, se2=None, metric="MD", two_arm=True,
                                 conf_level=95.0):
@@ -1269,7 +1276,7 @@ def continuous_effect_for_study(n1, m1, sd1, se1=None, n2=None, m2=None,
     return {"calc_scale":est_and_ci, "display_scale":transformed_est_and_ci}
 
 
-#@RfunctionExecuter
+@RfunctionCaller
 def effect_for_study(e1, n1, e2=None, n2=None, two_arm=True, 
                 metric="OR", conf_level=95):
     '''
@@ -1333,7 +1340,7 @@ def diagnostic_convert_scale(x, metric_name, convert_to="display.scale"):
     return generic_convert_scale(x, metric_name, "diagnostic", convert_to)
 
 
-#@RfunctionExecuter
+@RfunctionCaller
 def generic_convert_scale(x, metric_name, data_type, convert_to="display.scale"):
     r_str = "trans.f <- %s.transform.f('%s')" % (data_type, metric_name)
     ro.r(r_str)
@@ -1353,6 +1360,6 @@ def generic_convert_scale(x, metric_name, data_type, convert_to="display.scale")
     return transformed_ls
 
 
-#@RfunctionExecuter
+@RfunctionCaller
 def turn_off_R_graphics():
     ro.r("graphics.off()")

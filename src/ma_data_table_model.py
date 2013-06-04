@@ -292,6 +292,11 @@ class DatasetModel(QAbstractTableModel):
                 if not self.is_diag():
                     eff,grp = self.current_effect, group_str
                     
+                    if current_data_type == BINARY:
+                        conv_to_disp_scale = lambda x: meta_py_r.binary_convert_scale(x, eff, convert_to="display.scale")
+                    elif current_data_type == CONTINUOUS:
+                        conv_to_disp_scale = lambda x: meta_py_r.continuous_convert_scale(x, eff, convert_to="display.scale")
+                    
                     if current_data_type == CONTINUOUS and outcome_subtype == 'generic_effect':
                         est_and_se = (ma_unit.get_estimate(eff, grp),
                                       ma_unit.get_se(eff, grp))
@@ -299,11 +304,15 @@ class DatasetModel(QAbstractTableModel):
                     else: # normal case of no outcome subtype
                         est_and_ci = ma_unit.get_effect_and_ci(eff, grp)
                         c_val = est_and_ci[outcome_index]
+                        d_est_and_ci = ma_unit.get_display_effect_and_ci(eff, grp, conv_to_disp_scale)
+                        outcome_val = d_est_and_ci[outcome_index]
                         
-                    if current_data_type == BINARY:
-                        outcome_val = meta_py_r.binary_convert_scale(c_val, eff, convert_to="display.scale")
-                    elif current_data_type == CONTINUOUS:
-                        outcome_val = meta_py_r.continuous_convert_scale(c_val, eff, convert_to="display.scale")
+                    #outcome_val = conv_to_disp_scale(x)
+                        
+#                    if current_data_type == BINARY:
+#                        outcome_val = meta_py_r.binary_convert_scale(c_val, eff, convert_to="display.scale")
+#                    elif current_data_type == CONTINUOUS:
+#                        outcome_val = meta_py_r.continuous_convert_scale(c_val, eff, convert_to="display.scale")
                     
                     if outcome_val is None:
                         return QVariant("")
@@ -603,6 +612,8 @@ class DatasetModel(QAbstractTableModel):
                 # update the corresponding outcome (if data permits)
                 self.update_outcome_if_possible(index.row())
             elif column in self.OUTCOMES:
+                print("Value %s in outcomes" % str(value.toString()))
+                
                 row = index.row()
                 
                 if value.toString().trimmed() == "":
@@ -614,11 +625,13 @@ class DatasetModel(QAbstractTableModel):
                     data_ok, msg = self._verify_outcome_data(value.toString(), column, row, current_data_type)
                     if not data_ok and import_csv == False:
                         self.emit(SIGNAL("dataError(QString)"), QString(msg))
-                    return False
+                        return False
 
                     # the user can also explicitly set the effect size / CIs
                     # @TODO what to do if the entered estimate contradicts the raw data?
                     display_scale_val, converted_ok = value.toDouble()
+                    
+                    print("Display scale value: %s" % str(display_scale_val))
 
                 if display_scale_val is None or converted_ok:
                     if not self.is_diag():

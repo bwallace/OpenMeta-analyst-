@@ -732,14 +732,60 @@ class MetaAnalyticUnit:
     def set_SE(self, effect, group_str, se):
         self.effects_dict[effect][group_str]["SE"] = se
         
-#    def set_display_effect(self, effect, group_str, value):
-#        self.effects_dict[effect][group_str]["display_est"] = value
-#    def set_display_lower(self, effect, group_str, lower):
-#        self.effects_dict[effect][group_str]["display_lower"] = lower
-#    def set_display_upper(self, effect, group_str, upper):
-#        self.effects_dict[effect][group_str]["display_upper"] = upper
-#    def set_display_se(self, effect, group_str, se):
-#        self.effects_dict[effect][group_str]["display_se"] = se
+    def set_display_effect(self, effect, group_str, value):
+        self.effects_dict[effect][group_str]["display_est"] = value
+    def set_display_lower(self, effect, group_str, lower):
+        self.effects_dict[effect][group_str]["display_lower"] = lower
+    def set_display_upper(self, effect, group_str, upper):
+        self.effects_dict[effect][group_str]["display_upper"] = upper
+    # Should this exist?
+    def set_display_se(self, effect, group_str, se):
+        self.effects_dict[effect][group_str]["display_se"] = se
+        
+    def calculate_display_effect_and_ci(self, effect, group_str, convert_to_display_scale):
+        '''Calculates display effect and ci and stores the results in the
+        various 'display_' variables '''
+        est, lower, upper = self.get_effect_and_ci(effect, group_str)
+        d_est, d_lower, d_upper = [convert_to_display_scale(x) for x in [est, lower, upper]]
+        
+        self.set_display_effect(effect, group_str, d_est)
+        self.set_display_lower(effect, group_str, d_lower)
+        self.set_display_upper(effect, group_str, d_upper)
+        self.effects_dict[effect][group_str]["display_conf_level"] = meta_globals.get_global_conf_level()
+        
+        
+    def get_display_effect(self, effect, group_str):
+        return self.effects_dict[effect][group_str]["display_est"]
+    def get_display_lower(self, effect, group_str):
+        return self.effects_dict[effect][group_str]["display_lower"]
+    def get_display_upper(self, effect, group_str):
+        return self.effects_dict[effect][group_str]["display_upper"]
+    
+    
+    
+    
+    def get_display_effect_and_ci(self, effect, group_str, convert_to_display_scale):
+        existing_display_conf_level = "display_conf_level" in self.effects_dict[effect][group_str].keys()
+        
+        if existing_display_conf_level:
+            display_cl = self.effects_dict[effect][group_str]["display_conf_level"] # conf level @ which display values were computed
+            print("Display CL, global CL: %s, %s" % (str(display_cl),
+                                    str(meta_globals.get_global_conf_level())))
+            disp_cl_eq_global_cl = meta_globals.equal_close_enough(
+                                            display_cl,
+                                            meta_globals.get_global_conf_level())
+            if disp_cl_eq_global_cl:
+                pass # we are ok, don't have to do anything special
+            else:
+                self.calculate_display_effect_and_ci(effect, group_str, convert_to_display_scale)
+        else:
+            self.calculate_display_effect_and_ci(effect, group_str, convert_to_display_scale)
+            
+        return (self.get_display_effect(effect, group_str),
+                self.get_display_lower(effect, group_str),
+                self.get_display_upper(effect, group_str))
+            
+        
          
     def get_estimate(self, effect, group_str):
         return self.effects_dict[effect][group_str]["est"]
