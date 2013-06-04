@@ -26,9 +26,10 @@ import copy
 
 import forms.ui_ma_specs
 import meta_py_r
-#from meta_globals import *
+import meta_globals
 from meta_globals import (check_plot_bound, DIAG_METRIC_NAMES_D, 
-                          METHODS_WITH_NO_FOREST_PLOT, ONE_ARM_METRICS, seems_sane)
+                          METHODS_WITH_NO_FOREST_PLOT, ONE_ARM_METRICS,
+                          seems_sane)
 import diagnostic_explain
 
 ###
@@ -587,7 +588,7 @@ class MA_Specs(QDialog, forms.ui_ma_specs.Ui_Dialog):
             self.current_defaults = method_params[self.current_method]
             
         # override conf.level with global conf.level
-        self.current_defaults['conf.level'] = meta_py_r.get_global_conf_level()
+        self.current_defaults['conf.level'] = meta_globals.get_global_conf_level()
 
         print self.current_defaults
 

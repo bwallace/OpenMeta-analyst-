@@ -44,7 +44,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self.text_boxes = [self.low_txt_box, self.high_txt_box,
                            self.effect_txt_box, self.prevalence_txt_box]
         
-        self.ci_label.setText("{0:.1f}% Confidence Interval".format(meta_py_r.get_global_conf_level()))
+        self.ci_label.setText("{0:.1f}% Confidence Interval".format(meta_globals.get_global_conf_level()))
         self.initialize_form()
         self.setup_inconsistency_checking()
         self.undoStack = QUndoStack(self)
@@ -343,7 +343,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         # sensitivity and specificity
         ests_and_cis = meta_py_r.diagnostic_effects_for_study(
                                 tp, fn, fp, tn, metrics=DIAGNOSTIC_METRICS,
-                                conf_level=meta_py_r.get_global_conf_level())
+                                conf_level=meta_globals.get_global_conf_level())
         
         # now we're going to set the effect estimate/CI on the MA object.
         for metric in DIAGNOSTIC_METRICS:
@@ -658,7 +658,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             x = self.prevalence_txt_box.text()
             d["prev"] = float(x) if _is_a_float(x) else None
 
-            d["conf.level"] = meta_py_r.get_global_conf_level()
+            d["conf.level"] = meta_globals.get_global_conf_level()
     
             # now grab the raw data, if available
             d.update(self.get_raw_diag_data())

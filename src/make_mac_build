@@ -9,7 +9,7 @@ cd ..
 
 # Copy R to local directory
 mkdir ../frozen/OpenMetaAnalyst.app/Contents/MacOS/R_dist
-cp -r /opt/local/lib/R ../frozen/OpenMetaAnalyst.app/Contents/MacOS/R_dist/2.15
+cp -r /opt/local/Library/Frameworks/R.framework/Versions/3.0/Resources/ ../frozen/OpenMetaAnalyst.app/Contents/MacOS/R_dist/3.0.1
 # Copy sample data
 cp -rv sample_data/ ../frozen/sample_data
 

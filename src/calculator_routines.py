@@ -13,8 +13,10 @@
 from PyQt4.Qt import *
 from functools import partial
 
+import meta_globals
 from meta_globals import *
 from meta_globals import _is_a_float, _is_empty
+import meta_py_r
 
 def between_bounds(est=None, low=None, high=None):
     def my_lt(a,b):
@@ -268,7 +270,7 @@ def enable_txt_box_input(*args):
         
 def init_ci_spinbox_and_label(ci_spinbox, ci_label, value=None):
     if value is None:
-        value = meta_py_r.get_global_conf_level()
+        value = meta_globals.get_global_conf_level()
     
     ci_spinbox.blockSignals(True)
     ci_spinbox.setValue(value)
@@ -281,7 +283,7 @@ CHANGE_CI_ALERT_BASE_MSG = (
     "(currently set at {0:.1%}) chosen for data display on spreadsheets and "
     "forest plots.")
 def get_CHANGE_CI_ALERT_MSG():
-    return CHANGE_CI_ALERT_BASE_MSG.format(meta_py_r.get_global_conf_level()/100.0)
+    return CHANGE_CI_ALERT_BASE_MSG.format(meta_globals.get_global_conf_level()/100.0)
 
 def helper_set_current_effect(ma_unit, txt_boxes, current_effect, group_str, data_type):
     '''Fills in text boxes on calculator forms with data from ma unit.

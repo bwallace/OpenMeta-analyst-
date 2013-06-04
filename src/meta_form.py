@@ -84,8 +84,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.setupUi(self)
         
         
-        meta_py_r.set_global_conf_level(meta_globals.DEFAULT_CONF_LEVEL)
-        self.cl_label=QLabel("confidence level: {:.1%}".format(meta_py_r.get_global_conf_level()/100.0))
+        meta_globals.set_global_conf_level(meta_globals.DEFAULT_CONF_LEVEL)
+        self.cl_label=QLabel("confidence level: {:.1%}".format(meta_globals.get_global_conf_level()/100.0))
         self.cl_label.setAlignment(Qt.AlignRight)
         self.statusbar.addWidget(self.cl_label,1)
         
@@ -292,15 +292,15 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         
     def _change_global_ci(self):
         print("Changing global confidence level:")
-        prev_conf_level = meta_py_r.get_global_conf_level()
+        prev_conf_level = meta_globals.get_global_conf_level()
         print("   Previous Global Confidence level was: %f" % prev_conf_level)
 
         dialog = conf_level_dialog.ChangeConfLevelDlg(prev_conf_level, self)
         if dialog.exec_():
-            meta_py_r.set_global_conf_level(dialog.get_value())
-            self.cl_label.setText("confidence level: {:.1%}".format(meta_py_r.get_global_conf_level()/100.0))
+            meta_globals.set_global_conf_level(dialog.get_value())
+            self.cl_label.setText("confidence level: {:.1%}".format(meta_globals.get_global_conf_level()/100.0))
             self.model.reset()
-            print("   Global Confidence level is now: %f" % meta_py_r.get_global_conf_level())
+            print("   Global Confidence level is now: %f" % meta_globals.get_global_conf_level())
             
     def _import_csv(self):
         '''Import data from csv file'''

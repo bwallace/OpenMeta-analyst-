@@ -80,19 +80,19 @@ except:
     raise Exception, "unable to create temporary directory for R results! make sure you have sufficient permissions."
 
 
-lochness_monster = threading.Lock() # lock to use for executing R functions
+#lochness_monster = threading.Lock() # lock to use for executing R functions
 
-def RfunctionExecuter(function):
-    def _RfunctionExecuter(*args, **kw):
-        lochness_monster.acquire()
-        print("Lock acquired, executing a function")
-        
-        res = function(*args, **kw)
-        
-        lochness_monster.release()
-        print("Finished function, lock released")
-        return res
-    return _RfunctionExecuter
+#def RfunctionExecuter(function):
+#    def _RfunctionExecuter(*args, **kw):
+#        lochness_monster.acquire()
+#        print("Lock acquired, executing a function")
+#        
+#        res = function(*args, **kw)
+#        
+#        lochness_monster.release()
+#        print("Finished function, lock released")
+#        return res
+#    return _RfunctionExecuter
 
 #@RfunctionExecuter
 def reset_Rs_working_dir():
@@ -297,25 +297,11 @@ def impute_pre_post_cont_data(cont_data_dict, correlation, alpha):
 
 ##################### DEALING WITH CONFIDENCE LEVEL IN R #######################
 #@RfunctionExecuter
-def get_mult(confidence_level):
+def get_mult_from_r(confidence_level):
     alpha = 1-float(confidence_level)/100.0
     r_str = "abs(qnorm(%s/2))" % str(alpha)
     mult = ro.r(r_str)
     return mult[0]
-
-#@RfunctionExecuter
-def set_global_conf_level(conf_lev):
-    r_str = "set.global.conf.level("+str(float(conf_lev))+")"
-    new_cl_in_R = ro.r(r_str)[0]
-    print("Set confidence level in R to: %f" % new_cl_in_R)
-    return new_cl_in_R
-
-@RfunctionExecuter
-def get_global_conf_level():
-    r_str = "get.global.conf.level()"
-    cl = ro.r(r_str)[0]
-    #print("Retrieved the following confidence level from R: " + str(float(cl)))
-    return float(cl)
 ################################################################################
 
 #@RfunctionExecuter
@@ -1005,7 +991,7 @@ def run_binary_fixed_meta_regression(selected_cov, bin_data_name="tmp_obj",
                                      res_name="result"):
     method_str = "FE"                                        
     # equiavlent to params <- list(conf.level=95, digits=3)
-    params = {"conf.level":get_global_conf_level(), "digits":3, "method":method_str}
+    params = {"conf.level":meta_globals.get_global_conf_level(), "digits":3, "method":method_str}
     params_df = ro.r['data.frame'](**params)
     r_str = "%s<-binary.fixed.meta.regression(%s, %s, %s)" % \
             (res_name, bin_data_name, params_df.r_repr(), "'"+ selected_cov + "'")
@@ -1049,7 +1035,7 @@ def run_meta_regression(dataset, study_names, cov_list, metric_name,
     method_str = "FE" if fixed_effects else "DL"    
 
     # @TODO conf.level, digits should be user-specified
-    params = {"conf.level":get_global_conf_level(),
+    params = {"conf.level":meta_globals.get_global_conf_level(),
               "digits":3,
               "method":method_str,
               "rm.method":"ML",

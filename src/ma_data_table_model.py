@@ -906,9 +906,9 @@ class DatasetModel(QAbstractTableModel):
                 elif section in self.OUTCOMES:
                     help_msg = "For information about how the confidence interval was obtained,\n"
                     help_msg += "please consult the the help at {0}".format(HELP_URL)
-                    lower_msg = "Lower bound of {0:.1%} confidence interval".format(meta_py_r.get_global_conf_level()/100.0)
+                    lower_msg = "Lower bound of {0:.1%} confidence interval".format(meta_globals.get_global_conf_level()/100.0)
                     lower_msg += "\n" + help_msg
-                    upper_msg = "Upper bound of {0:.1%} confidence interval\n".format(meta_py_r.get_global_conf_level()/100.0)
+                    upper_msg = "Upper bound of {0:.1%} confidence interval\n".format(meta_globals.get_global_conf_level()/100.0)
                     upper_msg += "\n" + help_msg
                     se_msg = "Standard Error"
                     
@@ -1514,20 +1514,20 @@ class DatasetModel(QAbstractTableModel):
             if data_type == BINARY:
                 e1, n1, e2, n2 = self.get_cur_raw_data_for_study(study_index)
                 if self.current_effect in BINARY_TWO_ARM_METRICS:
-                    est_and_ci_d = meta_py_r.effect_for_study(e1, n1, e2, n2, metric=self.current_effect, conf_level=meta_py_r.get_global_conf_level())
+                    est_and_ci_d = meta_py_r.effect_for_study(e1, n1, e2, n2, metric=self.current_effect, conf_level=meta_globals.get_global_conf_level())
                 else:
                     # binary, one-arm
                     est_and_ci_d = meta_py_r.effect_for_study(e1, n1,
-                                        two_arm=False, metric=self.current_effect, conf_level=meta_py_r.get_global_conf_level())
+                                        two_arm=False, metric=self.current_effect, conf_level=meta_globals.get_global_conf_level())
             elif data_type == CONTINUOUS:
                 n1, m1, sd1, n2, m2, sd2 = self.get_cur_raw_data_for_study(study_index)
                 if self.current_effect in CONTINUOUS_TWO_ARM_METRICS:
                     est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1,
-                                        n2=n2, m2=m2, sd2=sd2, metric=self.current_effect, conf_level=meta_py_r.get_global_conf_level())
+                                        n2=n2, m2=m2, sd2=sd2, metric=self.current_effect, conf_level=meta_globals.get_global_conf_level())
                 else:
                     # continuous, one-arm metric
                     est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1,
-                                          two_arm=False, metric=self.current_effect, conf_level=meta_py_r.get_global_conf_level())
+                                          two_arm=False, metric=self.current_effect, conf_level=meta_globals.get_global_conf_level())
                 
             elif data_type == DIAGNOSTIC: 
                 # diagnostic data
@@ -1537,7 +1537,7 @@ class DatasetModel(QAbstractTableModel):
                 ests_and_cis = meta_py_r.diagnostic_effects_for_study(
                                                   tp, fn, fp, tn,
                                                   metrics=DIAGNOSTIC_METRICS,
-                                                  conf_level=meta_py_r.get_global_conf_level())
+                                                  conf_level=meta_globals.get_global_conf_level())
                 
                 ###
                 # now we're going to set the effect estimate/CI on the MA object.

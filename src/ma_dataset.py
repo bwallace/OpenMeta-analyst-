@@ -24,6 +24,7 @@ import copy
 import two_way_dict
 import meta_globals
 from meta_globals import *
+import meta_py_r
 
 class Dataset:
     def __len__(self):
@@ -705,7 +706,7 @@ class MetaAnalyticUnit:
             lower = self.effects_dict[effect][group_str]["lower"]
         if  upper is None:
             upper = self.effects_dict[effect][group_str]["upper"]
-        mult = meta_py_r.get_mult(meta_py_r.get_global_conf_level())
+        mult = meta_globals.get_mult()
         
         
         #print("Using the following values to calculate se:")
@@ -747,7 +748,7 @@ class MetaAnalyticUnit:
             return self.effects_dict[effect][group_str]["lower"]
         est = self.get_estimate(effect, group_str)
         se  = self.get_se(effect, group_str)
-        mult = meta_py_r.get_mult(meta_py_r.get_global_conf_level())
+        mult = meta_globals.get_mult()
         if est is None or se is None:
             return None
         return  (est-mult*se)
@@ -757,7 +758,7 @@ class MetaAnalyticUnit:
             return self.effects_dict[effect][group_str]["upper"]
         est = self.get_estimate(effect, group_str)
         se  = self.get_se(effect, group_str)
-        mult = meta_py_r.get_mult(meta_py_r.get_global_conf_level())
+        mult = meta_globals.get_mult()
         if est is None or se is None:
             return None
         return  (est+mult*se)
