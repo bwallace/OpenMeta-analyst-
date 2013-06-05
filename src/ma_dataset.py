@@ -385,13 +385,19 @@ class Dataset:
         you to sort arbitrarily in the order specified by the list.
         '''
         
-        outcome_name = directions_to_ma_unit['outcome_name']
-        follow_up = directions_to_ma_unit['follow_up']
-        current_groups = directions_to_ma_unit['current_groups']
-        data_index = directions_to_ma_unit['data_index']
-        current_effect = directions_to_ma_unit['current_effect']
-        group_str = directions_to_ma_unit['group_str']
-        outcome_type = directions_to_ma_unit['outcome_type']
+        
+        # Assign stuff conditionally
+        def val_if_key_in_dict(key, dictionary):
+            if key in dictionary:
+                return dictionary[key]
+            else:
+                return None
+            
+        if directions_to_ma_unit is not None:
+            keys = ['outcome_name','follow_up','current_groups','data_index',
+                    'current_effect','group_str','outcome_type']
+            (outcome_name, follow_up, current_groups, data_index, current_effect,
+             group_str, outcome_type) = [val_if_key_in_dict(x,directions_to_ma_unit) for x in keys]
         
         if compare_by == "name":
             return lambda study_a, study_b : self._meta_cmp_wrapper(study_a, study_b,\

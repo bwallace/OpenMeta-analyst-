@@ -1250,7 +1250,6 @@ class DatasetModel(QAbstractTableModel):
         print "\ncurrent tx group index a, b: %s, %s" % (self.tx_index_a, self.tx_index_b)
 
     def sort_studies(self, col, reverse):
-        ''' @TODO sort on raw data/outcomes '''
         if col == self.NAME:
             self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by="name", reverse=reverse), reverse=reverse)
         elif col == self.YEAR:
