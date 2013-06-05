@@ -6,16 +6,24 @@
 
 To run OpenMetaAnalyst from source, you'll need to install the corresponding dependencies. If you're interested in simply running the program (i.e., not from source) consider grabbing a binary build (for Windows and Mac OS X) from: 
 
-    http://tuftscaes.org/open_meta/download.html
+    http://www.cebm.brown.edu/open_meta
 
-Otherwise, you'll need to install the necessary R packages. To this end, you'll need to build and install the openmetar library and its dependencies. This package is distributed with the source under the "R" directory. 
+Otherwise, you'll need to install the necessary R packages. 
+First install the dependencies:
+From within a sudo-ed R session type:
 
-    > R CMD BUILD openmetar
-    > R CMD INSTALL openmetar
-    
-To simplify this, you can just call ./reinstallopenmetar in the R directory which does these two operations
+	> install.packages(c("metafor","lme4","MCMCpack","igraph"))
 
-On this branch, we have moved to R 2.15!
+
+	
+Next, you'll need to build and install the openmetar packages and altered HSROC (NOT THE ONE FROM CRAN) package and install them. These package are distributed with the source under the "src/R" directory. 
+
+    > R CMD build HSROC
+    > R CMD build openmetar
+    > sudo R CMD INSTALL HSROC_2.0.5.tar.gz
+    > sudo R CMD INSTALL openmetar_1.0.tar.gz
+
+On this branch, we have moved to R 3.0.1!
 
 Once R is setup for OpenMeta, you'll need to install Python (we use 2.7) and the necessary libraries. You'll need PyQT (and QT: see http://www.riverbankcomputing.co.uk/software/pyqt/intro) installed -- we use PyQt 4.9; your mileage may vary with other versions. 
 
@@ -28,6 +36,6 @@ At the Python console.
 
 That should be all you need. Once everything is setup, you can launch the program by typing:
 
-    > python launch.py
+    > python src/launch.py
 
 At the console. This should fire up the GUI.
