@@ -1,8 +1,8 @@
-import forms.wizardpages.ui_choose_metric_page
-import forms.wizardpages.ui_csv_import_page
-import forms.wizardpages.ui_data_type_page
-import forms.wizardpages.ui_outcome_name_page
-import forms.wizardpages.ui_welcome_page
+import forms.ui_choose_metric_page
+import forms.ui_csv_import_page
+import forms.ui_data_type_page
+import forms.ui_outcome_name_page
+import forms.ui_welcome_page
 
 from PyQt4.Qt import *
 from PyQt4.QtGui import *
@@ -14,7 +14,7 @@ from ma_data_table_model import DatasetModel
 import forms.icons_rc
 
 
-class WelcomePage(QWizardPage, forms.wizardpages.ui_welcome_page.Ui_WizardPage):
+class WelcomePage(QWizardPage, forms.ui_welcome_page.Ui_WizardPage):
     def __init__(self, parent=None, recent_datasets=[]):
         super(WelcomePage, self).__init__(parent)
         self.setupUi(self)
@@ -96,7 +96,7 @@ class WelcomePage(QWizardPage, forms.wizardpages.ui_welcome_page.Ui_WizardPage):
         
 ################################################################################
         
-class DataTypePage(QWizardPage, forms.wizardpages.ui_data_type_page.Ui_DataTypePage):
+class DataTypePage(QWizardPage, forms.ui_data_type_page.Ui_DataTypePage):
     def __init__(self, parent=None):
         super(DataTypePage, self).__init__(parent)
         self.setupUi(self)
@@ -184,7 +184,7 @@ class DataTypePage(QWizardPage, forms.wizardpages.ui_data_type_page.Ui_DataTypeP
         
         
 ###############################################################################
-class ChooseMetricPage(QtGui.QWizardPage, forms.wizardpages.ui_choose_metric_page.Ui_WizardPage):
+class ChooseMetricPage(QtGui.QWizardPage, forms.ui_choose_metric_page.Ui_WizardPage):
     def __init__(self, parent=None):
         super(ChooseMetricPage, self).__init__(parent)
         self.setupUi(self)
@@ -226,7 +226,7 @@ class ChooseMetricPage(QtGui.QWizardPage, forms.wizardpages.ui_choose_metric_pag
 
 import csv
 
-class CsvImportPage(QWizardPage, forms.wizardpages.ui_csv_import_page.Ui_WizardPage):
+class CsvImportPage(QWizardPage, forms.ui_csv_import_page.Ui_WizardPage):
     def __init__(self, parent=None):
         super(CsvImportPage, self).__init__(parent)
         self.setupUi(self)
@@ -456,7 +456,7 @@ class CsvImportPage(QWizardPage, forms.wizardpages.ui_csv_import_page.Ui_WizardP
     def _get_quotechar(self):
         return str(self.quotechar_le.text())
 ################################################################################
-class OutcomeNamePage(QWizardPage, forms.wizardpages.ui_outcome_name_page.Ui_WizardPage):
+class OutcomeNamePage(QWizardPage, forms.ui_outcome_name_page.Ui_WizardPage):
     def __init__(self, parent=None):
         super(OutcomeNamePage, self).__init__(parent)
         self.setupUi(self)
