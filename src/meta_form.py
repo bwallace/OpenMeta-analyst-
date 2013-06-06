@@ -169,7 +169,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 wizard_data = start_up_wizard.get_results()
                 self._handle_wizard_results(wizard_data)
             else:
-                quit()
+                QApplication.quit()
             
     def closeEvent(self, event):
         if self.current_data_unsaved:
