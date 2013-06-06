@@ -811,12 +811,25 @@ def _to_R_params(params):
 @RfunctionCaller
 def run_diagnostic_multi(function_names, list_of_params, res_name="result", diag_data_name="tmp_obj"):
     r_params_str = "list(%s)" % ",".join([_to_R_params(p) for p in list_of_params])
+    
     ro.r("list.of.params <- %s" % r_params_str)
     ro.r("f.names <- c(%s)" % ",".join(["'%s'" % f_name for f_name in function_names]))
+    #r_statement("list.of.params <- %s" % r_params_str) # FOR DEBUGGING
+    #r_statement("f.names <- c(%s)" % ",".join(["'%s'" % f_name for f_name in function_names])) # FOR DEBUGGING
+    
+    # debug segfault thing
+    #pyqtRemoveInputHook()
+    #pdb.set_trace()
+    
     result = ro.r("multiple.diagnostic(f.names, list.of.params, %s)" % diag_data_name)
 
     print("Got here is run diagnostic multi w/o error")
     return parse_out_results(result)
+
+# HELPS WITH DEBUGGING
+#def r_statement(statement):
+#    print("About to execute: %s" % statement)
+#    ro.r(statement)
 
 
 @RfunctionCaller

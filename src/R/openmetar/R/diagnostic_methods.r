@@ -194,15 +194,19 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         metrics <- c(metrics, params.list[[count]]$measure)
         if (params.list[[count]]$measure=="Sens") {
             sens.index <- count
+			png(filename=paste(params.list[[count]]$fp_outpath,"INTER",sep="")) # to fix windows popping out at you issue
         }
         if (params.list[[count]]$measure=="Spec") {
             spec.index <- count
+			png(filename=paste(params.list[[count]]$fp_outpath,"INTER",sep="")) # to fix windows popping out at you issue
         }
         if (params.list[[count]]$measure=="PLR") {
             plr.index <- count
+			png(filename=paste(params.list[[count]]$fp_outpath,"INTER",sep="")) # to fix windows popping out at you issue
         }
         if (params.list[[count]]$measure=="NLR") {
             nlr.index <- count
+			png(filename=paste(params.list[[count]]$fp_outpath,"INTER",sep="")) # to fix windows popping out at you issue
         }
     }
     
