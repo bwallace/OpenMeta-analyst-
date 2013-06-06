@@ -50,6 +50,10 @@ os.environ["R"] = \
 os.environ["R_HOME"] = \
     os.path.join(DIR_NAME, "R_dist", "3.0.1")
     
+# For some reason, the X11 shows up in the build on Jens's computer but not on mine when doing diagnostic HSROC
+os.environ["R_INTERACTIVE_DEVICE"] = "pdf"
+os.environ["R_DEFAULT_DEVICE"] = "pdf"   
+    
 print("Setting PANGO_RC file path")
 pangorc_path = os.path.join(DIR_NAME, "pangorc")
 os.environ["PANGO_RC_FILE"] = pangorc_path
