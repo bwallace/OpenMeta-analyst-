@@ -178,6 +178,17 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 event.ignore()
         print "*** goodbye, dear analyst. ***"
 
+
+    def _model_about_to_be_reset(self):
+        '''Call all the functions here that should be called when the model is
+        about to be reset'''
+        self._recalculate_display_scale_values()
+    
+    def _recalculate_display_scale_values(self):
+        print("got to recalc disp scale values")
+        
+        self.tableView.model().recalculate_display_scale()
+
     ### TODO: Should ask if user wants to save before making the new dataset.. GD
     def create_new_dataset(self, use_undo_framework=True):
         wizard = main_wizard.MainWizard(parent=self, path="new_dataset")
@@ -262,6 +273,9 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                            self.tableView.displayed_ma_changed)
                                                                  
         QObject.disconnect(self.tableView, SIGNAL("dataDirtied()"), self.data_dirtied)
+        
+        QObject.disconnect(self.tableView.model(), SIGNAL("modelAboutToBeReset()"),
+                           self._model_about_to_be_reset)
 
 
     def data_error(self, msg):
@@ -326,6 +340,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # this fixes bug #20.
         QObject.connect(self.tableView.model(), SIGNAL("modelReset(QModelIndex)"),
                                                                 self.set_edit_focus) 
+        
+        # Do actions when the model is about to be reset (for now, just
+        # recalculate display scale values)
+        QObject.connect(self.tableView.model(), SIGNAL("modelAboutToBeReset()"), self._model_about_to_be_reset)
            
         ###
         # this listens to the model regarding errors in data entry -- 

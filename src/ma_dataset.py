@@ -748,7 +748,15 @@ class MetaAnalyticUnit:
     def set_display_se(self, effect, group_str, se):
         self.effects_dict[effect][group_str]["display_se"] = se
         
-    def calculate_display_effect_and_ci(self, effect, group_str, convert_to_display_scale):
+    def calculate_display_effect_and_ci(self, effect, group_str, convert_to_display_scale, check_if_necessary=False):
+        # only runs if it is necessary to do so
+        if check_if_necessary:
+            if self._should_calculate_display_effect_and_ci_and_se(effect, group_str):
+                pass # just continue and do the calculation
+            else:
+                #print("We don't have to recalculate display_effect and ci-->leaving")
+                return # we don't have to recalculate so exit
+        
         '''Calculates display effect and ci and stores the results in the
         various 'display_' variables '''
         est, lower, upper = self.get_effect_and_ci(effect, group_str)
@@ -777,18 +785,18 @@ class MetaAnalyticUnit:
     
     
     
-    def get_display_effect_and_ci(self, effect, group_str, convert_to_display_scale):
-        if self._should_calculate_display_effect_and_ci_and_se(effect, group_str):
-            self.calculate_display_effect_and_ci(effect, group_str, convert_to_display_scale)
+    def get_display_effect_and_ci(self, effect, group_str, convert_to_display_scale=None):
+#        if self._should_calculate_display_effect_and_ci_and_se(effect, group_str):
+#            self.calculate_display_effect_and_ci(effect, group_str, convert_to_display_scale)
             
         return (self.get_display_effect(effect, group_str),
                 self.get_display_lower(effect, group_str),
                 self.get_display_upper(effect, group_str))
         
-    def get_display_effect_and_se(self, effect, group_str, convert_to_display_scale):
-        if self._should_calculate_display_effect_and_ci_and_se(effect, group_str):
-            print("Yes, should calculate display_effect and se")
-            self.calculate_display_effect_and_ci(effect, group_str, convert_to_display_scale)
+    def get_display_effect_and_se(self, effect, group_str, convert_to_display_scale=None):
+#        if self._should_calculate_display_effect_and_ci_and_se(effect, group_str):
+#            print("Yes, should calculate display_effect and se")
+#            self.calculate_display_effect_and_ci(effect, group_str, convert_to_display_scale)
         
         return (self.get_display_effect(effect, group_str),
                 self.get_display_se(effect, group_str))

@@ -30,6 +30,14 @@ import calculator_routines as calc_fncs
 # following the last study.
 DUMMY_ROWS = 20
 
+def DebugHelper(function):
+    def _DebugHelper(*args, **kw):
+        print("Entered %s" % function.func_name)
+        res = function(*args, **kw)
+        print("Left %s" % function.func_name)
+        return res
+    return _DebugHelper
+
 class DatasetModel(QAbstractTableModel):
     '''
     This module mediates between the classes comprising a dataset
@@ -318,10 +326,12 @@ class DatasetModel(QAbstractTableModel):
                     if column in self.OUTCOMES[3:]:
                         m_str = "Spec"
                     
-                    est_and_ci = ma_unit.get_effect_and_ci(m_str, group_str)
-                                                    
-                    c_val = est_and_ci[outcome_index % 3]
-                    outcome_val = meta_py_r.diagnostic_convert_scale(c_val, m_str, convert_to="display.scale") 
+                    #est_and_ci = ma_unit.get_effect_and_ci(m_str, group_str)
+                    #c_val = est_and_ci[outcome_index % 3]
+                    #outcome_val = meta_py_r.diagnostic_convert_scale(c_val, m_str, convert_to="display.scale") 
+                    
+                    d_est_and_ci = ma_unit.get_display_effect_and_ci(m_str, group_str)
+                    outcome_val = d_est_and_ci[outcome_index % 3]
                     
                     if outcome_val is None:
                         return QVariant("")
@@ -1457,6 +1467,7 @@ class DatasetModel(QAbstractTableModel):
         return (data_for_arm_one and not data_for_arm_two) or\
                  (data_for_arm_two and not data_for_arm_one)
 
+    @DebugHelper
     def try_to_update_outcomes(self):
         for study_index in range(len(self.dataset.studies)):
             self.update_outcome_if_possible(study_index)
@@ -1714,5 +1725,37 @@ class DatasetModel(QAbstractTableModel):
             study.outcomes_to_follow_ups[self.current_outcome][self.current_time_point].get_raw_data_for_groups(self.current_txs)\
           ) for study in self.dataset.studies if self.current_outcome in study.outcomes_to_follow_ups])
 
+    def recalculate_display_scale(self):
+        effect = self.current_effect
+        group_str = self.get_cur_group_str()
+        current_data_type = self.dataset.get_outcome_type(self.current_outcome)
+        
+        ma_units = []
+        # Gather ma_units for spreadsheet
+        for study_index in range(len(self.dataset.studies)-1): #-1 is because last study is always blank
+            ma_units.append(self.get_current_ma_unit_for_study(study_index))
+            
+        binary_display_scale = lambda x: meta_py_r.binary_convert_scale(x, self.current_effect, convert_to="display.scale")
+        continuous_display_scale = lambda x: meta_py_r.continuous_convert_scale(x, self.current_effect, convert_to="display.scale")
+                            
+        def get_diagnostic_display_scale(m_str):
+            return lambda x: meta_py_r.diagnostic_convert_scale(x, m_str, convert_to="display.scale") 
+        
+        for index, x in enumerate(ma_units):
+            print("Recalculating display scale for ma_unit %d" % index)
 
-
+            if current_data_type in [BINARY,CONTINUOUS]:
+                if current_data_type == BINARY:
+                    convert_to_display_scale = binary_display_scale
+                elif current_data_type == CONTINUOUS:
+                    convert_to_display_scale = continuous_display_scale
+                x.calculate_display_effect_and_ci(effect, group_str,
+                                                  convert_to_display_scale,
+                                                  check_if_necessary=True)
+            elif current_data_type == DIAGNOSTIC:
+                for m_str in ["Sens","Spec"]:
+                    x.calculate_display_effect_and_ci(m_str, group_str,
+                                                      convert_to_display_scale=get_diagnostic_display_scale(m_str),
+                                                      check_if_necessary=True)
+        print("Finished calculating display effect and cis")
+            
