@@ -103,8 +103,16 @@ def RfunctionCaller(function):
 
 @RfunctionCaller
 def reset_Rs_working_dir():
-    print "resetting "
-    ro.r("setwd('%s')" % BASE_PATH) 
+    print("resetting R working dir")
+
+    # Fix paths issue in windows
+    r_str = "setwd('%s')" % BASE_PATH
+    print("before replacement r_string: %s" % r_str)
+    r_str = r_str.replace("\\","\\\\")
+    print("about to execute: %s" % r_str)
+
+    # Executing r call with escaped backslashes
+    ro.r(r_str) 
 
 @RfunctionCaller
 def impute_diag_data(diag_data_dict):
@@ -1376,3 +1384,4 @@ def generic_convert_scale(x, metric_name, data_type, convert_to="display.scale")
 @RfunctionCaller
 def turn_off_R_graphics():
     ro.r("graphics.off()")
+
