@@ -640,17 +640,16 @@ class DatasetModel(QAbstractTableModel):
                         # scale on which the metric is assumed to have been
                         # entered into the 'calculation' scale (e.g., log)
                         calc_scale_val = None
-                        if display_scale_val is not None:
-                            print("Input value is %s" % str(display_scale_val))
-                            if current_data_type == BINARY:
-                                calc_scale_val = meta_py_r.binary_convert_scale(display_scale_val,
-                                                            self.current_effect, convert_to="calc.scale")
-                                conv_to_disp_scale = lambda x: meta_py_r.binary_convert_scale(x, self.current_effect, convert_to="display.scale")
-                            else:
-                                ## assuming continuous here
-                                calc_scale_val = meta_py_r.continuous_convert_scale(display_scale_val,
-                                                            self.current_effect, convert_to="calc.scale")
-                                conv_to_disp_scale = lambda x: meta_py_r.continuous_convert_scale(x, self.current_effect, convert_to="display.scale")
+                        print("Input value is %s" % str(display_scale_val))
+                        if current_data_type == BINARY:
+                            calc_scale_val = meta_py_r.binary_convert_scale(display_scale_val,
+                                                        self.current_effect, convert_to="calc.scale")
+                            conv_to_disp_scale = lambda x: meta_py_r.binary_convert_scale(x, self.current_effect, convert_to="display.scale")
+                        else:
+                            ## assuming continuous here
+                            calc_scale_val = meta_py_r.continuous_convert_scale(display_scale_val,
+                                                        self.current_effect, convert_to="calc.scale")
+                            conv_to_disp_scale = lambda x: meta_py_r.continuous_convert_scale(x, self.current_effect, convert_to="display.scale")
                                                         
                         ma_unit = self.get_current_ma_unit_for_study(index.row())
         
@@ -682,6 +681,7 @@ class DatasetModel(QAbstractTableModel):
                                 se = None
                             ma_unit.set_SE(self.current_effect, group_str, se)
                         ma_unit.calculate_display_effect_and_ci(self.current_effect, group_str, conv_to_disp_scale)
+
                                 
                     else: #outcome is diagnostic
                         ma_unit = self.get_current_ma_unit_for_study(index.row())
@@ -695,16 +695,16 @@ class DatasetModel(QAbstractTableModel):
                             calc_scale_val = meta_py_r.diagnostic_convert_scale(display_scale_val, \
                                                         m_str, convert_to="calc.scale")    
                             
-                        # now we switch on what outcome column we're on ... kind of ugly, but eh.
-                        if column in (self.OUTCOMES[0], self.OUTCOMES[3]):
-                            ma_unit.set_effect(m_str, group_str, calc_scale_val)
-                            #ma_unit.set_display_effect(m_str, group_str, display_scale_val)
-                        elif column in (self.OUTCOMES[1], self.OUTCOMES[4]):
-                            ma_unit.set_lower(m_str, group_str, calc_scale_val)
-                            #ma_unit.set_display_lower(m_str, group_str, display_scale_val)    
-                        else:
-                            ma_unit.set_upper(m_str, group_str, calc_scale_val)
-                            #ma_unit.set_display_upper(m_str, group_str, display_scale_val)
+                            # now we switch on what outcome column we're on ... kind of ugly, but eh.
+                            if column in (self.OUTCOMES[0], self.OUTCOMES[3]):
+                                ma_unit.set_effect(m_str, group_str, calc_scale_val)
+                                #ma_unit.set_display_effect(m_str, group_str, display_scale_val)
+                            elif column in (self.OUTCOMES[1], self.OUTCOMES[4]):
+                                ma_unit.set_lower(m_str, group_str, calc_scale_val)
+                                #ma_unit.set_display_lower(m_str, group_str, display_scale_val)    
+                            else:
+                                ma_unit.set_upper(m_str, group_str, calc_scale_val)
+                                #ma_unit.set_display_upper(m_str, group_str, display_scale_val)
                         
             elif column == self.INCLUDE_STUDY:
                 study.include = value.toBool()

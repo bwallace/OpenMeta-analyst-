@@ -1358,7 +1358,7 @@ def generic_convert_scale(x, metric_name, data_type, convert_to="display.scale")
     r_str = "trans.f <- %s.transform.f('%s')" % (data_type, metric_name)
     ro.r(r_str)
 
-    if x is None:
+    if x is None or x == "":
         return None
     islist = isinstance(x, list) or isinstance(x, tuple) # being loose with what qualifies as a 'list' here.
     if islist:

@@ -774,13 +774,25 @@ class MetaAnalyticUnit:
         
         
     def get_display_effect(self, effect, group_str):
-        return self.effects_dict[effect][group_str]["display_est"]
+        if "display_est" in self.effects_dict[effect][group_str]:
+            return self.effects_dict[effect][group_str]["display_est"]
+        else:
+            return None
     def get_display_lower(self, effect, group_str):
-        return self.effects_dict[effect][group_str]["display_lower"]
+        if "display_lower" in self.effects_dict[effect][group_str]:
+            return self.effects_dict[effect][group_str]["display_lower"]
+        else:
+            return None 
     def get_display_upper(self, effect, group_str):
-        return self.effects_dict[effect][group_str]["display_upper"]
+        if "display_upper" in self.effects_dict[effect][group_str]:
+            return self.effects_dict[effect][group_str]["display_upper"]
+        else:
+            return None
     def get_display_se(self, effect, group_str):
-        return self.effects_dict[effect][group_str]["display_se"]
+        if "display_se" in self.effects_dict[effect][group_str]:
+            return self.effects_dict[effect][group_str]["display_se"]
+        else:
+            return None
     
     
     

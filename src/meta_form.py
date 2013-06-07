@@ -656,8 +656,11 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         view_window.show()
         
     def analysis(self, results):
-        form = results_window.ResultsWindow(results, parent=self)
-        form.show()
+        if results is None:
+            return # analysis failed
+        else: # analysis succeeded
+            form = results_window.ResultsWindow(results, parent=self)
+            form.show()
 
 
     def edit_group_name(self, cur_group_name):
@@ -688,7 +691,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
             # fix for issue #59; do not allow the user to create two covariates with
             # the same name!
-            new_covariate_type = str(form.datatype_cbo_box.currentText())
+            new_covariate_type = str(form.datatype_cbo_box.currentText()).lower()
             if new_covariate_name in self.model.get_covariate_names():
                 QMessageBox.warning(self,
                             "whoops.",
