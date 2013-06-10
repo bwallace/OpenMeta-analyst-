@@ -612,6 +612,8 @@ class DatasetModel(QAbstractTableModel):
                 # If a raw data column value is being edited, attempt to
                 # update the corresponding outcome (if data permits)
                 self.update_outcome_if_possible(index.row())
+                
+                
             elif column in self.OUTCOMES:
                 print("Value %s in outcomes" % str(value.toString()))
                 
@@ -641,18 +643,25 @@ class DatasetModel(QAbstractTableModel):
                         # entered into the 'calculation' scale (e.g., log)
                         calc_scale_val = None
                         print("Input value is %s" % str(display_scale_val))
-                        if current_data_type == BINARY:
-                            calc_scale_val = meta_py_r.binary_convert_scale(display_scale_val,
-                                                        self.current_effect, convert_to="calc.scale")
-                            conv_to_disp_scale = lambda x: meta_py_r.binary_convert_scale(x, self.current_effect, convert_to="display.scale")
-                        else:
-                            ## assuming continuous here
-                            calc_scale_val = meta_py_r.continuous_convert_scale(display_scale_val,
-                                                        self.current_effect, convert_to="calc.scale")
-                            conv_to_disp_scale = lambda x: meta_py_r.continuous_convert_scale(x, self.current_effect, convert_to="display.scale")
-                                                        
+# DELETE IF ALL IS WELL
+#                        if current_data_type == BINARY:
+#                            calc_scale_val = meta_py_r.binary_convert_scale(display_scale_val,
+#                                                        self.current_effect, convert_to="calc.scale")
+#                            conv_to_disp_scale = lambda x: meta_py_r.binary_convert_scale(x, self.current_effect, convert_to="display.scale")
+#                        else:
+#                            ## assuming continuous here
+#                            calc_scale_val = meta_py_r.continuous_convert_scale(display_scale_val,
+#                                                        self.current_effect, convert_to="calc.scale")
+#                            conv_to_disp_scale = lambda x: meta_py_r.continuous_convert_scale(x, self.current_effect, convert_to="display.scale")
+
+                        # Will be binary or continuous
+                        calc_scale_val = self._get_calc_scale_value(display_scale_val,
+                                                                    data_type=current_data_type,
+                                                                    effect=self.current_effect)
+                        conv_to_disp_scale = self._get_conv_to_display_scale(data_type=current_data_type,
+                                                                             effect=self.current_effect)
+                        
                         ma_unit = self.get_current_ma_unit_for_study(index.row())
-        
                         if outcome_subtype == "generic_effect":
                             if column == self.OUTCOMES[0]: #estimate
                                 ma_unit.set_effect(self.current_effect, group_str, calc_scale_val)
@@ -660,7 +669,7 @@ class DatasetModel(QAbstractTableModel):
                             elif column == self.OUTCOMES[1]: # se
                                 ma_unit.set_SE(self.current_effect, group_str, calc_scale_val)
                                 #ma_unit.set_display_se(self.current_effect, group_str, display_scale_val)
-                        else: # normal continuous case
+                        else: # normal case
                             if column == self.OUTCOMES[0]: # estimate
                                 print("Setting estimate: %s" % str(calc_scale_val))
                                 ma_unit.set_effect(self.current_effect, group_str, calc_scale_val)
@@ -680,6 +689,8 @@ class DatasetModel(QAbstractTableModel):
                             else:
                                 se = None
                             ma_unit.set_SE(self.current_effect, group_str, se)
+                            
+                        # Now calculate display_effectg and CI
                         ma_unit.calculate_display_effect_and_ci(self.current_effect, group_str, conv_to_disp_scale)
 
                                 
@@ -690,21 +701,25 @@ class DatasetModel(QAbstractTableModel):
                         if column in self.OUTCOMES[3:]:
                             # by convention, the last three columns are specificity
                             m_str = "Spec"
-
-                        if not display_scale_val in meta_globals.EMPTY_VALS:
-                            calc_scale_val = meta_py_r.diagnostic_convert_scale(display_scale_val, \
-                                                        m_str, convert_to="calc.scale")    
                             
-                            # now we switch on what outcome column we're on ... kind of ugly, but eh.
-                            if column in (self.OUTCOMES[0], self.OUTCOMES[3]):
-                                ma_unit.set_effect(m_str, group_str, calc_scale_val)
-                                #ma_unit.set_display_effect(m_str, group_str, display_scale_val)
-                            elif column in (self.OUTCOMES[1], self.OUTCOMES[4]):
-                                ma_unit.set_lower(m_str, group_str, calc_scale_val)
-                                #ma_unit.set_display_lower(m_str, group_str, display_scale_val)    
-                            else:
-                                ma_unit.set_upper(m_str, group_str, calc_scale_val)
-                                #ma_unit.set_display_upper(m_str, group_str, display_scale_val)
+                        calc_scale_val = self._get_calc_scale_value(display_scale_val,
+                                                                    data_type=current_data_type,
+                                                                    effect=m_str)
+                        
+                        # now we switch on what outcome column we're on ... kind of ugly, but eh.
+                        if column in (self.OUTCOMES[0], self.OUTCOMES[3]):
+                            ma_unit.set_effect(m_str, group_str, calc_scale_val)
+                            #ma_unit.set_display_effect(m_str, group_str, display_scale_val)
+                        elif column in (self.OUTCOMES[1], self.OUTCOMES[4]):
+                            ma_unit.set_lower(m_str, group_str, calc_scale_val)
+                            #ma_unit.set_display_lower(m_str, group_str, display_scale_val)    
+                        else:
+                            ma_unit.set_upper(m_str, group_str, calc_scale_val)
+                            #ma_unit.set_display_upper(m_str, group_str, display_scale_val)
+                        conv_to_display_scale = self._get_conv_to_display_scale(self,
+                                                                                data_type=current_data_type,
+                                                                                effect=m_str)
+                        ma_unit.calculate_display_effect_and_ci(m_str, group_str, conv_to_disp_scale)
                         
             elif column == self.INCLUDE_STUDY:
                 study.include = value.toBool()
@@ -1531,11 +1546,15 @@ class DatasetModel(QAbstractTableModel):
             if data_type == BINARY:
                 e1, n1, e2, n2 = self.get_cur_raw_data_for_study(study_index)
                 if self.current_effect in BINARY_TWO_ARM_METRICS:
-                    est_and_ci_d = meta_py_r.effect_for_study(e1, n1, e2, n2, metric=self.current_effect, conf_level=meta_globals.get_global_conf_level())
+                    est_and_ci_d = meta_py_r.effect_for_study(e1, n1, e2, n2,
+                                                              metric=self.current_effect,
+                                                              conf_level=meta_globals.get_global_conf_level())
                 else:
                     # binary, one-arm
-                    est_and_ci_d = meta_py_r.effect_for_study(e1, n1,
-                                        two_arm=False, metric=self.current_effect, conf_level=meta_globals.get_global_conf_level())
+                    est_and_ci_d = meta_py_r.effect_for_study(e1, n1, 
+                                                              two_arm=False,
+                                                              metric=self.current_effect,
+                                                              conf_level=meta_globals.get_global_conf_level())
             elif data_type == CONTINUOUS:
                 n1, m1, sd1, n2, m2, sd2 = self.get_cur_raw_data_for_study(study_index)
                 if self.current_effect in CONTINUOUS_TWO_ARM_METRICS:
@@ -1562,6 +1581,8 @@ class DatasetModel(QAbstractTableModel):
                 for metric in DIAGNOSTIC_METRICS:
                     est, lower, upper = ests_and_cis[metric]["calc_scale"]
                     ma_unit.set_effect_and_ci(metric, group_str, est, lower, upper)
+                    conv_to_disp_scale = self._get_conv_to_display_scale(data_type, effect=metric)
+                    ma_unit.calculate_display_effect_and_ci(metric, group_str, conv_to_disp_scale)
                 
             ####
             # if we're dealing with continuous or binary data, here
@@ -1579,7 +1600,8 @@ class DatasetModel(QAbstractTableModel):
                 # (e.g., log) and a version on the continuous/display scale to present to the
                 # user via the UI.
                 ma_unit.set_effect_and_ci(self.current_effect, group_str, est, lower, upper)
-    
+                conv_to_disp_scale = self._get_conv_to_display_scale(data_type, effect=self.current_effect)
+                ma_unit.calculate_display_effect_and_ci(self.current_effect, group_str, conv_to_disp_scale)
                 
     def get_cur_raw_data(self, only_if_included=True, only_these_studies=None):
         raw_data = []
@@ -1758,4 +1780,39 @@ class DatasetModel(QAbstractTableModel):
                                                       convert_to_display_scale=get_diagnostic_display_scale(m_str),
                                                       check_if_necessary=True)
         print("Finished calculating display effect and cis")
+
+    def _get_conv_to_display_scale(self, data_type, effect):
+        ''' Returns appropriate conv_to_display_scale function '''
+        
+        if None in [data_type, effect]:
+            print("_get_conv_to_display_scale got None for either data_type, or effect")
+
+        if data_type == BINARY:
+            conv_to_disp_scale = lambda x: meta_py_r.binary_convert_scale(x, effect, convert_to="display.scale")
+        elif data_type == CONTINUOUS:
+            conv_to_disp_scale = lambda x: meta_py_r.continuous_convert_scale(x, effect, convert_to="display.scale")
+        elif data_type == DIAGNOSTIC:
+            conv_to_disp_scale = lambda x: meta_py_r.diagnostic_convert_scale(x, effect, convert_to="display.scale")
+        else:
+            raise Exception("_get_conv_to_display_scale: data type not recognized!")
+        
+        return conv_to_disp_scale
+    
+    def _get_calc_scale_value(self, display_scale_val=None, data_type=None, effect=None):
+        ''' Gets the calc-scale value of the given display_scale value'''
+        
+        if None in [display_scale_val, data_type, effect]:
+            print("_get_calc_scale_value got None for either display_scale_val, data_type, or effect")
+        
+        calc_scale_val = None
+        if data_type == BINARY:
+            calc_scale_val = meta_py_r.binary_convert_scale(display_scale_val, effect, convert_to="calc.scale")
+        elif data_type == CONTINUOUS:
+            calc_scale_val = meta_py_r.continuous_convert_scale(display_scale_val, effect, convert_to="calc.scale")
+        elif data_type == DIAGNOSTIC:
+            calc_scale_val = meta_py_r.diagnostic_convert_scale(display_scale_val, effect, convert_to="calc.scale")   
+        else:
+                raise Exception("_get_calc_scale_value: data type not recognized!")
+            
+        return calc_scale_val
             

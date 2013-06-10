@@ -757,6 +757,12 @@ class MetaAnalyticUnit:
                 #print("We don't have to recalculate display_effect and ci-->leaving")
                 return # we don't have to recalculate so exit
         
+        if convert_to_display_scale is None:
+            # This shouldn't happen.... debug it!
+            #pyqtRemoveInputHook()
+            #pdb.set_trace()
+            raise Exception("calculate_display_effect_and_ci(ma_dataset): convert_to_display_scale is None!")
+        
         '''Calculates display effect and ci and stores the results in the
         various 'display_' variables '''
         est, lower, upper = self.get_effect_and_ci(effect, group_str)
