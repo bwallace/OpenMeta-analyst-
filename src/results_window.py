@@ -14,7 +14,7 @@ from PyQt4.Qt import *
 import pdb
 import os
 import sys
-import forms.ui_results_window
+import ui_results_window
 import edit_forest_plot_form
 import meta_py_r
 #import shutil
@@ -29,7 +29,7 @@ SCALE_P = .5 # percent images are to be scaled
 SIDE_BY_SIDE_FOREST_PLOTS = ("NLR and PLR Forest Plot", "Sensitivity and Specificity")
 ROW_HEIGHT = 15 # by trial-and-error; seems to work very well
 
-class ResultsWindow(QMainWindow, forms.ui_results_window.Ui_ResultsWindow):
+class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
     def __init__(self, results, parent=None):
 
@@ -101,7 +101,7 @@ class ResultsWindow(QMainWindow, forms.ui_results_window.Ui_ResultsWindow):
         # reset the scene
         self.graphics_view.setScene(self.scene)
         self.graphics_view.ensureVisible(QRectF(0,0,0,0))
-        
+
 
 
     def f(self):
@@ -143,9 +143,8 @@ class ResultsWindow(QMainWindow, forms.ui_results_window.Ui_ResultsWindow):
 
             img_shape, pos, pixmap_item = self.create_pixmap_item(pixmap, self.position(),\
                                                 title, image, params_path=params_path)
-
-            self.items_to_coords[qt_item] = pos
             
+            self.items_to_coords[qt_item] = pos
             
 
 
@@ -386,3 +385,21 @@ class ResultsWindow(QMainWindow, forms.ui_results_window.Ui_ResultsWindow):
         point = QPoint(self.x_coord, self.y_coord)
         return self.graphics_view.mapToScene(point)
 
+
+if __name__ == "__main__":
+    
+    # make test results based on results from when meta-analysis run from amino sample data
+    test_results = {}
+    test_results['images'] = {'Forest Plot': './r_tmp/forest.png'}
+    test_results['texts'] = {'Weights':'studies             weights\nGonzalez       1993  7.3%\nPrins          1993  6.2%\nGiamarellou    1991  2.1%\nMaller         1993 10.7%\nSturm          1989  2.0%\nMarik          1991 12.2%\nMuijsken       1988  7.5%\nVigano         1992  1.8%\nHansen         1988  5.3%\nDe Vries       1990  6.1%\nMauracher      1989  2.2%\nNordstrom      1990  5.3%\nRozdzinski     1993 10.3%\nTer Braak      1990  8.7%\nTulkens        1988  1.2%\nVan der Auwera 1991  2.0%\nKlastersky     1977  6.0%\nVanhaeverbeek  1993  1.2%\nHollender      1989  1.8%\n',
+                             'Summary':'Binary Random-Effects Model\n\nMetric: Odds Ratio\n\n Model Results\n\n Estimate  Lower bound   Upper bound   p-Value  \n\n 0.770        0.485         1.222       0.267   \n\n\n Heterogeneity\n\n tau^2  Q(df=18)   Het. p-Value   I^2  \n\n 0.378   33.360        0.015      46%  \n\n\n Results (log scale)\n\n Estimate  Lower bound   Upper bound   Std. error  \n\n -0.262      -0.724         0.200         0.236    \n\n\n'
+                            }
+    test_results['image_var_names'] = {'forest plot': 'forest_plot'}
+    test_results['image_params_paths'] = {'Forest Plot': 'r_tmp/1369769105.72079'} # change this number as necessary
+    test_results['image_order'] = None
+    
+    
+    app = QApplication(sys.argv)
+    resultswindow = ResultsWindow(test_results)
+    resultswindow.show()
+    sys.exit(app.exec_())

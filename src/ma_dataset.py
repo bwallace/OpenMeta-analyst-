@@ -24,6 +24,7 @@ import copy
 import two_way_dict
 import meta_globals
 from meta_globals import *
+import meta_py_r
 
 class Dataset:
     def __len__(self):
@@ -384,13 +385,19 @@ class Dataset:
         you to sort arbitrarily in the order specified by the list.
         '''
         
-        outcome_name = directions_to_ma_unit['outcome_name']
-        follow_up = directions_to_ma_unit['follow_up']
-        current_groups = directions_to_ma_unit['current_groups']
-        data_index = directions_to_ma_unit['data_index']
-        current_effect = directions_to_ma_unit['current_effect']
-        group_str = directions_to_ma_unit['group_str']
-        outcome_type = directions_to_ma_unit['outcome_type']
+        
+        # Assign stuff conditionally
+        def val_if_key_in_dict(key, dictionary):
+            if key in dictionary:
+                return dictionary[key]
+            else:
+                return None
+            
+        if directions_to_ma_unit is not None:
+            keys = ['outcome_name','follow_up','current_groups','data_index',
+                    'current_effect','group_str','outcome_type']
+            (outcome_name, follow_up, current_groups, data_index, current_effect,
+             group_str, outcome_type) = [val_if_key_in_dict(x,directions_to_ma_unit) for x in keys]
         
         if compare_by == "name":
             return lambda study_a, study_b : self._meta_cmp_wrapper(study_a, study_b,\
@@ -705,7 +712,7 @@ class MetaAnalyticUnit:
             lower = self.effects_dict[effect][group_str]["lower"]
         if  upper is None:
             upper = self.effects_dict[effect][group_str]["upper"]
-        mult = meta_py_r.get_mult(meta_py_r.get_global_conf_level())
+        mult = meta_globals.get_mult()
         
         
         #print("Using the following values to calculate se:")
@@ -731,14 +738,97 @@ class MetaAnalyticUnit:
     def set_SE(self, effect, group_str, se):
         self.effects_dict[effect][group_str]["SE"] = se
         
-#    def set_display_effect(self, effect, group_str, value):
-#        self.effects_dict[effect][group_str]["display_est"] = value
-#    def set_display_lower(self, effect, group_str, lower):
-#        self.effects_dict[effect][group_str]["display_lower"] = lower
-#    def set_display_upper(self, effect, group_str, upper):
-#        self.effects_dict[effect][group_str]["display_upper"] = upper
-#    def set_display_se(self, effect, group_str, se):
-#        self.effects_dict[effect][group_str]["display_se"] = se
+    def set_display_effect(self, effect, group_str, value):
+        self.effects_dict[effect][group_str]["display_est"] = value
+    def set_display_lower(self, effect, group_str, lower):
+        self.effects_dict[effect][group_str]["display_lower"] = lower
+    def set_display_upper(self, effect, group_str, upper):
+        self.effects_dict[effect][group_str]["display_upper"] = upper
+    # Should this exist?
+    def set_display_se(self, effect, group_str, se):
+        self.effects_dict[effect][group_str]["display_se"] = se
+        
+    def calculate_display_effect_and_ci(self, effect, group_str, convert_to_display_scale, check_if_necessary=False):
+        # only runs if it is necessary to do so
+        if check_if_necessary:
+            if self._should_calculate_display_effect_and_ci_and_se(effect, group_str):
+                pass # just continue and do the calculation
+            else:
+                #print("We don't have to recalculate display_effect and ci-->leaving")
+                return # we don't have to recalculate so exit
+        
+        '''Calculates display effect and ci and stores the results in the
+        various 'display_' variables '''
+        est, lower, upper = self.get_effect_and_ci(effect, group_str)
+        d_est, d_lower, d_upper = [convert_to_display_scale(x) for x in [est, lower, upper]]
+        se = self.get_se(effect, group_str)
+        d_se = convert_to_display_scale(se)
+        
+        print("results of calculating display effect and ci: (est,low,high,se: %s, %s, %s, %s" % (d_est,d_lower,d_upper,d_se))
+        
+        self.set_display_effect(effect, group_str, d_est)
+        self.set_display_lower(effect, group_str, d_lower)
+        self.set_display_upper(effect, group_str, d_upper)
+        self.set_display_se(effect, group_str, d_se)
+        self.effects_dict[effect][group_str]["display_conf_level"] = meta_globals.get_global_conf_level()
+        
+        
+    def get_display_effect(self, effect, group_str):
+        if "display_est" in self.effects_dict[effect][group_str]:
+            return self.effects_dict[effect][group_str]["display_est"]
+        else:
+            return None
+    def get_display_lower(self, effect, group_str):
+        if "display_lower" in self.effects_dict[effect][group_str]:
+            return self.effects_dict[effect][group_str]["display_lower"]
+        else:
+            return None 
+    def get_display_upper(self, effect, group_str):
+        if "display_upper" in self.effects_dict[effect][group_str]:
+            return self.effects_dict[effect][group_str]["display_upper"]
+        else:
+            return None
+    def get_display_se(self, effect, group_str):
+        if "display_se" in self.effects_dict[effect][group_str]:
+            return self.effects_dict[effect][group_str]["display_se"]
+        else:
+            return None
+    
+    
+    
+    
+    def get_display_effect_and_ci(self, effect, group_str, convert_to_display_scale=None):
+#        if self._should_calculate_display_effect_and_ci_and_se(effect, group_str):
+#            self.calculate_display_effect_and_ci(effect, group_str, convert_to_display_scale)
+            
+        return (self.get_display_effect(effect, group_str),
+                self.get_display_lower(effect, group_str),
+                self.get_display_upper(effect, group_str))
+        
+    def get_display_effect_and_se(self, effect, group_str, convert_to_display_scale=None):
+#        if self._should_calculate_display_effect_and_ci_and_se(effect, group_str):
+#            print("Yes, should calculate display_effect and se")
+#            self.calculate_display_effect_and_ci(effect, group_str, convert_to_display_scale)
+        
+        return (self.get_display_effect(effect, group_str),
+                self.get_display_se(effect, group_str))
+    
+    def _should_calculate_display_effect_and_ci_and_se(self, effect, group_str):
+        existing_display_conf_level = "display_conf_level" in self.effects_dict[effect][group_str].keys()
+        if existing_display_conf_level:
+            display_cl = self.effects_dict[effect][group_str]["display_conf_level"] # conf level @ which display values were computed
+            #print("Display CL, global CL: %s, %s" % (str(display_cl),
+            #                        str(meta_globals.get_global_conf_level())))
+            disp_cl_eq_global_cl = meta_globals.equal_close_enough(
+                                            display_cl,
+                                            meta_globals.get_global_conf_level())
+            if disp_cl_eq_global_cl:
+                result = False # we are ok, don't have to do anything special
+            else:
+                result = True
+        else:
+            result = True
+        return result
          
     def get_estimate(self, effect, group_str):
         return self.effects_dict[effect][group_str]["est"]
@@ -747,7 +837,7 @@ class MetaAnalyticUnit:
             return self.effects_dict[effect][group_str]["lower"]
         est = self.get_estimate(effect, group_str)
         se  = self.get_se(effect, group_str)
-        mult = meta_py_r.get_mult(meta_py_r.get_global_conf_level())
+        mult = meta_globals.get_mult()
         if est is None or se is None:
             return None
         return  (est-mult*se)
@@ -757,7 +847,7 @@ class MetaAnalyticUnit:
             return self.effects_dict[effect][group_str]["upper"]
         est = self.get_estimate(effect, group_str)
         se  = self.get_se(effect, group_str)
-        mult = meta_py_r.get_mult(meta_py_r.get_global_conf_level())
+        mult = meta_globals.get_mult()
         if est is None or se is None:
             return None
         return  (est+mult*se)

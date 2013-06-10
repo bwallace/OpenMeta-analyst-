@@ -22,7 +22,7 @@ print "success!"
 import copy
 
 ## hand-rolled modules
-import forms.ui_meta
+import ui_meta
 import meta_py_r
 import ma_data_table_view
 import ma_data_table_model
@@ -72,7 +72,7 @@ class ImportProgress(QDialog, forms.ui_running.Ui_running):
     
 ###############################################################################
 
-class MetaForm(QtGui.QMainWindow, forms.ui_meta.Ui_MainWindow):
+class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
     def __init__(self, parent=None):
         #
@@ -84,8 +84,8 @@ class MetaForm(QtGui.QMainWindow, forms.ui_meta.Ui_MainWindow):
         self.setupUi(self)
         
         
-        meta_py_r.set_global_conf_level(meta_globals.DEFAULT_CONF_LEVEL)
-        self.cl_label=QLabel("confidence level: {:.1%}".format(meta_py_r.get_global_conf_level()/100.0))
+        meta_globals.set_global_conf_level(meta_globals.DEFAULT_CONF_LEVEL)
+        self.cl_label=QLabel("confidence level: {:.1%}".format(meta_globals.get_global_conf_level()/100.0))
         self.cl_label.setAlignment(Qt.AlignRight)
         self.statusbar.addWidget(self.cl_label,1)
         
@@ -169,7 +169,7 @@ class MetaForm(QtGui.QMainWindow, forms.ui_meta.Ui_MainWindow):
                 wizard_data = start_up_wizard.get_results()
                 self._handle_wizard_results(wizard_data)
             else:
-                quit()
+                QApplication.quit()
             
     def closeEvent(self, event):
         if self.current_data_unsaved:
@@ -177,6 +177,17 @@ class MetaForm(QtGui.QMainWindow, forms.ui_meta.Ui_MainWindow):
                 # then they canceled!
                 event.ignore()
         print "*** goodbye, dear analyst. ***"
+
+
+    def _model_about_to_be_reset(self):
+        '''Call all the functions here that should be called when the model is
+        about to be reset'''
+        self._recalculate_display_scale_values()
+    
+    def _recalculate_display_scale_values(self):
+        print("got to recalc disp scale values")
+        
+        self.tableView.model().recalculate_display_scale()
 
     ### TODO: Should ask if user wants to save before making the new dataset.. GD
     def create_new_dataset(self, use_undo_framework=True):
@@ -262,6 +273,9 @@ class MetaForm(QtGui.QMainWindow, forms.ui_meta.Ui_MainWindow):
                            self.tableView.displayed_ma_changed)
                                                                  
         QObject.disconnect(self.tableView, SIGNAL("dataDirtied()"), self.data_dirtied)
+        
+        QObject.disconnect(self.tableView.model(), SIGNAL("modelAboutToBeReset()"),
+                           self._model_about_to_be_reset)
 
 
     def data_error(self, msg):
@@ -292,15 +306,15 @@ class MetaForm(QtGui.QMainWindow, forms.ui_meta.Ui_MainWindow):
         
     def _change_global_ci(self):
         print("Changing global confidence level:")
-        prev_conf_level = meta_py_r.get_global_conf_level()
+        prev_conf_level = meta_globals.get_global_conf_level()
         print("   Previous Global Confidence level was: %f" % prev_conf_level)
 
         dialog = conf_level_dialog.ChangeConfLevelDlg(prev_conf_level, self)
         if dialog.exec_():
-            meta_py_r.set_global_conf_level(dialog.get_value())
-            self.cl_label.setText("confidence level: {:.1%}".format(meta_py_r.get_global_conf_level()/100.0))
+            meta_globals.set_global_conf_level(dialog.get_value())
+            self.cl_label.setText("confidence level: {:.1%}".format(meta_globals.get_global_conf_level()/100.0))
             self.model.reset()
-            print("   Global Confidence level is now: %f" % meta_py_r.get_global_conf_level())
+            print("   Global Confidence level is now: %f" % meta_globals.get_global_conf_level())
             
     def _import_csv(self):
         '''Import data from csv file'''
@@ -326,6 +340,10 @@ class MetaForm(QtGui.QMainWindow, forms.ui_meta.Ui_MainWindow):
         # this fixes bug #20.
         QObject.connect(self.tableView.model(), SIGNAL("modelReset(QModelIndex)"),
                                                                 self.set_edit_focus) 
+        
+        # Do actions when the model is about to be reset (for now, just
+        # recalculate display scale values)
+        QObject.connect(self.tableView.model(), SIGNAL("modelAboutToBeReset()"), self._model_about_to_be_reset)
            
         ###
         # this listens to the model regarding errors in data entry -- 
@@ -638,8 +656,11 @@ class MetaForm(QtGui.QMainWindow, forms.ui_meta.Ui_MainWindow):
         view_window.show()
         
     def analysis(self, results):
-        form = results_window.ResultsWindow(results, parent=self)
-        form.show()
+        if results is None:
+            return # analysis failed
+        else: # analysis succeeded
+            form = results_window.ResultsWindow(results, parent=self)
+            form.show()
 
 
     def edit_group_name(self, cur_group_name):
@@ -670,7 +691,7 @@ class MetaForm(QtGui.QMainWindow, forms.ui_meta.Ui_MainWindow):
 
             # fix for issue #59; do not allow the user to create two covariates with
             # the same name!
-            new_covariate_type = str(form.datatype_cbo_box.currentText())
+            new_covariate_type = str(form.datatype_cbo_box.currentText()).lower()
             if new_covariate_name in self.model.get_covariate_names():
                 QMessageBox.warning(self,
                             "whoops.",
@@ -718,8 +739,9 @@ class MetaForm(QtGui.QMainWindow, forms.ui_meta.Ui_MainWindow):
             try:
                 new_outcome_subtype = startup_outcome['sub_type']
             except:
-                pyqtRemoveInputHook()
-                pdb.set_trace()
+                print("ERROR: No outcome subtype detected.")
+                #pyqtRemoveInputHook()
+                #pdb.set_trace()
             print 'Startup Outcome',startup_outcome
             redo_f = lambda: self._add_new_outcome(new_outcome_name, new_outcome_type, new_outcome_subtype)
             prev_outcome = str(self.model.current_outcome)
@@ -1351,7 +1373,7 @@ class MetaForm(QtGui.QMainWindow, forms.ui_meta.Ui_MainWindow):
                     covariate_names=covariate_names,
                     covariate_types=covariate_types)
             self.tableView.undoStack.push(importcsv_command)
-        
+            
         
         
 #class CommandGenericDo(QUndoCommand):

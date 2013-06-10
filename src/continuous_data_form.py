@@ -65,7 +65,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
                               self.correlation_pre_post]
         self.text_boxes = [self.low_txt_box, self.high_txt_box,
                            self.effect_txt_box, self.correlation_pre_post]
-        self.ci_label.setText("{0:.1f}% Confidence Interval".format(meta_py_r.get_global_conf_level()))
+        self.ci_label.setText("{0:.1f}% Confidence Interval".format(meta_globals.get_global_conf_level()))
         self.current_item_data = {}
         
         # Set the table headers to reflect the group names
@@ -89,7 +89,9 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         self.impute_data()
         self.enable_back_calculation_btn()
         
-        if (self.cur_effect != "MD"):
+        print("current effect: %s" % str(self.cur_effect))
+        # Hide pre-post for SMD until it is implemented
+        if self.cur_effect not in ["MD","SMD"]:
             self.grp_box_pre_post.setVisible(False)
             self.adjustSize()
             
@@ -156,7 +158,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         self.cur_effect = unicode(self.effect_cbo_box.currentText().toUtf8(), "utf-8")
         
         # hide pre-post for SMD
-        if (self.cur_effect != "MD"):
+        if self.cur_effect not in ["MD","SMD"]:
             self.grp_box_pre_post.setVisible(False)
             self.adjustSize()
         else:
@@ -566,7 +568,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
                 self._update_ma_unit()
                 
     def conf_level_to_alpha(self):
-        alpha = 1-meta_py_r.get_global_conf_level()/100.0
+        alpha = 1-meta_globals.get_global_conf_level()/100.0
         return alpha
            
     def impute_pre_post_data(self, table, group_index, row=None, col=None):
@@ -723,11 +725,11 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
                 est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1, se1=se1, 
                                                                      n2=n2, m2=m2, sd2=sd2, se2=se2,
                                                                      metric=self.cur_effect,
-                                                                     conf_level=meta_py_r.get_global_conf_level())
+                                                                     conf_level=meta_globals.get_global_conf_level())
             else:
                 # continuous, one-arm metric
                 est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1,
-                                      two_arm=False, metric=self.cur_effect, conf_level=meta_py_r.get_global_conf_level())                          
+                                      two_arm=False, metric=self.cur_effect, conf_level=meta_globals.get_global_conf_level())                          
             
             est, low, high = est_and_ci_d["calc_scale"] # calculation (e.g., log) scale
             self.ma_unit.set_effect_and_ci(self.cur_effect, self.group_str, est, low, high)    
@@ -819,7 +821,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
             self.back_calc_btn.setVisible(True)
             
         (group1_data, group2_data, effect_data) = build_data_dicts()
-        imputed = meta_py_r.back_calc_cont_data(group1_data, group2_data, effect_data, meta_py_r.get_global_conf_level())
+        imputed = meta_py_r.back_calc_cont_data(group1_data, group2_data, effect_data, meta_globals.get_global_conf_level())
         print("Imputed data: ", imputed)
         
         # Leave if there was a failure

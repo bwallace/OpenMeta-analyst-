@@ -9,7 +9,7 @@ cd ..
 
 # Copy R to local directory
 mkdir ../frozen/OpenMetaAnalyst.app/Contents/MacOS/R_dist
-cp -r /opt/local/lib/R ../frozen/OpenMetaAnalyst.app/Contents/MacOS/R_dist/2.15
+cp -r /opt/local/Library/Frameworks/R.framework/Versions/3.0/Resources/ ../frozen/OpenMetaAnalyst.app/Contents/MacOS/R_dist/3.0.1
 # Copy sample data
 cp -rv sample_data/ ../frozen/sample_data
 
@@ -62,6 +62,12 @@ cp -v /opt/local/lib/libffi.6.dylib libffi.6.dylib
 cp -v /opt/local/lib/libgraphite2.3.dylib libgraphite2.3.dylib
 cp -v /opt/local/lib/libicule.49.dylib libicule.49.dylib
 cp -v /opt/local/lib/libexpat.1.dylib libexpat.1.dylib
+
+# Needed to addd libRlapack after move to R3.0.1 for some reason
+cp -v /opt/local/Library/Frameworks/R.framework/Versions/3.0/Resources/lib/libRlapack.dylib libRlapack.dylib
+
+# Allow Qt to display different image formats otherwise pixmaps don't work
+cp -rv /opt/local/share/qt4/plugins/imageformats imageformats
 
 # To solve the text showing up as boxes issue
 cp -v /opt/local/lib/pango/1.8.0/modules/* .

@@ -26,9 +26,6 @@ NUM_DIGITS = 3
 #   levels of granularity).
 CALC_NUM_DIGITS = 4
 
-# Confidence level 
-DEFAULT_CONF_LEVEL = 95.0    # (normal 95% CI)
-
 # completely made up. need an actual versioning system.
 VERSION = .005 
 
@@ -155,6 +152,44 @@ ERROR_COLOR = QColor("red")
 OK_COLOR = QColor("black")
 
 DEFAULT_GROUP_NAMES = ["Grp A", "Grp B"]  # old: DEFAULT_GROUP_NAMES = ["tx A", "tx B"]
+
+
+def equal_close_enough(x,y):
+    THRESHOLD = 1e-4
+    if abs(x-y) < THRESHOLD:
+        return True
+    else:
+        return False
+
+### CONFIDENCE LEVEL STUFF #####
+# Confidence level 
+DEFAULT_CONF_LEVEL = 95.0    # (normal 95% CI)
+conf_level = 95 # global confidence Level
+mult = None
+
+def set_global_conf_level(conf_lev):
+    ''' sets multiplier as well '''
+    
+    global conf_level, mult
+    conf_level = float(conf_lev)
+    print("Set confidence level to: %f" % conf_level)
+    mult = meta_py_r.get_mult_from_r(conf_level)
+    
+    # set in R as well
+    r_str = "set.global.conf.level("+str(float(conf_lev))+")"
+    new_cl_in_R = meta_py_r.ro.r(r_str)[0]
+    print("Set confidence level in R to: %f" % new_cl_in_R)
+    
+    return conf_level
+
+
+def get_global_conf_level():
+    return float(conf_level)
+
+def get_mult():
+    return mult
+
+### END CONFIDENCE LEVEL STUFF ####
 
 
 '''
