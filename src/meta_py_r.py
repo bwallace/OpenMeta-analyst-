@@ -21,7 +21,9 @@ import meta_globals
 from PyQt4.QtCore import pyqtRemoveInputHook
 from meta_globals import (BASE_PATH,CONTINUOUS,ONE_ARM_METRICS,TWO_ARM_METRICS,
                           TYPE_TO_STR_DICT)
+
 import threading
+
 
 try:
     print("importing from rpy2")
@@ -80,19 +82,6 @@ except:
     raise Exception, "unable to create temporary directory for R results! make sure you have sufficient permissions."
 
 
-#lochness_monster = threading.Lock() # lock to use for executing R functions
-
-#def RfunctionExecuter(function):
-#    def _RfunctionExecuter(*args, **kw):
-#        lochness_monster.acquire()
-#        print("Lock acquired, executing a function")
-#        
-#        res = function(*args, **kw)
-#        
-#        lochness_monster.release()
-#        print("Finished function, lock released")
-#        return res
-#    return _RfunctionExecuter
 
 def RfunctionCaller(function):
     def _RfunctionCaller(*args, **kw):
@@ -103,8 +92,16 @@ def RfunctionCaller(function):
 
 @RfunctionCaller
 def reset_Rs_working_dir():
-    print "resetting "
-    ro.r("setwd('%s')" % BASE_PATH) 
+    print("resetting R working dir")
+
+    # Fix paths issue in windows
+    r_str = "setwd('%s')" % BASE_PATH
+    print("before replacement r_string: %s" % r_str)
+    r_str = r_str.replace("\\","\\\\")
+    print("about to execute: %s" % r_str)
+
+    # Executing r call with escaped backslashes
+    ro.r(r_str) 
 
 @RfunctionCaller
 def impute_diag_data(diag_data_dict):
@@ -1376,3 +1373,4 @@ def generic_convert_scale(x, metric_name, data_type, convert_to="display.scale")
 @RfunctionCaller
 def turn_off_R_graphics():
     ro.r("graphics.off()")
+
