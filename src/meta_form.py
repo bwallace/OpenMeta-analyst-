@@ -138,6 +138,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         show_tom.setShortcut(QKeySequence("T, Shift+O, M"))
         self.addAction(show_tom)
         QObject.connect(show_tom, SIGNAL("triggered()"), self._show_tom)
+        
     
 
     def start(self):
@@ -189,14 +190,18 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         
         self.tableView.model().recalculate_display_scale()
 
-    ### TODO: Should ask if user wants to save before making the new dataset.. GD
+
     def create_new_dataset(self, use_undo_framework=True):
+        if self.current_data_unsaved:
+            self.user_is_going_to_lose_data()
+        
         wizard = main_wizard.MainWizard(parent=self, path="new_dataset")
         if wizard.exec_():
             wizard_data = wizard.get_results()
             self._handle_wizard_results(wizard_data)
         
     def new_dataset(self, name=DEFAULT_DATASET_NAME, is_diag=False, use_undo_framework = True):
+        
         data_model = ma_dataset.Dataset(title=name, is_diag=is_diag)
         if self.model is not None:
             if use_undo_framework:
