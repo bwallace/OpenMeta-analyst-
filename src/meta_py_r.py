@@ -24,6 +24,10 @@ from meta_globals import (BASE_PATH,CONTINUOUS,ONE_ARM_METRICS,TWO_ARM_METRICS,
 
 import threading
 
+import sys, os
+
+print("the path: %s" % os.getenv("PATH"))
+
 
 try:
     print("importing from rpy2")
@@ -33,10 +37,11 @@ try:
     import rpy2.robjects as ro
     print("succesfully imported from rpy2")
 except Exception, e:
+    print e
     print("rpy2 import problem")
     #pyqtRemoveInputHook()
     #pdb.set_trace()
-    raise Exception, "rpy2 not properly installed!"
+    raise Exception("rpy2 not properly installed!")
     print e
 print("importing rpy2.robjects")
 import rpy2.robjects

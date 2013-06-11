@@ -551,233 +551,230 @@ class DatasetModel(QAbstractTableModel):
             column = index.column()
             old_val = self.data(index)
             study = self.dataset.studies[index.row()]
-            if column in (self.NAME, self.YEAR):
-                if column == self.NAME:
-                    study.name = unicode(value.toString().toUtf8(), encoding="utf8")
-                    if study.name == "":
-                        # just ignore -- we don't allow empty study names
-                        return False
-                    elif index.row() == self.rowCount()-DUMMY_ROWS-1:
-                        # if the last study was just edited, append a
-                        # new, blank study
-                        # TODO bug: if a new tx group is added, and then a new study
-                        # is added, the program throws up because the study doesn't have
-                        # the new outcome in its meta-analytic unit object -- need to check
-                        # for this at runtime as we do with follow-up and outcome
-                        new_study = Study(self.max_study_id()+1)
-                        # issue #133 fix; exclude newly added studies by default
-                        new_study.include=False
-                        self.dataset.add_study(new_study)
-                        self.study_auto_added = int(new_study.id)
-                        study_added_due_to_edit = int(new_study.id)
-                        self.reset()
-                        # new_index is where the user *should* be editing.
-                        new_index = self.index(index.row(), index.column()+1)
-                        self.emit(SIGNAL("modelReset(QModelIndex)"), new_index)
-                else:
-                    year_ok, msg = self._verify_year(value.toString())
-                    if not year_ok:
-                        self.emit(SIGNAL("dataError(QString)"), QString(msg))
-                        return False
-                    study.year = value.toInt()[0]
-            elif self.current_outcome is not None and column in self.RAW_DATA:
-                data_ok, msg = self._verify_raw_data(value.toString(), column, current_data_type, index)
-                if not data_ok:
-                    # this signal is (-- presumably --) handled by the UI
-                    # i.e., meta_form, which reports the problem to the
-                    # user. the model is not affected.
+        else:
+            return False
+            
+        if column == self.NAME:
+            study.name = unicode(value.toString().toUtf8(), encoding="utf8")
+            if study.name == "":
+                # just ignore -- we don't allow empty study names
+                return False
+            elif index.row() == self.rowCount()-DUMMY_ROWS-1:
+                # if the last study was just edited, append a
+                # new, blank study
+                # TODO bug: if a new tx group is added, and then a new study
+                # is added, the program throws up because the study doesn't have
+                # the new outcome in its meta-analytic unit object -- need to check
+                # for this at runtime as we do with follow-up and outcome
+                new_study = Study(self.max_study_id()+1)
+                # issue #133 fix; exclude newly added studies by default
+                new_study.include=False
+                self.dataset.add_study(new_study)
+                self.study_auto_added = int(new_study.id)
+                study_added_due_to_edit = int(new_study.id)
+                self.reset()
+                # new_index is where the user *should* be editing.
+                new_index = self.index(index.row(), index.column()+1)
+                self.emit(SIGNAL("modelReset(QModelIndex)"), new_index)
+        elif column == self.YEAR:
+            year_ok, msg = self._verify_year(value.toString())
+            if not year_ok:
+                self.emit(SIGNAL("dataError(QString)"), QString(msg))
+                return False
+            study.year = value.toInt()[0]
+        elif self.current_outcome is not None and column in self.RAW_DATA:
+            data_ok, msg = self._verify_raw_data(value.toString(), column, current_data_type, index)
+            if not data_ok:
+                # this signal is (-- presumably --) handled by the UI
+                # i.e., meta_form, which reports the problem to the
+                # user. the model is not affected.
+                self.emit(SIGNAL("dataError(QString)"), QString(msg))
+                return False
+
+            # @TODO make module-level constant?
+            adjust_by = 3 # include study, study name, year columns
+            ma_unit = self.get_current_ma_unit_for_study(index.row())
+            group_name = self.current_txs[0]
+            if current_data_type == BINARY:
+                if column in self.RAW_DATA[2:]:
+                    adjust_by += 2 
+                    group_name = self.current_txs[1]
+            elif current_data_type == CONTINUOUS:
+                if column in self.RAW_DATA[3:]:
+                    adjust_by += 3
+                    group_name = self.current_txs[1]
+            else:
+                # diagnostic
+                pass
+                    
+            adjusted_index = column-adjust_by
+            val = value.toDouble()[0] if value.toDouble()[1] else ""
+            ma_unit.tx_groups[group_name].raw_data[adjusted_index] = val # TODO: ENC
+            
+            # If a raw data column value is being edited, attempt to
+            # update the corresponding outcome (if data permits)
+            self.update_outcome_if_possible(index.row())
+            
+            
+        elif column in self.OUTCOMES:
+            print("Value %s in outcomes" % str(value.toString()))
+            
+            row = index.row()
+            
+            if value.toString().trimmed() == "":
+                delete_value = True  
+                display_scale_val = None
+                calc_scale_val = None
+            else:
+                # sanity check -- is this a number?
+                data_ok, msg = self._verify_outcome_data(value.toString(), column, row, current_data_type)
+                if not data_ok and import_csv == False:
                     self.emit(SIGNAL("dataError(QString)"), QString(msg))
                     return False
 
-                # @TODO make module-level constant?
-                adjust_by = 3 # include study, study name, year columns
-                ma_unit = self.get_current_ma_unit_for_study(index.row())
-                group_name = self.current_txs[0]
-                if current_data_type == BINARY:
-                    if column in self.RAW_DATA[2:]:
-                        adjust_by += 2 
-                        group_name = self.current_txs[1]
-                elif current_data_type == CONTINUOUS:
-                    if column in self.RAW_DATA[3:]:
-                        adjust_by += 3
-                        group_name = self.current_txs[1]
-                else:
-                    # diagnostic
-                    pass
-                        
-                adjusted_index = column-adjust_by
-                val = value.toDouble()[0] if value.toDouble()[1] else ""
-                ma_unit.tx_groups[group_name].raw_data[adjusted_index] = val # TODO: ENC
+                # the user can also explicitly set the effect size / CIs
+                # @TODO what to do if the entered estimate contradicts the raw data?
+                display_scale_val, converted_ok = value.toDouble()
                 
-                # If a raw data column value is being edited, attempt to
-                # update the corresponding outcome (if data permits)
-                self.update_outcome_if_possible(index.row())
-                
-                
-            elif column in self.OUTCOMES:
-                print("Value %s in outcomes" % str(value.toString()))
-                
-                row = index.row()
-                
-                if value.toString().trimmed() == "":
-                    delete_value = True  
-                    display_scale_val = None
+                print("Display scale value: %s" % str(display_scale_val))
+
+            if display_scale_val is None or converted_ok:
+                if not self.is_diag():
+                    # note that we convert from the display/continuous
+                    # scale on which the metric is assumed to have been
+                    # entered into the 'calculation' scale (e.g., log)
                     calc_scale_val = None
-                else:
-                    # sanity check -- is this a number?
-                    data_ok, msg = self._verify_outcome_data(value.toString(), column, row, current_data_type)
-                    if not data_ok and import_csv == False:
-                        self.emit(SIGNAL("dataError(QString)"), QString(msg))
-                        return False
+                    print("Input value is %s" % str(display_scale_val))
 
-                    # the user can also explicitly set the effect size / CIs
-                    # @TODO what to do if the entered estimate contradicts the raw data?
-                    display_scale_val, converted_ok = value.toDouble()
+                    # Will be binary or continuous
+                    calc_scale_val = self._get_calc_scale_value(display_scale_val,
+                                                                data_type=current_data_type,
+                                                                effect=self.current_effect)
+                    conv_to_disp_scale = self._get_conv_to_display_scale(data_type=current_data_type,
+                                                                         effect=self.current_effect)
                     
-                    print("Display scale value: %s" % str(display_scale_val))
-
-                if display_scale_val is None or converted_ok:
-                    if not self.is_diag():
-                        # note that we convert from the display/continuous
-                        # scale on which the metric is assumed to have been
-                        # entered into the 'calculation' scale (e.g., log)
-                        calc_scale_val = None
-                        print("Input value is %s" % str(display_scale_val))
-# DELETE IF ALL IS WELL
-#                        if current_data_type == BINARY:
-#                            calc_scale_val = meta_py_r.binary_convert_scale(display_scale_val,
-#                                                        self.current_effect, convert_to="calc.scale")
-#                            conv_to_disp_scale = lambda x: meta_py_r.binary_convert_scale(x, self.current_effect, convert_to="display.scale")
-#                        else:
-#                            ## assuming continuous here
-#                            calc_scale_val = meta_py_r.continuous_convert_scale(display_scale_val,
-#                                                        self.current_effect, convert_to="calc.scale")
-#                            conv_to_disp_scale = lambda x: meta_py_r.continuous_convert_scale(x, self.current_effect, convert_to="display.scale")
-
-                        # Will be binary or continuous
-                        calc_scale_val = self._get_calc_scale_value(display_scale_val,
-                                                                    data_type=current_data_type,
-                                                                    effect=self.current_effect)
-                        conv_to_disp_scale = self._get_conv_to_display_scale(data_type=current_data_type,
-                                                                             effect=self.current_effect)
+                    ma_unit = self.get_current_ma_unit_for_study(index.row())
+                    if outcome_subtype == "generic_effect":
+                        if column == self.OUTCOMES[0]: #estimate
+                            ma_unit.set_effect(self.current_effect, group_str, calc_scale_val)
+                            #ma_unit.set_display_effect(self.current_effect, group_str, display_scale_val)
+                        elif column == self.OUTCOMES[1]: # se
+                            ma_unit.set_SE(self.current_effect, group_str, calc_scale_val)
+                            #ma_unit.set_display_se(self.current_effect, group_str, display_scale_val)
+                    else: # normal case
+                        if column == self.OUTCOMES[0]: # estimate
+                            print("Setting estimate: %s" % str(calc_scale_val))
+                            ma_unit.set_effect(self.current_effect, group_str, calc_scale_val)
+                            #ma_unit.set_display_effect(self.current_effect, group_str, display_scale_val)
+                        elif column == self.OUTCOMES[1]: #lower
+                            ma_unit.set_lower(self.current_effect, group_str, calc_scale_val)
+                            #ma_unit.set_display_lower(self.current_effect, group_str, display_scale_val)
+                        else: #upper
+                            ma_unit.set_upper(self.current_effect, group_str, calc_scale_val)
+                            #ma_unit.set_display_upper(self.current_effect, group_str, display_scale_val)
+                        print("calculating se")
                         
-                        ma_unit = self.get_current_ma_unit_for_study(index.row())
-                        if outcome_subtype == "generic_effect":
-                            if column == self.OUTCOMES[0]: #estimate
-                                ma_unit.set_effect(self.current_effect, group_str, calc_scale_val)
-                                #ma_unit.set_display_effect(self.current_effect, group_str, display_scale_val)
-                            elif column == self.OUTCOMES[1]: # se
-                                ma_unit.set_SE(self.current_effect, group_str, calc_scale_val)
-                                #ma_unit.set_display_se(self.current_effect, group_str, display_scale_val)
-                        else: # normal case
-                            if column == self.OUTCOMES[0]: # estimate
-                                print("Setting estimate: %s" % str(calc_scale_val))
-                                ma_unit.set_effect(self.current_effect, group_str, calc_scale_val)
-                                #ma_unit.set_display_effect(self.current_effect, group_str, display_scale_val)
-                            elif column == self.OUTCOMES[1]: #lower
-                                ma_unit.set_lower(self.current_effect, group_str, calc_scale_val)
-                                #ma_unit.set_display_lower(self.current_effect, group_str, display_scale_val)
-                            else: #upper
-                                ma_unit.set_upper(self.current_effect, group_str, calc_scale_val)
-                                #ma_unit.set_display_upper(self.current_effect, group_str, display_scale_val)
-                            print("calculating se")
-                            
-                            # in normal case, only calculate SE when all data is filled in
-                            if None not in ma_unit.get_entered_effect_and_ci(self.current_effect, group_str):              
-                                se = ma_unit.calculate_SE_if_possible(self.current_effect, group_str)
-                                print("setting se to %s" % str(se))
-                            else:
-                                se = None
-                            ma_unit.set_SE(self.current_effect, group_str, se)
-                            
-                        # Now calculate display_effectg and CI
-                        ma_unit.calculate_display_effect_and_ci(self.current_effect, group_str, conv_to_disp_scale)
-
-                                
-                    else: #outcome is diagnostic
-                        ma_unit = self.get_current_ma_unit_for_study(index.row())
-                        # figure out if this column is sensitivity or specificity
-                        m_str = "Sens"
-                        if column in self.OUTCOMES[3:]:
-                            # by convention, the last three columns are specificity
-                            m_str = "Spec"
-                            
-                        calc_scale_val = self._get_calc_scale_value(display_scale_val,
-                                                                    data_type=current_data_type,
-                                                                    effect=m_str)
-                        
-                        # now we switch on what outcome column we're on ... kind of ugly, but eh.
-                        if column in (self.OUTCOMES[0], self.OUTCOMES[3]):
-                            ma_unit.set_effect(m_str, group_str, calc_scale_val)
-                            #ma_unit.set_display_effect(m_str, group_str, display_scale_val)
-                        elif column in (self.OUTCOMES[1], self.OUTCOMES[4]):
-                            ma_unit.set_lower(m_str, group_str, calc_scale_val)
-                            #ma_unit.set_display_lower(m_str, group_str, display_scale_val)    
+                        # in normal case, only calculate SE when all data is filled in
+                        if None not in ma_unit.get_entered_effect_and_ci(self.current_effect, group_str):              
+                            se = ma_unit.calculate_SE_if_possible(self.current_effect, group_str)
+                            print("setting se to %s" % str(se))
                         else:
-                            ma_unit.set_upper(m_str, group_str, calc_scale_val)
-                            #ma_unit.set_display_upper(m_str, group_str, display_scale_val)
-                        conv_to_display_scale = self._get_conv_to_display_scale(self,
-                                                                                data_type=current_data_type,
-                                                                                effect=m_str)
-                        ma_unit.calculate_display_effect_and_ci(m_str, group_str, conv_to_disp_scale)
+                            se = None
+                        ma_unit.set_SE(self.current_effect, group_str, se)
                         
-            elif column == self.INCLUDE_STUDY:
-                study.include = value.toBool()
-                # we keep note if a study was manually 
-                # excluded; this differs from just being
-                # `included' because the latter is TRUE
-                # automatically when a study first acquires
-                # sufficient data to be included in an MA
-                if not value.toBool():
-                    study.manually_excluded = True
+                    # Now calculate display_effect and CI
+                    ma_unit.calculate_display_effect_and_ci(self.current_effect, group_str, conv_to_disp_scale)
+
+                            
+                else: #outcome is diagnostic
+                    ma_unit = self.get_current_ma_unit_for_study(index.row())
+                    # figure out if this column is sensitivity or specificity
+                    m_str = "Sens"
+                    if column in self.OUTCOMES[3:]:
+                        # by convention, the last three columns are specificity
+                        m_str = "Spec"
+                        
+                    calc_scale_val = self._get_calc_scale_value(display_scale_val,
+                                                                data_type=current_data_type,
+                                                                effect=m_str)
+                    
+                    # now we switch on what outcome column we're on ... kind of ugly, but eh.
+                    if column in (self.OUTCOMES[0], self.OUTCOMES[3]):
+                        ma_unit.set_effect(m_str, group_str, calc_scale_val)
+                        #ma_unit.set_display_effect(m_str, group_str, display_scale_val)
+                    elif column in (self.OUTCOMES[1], self.OUTCOMES[4]):
+                        ma_unit.set_lower(m_str, group_str, calc_scale_val)
+                        #ma_unit.set_display_lower(m_str, group_str, display_scale_val)    
+                    else:
+                        ma_unit.set_upper(m_str, group_str, calc_scale_val)
+                        #ma_unit.set_display_upper(m_str, group_str, display_scale_val)
+                    conv_to_display_scale = self._get_conv_to_display_scale(self,
+                                                                            data_type=current_data_type,
+                                                                            effect=m_str)
+                    ma_unit.calculate_display_effect_and_ci(m_str, group_str, conv_to_disp_scale)
+                    
+        elif column == self.INCLUDE_STUDY:
+            study.include = value.toBool()
+            # we keep note if a study was manually 
+            # excluded; this differs from just being
+            # `included' because the latter is TRUE
+            # automatically when a study first acquires
+            # sufficient data to be included in an MA
+            if not value.toBool():
+                study.manually_excluded = True
+        else:
+            # then a covariate value has been edited.
+            cov = self.get_cov(column)
+            cov_name = cov.name
+            new_value = None
+            if cov.data_type == FACTOR:
+                new_value = value.toString()
             else:
-                # then a covariate value has been edited.
-                cov = self.get_cov(column)
-                cov_name = cov.name
-                new_value = None
-                if cov.data_type == FACTOR:
-                    new_value = value.toString()
-                else:
-                    # continuous
-                    new_value, converted_ok = value.toDouble()
-                    if not converted_ok: 
-                        new_value = None
-                study.covariate_dict[cov_name] = new_value
+                # continuous
+                new_value, converted_ok = value.toDouble()
+                if not converted_ok: 
+                    new_value = None
+            study.covariate_dict[cov_name] = new_value
+            
+        self.emit(SIGNAL("dataChanged(QModelIndex, QModelIndex)"), index, index)
+
+        # tell the view that an entry in the table has changed, and what the old
+        # and new values were. This for undo/redo purposes.
+        new_val = self.data(index)
+
+        self.emit(SIGNAL("pyCellContentChanged(PyQt_PyObject, PyQt_PyObject, PyQt_PyObject, PyQt_PyObject)"), 
+                           index, old_val, new_val, study_added_due_to_edit)
+     
+        if not self.is_diag():
+            group_str = self.get_cur_group_str()
+
+            print group_str
+            print "ok checking it; cur outcome: %s. cur group: %s" % (self.current_outcome, group_str)
+            if self.current_outcome is not None:
+                effect_d = self.get_current_ma_unit_for_study(index.row()).effects_dict[self.current_effect][group_str]
+                print effect_d
                 
-            self.emit(SIGNAL("dataChanged(QModelIndex, QModelIndex)"), index, index)
-
-            # tell the view that an entry in the table has changed, and what the old
-            # and new values were. This for undo/redo purposes.
-            new_val = self.data(index)
-
-            self.emit(SIGNAL("pyCellContentChanged(PyQt_PyObject, PyQt_PyObject, PyQt_PyObject, PyQt_PyObject)"), 
-                               index, old_val, new_val, study_added_due_to_edit)
-         
-            if not self.is_diag():
-                group_str = self.get_cur_group_str()
-
-                print group_str
-                print "ok checking it; cur outcome: %s. cur group: %s" % (self.current_outcome, group_str)
-                if self.current_outcome is not None:
-                    effect_d = self.get_current_ma_unit_for_study(index.row()).effects_dict[self.current_effect][group_str]
-                    print effect_d
+                
+                # if the study has not been explicitly excluded by the user, then we automatically
+                # include it once it has sufficient data.
+                if not study.manually_excluded:
+                    study.include = True
                     
-                    
-                    # if the study has not been explicitly excluded by the user, then we automatically
-                    # include it once it has sufficient data.
-                    if not study.manually_excluded:
-                        study.include = True
-                        
-                    if current_data_type == CONTINUOUS and outcome_subtype == "generic_effect":
-                        if None in [effect_d[key] for key in ["est","SE"]]:
-                            study.include = False
-                    else: # normal case, binary or continuous
-                        # if any of the effect values are empty, we cannot include this study in the analysis, so it
-                        # is automatically excluded.
-                        if any([val is None for val in [effect_d[effect_key] for effect_key in ("upper", "lower", "est")]]):
-                            study.include = False
-            return True
-        return False
+                if current_data_type == CONTINUOUS and outcome_subtype == "generic_effect":
+                    if None in [effect_d[key] for key in ["est","SE"]]:
+                        study.include = False
+                else: # normal case, binary or continuous
+                    # if any of the effect values are empty, we cannot include this study in the analysis, so it
+                    # is automatically excluded.
+                    if any([val is None for val in [effect_d[effect_key] for effect_key in ("upper", "lower", "est")]]):
+                        study.include = False
+        return True
+        
+    
+    #def _setData_NAME(self, value, index, study):
+    #def _setData_YEAR(self):
+    #def _setData_RAW_DATA(self):
+    #def _setData_OUTCOMES(self):
 
     @staticmethod
     def helper_basic_horizontal_headerData(section, data_type, sub_type,
@@ -1443,7 +1440,23 @@ class DatasetModel(QAbstractTableModel):
 
         self.reset()
 
-    def raw_data_is_complete_for_study(self, study_index, first_arm_only=False):
+    def raw_data_is_complete_for_study(self, study_index, first_arm_only=False):         
+        raw_data = self._get_raw_data_according_to_arms(study_index, first_arm_only)
+        
+        raw_data_is_complete = not "" in raw_data and not None in raw_data
+        return raw_data_is_complete
+    
+    def _raw_data_is_not_empty_for_study(self, study_index, first_arm_only=False):
+        raw_data = self._get_raw_data_according_to_arms(study_index, first_arm_only)
+    
+        empty = True
+        for x in raw_data:
+            if x not in meta_globals.EMPTY_VALS:
+                empty = False
+
+        return not empty      
+
+    def _get_raw_data_according_to_arms(self, study_index, first_arm_only = False):
         if self.current_outcome is None or self.current_time_point is None:
             return False
 
@@ -1457,10 +1470,7 @@ class DatasetModel(QAbstractTableModel):
                 raw_data = raw_data[:2]
             elif data_type == CONTINUOUS:
                 raw_data = raw_data[:3]
-        
-        raw_data_is_complete = not "" in raw_data and not None in raw_data
-        return raw_data_is_complete
-
+        return raw_data
 
     def data_for_only_one_arm(self):
         '''
@@ -1515,15 +1525,20 @@ class DatasetModel(QAbstractTableModel):
 
     def update_outcome_if_possible(self, study_index):
         '''
-        Checks the parametric study to ascertain if enough raw data has been
-        entered to compute the outcome. If so, the outcome is computed and
-        displayed.
+        Rules:
+            Checks the parametric study to ascertain if enough raw data has been
+            entered to compute the outcome. If so, the outcome is computed and
+            displayed.
+            
+            If the raw data is not empty, the outcome should be blanked out.
+            If the raw data is empty, the outcome should not be effected
         '''
         est_and_ci_d = None
         # to index into the effect belonging to the currently displayed groups
         group_str = self.get_cur_group_str() 
         data_type = self.get_current_outcome_type(get_str=False) 
         one_arm_effect = self.current_effect in BINARY_ONE_ARM_METRICS + CONTINUOUS_ONE_ARM_METRICS  
+        ma_unit = self.get_current_ma_unit_for_study(study_index)
 
         ####
         # previously we were always setting this to false here,
@@ -1577,7 +1592,7 @@ class DatasetModel(QAbstractTableModel):
                 
                 ###
                 # now we're going to set the effect estimate/CI on the MA object.
-                ma_unit = self.get_current_ma_unit_for_study(study_index)
+                
                 for metric in DIAGNOSTIC_METRICS:
                     est, lower, upper = ests_and_cis[metric]["calc_scale"]
                     ma_unit.set_effect_and_ci(metric, group_str, est, lower, upper)
@@ -1594,7 +1609,6 @@ class DatasetModel(QAbstractTableModel):
                 est, lower, upper = None, None, None
                 if est_and_ci_d is not None:
                     est, lower, upper = est_and_ci_d["calc_scale"] # calculation scale
-                ma_unit = self.get_current_ma_unit_for_study(study_index)
                 # now set the effect size & CIs
                 # note that we keep two versions around; a version on the 'calculation' scale
                 # (e.g., log) and a version on the continuous/display scale to present to the
@@ -1602,6 +1616,15 @@ class DatasetModel(QAbstractTableModel):
                 ma_unit.set_effect_and_ci(self.current_effect, group_str, est, lower, upper)
                 conv_to_disp_scale = self._get_conv_to_display_scale(data_type, effect=self.current_effect)
                 ma_unit.calculate_display_effect_and_ci(self.current_effect, group_str, conv_to_disp_scale)
+        elif self._raw_data_is_not_empty_for_study(study_index) or (one_arm_effect and self._raw_data_is_not_empty_for_study(study_index, first_arm_only=True)):
+            if data_type in [BINARY, CONTINUOUS]: # raw data is not blank but not full so clear outcome
+                est, lower, upper, se = None, None, None, None
+                ma_unit.set_effect_and_ci(self.current_effect, group_str, est, lower, upper)
+                ma_unit.set_SE(self.current_effect, group_str, se)
+                conv_to_disp_scale = self._get_conv_to_display_scale(data_type, effect=self.current_effect)
+                ma_unit.calculate_display_effect_and_ci(self.current_effect, group_str, conv_to_disp_scale)
+        else: # raw data is all blank, do nothing
+            pass
                 
     def get_cur_raw_data(self, only_if_included=True, only_these_studies=None):
         raw_data = []

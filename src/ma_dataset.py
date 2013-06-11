@@ -780,10 +780,15 @@ class MetaAnalyticUnit:
         
         
     def get_display_effect(self, effect, group_str):
-        if "display_est" in self.effects_dict[effect][group_str]:
-            return self.effects_dict[effect][group_str]["display_est"]
-        else:
-            return None
+        try:
+            if "display_est" in self.effects_dict[effect][group_str]:
+                return self.effects_dict[effect][group_str]["display_est"]
+            else:
+                return None
+        except:
+            pyqtRemoveInputHook()
+            pdb.set_trace()
+            
     def get_display_lower(self, effect, group_str):
         if "display_lower" in self.effects_dict[effect][group_str]:
             return self.effects_dict[effect][group_str]["display_lower"]
@@ -837,28 +842,42 @@ class MetaAnalyticUnit:
         return result
          
     def get_estimate(self, effect, group_str):
-        return self.effects_dict[effect][group_str]["est"]
-    def get_lower(self, effect, group_str):
-        if self.get_se(effect, group_str) is None:
-            return self.effects_dict[effect][group_str]["lower"]
-        est = self.get_estimate(effect, group_str)
-        se  = self.get_se(effect, group_str)
-        mult = meta_globals.get_mult()
-        if est is None or se is None:
+        if "est" in self.effects_dict[effect][group_str]:
+            return self.effects_dict[effect][group_str]["est"]
+        else:
             return None
-        return  (est-mult*se)
+    
+    
+    def get_lower(self, effect, group_str):    
+        return self._helper_get_upper_lower("lower", effect, group_str)
         
-    def get_upper(self, effect, group_str):
+    def get_upper(self, effect, group_str):    
+        return self._helper_get_upper_lower("upper", effect, group_str)
+    
+    def _helper_get_upper_lower(self, boundary, effect, group_str):
+        if boundary not in ["upper","lower"]:
+            raise Exception("Boundary must be one of 'upper' or 'lower'")
+        
         if self.get_se(effect, group_str) is None:
-            return self.effects_dict[effect][group_str]["upper"]
+            return self.effects_dict[effect][group_str][boundary]
         est = self.get_estimate(effect, group_str)
         se  = self.get_se(effect, group_str)
         mult = meta_globals.get_mult()
         if est is None or se is None:
             return None
-        return  (est+mult*se)
+        if boundary == "lower":
+            return  (est-mult*se)
+        elif boundary == "upper":
+            return (est+mult*se)
+        else:
+            raise Exception("BOUNDARY NOT RECOGNIZED")
+        
+    
     def get_se(self, effect, group_str):
-        return self.effects_dict[effect][group_str]["SE"]   
+        if "SE" in self.effects_dict[effect][group_str]:
+            return self.effects_dict[effect][group_str]["SE"]
+        else:
+            return None
          
     def set_effect_and_ci(self, effect, group_str, est, lower, upper):
         self.set_effect(effect, group_str, est)
