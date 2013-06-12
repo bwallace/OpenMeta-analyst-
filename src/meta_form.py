@@ -23,7 +23,7 @@ import copy
 
 ## hand-rolled modules
 import ui_meta
-import meta_py_r
+#import meta_py_r
 import ma_data_table_view
 import ma_data_table_model
 import meta_globals
@@ -52,12 +52,12 @@ DEFAULT_DATASET_NAME = unicode("untitled_dataset", "utf-8")
 
 import forms.ui_running
 class ImportProgress(QDialog, forms.ui_running.Ui_running):
-    def __init__(self, parent=None, min=0, max=10):
+    def __init__(self, parent=None, min_=0, max_=10):
         super(ImportProgress, self).__init__(parent)
         self.setupUi(self)
         
         self.setWindowTitle("Importing from CSV...")
-        self.progress_bar.setRange(min,max)
+        self.progress_bar.setRange(min_,max_)
         
     def setValue(self, value):
         if self.progress_bar.minimum() <= value <= self.progress_bar.maximum():
@@ -1330,14 +1330,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.model.try_to_update_outcomes()
             self.model.reset()
     
-    # TODO: HIGH PRIORITY IMPLEMENT HANDLING OF wizard results
     def _handle_wizard_results(self, wizard_data):
         path = wizard_data['path'] # route through wizard
-        
-        #desired_keys = ['outcome_name','arms','data_type','sub_type']
-        #dataset_info = dict([(k,v) for k,v in wizard_data.items() if k in desired_keys])
-        #dataset_info['name']=dataset_info['outcome_name'] # renaming
-        #del dataset_info['outcome_name']
         
         dataset_info = wizard_data['outcome_info']
         
@@ -1379,23 +1373,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                     covariate_types=covariate_types)
             self.tableView.undoStack.push(importcsv_command)
             
-        
-        
-#class CommandGenericDo(QUndoCommand):
-#    '''
-#   This is a generic undo/redo command that takes two unevaluated lambdas --
-#   thunks, if you will -- one for doing and one for undoing.
-#    '''
-#    def __init__(self, redo_f, undo_f, description=""):
-#        super(CommandGenericDo, self).__init__(description)
-#        self.redo_f = redo_f
-#        self.undo_f = undo_f
-#        
-#    def redo(self):
-#        self.redo_f()
-#        
-#    def undo(self):
-#        self.undo_f()
 
 ######################### Undo Command for Import CSV #########################
 class CommandImportCSV(QUndoCommand):

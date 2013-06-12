@@ -22,12 +22,7 @@ from PyQt4.QtCore import pyqtRemoveInputHook
 from meta_globals import (BASE_PATH,CONTINUOUS,ONE_ARM_METRICS,TWO_ARM_METRICS,
                           TYPE_TO_STR_DICT)
 
-import threading
-
-import sys, os
-
 print("the path: %s" % os.getenv("PATH"))
-
 
 try:
     print("importing from rpy2")
@@ -816,12 +811,6 @@ def run_diagnostic_multi(function_names, list_of_params, res_name="result", diag
     
     ro.r("list.of.params <- %s" % r_params_str)
     ro.r("f.names <- c(%s)" % ",".join(["'%s'" % f_name for f_name in function_names]))
-    #r_statement("list.of.params <- %s" % r_params_str) # FOR DEBUGGING
-    #r_statement("f.names <- c(%s)" % ",".join(["'%s'" % f_name for f_name in function_names])) # FOR DEBUGGING
-    
-    # debug segfault thing
-    #pyqtRemoveInputHook()
-    #pdb.set_trace()
     
     result = ro.r("multiple.diagnostic(f.names, list.of.params, %s)" % diag_data_name)
 
@@ -1013,7 +1002,9 @@ def run_binary_fixed_meta_regression(selected_cov, bin_data_name="tmp_obj",
                                      res_name="result"):
     method_str = "FE"                                        
     # equiavlent to params <- list(conf.level=95, digits=3)
-    params = {"conf.level":meta_globals.get_global_conf_level(), "digits":3, "method":method_str}
+    params = {"conf.level": meta_globals.get_global_conf_level(),
+              "digits": 3,
+              "method": method_str}
     params_df = ro.r['data.frame'](**params)
     r_str = "%s<-binary.fixed.meta.regression(%s, %s, %s)" % \
             (res_name, bin_data_name, params_df.r_repr(), "'"+ selected_cov + "'")

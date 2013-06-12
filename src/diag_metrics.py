@@ -1,12 +1,8 @@
-from PyQt4 import QtCore, QtGui, Qt
 from PyQt4.Qt import *
 import pdb
 
-
 import forms.ui_diagnostic_metrics
 import ma_specs
-import meta_globals
-from meta_globals import *
 
 class Diag_Metrics(QDialog, forms.ui_diagnostic_metrics.Ui_diag_metric):
 

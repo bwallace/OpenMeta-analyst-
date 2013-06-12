@@ -31,7 +31,7 @@ import meta_py_r
 import meta_globals
 #from meta_globals import *
 from meta_globals import (CONTINUOUS_ONE_ARM_METRICS,CONTINUOUS_TWO_ARM_METRICS,
-                          _is_a_float,_is_empty)
+                          _is_empty)
 import forms.ui_continuous_data_form
 import forms.ui_choose_back_calc_result_form
 

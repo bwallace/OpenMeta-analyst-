@@ -80,6 +80,9 @@ class MetaRegForm(QDialog, forms.ui_meta_reg.Ui_cov_reg_dialog):
     
 
         if at_least_one_study_does_not_have_vals:
+            # TODO: this run_with_missing stuff needs to be finished i.e.
+            # actually remove the affected studies. Currently just throws an
+            # error
             run_with_missing = QMessageBox.warning(self,
                         "Missing covariate value(s)",
                         "Some studies do not have values for the covariate(s) you have selected. Do you want me to run the regression without them (i.e., drop studies with missing values)?",
@@ -87,7 +90,7 @@ class MetaRegForm(QDialog, forms.ui_meta_reg.Ui_cov_reg_dialog):
         
             if run_with_missing == QMessageBox.No:
                 self.accept()
-                return      
+                return
 
 
         result = meta_py_r.run_meta_regression(self.model.dataset, studies,\

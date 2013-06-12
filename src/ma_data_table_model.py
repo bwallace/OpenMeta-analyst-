@@ -555,9 +555,15 @@ class DatasetModel(QAbstractTableModel):
             return False
             
         if column == self.NAME:
-            study.name = unicode(value.toString().toUtf8(), encoding="utf8")
-            if study.name == "":
+            # proposed study name
+            name = unicode(value.toString().toUtf8(), encoding="utf8")
+            
+            if name == "":
                 # just ignore -- we don't allow empty study names
+                return False
+            if name in self.dataset.get_study_names():
+                msg = "Duplicate study names not allowed"
+                self.emit(SIGNAL("dataError(QString)"), QString(msg))
                 return False
             elif index.row() == self.rowCount()-DUMMY_ROWS-1:
                 # if the last study was just edited, append a
@@ -576,6 +582,10 @@ class DatasetModel(QAbstractTableModel):
                 # new_index is where the user *should* be editing.
                 new_index = self.index(index.row(), index.column()+1)
                 self.emit(SIGNAL("modelReset(QModelIndex)"), new_index)
+            
+            # study name is good to go
+            study.name = unicode(value.toString().toUtf8(), encoding="utf8")
+                
         elif column == self.YEAR:
             year_ok, msg = self._verify_year(value.toString())
             if not year_ok:
