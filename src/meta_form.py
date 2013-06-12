@@ -125,7 +125,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
         self.out_path = None                # path to output file
         self.metric_menu_is_set_for = None  # BINARY, CONTINUOUS, or DIAGNOSTIC
-        #self.raise_()
 
         # by default, disable meta-regression (until we have covariates)
         self.action_meta_regression.setEnabled(False)
@@ -163,8 +162,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             
             ###
             # fix for issue #158
-            # formerly .show()
-            #self.show()
+            # formerly self.show()
             if start_up_wizard.exec_():
                 wizard_data = start_up_wizard.get_results()
                 self._handle_wizard_results(wizard_data)
