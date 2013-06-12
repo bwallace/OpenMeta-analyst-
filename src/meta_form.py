@@ -23,7 +23,7 @@ import copy
 
 ## hand-rolled modules
 import ui_meta
-import meta_py_r
+#import meta_py_r
 import ma_data_table_view
 import ma_data_table_model
 import meta_globals
@@ -52,12 +52,12 @@ DEFAULT_DATASET_NAME = unicode("untitled_dataset", "utf-8")
 
 import forms.ui_running
 class ImportProgress(QDialog, forms.ui_running.Ui_running):
-    def __init__(self, parent=None, min=0, max=10):
+    def __init__(self, parent=None, min_=0, max_=10):
         super(ImportProgress, self).__init__(parent)
         self.setupUi(self)
         
         self.setWindowTitle("Importing from CSV...")
-        self.progress_bar.setRange(min,max)
+        self.progress_bar.setRange(min_,max_)
         
     def setValue(self, value):
         if self.progress_bar.minimum() <= value <= self.progress_bar.maximum():
@@ -137,6 +137,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         show_tom.setShortcut(QKeySequence("T, Shift+O, M"))
         self.addAction(show_tom)
         QObject.connect(show_tom, SIGNAL("triggered()"), self._show_tom)
+        
     
 
     def start(self):
@@ -187,14 +188,18 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         
         self.tableView.model().recalculate_display_scale()
 
-    ### TODO: Should ask if user wants to save before making the new dataset.. GD
+
     def create_new_dataset(self, use_undo_framework=True):
+        if self.current_data_unsaved:
+            self.user_is_going_to_lose_data()
+        
         wizard = main_wizard.MainWizard(parent=self, path="new_dataset")
         if wizard.exec_():
             wizard_data = wizard.get_results()
             self._handle_wizard_results(wizard_data)
         
     def new_dataset(self, name=DEFAULT_DATASET_NAME, is_diag=False, use_undo_framework = True):
+        
         data_model = ma_dataset.Dataset(title=name, is_diag=is_diag)
         if self.model is not None:
             if use_undo_framework:
@@ -305,14 +310,12 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     def _change_global_ci(self):
         print("Changing global confidence level:")
         prev_conf_level = meta_globals.get_global_conf_level()
-        print("   Previous Global Confidence level was: %f" % prev_conf_level)
 
         dialog = conf_level_dialog.ChangeConfLevelDlg(prev_conf_level, self)
         if dialog.exec_():
-            meta_globals.set_global_conf_level(dialog.get_value())
-            self.cl_label.setText("confidence level: {:.1%}".format(meta_globals.get_global_conf_level()/100.0))
-            self.model.reset()
-            print("   Global Confidence level is now: %f" % meta_globals.get_global_conf_level())
+            new_conf_level = dialog.get_value()
+            change_cl_command = Command_Change_Conf_Level(prev_conf_level, new_conf_level, mainform=self)
+            self.tableView.undoStack.push(change_cl_command)
             
     def _import_csv(self):
         '''Import data from csv file'''
@@ -1323,14 +1326,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.model.try_to_update_outcomes()
             self.model.reset()
     
-    # TODO: HIGH PRIORITY IMPLEMENT HANDLING OF wizard results
     def _handle_wizard_results(self, wizard_data):
         path = wizard_data['path'] # route through wizard
-        
-        #desired_keys = ['outcome_name','arms','data_type','sub_type']
-        #dataset_info = dict([(k,v) for k,v in wizard_data.items() if k in desired_keys])
-        #dataset_info['name']=dataset_info['outcome_name'] # renaming
-        #del dataset_info['outcome_name']
         
         dataset_info = wizard_data['outcome_info']
         
@@ -1372,23 +1369,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                     covariate_types=covariate_types)
             self.tableView.undoStack.push(importcsv_command)
             
-        
-        
-#class CommandGenericDo(QUndoCommand):
-#    '''
-#   This is a generic undo/redo command that takes two unevaluated lambdas --
-#   thunks, if you will -- one for doing and one for undoing.
-#    '''
-#    def __init__(self, redo_f, undo_f, description=""):
-#        super(CommandGenericDo, self).__init__(description)
-#        self.redo_f = redo_f
-#        self.undo_f = undo_f
-#        
-#    def redo(self):
-#        self.redo_f()
-#        
-#    def undo(self):
-#        self.undo_f()
 
 ######################### Undo Command for Import CSV #########################
 class CommandImportCSV(QUndoCommand):
@@ -1471,6 +1451,30 @@ class CommandNext(QUndoCommand):
         
     def undo(self):
         self.undo_f()
+        
+
+class Command_Change_Conf_Level(QUndoCommand):
+    ''' Undo command for chnaging the confidence level '''
+    def __init__(self, old_conf_lvl, new_conf_lvl, mainform, description="Change confidence level"):
+        super(Command_Change_Conf_Level, self).__init__(description)
+        
+        
+        self.old_cl = old_conf_lvl
+        self.new_cl = new_conf_lvl
+        self.mainform = mainform
+    
+    
+    def redo(self):
+        self._set_conf_level(self.new_cl)
+        
+    def undo(self):
+        self._set_conf_level(self.old_cl)
+        
+    def _set_conf_level(self, conf_level):
+        meta_globals.set_global_conf_level(conf_level)
+        self.mainform.cl_label.setText("confidence level: {:.1%}".format(conf_level/100.0))
+        self.mainform.model.reset()
+        print("Global Confidence level is now: %f" % meta_globals.get_global_conf_level())
         
 
 #############################################################################

@@ -19,7 +19,7 @@ from PyQt4.QtGui import *
 import meta_py_r
 import meta_globals
 from meta_globals import (BINARY_ONE_ARM_METRICS, BINARY_TWO_ARM_METRICS,
-                          _is_a_float, _is_empty, EMPTY_VALS)
+                          _is_empty, EMPTY_VALS)
 import calculator_routines as calc_fncs
 
 import forms.ui_binary_data_form

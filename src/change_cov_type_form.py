@@ -5,7 +5,6 @@ import math
 from PyQt4.Qt import *
 from PyQt4 import QtGui
 
-import meta_py_r
 from meta_globals import *
 import forms.ui_change_cov_type
 from forms.ui_change_cov_type import Ui_ChangeCovTypeForm

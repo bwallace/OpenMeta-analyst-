@@ -32,6 +32,15 @@ from meta_globals import *
 # use QRegExp to manipulate QStrings (rather than re)
 _newlines_re  = QRegExp('(\r\n|\r|\r)')
 
+
+def DebugHelper(function):
+    def _DebugHelper(*args, **kw):
+        print("Entered %s" % function.func_name)
+        res = function(*args, **kw)
+        print("Left %s" % function.func_name)
+        return res
+    return _DebugHelper
+
 class MADataTable(QtGui.QTableView):
 
     def __init__(self, parent=None):
@@ -336,21 +345,45 @@ class MADataTable(QtGui.QTableView):
         cur_follow_up = self.model().current_time_point
 
     def cell_content_changed(self, index, old_val, new_val, study_added):
-        metric_changed, old_metric = False, None
-        if index.column in self.model().RAW_DATA:
-            metric_changed, old_metric = self.change_metric_if_appropriate()
+        #DELETE IF ALL IS WELL
+        #metric_changed, old_metric = False, None
+        #if index.column in self.model().RAW_DATA:
+        #    metric_changed, old_metric = self.change_metric_if_appropriate()
+        #    
+        #new_metric = None
+        #if metric_changed:
+        #    new_metric = self.model().current_effect
+        
+        # Only make a cell edit if the old values and new values are different
+        if not self._new_eq_old(old_val, new_val):
+            print("Old val: %s, new val: %s" % (str(old_val.toString()), str(new_val.toString())))
+            cell_edit = CommandCellEdit(self, index, old_val, new_val,
+                                        added_study=study_added,
+                                        #metric_changed=metric_changed, # DELETE IF ALL IS WELL
+                                        #old_metric=old_metric,
+                                        #new_metric=new_metric
+                                        )
+            self.undoStack.push(cell_edit)
             
-        new_metric = None
-        if metric_changed:
-            new_metric = self.model().current_effect
-            
-        cell_edit = CommandCellEdit(self, index, old_val, new_val,
-                                    added_study=study_added,
-                                    metric_changed=metric_changed,
-                                    old_metric=old_metric,
-                                    new_metric=new_metric)
-        self.undoStack.push(cell_edit)
-
+    def _new_eq_old(self, old, new):
+        '''None and "" are the same. Assume old and new are QVariants'''
+        
+        blank_vals = meta_globals.EMPTY_VALS
+        
+        # transform into normal string:
+        if old is not None:
+            old = str(old.toString())
+        if new is not None:
+            new = str(new.toString())
+        
+        if old in blank_vals and new in blank_vals:
+            return True
+        elif old == new:
+            return True
+        else:
+            return False # old is not the same as new
+        
+    
     def change_metric_if_appropriate(self):
         '''
         if: 
@@ -648,20 +681,41 @@ class CommandCellEdit(QUndoCommand):
     defined below).
     '''
     def __init__(self, ma_data_table_view, index, original_content, new_content, 
-                        metric_changed=False, old_metric=None, new_metric=None,
-                        added_study=None, description=""):
+                 ####metric_changed=False, old_metric=None, new_metric=None, # DELETE IF ALL IS WELL
+                 added_study=None,
+                 description=""):
         super(CommandCellEdit, self).__init__(description)
         self.first_call = True
-        self.original_content = original_content
+        if original_content == None:
+            self.original_content = QVariant(QString(""))
+        else:
+            self.original_content = original_content
         self.new_content = new_content
         self.row, self.col = index.row(), index.column()
         self.ma_data_table_view = ma_data_table_view
         self.added_study = added_study
         self.something_else = added_study
-        self.metric_changed = metric_changed
-        self.old_metric = old_metric
-        self.new_metric = new_metric
+        #####################self.metric_changed = metric_changed
+        #####################self.old_metric = old_metric
+        #####################self.new_metric = new_metric
+        
+        #### FOR DEBUGGING
+        debug_params = dict(first_call = True,
+            original_content = original_content,
+            new_content = new_content,
+            row = index.row(),
+            col = index.column(),
+            ma_data_table_view = ma_data_table_view,
+            added_study = added_study,
+            something_else = added_study,
+            ###########################metric_changed = metric_changed,
+            ###########################old_metric = old_metric,
+            ###########################new_metric = new_metric,
+            )
+        print("CommandCellEdit created with parameters: %s" % str(debug_params))
+        #####
 
+    @DebugHelper
     def redo(self):
         index = self._get_index()
      
@@ -690,9 +744,10 @@ class CommandCellEdit(QUndoCommand):
             self.added_study = self.ma_data_table_view.model().study_auto_added
             self.ma_data_table_view.model().study_auto_added = None
 
-            # did the metric change? if so re-change it here
-            if self.metric_changed is not None:
-                self.ma_data_table_view.set_metric_in_ui(self.new_metric)
+            #DELETE
+            ### did the metric change? if so re-change it here
+            ##if self.metric_changed is not None:
+            ##    self.ma_data_table_view.set_metric_in_ui(self.new_metric)
 
             model.blockSignals(False)
             # make the view reflect the update
@@ -704,6 +759,7 @@ class CommandCellEdit(QUndoCommand):
         # let everyone know that the data is dirty
         self.ma_data_table_view.emit(SIGNAL("dataDirtied()"))
 
+    @DebugHelper
     def undo(self):
         '''
         if self.col == 1 and self.row == len(self.ma_data_table_view.model().get_studies())-1:
@@ -721,14 +777,15 @@ class CommandCellEdit(QUndoCommand):
         # as in the redo method, we block signals before
         # editing the model data
         model.blockSignals(True)
+        
         model.setData(index, self.original_content)
 
         # did we change the metric automatically (e.g., because it
         # looked like the user was exploring single-arm data?) if
         # so, change it back
-        if self.metric_changed:
-            #self.ma_data_table_view.model().set_current_metric(self.old_metric)
-            self.ma_data_table_view.set_metric_in_ui(self.old_metric)
+        #if self.metric_changed:
+        #    #self.ma_data_table_view.model().set_current_metric(self.old_metric)
+        #    self.ma_data_table_view.set_metric_in_ui(self.old_metric)
 
         model.blockSignals(False)
         self.ma_data_table_view.model().reset()
@@ -763,7 +820,9 @@ class CommandPaste(QUndoCommand):
         # is this the first time? 
         self.first_call = True
 
-
+        print("CommandPaste created")
+    
+    @DebugHelper
     def redo(self):
         # cache the original dataset
         self.original_dataset = copy.deepcopy(self.ma_data_table_view.model().dataset)
@@ -795,6 +854,7 @@ class CommandPaste(QUndoCommand):
         self.ma_data_table_view.emit(SIGNAL("dataDirtied()"))
         self.ma_data_table_view.resizeColumnsToContents()
 
+    @DebugHelper
     def undo(self):
         if self.added_study is not None:
             self.ma_data_table_view.model().remove_study(self.added_study)
@@ -822,12 +882,17 @@ class CommandEditMAUnit(QUndoCommand):
         self.study_index = study_index
         self.ma_data_table_view = table_view
         
+        # for debugging
+        print("CommandEditMAunit created")
+    
+    @DebugHelper
     def undo(self):
         self.model.set_current_ma_unit_for_study(self.study_index, self.old_ma_unit)
         self.model.reset()
         self.table_view.resizeColumnsToContents()
         self.ma_data_table_view.emit(SIGNAL("dataDirtied()"))
 
+    @DebugHelper
     def redo(self):
         self.model.set_current_ma_unit_for_study(self.study_index, self.new_ma_unit)
         self.model.reset()
@@ -837,6 +902,7 @@ class CommandEditMAUnit(QUndoCommand):
         self.table_view.resizeColumnsToContents()
         self.ma_data_table_view.emit(SIGNAL("dataDirtied()"))
 
+# IS THIS CLASS USED ANYWHERE?
 class CommandEditRawData(QUndoCommand):
     def __init__(self, ma_unit, model, old_raw_data_dict, new_raw_data_dict, description="Raw data edit"):
         super(CommandEditRawData, self).__init__(description)
@@ -848,7 +914,10 @@ class CommandEditRawData(QUndoCommand):
         self.old_raw_data_dict = old_raw_data_dict
         self.new_raw_data_dict = new_raw_data_dict
         self.group_names = self.old_raw_data_dict.keys()
+        
+        print("Command Edit RawData created")
     
+    @DebugHelper
     def undo(self):
         for group_name in self.group_names:
             raw_data = self.old_raw_data_dict[group_name]
@@ -856,6 +925,7 @@ class CommandEditRawData(QUndoCommand):
         self.model.reset()
         self.ma_data_table_view.emit(SIGNAL("dataDirtied()"))
 
+    @DebugHelper
     def redo(self):
         for group_name in self.group_names:
             raw_data = self.new_raw_data_dict[group_name]
@@ -870,6 +940,8 @@ class CommandSort(QUndoCommand):
         self.col = col
         self.reverse = reverse_order
         self.previous_order = None
+        
+        print("CommandSort created")
 
     def redo(self):
         self.previous_order = self.model.get_ordered_study_ids()

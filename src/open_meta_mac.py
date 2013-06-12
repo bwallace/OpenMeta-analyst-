@@ -76,13 +76,6 @@ def create_pangorc():
 
 create_pangorc()
 
-<<<<<<< HEAD:open_meta_mac.py
-    
-    
->>>>>>> 805a10c14dd21b8b69abf53d268dd6e1302c8bf0
-=======
->>>>>>> ab5fb3275ff787c6e7c4413f32417c21b89ce905:src/open_meta_mac.py
-
 os.environ["TCL_LIBRARY"] = os.path.join(DIR_NAME, "tcl")
 os.environ["TK_LIBRARY"] = os.path.join(DIR_NAME, "tk")
 
@@ -115,6 +108,5 @@ if versionInfo >= (2, 5, 0) and versionInfo <= (2, 6, 4):
 OK???
 '''
 print "starting up..."
-#meta_form.start()
 launch.start() 
 

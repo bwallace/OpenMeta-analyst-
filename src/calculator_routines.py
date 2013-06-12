@@ -16,7 +16,6 @@ from functools import partial
 import meta_globals
 from meta_globals import *
 from meta_globals import _is_a_float, _is_empty
-import meta_py_r
 
 def between_bounds(est=None, low=None, high=None):
     def my_lt(a,b):

@@ -8,10 +8,8 @@ from PyQt4.Qt import *
 from PyQt4.QtGui import *
 from PyQt4 import QtCore, QtGui
 import pdb
-import meta_py_r
 import meta_globals
 from ma_data_table_model import DatasetModel
-import forms.icons_rc
 
 
 class WelcomePage(QWizardPage, forms.ui_welcome_page.Ui_WizardPage):

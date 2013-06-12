@@ -2,8 +2,6 @@ from PyQt4.Qt import *
 import pdb
 
 import forms.ui_cov_subgroup_dlg
-import meta_py_r
-import ma_specs
 from meta_globals import FACTOR
 
 class MetaSubgroupForm(QDialog, forms.ui_cov_subgroup_dlg.Ui_cov_subgroup_dialog):
