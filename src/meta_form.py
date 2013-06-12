@@ -312,7 +312,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     def _change_global_ci(self):
         print("Changing global confidence level:")
         prev_conf_level = meta_globals.get_global_conf_level()
-        print("   Previous Global Confidence level was: %f" % prev_conf_level)
 
         dialog = conf_level_dialog.ChangeConfLevelDlg(prev_conf_level, self)
         if dialog.exec_():

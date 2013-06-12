@@ -4,8 +4,8 @@ import sys
 import pdb
 import forms.icons_rc
 import time
-
 import meta_py_r
+import meta_form
 
 SPLASH_DISPLAY_TIME = 0 # TODO: change to 5 seconds in production version
 
@@ -49,8 +49,7 @@ def start():
     if time_elapsed < SPLASH_DISPLAY_TIME: # seconds
         print("Going to sleep for %f seconds" % float(SPLASH_DISPLAY_TIME-time_elapsed))
         QThread.sleep(int(SPLASH_DISPLAY_TIME-time_elapsed))
-    
-    import meta_form # TODO: metaform shows itself and the default wizard in init.... this probably shouldn't be allowed
+
     meta = meta_form.MetaForm()
     splash.finish(meta)
     meta.show()

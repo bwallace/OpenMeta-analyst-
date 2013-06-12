@@ -30,9 +30,17 @@
 #    unittest.main()
 
 #import nose
+import os
+import sys
+
+from PyQt4 import QtCore, QtGui, Qt
+from PyQt4.Qt import *
+
+import meta_form
 import meta_py_r
 
-class Test_meta_analysis:
+
+class Test_MA:
     def setup(self): # runs before each test method
         pass
 
@@ -41,11 +49,30 @@ class Test_meta_analysis:
 
     @classmethod
     def setup_class(cls): # runs before any method in the class
-        pass
+        app = QtGui.QApplication(sys.argv)
+        meta = meta_form.MetaForm()
+        #meta.tableView.setSelectionMode(QTableView.ContiguousSelection)
+        meta.show()
+        
+        Test_MA.app = app
+        Test_MA.meta = meta
+ 
 
     @classmethod
     def teardown_class(cls): # runs after any methods in the class
-        pass
+        sys.exit(Test_MA.app.exec_())
+        
+    def test_a_testtest(self):
+        print("")
+        
+    def binary_meta_analysis_test(self):
+        Test_MA.meta.open(os.path.join("sample_data", "amino.oma"))
+        
+        meta_py_r.ma_dataset_to_simple_binary_robj(Test_MA.meta.model)
+
+    ####
+    # TODO -- run through all metrics here
+    pass
     
 
 #    def test_numbers_5_6(self):
@@ -95,6 +122,14 @@ meta-regression:
     [ ] continuous covariate
     [ ] factor covariate
 '''
+    
+def binary_meta_analysis_test():
+    #meta, app = _setup_app()
+    #meta.open(os.path.join("test_data", "amino.oma"))
+
+    ####
+    # TODO -- run through all metrics here
+    pass
 
 def test_run_binary_ma():
     # TODO
