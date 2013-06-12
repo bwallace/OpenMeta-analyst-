@@ -316,10 +316,9 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
         dialog = conf_level_dialog.ChangeConfLevelDlg(prev_conf_level, self)
         if dialog.exec_():
-            meta_globals.set_global_conf_level(dialog.get_value())
-            self.cl_label.setText("confidence level: {:.1%}".format(meta_globals.get_global_conf_level()/100.0))
-            self.model.reset()
-            print("   Global Confidence level is now: %f" % meta_globals.get_global_conf_level())
+            new_conf_level = dialog.get_value()
+            change_cl_command = Command_Change_Conf_Level(prev_conf_level, new_conf_level, mainform=self)
+            self.tableView.undoStack.push(change_cl_command)
             
     def _import_csv(self):
         '''Import data from csv file'''
@@ -1455,6 +1454,30 @@ class CommandNext(QUndoCommand):
         
     def undo(self):
         self.undo_f()
+        
+
+class Command_Change_Conf_Level(QUndoCommand):
+    ''' Undo command for chnaging the confidence level '''
+    def __init__(self, old_conf_lvl, new_conf_lvl, mainform, description="Change confidence level"):
+        super(Command_Change_Conf_Level, self).__init__(description)
+        
+        
+        self.old_cl = old_conf_lvl
+        self.new_cl = new_conf_lvl
+        self.mainform = mainform
+    
+    
+    def redo(self):
+        self._set_conf_level(self.new_cl)
+        
+    def undo(self):
+        self._set_conf_level(self.old_cl)
+        
+    def _set_conf_level(self, conf_level):
+        meta_globals.set_global_conf_level(conf_level)
+        self.mainform.cl_label.setText("confidence level: {:.1%}".format(conf_level/100.0))
+        self.mainform.model.reset()
+        print("Global Confidence level is now: %f" % meta_globals.get_global_conf_level())
         
 
 #############################################################################
