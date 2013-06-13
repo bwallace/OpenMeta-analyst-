@@ -50,7 +50,7 @@ class DatasetModel(QAbstractTableModel):
     bring myself to maintain this blighted style.
     '''
     
-        #
+    #
     # column indices; these are a core component of this class,
     # as these indices are what maps the UI to the model. The following
     # columns are constant across datatypes, but some (e.g., the 
@@ -110,19 +110,6 @@ class DatasetModel(QAbstractTableModel):
     def set_current_metric(self, metric):
         self.current_effect = metric
         print "OK! metric updated."
-        
-#    def delete_stored_lower_upper(self):
-#        ''' Deletes the values stored in upper and lower since these are just
-#        used temporarily to calculate the SE. Probably called when the
-#        confidence level is changed '''
-#        
-#        group_str = self.get_cur_group_str()
-#        
-#        for study_index in range(len(self.dataset.studies)): # FINISH
-#            ma_unit = self.get_current_ma_unit_for_study(self, study_index)
-#            ma_unit.set_lower(self.current_effect, group_str, None)
-#            ma_unit.set_upper(self.current_effect, group_str, None)
-            
         
     def update_current_outcome(self):
         outcome_names = self.dataset.get_outcome_names()
@@ -535,7 +522,7 @@ class DatasetModel(QAbstractTableModel):
         return True, None
 
 
-    def setData(self, index, value, role=Qt.EditRole, import_csv = False):
+    def setData(self, index, value, role=Qt.EditRole, import_csv=False, allow_empty_names=False):
         '''
         Implementation of the AbstractDataTable method. The view uses this method
         to request data to display. Thus we here return values to render in the table
@@ -558,14 +545,19 @@ class DatasetModel(QAbstractTableModel):
             # proposed study name
             name = unicode(value.toString().toUtf8(), encoding="utf8")
             
-            if name == "":
+            if name == "" and not allow_empty_names:
                 # just ignore -- we don't allow empty study names
                 return False
             if name in self.dataset.get_study_names():
                 msg = "Duplicate study names not allowed"
                 self.emit(SIGNAL("dataError(QString)"), QString(msg))
                 return False
-            elif index.row() == self.rowCount()-DUMMY_ROWS-1:
+            # the second clause here is to address issue #233,
+            # specifically we do not add a dummy study if the 
+            # current study (as indexed by index.row()) is 'blank'.
+            # note that for us to have even gotten this far in such
+            # a case means the allow_empty_names flag is True.
+            elif index.row() == self.rowCount()-DUMMY_ROWS-1 and not name=="":
                 # if the last study was just edited, append a
                 # new, blank study
                 # TODO bug: if a new tx group is added, and then a new study
@@ -781,11 +773,6 @@ class DatasetModel(QAbstractTableModel):
         return True
         
     
-    #def _setData_NAME(self, value, index, study):
-    #def _setData_YEAR(self):
-    #def _setData_RAW_DATA(self):
-    #def _setData_OUTCOMES(self):
-
     @staticmethod
     def helper_basic_horizontal_headerData(section, data_type, sub_type,
             raw_columns, outcome_columns, current_effect, groups, outcome_not_None=True):
@@ -881,8 +868,6 @@ class DatasetModel(QAbstractTableModel):
         model class. This is responsible for providing header data for the
         respective columns.
         '''
-    
-        
         outcome_type = self.dataset.get_outcome_type(self.current_outcome)
         outcome_subtype = self.dataset.get_outcome_subtype(self.current_outcome)
         length_dataset = len(self.dataset)
@@ -991,13 +976,23 @@ class DatasetModel(QAbstractTableModel):
                 
         # For cool calculator icon
         if role == Qt.DecorationRole:
-            if orientation == Qt.Vertical and sectionOK:
-                return QIcon(":/misc/calculator-34.png")
+            if orientation == Qt.Vertical:
+                if sectionOK:
+                    return QIcon(":/misc/calculator-34.png")
+                else:
+                    print "\n\n----\n\n"
+                    print section
+                    print len(self.dataset)
+                    print self.dataset.studies
+                    print self.dataset.get_study_names()
+                    #pyqtRemoveInputHook()
+                    #pdb.set_trace()
+                    return QVariant()
+
         
         if role == Qt.TextAlignmentRole:
             return QVariant(int(Qt.AlignLeft|Qt.AlignVCenter))
-        #if role != Qt.DisplayRole:
-        #    return QVariant()
+
         ############################# DISPLAY ROLE #############################
         if role == Qt.DisplayRole:
             if orientation == Qt.Horizontal:
