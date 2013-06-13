@@ -412,15 +412,20 @@ binary.fixed.peto <- function(binary.data, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.") 
     
-    if (length(binary.data@g1O1) == 1){
+    if (length(binary.data@g1O1) == 1) {
         res <- get.res.for.one.binary.study(binary.data, params)
          # Package res for use by overall method.
         results <- list("Summary"=res)
     }
-    else{  
+    else {
         res <- rma.peto(ai=binary.data@g1O1, bi=binary.data@g1O2, 
-                                ci=binary.data@g2O1, di=binary.data@g2O2, slab=binary.data@study.names,
-                                level=params$conf.level, digits=params$digits)
+                        ci=binary.data@g2O1, di=binary.data@g2O2,
+						slab=binary.data@study.names,
+                        level=params$conf.level,
+						digits=params$digits,
+						add=params$adjust,
+						to=as.character(params$to),
+						drop00 = FALSE)
         # Corrected values for y and SE
         binary.data@y <- res$yi
         binary.data@SE <- sqrt(res$vi)
@@ -489,8 +494,8 @@ binary.fixed.peto.parameters <- function(){
     # parameters
     apply_adjustment_to = c("only0", "all")
     
-    params <- list( "conf.level"="float", "digits"="int",
-                            "adjust"="float", "to"=apply_adjustment_to)
+    params <- list("conf.level"="float", "digits"="int",
+                   "adjust"="float", "to"=apply_adjustment_to)
     
     # default values
     defaults <- list("conf.level"=95, "digits"=3, "adjust"=.5, "to"="only0")
@@ -546,7 +551,10 @@ binary.random <- function(binary.data, params){
         res<-rma.uni(yi=binary.data@y, sei=binary.data@SE, 
                      slab=binary.data@study.names,
                      method=params$rm.method, level=params$conf.level,
-                     digits=params$digits)
+                     digits=params$digits,
+					 add=params$adjust,
+					 to=as.character(params$to),
+					 drop00 = FALSE)
         if (is.null(params$create.plot) || (is.null(params$write.to.file))) {
             if (is.null(binary.data@y) || is.null(binary.data@SE)) {
                 # compute point estimates for plot.data in case they are missing
