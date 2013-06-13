@@ -344,16 +344,7 @@ class MADataTable(QtGui.QTableView):
         cur_outcome = self.model().current_outcome
         cur_follow_up = self.model().current_time_point
 
-    def cell_content_changed(self, index, old_val, new_val, study_added):
-        #DELETE IF ALL IS WELL
-        #metric_changed, old_metric = False, None
-        #if index.column in self.model().RAW_DATA:
-        #    metric_changed, old_metric = self.change_metric_if_appropriate()
-        #    
-        #new_metric = None
-        #if metric_changed:
-        #    new_metric = self.model().current_effect
-        
+    def cell_content_changed(self, index, old_val, new_val, study_added):        
         # Only make a cell edit if the old values and new values are different
         if not self._new_eq_old(old_val, new_val):
             print("Old val: %s, new val: %s" % (str(old_val.toString()), str(new_val.toString())))
@@ -363,7 +354,7 @@ class MADataTable(QtGui.QTableView):
                                         #old_metric=old_metric,
                                         #new_metric=new_metric
                                         )
-            self.undoStack.push(cell_edit)
+        self.undoStack.push(cell_edit)
             
     def _new_eq_old(self, old, new):
         '''None and "" are the same. Assume old and new are QVariants'''
@@ -425,7 +416,7 @@ class MADataTable(QtGui.QTableView):
         # if a covariate column was clicked, it may not yet have an entry in the
         # reverse_column_sorts dictionary; thus we insert one here
         #
-        # TODO this should *not* use the column number as the key!
+        # @TODO this should *not* use the column number as the key!
         # rather, it should use the name -- the column number of a given
         # covariate might change (e.g., if another covariate is deleted)
         if not self.reverse_column_sorts.has_key(column):
@@ -433,13 +424,6 @@ class MADataTable(QtGui.QTableView):
         sort_command = CommandSort(self.model(), column, self.reverse_column_sorts[column])
         self.undoStack.push(sort_command)
         self.reverse_column_sorts[column] = not self.reverse_column_sorts[column]
-
-    # Broken code, doesn't seem to be called from anywhere else but keeping
-    #   around until told otherwise GD
-    #def _data_for_only_one_of_two_arms(self):
-    #    cur_txs = self.model().current_txs
-    #    for group in cur_txs:
-    #        cur_raw_data_dict[group] = list(ma_unit.get_raw_data_for_group(group))
 
     def _normalize_newlines(self, qstr_text):
         return qstr_text.replace(_newlines_re, "\n")
@@ -453,8 +437,6 @@ class MADataTable(QtGui.QTableView):
         # fix for issue #169.
         # excel for mac, insanely, appends \r instead of
         # \n for new lines (rows).
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
         clipboard_text = self._normalize_newlines(clipboard_text)
 
         new_content = self._str_to_matrix(clipboard_text)
@@ -491,8 +473,8 @@ class MADataTable(QtGui.QTableView):
         print "upper left index: %s, upper right index: %s" % \
                 (self._print_index(upper_left_index), self._print_index(lower_right_index))
         text_matrix = []
+
         # +1s are because range() is right interval exclusive
-        
         for row in range(upper_left_index.row(), lower_right_index.row()+1):
             current_row = []
             for col in range(upper_left_index.column(), lower_right_index.column()+1):
@@ -695,11 +677,8 @@ class CommandCellEdit(QUndoCommand):
         self.ma_data_table_view = ma_data_table_view
         self.added_study = added_study
         self.something_else = added_study
-        #####################self.metric_changed = metric_changed
-        #####################self.old_metric = old_metric
-        #####################self.new_metric = new_metric
         
-        #### FOR DEBUGGING
+        #### output for debugging
         debug_params = dict(first_call = True,
             original_content = original_content,
             new_content = new_content,
@@ -708,12 +687,10 @@ class CommandCellEdit(QUndoCommand):
             ma_data_table_view = ma_data_table_view,
             added_study = added_study,
             something_else = added_study,
-            ###########################metric_changed = metric_changed,
-            ###########################old_metric = old_metric,
-            ###########################new_metric = new_metric,
             )
+
         print("CommandCellEdit created with parameters: %s" % str(debug_params))
-        #####
+        #### end debugging output
 
     @DebugHelper
     def redo(self):
@@ -744,11 +721,6 @@ class CommandCellEdit(QUndoCommand):
             self.added_study = self.ma_data_table_view.model().study_auto_added
             self.ma_data_table_view.model().study_auto_added = None
 
-            #DELETE
-            ### did the metric change? if so re-change it here
-            ##if self.metric_changed is not None:
-            ##    self.ma_data_table_view.set_metric_in_ui(self.new_metric)
-
             model.blockSignals(False)
             # make the view reflect the update
             self.ma_data_table_view.model().reset()
@@ -761,10 +733,6 @@ class CommandCellEdit(QUndoCommand):
 
     @DebugHelper
     def undo(self):
-        '''
-        if self.col == 1 and self.row == len(self.ma_data_table_view.model().get_studies())-1:
-            self.ma_data_table_view.model().remove_study(self.added_study)
-        '''
         # in this case, the original editing action
         # had the effect of appending a row to the spreadsheet.
         # here we remove it.
@@ -777,15 +745,7 @@ class CommandCellEdit(QUndoCommand):
         # as in the redo method, we block signals before
         # editing the model data
         model.blockSignals(True)
-        
-        model.setData(index, self.original_content)
-
-        # did we change the metric automatically (e.g., because it
-        # looked like the user was exploring single-arm data?) if
-        # so, change it back
-        #if self.metric_changed:
-        #    #self.ma_data_table_view.model().set_current_metric(self.old_metric)
-        #    self.ma_data_table_view.set_metric_in_ui(self.old_metric)
+        model.setData(index, self.original_content, allow_empty_names=True)
 
         model.blockSignals(False)
         self.ma_data_table_view.model().reset()
