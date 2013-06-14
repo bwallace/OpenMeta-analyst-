@@ -1084,15 +1084,22 @@ def run_meta_method_diag(meta_function_name, function_names, list_of_params,
                          res_name="result", diag_data_name="tmp_obj"):
     # list of parameter objects
     r_params_str = "list(%s)" % ",".join([_to_R_params(p) for p in list_of_params])
-    ro.r("list.of.params <- %s" % r_params_str)
+    r_str = "list.of.params <- %s" % r_params_str
+    print(r_str)
+    ro.r(r_str)
     # list of function names
-    ro.r("f.names <- c(%s)" % ",".join(["'%s'" % f_name for f_name in function_names]))
+    r_str = "f.names <- c(%s)" % ",".join(["'%s'" % f_name for f_name in function_names])
+    print(r_str)
+    ro.r(r_str)
 
     multi_meta_function_name = \
-        {"loo.ma.diagnostic":"multiple.loo.diagnostic",\
-         "subgroup.ma.diagnostic":"multiple.subgroup.diagnostic"}[meta_function_name]
+        {"loo.ma.diagnostic":"multiple.loo.diagnostic",
+         "subgroup.ma.diagnostic":"multiple.subgroup.diagnostic",
+         "cum.ma.diagnostic":"multiple.cum.ma.diagnostic"}[meta_function_name]
 
-    result = ro.r("%s(f.names, list.of.params, %s)" % (multi_meta_function_name, diag_data_name))
+    r_str = "%s(f.names, list.of.params, %s)" % (multi_meta_function_name, diag_data_name)
+    print(r_str)
+    result = ro.r(r_str)
     
     return parse_out_results(result)
         

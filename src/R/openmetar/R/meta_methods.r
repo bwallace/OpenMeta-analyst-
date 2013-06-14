@@ -342,7 +342,7 @@ cum.ma.diagnostic <- function(fname, diagnostic.data, params){
 	# iterate over the binaryData elements, adding one study at a time
 	cum.results <- array(list(NULL), dim=c(length(diagnostic.data@study.names)))
 	
-	for (i in 1:length(binary.data@study.names)){
+	for (i in 1:length(diagnostic.data@study.names)){
 		# build a DiagnosticData object including studies
 		# 1 through i
 		y.tmp <- diagnostic.data@y[1:i]
@@ -350,7 +350,7 @@ cum.ma.diagnostic <- function(fname, diagnostic.data, params){
 		names.tmp <- diagnostic.data@study.names[1:i]
 		bin.data.tmp <- NULL
 		
-		if (length(diagnostic@g1O1) > 0){
+		if (length(diagnostic.data@TP) > 0){
 			# if we have group level data for 
 			# group 1, outcome 1, then we assume
 			# we have it for all groups
@@ -358,9 +358,9 @@ cum.ma.diagnostic <- function(fname, diagnostic.data, params){
 			FN.tmp <- diagnostic.data@FN[1:i]
 			FP.tmp <- diagnostic.data@FP[1:i]
 			TN.tmp <- diagnostic.data@TN[1:i]
-			diag.data.tmp <- new('DiagnosticData', g1O1=g1O1.tmp, 
-					g1O2=g1O2.tmp , g2O1=g2O1.tmp, 
-					g2O2=g2O2.tmp, y=y.tmp, SE=SE.tmp, study.names=names.tmp)
+			diag.data.tmp <- new('DiagnosticData', TP=TP.tmp, 
+					FN=FN.tmp , FP=FP.tmp, 
+					TN=TN.tmp, y=y.tmp, SE=SE.tmp, study.names=names.tmp)
 		} else {
 			diag.data.tmp <- new('DiagnosticData', y=y.tmp, SE=SE.tmp, study.names=names.tmp)
 		}
@@ -446,26 +446,15 @@ multiple.cum.ma.diagnostic <- function(fnames, params.list, diagnostic.data) {
 		metrics <- c(metrics, params.list[[count]]$measure)
 		if (params.list[[count]]$measure=="Sens") {
 			sens.index <- count
-			#sens.spec.outpath <- params.list[[count]]$fp_outpath
 		}
 		if (params.list[[count]]$measure=="Spec") {
 			spec.index <- count
-			#sens.spec.outpath <- params.list[[count]]$fp_outpath
 		}
 		if (params.list[[count]]$measure=="PLR") {
 			plr.index <- count
-			#if (params.list[[count]]$fp_outpath==sens.spec.outpath) {
-			# for future use - check that path names are distinct.    
-			#    params.list[[count]]$fp_outpath <- paste(sub(".png","",sens.spec.outpath), "1.png", sep="")   
-			# if fp_outpath is the same as for sens or spec, append a 1.
-			#}
 		}
 		if (params.list[[count]]$measure=="NLR") {
 			nlr.index <- count
-			#if (params.list[[count]]$fp_outpath==sens.spec.outpath) {
-			#    params.list[[count]]$fp_outpath <- paste(sub(".png","",sens.spec.outpath), "1.png", sep="")   
-			#    # if fp_outpath is the same as for sens or spec, append a 1.
-			#}
 		}
 	}
 	
@@ -500,14 +489,14 @@ multiple.cum.ma.diagnostic <- function(fnames, params.list, diagnostic.data) {
 		results <- c(results, summary.sens, summary.spec)
 		
 		res.sens.spec <- list("left"=results.sens$res, "right"=results.spec$res)
-		plot.data <- create.loo.side.by.side.plot.data(diagnostic.data.sens.spec, params.tmp, res=res.sens.spec)
+		##plot.data <- create.loo.side.by.side.plot.data(diagnostic.data.sens.spec, params.tmp, res=res.sens.spec)
 		
 		forest.path <- paste(params.sens$fp_outpath, sep="")
-		two.forest.plots(plot.data, outpath=forest.path)
+		##two.forest.plots(plot.data, outpath=forest.path)
 		
-		forest.plot.params.path <- save.data(om.data=diagnostic.data.sens.spec, res.sens.spec, params=params.tmp, plot.data)
-		plot.params.paths.tmp <- c("Sensitivity and Specificity Forest Plot"=forest.plot.params.path)
-		plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
+		##forest.plot.params.path <- save.data(om.data=diagnostic.data.sens.spec, res.sens.spec, params=params.tmp, plot.data)
+		##plot.params.paths.tmp <- c("Sensitivity and Specificity Forest Plot"=forest.plot.params.path)
+		#plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
 		
 		images.tmp <- c("Sensitivity and Specificity Forest Plot"=forest.path)
 		images <- c(images, images.tmp)
@@ -531,8 +520,8 @@ multiple.cum.ma.diagnostic <- function(fnames, params.list, diagnostic.data) {
 		fname <- fnames[nlr.index]
 		diagnostic.data.nlr <- compute.diag.point.estimates(diagnostic.data, params.nlr)
 		diagnostic.data.plr <- compute.diag.point.estimates(diagnostic.data, params.plr)
-		results.nlr <- loo.ma.diagnostic(fname, diagnostic.data.nlr, params.nlr)
-		results.plr <- loo.ma.diagnostic(fname, diagnostic.data.plr, params.plr)
+		results.nlr <- cum.ma.diagnostic(fname, diagnostic.data.nlr, params.nlr)
+		results.plr <- cum.ma.diagnostic(fname, diagnostic.data.plr, params.plr)
 		diagnostic.data.nlr.plr <- list("left"=diagnostic.data.nlr, "right"=diagnostic.data.plr)
 		
 		summary.nlr <- list("Summary"=results.nlr$Summary)
