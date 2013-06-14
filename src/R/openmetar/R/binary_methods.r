@@ -195,8 +195,8 @@ binary.fixed.inv.var <- function(binary.data, params){
     else{
         # call out to the metafor package
         res<-rma.uni(yi=binary.data@y, sei=binary.data@SE, slab=binary.data@study.names,
-                                level=params$conf.level, digits=params$digits, method="FE", add=params$adjust,
-                                to=params$to)
+                                level=params$conf.level, digits=params$digits, method="FE", add=c(params$adjust,params$adjust),
+                                to=c(as.character(params$to), as.character(params$to)))
         if (is.null(params$create.plot) || (is.null(params$write.to.file))) {
             if (is.null(params$write.to.file)) {
                 # Write results and study data to csv files 
@@ -296,9 +296,13 @@ binary.fixed.mh <- function(binary.data, params){
     }
     else{
         res<-rma.mh(ai=binary.data@g1O1, bi=binary.data@g1O2, 
-                                ci=binary.data@g2O1, di=binary.data@g2O2, slab=binary.data@study.names,
-                                level=params$conf.level, digits=params$digits, measure=params$measure,
-                                add=c(params$adjust, 0), to=c(as.character(params$to), "none")) 
+                    ci=binary.data@g2O1, di=binary.data@g2O2,
+					slab=binary.data@study.names,
+                    level=params$conf.level,
+					digits=params$digits,
+					measure=params$measure,
+                    add=c(params$adjust, 0),
+					to=c(as.character(params$to), "none")) 
         if (is.null(params$create.plot) || (is.null(params$write.to.file))) {
             if (is.null(binary.data@y) || is.null(binary.data@SE)) {
                 # compute point estimates for plot.data in case they are missing
@@ -423,9 +427,9 @@ binary.fixed.peto <- function(binary.data, params){
 						slab=binary.data@study.names,
                         level=params$conf.level,
 						digits=params$digits,
-						add=params$adjust,
-						to=as.character(params$to),
-						drop00 = FALSE)
+						add=c(params$adjust,params$adjust),
+						to=c(as.character(params$to), as.character(params$to)))
+						##drop00 = FALSE)  # needed in metafor 1.8, unknown in 1.6
         # Corrected values for y and SE
         binary.data@y <- res$yi
         binary.data@SE <- sqrt(res$vi)
@@ -552,9 +556,9 @@ binary.random <- function(binary.data, params){
                      slab=binary.data@study.names,
                      method=params$rm.method, level=params$conf.level,
                      digits=params$digits,
-					 add=params$adjust,
-					 to=as.character(params$to),
-					 drop00 = FALSE)
+					 add=c(params$adjust,params$adjust),
+					 to=as.character(params$to))
+					 ##drop00 = FALSE)  # needed in metafor 1.8, unknown in 1.6
         if (is.null(params$create.plot) || (is.null(params$write.to.file))) {
             if (is.null(binary.data@y) || is.null(binary.data@SE)) {
                 # compute point estimates for plot.data in case they are missing

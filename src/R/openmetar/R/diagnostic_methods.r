@@ -614,9 +614,12 @@ diagnostic.fixed.peto <- function(diagnostic.data, params){
   }
   else{  
     res <- rma.peto(ai=diagnostic.data@TP, bi=diagnostic.data@FN, 
-                    ci=diagnostic.data@FP, di=diagnostic.data@TN, slab=diagnostic.data@study.names,
-                    level=params$conf.level, digits=params$digits,
-                    add=c(params$adjust, 0), to=c(as.character(params$to), "none"))
+                    ci=diagnostic.data@FP, di=diagnostic.data@TN,
+					slab=diagnostic.data@study.names,
+                    level=params$conf.level,
+					digits=params$digits,
+                    add=c(params$adjust, 0),
+					to=c(as.character(params$to), "none"))
 	# GD EXPERIMENTAL#########################
 	res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
 	res$study.names <- diagnostic.data@study.names

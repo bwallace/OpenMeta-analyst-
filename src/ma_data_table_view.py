@@ -354,7 +354,7 @@ class MADataTable(QtGui.QTableView):
                                         #old_metric=old_metric,
                                         #new_metric=new_metric
                                         )
-        self.undoStack.push(cell_edit)
+            self.undoStack.push(cell_edit)
             
     def _new_eq_old(self, old, new):
         '''None and "" are the same. Assume old and new are QVariants'''
