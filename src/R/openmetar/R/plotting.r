@@ -1370,17 +1370,18 @@ draw.normal.CI <- function(LL, ES, UL, size) {
 # TO DO: there is one case where this is a problem, when the summary estimate is wider than the CI
 # this can happen when the summary is calculated in a subgroup where there is only one study
 # this should be handled by another "if" that forces the xscale to be determined "primarily" by the CI of the summaries
-# this has to be done in the function above 
-  if (convertX(unit(UL, "native"), "npc", valueOnly=TRUE) > 1  &&  convertX(unit(LL, "native"), "npc", valueOnly=TRUE) >= 0){
+# this has to be done in the function above
+
+  if ((convertX(unit(UL, "native"), "npc", valueOnly=TRUE) > 1)  &&  (convertX(unit(LL, "native"), "npc", valueOnly=TRUE) >= 0)) {
     # this line is too long on the right - draw a right arrow from LL to 1 (in approriate coords.) 
     grid.arrows(x=unit(c(LL, 1), c("native", "npc")), length=unit(0.05, "inches"))                 
   }
-  else if (convertX(unit(UL, "native"), "npc", valueOnly=TRUE) <= 1  &&  convertX(unit(LL, "native"), "npc", valueOnly=TRUE) < 0){
+  else if ((convertX(unit(UL, "native"), "npc", valueOnly=TRUE) <= 1)  &&  (convertX(unit(LL, "native"), "npc", valueOnly=TRUE) < 0)) {
     # this line is too long on the left - draw a left arrow from UL to 0 (in approriate coords.)
     grid.arrows(x=unit(c(UL, 0), c("native", "npc")),
                 length=unit(0.05, "inches"))
   }
-  else if (convertX(unit(UL, "native"), "npc", valueOnly=TRUE) > 1   &&  convertX(unit(LL, "native"), "npc", valueOnly=TRUE) < 0 ){
+  else if ((convertX(unit(UL, "native"), "npc", valueOnly=TRUE) > 1)   &&  (convertX(unit(LL, "native"), "npc", valueOnly=TRUE) < 0)) {
     # this line is too long on both sides - draw a left arrow from ES to 0 and a right arrow from ES to 1 (in approriate coords.)
     grid.arrows(x=unit(c(ES, 0), c("native", "npc")), length=unit(0.05, "inches")) 
     grid.arrows(x=unit(c(ES, 1), c("native", "npc")), length=unit(0.05, "inches"))              
@@ -1425,26 +1426,24 @@ draw.summary.CI.no.scaled.diamond <- function(LL, ES, UL, size, color, diam.heig
   plot.width <- plot.range[2] - plot.range[1]
   grid.polygon(x=unit(c(ES-plot.width/30, ES, ES+plot.width/30, ES), "native"),
                y=unit(0.5 + c(0, 0.5*diam.height, 0, -0.5*diam.height), "npc"), gp=gpar(fill=color))
-  if (convertX(unit(UL, "native"), "npc", valueOnly=TRUE) > 1  &&  convertX(unit(LL, "native"), "npc", valueOnly=TRUE) >= 0){
+  if ((convertX(unit(UL, "native"), "npc", valueOnly=TRUE) > 1)  &&  (convertX(unit(LL, "native"), "npc", valueOnly=TRUE) >= 0)) {
     # this line is too long on the right - draw a right arrow from LL to 1 (in approriate coords.) 
     grid.arrows(x=unit(c(LL, 1), c("native", "npc")), length=unit(0.05, "inches"))                 
   }
-  else if (convertX(unit(UL, "native"), "npc", valueOnly=TRUE) <= 1  &&  convertX(unit(LL, "native"), "npc", valueOnly=TRUE) < 0){
+  else if ((convertX(unit(UL, "native"), "npc", valueOnly=TRUE) <= 1)  &&  (convertX(unit(LL, "native"), "npc", valueOnly=TRUE) < 0)) {
     # this line is too long on the left - draw a left arrow from UL to 0 (in approriate coords.)
     grid.arrows(x=unit(c(UL, 0), c("native", "npc")),
                 length=unit(0.05, "inches"))
   }
-  else if (convertX(unit(UL, "native"), "npc", valueOnly=TRUE) > 1   &&  convertX(unit(LL, "native"), "npc", valueOnly=TRUE) < 0 ){
+  else if ((convertX(unit(UL, "native"), "npc", valueOnly=TRUE) > 1)   &&  (convertX(unit(LL, "native"), "npc", valueOnly=TRUE) < 0)){
     # this line is too long on both sides - draw a left arrow from ES to 0 and a right arrow from ES to 1 (in approriate coords.)
     grid.arrows(x=unit(c(ES, 0), c("native", "npc")), length=unit(0.05, "inches")) 
     grid.arrows(x=unit(c(ES, 1), c("native", "npc")), length=unit(0.05, "inches"))              
   }
   else {
     # this line is too short - draw white if totally inside rect
-    line.col <- if ((convertX(unit(ES, "native") + unit(0.5*size, "lines"),
-                              "native", valueOnly=TRUE) > UL) &&
-                                (convertX(unit(ES, "native") - unit(0.5*size, "lines"),
-                                          "native", valueOnly=TRUE) < LL))
+    line.col <- if ((convertX(unit(ES, "native") + unit(0.5*size, "lines"), "native", valueOnly=TRUE) > UL) &&
+                                (convertX(unit(ES, "native") - unit(0.5*size, "lines"), "native", valueOnly=TRUE) < LL))
       "white"
     else
       # this line is just right

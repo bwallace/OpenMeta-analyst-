@@ -227,8 +227,9 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
     def toggle_menu_options_that_require_dataset(self, enable):
         self.action_go.setEnabled(enable)
-        if self.model.get_current_outcome_type() != "diagnostic":
-            self.action_cum_ma.setEnabled(enable)
+#        if self.model.get_current_outcome_type() != "diagnostic":
+#            self.action_cum_ma.setEnabled(enable)
+        self.action_cum_ma.setEnabled(enable)
         self.action_loo_ma.setEnabled(enable)
         self.action_meta_regression.setEnabled(enable)
         #self.action_subgroup_ma.setEnabled(enable)
@@ -1142,11 +1143,11 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         if check_for_appropriate_metric:
             self.tableView.change_metric_if_appropriate()
 
-        if self.model.get_current_outcome_type() == "diagnostic":
-            # no cumulative MA for diagnostic data
-            self.action_cum_ma.setEnabled(False)
-        else:
-            self.action_cum_ma.setEnabled(True)
+#        if self.model.get_current_outcome_type() == "diagnostic":
+#            # no cumulative MA for diagnostic data
+#            self.action_cum_ma.setEnabled(False)
+#        else:
+#            self.action_cum_ma.setEnabled(True)
 
         self.model_updated()
         self.data_dirtied()

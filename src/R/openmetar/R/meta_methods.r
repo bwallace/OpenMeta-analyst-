@@ -315,6 +315,163 @@ cum.ma.continuous <- function(fname, cont.data, params){
     results
 }
 
+
+#################################
+#  diagnostic cumulative MA     #
+#################################
+cum.ma.diagnostic <- function(fname, diagnostic.data, params){
+	# NOT TESTED YET!!!!!!!
+	
+	# assert that the argument is the correct type
+	if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")  
+	
+	params.tmp <- params
+	# These temporarily turn off creating plots and writing results to file
+	params.tmp$create.plot <- FALSE
+	params.tmp$write.to.file <- FALSE
+	res <- eval(call(fname, diagnostic.data, params.tmp))
+	res.overall <- eval(call(paste(fname, ".overall", sep=""), res))
+	# parse out the overall estimate
+	plot.data <- create.plot.data.diagnostic(diagnostic.data, params, res.overall)
+	# data for standard forest plot
+	
+	####
+	#### SOMETHING MISSING HERE?
+	####
+	
+	# iterate over the binaryData elements, adding one study at a time
+	cum.results <- array(list(NULL), dim=c(length(diagnostic.data@study.names)))
+	
+	for (i in 1:length(diagnostic.data@study.names)){
+		# build a DiagnosticData object including studies
+		# 1 through i
+		y.tmp <- diagnostic.data@y[1:i]
+		SE.tmp <- diagnostic.data@SE[1:i]
+		names.tmp <- diagnostic.data@study.names[1:i]
+		bin.data.tmp <- NULL
+		
+		if (length(diagnostic.data@TP) > 0){
+			# if we have group level data for 
+			# group 1, outcome 1, then we assume
+			# we have it for all groups
+			TP.tmp <- diagnostic.data@TP[1:i]
+			FN.tmp <- diagnostic.data@FN[1:i]
+			FP.tmp <- diagnostic.data@FP[1:i]
+			TN.tmp <- diagnostic.data@TN[1:i]
+			diag.data.tmp <- new('DiagnosticData', TP=TP.tmp, 
+					FN=FN.tmp , FP=FP.tmp, 
+					TN=TN.tmp, y=y.tmp, SE=SE.tmp, study.names=names.tmp)
+		} else {
+			diag.data.tmp <- new('DiagnosticData', y=y.tmp, SE=SE.tmp, study.names=names.tmp)
+		}
+		# call the parametric function by name, passing along the 
+		# data and parameters. Notice that this method knows
+		# neither what method its calling nor what parameters
+		# it's passing!
+		cur.res <- eval(call(fname, diag.data.tmp, params.tmp))
+		cur.overall <- eval(call(paste(fname, ".overall", sep=""), cur.res))
+		cum.results[[i]] <- cur.overall 
+	}
+	study.names <- diagnostic.data@study.names[1] 
+	for (count in 2:length(diagnostic.data@study.names)) {
+		study.names <- c(study.names, paste("+ ", diagnostic.data@study.names[count], sep=""))
+	}
+	metric.name <- pretty.metric.name(as.character(params.tmp$measure))
+	model.title <- ""
+	if (fname == "diagnostic.bivariate.ml") {
+		model.title <- paste("Diagnostic Bivariate - Maximum Likelihood\n\nMetric: ", metric.name, sep="") 
+	} else if (fname == "diagnostic.fixed.inv.var.") {
+		model.title <- paste("Diagnostic Fixed-Effect Inverse Variance\n\nMetric: ", metric.name, sep="")
+	} else if (fname == "diagnostic.fixed.mh") {
+		model.title <- paste("Diagnostic Fixed-Effect Mantel Haenszel\n\nMetric: ", metric.name, sep="")
+	} else if (fname == "diagnostic.fixed.peto") {
+		model.title <- paste("Diagnostic Fixed-Effect Peto\n\nMetric: ", metric.name, sep="")
+	} else if (fname == "diagnostic.hsroc") {
+		model.title <- paste("Diagnostic HSROC\n\nMetric: ", metric.name, sep="")
+	} else if (fname == "diagnostic.random") {
+		model.title <- paste("Diagnostic Random-Effects\n\nMetric: ", metric.name, sep="")
+	}
+	
+	cum.disp <- create.overall.display(res=cum.results, study.names, params, model.title, data.type="diagnostic")
+	forest.path <- paste(params$fp_outpath, sep="")
+	params.cum <- params
+	params.cum$fp_col1_str <- "Cumulative Studies"
+	params.cum$fp_col2_str <- "Cumulative Estimate"
+	# column labels for the cumulative (right-hand) plot
+	plot.data.cum <- create.plot.data.cum(om.data=diagnostic.data, params.cum, res=cum.results)
+	two.plot.data <- list("left"=plot.data, "right"=plot.data.cum)
+	changed.params <- plot.data$changed.params
+	# List of changed params values for standard (left) plot - not cumulative plot!
+	# Currently plot edit can't handle two sets of params values for xticks or plot bounds.
+	# Could be changed in future.
+	params.changed.in.forest.plot <- two.forest.plots(two.plot.data, outpath=forest.path)
+	changed.params <- c(changed.params, params.changed.in.forest.plot)
+	# Update params changed in two.forest.plots
+	params[names(changed.params)] <- changed.params
+	# we use the system time as our unique-enough string to store
+	# the params object
+	forest.plot.params.path <- save.data(diagnostic.data, res, params, two.plot.data)
+	# Now we package the results in a dictionary (technically, a named 
+	# vector). In particular, there are two fields that must be returned; 
+	# a dictionary of images (mapping titles to image paths) and a list of texts
+	# (mapping titles to pretty-printed text). In this case we have only one 
+	# of each. 
+	#    
+	plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+	images <- c("Cumulative Forest Plot"=forest.path)
+	plot.names <- c("cumulative forest plot"="cumulative_forest_plot")
+	results <- list("images"=images, "Cumulative Summary"=cum.disp, 
+			        "plot_names"=plot.names, 
+					"plot_params_paths"=plot.params.paths)
+	results
+}
+
+
+multiple.cum.ma.diagnostic <- function(fnames, params.list, diagnostic.data) {
+	# wrapper for applying cum.ma method to multiple diagnostic functions and metrics    
+	
+	# fnames -- names of diagnostic meta-analytic functions to call
+	# params.list -- parameter lists to be passed along to the functions in
+	#              fnames
+	# diagnostic.data -- the (diagnostic data) that is to be analyzed 
+	
+	
+	results <- list()
+	pretty.names <- diagnostic.fixed.inv.var.pretty.names()
+	images <- c()
+	plot.names <- c()
+	plot.params.paths <- c()
+			
+	for (count in 1:length(params.list)) {
+		params <- params.list[[count]]
+		fname <- fnames[count]
+		diagnostic.data <- compute.diag.point.estimates(diagnostic.data, params)
+		res <- cum.ma.diagnostic(fname, diagnostic.data, params)
+		
+		summary <- list("Summary"=res[["Cumulative Summary"]])
+		names(summary) <- paste(eval(parse(text=paste("pretty.names$measure$", params$measure,sep=""))), " Summary", sep="")
+		
+		results <- c(results, summary)
+		
+		image.name <- paste(params$measure, "Forest Plot", sep=" ")
+		images.tmp <- c(res$images[[1]])
+		names(images.tmp) <- image.name
+		images <- c(images, images.tmp)
+		
+		plot.names.tmp <- c("forest plot"="forest.plot")
+		plot.names <- c(plot.names, plot.names.tmp)
+		
+		#plot.params.paths <-
+	
+	}
+	
+	results <- c(results, list("images"=images, "plot_names"=plot.names))
+	results
+	
+
+
+}
+
 ##################################
 #  continuous leave-one-out MA   #
 ##################################

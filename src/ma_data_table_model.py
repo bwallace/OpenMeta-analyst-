@@ -980,11 +980,11 @@ class DatasetModel(QAbstractTableModel):
                 if sectionOK:
                     return QIcon(":/misc/calculator-34.png")
                 else:
-                    print "\n\n----\n\n"
-                    print section
-                    print len(self.dataset)
-                    print self.dataset.studies
-                    print self.dataset.get_study_names()
+                    #print "\n\n----\n\n"
+                    #print section
+                    #print len(self.dataset)
+                    #print self.dataset.studies
+                    #print self.dataset.get_study_names()
                     #pyqtRemoveInputHook()
                     #pdb.set_trace()
                     return QVariant()
