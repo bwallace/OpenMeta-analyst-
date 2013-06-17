@@ -421,166 +421,55 @@ cum.ma.diagnostic <- function(fname, diagnostic.data, params){
 	images <- c("Cumulative Forest Plot"=forest.path)
 	plot.names <- c("cumulative forest plot"="cumulative_forest_plot")
 	results <- list("images"=images, "Cumulative Summary"=cum.disp, 
-			"plot_names"=plot.names, 
-			"plot_params_paths"=plot.params.paths)
+			        "plot_names"=plot.names, 
+					"plot_params_paths"=plot.params.paths)
 	results
 }
 
 
 multiple.cum.ma.diagnostic <- function(fnames, params.list, diagnostic.data) {
-	## NOT FINISHED OR TESTED!!!!
+	# wrapper for applying cum.ma method to multiple diagnostic functions and metrics    
 	
-	# wrapper for applying leave-one-out method to multiple diagnostic functions and metrics    
-	
-	####
 	# fnames -- names of diagnostic meta-analytic functions to call
 	# params.list -- parameter lists to be passed along to the functions in
 	#              fnames
 	# diagnostic.data -- the (diagnostic data) that is to be analyzed 
-	###
-	metrics <- c()
+	
+	
 	results <- list()
 	pretty.names <- diagnostic.fixed.inv.var.pretty.names()
-	sens.spec.outpath <- c()
-	for (count in 1:length(params.list)) {
-		metrics <- c(metrics, params.list[[count]]$measure)
-		if (params.list[[count]]$measure=="Sens") {
-			sens.index <- count
-		}
-		if (params.list[[count]]$measure=="Spec") {
-			spec.index <- count
-		}
-		if (params.list[[count]]$measure=="PLR") {
-			plr.index <- count
-		}
-		if (params.list[[count]]$measure=="NLR") {
-			nlr.index <- count
-		}
-	}
-	
 	images <- c()
 	plot.names <- c()
 	plot.params.paths <- c()
-	remove.indices <- c()
-	
-	if (("Sens" %in% metrics) & ("Spec" %in% metrics)) {
-		# create side-by-side forest plots for sens and spec.
-		params.sens <- params.list[[sens.index]]
-		params.spec <- params.list[[spec.index]]
-		params.sens$create.plot <- FALSE
-		params.sens$write.to.file <- FALSE
-		params.spec$create.plot <- FALSE
-		params.spec$write.to.file <- FALSE
-		params.tmp <- list("left"=params.sens, "right"=params.spec)
+			
+	for (count in 1:length(params.list)) {
+		params <- params.list[[count]]
+		fname <- fnames[count]
+		diagnostic.data <- compute.diag.point.estimates(diagnostic.data, params)
+		res <- cum.ma.diagnostic(fname, diagnostic.data, params)
 		
-		fname <- fnames[sens.index]
-		diagnostic.data.sens <- compute.diag.point.estimates(diagnostic.data, params.sens)
-		diagnostic.data.spec <- compute.diag.point.estimates(diagnostic.data, params.spec)
+		summary <- list("Summary"=res[["Cumulative Summary"]])
+		names(summary) <- paste(eval(parse(text=paste("pretty.names$measure$", params$measure,sep=""))), " Summary", sep="")
 		
-		results.sens <- cum.ma.diagnostic(fname, diagnostic.data.sens, params.sens)
-		results.spec <- cum.ma.diagnostic(fname, diagnostic.data.spec, params.spec)
+		results <- c(results, summary)
 		
-		diagnostic.data.sens.spec <- list("left"=diagnostic.data.sens, "right"=diagnostic.data.spec)
-		
-		summary.sens <- list("Summary"=results.sens$Summary)
-		names(summary.sens) <- paste(eval(parse(text=paste("pretty.names$measure$", params.sens$measure,sep=""))), " Summary", sep="")
-		summary.spec <- list("Summary"=results.spec$Summary)
-		names(summary.spec) <- paste(eval(parse(text=paste("pretty.names$measure$", params.spec$measure,sep=""))), " Summary", sep="")
-		results <- c(results, summary.sens, summary.spec)
-		
-		res.sens.spec <- list("left"=results.sens$res, "right"=results.spec$res)
-		##plot.data <- create.loo.side.by.side.plot.data(diagnostic.data.sens.spec, params.tmp, res=res.sens.spec)
-		
-		forest.path <- paste(params.sens$fp_outpath, sep="")
-		##two.forest.plots(plot.data, outpath=forest.path)
-		
-		##forest.plot.params.path <- save.data(om.data=diagnostic.data.sens.spec, res.sens.spec, params=params.tmp, plot.data)
-		##plot.params.paths.tmp <- c("Sensitivity and Specificity Forest Plot"=forest.plot.params.path)
-		#plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
-		
-		images.tmp <- c("Sensitivity and Specificity Forest Plot"=forest.path)
+		image.name <- paste(params$measure, "Forest Plot", sep=" ")
+		images.tmp <- c(res$images[[1]])
+		names(images.tmp) <- image.name
 		images <- c(images, images.tmp)
 		
 		plot.names.tmp <- c("forest plot"="forest.plot")
 		plot.names <- c(plot.names, plot.names.tmp)
 		
-		remove.indices <- c(sens.index, spec.index)
+		#plot.params.paths <-
+	
 	}
 	
-	if (("NLR" %in% metrics) & ("PLR" %in% metrics)) {
-		# create side-by-side forest plots for NLR and PLR.
-		params.nlr <- params.list[[nlr.index]]
-		params.plr <- params.list[[plr.index]]
-		params.nlr$create.plot <- FALSE
-		params.nlr$write.to.file <- FALSE
-		params.plr$create.plot <- FALSE
-		params.plr$write.to.file <- FALSE
-		params.tmp <- list("left"=params.nlr, "right"=params.plr)
-		
-		fname <- fnames[nlr.index]
-		diagnostic.data.nlr <- compute.diag.point.estimates(diagnostic.data, params.nlr)
-		diagnostic.data.plr <- compute.diag.point.estimates(diagnostic.data, params.plr)
-		results.nlr <- cum.ma.diagnostic(fname, diagnostic.data.nlr, params.nlr)
-		results.plr <- cum.ma.diagnostic(fname, diagnostic.data.plr, params.plr)
-		diagnostic.data.nlr.plr <- list("left"=diagnostic.data.nlr, "right"=diagnostic.data.plr)
-		
-		summary.nlr <- list("Summary"=results.nlr$Summary)
-		names(summary.nlr) <- paste(eval(parse(text=paste("pretty.names$measure$", params.nlr$measure,sep=""))), " Summary", sep="")
-		summary.plr <- list("Summary"=results.plr$Summary)
-		names(summary.plr) <- paste(eval(parse(text=paste("pretty.names$measure$", params.plr$measure,sep=""))), " Summary", sep="")
-		results <- c(results, summary.nlr, summary.plr)
-		
-		res.nlr.plr <- list("left"=results.nlr$res, "right"=results.plr$res)
-		plot.data <- create.loo.side.by.side.plot.data(diagnostic.data.nlr.plr, params.tmp, res=res.nlr.plr)
-		
-		forest.path <- paste(params.nlr$fp_outpath, sep="")
-		two.forest.plots(plot.data, outpath=forest.path)
-		
-		forest.plot.params.path <- save.data(diagnostic.data.nlr.plr, res.nlr.plr, params=params.tmp, plot.data)
-		# @TODO: If you want to edit the plot, need to also 
-		plot.params.paths.tmp <- c("NLR and PLR Forest Plot"=forest.plot.params.path)
-		plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
-		
-		images.tmp <- c("NLR and PLR Forest Plot"=forest.path)
-		images <- c(images, images.tmp)
-		
-		plot.names.tmp <- c("forest plot"="forest.plot")
-		plot.names <- c(plot.names, plot.names.tmp)
-		
-		remove.indices <- c(remove.indices, nlr.index, plr.index)
-	}
-	
-	# remove fnames and params for side-by-side plots
-	fnames <- fnames[setdiff(1:length(fnames), remove.indices)]
-	params.list <- params.list[setdiff(1:length(params.list), remove.indices)]
-	
-	if (length(params.list) > 0) {
-		for (count in 1:length(params.list)) {
-			# create ma summaries and single (not side-by-side) forest plots.
-			#pretty.names <- eval(call(paste(fnames[count],".pretty.names",sep="")))
-			diagnostic.data.tmp <- compute.diag.point.estimates(diagnostic.data, params.list[[count]])
-			results.tmp <- loo.ma.diagnostic(fnames[[count]], diagnostic.data.tmp, params.list[[count]])
-			#if (is.null(params.list[[count]]$create.plot)) {
-			# create plot
-			images.tmp <- results.tmp$images
-			names(images.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
-			images <- c(images, images.tmp)
-			plot.params.paths.tmp <- results.tmp$plot_params_paths
-			names(plot.params.paths.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$", params.list[[count]]$measure,sep=""))), " Forest Plot", sep="")
-			plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
-			plot.names <- c(plot.names, results.tmp$plot.names)
-			#}
-			summary.tmp <- list("Summary"=results.tmp$Summary)
-			names(summary.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Summary", sep="")
-			results <- c(results, summary.tmp)
-		}
-	}
-	results <- c(results, list("images"=images, "plot_names"=plot.names, 
-					"plot_params_paths"=plot.params.paths))
-	#results$images <- images
-	#results$plot.names <- plot.names
-	#results$plot.params.paths <- plot.params.paths
+	results <- c(results, list("images"=images, "plot_names"=plot.names))
 	results
+	
+
+
 }
 
 ##################################
