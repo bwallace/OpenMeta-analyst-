@@ -985,7 +985,6 @@ create.loo.side.by.side.plot.data <- function(diagnostic.data, params, res) {
 #################################
 #  subgroup diagnostic methods  #
 #################################
-
 multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
 
     # wrapper for applying subgroup method to multiple diagnostic functions and metrics    
