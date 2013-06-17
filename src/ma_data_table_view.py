@@ -349,11 +349,7 @@ class MADataTable(QtGui.QTableView):
         if not self._new_eq_old(old_val, new_val):
             print("Old val: %s, new val: %s" % (str(old_val.toString()), str(new_val.toString())))
             cell_edit = CommandCellEdit(self, index, old_val, new_val,
-                                        added_study=study_added,
-                                        #metric_changed=metric_changed, # DELETE IF ALL IS WELL
-                                        #old_metric=old_metric,
-                                        #new_metric=new_metric
-                                        )
+                                        added_study=study_added)
             self.undoStack.push(cell_edit)
             
     def _new_eq_old(self, old, new):
@@ -369,10 +365,8 @@ class MADataTable(QtGui.QTableView):
         
         if old in blank_vals and new in blank_vals:
             return True
-        elif old == new:
-            return True
-        else:
-            return False # old is not the same as new
+        
+        return old==new
         
     
     def change_metric_if_appropriate(self):
