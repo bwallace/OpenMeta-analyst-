@@ -120,11 +120,22 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
     def add_images(self):
         # temporary fix!
         image_order = self.images.keys()
+        
         if self.image_order is not None:
             image_order = self.image_order
-
-        for title in image_order:
-            image = self.images[title]
+        
+        ungrouped_images = [(title, self.images[title]) for title in image_order]
+        ordered_images = ungrouped_images
+        
+        if self.image_order is None:
+            grouped_images = self._group_items(ungrouped_images,
+                                               ["Likelihood","nlr","plr"],
+                                               ["sens","spec"])
+            ordered_images = grouped_images
+        
+        
+        for title,image in ordered_images:
+            ####image = self.images[title]
             print "title: %s; image: %s" % (title, image)
             cur_y = max(0, self.y_coord)
             print "cur_y: %s" % cur_y
@@ -173,7 +184,11 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
 
     def add_text(self):
-        for title, text in self.texts.items():
+        grouped_items = self._group_items(self.texts.items(),
+                                          ["Likelihood","nlr","plr"],
+                                          ["sens","spec"])
+        
+        for title, text in grouped_items:
             try:
                 print "title: %s; text: %s" % (title, text)
                 cur_y = max(0, self.y_coord)
@@ -186,6 +201,44 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
                 self.items_to_coords[qt_item] =  pos
             except:
                 pass
+    
+    def _group_items(self, items, *groups):
+        '''Groups items together if their title contains an element in a group list.
+        items is a tuple of key,value pairs i.e. (title,text)
+        Each group is a list of strings to which item titles should be matched
+        i.e: _group_items(items, ['NLR','PLR'], ['sens','spec'])  '''
+        
+        def _get_group_id(key):
+            for group_id, group in enumerate(groups):
+                for grp_member in group:
+                    if key.lower().find(grp_member.lower()) != -1:
+                        return group_id
+            return None
+        
+        # initialization
+        grouped_items = []
+        for i in range(len(groups)+1):
+            grouped_items.append([])
+        no_grp_index = len(groups)
+        
+        # main loop
+        for key, value in items:
+            group_id = _get_group_id(key)
+            if group_id is None:
+                grouped_items[no_grp_index].append((key,value))
+            else:
+                grouped_items[group_id].append((key,value))
+        
+        # return result
+        result = []
+        for x in grouped_items:
+            result.extend(x)
+        return result
+
+                        
+
+                            
+        
 
     def add_title(self, title):
         print("Adding title")
