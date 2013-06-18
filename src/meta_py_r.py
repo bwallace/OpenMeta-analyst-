@@ -17,10 +17,10 @@ print("Entering meta_py_r for import probably")
 import math
 import os
 import pdb
-import meta_globals
+#import meta_globals
 from PyQt4.QtCore import pyqtRemoveInputHook
-from meta_globals import (BASE_PATH,CONTINUOUS,ONE_ARM_METRICS,TWO_ARM_METRICS,
-                          TYPE_TO_STR_DICT)
+from meta_globals import (CONTINUOUS,ONE_ARM_METRICS,TWO_ARM_METRICS,
+                          TYPE_TO_STR_DICT, get_BASE_PATH, get_global_conf_level)
 
 print("the path: %s" % os.getenv("PATH"))
 
@@ -95,7 +95,7 @@ def reset_Rs_working_dir():
     print("resetting R working dir")
 
     # Fix paths issue in windows
-    r_str = "setwd('%s')" % BASE_PATH
+    r_str = "setwd('%s')" % get_BASE_PATH()
     print("before replacement r_string: %s" % r_str)
     r_str = r_str.replace("\\","\\\\")
     print("about to execute: %s" % r_str)
@@ -950,7 +950,7 @@ def parse_out_results(result):
             else:
                 image_params_paths_d = _rls_to_pyd(text)
         else:
-            text_d[text_n]=text
+            text_d[text_n]=str(text)
             # Construct List of Weights for studies
             (key, astring) = make_weights_list(text_n,text)
             if key is not None:
@@ -1002,7 +1002,7 @@ def run_binary_fixed_meta_regression(selected_cov, bin_data_name="tmp_obj",
                                      res_name="result"):
     method_str = "FE"                                        
     # equiavlent to params <- list(conf.level=95, digits=3)
-    params = {"conf.level": meta_globals.get_global_conf_level(),
+    params = {"conf.level": get_global_conf_level(),
               "digits": 3,
               "method": method_str}
     params_df = ro.r['data.frame'](**params)
@@ -1048,7 +1048,7 @@ def run_meta_regression(dataset, study_names, cov_list, metric_name,
     method_str = "FE" if fixed_effects else "DL"    
 
     # @TODO conf.level, digits should be user-specified
-    params = {"conf.level":meta_globals.get_global_conf_level(),
+    params = {"conf.level":get_global_conf_level(),
               "digits":3,
               "method":method_str,
               "rm.method":"ML",

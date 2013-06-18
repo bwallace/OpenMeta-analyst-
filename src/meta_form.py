@@ -986,7 +986,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         try:
             data_model = pickle.load(open(file_path, 'r'))
             print "successfully loaded data"
-        except:
+        except Exception as e:
+            msg = "Could not open %s, error: %s" % (file_path, str(e))
+            print(msg)
+            QMessageBox.critical(self, "whoops", msg)
             return None
         
         ## cache current state for undo.

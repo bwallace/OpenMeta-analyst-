@@ -9,7 +9,7 @@ import meta_form
 
 SPLASH_DISPLAY_TIME = 0 # TODO: change to 5 seconds in production version
 
-def load_R_libraries(app, splash):
+def load_R_libraries(app, splash=None):
     ''' Loads the R libraries while updating the splash screen'''
     
     rloader = meta_py_r.RlibLoader()

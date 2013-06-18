@@ -128,6 +128,8 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         ordered_images = ungrouped_images
         
         if self.image_order is None:
+            # add to the arguments to make more groups, also make sure to add them
+            # in add_text
             grouped_images = self._group_items(ungrouped_images,
                                                ["Likelihood","nlr","plr"],
                                                ["sens","spec"])
@@ -135,7 +137,6 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         
         
         for title,image in ordered_images:
-            ####image = self.images[title]
             print "title: %s; image: %s" % (title, image)
             cur_y = max(0, self.y_coord)
             print "cur_y: %s" % cur_y
@@ -184,6 +185,9 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
 
     def add_text(self):
+        
+        # add to the arguments to make more groups, also make sure to add them
+        # in add_images
         grouped_items = self._group_items(self.texts.items(),
                                           ["Likelihood","nlr","plr"],
                                           ["sens","spec"])
