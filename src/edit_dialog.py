@@ -16,16 +16,17 @@
 #                                     
 ##################################
 
-import pdb
+#import pdb
 
-from PyQt4.Qt import *
+#from PyQt4.Qt import *
+from PyQt4.Qt import QDialog, QObject, SIGNAL
 
 import forms.ui_edit_dialog
 import edit_list_models
-import meta_py_r
 import add_new_dialogs
+import meta_globals
 import ma_dataset
-from ma_dataset import *
+
 
 class EditDialog(QDialog, forms.ui_edit_dialog.Ui_edit_dialog):
 
@@ -160,8 +161,8 @@ class EditDialog(QDialog, forms.ui_edit_dialog.Ui_edit_dialog):
             # the outcome type is one of the enumerated types; we don't worry about
             # unicode encoding
             data_type = str(form.datatype_cbo_box.currentText())
-            data_type = STR_TO_TYPE_DICT[data_type.lower()]
-            self.outcome_list.model().dataset.add_outcome(Outcome(new_outcome_name, data_type))
+            data_type = meta_globals.STR_TO_TYPE_DICT[data_type.lower()]
+            self.outcome_list.model().dataset.add_outcome(ma_dataset.Outcome(new_outcome_name, data_type))
 
             self.outcome_list.model().refresh_outcome_list()
             self.outcome_list.model().current_outcome = new_outcome_name
@@ -241,7 +242,7 @@ class EditDialog(QDialog, forms.ui_edit_dialog.Ui_edit_dialog):
         if form.exec_():
             new_covariate_name = unicode(form.covariate_name_le.text().toUtf8(), "utf-8")
             new_covariate_type = str(form.datatype_cbo_box.currentText())
-            cov_obj = Covariate(new_covariate_name, new_covariate_type)
+            cov_obj = ma_dataset.Covariate(new_covariate_name, new_covariate_type)
             self.covariate_list.model().dataset.add_covariate(cov_obj)
             self.covariate_list.model().update_covariates_list()
         
@@ -278,7 +279,7 @@ class EditDialog(QDialog, forms.ui_edit_dialog.Ui_edit_dialog):
         if form.exec_():
             study_name = unicode(form.study_lbl.text().toUtf8(), "utf-8")
             study_id = self.study_list.model().dataset.max_study_id()+1
-            new_study = Study(study_id, name = study_name)
+            new_study = ma_dataset.Study(study_id, name = study_name)
             self.study_list.model().dataset.add_study(new_study)
             self.study_list.model().update_study_list()
              

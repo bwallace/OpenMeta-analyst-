@@ -269,7 +269,7 @@ def enable_txt_box_input(*args):
         
 def init_ci_spinbox_and_label(ci_spinbox, ci_label, value=None):
     if value is None:
-        value = meta_globals.get_global_conf_level()
+        raise ValueError("Confidence level must be specified")
     
     ci_spinbox.blockSignals(True)
     ci_spinbox.setValue(value)
@@ -281,13 +281,19 @@ CHANGE_CI_ALERT_BASE_MSG = (
     "calculator need not correspond with the global confidence level "
     "(currently set at {0:.1%}) chosen for data display on spreadsheets and "
     "forest plots.")
-def get_CHANGE_CI_ALERT_MSG():
-    return CHANGE_CI_ALERT_BASE_MSG.format(meta_globals.get_global_conf_level()/100.0)
+def get_CHANGE_CI_ALERT_MSG(conf_level):
+    if conf_level is None:
+        raise ValueError("Confidence level must be specified")
+    
+    return CHANGE_CI_ALERT_BASE_MSG.format(conf_level/100.0)
 
-def helper_set_current_effect(ma_unit, txt_boxes, current_effect, group_str, data_type):
+def helper_set_current_effect(ma_unit, txt_boxes, current_effect, group_str, data_type, mult=None):
     '''Fills in text boxes on calculator forms with data from ma unit.
     I noticed all 3 set_current_effect functions in the 3 calculators are
     nearly identical so it makes sense to share the similiar parts'''
+    
+    if mult is None:
+        raise ValueError("mult must be specified")
     
     if data_type == "binary":
         conv_to_disp_scale = lambda x: meta_py_r.binary_convert_scale(x, current_effect, convert_to="display.scale")
@@ -299,7 +305,7 @@ def helper_set_current_effect(ma_unit, txt_boxes, current_effect, group_str, dat
         raise Exception("data_type unrecognized")
     effect_tbox, lower_tbox, upper_tbox = [txt_boxes[box_name] for box_name in ("effect","lower","upper")]
     
-    (est,lower,upper) = ma_unit.get_effect_and_ci(current_effect, group_str)
+    (est,lower,upper) = ma_unit.get_effect_and_ci(current_effect, group_str, mult)
     (d_est,d_lower,d_upper) = [conv_to_disp_scale(x) for x in (est,lower,upper)]
     for val, txt_box in zip((d_est,d_lower,d_upper),
                           [effect_tbox, lower_tbox, upper_tbox]):
@@ -401,12 +407,15 @@ def _txt_boxes_disabled(text_boxes):
 
 # Function for testing validity and range conditions in form txt boxes
 def evaluate(new_text, ma_unit, curr_effect, group_str, conv_to_disp_scale, ci_param = None,
-             parent=None, opt_cmp_fn=None, opt_cmp_msg=None):
+             parent=None, opt_cmp_fn=None, opt_cmp_msg=None, mult=None):
     '''opt_cmp_fn i.e. 'Optional Compare Function' should return True when the
     desired condition is met and False otherwise. It is a function of new_text:
     opt_cmp_fn(new_text)'''
+    
+    if mult is None:
+        raise ValueError("mult must be specified")
         
-    est,lower,upper = ma_unit.get_effect_and_ci(curr_effect, group_str) # calc scale
+    est,lower,upper = ma_unit.get_effect_and_ci(curr_effect, group_str, mult) # calc scale
     d_est,d_lower,d_upper = [conv_to_disp_scale(x) for x in (est,lower,upper)]
     is_between_bounds = partial(between_bounds, est=d_est, low=d_lower, high=d_upper)
     ###### ERROR CHECKING CODE#####
@@ -420,7 +429,7 @@ def evaluate(new_text, ma_unit, curr_effect, group_str, conv_to_disp_scale, ci_p
             QMessageBox.warning(parent, "whoops", msg)
             raise Exception("error")
     else: # something other than est, lower, upper (like correlation or prevalence)
-        print("Result of correlation evalauation is: %s" % str(opt_cmp_fn(new_text)))
+        print("Result of correlation evaluation is: %s" % str(opt_cmp_fn(new_text)))
         if not opt_cmp_fn(new_text):
             QMessageBox.warning(parent, "whoops", opt_cmp_msg)
             print("raising exception")

@@ -19,14 +19,14 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4 import QtCore, QtGui
 
-import pdb
+#import pdb
 #import sys
 import copy
+import os
 #import sip
 
 import forms.ui_ma_specs
 import meta_py_r
-import meta_globals
 from meta_globals import (check_plot_bound, DIAG_METRIC_NAMES_D, 
                           METHODS_WITH_NO_FOREST_PLOT, ONE_ARM_METRICS,
                           seems_sane)
@@ -45,14 +45,17 @@ class MA_Specs(QDialog, forms.ui_ma_specs.Ui_Dialog):
     def __init__(self, model, parent=None, meta_f_str=None,
                  external_params=None, diag_metrics=None,
                  diag_metrics_to_analysis_details_d=None,
-                 fp_specs_only=False):
+                 fp_specs_only=False, conf_level=None):
 
         super(MA_Specs, self).__init__(parent)
         self.setupUi(self)
 
         self.current_param_vals = external_params or {}
-        
         self.model = model
+        
+        if conf_level is None:
+            raise ValueError("CONFIDENCE LEVEL MUST BE SPECIFIED")
+        self.conf_level = conf_level
 
         # if not none, we assume we're running a meta
         # method 
@@ -185,6 +188,8 @@ class MA_Specs(QDialog, forms.ui_ma_specs.Ui_Dialog):
                 #pass
             else:
                 result = meta_py_r.run_meta_method(self.meta_f_str, self.current_method, self.current_param_vals)
+                
+            #_writeout_test_data(self.meta_f_str, self.current_method, self.current_param_vals, result) # FOR MAKING TESTS
         elif self.data_type == "continuous":
             meta_py_r.ma_dataset_to_simple_continuous_robj(self.model)
             if self.meta_f_str is None:
@@ -193,6 +198,8 @@ class MA_Specs(QDialog, forms.ui_ma_specs.Ui_Dialog):
             else:
                 # get meta!
                 result = meta_py_r.run_meta_method(self.meta_f_str, self.current_method, self.current_param_vals)
+            
+            #_writeout_test_data(self.meta_f_str, self.current_method, self.current_param_vals, result) # FOR MAKING TESTS
         elif self.data_type == "diagnostic":
             # add the current metrics (e.g., PLR, etc.) to the method/params
             # dictionary
@@ -588,7 +595,7 @@ class MA_Specs(QDialog, forms.ui_ma_specs.Ui_Dialog):
             self.current_defaults = method_params[self.current_method]
             
         # override conf.level with global conf.level
-        self.current_defaults['conf.level'] = meta_globals.get_global_conf_level()
+        self.current_defaults['conf.level'] = self.conf_level
 
         print self.current_defaults
 
@@ -610,7 +617,8 @@ class MA_Specs(QDialog, forms.ui_ma_specs.Ui_Dialog):
         form =  MA_Specs(self.model, parent=self.parent(),
                     diag_metrics=list(set(["lr", "dor"]) & set(self.diag_metrics)),
                     meta_f_str = self.meta_f_str,
-                    diag_metrics_to_analysis_details_d=self.diag_metrics_to_analysis_details)
+                    diag_metrics_to_analysis_details_d=self.diag_metrics_to_analysis_details,
+                    conf_level=self.model.get_global_conf_level())
         form.show()
         self.hide()
 
@@ -728,6 +736,25 @@ def add_plot_params(specs_form):
     specs_form.current_param_vals["fp_show_summary_line"] = specs_form.show_summary_line.isChecked()
 
 
+def _writeout_test_data(meta_f_str, method, params, results):
+    with open('test_data.txt', 'a') as f:
+        f.write("method_and_params.append({\n")
+        f.write("                          'meta_f_str': '%s',\n" % meta_f_str)
+        f.write("                          'method': '%s',\n" % method)
+        f.write("                          'parameters': %s,\n" % str(params))
+        f.write("                          'results': %s,\n" % str(results))
+        f.write("                         })\n\n")
+        
+        # Write the data to the disk for sure
+        f.flush()
+        os.fsync(f)
+        
+        
+#    method_and_params.append({'meta_f_str': u'loo.ma.binary',
+#                              'method'    : 'binary.random',
+#                              'parameters': {'conf.level': 95.0, 'digits': 3.0, 'fp_col2_str': u'[default]', 'fp_show_col4': True, 'to': 'only0', 'fp_col4_str': u'Ev/Ctrl', 'fp_xticks': '[default]', 'fp_col3_str': u'Ev/Trt', 'fp_show_col3': True, 'fp_show_col2': True, 'fp_show_col1': True, 'fp_plot_lb': '[default]', 'fp_outpath': u'./r_tmp/forest.png', 'rm.method': 'DL', 'adjust': 0.5, 'fp_plot_ub': '[default]', 'fp_col1_str': u'Studies', 'measure': 'OR', 'fp_xlabel': u'[default]', 'fp_show_summary_line': True},
+#                              'results'   : {'images': {'Leave-one-out Forest plot': './r_tmp/forest.png'}, 'texts': {'Leave-one-out Summary': 'Binary Random-Effects Model\n\nMetric: Odds Ratio\n\n Model Results\n\n Studies           Estimate   Lower bound   Upper bound   Std. error   p-Val  \n\n Overall             0.770       0.485         1.222         0.236     0.267  \n\n - Gonzalez          0.783       0.477         1.285         0.253     0.332  \n\n - Prins             0.796       0.489         1.296         0.249     0.359  \n\n - Giamarellou       0.811       0.513         1.281         0.233     0.369  \n\n - Maller            0.715       0.437         1.172         0.252     0.184  \n\n - Sturm             0.791       0.494         1.265         0.240     0.327  \n\n - Marik             0.864       0.543         1.375         0.237     0.538  \n\n - Muijsken          0.724       0.446         1.175         0.247     0.191  \n\n - Vigano            0.750       0.468         1.200         0.240     0.230  \n\n - Hansen            0.851       0.542         1.336         0.230     0.484  \n\n - De Vries          0.724       0.449         1.166         0.243     0.184  \n\n - Mauracher         0.813       0.515         1.283         0.233     0.375  \n\n - Nordstrom         0.772       0.474         1.257         0.249     0.298  \n\n - Rozdzinski        0.738       0.442         1.231         0.261     0.244  \n\n - Ter Braak         0.726       0.443         1.189         0.252     0.204  \n\n - Tulkens           0.764       0.476         1.227         0.242     0.266  \n\n - Van der Auwera    0.791       0.494         1.265         0.240     0.327  \n\n - Klastersky        0.696       0.458         1.059         0.214     0.091  \n\n - Vanhaeverbeek     0.764       0.476         1.226         0.242     0.265  \n\n - Hollender         0.780       0.486         1.253         0.241     0.304  \n\n\n'}, 'image_var_names': {'loo forest plot': 'loo_forest_plot'}, 'image_params_paths': {'Forest Plot': 'r_tmp/1371578321.65222'}, 'image_order': None},
+#                      })
 
 
 ####

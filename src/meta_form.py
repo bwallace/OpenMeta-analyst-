@@ -14,7 +14,7 @@ import os
 import pdb
 import pickle
 print "about to import PyQt4..."
-from PyQt4 import QtCore, QtGui, Qt
+from PyQt4 import QtCore, QtGui
 from PyQt4.Qt import *
 print "success!"
 #from os import urandom as _urandom
@@ -23,11 +23,10 @@ import copy
 
 ## hand-rolled modules
 import ui_meta
-#import meta_py_r
+#import meta_py_r ####
 import ma_data_table_view
 import ma_data_table_model
 import meta_globals
-from meta_globals import CommandGenericDo
 import ma_dataset
 
 # additional forms
@@ -83,9 +82,11 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         super(MetaForm, self).__init__(parent)
         self.setupUi(self)
         
+        #self.conf_level = meta_globals.DEFAULT_CONF_LEVEL
+        #meta_globals.set_global_conf_level(meta_globals.DEFAULT_CONF_LEVEL)
         
-        meta_globals.set_global_conf_level(meta_globals.DEFAULT_CONF_LEVEL)
-        self.cl_label=QLabel("confidence level: {:.1%}".format(meta_globals.get_global_conf_level()/100.0))
+        # crazy number to indicate the conf level hasn't really been set yet
+        self.cl_label=QLabel("confidence level: {:.1%}".format(meta_globals.DEFAULT_CONF_LEVEL/2/100.0))
         self.cl_label.setAlignment(Qt.AlignRight)
         self.statusbar.addWidget(self.cl_label,1)
         
@@ -207,7 +208,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 old_state_dict = self.tableView.model().get_stateful_dict()
                 undo_f = lambda : self.set_model(original_dataset, old_state_dict) 
                 redo_f = lambda : self.set_model(data_model)
-                edit_command = CommandGenericDo(redo_f, undo_f)
+                edit_command = meta_globals.CommandGenericDo(redo_f, undo_f)
                 self.tableView.undoStack.push(edit_command)
             else: # not using undo framework (probably when importing csv (it will handle it internally)
                 self.set_model(data_model)
@@ -268,6 +269,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         in a new model, e.g., when a dataset is loaded, to tear down the relevant connections. 
         _setup_connections (with menu_actiosn set to False) should subsequently be invoked. 
         '''
+        
+        #QObject.disconnect(self.tableView.model(), SIGNAL("conf_level_changed()"), self._change_conf_level_label)
         QObject.disconnect(self.tableView.model(), SIGNAL("pyCellContentChanged(PyQt_PyObject, PyQt_PyObject, PyQt_PyObject, PyQt_PyObject)"),
                            self.tableView.cell_content_changed)
 
@@ -310,7 +313,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         
     def _change_global_ci(self):
         print("Changing global confidence level:")
-        prev_conf_level = meta_globals.get_global_conf_level()
+        prev_conf_level = self.model.get_global_conf_level()
 
         dialog = conf_level_dialog.ChangeConfLevelDlg(prev_conf_level, self)
         if dialog.exec_():
@@ -327,6 +330,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         
     def _setup_connections(self, menu_actions=True):
         ''' Signals & slots '''
+        #QObject.connect(self.tableView.model(), SIGNAL("conf_level_changed()"), self._change_conf_level_label)
         QObject.connect(self.tableView.model(), SIGNAL("pyCellContentChanged(PyQt_PyObject, PyQt_PyObject, PyQt_PyObject, PyQt_PyObject)"),
                                                                 self.tableView.cell_content_changed)
 
@@ -390,6 +394,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             QObject.connect(self.action_change_conf_level, SIGNAL("triggered()"), self._change_global_ci)
             QObject.connect(self.action_import_csv, SIGNAL("triggered()"), self._import_csv)
 
+    def _change_conf_level_label(self):
+        conf_level = self.model.get_global_conf_level()
+        self.cl_label.setText("confidence level: {:.1%}".format(conf_level/100.0))
+
     def go(self):
         form = None
         if self.model.get_current_outcome_type() != "diagnostic":
@@ -399,7 +407,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             # note that the spec form gets *this* form as a parameter.
             # this allows the spec form to callback to this
             # module when specifications have been provided.
-            form =  ma_specs.MA_Specs(self.model, parent=self)
+            form =  ma_specs.MA_Specs(self.model, parent=self, conf_level=self.model.get_global_conf_level())
         else:
             # diagnostic data; we first have the user select metric(s),
             # and only then the model, &etc.
@@ -435,7 +443,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # this allows the spec form to callback to this
         # module when specifications have been provided.
         if self.model.get_current_outcome_type() != "diagnostic":
-            form =  ma_specs.MA_Specs(self.model, meta_f_str="cum.ma", parent=self)
+            form =  ma_specs.MA_Specs(self.model, meta_f_str="cum.ma", parent=self, conf_level=self.model.get_global_conf_level())
         else:
             # diagnostic data; we first have the user select metric(s),
             # and only then the model, &etc.
@@ -458,7 +466,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             # note that the spec form gets *this* form as a parameter.
             # this allows the spec form to callback to this
             # module when specifications have been provided.
-            form =  ma_specs.MA_Specs(self.model, meta_f_str="loo.ma", parent=self)
+            form =  ma_specs.MA_Specs(self.model, meta_f_str="loo.ma", parent=self, conf_level=self.model.get_global_conf_level())
         else:
             # diagnostic data; we first have the user select metric(s),
             # and only then the model, &etc.
@@ -479,9 +487,11 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             # note that the spec form gets *this* form as a parameter.
             # this allows the spec form to callback to this
             # module when specifications have been provided.
-            form = ma_specs.MA_Specs(self.model, meta_f_str="subgroup.ma", 
-                                  parent=self, \
-                                  external_params={"cov_name":selected_cov})
+            form = ma_specs.MA_Specs(self.model,
+                                     meta_f_str="subgroup.ma", 
+                                     parent=self, 
+                                     external_params={"cov_name":selected_cov},
+                                     conf_level=self.model.get_global_conf_level())
         else:
             # diagnostic data; we first have the user select metric(s),
             # and only then the model, &etc.
@@ -535,7 +545,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             redo_f = lambda : self.set_model(modified_dataset, new_state_dict)
             original_dataset = copy.deepcopy(self.model.dataset)
             undo_f = lambda : self.set_model(original_dataset, old_state_dict) 
-            edit_command = CommandGenericDo(redo_f, undo_f)
+            edit_command = meta_globals.CommandGenericDo(redo_f, undo_f)
             self.tableView.undoStack.push(edit_command)
             
     
@@ -681,7 +691,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 redo_f = lambda: self.model.rename_group(orig_group_name, new_group_name)
                 undo_f = lambda: self.model.rename_group(new_group_name, orig_group_name)
 
-                rename_group_command = CommandGenericDo(redo_f, undo_f)
+                rename_group_command = meta_globals.CommandGenericDo(redo_f, undo_f)
                 self.tableView.undoStack.push(rename_group_command)
             
     def add_covariate(self):
@@ -703,7 +713,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 redo_f = lambda: self._add_new_covariate(new_covariate_name, new_covariate_type)
                 undo_f = lambda: self._undo_add_new_covariate(new_covariate_name)
                 
-                add_cov_command = CommandGenericDo(redo_f, undo_f)
+                add_cov_command = meta_globals.CommandGenericDo(redo_f, undo_f)
                 self.tableView.undoStack.push(add_cov_command)
      
 
@@ -768,7 +778,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                                                     previous_follow_up, follow_up_lbl)
 
         if redo_f is not None:
-            next_command = CommandGenericDo(redo_f, undo_f)
+            next_command = meta_globals.CommandGenericDo(redo_f, undo_f)
             self.tableView.undoStack.push(next_command)
                 
     def _add_new_group(self, new_group_name):
@@ -844,7 +854,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             undo_f = lambda: self.display_follow_up(old_follow_up_t_point)
             
         if redo_f is not None and undo_f is not None:
-            next_command = CommandGenericDo(redo_f, undo_f)
+            next_command = meta_globals.CommandGenericDo(redo_f, undo_f)
             self.tableView.undoStack.push(next_command)
             
     def previous(self):
@@ -866,7 +876,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             undo_f = lambda: self.display_follow_up(old_follow_up_t_point)
             
         if redo_f is not None and undo_f is not None:
-            prev_command = CommandGenericDo(redo_f, undo_f)
+            prev_command = meta_globals.CommandGenericDo(redo_f, undo_f)
             self.tableView.undoStack.push(prev_command)
 
     def next_dimension(self):
@@ -1016,7 +1026,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         redo_f = lambda: self.set_model(data_model, state_dict,
                                         check_for_appropriate_metric=True)
         
-        open_command = CommandGenericDo(redo_f, undo_f)
+        open_command = meta_globals.CommandGenericDo(redo_f, undo_f)
         self.tableView.undoStack.push(open_command)
         self.dataset_file_lbl.setText("open file: %s" % file_path)
         
@@ -1029,7 +1039,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     def delete_study(self, study, study_index=None):
         undo_f = lambda : self._add_study(study, study_index=study_index)
         redo_f = lambda : self._remove_study(study)
-        delete_command = CommandGenericDo(redo_f, undo_f)
+        delete_command = meta_globals.CommandGenericDo(redo_f, undo_f)
         self.tableView.undoStack.push(delete_command)
     
     def change_cov_type(self, covariate):
@@ -1047,7 +1057,8 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             # revert to original study ordering
             modified_dataset.studies.sort(\
                     cmp=modified_dataset.cmp_studies(compare_by="ordered_list",\
-                                        ordered_list=original_study_order))
+                                        ordered_list=original_study_order,
+                                        mult=self.model.get_mult()))
             
             ### use the same state dict as before.
             old_state_dict = self.tableView.model().get_stateful_dict()
@@ -1056,7 +1067,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             redo_f = lambda : self.set_model(modified_dataset, new_state_dict)
             original_dataset = copy.deepcopy(self.model.dataset)
             undo_f = lambda : self.set_model(original_dataset, old_state_dict) 
-            edit_command = CommandGenericDo(redo_f, undo_f)
+            edit_command = meta_globals.CommandGenericDo(redo_f, undo_f)
             self.tableView.undoStack.push(edit_command)
             
 
@@ -1081,7 +1092,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 redo_f = lambda: self.model.rename_covariate(orig_cov_name, new_cov)
                 undo_f = lambda: self.model.rename_covariate(new_cov, orig_cov_name)
 
-                rename_cov_command = CommandGenericDo(redo_f, undo_f)
+                rename_cov_command = meta_globals.CommandGenericDo(redo_f, undo_f)
                 self.tableView.undoStack.push(rename_cov_command)
 
 
@@ -1092,7 +1103,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                                 meta_globals.COV_INTS_TO_STRS[covariate.data_type], \
                                 cov_values=cov_vals_d)
         redo_f = lambda : self.model.remove_covariate(covariate)
-        delete_command = CommandGenericDo(redo_f, undo_f)
+        delete_command = meta_globals.CommandGenericDo(redo_f, undo_f)
         self.tableView.undoStack.push(delete_command)  
 
     def _add_study(self, study, study_index=None):
@@ -1188,6 +1199,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 metric_to_check=self.tableView.model().current_effect)
 
         self.model.reset()
+        self._change_conf_level_label()
         
         
     def undo_set_model(self, out_path, state_dict, dataset):
@@ -1475,10 +1487,10 @@ class Command_Change_Conf_Level(QUndoCommand):
         self._set_conf_level(self.old_cl)
         
     def _set_conf_level(self, conf_level):
-        meta_globals.set_global_conf_level(conf_level)
+        self.mainform.model.set_conf_level(conf_level)
         self.mainform.cl_label.setText("confidence level: {:.1%}".format(conf_level/100.0))
         self.mainform.model.reset()
-        print("Global Confidence level is now: %f" % meta_globals.get_global_conf_level())
+        print("Global Confidence level is now: %f" % self.mainform.model.get_global_conf_level())
         
 
 #############################################################################

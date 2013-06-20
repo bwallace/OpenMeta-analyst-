@@ -16,11 +16,13 @@
 print("Entering meta_py_r for import probably")
 import math
 import os
-import pdb
-#import meta_globals
-from PyQt4.QtCore import pyqtRemoveInputHook
-from meta_globals import (CONTINUOUS,ONE_ARM_METRICS,TWO_ARM_METRICS,
-                          TYPE_TO_STR_DICT, get_BASE_PATH, get_global_conf_level)
+import meta_globals
+
+#import pdb
+#from PyQt4.QtCore import pyqtRemoveInputHook
+
+#from meta_globals import (CONTINUOUS,ONE_ARM_METRICS,TWO_ARM_METRICS,
+#                          TYPE_TO_STR_DICT, get_BASE_PATH)
 
 print("the path: %s" % os.getenv("PATH"))
 
@@ -95,7 +97,7 @@ def reset_Rs_working_dir():
     print("resetting R working dir")
 
     # Fix paths issue in windows
-    r_str = "setwd('%s')" % get_BASE_PATH()
+    r_str = "setwd('%s')" % meta_globals.get_BASE_PATH()
     print("before replacement r_string: %s" % r_str)
     r_str = r_str.replace("\\","\\\\")
     print("about to execute: %s" % r_str)
@@ -492,7 +494,7 @@ def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj",
 
     # first try and construct an object with raw data -- note that if
     # we're using a one-armed metric for cont. data, we just use y/SE
-    if (not table_model.current_effect in ONE_ARM_METRICS) and \
+    if (not table_model.current_effect in meta_globals.ONE_ARM_METRICS) and \
                          table_model.included_studies_have_raw_data():
         print "we have raw data... parsing, parsing, parsing"
             
@@ -594,7 +596,7 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj",
         # now, for group 2; we only set up the string
         # for group two if we have a two-arm metric
         g2O1_str, g2O2_str = "0", "0" # the 0s are just to satisfy R; not used
-        if table_model.current_effect in TWO_ARM_METRICS:  
+        if table_model.current_effect in meta_globals.TWO_ARM_METRICS:  
             g2_events = _get_col(raw_data, 2)
             g2O1_str = ", ".join(_to_strs(g2_events))
 
@@ -741,7 +743,7 @@ def cov_to_str(cov, study_ids, dataset, \
     cov_values = []
    
     for study_id in study_ids:
-        if cov.data_type == CONTINUOUS:
+        if cov.data_type == meta_globals.CONTINUOUS:
             if cov_value_d.has_key(study_id):
                 cov_values.append("%s" % cov_value_d[study_id])
             else:
@@ -997,12 +999,17 @@ def make_weights_list(text_n,text):
         return (None,None)
 
 
+# Is this function obsolete?
 @RfunctionCaller
 def run_binary_fixed_meta_regression(selected_cov, bin_data_name="tmp_obj",
-                                     res_name="result"):
+                                     res_name="result", conf_level=None):
+    
+    if conf_level is None:
+        raise ValueError("Confidence level must be specified")
+    
     method_str = "FE"                                        
     # equiavlent to params <- list(conf.level=95, digits=3)
-    params = {"conf.level": get_global_conf_level(),
+    params = {"conf.level": conf_level,
               "digits": 3,
               "method": method_str}
     params_df = ro.r['data.frame'](**params)
@@ -1024,7 +1031,7 @@ def _gen_cov_vals_obj_str(cov, study_ids, dataset):
 
     r_str = "new('CovariateValues', cov.name='%s', cov.vals=%s, \
                     cov.type='%s', ref.var='%s')" % \
-                (cov.name, values_str, TYPE_TO_STR_DICT[cov.data_type], ref_var)
+                (cov.name, values_str, meta_globals.TYPE_TO_STR_DICT[cov.data_type], ref_var)
     return r_str
 
 
@@ -1043,16 +1050,19 @@ def list_of_cov_value_objects_str(dataset, study_ids, cov_list=None):
 @RfunctionCaller
 def run_meta_regression(dataset, study_names, cov_list, metric_name,
                         data_name="tmp_obj", results_name="results_obj",
-                        fixed_effects=False): 
+                        fixed_effects=False, conf_level=None): 
+    
+    if conf_level is None:
+        raise ValueError("Confidence level must be specified")
                         
     method_str = "FE" if fixed_effects else "DL"    
 
     # @TODO conf.level, digits should be user-specified
-    params = {"conf.level":get_global_conf_level(),
-              "digits":3,
-              "method":method_str,
-              "rm.method":"ML",
-              "measure":metric_name}
+    params = {"conf.level": conf_level,
+              "digits": 3,
+              "method": method_str,
+              "rm.method": "ML",
+              "measure": metric_name}
     params_df = ro.r['data.frame'](**params)
 
     # create a lit of covariate objects on the R side

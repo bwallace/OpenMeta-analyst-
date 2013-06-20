@@ -23,8 +23,15 @@ import copy
 
 import two_way_dict
 import meta_globals
-from meta_globals import *
+#from meta_globals import *
 import meta_py_r
+
+BINARY = meta_globals.BINARY
+CONTINUOUS = meta_globals.CONTINUOUS
+DIAGNOSTIC = meta_globals.DIAGNOSTIC
+EMPTY_VALS = meta_globals.EMPTY_VALS
+FACTOR = meta_globals.FACTOR
+TYPE_TO_STR_DICT = meta_globals.TYPE_TO_STR_DICT
 
 class Dataset:
     def __len__(self):
@@ -375,7 +382,7 @@ class Dataset:
                 return False
         return True
         
-    def cmp_studies(self, compare_by="name", reverse=True, ordered_list=None, directions_to_ma_unit=None):
+    def cmp_studies(self, compare_by="name", reverse=True, ordered_list=None, directions_to_ma_unit=None, mult=None):
         '''
         compare studies in various ways -- pass the returned function
         to the (built-in) sort function.
@@ -385,6 +392,7 @@ class Dataset:
         you to sort arbitrarily in the order specified by the list.
         '''
         
+
         
         # Assign stuff conditionally
         def val_if_key_in_dict(key, dictionary):
@@ -416,6 +424,9 @@ class Dataset:
                 return self._meta_cmp_wrapper(study_a, study_b, study_a_val, study_b_val, reverse)
             return f
         elif compare_by == 'outcomes':
+            if mult is None:
+                raise ValueError("mult must be specified")
+            
             def f(study_a, study_b):
                 ma_unit_A = study_a.get_ma_unit(outcome_name,follow_up)
                 ma_unit_B = study_b.get_ma_unit(outcome_name,follow_up)
@@ -428,8 +439,8 @@ class Dataset:
                     to_display_scale = lambda x: meta_py_r.diagnostic_convert_scale(x, current_effect, convert_to="display.scale")
                 
                 if outcome_type in (BINARY,CONTINUOUS):
-                    outcome_data_A = ma_unit_A.get_effect_and_ci(current_effect, group_str)
-                    outcome_data_B = ma_unit_B.get_effect_and_ci(current_effect, group_str)                    
+                    outcome_data_A = ma_unit_A.get_effect_and_ci(current_effect, group_str, mult)
+                    outcome_data_B = ma_unit_B.get_effect_and_ci(current_effect, group_str, mult)                    
                     outcome_data_A = [to_display_scale(c_val) for c_val in outcome_data_A]
                     outcome_data_B = [to_display_scale(c_val) for c_val in outcome_data_B]
                 elif outcome_type == DIAGNOSTIC:
@@ -438,8 +449,8 @@ class Dataset:
                     #                                     |
                     #                                  \_____/
                     for diag_metric in ["Sens","Spec"]: # this order corresponds to the order displayed on the spreadsheet
-                        est_and_ci_A = ma_unit_A.get_effect_and_ci(diag_metric, group_str)
-                        est_and_ci_B = ma_unit_B.get_effect_and_ci(diag_metric, group_str)
+                        est_and_ci_A = ma_unit_A.get_effect_and_ci(diag_metric, group_str, mult)
+                        est_and_ci_B = ma_unit_B.get_effect_and_ci(diag_metric, group_str, mult)
                         est_and_ci_A = [to_display_scale(c_val) for c_val in est_and_ci_A]
                         est_and_ci_B = [to_display_scale(c_val) for c_val in est_and_ci_B]
                         
@@ -704,7 +715,10 @@ class MetaAnalyticUnit:
             for effect in meta_globals.DIAGNOSTIC_METRICS:
                 self.effects_dict[effect][new_group] = self.get_init_effect_d()
                 
-    def calculate_SE_if_possible(self, effect, group_str, est=None, lower=None, upper=None):
+    def calculate_SE_if_possible(self, effect, group_str, est=None, lower=None, upper=None, mult=None):
+        if mult is None:
+            raise ValueError("Mult must be specified")
+        
         # get SE
         if est is None:
             est = self.effects_dict[effect][group_str]["est"]
@@ -712,11 +726,9 @@ class MetaAnalyticUnit:
             lower = self.effects_dict[effect][group_str]["lower"]
         if  upper is None:
             upper = self.effects_dict[effect][group_str]["upper"]
-        mult = meta_globals.get_mult()
         
-        
-        #print("Using the following values to calculate se:")
-        #print("  (est,lower,upper) = (%s,%s,%s)" % (str(est),str(lower),str(upper)))
+        print("Using the following values to calculate se:")
+        print("  (est,lower,upper, mult) = (%s,%s,%s, %s)" % (str(est),str(lower),str(upper), str(mult)))
         try:
             se = (upper - est)/mult
         except:
@@ -748,10 +760,13 @@ class MetaAnalyticUnit:
     def set_display_se(self, effect, group_str, se):
         self.effects_dict[effect][group_str]["display_se"] = se
         
-    def calculate_display_effect_and_ci(self, effect, group_str, convert_to_display_scale, check_if_necessary=False):
+    def calculate_display_effect_and_ci(self, effect, group_str, convert_to_display_scale, conf_level=None, mult=None, check_if_necessary=False):
+        if None in [conf_level, mult]:
+            raise ValueError("confidence level & mult must be specified")
+        
         # only runs if it is necessary to do so
         if check_if_necessary:
-            if self._should_calculate_display_effect_and_ci_and_se(effect, group_str):
+            if self._should_calculate_display_effect_and_ci_and_se(effect, group_str, conf_level):
                 pass # just continue and do the calculation
             else:
                 #print("We don't have to recalculate display_effect and ci-->leaving")
@@ -765,18 +780,18 @@ class MetaAnalyticUnit:
         
         '''Calculates display effect and ci and stores the results in the
         various 'display_' variables '''
-        est, lower, upper = self.get_effect_and_ci(effect, group_str)
+        est, lower, upper = self.get_effect_and_ci(effect, group_str, mult)
         d_est, d_lower, d_upper = [convert_to_display_scale(x) for x in [est, lower, upper]]
-        se = self.get_se(effect, group_str)
-        d_se = convert_to_display_scale(se)
+        se = self.get_se(effect, group_str, mult)
+        #d_se = convert_to_display_scale(se) # this doesn't mean anything...i suppose its just to check to see if we have an se value
         
-        print("results of calculating display effect and ci: (est,low,high,se: %s, %s, %s, %s" % (d_est,d_lower,d_upper,d_se))
+        print("results of calculating display effect and ci: (est,low,high,se(calc scale): %s, %s, %s, %s" % (d_est,d_lower,d_upper,se))
         
         self.set_display_effect(effect, group_str, d_est)
         self.set_display_lower(effect, group_str, d_lower)
         self.set_display_upper(effect, group_str, d_upper)
-        self.set_display_se(effect, group_str, d_se)
-        self.effects_dict[effect][group_str]["display_conf_level"] = meta_globals.get_global_conf_level()
+        #self.set_display_se(effect, group_str, d_se)
+        self.effects_dict[effect][group_str]["display_conf_level"] = conf_level
         
         
     def get_display_effect(self, effect, group_str):
@@ -809,30 +824,24 @@ class MetaAnalyticUnit:
     
     
     def get_display_effect_and_ci(self, effect, group_str, convert_to_display_scale=None):
-#        if self._should_calculate_display_effect_and_ci_and_se(effect, group_str):
-#            self.calculate_display_effect_and_ci(effect, group_str, convert_to_display_scale)
-            
         return (self.get_display_effect(effect, group_str),
                 self.get_display_lower(effect, group_str),
                 self.get_display_upper(effect, group_str))
         
     def get_display_effect_and_se(self, effect, group_str, convert_to_display_scale=None):
-#        if self._should_calculate_display_effect_and_ci_and_se(effect, group_str):
-#            print("Yes, should calculate display_effect and se")
-#            self.calculate_display_effect_and_ci(effect, group_str, convert_to_display_scale)
-        
         return (self.get_display_effect(effect, group_str),
                 self.get_display_se(effect, group_str))
     
-    def _should_calculate_display_effect_and_ci_and_se(self, effect, group_str):
+    def _should_calculate_display_effect_and_ci_and_se(self, effect, group_str, conf_level=None):
+        if conf_level is None:
+            raise ValueError("Confidence level must be specified")
+        
         existing_display_conf_level = "display_conf_level" in self.effects_dict[effect][group_str].keys()
         if existing_display_conf_level:
             display_cl = self.effects_dict[effect][group_str]["display_conf_level"] # conf level @ which display values were computed
-            #print("Display CL, global CL: %s, %s" % (str(display_cl),
-            #                        str(meta_globals.get_global_conf_level())))
             disp_cl_eq_global_cl = meta_globals.equal_close_enough(
                                             display_cl,
-                                            meta_globals.get_global_conf_level())
+                                            conf_level)
             if disp_cl_eq_global_cl:
                 result = False # we are ok, don't have to do anything special
             else:
@@ -848,21 +857,23 @@ class MetaAnalyticUnit:
             return None
     
     
-    def get_lower(self, effect, group_str):    
-        return self._helper_get_upper_lower("lower", effect, group_str)
+    def get_lower(self, effect, group_str, mult):    
+        return self._helper_get_upper_lower("lower", effect, group_str, mult)
         
-    def get_upper(self, effect, group_str):    
-        return self._helper_get_upper_lower("upper", effect, group_str)
+    def get_upper(self, effect, group_str, mult):    
+        return self._helper_get_upper_lower("upper", effect, group_str, mult)
     
-    def _helper_get_upper_lower(self, boundary, effect, group_str):
+    def _helper_get_upper_lower(self, boundary, effect, group_str, mult=None):
+        if mult is None:
+            raise ValueError("Mult must be specified")
+        
         if boundary not in ["upper","lower"]:
             raise Exception("Boundary must be one of 'upper' or 'lower'")
         
-        if self.get_se(effect, group_str) is None:
+        if self.get_se(effect, group_str, mult) is None:
             return self.effects_dict[effect][group_str][boundary]
         est = self.get_estimate(effect, group_str)
-        se  = self.get_se(effect, group_str)
-        mult = meta_globals.get_mult()
+        se  = self.get_se(effect, group_str, mult)
         if est is None or se is None:
             return None
         if boundary == "lower":
@@ -873,28 +884,37 @@ class MetaAnalyticUnit:
             raise Exception("BOUNDARY NOT RECOGNIZED")
         
     
-    def get_se(self, effect, group_str):
+    def get_se(self, effect, group_str, mult):
         if "SE" in self.effects_dict[effect][group_str]:
-            return self.effects_dict[effect][group_str]["SE"]
+            print("SE found: %s" % str(self.effects_dict[effect][group_str]["SE"]))
+            se = self.effects_dict[effect][group_str]["SE"]
+            if se is None:
+                new_se = self.calculate_SE_if_possible(effect, group_str, mult=mult)
+                print("new se is %s" % str(new_se))
+                return new_se
+            return se
         else:
-            return None
+            #return None
+            return self.calculate_SE_if_possible(effect, group_str, mult=mult)
          
-    def set_effect_and_ci(self, effect, group_str, est, lower, upper):
+    def set_effect_and_ci(self, effect, group_str, est, lower, upper, mult):
+        '''also calculated se if possible '''
+        
         self.set_effect(effect, group_str, est)
         self.effects_dict[effect][group_str]["lower"] = lower
         self.effects_dict[effect][group_str]["upper"] = upper
         
-        se = self.calculate_SE_if_possible(effect, group_str, est, lower, upper)
+        se = self.calculate_SE_if_possible(effect, group_str, est, lower, upper, mult=mult)
         self.set_SE(effect, group_str, se)
         
-    def get_effect_and_ci(self, effect, group_str):
+    def get_effect_and_ci(self, effect, group_str, mult):
         return (self.get_estimate(effect, group_str),
-                self.get_lower(effect, group_str),
-                self.get_upper(effect, group_str),
+                self.get_lower(effect, group_str, mult),
+                self.get_upper(effect, group_str, mult),
                 )
-    def get_effect_and_se(self, effect, group_str):
+    def get_effect_and_se(self, effect, group_str, mult):
         return (self.get_estimate(effect, group_str),
-                self.get_se(effect, group_str),
+                self.get_se(effect, group_str, mult),
                 )
         
     def get_entered_effect_and_ci(self, effect, group_str):

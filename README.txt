@@ -39,3 +39,7 @@ That should be all you need. Once everything is setup, you can launch the progra
     > python src/launch.py
 
 At the console. This should fire up the GUI.
+
+For running nosetests:
+these should be run from within the src folder:
+nosetests -v test_meta_analysis.py

@@ -93,9 +93,11 @@ class MetaRegForm(QDialog, forms.ui_meta_reg.Ui_cov_reg_dialog):
                 return
 
 
-        result = meta_py_r.run_meta_regression(self.model.dataset, studies,\
-                                                 selected_covariates, current_effect,
-                                                 fixed_effects=fixed_effects)
+        result = meta_py_r.run_meta_regression(self.model.dataset, studies,
+                                               selected_covariates,
+                                               current_effect,
+                                               fixed_effects=fixed_effects,
+                                               conf_level=self.model.get_global_conf_level())
         if isinstance(result, str):
             # then there was an error!
             QMessageBox.critical(self,

@@ -10,13 +10,13 @@
 ''' Desired tests:
 Regular meta-analysis:
 [X] binary data * analysis methods
-[ ] continuous data * analysis methods
+[X] continuous data * analysis methods
 [ ] diagnostic data * sens/spec * method (4)
                     * dor/lor   * method (3)
 
 Cumulative meta-analysis:
 [X] binary data * analysis methods
-[ ] continuous data * analysis methods
+[X] continuous data * analysis methods
 [ ] diagnostic data * analysis methods
 
 Subgroup meta-analysis: (factor covariate)
@@ -30,7 +30,7 @@ Subgroup meta-analysis: (factor covariate)
 
 leave-one-out meta-analysis:
 [X] binary data * analysis methods
-[ ] continuous data * analysis methods
+[X] continuous data * analysis methods
 [ ] diagnostic data * sens/spec * method (4)
                     * dor/lor   * method (3)
 
@@ -54,8 +54,16 @@ from PyQt4 import QtCore, QtGui, Qt
 from PyQt4.Qt import *
 
 
-import meta_py_r # this needs to come first or else weird stuff happens w/ nose
+#import meta_py_r # this needs to come first or else weird stuff happens w/ nose
+#import meta_globals
+
+print("Importing meta_globals")
+#import meta_globals
+print("Importing meta_form")
 import meta_form
+print("Importing meta_py_r")
+import meta_py_r
+
 
 from types import (NoneType, BooleanType, IntType, LongType, FloatType,
                    StringType, UnicodeType, ListType, DictType, TupleType)
@@ -115,26 +123,31 @@ app,meta = None, None
 
 def setup_module(module): # runs before any method in the class
     print("")
+    print("ENTERING SETUP MODULE ------------------------------------------------")
+    
     # load R libraries
     rloader = meta_py_r.RlibLoader()
     rloader.load_all()
     
     global app, meta
-    
-    
     app = QtGui.QApplication(sys.argv)
-
     meta = meta_form.MetaForm()
     #meta.tableView.setSelectionMode(QTableView.ContiguousSelection)
     meta.show()
+    app.processEvents()
     
     
 def teardown_module(module):
     QApplication.quit()
 
 ################### BINARY META ANALYSIS TESTS ################################
+
+#def test_dummy():
+#    print("Running test dummy")
+#    assert True
         
 def test_binary_meta_analysis():
+    
     fullpath = os.path.join(os.getcwd(),"../sample_data", "amino.oma")
 
     meta.open(fullpath)
@@ -214,6 +227,7 @@ def test_binary_meta_analysis_meta_methods():
                               'results'   : {'images': {'Leave-one-out Forest plot': './r_tmp/forest.png'}, 'texts': {'Leave-one-out Summary': 'Binary Fixed-effect Model - Inverse Variance\n\nMetric: Odds Ratio\n\n Model Results\n\n Studies           Estimate   Lower bound   Upper bound   Std. error   p-Val  \n\n Overall             0.760       0.571         1.011         0.146     0.059  \n\n - Gonzalez          0.772       0.576         1.037         0.150     0.085  \n\n - Prins             0.778       0.581         1.042         0.149     0.092  \n\n - Giamarellou       0.776       0.583         1.035         0.147     0.084  \n\n - Maller            0.683       0.501         0.931         0.158     0.016  \n\n - Sturm             0.769       0.577         1.025         0.147     0.073  \n\n - Marik             0.975       0.697         1.364         0.171     0.882  \n\n - Muijsken          0.725       0.540         0.974         0.150     0.033  \n\n - Vigano            0.752       0.564         1.001         0.146     0.051  \n\n - Hansen            0.802       0.600         1.073         0.148     0.137  \n\n - De Vries          0.730       0.545         0.977         0.149     0.034  \n\n - Mauracher         0.777       0.583         1.036         0.147     0.086  \n\n - Nordstrom         0.763       0.571         1.020         0.148     0.068  \n\n - Rozdzinski        0.726       0.534         0.987         0.157     0.041  \n\n - Ter Braak         0.721       0.535         0.972         0.152     0.032  \n\n - Tulkens           0.758       0.569         1.010         0.146     0.059  \n\n - Van der Auwera    0.769       0.577         1.025         0.147     0.073  \n\n - Klastersky        0.699       0.522         0.936         0.149     0.016  \n\n - Vanhaeverbeek     0.758       0.569         1.010         0.146     0.058  \n\n - Hollender         0.765       0.574         1.019         0.146     0.067  \n\n\n'}, 'image_var_names': {'loo forest plot': 'loo_forest_plot'}, 'image_params_paths': {'Forest Plot': 'r_tmp/1371578803.22466'}, 'image_order': None},
                       })
     
+    
     # for now just check that images and texts match
     for t in method_and_params:
         check_binary_meta_method_analysis.description = "Testing Binary Meta Method Analysis %s:%s" % (t['meta_f_str'], t['method'])
@@ -247,7 +261,89 @@ def _results_match(test_res, ref_res, keys_to_compare): # test results and refer
         assert equal_values, "test value: %s does not match reference value: %s for key: %s" % (val_test, val_ref, key)
         
         
-##############################################################################
+################# CONTINUOUS META ANALYSIS TESTS #############################
+
+def test_continuous_meta_analysis():
+    fullpath = os.path.join(os.getcwd(),"../sample_data", "continuous.oma")
+    meta.open(fullpath)
+    meta_py_r.ma_dataset_to_simple_continuous_robj(meta.model)
+    
+    method_and_params = []
+    method_and_params.append({
+                              'meta_f_str': 'None',
+                              'method': 'continuous.random',
+                              'parameters': {'conf.level': 95.0, 'digits': 3.0, 'fp_col2_str': u'[default]', 'fp_show_col4': False, 'fp_xlabel': u'[default]', 'fp_col4_str': u'Ev/Ctrl', 'fp_xticks': '[default]', 'fp_col3_str': u'Ev/Trt', 'fp_show_col3': False, 'fp_show_col2': True, 'fp_show_col1': True, 'fp_plot_lb': '[default]', 'fp_outpath': u'./r_tmp/forest.png', 'rm.method': 'DL', 'fp_plot_ub': '[default]', 'fp_col1_str': u'Studies', 'measure': 'SMD', 'fp_show_summary_line': True},
+                              'results': {'images': {'Forest Plot': './r_tmp/forest.png'}, 'texts': {'Weights': 'studies      weights\nCarroll 1997 15.8%\nGrant   1981 16.3%\nPeck    1987 12.6%\nDonat   2003 23.3%\nStewart 1990 13.8%\nYoung   1995 18.3%\n', 'Summary': 'Continuous Random-Effects Model\n\nMetric: Standardized Mean Difference\n\n Model Results\n\n Estimate  Lower bound   Upper bound   Std. error   p-Value  \n\n 0.358        0.152         0.565         0.105     < 0.001  \n\n\n Heterogeneity\n\n tau^2  Q(df=5)   Het. p-Value   I^2  \n\n 0.037   11.914       0.036      58%  \n\n\n'}, 'image_var_names': {'forest plot': 'forest_plot'}, 'image_params_paths': {'Forest Plot': 'r_tmp/1371651937.75495'}, 'image_order': None},
+                             })
+    
+    method_and_params.append({
+                              'meta_f_str': 'None',
+                              'method': 'continuous.fixed',
+                              'parameters': {'conf.level': 95.0, 'digits': 3.0, 'fp_col2_str': u'[default]', 'fp_show_col4': False, 'fp_xlabel': u'[default]', 'fp_col4_str': u'Ev/Ctrl', 'fp_xticks': '[default]', 'fp_col3_str': u'Ev/Trt', 'fp_show_col3': False, 'fp_show_col2': True, 'fp_show_col1': True, 'fp_plot_lb': '[default]', 'fp_outpath': u'./r_tmp/forest.png', 'rm.method': 'DL', 'fp_plot_ub': '[default]', 'fp_col1_str': u'Studies', 'measure': 'SMD', 'fp_show_summary_line': True},
+                              'results': {'images': {'Forest Plot': './r_tmp/forest.png'}, 'texts': {'Weights': 'studies      weights\nCarroll 1997 12.4%\nGrant   1981 13.3%\nPeck    1987  8.1%\nDonat   2003 39.2%\nStewart 1990  9.5%\nYoung   1995 17.5%\n', 'Summary': 'Continuous Fixed-Effect Model\n\nMetric: Standardized Mean Difference\n\n Model Results\n\n Estimate  Lower bound   Upper bound   Std. error   p-Value  \n\n 0.415        0.289         0.541         0.064     < 0.001  \n\n\n Heterogeneity\n\n Q(df=5)  Het. p-Value   I^2  \n\n 11.914       0.036      58%  \n\n\n'}, 'image_var_names': {'forest plot': 'forest_plot'}, 'image_params_paths': {'Forest Plot': 'r_tmp/1371651942.7068'}, 'image_order': None},
+                             })
+    
+    # for now just check that images and texts match
+    for t in method_and_params:
+        check_continuous_meta_analysis.description = "Testing Continuous Meta Analysis %s" % t['method']
+        yield check_continuous_meta_analysis, t
+
+def test_continuous_meta_analysis_meta_methods():
+    fullpath = os.path.join(os.getcwd(),"../sample_data", "continuous.oma")
+    meta.open(fullpath)
+    meta_py_r.ma_dataset_to_simple_continuous_robj(meta.model)
+    
+    method_and_params = []
+    
+    # Cumulative meta analysis
+    method_and_params.append({
+                              'meta_f_str': 'cum.ma.continuous',
+                              'method': 'continuous.random',
+                              'parameters': {'conf.level': 95.0, 'digits': 3.0, 'fp_col2_str': u'[default]', 'fp_show_col4': False, 'fp_xlabel': u'[default]', 'fp_col4_str': u'Ev/Ctrl', 'fp_xticks': '[default]', 'fp_col3_str': u'Ev/Trt', 'fp_show_col3': False, 'fp_show_col2': True, 'fp_show_col1': True, 'fp_plot_lb': '[default]', 'fp_outpath': u'./r_tmp/forest.png', 'rm.method': 'DL', 'fp_plot_ub': '[default]', 'fp_col1_str': u'Studies', 'measure': 'SMD', 'fp_show_summary_line': True},
+                              'results': {'images': {'Cumulative Forest Plot': './r_tmp/forest.png'}, 'texts': {'Cumulative Summary': 'Continuous Random-Effects Model\n\nMetric: Standardized Mean Difference\n\n Model Results\n\n Studies    Estimate   Lower bound   Upper bound   Std. error    p-Val   \n\n Carroll      0.095      -0.264         0.453         0.183        NA    \n\n + Grant      0.189      -0.059         0.438         0.127      0.136   \n\n + Peck       0.232       0.015         0.449         0.111      0.036   \n\n + Donat      0.376       0.091         0.660         0.145      0.010   \n\n + Stewart    0.397       0.169         0.626         0.116     < 0.001  \n\n + Young      0.358       0.152         0.565         0.105     < 0.001  \n\n\n'}, 'image_var_names': {'cumulative forest plot': 'cumulative forest_plot'}, 'image_params_paths': {'Forest Plot': 'r_tmp/1371655521.74068'}, 'image_order': None},
+                             })
+    
+    method_and_params.append({
+                              'meta_f_str': 'cum.ma.continuous',
+                              'method': 'continuous.fixed',
+                              'parameters': {'conf.level': 95.0, 'digits': 3.0, 'fp_col2_str': u'[default]', 'fp_show_col4': False, 'fp_xlabel': u'[default]', 'fp_col4_str': u'Ev/Ctrl', 'fp_xticks': '[default]', 'fp_col3_str': u'Ev/Trt', 'fp_show_col3': False, 'fp_show_col2': True, 'fp_show_col1': True, 'fp_plot_lb': '[default]', 'fp_outpath': u'./r_tmp/forest.png', 'rm.method': 'DL', 'fp_plot_ub': '[default]', 'fp_col1_str': u'Studies', 'measure': 'SMD', 'fp_show_summary_line': True},
+                              'results': {'images': {'Cumulative Forest Plot': './r_tmp/forest.png'}, 'texts': {'Cumulative Summary': 'Continuous Fixed-effect Model - Inverse Variance\n\nMetric: Standardized Mean Difference\n\n Model Results\n\n Studies    Estimate   Lower bound   Upper bound   Std. error    p-Val   \n\n Carroll      0.095      -0.264         0.453         0.183        NA    \n\n + Grant      0.189      -0.059         0.438         0.127      0.136   \n\n + Peck       0.232       0.015         0.449         0.111      0.036   \n\n + Donat      0.464       0.316         0.611         0.075     < 0.001  \n\n + Stewart    0.464       0.325         0.602         0.071     < 0.001  \n\n + Young      0.415       0.289         0.541         0.064     < 0.001  \n\n\n'}, 'image_var_names': {'cumulative forest plot': 'cumulative forest_plot'}, 'image_params_paths': {'Forest Plot': 'r_tmp/1371655532.42571'}, 'image_order': None},
+                             })
+    
+    # Leave one out meta analysis
+    method_and_params.append({
+                              'meta_f_str': 'loo.ma.continuous',
+                              'method': 'continuous.random',
+                              'parameters': {'conf.level': 95.0, 'digits': 3.0, 'fp_col2_str': u'[default]', 'fp_show_col4': False, 'fp_xlabel': u'[default]', 'fp_col4_str': u'Ev/Ctrl', 'fp_xticks': '[default]', 'fp_col3_str': u'Ev/Trt', 'fp_show_col3': False, 'fp_show_col2': True, 'fp_show_col1': True, 'fp_plot_lb': '[default]', 'fp_outpath': u'./r_tmp/forest.png', 'rm.method': 'DL', 'fp_plot_ub': '[default]', 'fp_col1_str': u'Studies', 'measure': 'SMD', 'fp_show_summary_line': True},
+                              'results': {'images': {'Leave-one-out Forest Plot': './r_tmp/forest.png'}, 'texts': {'Leave-one-out Summary': 'Continuous Random-Effects Model\n\nMetric: Standardized Mean Difference\n\n Model Results\n\n Studies    Estimate   Lower bound   Upper bound   Std. error    p-Val   \n\n Overall      0.358       0.152         0.565         0.105     < 0.001  \n\n - Carroll    0.411       0.202         0.621         0.107     < 0.001  \n\n - Grant      0.370       0.126         0.615         0.125      0.003   \n\n - Peck       0.353       0.113         0.593         0.122      0.004   \n\n - Donat      0.254       0.093         0.416         0.082      0.002   \n\n - Stewart    0.337       0.094         0.580         0.124      0.007   \n\n - Young      0.397       0.169         0.626         0.116     < 0.001  \n\n\n'}, 'image_var_names': {'loo forest plot': 'loo_forest_plot'}, 'image_params_paths': {'Forest Plot': 'r_tmp/1371655544.35331'}, 'image_order': None},
+                             })
+    
+    method_and_params.append({
+                              'meta_f_str': 'loo.ma.continuous',
+                              'method': 'continuous.fixed',
+                              'parameters': {'conf.level': 95.0, 'digits': 3.0, 'fp_col2_str': u'[default]', 'fp_show_col4': False, 'fp_xlabel': u'[default]', 'fp_col4_str': u'Ev/Ctrl', 'fp_xticks': '[default]', 'fp_col3_str': u'Ev/Trt', 'fp_show_col3': False, 'fp_show_col2': True, 'fp_show_col1': True, 'fp_plot_lb': '[default]', 'fp_outpath': u'./r_tmp/forest.png', 'rm.method': 'DL', 'fp_plot_ub': '[default]', 'fp_col1_str': u'Studies', 'measure': 'SMD', 'fp_show_summary_line': True},
+                              'results': {'images': {'Leave-one-out Forest Plot': './r_tmp/forest.png'}, 'texts': {'Leave-one-out Summary': 'Continuous Fixed-effect Model - Inverse Variance\n\nMetric: Standardized Mean Difference\n\n Model Results\n\n Studies    Estimate   Lower bound   Upper bound   Std. error    p-Val   \n\n Overall      0.415       0.289         0.541         0.064     < 0.001  \n\n - Carroll    0.460       0.326         0.595         0.069     < 0.001  \n\n - Grant      0.436       0.301         0.571         0.069     < 0.001  \n\n - Peck       0.419       0.288         0.551         0.067     < 0.001  \n\n - Donat      0.254       0.093         0.416         0.082      0.002   \n\n - Stewart    0.410       0.278         0.543         0.068     < 0.001  \n\n - Young      0.464       0.325         0.602         0.071     < 0.001  \n\n\n'}, 'image_var_names': {'loo forest plot': 'loo_forest_plot'}, 'image_params_paths': {'Forest Plot': 'r_tmp/1371655554.24533'}, 'image_order': None},
+                             })
+    
+    # for now just check that images and texts match
+    for t in method_and_params:
+        check_continuous_meta_method_analysis.description = "Testing Continuous Meta Method Analysis %s:%s" % (t['meta_f_str'], t['method'])
+        yield check_continuous_meta_method_analysis, t
+
+
+def check_continuous_meta_analysis(test_data):
+    test_result = meta_py_r.run_continuous_ma(test_data['method'], test_data['parameters'])
+    _results_match(test_result, test_data['results'], ['images','texts'])
+
+# same as check_binary_meta_method_analysis--> should be refactored together
+def check_continuous_meta_method_analysis(test_data):
+    test_result = meta_py_r.run_meta_method(test_data['meta_f_str'], test_data['method'], test_data['parameters'])
+    _results_match(test_result, test_data['results'], ['images','texts'])
+
+
+
+
+
         
 ####### Don't delete this. Its good to use as a template ####
 #def setup_module(module):

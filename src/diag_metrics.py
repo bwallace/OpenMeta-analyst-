@@ -18,10 +18,11 @@ class Diag_Metrics(QDialog, forms.ui_diagnostic_metrics.Ui_diag_metric):
         QObject.connect(self.btn_ok, SIGNAL("pressed()"), self.ok)
 
     def ok(self):
-        form =  ma_specs.MA_Specs(self.model, parent=self.parent,\
-                     meta_f_str=self.meta_f_str,\
-                     external_params=self.external_params,\
-                     diag_metrics=self.get_selected_metrics())
+        form =  ma_specs.MA_Specs(self.model, parent=self.parent,
+                                  meta_f_str=self.meta_f_str,
+                                  external_params=self.external_params,
+                                  diag_metrics=self.get_selected_metrics(),
+                                  conf_level=self.model.get_global_conf_level())
         form.show()
         self.hide()
 

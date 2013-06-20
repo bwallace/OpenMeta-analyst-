@@ -309,7 +309,7 @@ class MADataTable(QtGui.QTableView):
             for group in cur_txs:
                 cur_raw_data_dict[group] = list(ma_unit.get_raw_data_for_group(group))
                 
-            form = binary_data_form.BinaryDataForm2(ma_unit, cur_txs, cur_group_str, cur_effect, parent=self)
+            form = binary_data_form.BinaryDataForm2(ma_unit, cur_txs, cur_group_str, cur_effect, conf_level=self.model().get_global_conf_level(), parent=self)
             if form.exec_():
                 # push the edit even
                 ma_edit = CommandEditMAUnit(self, study_index, ma_unit, old_ma_unit)
@@ -320,7 +320,7 @@ class MADataTable(QtGui.QTableView):
                 cur_raw_data_dict[group_name] = list(ma_unit.get_raw_data_for_group(group_name))
                 
             #old_raw_data_dict = copy.deepcopy(cur_raw_data_dict)
-            form = continuous_data_form.ContinuousDataForm(ma_unit, cur_txs, cur_group_str, cur_effect, parent=self)
+            form = continuous_data_form.ContinuousDataForm(ma_unit, cur_txs, cur_group_str, cur_effect, conf_level=self.model().get_global_conf_level(), parent=self)
             if form.exec_():
                 # update the model; push this event onto the stack
                 ma_edit = CommandEditMAUnit(self, study_index, ma_unit, old_ma_unit)
@@ -331,7 +331,7 @@ class MADataTable(QtGui.QTableView):
             for group in cur_txs:
                 cur_raw_data_dict[group] = list(ma_unit.get_raw_data_for_group(group))
 
-            form = diagnostic_data_form.DiagnosticDataForm(ma_unit, cur_txs, cur_group_str, parent=self)
+            form = diagnostic_data_form.DiagnosticDataForm(ma_unit, cur_txs, cur_group_str, conf_level=self.model().get_global_conf_level(), parent=self)
             if form.exec_():
                 ma_edit = CommandEditMAUnit(self, study_index, ma_unit, old_ma_unit)
                 self.undoStack.push(ma_edit)

@@ -1,8 +1,9 @@
-from PyQt4 import QtCore, QtGui, Qt
-from PyQt4.Qt import *
+from PyQt4 import QtGui
+#from PyQt4.Qt import *
+from PyQt4.Qt import QPixmap, QSplashScreen, QThread
 import sys
-import pdb
-import forms.icons_rc
+#import pdb
+#import forms.icons_rc
 import time
 import meta_py_r
 import meta_form

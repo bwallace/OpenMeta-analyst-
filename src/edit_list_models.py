@@ -8,17 +8,11 @@
 #  and the editing UI.
 ################################################################
 
-# core libraries
-import PyQt4
-from PyQt4 import *
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-import pdb
+#import pdb
 
-# home-grown
-import ma_dataset
-from ma_dataset import *
-import meta_py_r
+# core libraries
+#from PyQt4.QtCore import *
+from PyQt4.QtCore import QAbstractTableModel, QModelIndex, QString, Qt, QVariant
 
 class TXGroupsModel(QAbstractTableModel):
     '''

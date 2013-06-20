@@ -1,5 +1,5 @@
-from PyQt4.Qt import *
-import pdb
+from PyQt4.Qt import QDialog, QObject, SIGNAL
+#import pdb
 import forms.ui_diagnostic_explain_dlg
 
 class DiagnosticExplain(QDialog, forms.ui_diagnostic_explain_dlg.Ui_diag_explain_window):

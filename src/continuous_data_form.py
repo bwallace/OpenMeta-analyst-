@@ -49,10 +49,16 @@ def is_list(x):
         return False
 
 class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDataForm):
-    def __init__(self, ma_unit, cur_txs, cur_group_str, cur_effect, parent=None):
+    def __init__(self, ma_unit, cur_txs, cur_group_str, cur_effect, conf_level=None, parent=None):
         super(ContinuousDataForm, self).__init__(parent)
         self.setupUi(self)
         self.setup_signals_and_slots()
+        
+        if conf_level is None:
+            QMessageBox.critical(self, "insufficient arguments", "Confidence interval must be specified")
+            raise ValueError("Confidence interval must be specified")
+        self.conf_level = conf_level
+        self.mult = meta_py_r.get_mult_from_r(self.conf_level)
         
         self.ma_unit = ma_unit
         self.cur_groups = cur_txs
@@ -65,7 +71,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
                               self.correlation_pre_post]
         self.text_boxes = [self.low_txt_box, self.high_txt_box,
                            self.effect_txt_box, self.correlation_pre_post]
-        self.ci_label.setText("{0:.1f}% Confidence Interval".format(meta_globals.get_global_conf_level()))
+        self.ci_label.setText("{0:.1f}% Confidence Interval".format(self.conf_level))
         self.current_item_data = {}
         
         # Set the table headers to reflect the group names
@@ -184,7 +190,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
                 conv_to_disp_scale = partial(meta_py_r.continuous_convert_scale,
                                              metric_name=self.cur_effect,
                                              convert_to="display.scale"),
-                parent=self)
+                parent=self, mult=meta_py_r.get_mult_from_r(self.global_conf_level))
 
         calc_fncs.block_signals(self.entry_widgets, True)
         try:
@@ -307,7 +313,8 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         txt_boxes = dict(effect=self.effect_txt_box, lower=self.low_txt_box, upper=self.high_txt_box)
         calc_fncs.helper_set_current_effect(ma_unit=self.ma_unit,
             txt_boxes=txt_boxes, current_effect=self.cur_effect,
-            group_str=self.group_str, data_type="continuous")
+            group_str=self.group_str, data_type="continuous",
+            mult=meta_py_r.get_mult_from_r(self.global_conf_level))
         
         self.change_row_color_according_to_metric()
     
@@ -338,7 +345,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
                 self._set_val(row_index, col, grp_raw_data[col], self.simple_table)
             # also insert the SEs, if we have them
             se_col = 3
-            se = self.ma_unit.get_se(self.cur_effect, self.group_str)
+            se = self.ma_unit.get_se(self.cur_effect, self.group_str, self.mult)
             self._set_val(row_index, col, grp_raw_data[col], self.simple_table)
         self.simple_table.blockSignals(False) 
         self.impute_data()
@@ -568,7 +575,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
                 self._update_ma_unit()
                 
     def conf_level_to_alpha(self):
-        alpha = 1-meta_globals.get_global_conf_level()/100.0
+        alpha = 1-self.conf_level/100.0
         return alpha
            
     def impute_pre_post_data(self, table, group_index, row=None, col=None):
@@ -725,14 +732,14 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
                 est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1, se1=se1, 
                                                                      n2=n2, m2=m2, sd2=sd2, se2=se2,
                                                                      metric=self.cur_effect,
-                                                                     conf_level=meta_globals.get_global_conf_level())
+                                                                     conf_level=self.conf_level)
             else:
                 # continuous, one-arm metric
                 est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1,
-                                      two_arm=False, metric=self.cur_effect, conf_level=meta_globals.get_global_conf_level())                          
+                                      two_arm=False, metric=self.cur_effect, conf_level=self.conf_level)                          
             
             est, low, high = est_and_ci_d["calc_scale"] # calculation (e.g., log) scale
-            self.ma_unit.set_effect_and_ci(self.cur_effect, self.group_str, est, low, high)    
+            self.ma_unit.set_effect_and_ci(self.cur_effect, self.group_str, est, low, high, mult=self.mult)    
             self.set_current_effect()
     
     def enable_txt_box_input(self):
@@ -779,7 +786,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
             group1_data = dict(tmp[0])
             group2_data = dict(tmp[1])
             
-            tmp = self.ma_unit.get_effect_and_ci(self.cur_effect, self.group_str)
+            tmp = self.ma_unit.get_effect_and_ci(self.cur_effect, self.group_str, meta_py_r.get_mult_from_r(self.conf_level))
             effect_data = {"est":tmp[0], "low":tmp[1], "high":tmp[2],
                            "metric":self.cur_effect,
                            "met.param":self.metric_parameter}
@@ -821,7 +828,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
             self.back_calc_btn.setVisible(True)
             
         (group1_data, group2_data, effect_data) = build_data_dicts()
-        imputed = meta_py_r.back_calc_cont_data(group1_data, group2_data, effect_data, meta_globals.get_global_conf_level())
+        imputed = meta_py_r.back_calc_cont_data(group1_data, group2_data, effect_data, self.conf_level)
         print("Imputed data: ", imputed)
         
         # Leave if there was a failure
@@ -933,7 +940,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         for metric in CONTINUOUS_ONE_ARM_METRICS + CONTINUOUS_TWO_ARM_METRICS:
             if ((self.cur_effect in CONTINUOUS_TWO_ARM_METRICS and metric in CONTINUOUS_TWO_ARM_METRICS) or
                 (self.cur_effect in CONTINUOUS_ONE_ARM_METRICS and metric in CONTINUOUS_ONE_ARM_METRICS)):
-                self.ma_unit.set_effect_and_ci(metric, self.group_str, None, None, None)
+                self.ma_unit.set_effect_and_ci(metric, self.group_str, None, None, None, mult=self.mult)
             else:
                 # TODO: Do nothing for now..... treat the case where we have to switch group strings down the line
                 pass

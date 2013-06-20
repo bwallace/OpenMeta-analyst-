@@ -166,30 +166,34 @@ def equal_close_enough(x,y):
 ### CONFIDENCE LEVEL STUFF #####
 # Confidence level 
 DEFAULT_CONF_LEVEL = 95.0    # (normal 95% CI)
-conf_level = 95 # global confidence Level
-mult = None
 
-def set_global_conf_level(conf_lev):
-    ''' sets multiplier as well '''
-    
-    global conf_level, mult
-    conf_level = float(conf_lev)
-    print("Set confidence level to: %f" % conf_level)
-    mult = meta_py_r.get_mult_from_r(conf_level)
-    
-    # set in R as well
-    r_str = "set.global.conf.level("+str(float(conf_lev))+")"
-    new_cl_in_R = meta_py_r.ro.r(r_str)[0]
-    print("Set confidence level in R to: %f" % new_cl_in_R)
-    
-    return conf_level
-
-
-def get_global_conf_level():
-    return float(conf_level)
-
-def get_mult():
-    return mult
+#conf_level = 95 # global confidence Level
+#mult = None
+#print("set mult to None, see: %s" % str(mult))
+#
+#def set_global_conf_level(conf_lev):
+#    ''' sets multiplier as well '''
+#    
+#    global conf_level, mult
+#    conf_level = float(conf_lev)
+#    print("Set confidence level to: %f" % conf_level)
+#    mult = meta_py_r.get_mult_from_r(conf_level)
+#    print("mult is now: %s" % str(mult))
+#    
+#    # set in R as well
+#    r_str = "set.global.conf.level("+str(float(conf_lev))+")"
+#    new_cl_in_R = meta_py_r.ro.r(r_str)[0]
+#    print("Set confidence level in R to: %f" % new_cl_in_R)
+#    
+#    return conf_level
+#
+#
+#def get_global_conf_level():
+#    return float(conf_level)
+#
+#def get_mult():
+#    print("mult is %s" % str(mult))
+#    return mult
 
 ### END CONFIDENCE LEVEL STUFF ####
 

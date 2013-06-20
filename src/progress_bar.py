@@ -2,8 +2,8 @@
 ' admittedly, kind of silly. '
 ''''''''''''''''''''''''''''''
 
-from PyQt4.Qt import *
-import pdb
+from PyQt4.Qt import QDialog
+#import pdb
 import forms.ui_running
 
 

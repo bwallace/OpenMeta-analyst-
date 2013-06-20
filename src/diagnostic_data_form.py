@@ -28,9 +28,15 @@ from forms.ui_diagnostic_data_form import Ui_DiagnosticDataForm
 BACK_CALCULATABLE_DIAGNOSTIC_EFFECTS = ["Sens", "Spec"]
 
 class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
-    def __init__(self, ma_unit, cur_txs, cur_group_str, parent=None):
+    def __init__(self, ma_unit, cur_txs, cur_group_str, conf_level=None, parent=None):
         super(DiagnosticDataForm, self).__init__(parent)
         self.setupUi(self)
+        
+        if conf_level is None:
+            raise ValueError("Confidence level must be specified")
+        self.global_conf_level = conf_level
+        self.mult = meta_py_r.get_mult_from_r(self.global_conf_level)
+        
         self.setup_signals_and_slots()
         
         # Assign stuff
@@ -44,7 +50,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         self.text_boxes = [self.low_txt_box, self.high_txt_box,
                            self.effect_txt_box, self.prevalence_txt_box]
         
-        self.ci_label.setText("{0:.1f}% Confidence Interval".format(meta_globals.get_global_conf_level()))
+        self.ci_label.setText("{0:.1f}% Confidence Interval".format(self.global_conf_level))
         self.initialize_form()
         self.setup_inconsistency_checking()
         self.undoStack = QUndoStack(self)
@@ -343,7 +349,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         # sensitivity and specificity
         ests_and_cis = meta_py_r.diagnostic_effects_for_study(
                                 tp, fn, fp, tn, metrics=DIAGNOSTIC_METRICS,
-                                conf_level=meta_globals.get_global_conf_level())
+                                conf_level=self.global_conf_level)
         
         # now we're going to set the effect estimate/CI on the MA object.
         for metric in DIAGNOSTIC_METRICS:
@@ -354,7 +360,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
                 continue
             
             est, lower, upper = ests_and_cis[metric]["calc_scale"]
-            self.ma_unit.set_effect_and_ci(metric, self.group_str, est, lower, upper)
+            self.ma_unit.set_effect_and_ci(metric, self.group_str, est, lower, upper, mult=self.mult)
 
     def _get_row_col(self, field):
         row = 0 if field in ("FP", "TP") else 1
@@ -419,7 +425,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
                 conv_to_disp_scale = partial(meta_py_r.diagnostic_convert_scale,
                                              metric_name=self.cur_effect,
                                              convert_to="display.scale"),
-                parent=self)
+                parent=self, mult=meta_py_r.get_mult_from_r(self.global_conf_level))
         
         calc_fncs.block_signals(self.entry_widgets, True)
         try:
@@ -548,7 +554,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         txt_boxes = dict(effect=self.effect_txt_box, lower=self.low_txt_box, upper=self.high_txt_box)
         calc_fncs.helper_set_current_effect(ma_unit=self.ma_unit,
             txt_boxes=txt_boxes, current_effect=self.cur_effect,
-            group_str=self.group_str, data_type="diagnostic")
+            group_str=self.group_str, data_type="diagnostic", mult=meta_py_r.get_mult_from_r(self.global_conf_level))
     
     def print_effects_dict_from_ma_unit(self):
         print self.ma_unit.get_effects_dict()
@@ -598,7 +604,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         
         # clear out effects stuff
         for metric in DIAGNOSTIC_METRICS:
-            self.ma_unit.set_effect_and_ci(metric, self.group_str, None, None, None)
+            self.ma_unit.set_effect_and_ci(metric, self.group_str, None, None, None, mult=self.mult)
             
         # clear line edits
         self.set_current_effect()
@@ -643,7 +649,9 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             d = {}
 
             for effect in BACK_CALCULATABLE_DIAGNOSTIC_EFFECTS:    
-                est,lower,upper = self.ma_unit.get_effect_and_ci(effect, self.group_str)
+                est,lower,upper = self.ma_unit.get_effect_and_ci(effect,
+                                                                 self.group_str,
+                                                                 meta_py_r.get_mult_from_r(self.global_conf_level))
                 conv_to_disp_scale = lambda x: meta_py_r.diagnostic_convert_scale(x, effect, convert_to="display.scale")
                 d_est,d_lower,d_upper = [conv_to_disp_scale(x) for x in [est,lower,upper]]
                 for i,Rsubkey in enumerate(["",".lb",".ub"]):
@@ -658,7 +666,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             x = self.prevalence_txt_box.text()
             d["prev"] = float(x) if _is_a_float(x) else None
 
-            d["conf.level"] = meta_globals.get_global_conf_level()
+            d["conf.level"] = self.global_conf_level
     
             # now grab the raw data, if available
             d.update(self.get_raw_diag_data())

@@ -12,16 +12,16 @@
 #########################################################################################
 
 # core libraries
-#import PyQt4
-from PyQt4 import *
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from PyQt4.QtCore import pyqtRemoveInputHook
-import pdb
+from PyQt4.Qt import Qt
+from PyQt4 import QtCore
+from PyQt4.QtCore import QAbstractTableModel, QModelIndex, QString, QVariant, SIGNAL
+from PyQt4.QtGui import QIcon
+
+#from PyQt4.QtCore import pyqtRemoveInputHook
+#import pdb
 
 # home-grown
 from ma_dataset import Dataset,Outcome,Study,Covariate
-import meta_py_r
 import meta_globals
 from meta_globals import *
 import calculator_routines as calc_fncs
@@ -64,6 +64,8 @@ class DatasetModel(QAbstractTableModel):
     
     def __init__(self, filename=QString(), dataset=None, add_blank_study=True):
         super(DatasetModel, self).__init__()
+        
+        self.conf_level = self.set_conf_level(meta_globals.DEFAULT_CONF_LEVEL)
 
         self.dataset = dataset
         if dataset is None:
@@ -152,7 +154,7 @@ class DatasetModel(QAbstractTableModel):
         else:
             if not self.is_diag():
                 #self.current_txs = ["tx A", "tx B"]
-                self.current_txs = meta_globals.DEFAULT_GROUP_NAMES
+                self.current_txs = DEFAULT_GROUP_NAMES
             else:
                 self.current_txs = ["test 1"]
         self.previous_txs = self.current_txs
@@ -433,7 +435,7 @@ class DatasetModel(QAbstractTableModel):
         
         
         if data_type in [BINARY, CONTINUOUS]: 
-            prev_est, prev_lower, prev_upper = ma_unit.get_effect_and_ci(self.current_effect, group_str)
+            prev_est, prev_lower, prev_upper = ma_unit.get_effect_and_ci(self.current_effect, group_str, self.get_mult())
         if data_type == BINARY:
             prev_est, prev_lower, prev_upper = [binary_display_scale(x) for x in [prev_est, prev_lower, prev_upper]]
             print("Previous binary: %s" % str([prev_est, prev_lower, prev_upper]))
@@ -444,7 +446,7 @@ class DatasetModel(QAbstractTableModel):
         elif data_type == DIAGNOSTIC:
             m_str = "Sens" if col in self.OUTCOMES[:3] else "Spec"
             #prev_est, prev_lower, prev_upper = ma_unit.get_display_effect_and_ci(m_str, group_str)
-            prev_est, prev_lower, prev_upper = ma_unit.get_effect_and_ci(m_str, group_str)
+            prev_est, prev_lower, prev_upper = ma_unit.get_effect_and_ci(m_str, group_str, self.get_mult())
             prev_est, prev_lower, prev_upper = [meta_py_r.diagnostic_convert_scale(x, m_str, convert_to="display.scale") for x in [prev_est, prev_lower, prev_upper]]
             print("Previous diagnostic: %s" % str([prev_est, prev_lower, prev_upper]))
             
@@ -678,14 +680,18 @@ class DatasetModel(QAbstractTableModel):
                         
                         # in normal case, only calculate SE when all data is filled in
                         if None not in ma_unit.get_entered_effect_and_ci(self.current_effect, group_str):              
-                            se = ma_unit.calculate_SE_if_possible(self.current_effect, group_str)
+                            se = ma_unit.calculate_SE_if_possible(self.current_effect, group_str, mult=self.mult)
                             print("setting se to %s" % str(se))
                         else:
                             se = None
                         ma_unit.set_SE(self.current_effect, group_str, se)
                         
                     # Now calculate display_effect and CI
-                    ma_unit.calculate_display_effect_and_ci(self.current_effect, group_str, conv_to_disp_scale)
+                    ma_unit.calculate_display_effect_and_ci(
+                                    self.current_effect, group_str,
+                                    conv_to_disp_scale,
+                                    conf_level=self.get_global_conf_level(),
+                                    mult=self.mult)
 
                             
                 else: #outcome is diagnostic
@@ -713,7 +719,10 @@ class DatasetModel(QAbstractTableModel):
                     conv_to_display_scale = self._get_conv_to_display_scale(self,
                                                                             data_type=current_data_type,
                                                                             effect=m_str)
-                    ma_unit.calculate_display_effect_and_ci(m_str, group_str, conv_to_disp_scale)
+                    ma_unit.calculate_display_effect_and_ci(
+                                    m_str, group_str, conv_to_disp_scale,
+                                    conf_level=self.get_global_conf_level(),
+                                    mult=self.mult)
                     
         elif column == self.INCLUDE_STUDY:
             study.include = value.toBool()
@@ -930,9 +939,9 @@ class DatasetModel(QAbstractTableModel):
                 elif section in self.OUTCOMES:
                     help_msg = "For information about how the confidence interval was obtained,\n"
                     help_msg += "please consult the the help at {0}".format(HELP_URL)
-                    lower_msg = "Lower bound of {0:.1%} confidence interval".format(meta_globals.get_global_conf_level()/100.0)
+                    lower_msg = "Lower bound of {0:.1%} confidence interval".format(self.conf_level/100.0)
                     lower_msg += "\n" + help_msg
-                    upper_msg = "Upper bound of {0:.1%} confidence interval\n".format(meta_globals.get_global_conf_level()/100.0)
+                    upper_msg = "Upper bound of {0:.1%} confidence interval\n".format(self.conf_level/100.0)
                     upper_msg += "\n" + help_msg
                     se_msg = "Standard Error"
                     
@@ -1278,9 +1287,9 @@ class DatasetModel(QAbstractTableModel):
 
     def sort_studies(self, col, reverse):
         if col == self.NAME:
-            self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by="name", reverse=reverse), reverse=reverse)
+            self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by="name", reverse=reverse, mult=self.get_mult()), reverse=reverse)
         elif col == self.YEAR:
-            self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by="year", reverse=reverse), reverse=reverse)
+            self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by="year", reverse=reverse, mult=self.get_mult()), reverse=reverse)
         elif col in self.RAW_DATA:
             #data_type = self.dataset.get_outcome_type(self.current_outcome)
             # need this to dig down to find right ma_unit and data we're looking for to compare against
@@ -1289,7 +1298,7 @@ class DatasetModel(QAbstractTableModel):
                                       'current_groups': self.get_current_groups(),
                                       'data_index': col - min(self.RAW_DATA)}
             self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by="raw_data", 
-                reverse=reverse, directions_to_ma_unit=ma_unit_reference_info), reverse=reverse)
+                reverse=reverse, directions_to_ma_unit=ma_unit_reference_info, mult=self.get_mult()), reverse=reverse)
         elif col in self.OUTCOMES:
             # need this to dig down to find right ma_unit and data we're looking for to compare against
             ma_unit_reference_info = {
@@ -1302,7 +1311,8 @@ class DatasetModel(QAbstractTableModel):
                 'data_index': col - min(self.OUTCOMES)
             }
             self.dataset.studies.sort(cmp = self.dataset.cmp_studies(compare_by="outcomes", 
-                reverse=reverse, directions_to_ma_unit=ma_unit_reference_info), reverse=reverse)
+                                      reverse=reverse, directions_to_ma_unit=ma_unit_reference_info, mult=self.get_mult()),
+                                      reverse=reverse)
         
             
         # covariates -- note that we assume anything to the right of the outcomes
@@ -1310,7 +1320,7 @@ class DatasetModel(QAbstractTableModel):
         elif col > self.OUTCOMES[-1]:
             cov = self.get_cov(col)
             self.dataset.studies.sort(cmp = self.dataset.cmp_studies(\
-                                        compare_by=cov.name, reverse=reverse), reverse=reverse)
+                                        compare_by=cov.name, reverse=reverse, mult=self.get_mult()), reverse=reverse)
 
         self.reset()
 
@@ -1415,6 +1425,9 @@ class DatasetModel(QAbstractTableModel):
         # after setting this as the state_dict
         d["current_effect"] = effect
         d["study_auto_added"] = False # hmm ?
+        
+        d["conf_level"] = meta_globals.DEFAULT_CONF_LEVEL
+        
         return d
 
 
@@ -1432,6 +1445,7 @@ class DatasetModel(QAbstractTableModel):
         d["current_txs"] = self.current_txs
         d["current_effect"] = self.current_effect
         d["study_auto_added"] = self.study_auto_added
+        d["conf_level"] = self.conf_level
         
         return d
 
@@ -1441,8 +1455,14 @@ class DatasetModel(QAbstractTableModel):
         
     def set_state(self, state_dict):
         for key, val in state_dict.items():
-            exec("self.%s = val" % key)
-
+            if key == "conf_level":
+                self.set_conf_level(val)
+            else:
+                exec("self.%s = val" % key)
+        
+        if "conf_level" not in state_dict.keys():
+            self.set_conf_level(meta_globals.DEFAULT_CONF_LEVEL)
+        
         self.reset()
 
     def raw_data_is_complete_for_study(self, study_index, first_arm_only=False):         
@@ -1568,22 +1588,22 @@ class DatasetModel(QAbstractTableModel):
                 if self.current_effect in BINARY_TWO_ARM_METRICS:
                     est_and_ci_d = meta_py_r.effect_for_study(e1, n1, e2, n2,
                                                               metric=self.current_effect,
-                                                              conf_level=meta_globals.get_global_conf_level())
+                                                              conf_level=self.conf_level)
                 else:
                     # binary, one-arm
                     est_and_ci_d = meta_py_r.effect_for_study(e1, n1, 
                                                               two_arm=False,
                                                               metric=self.current_effect,
-                                                              conf_level=meta_globals.get_global_conf_level())
+                                                              conf_level=self.conf_level)
             elif data_type == CONTINUOUS:
                 n1, m1, sd1, n2, m2, sd2 = self.get_cur_raw_data_for_study(study_index)
                 if self.current_effect in CONTINUOUS_TWO_ARM_METRICS:
                     est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1,
-                                        n2=n2, m2=m2, sd2=sd2, metric=self.current_effect, conf_level=meta_globals.get_global_conf_level())
+                                        n2=n2, m2=m2, sd2=sd2, metric=self.current_effect, conf_level=self.conf_level)
                 else:
                     # continuous, one-arm metric
                     est_and_ci_d = meta_py_r.continuous_effect_for_study(n1, m1, sd1,
-                                          two_arm=False, metric=self.current_effect, conf_level=meta_globals.get_global_conf_level())
+                                          two_arm=False, metric=self.current_effect, conf_level=self.conf_level)
                 
             elif data_type == DIAGNOSTIC: 
                 # diagnostic data
@@ -1593,16 +1613,19 @@ class DatasetModel(QAbstractTableModel):
                 ests_and_cis = meta_py_r.diagnostic_effects_for_study(
                                                   tp, fn, fp, tn,
                                                   metrics=DIAGNOSTIC_METRICS,
-                                                  conf_level=meta_globals.get_global_conf_level())
+                                                  conf_level=self.conf_level)
                 
                 ###
                 # now we're going to set the effect estimate/CI on the MA object.
                 
                 for metric in DIAGNOSTIC_METRICS:
                     est, lower, upper = ests_and_cis[metric]["calc_scale"]
-                    ma_unit.set_effect_and_ci(metric, group_str, est, lower, upper)
+                    ma_unit.set_effect_and_ci(metric, group_str, est, lower, upper, mult=self.mult)
                     conv_to_disp_scale = self._get_conv_to_display_scale(data_type, effect=metric)
-                    ma_unit.calculate_display_effect_and_ci(metric, group_str, conv_to_disp_scale)
+                    ma_unit.calculate_display_effect_and_ci(
+                                        metric, group_str, conv_to_disp_scale,
+                                        conf_level=self.get_global_conf_level(),
+                                        mult=self.mult)
                 
             ####
             # if we're dealing with continuous or binary data, here
@@ -1618,16 +1641,24 @@ class DatasetModel(QAbstractTableModel):
                 # note that we keep two versions around; a version on the 'calculation' scale
                 # (e.g., log) and a version on the continuous/display scale to present to the
                 # user via the UI.
-                ma_unit.set_effect_and_ci(self.current_effect, group_str, est, lower, upper)
+                ma_unit.set_effect_and_ci(self.current_effect, group_str, est, lower, upper, mult=self.mult)
                 conv_to_disp_scale = self._get_conv_to_display_scale(data_type, effect=self.current_effect)
-                ma_unit.calculate_display_effect_and_ci(self.current_effect, group_str, conv_to_disp_scale)
+                ma_unit.calculate_display_effect_and_ci(
+                                self.current_effect, group_str,
+                                conv_to_disp_scale,
+                                conf_level=self.get_global_conf_level(),
+                                mult=self.mult)
         elif self._raw_data_is_not_empty_for_study(study_index) or (one_arm_effect and self._raw_data_is_not_empty_for_study(study_index, first_arm_only=True)):
             if data_type in [BINARY, CONTINUOUS]: # raw data is not blank but not full so clear outcome
                 est, lower, upper, se = None, None, None, None
-                ma_unit.set_effect_and_ci(self.current_effect, group_str, est, lower, upper)
+                ma_unit.set_effect_and_ci(self.current_effect, group_str, est, lower, upper, mult=self.mult)
                 ma_unit.set_SE(self.current_effect, group_str, se)
                 conv_to_disp_scale = self._get_conv_to_display_scale(data_type, effect=self.current_effect)
-                ma_unit.calculate_display_effect_and_ci(self.current_effect, group_str, conv_to_disp_scale)
+                ma_unit.calculate_display_effect_and_ci(
+                                self.current_effect, group_str,
+                                conv_to_disp_scale,
+                                conf_level=self.get_global_conf_level(),
+                                mult=self.mult)
         else: # raw data is all blank, do nothing
             pass
                 
@@ -1667,7 +1698,7 @@ class DatasetModel(QAbstractTableModel):
         effect = effect or self.current_effect
         cur_ma_unit = self.get_current_ma_unit_for_study(study_index)
         
-        if None in cur_ma_unit.get_effect_and_se(effect, group_str):
+        if None in cur_ma_unit.get_effect_and_se(effect, group_str, self.mult):
             print "study %s does not have a point estimate" % study_index
             return False
             
@@ -1680,7 +1711,7 @@ class DatasetModel(QAbstractTableModel):
         effect = effect or self.current_effect
         
         est = cur_ma_unit.get_estimate(effect, group_str)
-        se = cur_ma_unit.get_se(effect, group_str)
+        se = cur_ma_unit.get_se(effect, group_str, self.mult)
         return (est, se)
         
     def get_cur_ests_and_SEs(self, only_if_included=True, only_these_studies=None, effect=None):
@@ -1801,11 +1832,13 @@ class DatasetModel(QAbstractTableModel):
                     convert_to_display_scale = continuous_display_scale
                 x.calculate_display_effect_and_ci(effect, group_str,
                                                   convert_to_display_scale,
+                                                  conf_level=self.get_global_conf_level(), mult=self.mult,
                                                   check_if_necessary=True)
             elif current_data_type == DIAGNOSTIC:
                 for m_str in ["Sens","Spec"]:
                     x.calculate_display_effect_and_ci(m_str, group_str,
                                                       convert_to_display_scale=get_diagnostic_display_scale(m_str),
+                                                      conf_level=self.get_global_conf_level(), mult=self.mult,
                                                       check_if_necessary=True)
         print("Finished calculating display effect and cis")
 
@@ -1843,4 +1876,35 @@ class DatasetModel(QAbstractTableModel):
                 raise Exception("_get_calc_scale_value: data type not recognized!")
             
         return calc_scale_val
-            
+
+
+    def set_conf_level(self, conf_lev):
+        ''' sets multiplier as well (~1.96 for 95% conf level) '''
+        
+        invalid_conf_lev_msg = "Confidence level needs to be a number between 0 and 100"
+        if conf_lev is None:
+            raise ValueError(invalid_conf_lev_msg)
+        elif not (0 < conf_lev < 100):
+            raise ValueError(invalid_conf_lev_msg)
+        
+        self.conf_level = float(conf_lev)
+        print("Set confidence level to: %f" % conf_lev)
+        
+        self.mult = meta_py_r.get_mult_from_r(conf_lev)
+        print("mult is now: %s" % str(self.mult))
+        
+        # set in R as well
+        r_str = "set.global.conf.level("+str(float(conf_lev))+")"
+        new_cl_in_R = meta_py_r.ro.r(r_str)[0]
+        print("Set confidence level in R to: %f" % new_cl_in_R)
+
+        self.emit(SIGNAL("conf_level_changed()"))
+        
+        return conf_lev
+    
+    def get_global_conf_level(self):
+        return self.conf_level
+    
+    def get_mult(self):
+        print("mult is %s" % str(self.mult))
+        return self.mult

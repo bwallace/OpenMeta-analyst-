@@ -4,8 +4,10 @@ Created on Apr 29, 2013
 @author: George Dietz
 '''
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+#from PyQt4.QtCore import *
+#from PyQt4.QtGui import *
+from PyQt4.QtCore import QString, SIGNAL, SLOT
+from PyQt4.QtGui import QDialog, QDialogButtonBox, QDoubleSpinBox, QHBoxLayout, QLabel, QVBoxLayout
 
 from meta_globals import DEFAULT_CONF_LEVEL
 

@@ -1,13 +1,13 @@
-import pdb
+#import pdb
 #import os
 
-from PyQt4.Qt import *
-from PyQt4 import QtGui
+from PyQt4.Qt import QObject, SIGNAL
+from PyQt4.QtGui import QDialog, QDialogButtonBox
 
 import forms.ui_edit_forest_plot
 import ma_specs
 import meta_py_r
-from meta_globals import *
+import meta_globals
 
 class EditPlotWindow(QDialog, forms.ui_edit_forest_plot.Ui_edit_forest_plot_dlg):
 
@@ -47,7 +47,7 @@ class EditPlotWindow(QDialog, forms.ui_edit_forest_plot.Ui_edit_forest_plot_dlg)
         self.current_param_vals = {}
 
         # get the button object
-        self.apply_button = self.buttonBox.button(QtGui.QDialogButtonBox.Apply)
+        self.apply_button = self.buttonBox.button(QDialogButtonBox.Apply)
         QObject.connect(self.apply_button, SIGNAL("clicked()"), self.regenerate_graph)
         self.populate_params()
 
@@ -105,17 +105,17 @@ class EditPlotWindow(QDialog, forms.ui_edit_forest_plot.Ui_edit_forest_plot_dlg)
     
         plot_lb = unicode(self.plot_lb_le.text().toUtf8(), "utf-8")
         self.current_param_vals["fp_plot_lb"] = "[default]"
-        if plot_lb != "[default]" and check_plot_bound(plot_lb):
+        if plot_lb != "[default]" and meta_globals.check_plot_bound(plot_lb):
             self.current_param_vals["fp_plot_lb"] = plot_lb
 
         plot_ub = unicode(self.plot_ub_le.text().toUtf8(), "utf-8")
         self.current_param_vals["fp_plot_ub"] = "[default]"
-        if plot_ub != "[default]" and check_plot_bound(plot_ub):
+        if plot_ub != "[default]" and meta_globals.check_plot_bound(plot_ub):
             self.current_param_vals["fp_plot_ub"] = plot_ub
 
         xticks = unicode(self.x_ticks_le.text().toUtf8(), "utf-8")
         self.current_param_vals["fp_xticks"] = "[default]"
-        if xticks != "[default]" and seems_sane(xticks):
+        if xticks != "[default]" and meta_globals.seems_sane(xticks):
             self.current_param_vals["fp_xticks"] = xticks
     
         self.current_param_vals["fp_show_summary_line"] = \

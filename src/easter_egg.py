@@ -1,4 +1,4 @@
-from PyQt4.Qt import *
+from PyQt4.Qt import QDialog
 import forms.ui_tom_form
 
 class TomDialog(QDialog, forms.ui_tom_form.Ui_Dialog):

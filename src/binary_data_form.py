@@ -31,9 +31,15 @@ THRESHOLD = 1e-5
 
 
 class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
-    def __init__(self, ma_unit, cur_txs, cur_group_str, cur_effect, parent=None):
+    def __init__(self, ma_unit, cur_txs, cur_group_str, cur_effect, conf_level=None, parent=None):
         super(BinaryDataForm2, self).__init__(parent)
         self.setupUi(self)
+        
+        if conf_level is None:
+            raise ValueError("Confidence level must be specified")
+        self.global_conf_level = conf_level
+        self.mult=meta_py_r.get_mult_from_r(self.global_conf_level)
+        
         self._setup_signals_and_slots()
         
         # Assign stuff
@@ -45,7 +51,7 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
                               self.high_txt_box, self.effect_txt_box]
         self.text_boxes = [self.low_txt_box, self.high_txt_box, self.effect_txt_box]
         
-        self.ci_label.setText("{0:.1f}% Confidence Interval".format(meta_globals.get_global_conf_level()))
+        self.ci_label.setText("{0:.1f}% Confidence Interval".format(self.global_conf_level))
         self.initialize_form()             # initialize all cell to empty items
         self.setup_inconsistency_checking()
         self.undoStack = QUndoStack(self)
@@ -99,7 +105,7 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
             d = {}
             d["metric"] = str(self.cur_effect)
 
-            est,lower,upper = self.ma_unit.get_effect_and_ci(self.cur_effect, self.group_str)
+            est,lower,upper = self.ma_unit.get_effect_and_ci(self.cur_effect, self.group_str, meta_py_r.get_mult_from_r(self.global_conf_level))
             conv_to_disp_scale = lambda x: meta_py_r.binary_convert_scale(x, self.cur_effect, convert_to="display.scale")
             d_est,d_lower,d_upper = [conv_to_disp_scale(x) for x in [est,lower,upper]]
             for i,R_key in enumerate(["estimate", "lower", "upper"]):
@@ -108,7 +114,7 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
                 except:
                     d["%s" % R_key] = None
 
-            d["conf.level"] = meta_globals.get_global_conf_level()
+            d["conf.level"] = self.global_conf_level
 
             d["Ev_A"] = float(self._get_int(0, 0)) if not self._is_empty(0, 0) else None
             d["N_A"]  = float(self._get_int(0, 2)) if not self._is_empty(0, 2) else None
@@ -283,7 +289,8 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
         txt_boxes = dict(effect=self.effect_txt_box, lower=self.low_txt_box, upper=self.high_txt_box)
         calc_fncs.helper_set_current_effect(ma_unit=self.ma_unit,
             txt_boxes=txt_boxes, current_effect=self.cur_effect,
-            group_str=self.group_str, data_type="binary")
+            group_str=self.group_str, data_type="binary",
+            mult=meta_py_r.get_mult_from_r(self.global_conf_level))
         
         self.change_row_color_according_to_metric()
         
@@ -325,7 +332,8 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
                 conv_to_disp_scale = partial(meta_py_r.binary_convert_scale,
                                              metric_name=self.cur_effect,
                                              convert_to="display.scale"),
-                parent=self)
+                                             parent=self,
+                                             mult=meta_py_r.get_mult_from_r(self.global_conf_level))
         
         calc_fncs.block_signals(self.entry_widgets, True)
         try:
@@ -636,13 +644,13 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
         # if None is in the raw data, should we clear out current outcome?
         if two_arm_raw_data_ok or (curr_effect_is_one_arm and one_arm_raw_data_ok):
             if curr_effect_is_two_arm:
-                est_and_ci_d = meta_py_r.effect_for_study(e1, n1, e2, n2, metric=self.cur_effect, conf_level=meta_globals.get_global_conf_level())
+                est_and_ci_d = meta_py_r.effect_for_study(e1, n1, e2, n2, metric=self.cur_effect, conf_level=self.global_conf_level)
             else:
                 # binary, one-arm
-                est_and_ci_d = meta_py_r.effect_for_study(e1, n1, two_arm=False, metric=self.cur_effect, conf_level=meta_globals.get_global_conf_level())
+                est_and_ci_d = meta_py_r.effect_for_study(e1, n1, two_arm=False, metric=self.cur_effect, conf_level=self.global_conf_level)
                                     
             est, low, high = est_and_ci_d["calc_scale"]  # calculation (e.g., log) scale
-            self.ma_unit.set_effect_and_ci(self.cur_effect, self.group_str, est, low, high)
+            self.ma_unit.set_effect_and_ci(self.cur_effect, self.group_str, est, low, high, mult=self.mult)
             self.set_current_effect()
            
     def clear_form(self):
@@ -669,7 +677,7 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
         for metric in BINARY_ONE_ARM_METRICS + BINARY_TWO_ARM_METRICS:
             if ((self.cur_effect in BINARY_TWO_ARM_METRICS and metric in BINARY_TWO_ARM_METRICS) or
                 (self.cur_effect in BINARY_ONE_ARM_METRICS and metric in BINARY_ONE_ARM_METRICS)):
-                self.ma_unit.set_effect_and_ci(metric, self.group_str, None, None, None)
+                self.ma_unit.set_effect_and_ci(metric, self.group_str, None, None, None, mult=self.mult)
             else:
                 # TODO: Do nothing for now..... treat the case where we have to switch group strings down the line
                 pass
