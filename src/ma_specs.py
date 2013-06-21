@@ -252,12 +252,13 @@ class MA_Specs(QDialog, forms.ui_ma_specs.Ui_Dialog):
                     # reset Rs working directory 
                     meta_py_r.reset_Rs_working_dir()
                     self.accept()
-
+                #_writeout_test_data(self.meta_f_str, method_names, list_of_param_vals, result, diag=True) # FOR MAKING TESTS
             else:
                 # in the case of diagnostic, we pass in lists
                 # of param values to the meta_method 
-                result = meta_py_r.run_meta_method_diag(\
+                result = meta_py_r.run_meta_method_diag(
                                 self.meta_f_str, method_names, list_of_param_vals)
+                #_writeout_test_data(self.meta_f_str, method_names, list_of_param_vals, result, diag=True) # FOR MAKING TESTS
 
         bar.hide()
 
@@ -736,11 +737,14 @@ def add_plot_params(specs_form):
     specs_form.current_param_vals["fp_show_summary_line"] = specs_form.show_summary_line.isChecked()
 
 
-def _writeout_test_data(meta_f_str, method, params, results):
+def _writeout_test_data(meta_f_str, method, params, results, diag=False):
     with open('test_data.txt', 'a') as f:
         f.write("method_and_params.append({\n")
         f.write("                          'meta_f_str': '%s',\n" % meta_f_str)
-        f.write("                          'method': '%s',\n" % method)
+        if diag:
+            f.write("                          'method': %s,\n" % str(method))
+        else:
+            f.write("                          'method': '%s',\n" % method)
         f.write("                          'parameters': %s,\n" % str(params))
         f.write("                          'results': %s,\n" % str(results))
         f.write("                         })\n\n")
