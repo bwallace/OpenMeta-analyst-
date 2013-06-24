@@ -216,6 +216,7 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
     plot.params.paths <- c()
     plot.pdfs.paths <- c() # sometimes we want to just output pdfs at run-time
     remove.indices <- c()
+	references <- c()
 
     if (("Sens" %in% metrics) & ("Spec" %in% metrics)) {
         ####
@@ -229,6 +230,7 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
             images <- c(images, biv.results$images)
             image.order <- append.image.order(image.order, biv.results)
             remove.indices <- c(sens.index, spec.index)
+			references <- c(references, biv.results$Reference)
         } else {
             ###
             # we're not running bivariate; proceed as usual
@@ -250,6 +252,8 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
             summary.spec <- list("Summary"=results.spec$Summary)
             names(summary.spec) <- paste(eval(parse(text=paste("pretty.names$measure$", params.spec$measure,sep=""))), " Summary", sep="")
             results <- c(results, summary.sens, summary.spec)
+			
+			references <- c(references, results.sens$References) # reference for method will be the same for both sens&spec
             
             res.sens <- results.sens$Summary$MAResults
             res.spec <- results.spec$Summary$MAResults
@@ -304,7 +308,9 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         summary.plr <- list("Summary"=results.plr$Summary)
         names(summary.plr) <- paste(eval(parse(text=paste("pretty.names$measure$", params.plr$measure,sep=""))), " Summary", sep="")
         results <- c(results, summary.nlr, summary.plr)
-        
+		
+		references <- c(references, results.nlr$References) # reference for method will be the same for both nlr&plr
+		
         res.nlr <- results.nlr$Summary$MAResults
         res.plr <- results.plr$Summary$MAResults
         res <- list("left"=res.nlr, "right"=res.plr)
@@ -326,11 +332,15 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
         plot.names <- c(plot.names, plot.names.tmp)
         
         remove.indices <- c(remove.indices, nlr.index, plr.index)
+		
+		cat("end of plr/nlr stuff")
     }
 
     # remove fnames and params for side-by-side plots
     fnames <- fnames[setdiff(1:length(fnames), remove.indices)]
     params.list <- params.list[setdiff(1:length(params.list), remove.indices)]
+	
+	
 
     if (length(params.list) > 0) {
         for (count in 1:length(params.list)) {
@@ -348,15 +358,19 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
             plot.names <- c(plot.names, results.tmp$plot_names)
             summary.tmp <- list("Summary"=results.tmp$Summary)
             names(summary.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Summary", sep="")
-            results <- c(results, summary.tmp)
+      
+		    references <- c(references, results.tmp$References)
+			
+			results <- c(results, summary.tmp)
         }
     }
 
     graphics.off()
-    results <- c(results, list("images"=images, "image_order"=image.order, "plot_names"=plot.names, 
-                               "plot_params_paths"=plot.params.paths))
-	print("THESE ARE THE RESULTS FROM MULTIPLE DIAGNOSTIC")
-	print(results)
+    results <- c(results, list("images"=images,
+					           "image_order"=image.order,
+							   "plot_names"=plot.names, 
+                               "plot_params_paths"=plot.params.paths,
+							   "References"=references))
     results
 }
 
@@ -425,13 +439,19 @@ diagnostic.fixed.inv.var <- function(diagnostic.data, params){
             images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
 
-            results <- list("images"=images, "Summary"=summary.disp, 
-                          "plot_names"=plot.names, 
-                          "plot_params_paths"=plot.params.paths)
+			
+            results <- list("images"=images,
+					        "Summary"=summary.disp,
+                            "plot_names"=plot.names, 
+                            "plot_params_paths"=plot.params.paths)
         } else {
             results <- list("Summary"=summary.disp)
         } 
     }
+	
+	references <- "this is a placeholder for diagnostic fixed effect inv var reference"
+	results[["References"]] <- references
+	
     results
 }
 
@@ -549,7 +569,8 @@ diagnostic.fixed.mh <- function(diagnostic.data, params){
             plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
             images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
-            results <- list("images"=images, "Summary"=summary.disp, 
+            results <- list("images"=images,
+					        "Summary"=summary.disp,
                             "plot_names"=plot.names, 
                             "plot_params_paths"=plot.params.paths)
         }
@@ -557,6 +578,10 @@ diagnostic.fixed.mh <- function(diagnostic.data, params){
             results <- list("Summary"=summary.disp)
         }    
     }
+	
+	references <- "this is a placeholder for diagnostic fixed effect mh reference"
+	results[["References"]] <- references
+	
     results
 }
                                 
@@ -679,18 +704,24 @@ diagnostic.fixed.peto <- function(diagnostic.data, params){
         # a dictionary of images (mapping titles to image paths) and a list of texts
         # (mapping titles to pretty-printed text). In this case we have only one 
         # of each. 
-        #     
+        # 
         plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
         images <- c("Forest Plot"=forest.path)
         plot.names <- c("forest plot"="forest_plot")
-        results <- list("images"=images, "Summary"=summary.disp, 
-                        "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)
+        results <- list("images"=images,
+				        "Summary"=summary.disp,
+                        "plot_names"=plot.names,
+						"plot_params_paths"=plot.params.paths)
       }
     }
     else {
       results <- list("Summary"=res)
     }    
   }
+  
+  references <- "this is a placeholder for diagnostic fixed peto reference"
+  results[["References"]] <- references
+  
   results
 }
 
@@ -796,14 +827,21 @@ diagnostic.random <- function(diagnostic.data, params){
             plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
             images <- c("Forest Plot"=forest.path)
             plot.names <- c("forest plot"="forest_plot")
-            results <- list("images"=images, "Summary"=summary.disp, 
+			
+			
+            results <- list("images"=images,
+					        "Summary"=summary.disp,
                             "plot_names"=plot.names, 
                             "plot_params_paths"=plot.params.paths)
         }
         else {
             results <- list("Summary"=summary.disp)
         } 
-    } 
+    }
+	
+	references <- "this is a placeholder for diagnostic random reference"
+	results[["References"]] <- references
+	
     results
 }
 
@@ -924,7 +962,11 @@ diagnostic.hsroc <- function(diagnostic.data, params){
     roc.plot.name <- "Summary ROC"
     image.names <- names(images)
     image.order <- append(roc.plot.name, image.names[image.names!=roc.plot.name])
-    results <- list("images"=images, "image_order"=image.order, "Summary"=summary)
+	references <- "HSROC: C. M. Rutter and C. A. Gatsonis. A hierarchical regression approach to meta-analysis of diagnostic accuracy evaluations. Statistics in Medicine, 20(19):2865-2884, 2001."
+    results <- list("images"=images,
+			        "image_order"=image.order,
+					"Summary"=summary,
+					"References"=references)
 
 }
 
@@ -1020,8 +1062,10 @@ diagnostic.bivariate.ml <- function(diagnostic.data, params){
 
     images <- c("ROC Plot"=path.to.roc.plot)
 
-
-    results <- list("images"=images, "Summary"=list("Bivariate Summary"=report.array))
+	references <- "this is a placeholder for bivariate references"
+    results <- list("images"=images,
+			        "Summary"=list("Bivariate Summary"=report.array),
+					"References"=references)
 }
 
 

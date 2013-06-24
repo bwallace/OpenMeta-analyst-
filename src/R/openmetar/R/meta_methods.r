@@ -15,6 +15,9 @@
 #  is implemented.                                               #
 ##################################################################
 
+cum_meta_analysis_ref = 'Cumulative Meta-Analysis: Lau, Joseph, et al. "Cumulative meta-analysis of therapeutic trials for myocardial infarction." New England Journal of Medicine 327.4 (1992): 248-254.)'
+subgroup_ma_ref = "Subgroup Meta-Analysis: subgroup ma reference placeholder"
+loo_ma_ref = "Leave-one-out Meta-Analysis: LOO ma reference placeholder"
 
 ##################################
 #  binary cumulative MA          #
@@ -108,9 +111,14 @@ cum.ma.binary <- function(fname, binary.data, params){
     plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
     images <- c("Cumulative Forest Plot"=forest.path)
     plot.names <- c("cumulative forest plot"="cumulative_forest_plot")
-    results <- list("images"=images, "Cumulative Summary"=cum.disp, 
+	
+	references <- c(res$References, cum_meta_analysis_ref)
+	
+    results <- list("images"=images,
+			        "Cumulative Summary"=cum.disp, 
                     "plot_names"=plot.names, 
-                    "plot_params_paths"=plot.params.paths)
+                    "plot_params_paths"=plot.params.paths, 
+					"References"=references)
     results
 }
 
@@ -202,9 +210,12 @@ loo.ma.binary <- function(fname, binary.data, params){
     plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
     images <- c("Leave-one-out Forest plot"=forest.path)
     plot.names <- c("loo forest plot"="loo_forest_plot")
-    results <- list("images"=images, "Leave-one-out Summary"=loo.disp, 
+	references <- c(res$References, loo_ma_ref)
+    results <- list("images"=images,
+			        "Leave-one-out Summary"=loo.disp, 
                     "plot_names"=plot.names, 
-                    "plot_params_paths"=plot.params.paths)
+                    "plot_params_paths"=plot.params.paths,
+					"References"=references)
     results
 }
 
@@ -309,9 +320,13 @@ cum.ma.continuous <- function(fname, cont.data, params){
     plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
     images <- c("Cumulative Forest Plot"=forest.path)
     plot.names <- c("cumulative forest plot"="cumulative forest_plot")
-    results <- list("images"=images, "Cumulative Summary"=cum.disp, 
+	
+	references <- c(res$References, cum_meta_analysis_ref)
+    results <- list("images"=images,
+			        "Cumulative Summary"=cum.disp, 
                     "plot_names"=plot.names, 
-                    "plot_params_paths"=plot.params.paths)
+                    "plot_params_paths"=plot.params.paths,
+					"References"=references)
     results
 }
 
@@ -320,8 +335,6 @@ cum.ma.continuous <- function(fname, cont.data, params){
 #  diagnostic cumulative MA     #
 #################################
 cum.ma.diagnostic <- function(fname, diagnostic.data, params){
-	# NOT TESTED YET!!!!!!!
-	
 	# assert that the argument is the correct type
 	if (!("DiagnosticData" %in% class(diagnostic.data))) stop("Diagnostic data expected.")  
 	
@@ -420,9 +433,14 @@ cum.ma.diagnostic <- function(fname, diagnostic.data, params){
 	plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
 	images <- c("Cumulative Forest Plot"=forest.path)
 	plot.names <- c("cumulative forest plot"="cumulative_forest_plot")
-	results <- list("images"=images, "Cumulative Summary"=cum.disp, 
+	
+	references <- c(res$References, cum_meta_analysis_ref)
+	
+	results <- list("images"=images,
+			        "Cumulative Summary"=cum.disp,
 			        "plot_names"=plot.names, 
-					"plot_params_paths"=plot.params.paths)
+					"plot_params_paths"=plot.params.paths,
+					"References"=references)
 	results
 }
 
@@ -441,6 +459,8 @@ multiple.cum.ma.diagnostic <- function(fnames, params.list, diagnostic.data) {
 	images <- c()
 	plot.names <- c()
 	plot.params.paths <- c()
+	
+	references <- c()
 			
 	for (count in 1:length(params.list)) {
 		params <- params.list[[count]]
@@ -462,10 +482,14 @@ multiple.cum.ma.diagnostic <- function(fnames, params.list, diagnostic.data) {
 		plot.names <- c(plot.names, plot.names.tmp)
 		
 		#plot.params.paths <-
+		
+		references <- c(references, res$References)
 	
 	}
 	
-	results <- c(results, list("images"=images, "plot_names"=plot.names))
+	results <- c(results, list("images"=images,
+					           "plot_names"=plot.names,
+							   "References"=references))
 	results
 	
 
@@ -567,9 +591,12 @@ loo.ma.continuous <- function(fname, cont.data, params){
     plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
     images <- c("Leave-one-out Forest Plot"=forest.path)
     plot.names <- c("loo forest plot"="loo_forest_plot")
-    results <- list("images"=images, "Leave-one-out Summary"=loo.disp, 
+	references <- c(res$References, loo_ma_ref)
+    results <- list("images"=images,
+			        "Leave-one-out Summary"=loo.disp, 
                     "plot_names"=plot.names, 
-                    "plot_params_paths"=plot.params.paths)
+                    "plot_params_paths"=plot.params.paths,
+					"References"=references)
     results
 }
 
@@ -648,9 +675,12 @@ subgroup.ma.binary <- function(fname, binary.data, params){
     plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
     images <- c("Subgroup Forest Plot"=forest.path)
     plot.names <- c("subgroups forest plot"="subgroups_forest_plot")
-    results <- list("images"=images, "Subgroup Summary"=subgroup.disp, 
+	references <- c(res$References, subgroup_ma_ref)
+    results <- list("images"=images,
+			        "Subgroup Summary"=subgroup.disp, 
                     "plot_names"=plot.names, 
-                    "plot_params_paths"=plot.params.paths)
+                    "plot_params_paths"=plot.params.paths,
+					"References"=references)
     results
 }
 
@@ -741,9 +771,14 @@ subgroup.ma.continuous <- function(fname, cont.data, params){
     plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
     images <- c("Subgroups Forest Plot"=forest.path)
     plot.names <- c("subgroups forest plot"="subgroups_forest_plot")
-    results <- list("images"=images, "Subgroup Summary"=subgroup.disp, 
+	
+	references <- c(res$References, subgroup_ma_ref)
+	
+    results <- list("images"=images,
+			        "Subgroup Summary"=subgroup.disp, 
                     "plot_names"=plot.names, 
-                    "plot_params_paths"=plot.params.paths)
+                    "plot_params_paths"=plot.params.paths,
+					"References"=references)
     results
 }
 
@@ -878,6 +913,7 @@ multiple.loo.diagnostic <- function(fnames, params.list, diagnostic.data) {
     results <- list()
     pretty.names <- diagnostic.fixed.inv.var.pretty.names()
     sens.spec.outpath <- c()
+	references <- c()
     for (count in 1:length(params.list)) {
         metrics <- c(metrics, params.list[[count]]$measure)
         if (params.list[[count]]$measure=="Sens") {
@@ -934,6 +970,8 @@ multiple.loo.diagnostic <- function(fnames, params.list, diagnostic.data) {
         summary.spec <- list("Summary"=results.spec$Summary)
         names(summary.spec) <- paste(eval(parse(text=paste("pretty.names$measure$", params.spec$measure,sep=""))), " Summary", sep="")
         results <- c(results, summary.sens, summary.spec)
+		
+		references <- c(references, results.sens$Reference) # spec reference will be the same
         
         res.sens.spec <- list("left"=results.sens$res, "right"=results.spec$res)
         plot.data <- create.loo.side.by.side.plot.data(diagnostic.data.sens.spec, params.tmp, res=res.sens.spec)
@@ -971,7 +1009,9 @@ multiple.loo.diagnostic <- function(fnames, params.list, diagnostic.data) {
         results.plr <- loo.ma.diagnostic(fname, diagnostic.data.plr, params.plr)
         diagnostic.data.nlr.plr <- list("left"=diagnostic.data.nlr, "right"=diagnostic.data.plr)
         
-        summary.nlr <- list("Summary"=results.nlr$Summary)
+		references <- c(references, results.nlr$References)
+		
+		summary.nlr <- list("Summary"=results.nlr$Summary)
         names(summary.nlr) <- paste(eval(parse(text=paste("pretty.names$measure$", params.nlr$measure,sep=""))), " Summary", sep="")
         summary.plr <- list("Summary"=results.plr$Summary)
         names(summary.plr) <- paste(eval(parse(text=paste("pretty.names$measure$", params.plr$measure,sep=""))), " Summary", sep="")
@@ -1019,11 +1059,16 @@ multiple.loo.diagnostic <- function(fnames, params.list, diagnostic.data) {
             #}
             summary.tmp <- list("Summary"=results.tmp$Summary)
             names(summary.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Summary", sep="")
-            results <- c(results, summary.tmp)
+            
+			references <- c(references, results.tmp$References)
+			
+			results <- c(results, summary.tmp)
         }
     }
-    results <- c(results, list("images"=images, "plot_names"=plot.names, 
-                               "plot_params_paths"=plot.params.paths))
+    results <- c(results, list("images"=images,
+					           "plot_names"=plot.names, 
+                               "plot_params_paths"=plot.params.paths,
+							   "References"=references))
     #results$images <- images
     #results$plot.names <- plot.names
     #results$plot.params.paths <- plot.params.paths
@@ -1115,7 +1160,10 @@ loo.ma.diagnostic <- function(fname, diagnostic.data, params){
                         "plot_params_paths"=plot.params.paths)
     } else {
         results <- list(res=loo.results, res.overall=res.overall, Summary=loo.disp) 
-    }  
+    } 
+	
+	references <- c(res$References, loo_ma_ref)
+	results[["References"]] <- references
     results
 }
 
@@ -1188,6 +1236,7 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
     plot.names <- c()
     plot.params.paths <- c()
     remove.indices <- c()
+	references <- c()
 
     if (("Sens" %in% metrics) & ("Spec" %in% metrics)) {
         # create side-by-side subgroup forest plots for sens and spec.
@@ -1207,6 +1256,8 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
         subgroup.data.sens <- results.sens$subgroup.data
         subgroup.data.spec <- results.spec$subgroup.data
         subgroup.data.all <- list("left"=subgroup.data.sens, "right"=subgroup.data.spec)
+		
+		references <- c(references, results.sens$Reference) # spec reference will be the same
       
         summary.sens <- list("Summary"=results.sens$Summary)
         names(summary.sens) <- paste(eval(parse(text=paste("pretty.names$measure$", params.sens$measure,sep=""))), " Summary", sep="")
@@ -1253,6 +1304,8 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
         subgroup.data.nlr <- results.nlr$subgroup.data
         subgroup.data.plr <- results.plr$subgroup.data
         subgroup.data.all <- list("left"=subgroup.data.nlr, "right"=subgroup.data.plr)
+		
+		references <- c(references, results.nlr$References)
         
         summary.nlr <- list("Summary"=results.nlr$Summary)
         names(summary.nlr) <- paste(eval(parse(text=paste("pretty.names$measure$", params.nlr$measure,sep=""))), " Summary", sep="")
@@ -1304,11 +1357,16 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
             }
             summary.tmp <- list("Summary"=results.tmp$Summary)
             names(summary.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Summary", sep="")
-            results <- c(results, summary.tmp)
+            
+			references <- c(references, results.tmp$References)
+			
+			results <- c(results, summary.tmp)
         }
     }
-    results <- c(results, list("images"=images, "plot_names"=plot.names, 
-                               "plot_params_paths"=plot.params.paths))
+    results <- c(results, list("images"=images,
+					           "plot_names"=plot.names, 
+                               "plot_params_paths"=plot.params.paths,
+							   "References"=references))
     #results$images <- images
     #results$plot.names <- plot.names
     #results$plot.params.paths <- plot.params.paths
@@ -1392,6 +1450,10 @@ subgroup.ma.diagnostic <- function(fname, diagnostic.data, params, selected.cov)
     } else {
         results <- list(subgroup.data=subgroup.data, Summary=subgroup.disp, "cov.list"=subgroup.list)
     }
+	
+	references <- c(res$References, subgroup_ma_ref)
+	results[["References"]] <- references
+	
     results
 }
 

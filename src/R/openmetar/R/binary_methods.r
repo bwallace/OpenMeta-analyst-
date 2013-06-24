@@ -235,18 +235,23 @@ binary.fixed.inv.var <- function(binary.data, params){
                 # (mapping titles to pretty-printed text). In this case we have only one 
                 # of each. 
                 #  
+				
                 plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
                 images <- c("Forest Plot"=forest.path)
                 plot.names <- c("forest plot"="forest_plot")
-                results <- list("images"=images, "Summary"=summary.disp,
-                            "plot_names"=plot.names, 
-                            "plot_params_paths"=plot.params.paths)
+                results <- list("images"=images,
+						        "Summary"=summary.disp,
+                                "plot_names"=plot.names, 
+                                "plot_params_paths"=plot.params.paths)
             }
         }
         else {
             results <- list("Summary"=res)
         }
     }
+	
+	references <- "this is a placeholder for binary fixed effect inv var reference"
+	results[["References"]] <- references
     results
 }
                                 
@@ -285,7 +290,7 @@ binary.fixed.inv.var.overall <- function(results) {
 ############################################
 #  binary fixed effects -- mantel haenszel #
 ############################################
-binary.fixed.mh <- function(binary.data, params){
+binary.fixed.mh <- function(binary.data, params){	
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")  
     results <- NULL
@@ -351,11 +356,11 @@ binary.fixed.mh <- function(binary.data, params){
                 # (mapping titles to pretty-printed text). In this case we have only one 
                 # of each. 
                 # 
-                references <- "Mantel, N., & Haenszel, W. (1959) Statistical aspects of the analysis of data from retrospective studies of disease. Journal of the National Cancer Institute, 22, 719-748."
+                #references <- "Mantel, N., & Haenszel, W. (1959) Statistical aspects of the analysis of data from retrospective studies of disease. Journal of the National Cancer Institute, 22, 719-748."
                 plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
                 images <- c("Forest Plot"=forest.path)
                 plot.names <- c("forest plot"="forest_plot")
-                results <- list("images"=images, "Summary"=summary.disp, "References"=references, 
+                results <- list("images"=images, "Summary"=summary.disp, 
                             "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)
             }
         }
@@ -363,6 +368,10 @@ binary.fixed.mh <- function(binary.data, params){
             results <- list("Summary"=res)
         }    
     }
+	
+	references <- "Mantel, N., & Haenszel, W. (1959) Statistical aspects of the analysis of data from retrospective studies of disease. Journal of the National Cancer Institute, 22, 719-748."
+	results[["References"]] = references
+	
     results
 }
                                 
@@ -412,7 +421,7 @@ binary.fixed.mh.overall <- function(results) {
 ##################################################
 #       binary fixed effects -- Peto             #
 ##################################################
-binary.fixed.peto <- function(binary.data, params){
+binary.fixed.peto <- function(binary.data, params) {	
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.") 
     
@@ -479,18 +488,22 @@ binary.fixed.peto <- function(binary.data, params){
                 # (mapping titles to pretty-printed text). In this case we have only one 
                 # of each. 
                 #
-                references <- "Yusuf, S., Peto, R., Lewis, J., Collins, R., & Sleight, P. (1985). Beta blockade during and after myocardial infarction: An overview of the randomized trials. Progress in Cardiovascular Disease, 27, 335-371."
                 plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
                 images <- c("Forest Plot"=forest.path)
                 plot.names <- c("forest plot"="forest_plot")
-                results <- list("images"=images, "Summary"=summary.disp, "References"=references,
-                            "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)
+                results <- list("images"=images,
+						        "Summary"=summary.disp,
+                                "plot_names"=plot.names,
+								"plot_params_paths"=plot.params.paths)
             }
         }
         else {
             results <- list("Summary"=res)
         }    
     }
+	
+	references <- "Fixed Peto: Yusuf, S., Peto, R., Lewis, J., Collins, R., & Sleight, P. (1985). Beta blockade during and after myocardial infarction: An overview of the randomized trials. Progress in Cardiovascular Disease, 27, 335-371."
+	results[["References"]] <- references
     results
 }
                               
@@ -624,18 +637,23 @@ binary.random <- function(binary.data, params){
                 # a dictionary of images (mapping titles to image paths) and a list of texts
                 # (mapping titles to pretty-printed text). In this case we have only one 
                 # of each. 
-                #     
+                #		
                 plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
                 images <- c("Forest Plot"=forest.path)
                 plot.names <- c("forest plot"="forest_plot")
-                results <- list("images"=images, "Summary"=summary.disp, 
-                        "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)
+                results <- list("images"=images,
+						        "Summary"=summary.disp,
+                                "plot_names"=plot.names,
+								"plot_params_paths"=plot.params.paths)
             }
         }
         else {
             results <- list("Summary"=res)
         }  
     }
+	
+	references <- "this is a placeholder for binary random reference"
+	results[["References"]] <- references
     results
 }
 

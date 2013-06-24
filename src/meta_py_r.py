@@ -18,8 +18,8 @@ import math
 import os
 import meta_globals
 
-#import pdb
-#from PyQt4.QtCore import pyqtRemoveInputHook
+import pdb
+from PyQt4.QtCore import pyqtRemoveInputHook
 
 #from meta_globals import (CONTINUOUS,ONE_ARM_METRICS,TWO_ARM_METRICS,
 #                          TYPE_TO_STR_DICT, get_BASE_PATH)
@@ -97,7 +97,7 @@ def reset_Rs_working_dir():
     print("resetting R working dir")
 
     # Fix paths issue in windows
-    r_str = "setwd('%s')" % meta_globals.get_BASE_PATH()
+    r_str = "setwd('%s')" % meta_globals.BASE_PATH
     print("before replacement r_string: %s" % r_str)
     r_str = r_str.replace("\\","\\\\")
     print("about to execute: %s" % r_str)
@@ -236,7 +236,6 @@ def _grlist_to_pydict(r_ls, recurse=True):
     d = {}
     names = r_ls.names
     for name, val in zip(names, r_ls):
-        #print "name {0}, val {1}".format(name, val)
         if recurse and is_named_R_list(val):
             print "recursing... \n"
             d[name] = _grlist_to_pydict(val)
@@ -252,7 +251,9 @@ def _grlist_to_pydict(r_ls, recurse=True):
                 else: # val is a real list, not a singleton list
                     d[name] = val # not a singleton list
                     d[name] = [convert_NA_to_None(x) for x in d[name][:]]
-            except: # val is not iterable
+            except Exception as e: # val is not iterable
+                print(e)
+                print("ENCOUNTERED ABOVE EXCEPTION")
                 d[name] = val
                 d[name] = convert_NA_to_None(d[name])
 
@@ -298,7 +299,6 @@ def impute_pre_post_cont_data(cont_data_dict, correlation, alpha):
     print "attempting to execute: %s" % r_str
     c_data = ro.r(r_str)
     pythonized_data = _grlist_to_pydict(c_data, True)
-    #return _rls_to_pyd(c_data)
     return pythonized_data
 
 ##################### DEALING WITH CONFIDENCE LEVEL IN R #######################
@@ -951,8 +951,24 @@ def parse_out_results(result):
                 image_params_paths_d = {}
             else:
                 image_params_paths_d = _rls_to_pyd(text)
+        elif text_n == "References":
+            references_list = list(text)
+            references_list.append('metafor: Viechtbauer, Wolfgang. "Conducting meta-analyses in R with the metafor package." Journal of 36 (2010).')
+            references_list.append('OpenMetaAnalyst: Wallace, Byron C., Issa J. Dahabreh, Thomas A. Trikalinos, Joseph Lau, Paul Trow, and Christopher H. Schmid. "Closing the Gap between Methodologists and End-Users: R as a Computational Back-End." Journal of Statistical Software 49 (2012): 5."')
+            ref_set = set(references_list) # removes duplicates
+            
+            
+            references_str = ""
+            for i, ref in enumerate(ref_set):
+                references_str += str(i+1) + ". " + ref + "\n"
+            
+            text_d[text_n] = references_str
+
         else:
             text_d[text_n]=str(text)
+            
+            #pyqtRemoveInputHook()
+            #pdb.set_trace()
             # Construct List of Weights for studies
             (key, astring) = make_weights_list(text_n,text)
             if key is not None:
@@ -994,7 +1010,7 @@ def make_weights_list(text_n,text):
             else:
                 print("study.names not found")
         return(None,None)
-    except:
+    except TypeError:
         print("Something went wrong from make_weights_list: Are we in bivariate?? :)")
         return (None,None)
 

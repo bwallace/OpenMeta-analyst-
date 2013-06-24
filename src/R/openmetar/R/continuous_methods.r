@@ -199,18 +199,24 @@ continuous.fixed <- function(cont.data, params){
                 # a dictionary of images (mapping titles to image paths) and a list of texts
                 # (mapping titles to pretty-printed text). In this case we have only one 
                 # of each. 
-                #     
+                #
                 plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
                 images <- c("Forest Plot"=forest.path)
                 plot.names <- c("forest plot"="forest_plot")
-                results <- list("images"=images, "Summary"=summary.disp, 
-                        "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)
+                results <- list("images"=images,
+						        "Summary"=summary.disp,
+                                "plot_names"=plot.names,
+								"plot_params_paths"=plot.params.paths)
             }
         }
         else {
             results <- list("Summary"=res)
         } 
     }
+	
+	references <- "Fixed Effects Inverse Variance: this is a placeholder for continuous fixed reference"
+	results[["References"]] <- references
+	
     results
 }
 
@@ -312,15 +318,21 @@ continuous.random <- function(cont.data, params){
               # a dictionary of images (mapping titles to image paths) and a list of texts
               # (mapping titles to pretty-printed text). In this case we have only one 
               # of each. 
-              #     
+              # 
               plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
               images <- c("Forest Plot"=forest.path)
               plot.names <- c("forest plot"="forest_plot")
-              results <- list("images"=images, "Summary"=summary.disp, 
-                        "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)
+              results <- list("images"=images,
+					          "Summary"=summary.disp,
+                              "plot_names"=plot.names,
+							  "plot_params_paths"=plot.params.paths)
           }
        }
     }
+	
+	references <- "this is a placeholder for continuous random reference"
+	results[["References"]] <- references
+	
     results
 }
 

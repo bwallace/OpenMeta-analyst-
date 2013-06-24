@@ -783,6 +783,7 @@ class MetaAnalyticUnit:
         est, lower, upper = self.get_effect_and_ci(effect, group_str, mult)
         d_est, d_lower, d_upper = [convert_to_display_scale(x) for x in [est, lower, upper]]
         se = self.get_se(effect, group_str, mult)
+        d_se = se
         #d_se = convert_to_display_scale(se) # this doesn't mean anything...i suppose its just to check to see if we have an se value
         
         print("results of calculating display effect and ci: (est,low,high,se(calc scale): %s, %s, %s, %s" % (d_est,d_lower,d_upper,se))
@@ -790,7 +791,7 @@ class MetaAnalyticUnit:
         self.set_display_effect(effect, group_str, d_est)
         self.set_display_lower(effect, group_str, d_lower)
         self.set_display_upper(effect, group_str, d_upper)
-        #self.set_display_se(effect, group_str, d_se)
+        self.set_display_se(effect, group_str, d_se)
         self.effects_dict[effect][group_str]["display_conf_level"] = conf_level
         
         
