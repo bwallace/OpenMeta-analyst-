@@ -81,6 +81,10 @@ meta.regression <- function(reg.data, params) {
     } else {
         results <- res
     }
+	
+	references <- "Meta Regression: meta regression citation placeholder"
+	results[["References"]] <- references
+	
     results
 }
 
