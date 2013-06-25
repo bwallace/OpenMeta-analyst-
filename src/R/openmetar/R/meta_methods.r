@@ -1253,6 +1253,8 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
         
         results.sens <- subgroup.ma.diagnostic(fname, diagnostic.data.sens, params.sens, selected.cov)
         results.spec <- subgroup.ma.diagnostic(fname, diagnostic.data.spec, params.spec, selected.cov)
+		diagnostic.data.sens.spec <- list("left"=diagnostic.data.sens, "right"=diagnostic.data.spec) ##
+		
         subgroup.data.sens <- results.sens$subgroup.data
         subgroup.data.spec <- results.spec$subgroup.data
         subgroup.data.all <- list("left"=subgroup.data.sens, "right"=subgroup.data.spec)
@@ -1264,7 +1266,9 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
         summary.spec <- list("Summary"=results.spec$Summary)
         names(summary.spec) <- paste(eval(parse(text=paste("pretty.names$measure$", params.spec$measure,sep=""))), " Summary", sep="")
         results <- c(results, summary.sens, summary.spec)
-        
+		
+		res.sens.spec <- list("left"=results.sens$res, "right"=results.spec$res) ##
+		
         #res.sens <- results.sens$res
         #res.spec <- results.spec$res
         #res <- list("left"=res.sens, "right"=res.spec)
@@ -1274,7 +1278,8 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
         forest.path <- paste(params.sens$fp_outpath, sep="")
         two.forest.plots(plot.data, outpath=forest.path)
            
-        forest.plot.params.path <- save.data(subgroup.data.all, params=params.tmp)
+        ######forest.plot.params.path <- save.data(subgroup.data.all, params=params.tmp)
+		forest.plot.params.path <- save.data(om.data=diagnostic.data.sens.spec, res.sens.spec, params=params.tmp, plot.data)
         plot.params.paths.tmp <- c("Sensitivity and Specificity Forest Plot"=forest.plot.params.path)
         plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
                
@@ -1301,6 +1306,8 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
         
         results.nlr <- subgroup.ma.diagnostic(fname, diagnostic.data.nlr, params.nlr, selected.cov)
         results.plr <- subgroup.ma.diagnostic(fname, diagnostic.data.plr, params.plr, selected.cov)
+		diagnostic.data.nlr.plr <- list("left"=diagnostic.data.nlr, "right"=diagnostic.data.plr)  ###
+		
         subgroup.data.nlr <- results.nlr$subgroup.data
         subgroup.data.plr <- results.plr$subgroup.data
         subgroup.data.all <- list("left"=subgroup.data.nlr, "right"=subgroup.data.plr)
@@ -1312,6 +1319,8 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
         summary.plr <- list("Summary"=results.plr$Summary)
         names(summary.plr) <- paste(eval(parse(text=paste("pretty.names$measure$", params.plr$measure,sep=""))), " Summary", sep="")
         results <- c(results, summary.nlr, summary.plr)
+		
+		res.nlr.plr <- list("left"=results.nlr$res, "right"=results.plr$res) ##
         
         #res.nlr <- results.nlr$res
         #res.plr <- results.plr$res
@@ -1321,8 +1330,9 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
         
         forest.path <- paste(params.nlr$fp_outpath, sep="")
         two.forest.plots(plot.data, outpath=forest.path)
-           
-        forest.plot.params.path <- save.data(subgroup.data.all, params=params.tmp)
+        
+		forest.plot.params.path <- save.data(diagnostic.data.nlr.plr, res.nlr.plr, params=params.tmp, plot.data)
+        ######forest.plot.params.path <- save.data(subgroup.data.all, params=params.tmp)
         plot.params.paths.tmp <- c("NLR and PLR Forest Plot"=forest.plot.params.path)
         plot.params.paths <- c(plot.params.paths, plot.params.paths.tmp)
                
