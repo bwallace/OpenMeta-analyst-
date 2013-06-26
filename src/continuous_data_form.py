@@ -190,7 +190,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
                 conv_to_disp_scale = partial(meta_py_r.continuous_convert_scale,
                                              metric_name=self.cur_effect,
                                              convert_to="display.scale"),
-                parent=self, mult=meta_py_r.get_mult_from_r(self.conf_level))
+                                             parent=self, mult=self.mult)
 
         calc_fncs.block_signals(self.entry_widgets, True)
         try:
@@ -312,9 +312,11 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
     def set_current_effect(self):
         txt_boxes = dict(effect=self.effect_txt_box, lower=self.low_txt_box, upper=self.high_txt_box)
         calc_fncs.helper_set_current_effect(ma_unit=self.ma_unit,
-            txt_boxes=txt_boxes, current_effect=self.cur_effect,
-            group_str=self.group_str, data_type="continuous",
-            mult=meta_py_r.get_mult_from_r(self.conf_level))
+                                            txt_boxes=txt_boxes,
+                                            current_effect=self.cur_effect,
+                                            group_str=self.group_str,
+                                            data_type="continuous",
+                                            mult=self.mult)
         
         self.change_row_color_according_to_metric()
     
@@ -786,7 +788,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
             group1_data = dict(tmp[0])
             group2_data = dict(tmp[1])
             
-            tmp = self.ma_unit.get_effect_and_ci(self.cur_effect, self.group_str, meta_py_r.get_mult_from_r(self.conf_level))
+            tmp = self.ma_unit.get_effect_and_ci(self.cur_effect, self.group_str, self.mult)
             effect_data = {"est":tmp[0], "low":tmp[1], "high":tmp[2],
                            "metric":self.cur_effect,
                            "met.param":self.metric_parameter}

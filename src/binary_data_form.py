@@ -105,7 +105,7 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
             d = {}
             d["metric"] = str(self.cur_effect)
 
-            est,lower,upper = self.ma_unit.get_effect_and_ci(self.cur_effect, self.group_str, meta_py_r.get_mult_from_r(self.global_conf_level))
+            est,lower,upper = self.ma_unit.get_effect_and_ci(self.cur_effect, self.group_str, self.mult)
             conv_to_disp_scale = lambda x: meta_py_r.binary_convert_scale(x, self.cur_effect, convert_to="display.scale")
             d_est,d_lower,d_upper = [conv_to_disp_scale(x) for x in [est,lower,upper]]
             for i,R_key in enumerate(["estimate", "lower", "upper"]):
@@ -290,7 +290,7 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
         calc_fncs.helper_set_current_effect(ma_unit=self.ma_unit,
             txt_boxes=txt_boxes, current_effect=self.cur_effect,
             group_str=self.group_str, data_type="binary",
-            mult=meta_py_r.get_mult_from_r(self.global_conf_level))
+            mult=self.mult)
         
         self.change_row_color_according_to_metric()
         
@@ -333,7 +333,7 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
                                              metric_name=self.cur_effect,
                                              convert_to="display.scale"),
                                              parent=self,
-                                             mult=meta_py_r.get_mult_from_r(self.global_conf_level))
+                                             mult=self.mult)
         
         calc_fncs.block_signals(self.entry_widgets, True)
         try:

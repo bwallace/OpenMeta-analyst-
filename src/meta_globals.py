@@ -165,10 +165,8 @@ def equal_close_enough(x,y):
         return False
 
 ### CONFIDENCE LEVEL STUFF #####
-# Confidence level 
 DEFAULT_CONF_LEVEL = 95.0    # (normal 95% CI)
 
-### END CONFIDENCE LEVEL STUFF ####
 
 
 '''

@@ -151,6 +151,8 @@ def test_binary_meta_analysis():
     fullpath = os.path.join(os.getcwd(),"../sample_data", "amino.oma")
 
     meta.open(fullpath)
+    app.processEvents() #show the data
+    
     meta_py_r.ma_dataset_to_simple_binary_robj(meta.model)
     
     method_and_params = []
@@ -180,6 +182,7 @@ def test_binary_meta_analysis_meta_methods():
     fullpath = os.path.join(os.getcwd(),"../sample_data", "amino.oma")
 
     meta.open(fullpath)
+    app.processEvents() #show the data
     meta_py_r.ma_dataset_to_simple_binary_robj(meta.model)
     
     method_and_params = []
@@ -266,6 +269,7 @@ def _results_match(test_res, ref_res, keys_to_compare): # test results and refer
 def test_continuous_meta_analysis():
     fullpath = os.path.join(os.getcwd(),"../sample_data", "continuous.oma")
     meta.open(fullpath)
+    app.processEvents() #show the data
     meta_py_r.ma_dataset_to_simple_continuous_robj(meta.model)
     
     method_and_params = []
@@ -291,6 +295,7 @@ def test_continuous_meta_analysis():
 def test_continuous_meta_analysis_meta_methods():
     fullpath = os.path.join(os.getcwd(),"../sample_data", "continuous.oma")
     meta.open(fullpath)
+    app.processEvents() #show the data
     meta_py_r.ma_dataset_to_simple_continuous_robj(meta.model)
     
     method_and_params = []
@@ -346,6 +351,7 @@ def check_continuous_meta_method_analysis(test_data):
 def test_multi_diagnostic_meta_analysis():
     fullpath = os.path.join(os.getcwd(),"../sample_data", "lymph.oma")
     meta.open(fullpath)
+    app.processEvents() #show the data
     meta_py_r.ma_dataset_to_simple_diagnostic_robj(meta.model)
     
     method_and_params = []
@@ -415,6 +421,7 @@ def test_multi_diagnostic_meta_analysis():
 def test_diagnostic_meta_analysis_meta_methods():
     fullpath = os.path.join(os.getcwd(),"../sample_data", "lymph.oma")
     meta.open(fullpath)
+    app.processEvents() #show the data
     meta_py_r.ma_dataset_to_simple_diagnostic_robj(meta.model)
     
     method_and_params = []

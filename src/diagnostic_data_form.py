@@ -425,7 +425,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
                 conv_to_disp_scale = partial(meta_py_r.diagnostic_convert_scale,
                                              metric_name=self.cur_effect,
                                              convert_to="display.scale"),
-                parent=self, mult=meta_py_r.get_mult_from_r(self.global_conf_level))
+                parent=self, mult=self.mult)
         
         calc_fncs.block_signals(self.entry_widgets, True)
         try:
@@ -554,7 +554,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         txt_boxes = dict(effect=self.effect_txt_box, lower=self.low_txt_box, upper=self.high_txt_box)
         calc_fncs.helper_set_current_effect(ma_unit=self.ma_unit,
             txt_boxes=txt_boxes, current_effect=self.cur_effect,
-            group_str=self.group_str, data_type="diagnostic", mult=meta_py_r.get_mult_from_r(self.global_conf_level))
+            group_str=self.group_str, data_type="diagnostic", mult=self.mult)
     
     def print_effects_dict_from_ma_unit(self):
         print self.ma_unit.get_effects_dict()
@@ -651,7 +651,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
             for effect in BACK_CALCULATABLE_DIAGNOSTIC_EFFECTS:    
                 est,lower,upper = self.ma_unit.get_effect_and_ci(effect,
                                                                  self.group_str,
-                                                                 meta_py_r.get_mult_from_r(self.global_conf_level))
+                                                                 self.mult)
                 conv_to_disp_scale = lambda x: meta_py_r.diagnostic_convert_scale(x, effect, convert_to="display.scale")
                 d_est,d_lower,d_upper = [conv_to_disp_scale(x) for x in [est,lower,upper]]
                 for i,Rsubkey in enumerate(["",".lb",".ub"]):
