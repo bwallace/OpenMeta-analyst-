@@ -119,9 +119,11 @@ def impute_diag_data(diag_data_dict):
     dataf = ro.r['data.frame'](**diag_data_dict)
     two_by_two = ro.r("gimpute.diagnostic.data(%s)" % (dataf.r_repr()))
     
-
-    print "Imputed 2x2:", _grlist_to_pydict(two_by_two)
-    return _grlist_to_pydict(two_by_two)
+    
+    imputed_2x2 =  R_parse_tools.rlist_to_pydict(two_by_two)
+    print ("Imputed 2x2: %s" % str(imputed_2x2))
+    
+    return imputed_2x2
 
 def rescale_effect_and_ci_conf_level(data_dict):
     print("Rescaling effect and CI confidence level")
@@ -145,7 +147,9 @@ def R_fn_with_dataframe_arg(data_dict, R_fn_name):
     print("executing (from R_fn_with_dataframe_arg: %s" % r_string)
     R_result = ro.r(r_string)
     
-    return _grlist_to_pydict(R_result)
+    res_as_dict = _grlist_to_pydict(R_result)
+    
+    return res_as_dict
 
 @RfunctionCaller
 def impute_bin_data(bin_data_dict):
@@ -154,7 +158,14 @@ def impute_bin_data(bin_data_dict):
     dataf = ro.r['data.frame'](**bin_data_dict)
     two_by_two = ro.r("gimpute.bin.data(%s)" % (dataf.r_repr()))
     
-    return _grlist_to_pydict(two_by_two)
+    res_as_dict = R_parse_tools.rlist_to_pydict(two_by_two)
+    for k,v in res_as_dict.copy().items():
+        if R_parse_tools.haskeys(v):
+            res_as_dict[k] = R_parse_tools.rlist_to_pydict(v)
+            
+    
+    
+    return res_as_dict
 
 @RfunctionCaller
 def back_calc_cont_data(group1_data, group2_data, effect_data, conf_level):
@@ -170,7 +181,11 @@ def back_calc_cont_data(group1_data, group2_data, effect_data, conf_level):
                                                      dataf_grp2.r_repr(),
                                                      dataf_effect.r_repr(),
                                                      str(conf_level)))
-    return _grlist_to_pydict(r_res)
+    
+    
+    res_as_dict = _grlist_to_pydict(r_res)
+    
+    return res_as_dict
     
 
 def remove_value(toRemove, t_dict):
@@ -179,37 +194,78 @@ def remove_value(toRemove, t_dict):
         if val == toRemove:
             t_dict.pop(param)
 
-#def fillin_2x2(table_data_dict):
-#    ro.r("source('sandbox.r')")
-#    r_str = ["fillin.2x2.simpler("]
-#    
-#    # construct argument list if argument is not None
-#    for param, val in table_data_dict.items():
-#        if val is not None:
-#            r_str.append("%s=%s," % (param, val))
-#        
-#    # drop the last comma, close the function call
-#    r_str = "".join(r_str)[:-1] if r_str[-1].endswith(",") else "".join(r_str)
-#    r_str += ")"
-#    res = ro.r(r_str)
-#    #if "NA" in str(res).split(" "):
-#    #    return None
-#    
-#    print "\n\n*****"
-#    print r_str
-#    #print res
-#    print "*****\n\n"
-#    
-#    # CONVERT res to python DICT using the fact that the r objects are iterable
-#    #for (name, index, value) in zip(enumerate(res.names)
-#
-#    if len(res) == 1 and _gis_NA(res[0]):
-#        return None
-#    toreturn = _grlist_to_pydict(res,True)
-#    return toreturn
-
 def _gis_NA(x):
     return str(x) == 'NA'
+
+###### R data structure tools #############
+
+class R_parse_tools:
+    ''' a set of tools to help parse data structures returned from rpy2 '''
+    def __init__(self):
+        pass
+    
+    @staticmethod
+    def rlist_to_pydict(named_r_list):
+        ''' parse named R list into a python dictionary.
+            Only parses one level, is not recursive.'''
+            
+        keys = named_r_list.names
+        if str(keys) == "NULL":
+            raise ValueError("No names found in alleged named R list")
+        
+        data = R_parse_tools.R_iterable_to_pylist(named_r_list)
+        d = dict(zip(keys, data))
+        return d
+            
+    @staticmethod
+    def R_iterable_to_pylist(r_iterable):
+        ''' Converts an r_iterable (i.e. list or vector) to a python list.
+            Will convert singleton elements to scalars in the list but not the list
+            itself if it is singleton.  '''
+        
+        def filter_list_element(x):
+            if R_parse_tools._isListable(x) and len(x) == 1:
+                return R_parse_tools._singleton_list_to_scalar(x)
+            else:
+                return x
+        
+        python_list = list(r_iterable)
+        python_list = [filter_list_element(x) for x in python_list]
+        return python_list
+    
+    @staticmethod
+    def _singleton_list_to_scalar(singleton_list):
+        ''' Takes in a singleton R list and returns a scalar value and converts 'NA'
+        to None '''
+        
+        if len(singleton_list) > 1:
+            raise ValueError("Expected a singleton list but this list has more than one entry")
+        
+        scalar = singleton_list[0]
+        if str(scalar) == 'NA':
+            return None
+        else:
+            return scalar
+    
+    @staticmethod
+    def _isListable(element):
+        try:
+            list(element)
+            return True
+        except TypeError:
+            return False
+        
+    @staticmethod
+    def haskeys(r_object):
+        if r_object is None:
+            return False
+        
+        return str(r_object.names) != "NULL"
+        
+
+    
+
+#### end of R data structure tools #########
 
 # NOTE: CUSTOM VERSION......
 def _grlist_to_pydict(r_ls, recurse=True):
@@ -281,6 +337,7 @@ def impute_cont_data(cont_data_dict, alpha):
     
     print "attempting to execute: %s" % r_str
     c_data = ro.r(r_str)
+    
     results = _grlist_to_pydict(c_data,True)
     
     return results
@@ -299,6 +356,8 @@ def impute_pre_post_cont_data(cont_data_dict, correlation, alpha):
     print "attempting to execute: %s" % r_str
     c_data = ro.r(r_str)
     pythonized_data = _grlist_to_pydict(c_data, True)
+    
+    
     return pythonized_data
 
 ##################### DEALING WITH CONFIDENCE LEVEL IN R #######################
@@ -986,36 +1045,42 @@ def parse_out_results(result):
 def make_weights_list(text_n,text):
     # Construct List of Weights for studies
     try:
-        if text_n.find("Summary") != -1:
-            summary_dict = _grlist_to_pydict(text)
-            print("Found summary")
-            # this is a silly thing to look for but its something I explicitly
-            # set in the random methods so I know it's there
-            if "study.names" in summary_dict['MAResults']: 
-                print("study.names found in maresults")
-                text_n_withoutSummary = text_n.replace("Summary","")
-                text_n_withoutSummary.strip()
-                key_name = text_n_withoutSummary + " Weights"
-                key_name = key_name.strip()
-                
-                study_names = summary_dict['MAResults']['study.names']
-                study_years = summary_dict['MAResults']['study.years']
-                study_weights = summary_dict['MAResults']['study.weights']
-                max_len = max([len(name) for name in study_names])
-                weights_txt = unicode("studies" + " "*(max_len-1) + "weights\n")
-                
-                
-                for name,year,weight in zip(study_names, study_years, study_weights):
-                    weights_txt += unicode("{0:{name_width}} {1} {2:4.1f}%\n").format(name, year, weight*100, name_width=max_len)
-                print("THIS IS THE WEIGHTS TEXT:")
-                print(weights_txt)
-                return (key_name, weights_txt)
-            else:
-                print("study.names not found")
+        if text_n.find("Summary") == -1: # 'Summary' not found
+            return (None,None)
+        
+        summary_dict = R_parse_tools.rlist_to_pydict(text)
+        
+        if R_parse_tools.haskeys(summary_dict['MAResults']):
+            summary_dict['MAResults'] = R_parse_tools.rlist_to_pydict(summary_dict['MAResults'])
+        else:
+            return (None,None)
+        
+        # this is a silly thing to look for but its something I explicitly
+        # set in the random methods so I know it's there
+        if "study.names" in summary_dict['MAResults']: 
+            print("study.names found in maresults")
+            text_n_withoutSummary = text_n.replace("Summary","")
+            text_n_withoutSummary.strip()
+            key_name = text_n_withoutSummary + " Weights"
+            key_name = key_name.strip()
+            
+            study_names = R_parse_tools.R_iterable_to_pylist(summary_dict['MAResults']['study.names'])
+            study_years = R_parse_tools.R_iterable_to_pylist(summary_dict['MAResults']['study.years'])
+            study_weights = R_parse_tools.R_iterable_to_pylist(summary_dict['MAResults']['study.weights'])
+            
+            max_len = max([len(name) for name in study_names])
+            weights_txt = unicode("studies" + " "*(max_len-1) + "weights\n")
+            
+            for name,year,weight in zip(study_names, study_years, study_weights):
+                weights_txt += unicode("{0:{name_width}} {1} {2:4.1f}%\n").format(name, year, weight*100, name_width=max_len)
+            return (key_name, weights_txt)
+        else:
+            print("study.names not found")
         return(None,None)
     except TypeError:
         print("Something went wrong from make_weights_list: Are we in bivariate?? :)")
         return (None,None)
+
 
 
 # Is this function obsolete?
