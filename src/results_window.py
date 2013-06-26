@@ -201,7 +201,7 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
                 qt_item = self.add_title(title)
 
                 # now the text
-                text_item_rect, pos = self.create_text_item(str(text), self.position())
+                text_item_rect, pos = self.create_text_item(unicode(text), self.position())
                 self.items_to_coords[qt_item] =  pos
             except:
                 pass

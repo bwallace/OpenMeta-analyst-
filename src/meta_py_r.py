@@ -1002,10 +1002,13 @@ def make_weights_list(text_n,text):
                 study_years = summary_dict['MAResults']['study.years']
                 study_weights = summary_dict['MAResults']['study.weights']
                 max_len = max([len(name) for name in study_names])
-                weights_txt = "studies" + " "*(max_len-1) + "weights\n"
+                weights_txt = unicode("studies" + " "*(max_len-1) + "weights\n")
+                
                 
                 for name,year,weight in zip(study_names, study_years, study_weights):
-                    weights_txt += "{0:{name_width}} {1} {2:4.1f}%\n".format(name, year, weight*100, name_width=max_len)
+                    weights_txt += unicode("{0:{name_width}} {1} {2:4.1f}%\n").format(name, year, weight*100, name_width=max_len)
+                print("THIS IS THE WEIGHTS TEXT:")
+                print(weights_txt)
                 return (key_name, weights_txt)
             else:
                 print("study.names not found")

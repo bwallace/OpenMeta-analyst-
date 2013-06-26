@@ -347,7 +347,7 @@ class MADataTable(QtGui.QTableView):
     def cell_content_changed(self, index, old_val, new_val, study_added):        
         # Only make a cell edit if the old values and new values are different
         if not self._new_eq_old(old_val, new_val):
-            print("Old val: %s, new val: %s" % (str(old_val.toString()), str(new_val.toString())))
+            print("Old val: %s, new val: %s" % (unicode(old_val.toString()), unicode(new_val.toString())))
             cell_edit = CommandCellEdit(self, index, old_val, new_val,
                                         added_study=study_added)
             self.undoStack.push(cell_edit)
@@ -359,9 +359,11 @@ class MADataTable(QtGui.QTableView):
         
         # transform into normal string:
         if old is not None:
-            old = str(old.toString())
+            #old = str(old.toString())
+            old = unicode(old.toString())
         if new is not None:
-            new = str(new.toString())
+            #new = str(new.toString())
+            new = unicode(new.toString())
         
         if old in blank_vals and new in blank_vals:
             return True
