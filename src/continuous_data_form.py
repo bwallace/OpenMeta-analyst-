@@ -190,7 +190,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
                 conv_to_disp_scale = partial(meta_py_r.continuous_convert_scale,
                                              metric_name=self.cur_effect,
                                              convert_to="display.scale"),
-                parent=self, mult=meta_py_r.get_mult_from_r(self.global_conf_level))
+                parent=self, mult=meta_py_r.get_mult_from_r(self.conf_level))
 
         calc_fncs.block_signals(self.entry_widgets, True)
         try:
@@ -314,7 +314,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         calc_fncs.helper_set_current_effect(ma_unit=self.ma_unit,
             txt_boxes=txt_boxes, current_effect=self.cur_effect,
             group_str=self.group_str, data_type="continuous",
-            mult=meta_py_r.get_mult_from_r(self.global_conf_level))
+            mult=meta_py_r.get_mult_from_r(self.conf_level))
         
         self.change_row_color_according_to_metric()
     
