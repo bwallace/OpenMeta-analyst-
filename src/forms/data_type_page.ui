@@ -7,8 +7,26 @@
     <x>0</x>
     <y>0</y>
     <width>450</width>
-    <height>347</height>
+    <height>350</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>450</width>
+    <height>350</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>450</width>
+    <height>350</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>WizardPage</string>
@@ -49,7 +67,7 @@
         <string>proportion</string>
        </property>
        <property name="icon">
-        <iconset resource="../../images/icons.qrc">
+        <iconset resource="../images/icons.qrc">
          <normaloff>:/new_dataset/startscreens/proportion.png</normaloff>:/new_dataset/startscreens/proportion.png</iconset>
        </property>
        <property name="iconSize">
@@ -93,7 +111,7 @@
         <string>mean</string>
        </property>
        <property name="icon">
-        <iconset resource="../../images/icons.qrc">
+        <iconset resource="../images/icons.qrc">
          <normaloff>:/new_dataset/startscreens/mean.png</normaloff>:/new_dataset/startscreens/mean.png</iconset>
        </property>
        <property name="iconSize">
@@ -137,7 +155,7 @@
         <string>regression coefficient</string>
        </property>
        <property name="icon">
-        <iconset resource="../../images/icons.qrc">
+        <iconset resource="../images/icons.qrc">
          <normaloff>:/new_dataset/startscreens/single_reg_coef.png</normaloff>:/new_dataset/startscreens/single_reg_coef.png</iconset>
        </property>
        <property name="iconSize">
@@ -182,7 +200,7 @@
 effect size</string>
        </property>
        <property name="icon">
-        <iconset resource="../../images/icons.qrc">
+        <iconset resource="../images/icons.qrc">
          <normaloff>:/new_dataset/startscreens/gen_eff_size.png</normaloff>:/new_dataset/startscreens/gen_eff_size.png</iconset>
        </property>
        <property name="iconSize">
@@ -260,7 +278,7 @@ effect size</string>
         <string>proportions</string>
        </property>
        <property name="icon">
-        <iconset resource="../../images/icons.qrc">
+        <iconset resource="../images/icons.qrc">
          <normaloff>:/new_dataset/startscreens/proportions.png</normaloff>:/new_dataset/startscreens/proportions.png</iconset>
        </property>
        <property name="iconSize">
@@ -304,7 +322,7 @@ effect size</string>
         <string>means</string>
        </property>
        <property name="icon">
-        <iconset resource="../../images/icons.qrc">
+        <iconset resource="../images/icons.qrc">
          <normaloff>:/new_dataset/startscreens/means.png</normaloff>:/new_dataset/startscreens/means.png</iconset>
        </property>
        <property name="iconSize">
@@ -348,7 +366,7 @@ effect size</string>
         <string>SMD</string>
        </property>
        <property name="icon">
-        <iconset resource="../../images/icons.qrc">
+        <iconset resource="../images/icons.qrc">
          <normaloff>:/new_dataset/startscreens/smd.png</normaloff>:/new_dataset/startscreens/smd.png</iconset>
        </property>
        <property name="iconSize">
@@ -423,7 +441,7 @@ effect size</string>
         <string>diagnostic</string>
        </property>
        <property name="icon">
-        <iconset resource="../../images/icons.qrc">
+        <iconset resource="../images/icons.qrc">
          <normaloff>:/new_dataset/startscreens/diagnostic.png</normaloff>:/new_dataset/startscreens/diagnostic.png</iconset>
        </property>
        <property name="iconSize">
@@ -461,7 +479,7 @@ effect size</string>
   </layout>
  </widget>
  <resources>
-  <include location="../../images/icons.qrc"/>
+  <include location="../images/icons.qrc"/>
  </resources>
  <connections/>
  <buttongroups>

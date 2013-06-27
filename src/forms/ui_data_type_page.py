@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'data_type_page.ui'
 #
-# Created: Thu May 16 11:02:35 2013
-#      by: PyQt4 UI code generator 4.10
+# Created: Thu Jun 27 10:21:34 2013
+#      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -26,7 +26,14 @@ except AttributeError:
 class Ui_DataTypePage(object):
     def setupUi(self, DataTypePage):
         DataTypePage.setObjectName(_fromUtf8("DataTypePage"))
-        DataTypePage.resize(450, 347)
+        DataTypePage.resize(450, 350)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(DataTypePage.sizePolicy().hasHeightForWidth())
+        DataTypePage.setSizePolicy(sizePolicy)
+        DataTypePage.setMinimumSize(QtCore.QSize(450, 350))
+        DataTypePage.setMaximumSize(QtCore.QSize(450, 350))
         self.verticalLayout = QtGui.QVBoxLayout(DataTypePage)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.label_2 = QtGui.QLabel(DataTypePage)

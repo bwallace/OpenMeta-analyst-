@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'choose_metric_page.ui'
 #
-# Created: Fri May 10 10:15:04 2013
-#      by: PyQt4 UI code generator 4.10
+# Created: Thu Jun 27 10:21:34 2013
+#      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -26,7 +26,14 @@ except AttributeError:
 class Ui_WizardPage(object):
     def setupUi(self, WizardPage):
         WizardPage.setObjectName(_fromUtf8("WizardPage"))
-        WizardPage.resize(412, 213)
+        WizardPage.resize(400, 220)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(WizardPage.sizePolicy().hasHeightForWidth())
+        WizardPage.setSizePolicy(sizePolicy)
+        WizardPage.setMinimumSize(QtCore.QSize(400, 220))
+        WizardPage.setMaximumSize(QtCore.QSize(400, 220))
         WizardPage.setSubTitle(_fromUtf8(""))
         self.verticalLayout = QtGui.QVBoxLayout(WizardPage)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
@@ -36,19 +43,17 @@ class Ui_WizardPage(object):
         self.verticalLayout.addWidget(self.label_2)
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem)
         self.label = QtGui.QLabel(WizardPage)
         self.label.setObjectName(_fromUtf8("label"))
         self.horizontalLayout.addWidget(self.label)
         self.metric_cbo_box = QtGui.QComboBox(WizardPage)
         self.metric_cbo_box.setObjectName(_fromUtf8("metric_cbo_box"))
         self.horizontalLayout.addWidget(self.metric_cbo_box)
-        spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem1)
+        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem)
         self.verticalLayout.addLayout(self.horizontalLayout)
-        spacerItem2 = QtGui.QSpacerItem(20, 46, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.verticalLayout.addItem(spacerItem2)
+        spacerItem1 = QtGui.QSpacerItem(20, 46, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.verticalLayout.addItem(spacerItem1)
 
         self.retranslateUi(WizardPage)
         QtCore.QMetaObject.connectSlotsByName(WizardPage)

@@ -6,18 +6,42 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>468</width>
+    <width>285</width>
     <height>46</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>285</width>
+    <height>45</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>300</width>
+    <height>50</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>WizardPage</string>
   </property>
+  <property name="title">
+   <string>What is the name of your outcome?</string>
+  </property>
+  <property name="subTitle">
+   <string/>
+  </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
     <widget class="QLabel" name="label">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="text">
-      <string>What is the name of your outcome?</string>
+      <string>Outcome Name:</string>
      </property>
      <property name="buddy">
       <cstring>outcome_name_LineEdit</cstring>

@@ -27,7 +27,8 @@ class WelcomePage(QWizardPage, forms.ui_welcome_page.Ui_WizardPage):
         self._setup_connections()
         
     def initializePage(self):
-        self.wizard().adjustSize()
+        #self.wizard().adjustSize()
+        pass
 
     def isComplete(self): # disable next/back buttons
         return False
@@ -107,7 +108,7 @@ class DataTypePage(QWizardPage, forms.ui_data_type_page.Ui_DataTypePage):
         self.setPixmap(QtGui.QWizard.BackgroundPixmap, QtGui.QPixmap(':/wizard_images/wizard_images/laplace.jpg'))
     
     def initializePage(self):
-        self.wizard().adjustSize()
+        #self.wizard().adjustSize()
         self.setFocus()
     
     def _button_selected(self, button):
@@ -213,7 +214,7 @@ class ChooseMetricPage(QtGui.QWizardPage, forms.ui_choose_metric_page.Ui_WizardP
             self.metric_cbo_box.blockSignals(False)
         
         self.setPixmap(QtGui.QWizard.BackgroundPixmap, QtGui.QPixmap(':/wizard_images/wizard_images/airy.jpg'))
-        self.wizard().adjustSize()
+        #self.wizard().adjustSize()
         
     def _metric_choice_changed(self, newindex):
         self.wizard().set_effect(str(self.metric_cbo_box.itemData(newindex).toString()))
@@ -464,7 +465,8 @@ class OutcomeNamePage(QWizardPage, forms.ui_outcome_name_page.Ui_WizardPage):
         self.registerField("outcomeName*", self.outcome_name_LineEdit)
         
     def initializePage(self):
-        self.wizard().adjustSize()
+        #self.wizard().adjustSize()
+        pass
         
     def nextId(self):
         if self.wizard().get_wizard_path()=="csv_import":
@@ -500,7 +502,12 @@ class MainWizard(QtGui.QWizard):
         #        QtGui.QPixmap(':/misc/meta.png'))
         #self.setPixmap(QtGui.QWizard.BackgroundPixmap,
         #               QtGui.QPixmap(':/misc/meta.png'))
-
+        
+        # make the displayed size of the pages reasonable
+        QObject.connect(self, SIGNAL("currentIdChanged(int)"), self._change_size)
+    
+    def _change_size(self, pageid):
+        self.adjustSize()
     
     def set_wizard_path(self, path):
         self.info_d['path']=path

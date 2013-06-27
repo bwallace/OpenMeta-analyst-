@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'outcome_name_page.ui'
 #
-# Created: Tue May 14 09:49:58 2013
-#      by: PyQt4 UI code generator 4.10
+# Created: Thu Jun 27 10:21:34 2013
+#      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -26,10 +26,18 @@ except AttributeError:
 class Ui_WizardPage(object):
     def setupUi(self, WizardPage):
         WizardPage.setObjectName(_fromUtf8("WizardPage"))
-        WizardPage.resize(468, 46)
+        WizardPage.resize(285, 46)
+        WizardPage.setMinimumSize(QtCore.QSize(285, 45))
+        WizardPage.setMaximumSize(QtCore.QSize(300, 50))
+        WizardPage.setSubTitle(_fromUtf8(""))
         self.horizontalLayout = QtGui.QHBoxLayout(WizardPage)
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.label = QtGui.QLabel(WizardPage)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
+        self.label.setSizePolicy(sizePolicy)
         self.label.setObjectName(_fromUtf8("label"))
         self.horizontalLayout.addWidget(self.label)
         self.outcome_name_LineEdit = QtGui.QLineEdit(WizardPage)
@@ -44,5 +52,6 @@ class Ui_WizardPage(object):
 
     def retranslateUi(self, WizardPage):
         WizardPage.setWindowTitle(_translate("WizardPage", "WizardPage", None))
-        self.label.setText(_translate("WizardPage", "What is the name of your outcome?", None))
+        WizardPage.setTitle(_translate("WizardPage", "What is the name of your outcome?", None))
+        self.label.setText(_translate("WizardPage", "Outcome Name:", None))
 

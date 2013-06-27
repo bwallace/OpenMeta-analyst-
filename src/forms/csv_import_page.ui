@@ -183,7 +183,7 @@ Additional columns will be treated as covariates.</string>
            <string>select csv file ...</string>
           </property>
           <property name="icon">
-           <iconset resource="../../images/icons.qrc">
+           <iconset resource="../images/icons.qrc">
             <normaloff>:/function_icon_set/function_icon_set/folder_48.png</normaloff>:/function_icon_set/function_icon_set/folder_48.png</iconset>
           </property>
          </widget>
@@ -260,7 +260,7 @@ Additional columns will be treated as covariates.</string>
   </layout>
  </widget>
  <resources>
-  <include location="../../images/icons.qrc"/>
+  <include location="../images/icons.qrc"/>
  </resources>
  <connections/>
 </ui>
