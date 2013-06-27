@@ -58,26 +58,27 @@ class EditPlotWindow(QDialog, forms.ui_edit_forest_plot.Ui_edit_forest_plot_dlg)
         # first fill in the col strs and show fields
         for col_i in [i+1 for i in xrange(4)]:
             cur_col_edit_box = eval("self.col%s_str_edit" % col_i)
-            cur_col_edit_box.setText(self.params_d["fp_col%s_str" % col_i])
+            cur_col_edit_box.setText(str(self.params_d["fp_col%s_str" % col_i]))
 
             cur_chk_box = eval("self.show_%s" % col_i)
-            cur_chk_box.setChecked(_to_bool(self.params_d["fp_show_col%s" % col_i]))
+            cur_chk_box.setChecked(self.params_d["fp_show_col%s" % col_i])
 
 
         # x-label
-        self.x_lbl_le.setText(self.params_d["fp_xlabel"])
+        self.x_lbl_le.setText(str(self.params_d["fp_xlabel"]))
 
         # set the outpath text
-        self.image_path.setText(self.params_d["fp_outpath"])
+        self.image_path.setText(str(self.params_d["fp_outpath"]))
 
         # bounds
-        self.plot_lb_le.setText(self.params_d["fp_plot_lb"])
-        self.plot_ub_le.setText(self.params_d["fp_plot_ub"])
+        self.plot_lb_le.setText(str(self.params_d["fp_plot_lb"]))
+        self.plot_ub_le.setText(str(self.params_d["fp_plot_ub"]))
         
         # xticks
-        self.x_ticks_le.setText(self.params_d["fp_xticks"])
+        self.x_ticks_le.setText(str(self.params_d["fp_xticks"]))
 
-        self.show_summary_line.setChecked(_to_bool(self.params_d["fp_show_summary_line"]))
+        ##self.show_summary_line.setChecked(_to_bool(self.params_d["fp_show_summary_line"]))
+        self.show_summary_line.setChecked(self.params_d["fp_show_summary_line"])
 
         ###
         # TODO fix issue #153 -- Paul is going to edit the R routine

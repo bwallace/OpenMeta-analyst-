@@ -21,9 +21,6 @@ import meta_globals
 import pdb
 from PyQt4.QtCore import pyqtRemoveInputHook
 
-#from meta_globals import (CONTINUOUS,ONE_ARM_METRICS,TWO_ARM_METRICS,
-#                          TYPE_TO_STR_DICT, get_BASE_PATH)
-
 print("the path: %s" % os.getenv("PATH"))
 
 try:
@@ -125,10 +122,11 @@ def impute_diag_data(diag_data_dict):
     
     return imputed_2x2
 
-def rescale_effect_and_ci_conf_level(data_dict):
-    print("Rescaling effect and CI confidence level")
-    
-    return R_fn_with_dataframe_arg(data_dict, "rescale.effect.and.ci.conf.level")
+## Used anymore?
+#def rescale_effect_and_ci_conf_level(data_dict):
+#    print("Rescaling effect and CI confidence level")
+#    
+#    return R_fn_with_dataframe_arg(data_dict, "rescale.effect.and.ci.conf.level")
 
 @RfunctionCaller
 def R_fn_with_dataframe_arg(data_dict, R_fn_name):
@@ -141,14 +139,12 @@ def R_fn_with_dataframe_arg(data_dict, R_fn_name):
             data_dict.pop(param)
 
     dataf = ro.r['data.frame'](**data_dict)
-    
     r_string = R_fn_name + "(" + str(dataf.r_repr()) + ")"
     
     print("executing (from R_fn_with_dataframe_arg: %s" % r_string)
     R_result = ro.r(r_string)
     
-    res_as_dict = _grlist_to_pydict(R_result)
-    
+    res_as_dict = R_parse_tools.recursioner(R_result)
     return res_as_dict
 
 @RfunctionCaller
@@ -158,10 +154,7 @@ def impute_bin_data(bin_data_dict):
     dataf = ro.r['data.frame'](**bin_data_dict)
     two_by_two = ro.r("gimpute.bin.data(%s)" % (dataf.r_repr()))
     
-    res_as_dict = R_parse_tools.rlist_to_pydict(two_by_two)
-    for k,v in res_as_dict.copy().items():
-        if R_parse_tools.haskeys(v):
-            res_as_dict[k] = R_parse_tools.rlist_to_pydict(v)
+    res_as_dict = R_parse_tools.recursioner(two_by_two)
             
     
     
@@ -182,8 +175,7 @@ def back_calc_cont_data(group1_data, group2_data, effect_data, conf_level):
                                                      dataf_effect.r_repr(),
                                                      str(conf_level)))
     
-    
-    res_as_dict = _grlist_to_pydict(r_res)
+    res_as_dict = R_parse_tools.recursioner(r_res)
     
     return res_as_dict
     
@@ -206,16 +198,41 @@ class R_parse_tools:
     
     @staticmethod
     def rlist_to_pydict(named_r_list):
-        ''' parse named R list into a python dictionary.
-            Only parses one level, is not recursive.'''
+        ''' parse named R list into a python dictionary.'''
+            #Only parses one level, is not recursive.'''
             
         keys = named_r_list.names
         if str(keys) == "NULL":
             raise ValueError("No names found in alleged named R list")
         
         data = R_parse_tools.R_iterable_to_pylist(named_r_list)
-        d = dict(zip(keys, data))
+        d = dict(zip(keys, data))    
+        
         return d
+    
+    @staticmethod
+    def recursioner(data):
+        '''
+        named_r_list --> python dictionary
+        not named r_list --> python list
+               singleton_r_list ---> python scalar
+        '''
+        
+        if R_parse_tools.haskeys(data): # can be converted to dictionary
+            d = R_parse_tools.rlist_to_pydict(data)
+            for k,v in d.items():
+                d[k] = R_parse_tools.recursioner(v)
+            return d
+        elif R_parse_tools._isListable(data): # can be converted to list
+            l = R_parse_tools.R_iterable_to_pylist(data)
+            for i,v in enumerate(l):
+                l[i] = R_parse_tools.recursioner(v)
+            return l
+        else: # is a scalar
+            return R_parse_tools._convert_NA_to_None(data) # convert NA to None
+        
+    
+    
             
     @staticmethod
     def R_iterable_to_pylist(r_iterable):
@@ -224,6 +241,7 @@ class R_parse_tools:
             itself if it is singleton.  '''
         
         def filter_list_element(x):
+            ''' if x is a singleton list, converts x to a scalar '''
             if R_parse_tools._isListable(x) and len(x) == 1:
                 return R_parse_tools._singleton_list_to_scalar(x)
             else:
@@ -241,23 +259,37 @@ class R_parse_tools:
         if len(singleton_list) > 1:
             raise ValueError("Expected a singleton list but this list has more than one entry")
         
+        # special case of a factor ve
+        if type(singleton_list) == rpy2.robjects.vectors.FactorVector:
+            return ro.r("as.character(%s)" % singleton_list.r_repr())[0]
+        
         scalar = singleton_list[0]
+        return R_parse_tools._convert_NA_to_None(scalar)
+    
+    
+    @staticmethod
+    def _convert_NA_to_None(scalar):
         if str(scalar) == 'NA':
             return None
         else:
             return scalar
     
     @staticmethod
-    def _isListable(element):
+    def _isListable(element, exclude_strings = True):
         try:
             list(element)
-            return True
         except TypeError:
             return False
         
+        # don't want to treat strings as lists even though they are iterable
+        if exclude_strings and type(element) == str:
+            return False
+        
+        return True
+        
     @staticmethod
     def haskeys(r_object):
-        if r_object is None:
+        if not hasattr(r_object,'names'):
             return False
         
         return str(r_object.names) != "NULL"
@@ -267,53 +299,6 @@ class R_parse_tools:
 
 #### end of R data structure tools #########
 
-# NOTE: CUSTOM VERSION......
-def _grlist_to_pydict(r_ls, recurse=True):
-    '''
-    parse rpy2 data structure into analogous Python
-    dictionary. if the recursive flag is true, this is 
-    done recursively, i.e., if a key points to an R
-    list, that list will be converted, too.
-    '''
-    
-    def gis_a_list(x):
-        # @TODO add additional vector types?
-        return type(x) in [rpy2.robjects.vectors.StrVector, 
-                           rpy2.robjects.vectors.ListVector, 
-                           rpy2.robjects.vectors.FloatVector,
-                           rpy2.robjects.vectors.Vector,]
-
-    def convert_NA_to_None(x):
-        return None if _gis_NA(x) else x
-    
-    def is_named_R_list(val):
-        return gis_a_list(val) and not str(val.names)=="NULL"
-    
-    d = {}
-    names = r_ls.names
-    for name, val in zip(names, r_ls):
-        if recurse and is_named_R_list(val):
-            print "recursing... \n"
-            d[name] = _grlist_to_pydict(val)
-        else: # not a named R list or we should not recurse
-            try: #assume val is iterable.....
-                cur_x = list(val)
-                if len(cur_x) == 1:
-                    # if it's a singleton, extract the
-                    # the value and stick it in the dict.
-                    # -- this is essentially the 'base case'
-                    d[name] = cur_x[0]
-                    d[name] = convert_NA_to_None(d[name])
-                else: # val is a real list, not a singleton list
-                    d[name] = val # not a singleton list
-                    d[name] = [convert_NA_to_None(x) for x in d[name][:]]
-            except Exception as e: # val is not iterable
-                print(e)
-                print("ENCOUNTERED ABOVE EXCEPTION")
-                d[name] = val
-                d[name] = convert_NA_to_None(d[name])
-
-    return d
 
 # This should be renamed as it is not doing back-calculation from effects
 @RfunctionCaller
@@ -338,7 +323,7 @@ def impute_cont_data(cont_data_dict, alpha):
     print "attempting to execute: %s" % r_str
     c_data = ro.r(r_str)
     
-    results = _grlist_to_pydict(c_data,True)
+    results = R_parse_tools.recursioner(c_data)
     
     return results
 
@@ -355,7 +340,7 @@ def impute_pre_post_cont_data(cont_data_dict, correlation, alpha):
     r_str += "correlation=%s, alpha=%s)" % (correlation, alpha)
     print "attempting to execute: %s" % r_str
     c_data = ro.r(r_str)
-    pythonized_data = _grlist_to_pydict(c_data, True)
+    pythonized_data = R_parse_tools.recursioner(c_data)
     
     
     return pythonized_data
@@ -395,8 +380,8 @@ def get_params(method_name):
     pretty_names_and_descriptions = get_pretty_names_and_descriptions_for_params(
                                         method_name, param_list)
 
-    return (_rlist_to_pydict(param_d['parameters'], recurse=False),
-            _rlist_to_pydict(param_d['defaults']),
+    return (R_parse_tools.recursioner(param_d['parameters']),
+            R_parse_tools.recursioner(param_d['defaults']),
             order_vars,
             pretty_names_and_descriptions,
             )
@@ -412,7 +397,7 @@ def get_pretty_names_and_descriptions_for_params(method_name, param_list):
         pretty_names_and_descriptions = ro.r("%s()" % pretty_names_f)
         # this dictionary is assumed to be as follows:
         #      params_d[param] --> {"pretty.name":XX, "description":XX}
-        params_d = _rlist_to_pydict(pretty_names_and_descriptions) 
+        params_d = R_parse_tools.recursioner(pretty_names_and_descriptions)
 
     # fill in entries for parameters for which pretty names/descriptions were
     # not provided-- these are just place-holders to make processing this
@@ -915,7 +900,9 @@ def load_vars_for_plot(params_path, return_params_dict=False):
             return False
 
     if return_params_dict:
-        return _rls_to_pyd(ro.r("params"))
+        robj = ro.r("params")
+        params_dict = R_parse_tools.recursioner(robj)
+        return params_dict
     return True
 
 
@@ -997,19 +984,19 @@ def parse_out_results(result):
         print text_n
         print "\n--------\n"
         if text_n == "images":
-            image_path_d = _rls_to_pyd(text)
+            image_path_d = R_parse_tools.recursioner(text)
         elif text_n == "image_order":
             image_order = list(text)
         elif text_n == "plot_names":
             if str(text) == "NULL":
                 image_var_name_d = {}
             else:
-                image_var_name_d = _rls_to_pyd(text)
+                image_var_name_d = R_parse_tools.recursioner(text)
         elif text_n == "plot_params_paths":
             if str(text) == "NULL":
                 image_params_paths_d = {}
             else:
-                image_params_paths_d = _rls_to_pyd(text)
+                image_params_paths_d = R_parse_tools.recursioner(text)
         elif text_n == "References":
             references_list = list(text)
             references_list.append('metafor: Viechtbauer, Wolfgang. "Conducting meta-analyses in R with the metafor package." Journal of 36 (2010).')
@@ -1044,42 +1031,41 @@ def parse_out_results(result):
     
 def make_weights_list(text_n,text):
     # Construct List of Weights for studies
-    try:
-        if text_n.find("Summary") == -1: # 'Summary' not found
-            return (None,None)
-        
-        summary_dict = R_parse_tools.rlist_to_pydict(text)
-        
-        if R_parse_tools.haskeys(summary_dict['MAResults']):
-            summary_dict['MAResults'] = R_parse_tools.rlist_to_pydict(summary_dict['MAResults'])
-        else:
-            return (None,None)
-        
-        # this is a silly thing to look for but its something I explicitly
-        # set in the random methods so I know it's there
-        if "study.names" in summary_dict['MAResults']: 
-            print("study.names found in maresults")
-            text_n_withoutSummary = text_n.replace("Summary","")
-            text_n_withoutSummary.strip()
-            key_name = text_n_withoutSummary + " Weights"
-            key_name = key_name.strip()
-            
-            study_names = R_parse_tools.R_iterable_to_pylist(summary_dict['MAResults']['study.names'])
-            study_years = R_parse_tools.R_iterable_to_pylist(summary_dict['MAResults']['study.years'])
-            study_weights = R_parse_tools.R_iterable_to_pylist(summary_dict['MAResults']['study.weights'])
-            
-            max_len = max([len(name) for name in study_names])
-            weights_txt = unicode("studies" + " "*(max_len-1) + "weights\n")
-            
-            for name,year,weight in zip(study_names, study_years, study_weights):
-                weights_txt += unicode("{0:{name_width}} {1} {2:4.1f}%\n").format(name, year, weight*100, name_width=max_len)
-            return (key_name, weights_txt)
-        else:
-            print("study.names not found")
-        return(None,None)
-    except TypeError:
-        print("Something went wrong from make_weights_list: Are we in bivariate?? :)")
+    if text_n.find("Summary") == -1: # 'Summary' not found
         return (None,None)
+    
+    if not R_parse_tools.haskeys(text): # if the text is not a dictionary it won't have weights, trust me
+        return (None, None)
+    
+    summary_dict = R_parse_tools.rlist_to_pydict(text)
+    
+    if R_parse_tools.haskeys(summary_dict['MAResults']):
+        summary_dict['MAResults'] = R_parse_tools.rlist_to_pydict(summary_dict['MAResults'])
+    else:
+        return (None,None)
+    
+    # this is a silly thing to look for but its something I explicitly
+    # set in the random methods so I know it's there
+    if "study.names" in summary_dict['MAResults']: 
+        print("study.names found in maresults")
+        text_n_withoutSummary = text_n.replace("Summary","")
+        text_n_withoutSummary.strip()
+        key_name = text_n_withoutSummary + " Weights"
+        key_name = key_name.strip()
+        
+        study_names = R_parse_tools.R_iterable_to_pylist(summary_dict['MAResults']['study.names'])
+        study_years = R_parse_tools.R_iterable_to_pylist(summary_dict['MAResults']['study.years'])
+        study_weights = R_parse_tools.R_iterable_to_pylist(summary_dict['MAResults']['study.weights'])
+        
+        max_len = max([len(name) for name in study_names])
+        weights_txt = unicode("studies" + " "*(max_len-1) + "weights\n")
+        
+        for name,year,weight in zip(study_names, study_years, study_weights):
+            weights_txt += unicode("{0:{name_width}} {1} {2:4.1f}%\n").format(name, year, weight*100, name_width=max_len)
+        return (key_name, weights_txt)
+    else:
+        print("study.names not found")
+    return(None,None)
 
 
 
@@ -1219,83 +1205,6 @@ def run_meta_method(meta_function_name, function_name, params, \
     # a special field which is assumed to contain the plot variable names
     # in R (for graphics manipulation).
     return parse_out_results(result)  
-          
-                                                                                  
-def _rls_to_pyd(r_ls):
-    # base case is that the type is a native python type, rather
-    # than an Rvector
-    d = {}
-    for name, val in zip(r_ls.names, r_ls):
-        ###
-        # I know we shouldn't wrap the whole thing in a (generic) try block,
-        # but rpy2 can throw some funky exceptions...
-        try:
-            # first check the key
-            if str(name) != "NULL":
-                if "rpy2.robjects" in str(type(name)):
-                    name = str(name[0])
-                if not "rpy2.robjects" in str(type(val)):
-                    # base case; not an rtype object
-                    d[name] = val
-                elif str(val)=="NULL":
-                    d[name] = None
-                elif str(val.names=="NULL"):
-                    ###
-                    # 11/28/11 -- swapping val[0] for the as.character
-                    # version below to avoid parsing an ugly structure.
-                    # this seems to be sane. did I mention we need
-                    # unit tests???
-                    #d[name] = val[0]
-                    d[name] = ro.r("as.character(%s)" % val.r_repr())[0]
-                else:
-                    # recurse
-                    d[name] = _rls_to_pyd(val)
-                if not isinstance(name, str):
-                    raise Exception, "arg"
-            else:
-                # name is null
-                return val
-
-        except Exception,  inst:
-            print "error parsing R tuple.. here's the exception "
-            print inst
-            print "ignoring."
-
-    return d
-
-
-def _is_a_list(x):
-    # @TODO add additional vector types?
-    return type(x) in [rpy2.robjects.vectors.StrVector, 
-                       rpy2.robjects.vectors.ListVector]
-
-
-def _rlist_to_pydict(r_ls, recurse=True):
-    '''
-    parse rpy2 data structure into analogous Python
-    dictionary. if the recursive flag is true, this is 
-    done recursively, i.e., if a key points to an R
-    list, that list will be converted, too. 
-    '''
-    d = {}
-    names = r_ls.names
-
-    for name, val in zip(names, r_ls):
-        print "name {0}, val {1}".format(name, val)
-        if recurse and _is_a_list(val) and not str(val.names)=="NULL":
-            print "recursing... \n"
-            d[name] = _rlist_to_pydict(val)
-
-        cur_x = list(val)
-        if len(cur_x) == 1:
-            # if it's a singleton, extract the
-            # the value and stick it in the dict.
-            # -- this is essentially the 'base case'
-            d[name] = cur_x[0]
-        elif not recurse:
-            d[name] = cur_x # not a singleton list
-
-    return d
 
 
 def _get_c_str_for_col(m, i):
