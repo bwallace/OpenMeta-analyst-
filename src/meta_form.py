@@ -228,12 +228,9 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
     def toggle_menu_options_that_require_dataset(self, enable):
         self.action_go.setEnabled(enable)
-#        if self.model.get_current_outcome_type() != "diagnostic":
-#            self.action_cum_ma.setEnabled(enable)
         self.action_cum_ma.setEnabled(enable)
         self.action_loo_ma.setEnabled(enable)
         self.action_meta_regression.setEnabled(enable)
-        #self.action_subgroup_ma.setEnabled(enable)
         self._enable_action_subgroup_ma()
         
     def _enable_action_subgroup_ma(self):

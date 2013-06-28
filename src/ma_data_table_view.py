@@ -346,11 +346,18 @@ class MADataTable(QtGui.QTableView):
 
     def cell_content_changed(self, index, old_val, new_val, study_added):        
         # Only make a cell edit if the old values and new values are different
-        if not self._new_eq_old(old_val, new_val):
+        try:
             print("Old val: %s, new val: %s" % (unicode(old_val.toString()), unicode(new_val.toString())))
+        except AttributeError:
+            print("old val: %s, new val: %s" % (str(old_val), str(new_val)))
+            
+        if not self._new_eq_old(old_val, new_val):
             cell_edit = CommandCellEdit(self, index, old_val, new_val,
                                         added_study=study_added)
             self.undoStack.push(cell_edit)
+            
+        # make analysis menus change even when checkbox is (un)checked
+        self._enable_analysis_menus_if_appropriate()
             
     def _new_eq_old(self, old, new):
         '''None and "" are the same. Assume old and new are QVariants'''
@@ -556,10 +563,21 @@ class MADataTable(QtGui.QTableView):
         self.main_gui.metric_selected(metric, menu)
 
     def _enable_analysis_menus_if_appropriate(self):
-        if len(self.model().dataset) >= 2:
+        
+        if len(self.model().dataset) >= 2 and self._get_number_of_included_studies() >= 2: #TODO add condition that there are at least two studies included
             self.main_gui.enable_menu_options_that_require_dataset()
         else:
             self.main_gui.disable_menu_options_that_require_dataset()
+    
+    def _get_number_of_included_studies(self):
+        studies = self.model().dataset.studies
+        num_included = 0
+        for study in studies:
+            if study.include and (not study.manually_excluded):
+                num_included += 1
+            print("included: %s, manually excluded: %s" % (str(study.include), str(study.manually_excluded)))
+        print("num included: %d" % num_included)
+        return num_included
 
     def _print_index(self, index):
         print "(%s, %s)" % (index.row(), index.column())
