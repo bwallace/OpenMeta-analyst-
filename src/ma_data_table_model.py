@@ -733,6 +733,8 @@ class DatasetModel(QAbstractTableModel):
             # sufficient data to be included in an MA
             if not value.toBool():
                 study.manually_excluded = True
+            else:
+                study.manually_excluded = False
         else:
             # then a covariate value has been edited.
             cov = self.get_cov(column)
