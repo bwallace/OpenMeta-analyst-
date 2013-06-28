@@ -355,6 +355,7 @@ class MADataTable(QtGui.QTableView):
             cell_edit = CommandCellEdit(self, index, old_val, new_val,
                                         added_study=study_added)
             self.undoStack.push(cell_edit)
+        self._enable_analysis_menus_if_appropriate()
             
         # make analysis menus change even when checkbox is (un)checked
         self._enable_analysis_menus_if_appropriate()

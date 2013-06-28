@@ -43,3 +43,8 @@ At the console. This should fire up the GUI.
 For running nosetests:
 these should be run from within the src folder:
 nosetests -v test_meta_analysis.py
+
+important dependency versions:
+R      : 3.0.1 (2013-05-16) -- "Good Sport"
+metafor: 1.6.0
+pyqt4  : 4.10.1
