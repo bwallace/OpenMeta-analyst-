@@ -372,7 +372,12 @@ class Dataset:
         comp_str = "-".join(groups)
         for effect in ma_unit.get_effect_names():
             comp_str_present = comp_str in ma_unit.get_group_strings(effect)
-            est_not_None = ma_unit.get_estimate(effect, comp_str) is not None
+            # fix for issue where for some reason we were trying to get
+            # estimates from one-arm effects (nonsensical)
+            try:
+                est_not_None = ma_unit.get_estimate(effect, comp_str) is not None
+            except KeyError:
+                est_not_None = False
             if comp_str_present and est_not_None:
                 return True
 
@@ -856,6 +861,7 @@ class MetaAnalyticUnit:
             return self.effects_dict[effect][group_str]["est"]
         else:
             return None
+
     
     
     def get_lower(self, effect, group_str, mult):    
