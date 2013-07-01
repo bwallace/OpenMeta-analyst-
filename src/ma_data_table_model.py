@@ -1286,6 +1286,9 @@ class DatasetModel(QAbstractTableModel):
         self.tx_index_a = self.dataset.get_group_names().index(group_names[0])
         self.tx_index_b = self.dataset.get_group_names().index(group_names[1])
         print "\ncurrent tx group index a, b: %s, %s" % (self.tx_index_a, self.tx_index_b)
+        
+    def get_group_names(self):
+        return self.dataset.get_group_names()
 
     def sort_studies(self, col, reverse):
         if col == self.NAME:

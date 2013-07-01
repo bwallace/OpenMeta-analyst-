@@ -1130,9 +1130,6 @@ draw.data.col <- function(forest.data, j, color.overall = "black",
                           summary.line.col = "darkred",
                           summary.line.pat = "dashed",
                           diam.size) {
-	#print("-----------FOREST DATA------------")
-	#print(forest.data)
-	#print("---------END FOREST DATA----------")
 					  
     # Draws the actual forest plot graph (excluding data columns)
     effects <- forest.data$effects

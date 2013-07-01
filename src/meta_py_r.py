@@ -479,8 +479,8 @@ def get_method_description(method_name):
     return description
 
 
-def ma_dataset_to_binary_robj(table_model, var_name):
-    pass
+#def ma_dataset_to_binary_robj(table_model, var_name):
+#    pass
 
 
 @RfunctionCaller
@@ -681,14 +681,78 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj",
     print "ok."
     return r_str
 
+def ma_dataset_to_simple_network_with_dichotomous_data(table_model,
+                                                var_name="tmp_obj",
+                                                studies = None):
+    ''' This converts a DatasetModel to an mtc.network R object as described
+    in the getmc documentation for mtc.network'''
+    
+    if studies is None:
+        studies = table_model.get_studies(only_if_included=True)
+        
+    #study_ids = [study.id for study in studies]
+    
+    
+    # Make 'treatments' data frame in R
+    group_names = table_model.get_group_names()
+    ids, descriptions = enumerate(group_names) # different id scheme in future? instead of just numbers?
+    treatments = {'id': ids,
+                  'description': descriptions}
+    treatments_table_str = _make_table_string_from_dict(treatments)
+    treatments_r_str = "treatments <- read.table(textConnection('%s'), header=TRUE)" % treatments_table_str
+    ro.r(treatments_r_str)
+    
+    # Make 'data' data_frame in R
+    #####data_dict = 
+    for study in studies:[].
+        ma_unit = table_model.get_current_ma_unit_for_study(table_model.dataset.studies.index(study))
+        for group in group_names:
+            raw_data = ma_unit.get_raw_data_for_group(group_name)
+            responders, sampleSize = raw_data
+            
+    
+    
+def _make_table_string_from_dict(table_dict):
+    '''Makes a string from dictionary d with the keys of d serving as the
+    column headers'''
+    
+    keys, values = table_dict.keys(), table_dict.values()
+    if len(keys)==0:
+        raise ValueError("Dictionary must have at least one key")
+    
+    #import pdb; pdb.set_trace()
+
+    headers = [unicode(key) for key in keys]
+    header_str = u' '.join(headers)
+    table_str = header_str + "\n"
+    
+    table_row_data = zip(*values)
+    
+    row_strings = []
+    row_data_to_row_str = lambda row_data: u" ".join([str(datum) for datum in row_data])
+    for row_data in table_row_data:
+        row_str = row_data_to_row_str(row_data)
+        row_strings.append(row_str)
+    table_data_str = u"\n".join(row_strings)
+    
+    table_str += table_data_str
+    
+    return table_str
+    
+    
+    
+    
+    
+
 def _sanitize_for_R(a_str):
     # may want to do something fancier in the future...
-    #return a_str.encode('latin-1', 'ignore')
+    return a_str.encode('latin-1', 'ignore')
+    
     
     # Mysterious fix for issue #73. For some reason, R doesn't throw up anymore
     # when non-latin characters are given. Maybe this was fixed in R at some
     # point by a 3rd party.
-    return a_str
+    #return a_str
 
 
 @RfunctionCaller
