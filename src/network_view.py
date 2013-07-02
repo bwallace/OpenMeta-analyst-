@@ -12,6 +12,7 @@ class ViewDialog(QDialog, forms.ui_network_view.Ui_network_view_dialog):
         super(ViewDialog, self).__init__(parent)
         self.setupUi(self)
         
+        self.model = model
         self.dataset = model.dataset
         self.cur_outcome = model.current_outcome
         self.cur_follow_up = model.get_current_follow_up_name()
@@ -51,32 +52,14 @@ class ViewDialog(QDialog, forms.ui_network_view.Ui_network_view_dialog):
         
         cur_follow_up_index = self.follow_up_cbo_box.findText(self.cur_follow_up)
         self.follow_up_cbo_box.setCurrentIndex(cur_follow_up_index)
-
+        
     def graph_network(self, outcome, follow_up):
-        nodes, edges = self.dataset.get_network(outcome, follow_up)
-        # get_network returns a list of tuples, wherein
-        # each tuple is an edge with group names representing
-        # nodes, e.g., [("tx a", "tx b"), ("tx b", "tx c")]. however the igraph
-        # library wants a flat list, e.g., ["tx_a", "tx_b", "tx_b", "tx_c"]
-        # thus we flatten out the list here
-
-        flattened_edges = []
-        for edge in edges:
-            flattened_edges.extend(edge)
-
-        # now add nodes that have no connections; these won't be
-        # included in the edgelist, as they don't belong to edges
-        unconnected_vertices = []
-        for node in nodes:
-            if node not in flattened_edges:
-                unconnected_vertices.append(node)
+        data_type = self.model.get_outcome_type(outcome, get_str=False)
         
-        img_path = meta_py_r.draw_network(flattened_edges, unconnected_vertices)
-        print img_path
-        # now add the image to the display
+        img_path = meta_py_r.ma_dataset_to_simple_network(
+                                      table_model=self.model,
+                                      data_type=data_type,
+                                      outcome=outcome,
+                                      follow_up=follow_up)
         pixmap = QPixmap(img_path)
-        #pixmap = pixmap.scaled(QSize(PageSize[0], PageSize[1]))
-        #pixmap.resize(PageSize[0], PageSize[1])
         self.scene.addPixmap(pixmap)
-
-        

@@ -54,11 +54,14 @@ class RlibLoader:
         return self._load_r_lib("igraph")
     def load_grid(self):
         return self._load_r_lib("grid")
+    def load_gemtc(self):
+        return self._load_r_lib("gemtc")
     def load_all(self):
         self.load_metafor()
         self.load_openmetar()
         self.load_igraph()
-        self.load_grid() 
+        self.load_grid()
+        self.load_gemtc()
     def _load_r_lib(self, name):
         try:
             ro.r("library(%s)" % name)
@@ -681,36 +684,102 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj",
     print "ok."
     return r_str
 
-def ma_dataset_to_simple_network_with_dichotomous_data(table_model,
-                                                var_name="tmp_obj",
-                                                studies = None):
+def ma_dataset_to_simple_network(table_model,
+                                 var_name="tmp_obj",
+                                 studies=None,
+                                 data_type=None,
+                                 outcome=None,
+                                 follow_up=None,
+                                 network_path='./r_tmp/network.png'):
     ''' This converts a DatasetModel to an mtc.network R object as described
     in the getmc documentation for mtc.network'''
     
+    BINARY, CONTINUOUS = meta_globals.BINARY, meta_globals.CONTINUOUS
+    
+    if data_type not in [BINARY, CONTINUOUS]:
+        raise ValueError("Given data type: '%s' is unknown." % str(data_type))
+    
     if studies is None:
-        studies = table_model.get_studies(only_if_included=True)
-        
-    #study_ids = [study.id for study in studies]
+        # we will exclude studies later on if they do not have full raw_data
+        studies = table_model.get_studies(only_if_included=False)
+    
+    #### Makes sure each group has at least one study with full raw data ####
+    group_names = table_model.dataset.get_group_names_for_outcome_fu(outcome, follow_up)
+    groups_to_include = []
+    for group in group_names:
+        for study in studies:
+            ma_unit = study.outcomes_to_follow_ups[outcome][follow_up]
+            raw_data = ma_unit.get_raw_data_for_group(group)
+            if not _data_blank_or_none(*raw_data):
+                groups_to_include.append(group)
+                break
+    print("groups to include: %s" % str(groups_to_include))
     
     
-    # Make 'treatments' data frame in R
-    group_names = table_model.get_group_names()
-    ids, descriptions = enumerate(group_names) # different id scheme in future? instead of just numbers?
-    treatments = {'id': ids,
+    ############ Make 'treatments' data frame in R ###################
+    
+    # different id scheme in future? instead of just numbers?
+    ids, descriptions = list(range(len(groups_to_include))), groups_to_include
+    treatments = {'id': [x.replace(' ','_') for x in descriptions],   #ids, ""
                   'description': descriptions}
     treatments_table_str = _make_table_string_from_dict(treatments)
     treatments_r_str = "treatments <- read.table(textConnection('%s'), header=TRUE)" % treatments_table_str
-    ro.r(treatments_r_str)
+    #ro.r(treatments_r_str)
+    _execute_r_string(treatments_r_str)
     
     # Make 'data' data_frame in R
-    #####data_dict = 
-    for study in studies:[].
-        ma_unit = table_model.get_current_ma_unit_for_study(table_model.dataset.studies.index(study))
-        for group in group_names:
+    if data_type == BINARY:
+        data = {'study':[], 'treatment':[], 'responders':[], 'sampleSize':[]}
+    elif data_type == CONTINUOUS:
+        data = {'study':[], 'treatment':[], 'mean':[], 'std.dev':[], 'sampleSize':[]}
+
+    for study in studies:
+        #ma_unit = table_model.get_current_ma_unit_for_study(table_model.dataset.studies.index(study))
+        #ma_unit = table_model.get_ma_unit(study=study, outcome=outcome, follow_up=follow_up):
+        ma_unit = study.outcomes_to_follow_ups[outcome][follow_up]
+        
+        for treatment_id, group_name in zip(treatments['id'], treatments['description']):
             raw_data = ma_unit.get_raw_data_for_group(group_name)
-            responders, sampleSize = raw_data
-            
+            if data_type == BINARY:
+                responders, sampleSize = raw_data
+                data['responders'].append(responders)
+                data['sampleSize'].append(sampleSize)
+            elif data_type == CONTINUOUS:
+                sampleSize, mean, std_dev = raw_data
+                data['mean'].append(mean)
+                data['std_dev'].append(std_dev)
+                data['sampleSize'].append(sampleSize)
+            if _data_blank_or_none(*raw_data): # make sure raw data is full
+                continue
+            data['study'].append(study.id)
+            data['treatment'].append(treatment_id)
+    data_table_str = _make_table_string_from_dict(data)
+    data_table_r_str = "data <- read.table(textConnection('%s'), header=TRUE)" % data_table_str
+    _execute_r_string(data_table_r_str)
     
+    ########## make the actual network ##########
+    make_network_r_str = "network <- mtc.network(data, description=\"MEWANTFOOD\", treatments=treatments)"
+    _execute_r_string(make_network_r_str)
+    
+    # plot the network and return path to the image
+    ro.r("png('%s')" % network_path)
+    ro.r("plot(network)")
+    ro.r("dev.off()")
+    
+    return network_path
+    
+def _data_blank_or_none(*args):
+    ''' Returns True if there is a blank or none value in args,
+        Returns False otherwise'''
+    
+    if args is None:
+        return True
+    
+    for x in args:
+        if x in meta_globals.EMPTY_VALS:
+            return True
+    return False
+
     
 def _make_table_string_from_dict(table_dict):
     '''Makes a string from dictionary d with the keys of d serving as the
@@ -729,7 +798,16 @@ def _make_table_string_from_dict(table_dict):
     table_row_data = zip(*values)
     
     row_strings = []
-    row_data_to_row_str = lambda row_data: u" ".join([str(datum) for datum in row_data])
+    def process_datum(x):
+        # quote strings
+        if type(x) in [str, unicode]:
+            return '"' + str(x) + '"'
+        else:
+            return str(x)
+    row_data_to_row_str = lambda row_data: u" ".join([process_datum(datum) for datum in row_data])
+
+        
+        
     for row_data in table_row_data:
         row_str = row_data_to_row_str(row_data)
         row_strings.append(row_str)
@@ -738,7 +816,10 @@ def _make_table_string_from_dict(table_dict):
     table_str += table_data_str
     
     return table_str
-    
+
+def _execute_r_string(r_str):
+    print("Executing: %s\n" % r_str)
+    ro.r(r_str)
     
     
     

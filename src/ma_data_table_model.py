@@ -1385,6 +1385,10 @@ class DatasetModel(QAbstractTableModel):
     def get_current_outcome_type(self, get_str=True):
         ''' Returns the type of the currently displayed (or 'active') outcome (e.g., binary).  '''
         return self.dataset.get_outcome_type(self.current_outcome, get_string=get_str)
+    
+    def get_outcome_type(self, outcome, get_str=True):
+        return self.dataset.get_outcome_type(outcome, get_string=get_str)
+    
     def get_current_outcome_subtype(self):
         return self.dataset.get_outcome_subtype(self.current_outcome)
 
@@ -1769,36 +1773,53 @@ class DatasetModel(QAbstractTableModel):
         to initially populate this study with empty MetaAnalytic units reflecting the known
         outcomes, time points & tx groups, as they will be added 'on-demand' here.
         '''
-        study = self.dataset.studies[study_index]
+        
+        return self.get_ma_unit(study_index=study_index,
+                                outcome=self.current_outcome,
+                                follow_up=self.get_current_follow_up_name(),
+                                tx_groups=self.current_txs)
+
+
+    def get_ma_unit(self, study=None, study_index=None, outcome=None, follow_up=None, tx_groups=None):
+        '''
+        Returns the MetaAnalytic unit for the study @ study_index. If no such Unit exists,
+        it will be added. Thus when a new study is added to a dataset, there is no need
+        to initially populate this study with empty MetaAnalytic units reflecting the known
+        outcomes, time points & tx groups, as they will be added 'on-demand' here.
+        
+        outcome and follow_up are the names, not ids or instances, of these objects
+        
+        '''
+        
+        if None not in [study, study_index]:
+            if study != self.dataset.studies[study_index]:
+                raise ValueError("study and study index don't match")
+        
+        if study is None: # you can specify a study OR a study index
+            study = self.dataset.studies[study_index]
         
         # first check to see that the current outcome is contained in this study
-        if not self.current_outcome in study.outcomes_to_follow_ups:
+        if not outcome in study.outcomes_to_follow_ups:
             ###
             # Issue 7 (RESOLVED) http://github.com/bwallace/OpenMeta-analyst-/issues/#issue/7
-            study.add_outcome(self.dataset.get_outcome_obj(self.current_outcome),
+            study.add_outcome(self.dataset.get_outcome_obj(outcome),
                               group_names=self.dataset.get_group_names())
         
         # we must also make sure the time point exists. note that we use the *name* rather than the 
         # index of the current time/follow up
-        if not self.get_current_follow_up_name() in study.outcomes_to_follow_ups[self.current_outcome]:
-            study.add_outcome_at_follow_up(self.dataset.get_outcome_obj(self.current_outcome),
-                                           self.get_current_follow_up_name())
+        if not self.get_current_follow_up_name() in study.outcomes_to_follow_ups[outcome]:
+            study.add_outcome_at_follow_up(self.dataset.get_outcome_obj(outcome),
+                                           follow_up)
+        
         
         # finally, make sure the studies contain the currently selected tx groups; if not, add them
-        ma_unit = study.outcomes_to_follow_ups[self.current_outcome][self.get_current_follow_up_name()]
-        for tx_group in self.current_txs:
-            if not tx_group in ma_unit.get_group_names():
-                ma_unit.add_group(tx_group)
+        if tx_groups is not None:
+            ma_unit = study.outcomes_to_follow_ups[outcome][follow_up]
+            for tx_group in tx_groups:
+                if not tx_group in ma_unit.get_group_names():
+                    ma_unit.add_group(tx_group)
         
         return ma_unit
-
-
-    def get_ma_unit(self, study_index, outcome, follow_up):
-        try:
-            return self.dataset.studies[study_index].outcomes_to_follow_ups[outcome][follow_up]
-        except:
-            raise Exception, "whoops -- you're attempting to access raw data for a study, outcome \
-                                        or time point that doesn't exist."
         
     def max_raw_data_cols_for_current_unit(self):
         '''

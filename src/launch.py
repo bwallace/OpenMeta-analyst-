@@ -33,6 +33,10 @@ def load_R_libraries(app, splash=None):
     splash.showMessage("Loading grid\n................")
     app.processEvents()
     rloader.load_grid()
+    
+    splash.showMessage("Loading gemtc\n...................")
+    app.processEvents()
+    rloader.load_gemtc()
 
 def start():
     app = QtGui.QApplication(sys.argv)
