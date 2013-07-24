@@ -47,6 +47,8 @@ import easter_egg
 # for the help
 import webbrowser
 
+DISABLE_NETWORK_STUFF = True # disable this until we can package jags, rjags, getmc etc
+
 DEFAULT_DATASET_NAME = unicode("untitled_dataset", "utf-8")
 
 import forms.ui_running
@@ -139,6 +141,11 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.addAction(show_tom)
         QObject.connect(show_tom, SIGNAL("triggered()"), self._show_tom)
         
+        
+        if DISABLE_NETWORK_STUFF:
+            self.action_view_network.setEnabled(False)
+        else:
+            self.action_view_network.setEnabled(False)
     
 
     def start(self):

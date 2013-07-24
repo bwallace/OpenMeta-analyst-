@@ -30,6 +30,7 @@ import meta_py_r
 from meta_globals import (check_plot_bound, DIAG_METRIC_NAMES_D, 
                           METHODS_WITH_NO_FOREST_PLOT, ONE_ARM_METRICS,
                           seems_sane)
+import meta_globals
 import diagnostic_explain
 
 ###
@@ -159,7 +160,25 @@ class MA_Specs(QDialog, forms.ui_ma_specs.Ui_Dialog):
         #bar.move(center_point)
     
         return bar
+    
+    def run_network_analysis(self):
+        # first, let's fire up a progress bar
+        bar = MetaProgress(self)
+        bar.show()
+        result = None
         
+        if self.data_type == "binary":
+            data_type = meta_globals.BINARY
+        
+        if self.data_type not in ["binary","continuous"]:
+            raise ValueError("Network Analysis can currently only be done with binary or continuous data")
+        
+        meta_py_r.ma_dataset_to_simple_network(table_model=self.model,
+                                     var_name="tmp_obj",
+                                     data_type=None,
+                                     outcome=None,
+                                     follow_up=None,
+                                     network_path='./r_tmp/network.png')
 
     def run_ma(self):
         ###
@@ -289,6 +308,8 @@ class MA_Specs(QDialog, forms.ui_ma_specs.Ui_Dialog):
         self.show_4.setEnabled(False)
 
     def method_changed(self):
+        if self.parameter_grp_box.layout() is not None:
+            print("Layout items count before: %d" % self.parameter_grp_box.layout().count())
         self.clear_param_ui()
         self.current_widgets= []
         self.current_method = self.available_method_d[str(self.method_cbo_box.currentText())]
@@ -386,6 +407,7 @@ class MA_Specs(QDialog, forms.ui_ma_specs.Ui_Dialog):
         for widget in self.current_widgets:
             widget.deleteLater()
             widget = None
+        
 
 
     def ui_for_params(self):

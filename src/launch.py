@@ -8,6 +8,8 @@ import time
 import meta_py_r
 import meta_form
 
+from meta_form import DISABLE_NETWORK_STUFF
+
 SPLASH_DISPLAY_TIME = 0 # TODO: change to 5 seconds in production version
 
 def load_R_libraries(app, splash=None):
@@ -34,9 +36,10 @@ def load_R_libraries(app, splash=None):
     app.processEvents()
     rloader.load_grid()
     
-    splash.showMessage("Loading gemtc\n...................")
-    app.processEvents()
-    rloader.load_gemtc()
+    if not DISABLE_NETWORK_STUFF:
+        splash.showMessage("Loading gemtc\n...................")
+        app.processEvents()
+        rloader.load_gemtc()
 
 def start():
     app = QtGui.QApplication(sys.argv)
