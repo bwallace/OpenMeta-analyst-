@@ -1244,15 +1244,28 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         return self.save(save_as=True)
 
     def save(self, save_as=False):
+        
+        base_path = str(os.path.abspath(os.getcwd()))
         if self.out_path is None or save_as:
             # fix for issue #58,1. -- use current dataset name in save path
-            out_f = os.path.join("." , self.model.get_name())
+            out_f = os.path.join(base_path, self.model.get_name())
             out_f = unicode(QFileDialog.getSaveFileName(self, "OpenMeta[analyst] - Save File",
                                                          out_f, "open meta files: (.oma)"))
             if out_f == "" or out_f == None:
                 return None
             else:
                 self.out_path = out_f
+        
+        # add proper file extension
+        try:
+            if self.out_path[-4:] != u".oma":
+                self.out_path += u".oma"
+            self.out_path = out_f
+        except Exception as e:
+            print("")
+            print(e)
+                
+                
         try:
             print "trying to write data out to: %s" % self.out_path
             f = open(self.out_path, 'wb')
