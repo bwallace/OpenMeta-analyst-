@@ -764,17 +764,19 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         if (self.metric_parameter is None) and self.cur_effect in ["MD","SMD"]:
             print("need to choose metric parameter because it is %s" % str(self.metric_parameter))
             if self.cur_effect == "MD":
-                info = "In order to perform back-calculation most accurately, we need to know something about the assumptions about the two population standard deviations. Please choose from one of the following options:"
-                option0_txt = "Assume the population standard deviations are the same (as in most parametric data analysis techniques) (default)."
-                option1_txt = "Do not assume the population standard deviations are the same"
+                info = "In order to perform back-calculation most accurately, we need to know something about the assumptions about the two population standard deviations.\n*Are we assuming that both of the population standard deviations are the same (as in most parametric data analysis techniques)"
+                option0_txt = "yes (default)."
+                option1_txt = "no"
                 dialog = ChooseBackCalcResultForm(info, option0_txt, option1_txt) # TODO: rename this class to be more something more general i.e. a choice between two things
+                dialog.setWindowTitle("Population SD Assumptions")
                 if dialog.exec_():
                     self.metric_parameter = True if dialog.getChoice() == 0 else False
             elif self.cur_effect == "SMD":
-                info = "In order to perform back-calculation most accurately, we need to know if the the bias in the SMD been corrected (Hedges' g)?"
-                option0_txt = "Yes, the slight bias in the SMD has been corrected (Hedges' g) (default)" 
-                option1_txt = "No, the bias is uncorrected"
+                info = "In order to perform back-calculation most accurately, we need to know if the the bias in the SMD been corrected i.e. should we use Hedge's g or Cohen's d when performing the back calculation?"
+                option0_txt = "Hedges' g (default)" 
+                option1_txt = "Cohen's d"
                 dialog = ChooseBackCalcResultForm(info, option0_txt, option1_txt)
+                dialog.setWindowTitle("SMD bias correction")
                 if dialog.exec_():
                     self.metric_parameter = True if dialog.getChoice() == 0 else False
             print("metric_parameter is now %s" % str(self.metric_parameter))
@@ -999,8 +1001,13 @@ class ChooseBackCalcResultForm(QDialog, forms.ui_choose_back_calc_result_form.Ui
         super(ChooseBackCalcResultForm, self).__init__(parent)
         self.setupUi(self)
                 
-        self.choice1_lbl.setText(op1_txt)
-        self.choice2_lbl.setText(op2_txt)
+        ####self.choice1_lbl.setText(op1_txt)
+        ####self.choice2_lbl.setText(op2_txt)
+        
+        self.choice1_btn.setText(op1_txt)
+        self.choice2_btn.setText(op2_txt)
+        
+        
         self.info_label.setText(info_text)
 
     def getChoice(self):

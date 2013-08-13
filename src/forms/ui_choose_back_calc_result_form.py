@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'choose_back_calc_result_form.ui'
 #
-# Created: Wed Apr 17 14:37:19 2013
-#      by: PyQt4 UI code generator 4.10
+# Created: Tue Aug 13 11:04:43 2013
+#      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -26,10 +26,21 @@ except AttributeError:
 class Ui_ChooseBackCalcResultForm(object):
     def setupUi(self, ChooseBackCalcResultForm):
         ChooseBackCalcResultForm.setObjectName(_fromUtf8("ChooseBackCalcResultForm"))
-        ChooseBackCalcResultForm.resize(429, 297)
+        ChooseBackCalcResultForm.resize(482, 221)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.MinimumExpanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(ChooseBackCalcResultForm.sizePolicy().hasHeightForWidth())
+        ChooseBackCalcResultForm.setSizePolicy(sizePolicy)
+        ChooseBackCalcResultForm.setMinimumSize(QtCore.QSize(480, 0))
         self.verticalLayout = QtGui.QVBoxLayout(ChooseBackCalcResultForm)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.info_label = QtGui.QLabel(ChooseBackCalcResultForm)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.info_label.sizePolicy().hasHeightForWidth())
+        self.info_label.setSizePolicy(sizePolicy)
         self.info_label.setWordWrap(True)
         self.info_label.setObjectName(_fromUtf8("info_label"))
         self.verticalLayout.addWidget(self.info_label)
@@ -40,32 +51,14 @@ class Ui_ChooseBackCalcResultForm(object):
         self.verticalLayout.addWidget(self.line_2)
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        self.choice1_lbl = QtGui.QLabel(ChooseBackCalcResultForm)
-        self.choice1_lbl.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
-        self.choice1_lbl.setMouseTracking(False)
-        self.choice1_lbl.setWordWrap(True)
-        self.choice1_lbl.setObjectName(_fromUtf8("choice1_lbl"))
-        self.horizontalLayout.addWidget(self.choice1_lbl)
-        self.line = QtGui.QFrame(ChooseBackCalcResultForm)
-        self.line.setFrameShape(QtGui.QFrame.VLine)
-        self.line.setFrameShadow(QtGui.QFrame.Sunken)
-        self.line.setObjectName(_fromUtf8("line"))
-        self.horizontalLayout.addWidget(self.line)
-        self.choice2_lbl = QtGui.QLabel(ChooseBackCalcResultForm)
-        self.choice2_lbl.setWordWrap(True)
-        self.choice2_lbl.setObjectName(_fromUtf8("choice2_lbl"))
-        self.horizontalLayout.addWidget(self.choice2_lbl)
-        self.verticalLayout.addLayout(self.horizontalLayout)
-        self.horizontalLayout_2 = QtGui.QHBoxLayout()
-        self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
         self.choice1_btn = QtGui.QRadioButton(ChooseBackCalcResultForm)
         self.choice1_btn.setChecked(True)
         self.choice1_btn.setObjectName(_fromUtf8("choice1_btn"))
-        self.horizontalLayout_2.addWidget(self.choice1_btn)
+        self.horizontalLayout.addWidget(self.choice1_btn)
         self.choice2_btn = QtGui.QRadioButton(ChooseBackCalcResultForm)
         self.choice2_btn.setObjectName(_fromUtf8("choice2_btn"))
-        self.horizontalLayout_2.addWidget(self.choice2_btn)
-        self.verticalLayout.addLayout(self.horizontalLayout_2)
+        self.horizontalLayout.addWidget(self.choice2_btn)
+        self.verticalLayout.addLayout(self.horizontalLayout)
         self.buttonBox = QtGui.QDialogButtonBox(ChooseBackCalcResultForm)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
@@ -82,15 +75,6 @@ class Ui_ChooseBackCalcResultForm(object):
         self.info_label.setText(_translate("ChooseBackCalcResultForm", "The back-calculation has resulted in two possible sets of choices for the counts.\n"
 "\n"
 "Please choose one from below:", None))
-        self.choice1_lbl.setText(_translate("ChooseBackCalcResultForm", "line1\n"
-"line2\n"
-"line3\n"
-"line4\n"
-"line5\n"
-"line6\n"
-"line7\n"
-"", None))
-        self.choice2_lbl.setText(_translate("ChooseBackCalcResultForm", "TextLabel", None))
         self.choice1_btn.setText(_translate("ChooseBackCalcResultForm", "Choice 1", None))
         self.choice2_btn.setText(_translate("ChooseBackCalcResultForm", "Choice 2", None))
 

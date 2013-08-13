@@ -230,3 +230,25 @@ class CommandGenericDo(QUndoCommand):
         
     def undo(self):
         self.undo_f()
+        
+
+def matrix_as_table(matrix, col_width=None, spacing=2):
+    ''' matrix is a list of rows, col_width is the fixed column width '''
+    
+    # get default col width, wide as widgest col
+    if col_width is None:
+        max_width = 0
+        for row in matrix:
+            widths = [len(x) for x in row]
+            max_width = max(max_width, max(widths))
+        col_width = max_width
+
+    matrix_formatted = []
+    for row in matrix:
+        formatted_row = ["{0:{width}}".format(x, width=col_width) for x in row]
+        spacer = " "*spacing
+        formatted_row = spacer.join(formatted_row)
+        matrix_formatted.append(formatted_row)
+        
+    matrix_formatted = "\n".join(matrix_formatted)
+    return matrix_formatted

@@ -731,19 +731,21 @@ class ChooseBackCalcResultForm(QDialog, forms.ui_choose_back_calc_result_form.Ui
         op1 = imputed_data["op1"]  # option 1 data
         a, b, c, d = op1["a"], op1["b"], op1["c"], op1["d"]
         a, b, c, d = int(round(a)), int(round(b)), int(round(c)), int(round(d))
-        option1_txt = "Group 1:\n  #events: %d\n  Total: %d\nGroup 2:\n  #events: %d\n  Total: %d" % (a, b, c, d)
+        option1_txt = "Group 1:\n  #events: %d\n  Total: %d\n\nGroup 2:\n  #events: %d\n  Total: %d" % (a, b, c, d)
         
         op2 = imputed_data["op2"]
         a, b, c, d = op2["a"], op2["b"], op2["c"], op2["d"]
         a, b, c, d = int(round(a)), int(round(b)), int(round(c)), int(round(d))
-        option2_txt = "Group 1:\n  #events: %d\n  Total: %d\nGroup 2:\n  #events: %d\n  Total: %d" % (a, b, c, d)
+        option2_txt = "Group 1:\n  #events: %d\n  Total: %d\n\nGroup 2:\n  #events: %d\n  Total: %d" % (a, b, c, d)
         
-        self.choice1_lbl.setText(option1_txt)
-        self.choice2_lbl.setText(option2_txt)
+        self.choice1_btn.setText(option1_txt)
+        self.choice2_btn.setText(option2_txt)
         self.info_label.setText("The back-calculation has resulted in two "
                                 "possible sets of choices for the counts. Please"
                                 " choose one from below. These choices do not "
                                 "reflect possible corrections for zero counts.")
+        
+        self.adjustSize()
 
     def getChoice(self):
         choices = ["op1", "op2"]

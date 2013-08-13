@@ -47,7 +47,7 @@ import easter_egg
 # for the help
 import webbrowser
 
-DISABLE_NETWORK_STUFF = True # disable this until we can package jags, rjags, getmc etc
+DISABLE_NETWORK_STUFF = True # disable this until we can package jags, rjags, getmc
 
 DEFAULT_DATASET_NAME = unicode("untitled_dataset", "utf-8")
 
