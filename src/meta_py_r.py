@@ -1062,7 +1062,7 @@ def load_in_R(fpath):
 
 
 @RfunctionCaller
-def update_plot_params(plot_params, plot_params_name="params", \
+def update_plot_params(plot_params, plot_params_name="params",
                         write_them_out=False, outpath=None):
     # first cast the params to an R data frame to make it
     # R-palatable
