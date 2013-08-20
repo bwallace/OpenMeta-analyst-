@@ -1260,6 +1260,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         try:
             if self.out_path[-4:] != u".oma":
                 self.out_path += u".oma"
+                print("added proper file extension")
         except Exception as e:
             print("")
             print(e)
