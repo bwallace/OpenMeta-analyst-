@@ -1250,6 +1250,8 @@ def _gen_cov_vals_obj_str(cov, study_ids, dataset):
 
 
 def list_of_cov_value_objects_str(dataset, study_ids, cov_list=None):
+    ''' makes r_string of covariate objects with their values '''
+    
     r_cov_str = []
     if cov_list is None:
         # then use all covariates that belong to the dataset
