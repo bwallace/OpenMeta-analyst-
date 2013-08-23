@@ -767,7 +767,9 @@ pretty.metric.name <- function(metric) {
     # diagnostic odds ratio
     DOR = "Diagnostic Odds Ratio",
     # tx mean is already pretty.
-    TXMean = "TX Mean")[[metric]]
+    TXMean = "TX Mean",
+    # Generic Effect
+    GEN = "Generic Effect")[[metric]]
 
   metric.name
 }
