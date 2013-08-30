@@ -1,6 +1,6 @@
 # Special methods for helping out OpenMEE
 
-trans.to.norm <- function(metric, source.data, conf.level) {
+trans.to.raw <- function(metric, source.data, conf.level) {
 	# transforms data given in source.data dataframe and returns the result
 	# in another dataframe
 	#
@@ -50,7 +50,7 @@ trans.to.norm <- function(metric, source.data, conf.level) {
 
 
 
-norm.to.trans <- function(metric, source.data, conf.level) {
+raw.to.trans <- function(metric, source.data, conf.level) {
 	# transforms data given in source.data dataframe and returns the result
 	# in another dataframe
 	#
@@ -66,7 +66,7 @@ norm.to.trans <- function(metric, source.data, conf.level) {
 	lb.source <- source.data$lb
 	ub.source <- source.data$ub
 	
-	get.yi.vi(yi,lb,ub) <- function() {
+	get.yi.vi <- function(yi,lb,ub) {
 		# just takes the yi,lb,ub and gives the yi, and vi
 		vi <- ((ub-yi)/mult)^2
 		vi <- ifelse(is.na(vi), ((ub-yi)/mult)^2, vi)
