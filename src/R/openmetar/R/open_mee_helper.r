@@ -104,3 +104,98 @@ raw.to.trans <- function(metric, source.data, conf.level) {
 			ZCOR = rtoz()      # Fisher's Z-transform
 	)
 }
+
+
+# Helpers for regression to show categorical covariate means instead of differences
+
+linear.combination <- function(a, rma.results, conf.level=95.0) {
+	# a is a matrix describing how to combine the
+	# intercept and a difference to get a mean
+	#
+	# Ex. 'a' matrix:
+	#           A B C D
+	# intercept 1 0 0 0
+	#        x1 1 1 0 0
+	#        x2 1 0 1 0
+	# 	     x3 1 0 0 1
+	
+	alpha <- 1.0-(conf.level/100.0)
+	mult <- abs(qnorm(alpha/2.0))
+	a <- t(a) # need to transpose for math to be sane
+	
+	#print("betas:\n")
+	#print(matrix(rma.results$b, ncol=1))
+	#print("cov:\n")
+	#print(rma.results$vb)
+	#print(matrix(diag(rma.results$vb), ncol=1))
+	#print("a matrix:\n")
+	#print(a)
+	#print("\n")
+	
+	new_betas  <- t(a) %*% matrix(rma.results$b, ncol=1)
+	new_cov   <- t(a) %*% rma.results$vb %*% a
+	new_vars <- diag(new_cov)
+	new_lowers <- new_betas - mult*sqrt(new_vars)
+	new_uppers <- new_betas + mult*sqrt(new_vars)
+	new_se     <- sqrt(new_vars)
+	
+	res <- data.frame(b=new_betas, ci.lb=new_lowers, ci.ub=new_uppers, se=new_se)
+	res
+}
+
+adjusted_means_display <- function(rma.results, params, display.data, conf.level=95.0) {
+
+	# Generate 'a' matrix
+	num.levels = display.data$factor.n.levels[1] # just look at the first covariate for now
+	a <- rep(1,num.levels)
+	for (one.pos in 2:num.levels) {
+		col = c(rep(0,one.pos-1),1,rep(0,num.levels-one.pos))
+		a <- c(a,col)
+	}
+	a <- matrix(a, nrow=num.levels)
+	
+	levels <- display.data$levels.display.col
+	levels <- levels[levels!='']
+	studies <- display.data$studies.display.col
+	studies <- studies[studies!='']
+			
+	res <- linear.combination(a, rma.results, conf.level)
+	res <- c(res, list(levels=levels,
+			           studies=studies))
+	return(create.adjusted.regression.display(res, params, display.data))
+	
+
+
+}
+
+
+
+create.adjusted.regression.display <- function(res, params, display.data) {
+	col.labels <- c("Level", "Studies", "Adjusted Means", "Lower bound", "Upper bound", "Std. error")
+	n.rows = length(res$b)+1
+	
+	reg.array <- array(dim=c(n.rows, length(col.labels)), dimnames=list(NULL, col.labels))
+	reg.array[1,] <- col.labels
+	digits.str <- paste("%.", params$digits, "f", sep="")
+	coeffs <- sprintf(digits.str, res$b)
+	se <- round.display(res$se, digits=params$digits)
+	lbs <- sprintf(digits.str, res$ci.lb)
+	ubs <- sprintf(digits.str, res$ci.ub)
+	
+	# add data to array
+	reg.array[2:n.rows, "Level"] <- res$levels
+	reg.array[2:n.rows, "Studies"] <- res$studies
+	reg.array[2:n.rows, "Adjusted Means"] <- coeffs
+	reg.array[2:n.rows, "Std. error"] <- se
+	reg.array[2:n.rows, "Lower bound"] <- lbs
+	reg.array[2:n.rows, "Upper bound"] <- ubs
+	
+	arrays <- list(arr1=reg.array)
+	metric.name <- pretty.metric.name(as.character(params$measure)) 
+	model.title <- paste("Meta-Regression Adjusted Means\n\nMetric: ", metric.name, sep="")
+	reg.disp <- list("model.title" = model.title, "table.titles" = c("Model Results"), "arrays" = arrays, "MAResults" = res)
+	
+	class(reg.disp) <-  "summary.display"
+	return(reg.disp)
+}
+

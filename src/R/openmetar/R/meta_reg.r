@@ -36,14 +36,16 @@ meta.regression <- function(reg.data, params) {
                                 level=params$conf.level, digits=params$digits,
                                 method=method, mods=cov.array))
 				
-	print("RES from meta_reg"); print(res);
+	print("\nRES from meta_reg\n"); print(res);
+	print("\nHere is the b:\n"); print(res$b);
+	print("\nAnd the vb:\n"); print(res$vb);
 				
 				
    if (class(res)[1] != "try-error") {
        display.data <- cov.data$display.data
        reg.disp <- create.regression.display(res, params, display.data)
    
-       if (length(display.data$n.cont.covs)==1 & length(display.data$factor.n.levels)==0) {
+       if (display.data$n.cont.covs==1 & length(display.data$factor.n.levels)==0) {
             # if only 1 continuous covariate, create reg. plot
             betas <- res$b
             fitted.line <- list(intercept=betas[1], slope=betas[2])
@@ -74,9 +76,13 @@ meta.regression <- function(reg.data, params) {
 					        "Summary"=reg.disp,
 							"plot_names"=plot.names,
                             "plot_params_paths"=plot.params.paths)
-
-        } else {
-            results <- list("Summary"=reg.disp)
+		} else {
+			if (display.data$n.cont.covs==0 & length(display.data$factor.n.levels)==1) {
+				adj.reg.disp <- adjusted_means_display(res, params, display.data, conf.level=params$conf.level)
+				results <- list("Summary"=reg.disp, "Adjusted Mean"=adj.reg.disp)
+			} else {
+            		results <- list("Summary"=reg.disp)
+			}
         }
     } else {
         results <- res
