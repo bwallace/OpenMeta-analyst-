@@ -32,16 +32,19 @@ meta.regression <- function(reg.data, params) {
 	
 	
 	
-   res<-try(rma.uni(yi=reg.data@y, sei=reg.data@SE, slab=reg.data@study.names,
-                                level=params$conf.level, digits=params$digits,
-                                method=method, mods=cov.array))
+   #res<-try(rma.uni(yi=reg.data@y, sei=reg.data@SE, slab=reg.data@study.names,
+   #                             level=params$conf.level, digits=params$digits,
+   #                             method=method, mods=cov.array))
+	res<-rma.uni(yi=reg.data@y, sei=reg.data@SE, slab=reg.data@study.names,
+					level=params$conf.level, digits=params$digits,
+					method=method, mods=cov.array)
 				
 	print("\nRES from meta_reg\n"); print(res);
 	print("\nHere is the b:\n"); print(res$b);
 	print("\nAnd the vb:\n"); print(res$vb);
 				
 				
-   if (class(res)[1] != "try-error") {
+#   if (class(res)[1] != "try-error") {
        display.data <- cov.data$display.data
        reg.disp <- create.regression.display(res, params, display.data)
    
@@ -84,9 +87,9 @@ meta.regression <- function(reg.data, params) {
             		results <- list("Summary"=reg.disp)
 			}
         }
-    } else {
-        results <- res
-    }
+#    } else {
+#        results <- res
+#    }
 	
 	references <- "Meta Regression: meta regression citation placeholder"
 	results[["References"]] <- references
@@ -113,6 +116,8 @@ extract.cov.data <- function(reg.data) {
     cov.name <- cov@cov.name
     cov.vals <- cov@cov.vals
     cov.type <- cov@cov.type
+	#debug_print <- paste(c("Cov name: ", cov.name, "\nCov type: ", cov.type,"\n"))
+	#print(debug_print)
     ref.var <- cov@ref.var
     if (cov.type=="continuous") {
       cov.col <- array(cov.vals, dim=c(length(reg.data@y), 1), 

@@ -262,7 +262,7 @@ create.regression.display <- function(res, params, display.data) {
     reg.array <- array(dim=c(length(cov.display.col)+1, length(col.labels)), dimnames=list(NULL, col.labels))
     reg.array[1,] <- col.labels
     digits.str <- paste("%.", params$digits, "f", sep="")
-    coeffs <- sprintf(digits.str, res$b)
+    coeffs <- sprintf(digits.str, res$b)#; print(paste(c("coeffs:", coeffs))); ###
     se <- round.display(res$se, digits=params$digits)
     pvals <- round.display(res$pval, digits=params$digits)
     lbs <- sprintf(digits.str, res$ci.lb)
@@ -277,19 +277,24 @@ create.regression.display <- function(res, params, display.data) {
     if (n.factor.covs > 0) {
       # there are factor covariants - insert spaces for reference var. row.
       insert.row <- n.cont.rows + 1
+	  print(paste(c("insert.row outer: ", insert.row)))
       for (count in 1:n.factor.covs) {
-        n.levels <- factor.n.levels[count] 
+        n.levels <- factor.n.levels[count]
+		#print(paste(c("n.levels", n.levels))) #####
         coeffs.tmp <- c(coeffs.tmp,"", coeffs[insert.row:(insert.row + n.levels - 2)])
         se.tmp <- c(se.tmp,"", se[insert.row:(insert.row + n.levels - 2)])
         pvals.tmp <- c(pvals.tmp,"",pvals[insert.row:(insert.row + n.levels - 2)])
         lbs.tmp <- c(lbs.tmp,"",lbs[insert.row:(insert.row + n.levels - 2)])
         ubs.tmp <- c(ubs.tmp,"",ubs[insert.row:(insert.row + n.levels - 2)])
-        insert.row <- insert.row + n.levels
+        insert.row <- insert.row + n.levels - 1
+		#print(paste(c("insert.row after: ", insert.row))) ######
       }   
       reg.array[2:n.rows, "Level"] <- levels.display.col
       reg.array[2:n.rows, "Studies"] <- studies.display.col
     }
 
+	
+	
     # add data to array
     reg.array[2:n.rows,"Covariate"] <- cov.display.col
     reg.array[2:n.rows,"Coefficients"] <- coeffs.tmp 
