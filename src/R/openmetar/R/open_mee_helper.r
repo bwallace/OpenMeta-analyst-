@@ -162,15 +162,157 @@ adjusted_means_display <- function(rma.results, params, display.data, conf.level
 	res <- linear.combination(a, rma.results, conf.level)
 	res <- c(res, list(levels=levels,
 			           studies=studies))
-	return(create.adjusted.regression.display(res, params, display.data))
+	return(create.adjusted.regression.display(res, params))
+}
+
+
+cond_means_display <- function(rma.results, params, display.data, reg.data, conf.level, cat.ref.var.and.levels, cond.means.data) {
+	# cat.ref.var.and.levels is a list:
+	#      keys: names of covariates
+	#      values: vector of ref.value and rest of levels in proper order
+	#
+	# cond.means.data is a list obtained from python:
+	#      keys: chosen.cov.name : name of covariate chosen to stratify over
+	#            other covariate names: values chosen for these covariates
 	
-
-
+	
+	chosen.cov.name = as.character(cond.means.data$chosen.cov.name)
+	
+	
+	##### Generate 'a' matrix
+	
+	# First make a list of continous and catagorical covariates as they appear in the mods array (and a matrix)
+	cont.cov.names <- c()
+	cat.cov.names <- c()
+	for (i in 1:length(reg.data@covariates)) {
+		cov <- reg.data@covariates[[i]]
+		cov.name <- cov@cov.name
+		cov.type <- cov@cov.type
+		
+		if (cov.type=="continuous") {
+			cont.cov.names <- c(cont.cov.names, cov.name)
+		}
+		if (cov.type=="factor") {
+			cat.cov.names <- c(cat.cov.names, cov.name)
+		}
+	}
+	
+	
+	num.rows <- length(cat.ref.var.and.levels[[chosen.cov.name]])
+	a <- cbind(c(), rep(1,num.rows))
+	# add in data for continuous variables
+	for (cont.name in cont.cov.names) {
+		col <- rep(cond.means.data[[cont.name]],num.rows)
+		a <- cbind(a,col)
+	}
+	
+	
+	
+	# add in data for categorical variables
+	count = 0
+	for (cat.name in cat.cov.names) {
+		count = count + 1
+		ref.var <- cat.ref.var.and.levels[[cat.name]][[1]]
+		n.cols  <- length(cat.ref.var.and.levels[[cat.name]]) - 1 # exclude reference var
+		
+		if (cat.name != chosen.cov.name) {
+			value   <- cond.means.data[[cat.name]]
+			levels <- cat.ref.var.and.levels[[cat.name]]
+			levels.min.ref <- levels[2:length(levels)]
+			
+			new.row <- (levels.min.ref==value)*1
+			block <- matrix(new.row, byrow=TRUE, nrow=num.rows, ncol=length(levels.min.ref))
+			a <- cbind(a, block)
+			
+		} else { # this is the chosen categorical variable that we stratify over
+			chosen_pos = count
+			chosen.cov.levels <- cat.ref.var.and.levels[[cat.name]]
+			chosen.level <- chosen.cov.levels[i]
+			block <- make.submatrix.for.strat.var(chosen.cov.levels, ref.var)
+			a <- cbind(a,block)
+			
+		} # end of else
+		
+	} # end for
+	
+	cat("A matrix", a)
+	# End of a matrix generation
+	
+	
+	res <- linear.combination(a, rma.results, conf.level)
+	
+	
+	#levels <- display.data$levels.display.col
+	#levels <- levels[levels!='']
+	levels <- chosen.cov.levels
+	
+	if (chosen_pos-1<1) {
+		studies.start.index <- 1
+	} else {
+		studies.start.index <- sum(display.data$factor.n.levels[1:(chosen_pos-1)])+1
+	}
+	studies <- display.data$studies.display.col
+	studies <- studies[studies!='']
+	studies <- studies[studies.start.index:(studies.start.index+length(levels)-1)]
+	
+	
+	res <- c(res, list(levels=levels, studies=studies, chosen.cov.name=chosen.cov.name, cond.means.data=cond.means.data)  )
+	return(create.adjusted.regression.display2(res, params))
 }
 
 
 
-create.adjusted.regression.display <- function(res, params, display.data) {
+make.submatrix.for.strat.var <- function(levels, ref) {
+	levels.min.ref <- levels[2:length(levels)]
+	block = c()
+	for (lvl in levels) {
+		new.row <- (levels.min.ref == lvl)*1
+		block <- rbind(block, new.row)
+	}
+	block
+}
+
+
+create.adjusted.regression.display2 <- function(res, params) {
+	col.labels <- c("Level", "Studies", "Conditional Means", "Lower bound", "Upper bound", "Std. error")
+	n.rows = length(res$levels)+1
+	
+	reg.array <- array(dim=c(n.rows, length(col.labels)), dimnames=list(NULL, col.labels))
+	reg.array[1,] <- col.labels
+	digits.str <- paste("%.", params$digits, "f", sep="")
+	coeffs <- sprintf(digits.str, res$b)
+	se <- round.display(res$se, digits=params$digits)
+	lbs <- sprintf(digits.str, res$ci.lb)
+	ubs <- sprintf(digits.str, res$ci.ub)
+	
+	# add data to array
+	reg.array[2:n.rows, "Level"] <- res$levels
+	reg.array[2:n.rows, "Studies"] <- res$studies
+	reg.array[2:n.rows, "Conditional Means"] <- coeffs
+	reg.array[2:n.rows, "Std. error"] <- se
+	reg.array[2:n.rows, "Lower bound"] <- lbs
+	reg.array[2:n.rows, "Upper bound"] <- ubs
+	
+	arrays <- list(arr1=reg.array)
+	metric.name <- pretty.metric.name(as.character(params$measure)) 
+	
+	blurb <- paste("\nThese are the conditional means for '",res$chosen.cov.name, "',\nstratified over its levels given the following values for the other covariates:\n", sep="")
+	for (name in names(res$cond.means.data)) {
+		if (name != 'chosen.cov.name') {
+			blurb <- paste(blurb, name, " = ", res$cond.means.data[[name]], "\n", sep="")
+		}
+	}
+	
+	model.title <- paste("Meta-Regression-Based Conditional Means\n\nMetric: ", metric.name, "\n", blurb, sep="")
+	reg.disp <- list("model.title" = model.title, "table.titles" = c("Model Results"), "arrays" = arrays, "MAResults" = res)
+	
+	class(reg.disp) <-  "summary.display"
+	return(reg.disp)
+}
+
+
+
+create.adjusted.regression.display <- function(res, params) {
 	col.labels <- c("Level", "Studies", "Adjusted Means", "Lower bound", "Upper bound", "Std. error")
 	n.rows = length(res$b)+1
 	

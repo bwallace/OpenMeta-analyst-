@@ -1,6 +1,8 @@
 ##################################################################
 #                                                                #
 #  Byron C. Wallace                                              #
+#  George E. Dietz
+#  Brown CEBM
 #  Tufts Medical Center                                          #
 #  OpenMeta[analyst]                                             #
 #  ---                                                           #
@@ -9,9 +11,10 @@
 
 library(metafor)
 
-meta.regression <- function(reg.data, params) {
+meta.regression <- function(reg.data, params, cond.means.data=FALSE) {
    cov.data <- extract.cov.data(reg.data)
    cov.array <- cov.data$cov.array
+   cat.ref.var.and.levels <- cov.data$cat.ref.var.and.levels
    
    # remove when and if method dialog is added
    method <- as.character(params$method)
@@ -80,12 +83,22 @@ meta.regression <- function(reg.data, params) {
 							"plot_names"=plot.names,
                             "plot_params_paths"=plot.params.paths)
 		} else {
-			if (display.data$n.cont.covs==0 & length(display.data$factor.n.levels)==1) {
-				adj.reg.disp <- adjusted_means_display(res, params, display.data, conf.level=params$conf.level)
-				results <- list("Summary"=reg.disp, "Adjusted Mean"=adj.reg.disp)
+			if (class(cond.means.data)!=class(FALSE)) {
+				mr.cond.means.disp <- cond_means_display(res, params, display.data, reg.data=reg.data, conf.level=params$conf.level, cat.ref.var.and.levels=cat.ref.var.and.levels, cond.means.data=cond.means.data)
+				results <- list("Summary"=reg.disp, "Conditional Means"=mr.cond.means.disp)
 			} else {
-            		results <- list("Summary"=reg.disp)
+				if (display.data$n.cont.covs==0 & length(display.data$factor.n.levels)==1) {
+					adj.reg.disp <- adjusted_means_display(res, params, display.data, conf.level=params$conf.level)
+					results <- list("Summary"=reg.disp, "Adjusted Mean"=adj.reg.disp)
+					
+					
+				} else {
+					results <- list("Summary"=reg.disp)
+				}
 			}
+			
+			
+
         }
 #    } else {
 #        results <- res
@@ -110,6 +123,7 @@ extract.cov.data <- function(reg.data) {
   cont.cov.names <- c()
   cont.cov.array <- NULL
   factor.cov.array <- NULL
+  cat.cov.ref.var.and.levels <- list() #### 
   for (n.covs in 1:length(reg.data@covariates)) {
     # put covariate data into two arrays, for continuous and factor covariates.
     cov <- reg.data@covariates[[n.covs]]
@@ -133,6 +147,8 @@ extract.cov.data <- function(reg.data) {
       levels.minus.NA <- setdiff(levels, "")
       # Levels except for reference variable
       levels.minus.ref.var <- setdiff(levels.minus.NA, ref.var)
+	  
+	  
       cov.cols <- array(dim=c(length(reg.data@y), length(levels.minus.ref.var)))
       studies.col <- c(sum(cov.vals==ref.var))
       for (col.index in 1:length(levels.minus.ref.var)) {
@@ -147,6 +163,8 @@ extract.cov.data <- function(reg.data) {
       factor.studies.display.col <- c() 
       levels.display.col <- c(levels.display.col, ref.var, levels.minus.ref.var)
       studies.display.col <- c(studies.display.col, studies.col)
+	  ref.var.and.levels.in.order <- c(ref.var, levels.minus.ref.var) ####
+	  cat.cov.ref.var.and.levels[[cov.name]] <- ref.var.and.levels.in.order ####
       }
   }
   cov.array <- cbind(cont.cov.array, factor.cov.array)
@@ -155,7 +173,8 @@ extract.cov.data <- function(reg.data) {
   studies.display.col <- c(rep("",length(cont.cov.names) + 1), studies.display.col)
   display.data <- list(cov.display.col=cov.display.col, levels.display.col=levels.display.col,
                        studies.display.col=studies.display.col, factor.n.levels=factor.n.levels, n.cont.covs=n.cont.covs)
-  cov.data <- list(cov.array=cov.array, display.data=display.data)
+  
+  cov.data <- list(cov.array=cov.array, display.data=display.data, cat.ref.var.and.levels=cat.cov.ref.var.and.levels)
                    
 }
 
