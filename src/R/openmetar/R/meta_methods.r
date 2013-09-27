@@ -122,6 +122,64 @@ cum.ma.binary <- function(fname, binary.data, params){
     results
 }
 
+bootstrap <- function(fname, omdata, data.type, ma.params, boot.params) {
+	# fname: the function name that runs the basic-meta-analysis
+	# data: the meta analysis object containing the data of interest
+	# data.type: the type of the data (binary or continuous)
+	# ma.params: parameters related to the meta-analysis
+	# boot.params: parameters related to the boot-strapping analysis in particular
+	#      boot.params$R
+	#      boot.params$plot.path
+	
+	
+	require(boot)
+	
+	##len_data = length(omdata@y)
+	omdata2 <- data.frame(omdata@y, omdata@SE, omdata@study.names)
+	names(omdata2)<-c("y", "SE", "study.names")
+	conf.level <- ma.params$conf.level
+	
+	bootstrap.plot.path <- boot.params$plot.path
+	if (is.null(bootstrap.plot.path)) {
+		bootstrap.plot.path <- "./r_tmp/bootstrap.png"
+	}
+	
+	coeff.statistic <- function(data, indices) {
+		params.tmp <- ma.params
+		params.tmp$create.plot <- FALSE
+		params.tmp$write.to.file <- FALSE
+		
+		# build a BinaryData or Continuous data object consisting of the data matching indices
+		y.tmp <- data$y[indices]
+		SE.tmp <- data$SE[indices]
+		names.tmp <- as.character(1:length(indices))
+		
+		data.tmp <- switch(data.type,
+						   binary=new('BinaryData', y=y.tmp, SE=SE.tmp, study.names=names.tmp),
+						   continuous=new('ContinuousData', y=y.tmp, SE=SE.tmp, study.names=names.tmp),
+						   )
+		
+	   res <- eval(call(fname, data.tmp, params.tmp))
+	   res.pure <- eval(call(paste(fname, ".overall", sep=""), res)) # the pure object obtained from metafor (not messed around with by OpenMetaR)
+	   res.pure$b
+	}
+	
+	results <- boot(omdata2, statistic=coeff.statistic, R=boot.params$R)
+	conf.interval <- boot.ci(boot.out = results, type = "norm")
+	
+	conf.interval.msg <- paste("The ", conf.interval$norm[1]*100, "% Confidence Interval: [", conf.interval$norm[2], ", ", conf.interval$norm[2])
+	# Make histogram
+	png(file=bootstrap.plot.path)
+	plot(results)
+	graphics.off()
+	
+	images <- c("Histogram"=bootstrap.plot.path)
+	plot.names <- c("forest plot"="forest_plot")
+	results <- list("images"=images,
+			"Summary"=conf.interval.msg)
+	results
+	
+}
 
 ##################################
 #  binary leave-one-out MA       #
@@ -130,6 +188,7 @@ loo.ma.binary <- function(fname, binary.data, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
     
+	######## START REFACTOR HERE ############
     loo.results <- array(list(NULL), dim=c(length(binary.data@study.names)))
     params.tmp <- params
     
@@ -174,6 +233,10 @@ loo.ma.binary <- function(fname, binary.data, params){
         loo.results[[i]] <- cur.overall
     }
     loo.results <- c(list(res.overall), loo.results)
+	
+	#### END REFACTORING HERE ##################
+	
+	
     # Add overall results
     study.names <- c("Overall", paste("- ",binary.data@study.names, sep=""))
     metric.name <- pretty.metric.name(as.character(params$measure))

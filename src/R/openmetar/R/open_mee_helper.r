@@ -257,7 +257,7 @@ cond_means_display <- function(rma.results, params, display.data, reg.data, conf
 	
 	
 	res <- c(res, list(levels=levels, studies=studies, chosen.cov.name=chosen.cov.name, cond.means.data=cond.means.data)  )
-	return(create.adjusted.regression.display2(res, params))
+	return(create.cond.means.regression.display(res, params))
 }
 
 
@@ -273,7 +273,7 @@ make.submatrix.for.strat.var <- function(levels, ref) {
 }
 
 
-create.adjusted.regression.display2 <- function(res, params) {
+create.cond.means.regression.display <- function(res, params) {
 	col.labels <- c("Level", "Studies", "Conditional Means", "Lower bound", "Upper bound", "Std. error")
 	n.rows = length(res$levels)+1
 	
