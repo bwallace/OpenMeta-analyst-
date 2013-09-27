@@ -122,7 +122,17 @@ cum.ma.binary <- function(fname, binary.data, params){
     results
 }
 
-bootstrap <- function(fname, omdata, data.type, ma.params, boot.params) {
+bootstrap.binary <- function(fname, omdata, params) {
+	res <- bootstrap(fname, omdata, "binary", params)
+	res
+}
+
+bootstrap.continuous <- function(fname, omdata, params) {
+	res <- bootstrap(fname, omdata, "continuous", params)
+	res
+}
+
+bootstrap <- function(fname, omdata, data.type, params) {
 	# fname: the function name that runs the basic-meta-analysis
 	# data: the meta analysis object containing the data of interest
 	# data.type: the type of the data (binary or continuous)
@@ -134,18 +144,17 @@ bootstrap <- function(fname, omdata, data.type, ma.params, boot.params) {
 	
 	require(boot)
 	
-	##len_data = length(omdata@y)
 	omdata2 <- data.frame(omdata@y, omdata@SE, omdata@study.names)
 	names(omdata2)<-c("y", "SE", "study.names")
-	conf.level <- ma.params$conf.level
+	conf.level <- params$conf.level
 	
-	bootstrap.plot.path <- boot.params$plot.path
+	bootstrap.plot.path <- as.character(params$bootstrap.plot.path)
 	if (is.null(bootstrap.plot.path)) {
 		bootstrap.plot.path <- "./r_tmp/bootstrap.png"
 	}
 	
 	coeff.statistic <- function(data, indices) {
-		params.tmp <- ma.params
+		params.tmp <- params
 		params.tmp$create.plot <- FALSE
 		params.tmp$write.to.file <- FALSE
 		
@@ -164,22 +173,62 @@ bootstrap <- function(fname, omdata, data.type, ma.params, boot.params) {
 	   res.pure$b
 	}
 	
-	results <- boot(omdata2, statistic=coeff.statistic, R=boot.params$R)
+	results <- boot(omdata2, statistic=coeff.statistic, R=params$num.bootstrap.replicates)
 	conf.interval <- boot.ci(boot.out = results, type = "norm")
 	
-	conf.interval.msg <- paste("The ", conf.interval$norm[1]*100, "% Confidence Interval: [", conf.interval$norm[2], ", ", conf.interval$norm[2])
+	mean_boot <- mean(results$t)
+	
+	conf.interval.msg <- paste("The ", conf.interval$norm[1]*100, "% Confidence Interval: [", conf.interval$norm[2], ", ", conf.interval$norm[3])
+	mean.msg <- paste("The observed value of the effect size was ", results$t0, ", while the mean over the replicates was ", mean_boot, ".")
+	summary.msg <- paste(conf.interval.msg, "\n", mean.msg)
 	# Make histogram
 	png(file=bootstrap.plot.path)
-	plot(results)
+	plot.custom.boot(results, title=as.character(params$histogram.title), xlab=as.character(params$histogram.xlab), ci.lb=conf.interval$norm[2], ci.ub=conf.interval$norm[3])
 	graphics.off()
 	
 	images <- c("Histogram"=bootstrap.plot.path)
-	plot.names <- c("forest plot"="forest_plot")
+	plot.names <- c("histogram"="histogram")
 	results <- list("images"=images,
-			"Summary"=conf.interval.msg)
+			"Summary"=summary.msg)
 	results
 	
 }
+
+plot.custom.boot <- function(x, title="Bootstrap Histogram", ci.lb, ci.ub, xlab="Effect Size") {
+#
+#  Plots the Histogram 
+#
+	
+	const <- function(w, eps=1e-8) {
+	# Are all of the values of w equal to within the tolerance eps.
+		all(abs(w-mean(w, na.rm=TRUE)) < eps)
+	}
+	
+	qdist <- "norm"
+	boot.out <- x
+	index <-1
+	t <- boot.out$t[,index]
+	t0 <- boot.out$t0[index]
+	t <- t[is.finite(t)]
+	if (const(t, min(1e-8,mean(t, na.rm=TRUE)/1e6))) {
+		print(paste("All values of t* are equal to ", mean(t, na.rm=TRUE)))
+		return(invisible(boot.out))
+	}
+	nclass <- min(max(ceiling(length(t)/25),10),100)
+	R <- boot.out$R
+	
+	#par(mfrow=c(1,2))
+	hist(t,nclass=nclass,probability=TRUE,xlab=xlab, main=title)
+	abline(v=t0,lty=1)
+	abline(v=ci.lb,lty=3) # conf. interval lines
+	abline(v=ci.ub,lty=3)
+	
+	#par(mfrow=c(1,1))
+	#invisible(boot.out)
+}
+
+
+
 
 ##################################
 #  binary leave-one-out MA       #

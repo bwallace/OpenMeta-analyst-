@@ -24,7 +24,7 @@ compute.for.one.bin.study <- function(binary.data, params){
     res <- escalc(params$measure, ai=binary.data@g1O1, bi=binary.data@g1O2, 
                                     ci=binary.data@g2O1, di=binary.data@g2O2,
                                     add=params$adjust, to=params$to)
-    res                             
+    res             
 }
 
 compute.bin.point.estimates <- function(binary.data, params) {
