@@ -143,8 +143,10 @@ linear.combination <- function(a, rma.results, conf.level=95.0) {
 	res
 }
 
-adjusted_means_display <- function(rma.results, params, display.data, conf.level=95.0) {
+adjusted_means_display <- function(rma.results, params, display.data) {
 
+	conf.level <- params$conf.level
+	
 	# Generate 'a' matrix
 	num.levels = display.data$factor.n.levels[1] # just look at the first covariate for now
 	a <- rep(1,num.levels)
@@ -166,20 +168,12 @@ adjusted_means_display <- function(rma.results, params, display.data, conf.level
 }
 
 
-cond_means_display <- function(rma.results, params, display.data, reg.data, conf.level, cat.ref.var.and.levels, cond.means.data) {
-	# cat.ref.var.and.levels is a list:
-	#      keys: names of covariates
-	#      values: vector of ref.value and rest of levels in proper order
-	#
-	# cond.means.data is a list obtained from python:
-	#      keys: chosen.cov.name : name of covariate chosen to stratify over
-	#            other covariate names: values chosen for these covariates
-	
-	
+cond_means_calculation <- function(rma.results, params, reg.data, cat.ref.var.and.levels, cond.means.data) {
 	chosen.cov.name = as.character(cond.means.data$chosen.cov.name)
+	conf.level <- params$conf.level
 	
 	
-	##### Generate 'a' matrix
+	#####@@@@@@@@@@ Generate 'a' matrix #########################
 	
 	# First make a list of continous and catagorical covariates as they appear in the mods array (and a matrix)
 	cont.cov.names <- c()
@@ -197,16 +191,14 @@ cond_means_display <- function(rma.results, params, display.data, reg.data, conf
 		}
 	}
 	
-	
 	num.rows <- length(cat.ref.var.and.levels[[chosen.cov.name]])
 	a <- cbind(c(), rep(1,num.rows))
+	
 	# add in data for continuous variables
 	for (cont.name in cont.cov.names) {
 		col <- rep(cond.means.data[[cont.name]],num.rows)
 		a <- cbind(a,col)
 	}
-	
-	
 	
 	# add in data for categorical variables
 	count = 0
@@ -235,16 +227,61 @@ cond_means_display <- function(rma.results, params, display.data, reg.data, conf
 		
 	} # end for
 	
-	cat("A matrix", a)
-	# End of a matrix generation
+	cat("A matrix", a) 
+	############## End of a matrix generation ################
 	
 	
 	res <- linear.combination(a, rma.results, conf.level)
+	result <- list(res=res, chosen.cov.levels=chosen.cov.levels, chosen_pos=chosen_pos, chosen.cov.name=chosen.cov.name)
+}
+
+# Makes a subset of an BinaryData or ContinuousData object with the:
+# study names
+# study years
+# point estimates
+# standard errors
+
+get.subset <- function(data, rows, make.unique.names=FALSE) {
+	data@study.names <- data@study.names[rows]
+	data@y <- data@y[rows]
+	data@SE <- data@SE[rows]
 	
+	if (length(data@covariates) > 0) {
+		for (j in 1:length(data@covariates)) {
+			# put covariate data into two arrays, for continuous and factor covariates.
+			data@covariates[[j]]@cov.vals <- data@covariates[[j]]@cov.vals[rows]
+		}
+	}
+	
+	if (make.unique.names) {
+		data@study.names <- as.character(1:length(rows))
+	}
+	
+	data
+} 
+
+
+
+cond_means_display <- function(rma.results, params, display.data, reg.data, cat.ref.var.and.levels, cond.means.data) {
+	# cat.ref.var.and.levels is a list:
+	#      keys: names of covariates
+	#      values: vector of ref.value and rest of levels in proper order
+	#
+	# cond.means.data is a list obtained from python:
+	#      keys: chosen.cov.name : name of covariate chosen to stratify over
+	#            other covariate names: values chosen for these covariates
+	
+	
+	# returns coefficients, uppers, lowers, and se
+	cond_means_result <- cond_means_calculation(rma.results, params, reg.data, cat.ref.var.and.levels, cond.means.data)
+	res             <- cond_means_result$res
+	levels          <- cond_means_result$chosen.cov.levels
+	chosen_pos      <- cond_means_result$chosen_pos
+	chosen.cov.name <- cond_means_result$chosen.cov.name
 	
 	#levels <- display.data$levels.display.col
 	#levels <- levels[levels!='']
-	levels <- chosen.cov.levels
+	#levels <- chosen.cov.levels
 	
 	if (chosen_pos-1<1) {
 		studies.start.index <- 1

@@ -132,6 +132,9 @@ bootstrap.continuous <- function(fname, omdata, params) {
 	res
 }
 
+
+
+
 bootstrap <- function(fname, omdata, data.type, params) {
 	# fname: the function name that runs the basic-meta-analysis
 	# data: the meta analysis object containing the data of interest
@@ -144,55 +147,139 @@ bootstrap <- function(fname, omdata, data.type, params) {
 	
 	require(boot)
 	
-	omdata2 <- data.frame(omdata@y, omdata@SE, omdata@study.names)
-	names(omdata2)<-c("y", "SE", "study.names")
-	conf.level <- params$conf.level
+	####omdata2 <- data.frame(omdata@y, omdata@SE, omdata@study.names)
+	omdata.rows <- seq(1:length(omdata@y)) # just store the row #s, we will index in to the actual object in the statistic function
+	#####names(omdata2)<-c("y", "SE", "study.names")
+
 	
+	# extract parameters
+	conf.level <- params$conf.level
+	max.extra.attempts <- 5*params$num.bootstrap.replicates
+	bootstrap.type <- as.character(params$bootstrap.type)
 	bootstrap.plot.path <- as.character(params$bootstrap.plot.path)
 	if (is.null(bootstrap.plot.path)) {
 		bootstrap.plot.path <- "./r_tmp/bootstrap.png"
 	}
 	
-	coeff.statistic <- function(data, indices) {
+	# used in the meta.reg.statistic to see if the covariates match
+	if (length(omdata@covariates) > 0) {
+		cov.data <- extract.cov.data(omdata)
+		factor.n.levels <- cov.data$display.data$factor.n.levels
+		n.cont.covs <- cov.data$display.data$n.cont.covs
+		cat.ref.var.and.levels <- cov.data$cat.ref.var.and.levels
+	}
+	
+	
+	# for bootstrapping a regular meta-analysis
+	vanilla.statistic <- function(data, indices) {
 		params.tmp <- params
 		params.tmp$create.plot <- FALSE
 		params.tmp$write.to.file <- FALSE
 		
-		# build a BinaryData or Continuous data object consisting of the data matching indices
-		y.tmp <- data$y[indices]
-		SE.tmp <- data$SE[indices]
-		names.tmp <- as.character(1:length(indices))
-		
-		data.tmp <- switch(data.type,
-						   binary=new('BinaryData', y=y.tmp, SE=SE.tmp, study.names=names.tmp),
-						   continuous=new('ContinuousData', y=y.tmp, SE=SE.tmp, study.names=names.tmp),
-						   )
+		data.tmp <- get.subset(omdata, indices, make.unique.names=TRUE)
+						   
 		
 	   res <- eval(call(fname, data.tmp, params.tmp))
 	   res.pure <- eval(call(paste(fname, ".overall", sep=""), res)) # the pure object obtained from metafor (not messed around with by OpenMetaR)
 	   res.pure$b
 	}
 	
-	results <- boot(omdata2, statistic=coeff.statistic, R=params$num.bootstrap.replicates)
-	conf.interval <- boot.ci(boot.out = results, type = "norm")
 	
-	mean_boot <- mean(results$t)
+	meta.reg.statistic <- function(data, indices) {
+		data.ok <- function(data.subset) {
+			subset.cov.data <- extract.cov.data(data.subset)
+			subset.factor.n.levels <- subset.cov.data$display.data$factor.n.levels
+			subset.n.cont.covs <- subset.cov.data$display.data$n.cont.covs
+			subset.cat.ref.var.and.levels <- subset.cov.data$cat.ref.var.and.levels
+			
+			# are the number of levels for each categorical covariate and the number of continuous covariates the same?
+			if (!(all(factor.n.levels==subset.factor.n.levels) && all(n.cont.covs==subset.n.cont.covs)))
+				return(FALSE)
+			
+			return(TRUE)
+		}
+		
+		data.tmp <- get.subset(omdata, indices, make.unique.names=TRUE)
+		error.during.meta.regression <- FALSE
+		first.try <- TRUE
+		while (first.try || !data.ok(data.tmp) || error.during.meta.regression) {
+			if (extra.attempts >= max.extra.attempts)
+				stop("Number of extra attempts exceeded 5x the number of replicates")
+			
+			
+			if (!first.try) {
+				extra.attempts <<- extra.attempts + 1
+				#cat("attempt: ", extra.attempts, "\n")
+				new.indices <- sample.int(length(omdata.rows), size=length(indices), replace=TRUE)
+				data.tmp <- get.subset(omdata, new.indices, make.unique.names=TRUE)
+			} else {
+				first.try <- FALSE
+			}
+
+			if (data.ok(data.tmp)) {
+				#cat("   data is ok maybe")
+				
+				# try to run the meta.regression
+				res <- try(meta.regression(data.tmp, params, stop.at.rma=TRUE), silent=FALSE)
+				if (class(res)[1] == "try-error") {
+					error.during.meta.regression <- TRUE
+					#cat("There was ane error during meta regression\n")
+				}
+				else {
+					error.during.meta.regrssion <- FALSE
+				}
+			}
+		} # end while
+		
+
+		res$b
+	}
 	
-	conf.interval.msg <- paste("The ", conf.interval$norm[1]*100, "% Confidence Interval: [", conf.interval$norm[2], ", ", conf.interval$norm[3])
-	mean.msg <- paste("The observed value of the effect size was ", results$t0, ", while the mean over the replicates was ", mean_boot, ".")
-	summary.msg <- paste(conf.interval.msg, "\n", mean.msg)
-	# Make histogram
-	png(file=bootstrap.plot.path)
-	plot.custom.boot(results, title=as.character(params$histogram.title), xlab=as.character(params$histogram.xlab), ci.lb=conf.interval$norm[2], ci.ub=conf.interval$norm[3])
-	graphics.off()
+	statistic <- switch(bootstrap.type,
+						boot.ma = vanilla.statistic,
+						boot.meta.reg = meta.reg.statistic,
+						boot.meta.reg.cond.means = meta.reg.statistic)
+	extra.attempts <- 0
+	results <- boot(omdata.rows, statistic=statistic, R=params$num.bootstrap.replicates)
 	
-	images <- c("Histogram"=bootstrap.plot.path)
-	plot.names <- c("histogram"="histogram")
-	results <- list("images"=images,
-			"Summary"=summary.msg)
+
+	cat("Total extra attempts: "); cat(extra.attempts); cat("\n")
+	
+	boot.ma.output.results <- function() {
+		conf.interval <- boot.ci(boot.out = results, type = "norm")
+		mean_boot <- mean(results$t)
+		
+		conf.interval.msg <- paste("The ", conf.interval$norm[1]*100, "% Confidence Interval: [", conf.interval$norm[2], ", ", conf.interval$norm[3])
+		mean.msg <- paste("The observed value of the effect size was ", results$t0, ", while the mean over the replicates was ", mean_boot, ".")
+		summary.msg <- paste(conf.interval.msg, "\n", mean.msg)
+		# Make histogram
+		png(file=bootstrap.plot.path)
+		plot.custom.boot(results, title=as.character(params$histogram.title), xlab=as.character(params$histogram.xlab), ci.lb=conf.interval$norm[2], ci.ub=conf.interval$norm[3])
+		graphics.off()
+		
+		images <- c("Histogram"=bootstrap.plot.path)
+		plot.names <- c("histogram"="histogram")
+		results <- list("images"=images,
+				"Summary"=summary.msg)
+		results
+	}
+	boot.meta.reg.output.results <- function() {
+		# RESUME HERE
+	}
+	boot.meta.reg.cond.means.output.results <- function() {
+		# RESUME HERE
+	}
+	
+	results <- switch(bootstrap.type,
+			boot.ma = boot.ma.output.results(),
+			boot.meta.reg = boot.meta.reg.output.results.reg.statistic(),
+			boot.meta.reg.cond.means = boot.meta.reg.cond.means.output.results())
 	results
 	
 }
+
+
+
 
 plot.custom.boot <- function(x, title="Bootstrap Histogram", ci.lb, ci.ub, xlab="Effect Size") {
 #

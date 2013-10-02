@@ -11,36 +11,30 @@
 
 library(metafor)
 
-meta.regression <- function(reg.data, params, cond.means.data=FALSE) {
+meta.regression <- function(reg.data, params, cond.means.data=FALSE, stop.at.rma=FALSE) {
    cov.data <- extract.cov.data(reg.data)
    cov.array <- cov.data$cov.array
    cat.ref.var.and.levels <- cov.data$cat.ref.var.and.levels
    
    # remove when and if method dialog is added
-   method <- as.character(params$method)
-   #method <- params$method
-   #cat("From meta.regression: method: ", method, "\n")
-   #cat("from meta.regression brackets: ", as.character(method), "\n")
+   method <- as.character(params$rm.method)
    
-	print("yi"); print(reg.data@y);
-	print("sei"); print(reg.data@SE);
-	print("slab"); print(reg.data@study.names);
-	
-	#params$method <- method
-	
-	cat("Level: ", params$conf.level, "\n")
-	cat("digits: ", params$digits, "\n")
-	cat("method: ", method, "\n")
-	cat("mods: ",cov.array)
+#	print("yi"); print(reg.data@y);
+#	print("sei"); print(reg.data@SE);
+#	print("slab"); print(reg.data@study.names);
+#	cat("Level: ", params$conf.level, "\n")
+#	cat("digits: ", params$digits, "\n")
+#	cat("method: ", method, "\n")
+#	cat("mods: ",cov.array)
 	
 	
-	
-   #res<-try(rma.uni(yi=reg.data@y, sei=reg.data@SE, slab=reg.data@study.names,
-   #                             level=params$conf.level, digits=params$digits,
-   #                             method=method, mods=cov.array))
 	res<-rma.uni(yi=reg.data@y, sei=reg.data@SE, slab=reg.data@study.names,
 					level=params$conf.level, digits=params$digits,
 					method=method, mods=cov.array)
+	# Used for when we just need the intermediate results (e.g. bootstrapping)
+	if (stop.at.rma) {
+		return(res) 
+	}
 				
 	print("\nRES from meta_reg\n"); print(res);
 	print("\nHere is the b:\n"); print(res$b);
@@ -84,11 +78,11 @@ meta.regression <- function(reg.data, params, cond.means.data=FALSE) {
                             "plot_params_paths"=plot.params.paths)
 		} else {
 			if (class(cond.means.data)!=class(FALSE)) {
-				mr.cond.means.disp <- cond_means_display(res, params, display.data, reg.data=reg.data, conf.level=params$conf.level, cat.ref.var.and.levels=cat.ref.var.and.levels, cond.means.data=cond.means.data)
+				mr.cond.means.disp <- cond_means_display(res, params, display.data, reg.data=reg.data, cat.ref.var.and.levels=cat.ref.var.and.levels, cond.means.data=cond.means.data)
 				results <- list("Summary"=reg.disp, "Conditional Means"=mr.cond.means.disp)
 			} else {
 				if (display.data$n.cont.covs==0 & length(display.data$factor.n.levels)==1) {
-					adj.reg.disp <- adjusted_means_display(res, params, display.data, conf.level=params$conf.level)
+					adj.reg.disp <- adjusted_means_display(res, params, display.data)
 					results <- list("Summary"=reg.disp, "Adjusted Mean"=adj.reg.disp)
 					
 					
@@ -142,7 +136,7 @@ extract.cov.data <- function(reg.data) {
     }
     #factor.cov.array <- NULL   # was this causing issue # 222 ?
     if (cov.type=="factor") {
-      levels <- unique(cov.vals)
+      levels <- sort(unique(cov.vals)) # it is actually important for this to be sorted 
       # Remove "" from levels, if necessary.
       levels.minus.NA <- setdiff(levels, "")
       # Levels except for reference variable
