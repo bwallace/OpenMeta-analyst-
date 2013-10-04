@@ -242,6 +242,13 @@ save.data <- function(om.data, res, params, plot.data, out.path=NULL) {
 }
 
 create.regression.display <- function(res, params, display.data) {
+	
+	if (is.null(params$bootstrap.type))
+		bootstrap.type <- ""
+	else
+		bootstrap.type <- as.character(params$bootstrap.type) # will be null if not bootstrap
+	
+	
     # create table for diplaying summary of regression ma results
     cov.display.col <- display.data$cov.display.col
     levels.display.col <- display.data$levels.display.col
@@ -254,24 +261,34 @@ create.regression.display <- function(res, params, display.data) {
     n.rows <- length(cov.display.col) + 1
     # extra row for col. labels
     if (n.factor.covs==0) {
-        col.labels <- c("Covariate", "Coefficients", "Lower bound", "Upper bound", "Std. error", "p-Value")
+		col.labels <- switch(bootstrap.type,
+							 boot.meta.reg=c("Covariate", "Coefficients", "Lower bound", "Upper bound"),
+							 c("Covariate", "Coefficients", "Lower bound", "Upper bound", "Std. error", "p-Value"))
+        #col.labels <- c("Covariate", "Coefficients", "Lower bound", "Upper bound", "Std. error", "p-Value")
     } else {
-        col.labels <- c("Covariate", "Level", "Studies", "Coefficients", "Lower bound", "Upper bound", "Std. error", "p-Value")
+		col.labels <- switch(bootstrap.type,
+				boot.meta.reg=col.labels <- c("Covariate", "Level", "Studies", "Coefficients", "Lower bound", "Upper bound"),
+				col.labels <- c("Covariate", "Level", "Studies", "Coefficients", "Lower bound", "Upper bound", "Std. error", "p-Value"))
+        #col.labels <- c("Covariate", "Level", "Studies", "Coefficients", "Lower bound", "Upper bound", "Std. error", "p-Value")
     }
         
     reg.array <- array(dim=c(length(cov.display.col)+1, length(col.labels)), dimnames=list(NULL, col.labels))
     reg.array[1,] <- col.labels
     digits.str <- paste("%.", params$digits, "f", sep="")
     coeffs <- sprintf(digits.str, res$b)#; print(paste(c("coeffs:", coeffs))); ###
-    se <- round.display(res$se, digits=params$digits)
-    pvals <- round.display(res$pval, digits=params$digits)
+	if (bootstrap.type!="boot.meta.reg") {
+	    se <- round.display(res$se, digits=params$digits)
+	    pvals <- round.display(res$pval, digits=params$digits)
+	}
     lbs <- sprintf(digits.str, res$ci.lb)
     ubs <- sprintf(digits.str, res$ci.ub)
     
     coeffs.tmp <- coeffs[1:n.cont.rows]
     # extra row for intercept
-    se.tmp <- se[1:n.cont.rows]
-    pvals.tmp <- pvals[1:n.cont.rows]
+	if (bootstrap.type!="boot.meta.reg") {
+    	se.tmp <- se[1:n.cont.rows]
+    	pvals.tmp <- pvals[1:n.cont.rows]
+	}
     lbs.tmp <- lbs[1:n.cont.rows]
     ubs.tmp <- ubs[1:n.cont.rows]
     if (n.factor.covs > 0) {
@@ -282,8 +299,10 @@ create.regression.display <- function(res, params, display.data) {
         n.levels <- factor.n.levels[count]
 		#print(paste(c("n.levels", n.levels))) #####
         coeffs.tmp <- c(coeffs.tmp,"", coeffs[insert.row:(insert.row + n.levels - 2)])
-        se.tmp <- c(se.tmp,"", se[insert.row:(insert.row + n.levels - 2)])
-        pvals.tmp <- c(pvals.tmp,"",pvals[insert.row:(insert.row + n.levels - 2)])
+		if (bootstrap.type!="boot.meta.reg") {
+        	se.tmp <- c(se.tmp,"", se[insert.row:(insert.row + n.levels - 2)])
+        	pvals.tmp <- c(pvals.tmp,"",pvals[insert.row:(insert.row + n.levels - 2)])
+		}
         lbs.tmp <- c(lbs.tmp,"",lbs[insert.row:(insert.row + n.levels - 2)])
         ubs.tmp <- c(ubs.tmp,"",ubs[insert.row:(insert.row + n.levels - 2)])
         insert.row <- insert.row + n.levels - 1
@@ -297,20 +316,30 @@ create.regression.display <- function(res, params, display.data) {
 	
     # add data to array
     reg.array[2:n.rows,"Covariate"] <- cov.display.col
-    reg.array[2:n.rows,"Coefficients"] <- coeffs.tmp 
-    reg.array[2:n.rows,"Std. error"] <- se.tmp
-    reg.array[2:n.rows, "p-Value"] <- pvals.tmp
-    reg.array[2:n.rows, "Lower bound"] <- lbs.tmp
-    reg.array[2:n.rows, "Upper bound"] <- ubs.tmp
-    
-    omnibus.pval.array <- array(dim=c(1,1))
-    omnibus.pval.array[1,1] <- sprintf(digits.str, res$QMp)
-    
-    arrays <- list(arr1=reg.array, arr2=omnibus.pval.array)
+    reg.array[2:n.rows,"Coefficients"] <- coeffs.tmp
+	reg.array[2:n.rows, "Lower bound"] <- lbs.tmp
+	reg.array[2:n.rows, "Upper bound"] <- ubs.tmp
+	if (bootstrap.type!="boot.meta.reg") {
+    	reg.array[2:n.rows,"Std. error"] <- se.tmp
+    	reg.array[2:n.rows, "p-Value"] <- pvals.tmp
+		
+		omnibus.pval.array <- array(dim=c(1,1))
+		omnibus.pval.array[1,1] <- sprintf(digits.str, res$QMp)
+		arrays <- list(arr1=reg.array, arr2=omnibus.pval.array)
+	} else {
+		arrays <- list(arr1=reg.array)
+	}
     
     metric.name <- pretty.metric.name(as.character(params$measure)) 
-    model.title <- paste("Meta-Regression\n\nMetric: ", metric.name, sep="")
-    reg.disp <- list("model.title" = model.title, "table.titles" = c("Model Results", "Omnibus p-Value"), "arrays" = arrays, "MAResults" = res)
+    
+	if (bootstrap.type!="boot.meta.reg") {
+		model.title <- paste("Meta-Regression\n\nMetric: ", metric.name, sep="")
+		reg.disp <- list("model.title" = model.title, "table.titles" = c("Model Results", "Omnibus p-Value"), "arrays" = arrays, "MAResults" = res)
+	} else {
+		model.title <- paste("Bootstrapped Meta-Regression based on ", params$num.bootstrap.replicates, " replicates.\n\n", params$extra.attempts, " resampling attempts failed.\n\nMetric: ", metric.name, sep="")
+		reg.disp <- list("model.title" = model.title, "table.titles" = c("Model Results"), "arrays" = arrays, "MAResults" = res)
+	}
+    
 
     class(reg.disp) <-  "summary.display"
     return(reg.disp)

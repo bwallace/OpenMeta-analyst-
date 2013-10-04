@@ -123,15 +123,6 @@ linear.combination <- function(a, rma.results, conf.level=95.0) {
 	mult <- abs(qnorm(alpha/2.0))
 	a <- t(a) # need to transpose for math to be sane
 	
-	#print("betas:\n")
-	#print(matrix(rma.results$b, ncol=1))
-	#print("cov:\n")
-	#print(rma.results$vb)
-	#print(matrix(diag(rma.results$vb), ncol=1))
-	#print("a matrix:\n")
-	#print(a)
-	#print("\n")
-	
 	new_betas  <- t(a) %*% matrix(rma.results$b, ncol=1)
 	new_cov   <- t(a) %*% rma.results$vb %*% a
 	new_vars <- diag(new_cov)
@@ -171,9 +162,37 @@ adjusted_means_display <- function(rma.results, params, display.data) {
 cond_means_calculation <- function(rma.results, params, reg.data, cat.ref.var.and.levels, cond.means.data) {
 	chosen.cov.name = as.character(cond.means.data$chosen.cov.name)
 	conf.level <- params$conf.level
+	chosen.cov.levels <- cat.ref.var.and.levels[[chosen.cov.name]]
 	
+	a <- generate.a.matrix(reg.data, cat.ref.var.and.levels, cond.means.data)
+	chosen_pos <- get.chosen.cov.position(chosen.cov.name, reg.data)
 	
+	res <- linear.combination(a, rma.results, conf.level)
+	result <- list(res=res, chosen.cov.levels=chosen.cov.levels, chosen_pos=chosen_pos, chosen.cov.name=chosen.cov.name)
+}
+
+
+get.chosen.cov.position <- function(chosen.cov.name, reg.data) {
+	count <- 0
+	for (i in 1:length(reg.data@covariates)) {
+		cov <- reg.data@covariates[[i]]
+		cov.name <- cov@cov.name
+		cov.type <- cov@cov.type
+		
+		
+		if (cov.type=="factor") {
+			count <- count + 1 # position in categorical covariates
+			#cat.cov.names <- c(cat.cov.names, cov.name)
+			if (cov.name == chosen.cov.name) chosen.pos <- count
+		}
+	}
+	chosen.pos
+}
+
+generate.a.matrix <- function(reg.data, cat.ref.var.and.levels, cond.means.data) {
 	#####@@@@@@@@@@ Generate 'a' matrix #########################
+	chosen.cov.name = as.character(cond.means.data$chosen.cov.name)
+	chosen.cov.levels <- cat.ref.var.and.levels[[chosen.cov.name]]
 	
 	# First make a list of continous and catagorical covariates as they appear in the mods array (and a matrix)
 	cont.cov.names <- c()
@@ -218,7 +237,7 @@ cond_means_calculation <- function(rma.results, params, reg.data, cat.ref.var.an
 			
 		} else { # this is the chosen categorical variable that we stratify over
 			chosen_pos = count
-			chosen.cov.levels <- cat.ref.var.and.levels[[cat.name]]
+			#chosen.cov.levels <- cat.ref.var.and.levels[[cat.name]]
 			chosen.level <- chosen.cov.levels[i]
 			block <- make.submatrix.for.strat.var(chosen.cov.levels, ref.var)
 			a <- cbind(a,block)
@@ -228,11 +247,8 @@ cond_means_calculation <- function(rma.results, params, reg.data, cat.ref.var.an
 	} # end for
 	
 	cat("A matrix", a) 
-	############## End of a matrix generation ################
-	
-	
-	res <- linear.combination(a, rma.results, conf.level)
-	result <- list(res=res, chosen.cov.levels=chosen.cov.levels, chosen_pos=chosen_pos, chosen.cov.name=chosen.cov.name)
+	a
+############## End of a matrix generation ################
 }
 
 # Makes a subset of an BinaryData or ContinuousData object with the:
@@ -260,6 +276,30 @@ get.subset <- function(data, rows, make.unique.names=FALSE) {
 	data
 } 
 
+
+boot.cond.means.display <- function (omdata, coeffs.and.cis, params, cat.ref.var.and.levels, cond.means.data) {
+	cov.data <- extract.cov.data(omdata)
+	display.data <- cov.data$display.data
+	chosen.cov.name = as.character(cond.means.data$chosen.cov.name)
+
+	levels     <- cat.ref.var.and.levels[[chosen.cov.name]]
+	chosen_pos <- get.chosen.cov.position(chosen.cov.name, omdata)
+	
+	# Display proper numbers for studies column
+	if (chosen_pos-1<1)
+		studies.start.index <- 1
+	else
+		studies.start.index <- sum(display.data$factor.n.levels[1:(chosen_pos-1)])+1
+	studies <- display.data$studies.display.col
+	studies <- studies[studies!='']
+	studies <- studies[studies.start.index:(studies.start.index+length(levels)-1)]
+	
+	
+	res <- list(b=coeffs.and.cis$b, ci.lb=coeffs.and.cis$ci.lb, ci.ub=coeffs.and.cis$ci.ub,
+				levels=levels, studies=studies,
+				chosen.cov.name=chosen.cov.name, cond.means.data=cond.means.data)
+	return(create.cond.means.regression.display(res, params, bootstrap=TRUE))
+}
 
 
 cond_means_display <- function(rma.results, params, display.data, reg.data, cat.ref.var.and.levels, cond.means.data) {
@@ -310,15 +350,19 @@ make.submatrix.for.strat.var <- function(levels, ref) {
 }
 
 
-create.cond.means.regression.display <- function(res, params) {
-	col.labels <- c("Level", "Studies", "Conditional Means", "Lower bound", "Upper bound", "Std. error")
+create.cond.means.regression.display <- function(res, params, bootstrap=FALSE) {
+	if (bootstrap)
+		col.labels <- c("Level", "Studies", "Conditional Means", "Lower bound", "Upper bound")
+	else
+		col.labels <- c("Level", "Studies", "Conditional Means", "Lower bound", "Upper bound", "Std. error")
 	n.rows = length(res$levels)+1
 	
 	reg.array <- array(dim=c(n.rows, length(col.labels)), dimnames=list(NULL, col.labels))
 	reg.array[1,] <- col.labels
 	digits.str <- paste("%.", params$digits, "f", sep="")
 	coeffs <- sprintf(digits.str, res$b)
-	se <- round.display(res$se, digits=params$digits)
+	if (!bootstrap)
+		se <- round.display(res$se, digits=params$digits)
 	lbs <- sprintf(digits.str, res$ci.lb)
 	ubs <- sprintf(digits.str, res$ci.ub)
 	
@@ -326,7 +370,8 @@ create.cond.means.regression.display <- function(res, params) {
 	reg.array[2:n.rows, "Level"] <- res$levels
 	reg.array[2:n.rows, "Studies"] <- res$studies
 	reg.array[2:n.rows, "Conditional Means"] <- coeffs
-	reg.array[2:n.rows, "Std. error"] <- se
+	if (!bootstrap)
+		reg.array[2:n.rows, "Std. error"] <- se
 	reg.array[2:n.rows, "Lower bound"] <- lbs
 	reg.array[2:n.rows, "Upper bound"] <- ubs
 	
@@ -340,7 +385,10 @@ create.cond.means.regression.display <- function(res, params) {
 		}
 	}
 	
-	model.title <- paste("Meta-Regression-Based Conditional Means\n\nMetric: ", metric.name, "\n", blurb, sep="")
+	if (bootstrap)
+		model.title <- paste("Bootstrapped Meta-Regression-Based Conditional Means\n\nMetric: ", metric.name, "\n", blurb, sep="")
+	else
+		model.title <- paste("Meta-Regression-Based Conditional Means\n\nMetric: ", metric.name, "\n", blurb, sep="")
 	reg.disp <- list("model.title" = model.title, "table.titles" = c("Model Results"), "arrays" = arrays, "MAResults" = res)
 	
 	class(reg.disp) <-  "summary.display"

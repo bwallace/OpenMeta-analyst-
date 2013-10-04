@@ -12,21 +12,14 @@
 library(metafor)
 
 meta.regression <- function(reg.data, params, cond.means.data=FALSE, stop.at.rma=FALSE) {
-   cov.data <- extract.cov.data(reg.data)
-   cov.array <- cov.data$cov.array
-   cat.ref.var.and.levels <- cov.data$cat.ref.var.and.levels
+	cov.data <- extract.cov.data(reg.data)
+	cov.array <- cov.data$cov.array
+	cat.ref.var.and.levels <- cov.data$cat.ref.var.and.levels
+
+	# remove when and if method dialog is added
+	method <- as.character(params$rm.method)
    
-   # remove when and if method dialog is added
-   method <- as.character(params$rm.method)
-   
-#	print("yi"); print(reg.data@y);
-#	print("sei"); print(reg.data@SE);
-#	print("slab"); print(reg.data@study.names);
-#	cat("Level: ", params$conf.level, "\n")
-#	cat("digits: ", params$digits, "\n")
-#	cat("method: ", method, "\n")
-#	cat("mods: ",cov.array)
-	
+
 	
 	res<-rma.uni(yi=reg.data@y, sei=reg.data@SE, slab=reg.data@study.names,
 					level=params$conf.level, digits=params$digits,
@@ -104,7 +97,7 @@ meta.regression <- function(reg.data, params, cond.means.data=FALSE, stop.at.rma
     results
 }
 
-extract.cov.data <- function(reg.data) {
+extract.cov.data <- function(reg.data, dont.make.array = FALSE) {
   # separate continuous and factor covariates and extract data.
   # The following are passed to create.regression.display
   n.cont.covs <- 0
@@ -147,8 +140,10 @@ extract.cov.data <- function(reg.data) {
       studies.col <- c(sum(cov.vals==ref.var))
       for (col.index in 1:length(levels.minus.ref.var)) {
            level <- levels.minus.ref.var[col.index]
-           cov.cols[cov.vals!="" & cov.vals!=level, col.index] <- 0
-           cov.cols[cov.vals!="" & cov.vals==level, col.index] <- 1
+		   if (!dont.make.array) {
+               cov.cols[cov.vals!="" & cov.vals!=level, col.index] <- 0
+               cov.cols[cov.vals!="" & cov.vals==level, col.index] <- 1
+	       }
            studies.col <- c(studies.col, sum(cov.vals==level)) 
       }
       factor.cov.array <- cbind(factor.cov.array, cov.cols)

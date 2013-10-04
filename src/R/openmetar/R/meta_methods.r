@@ -122,20 +122,20 @@ cum.ma.binary <- function(fname, binary.data, params){
     results
 }
 
-bootstrap.binary <- function(fname, omdata, params) {
-	res <- bootstrap(fname, omdata, "binary", params)
-	res
-}
-
-bootstrap.continuous <- function(fname, omdata, params) {
-	res <- bootstrap(fname, omdata, "continuous", params)
-	res
-}
-
-
+#bootstrap.binary <- function(fname, omdata, params) {
+#	res <- bootstrap(fname, omdata, "binary", params)
+#	res
+#}
+#
+#bootstrap.continuous <- function(fname, omdata, params) {
+#	res <- bootstrap(fname, omdata, "continuous", params)
+#	res
+#}
 
 
-bootstrap <- function(fname, omdata, data.type, params) {
+
+
+bootstrap <- function(fname, omdata, params, cond.means.data=FALSE) {
 	# fname: the function name that runs the basic-meta-analysis
 	# data: the meta analysis object containing the data of interest
 	# data.type: the type of the data (binary or continuous)
@@ -163,7 +163,7 @@ bootstrap <- function(fname, omdata, data.type, params) {
 	
 	# used in the meta.reg.statistic to see if the covariates match
 	if (length(omdata@covariates) > 0) {
-		cov.data <- extract.cov.data(omdata)
+		cov.data <- extract.cov.data(omdata, dont.make.array=TRUE)
 		factor.n.levels <- cov.data$display.data$factor.n.levels
 		n.cont.covs <- cov.data$display.data$n.cont.covs
 		cat.ref.var.and.levels <- cov.data$cat.ref.var.and.levels
@@ -187,7 +187,7 @@ bootstrap <- function(fname, omdata, data.type, params) {
 	
 	meta.reg.statistic <- function(data, indices) {
 		data.ok <- function(data.subset) {
-			subset.cov.data <- extract.cov.data(data.subset)
+			subset.cov.data <- extract.cov.data(data.subset, dont.make.array=TRUE)
 			subset.factor.n.levels <- subset.cov.data$display.data$factor.n.levels
 			subset.n.cont.covs <- subset.cov.data$display.data$n.cont.covs
 			subset.cat.ref.var.and.levels <- subset.cov.data$cat.ref.var.and.levels
@@ -235,50 +235,87 @@ bootstrap <- function(fname, omdata, data.type, params) {
 		res$b
 	}
 	
+	# generate design matrix for transform if we are doing bootstrapped conditional means
+	if (bootstrap.type == "boot.meta.reg.cond.means")
+		a.matrix <- generate.a.matrix(omdata, cat.ref.var.and.levels, cond.means.data)
+	meta.reg.cond.means.statistic <- function(data, indices) {
+		unconditional.b <- meta.reg.statistic(data, indices)
+		new_betas  <- a.matrix %*% matrix(unconditional.b, ncol=1)
+		new_betas
+	}
+	
 	statistic <- switch(bootstrap.type,
 						boot.ma = vanilla.statistic,
 						boot.meta.reg = meta.reg.statistic,
-						boot.meta.reg.cond.means = meta.reg.statistic)
+						boot.meta.reg.cond.means = meta.reg.cond.means.statistic)
 	extra.attempts <- 0
 	results <- boot(omdata.rows, statistic=statistic, R=params$num.bootstrap.replicates)
-	
+	params$extra.attempts <- extra.attempts
 
 	cat("Total extra attempts: "); cat(extra.attempts); cat("\n")
 	
-	boot.ma.output.results <- function() {
-		conf.interval <- boot.ci(boot.out = results, type = "norm")
-		mean_boot <- mean(results$t)
-		
-		conf.interval.msg <- paste("The ", conf.interval$norm[1]*100, "% Confidence Interval: [", conf.interval$norm[2], ", ", conf.interval$norm[3])
-		mean.msg <- paste("The observed value of the effect size was ", results$t0, ", while the mean over the replicates was ", mean_boot, ".")
-		summary.msg <- paste(conf.interval.msg, "\n", mean.msg)
-		# Make histogram
-		png(file=bootstrap.plot.path)
-		plot.custom.boot(results, title=as.character(params$histogram.title), xlab=as.character(params$histogram.xlab), ci.lb=conf.interval$norm[2], ci.ub=conf.interval$norm[3])
-		graphics.off()
-		
-		images <- c("Histogram"=bootstrap.plot.path)
-		plot.names <- c("histogram"="histogram")
-		results <- list("images"=images,
-				"Summary"=summary.msg)
-		results
-	}
-	boot.meta.reg.output.results <- function() {
-		# RESUME HERE
-	}
-	boot.meta.reg.cond.means.output.results <- function() {
-		# RESUME HERE
-	}
+
 	
 	results <- switch(bootstrap.type,
-			boot.ma = boot.ma.output.results(),
-			boot.meta.reg = boot.meta.reg.output.results.reg.statistic(),
-			boot.meta.reg.cond.means = boot.meta.reg.cond.means.output.results())
+			boot.ma = boot.ma.output.results(results, params, bootstrap.plot.path),
+			boot.meta.reg = boot.meta.reg.output.results(results, params, bootstrap.plot.path),
+			boot.meta.reg.cond.means = boot.meta.reg.cond.means.output.results(results, params, bootstrap.plot.path))
 	results
 	
 }
 
 
+
+boot.ma.output.results <- function(boot.results, params, bootstrap.plot.path) {
+	conf.interval <- boot.ci(boot.out = boot.results, type = "norm")
+	mean_boot <- mean(boot.results$t)
+	
+	conf.interval.msg <- paste("The ", conf.interval$norm[1]*100, "% Confidence Interval: [", conf.interval$norm[2], ", ", conf.interval$norm[3])
+	mean.msg <- paste("The observed value of the effect size was ", boot.results$t0, ", while the mean over the replicates was ", mean_boot, ".")
+	summary.msg <- paste(conf.interval.msg, "\n", mean.msg)
+	# Make histogram
+	png(file=bootstrap.plot.path)
+	plot.custom.boot(boot.results, title=as.character(params$histogram.title), xlab=as.character(params$histogram.xlab), ci.lb=conf.interval$norm[2], ci.ub=conf.interval$norm[3])
+	graphics.off()
+	
+	images <- c("Histogram"=bootstrap.plot.path)
+	plot.names <- c("histogram"="histogram")
+	results <- list("images"=images,
+			"Summary"=summary.msg)
+	results
+}
+calc.meta.reg.coeffs.and.cis <- function(boot.results) {
+	dim.t <- dim(boot.results$t)
+	num.rows <- dim.t[1]
+	num.coeffs <- dim.t[2]
+	
+	coeffs.and.cis <- data.frame(b=c(), ci.lb=c(), ci.ub=c())
+	for (i in 1:num.coeffs) {
+		mean_coeff <- mean(boot.results$t[,i])
+		conf.interval <- boot.ci(boot.out = boot.results, type="norm", index=i)
+		new.result.row <- data.frame(b=mean_coeff, ci.lb=conf.interval$norm[2], ci.ub=conf.interval$norm[3])
+		coeffs.and.cis <- rbind(coeffs.and.cis, new.result.row)
+	}
+	coeffs.and.cis
+}
+
+boot.meta.reg.output.results <- function(boot.results, params, bootstrap.plot.path) {
+	coeffs.and.cis <- calc.meta.reg.coeffs.and.cis(boot.results)
+	
+	display.data <- cov.data$display.data
+	reg.disp <- create.regression.display(coeffs.and.cis, params, display.data)
+	output.results <- list("Summary"=reg.disp)
+	output.results
+	
+	# TODO: add histograms
+}
+boot.meta.reg.cond.means.output.results <- function(boot.results, params, bootstrap.plot.path) {
+	coeffs.and.cis <- calc.meta.reg.coeffs.and.cis(boot.results)
+	
+	boot.cond.means.disp <- boot.cond.means.display(omdata, coeffs.and.cis, params, cat.ref.var.and.levels, cond.means.data)
+	results <- list("Bootstrapped Meta-Regression Based Conditional Means"=boot.cond.means.disp)	
+	# TODO: add histograms
+}
 
 
 plot.custom.boot <- function(x, title="Bootstrap Histogram", ci.lb, ci.ub, xlab="Effect Size") {
