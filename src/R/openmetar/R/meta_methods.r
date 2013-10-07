@@ -258,8 +258,8 @@ bootstrap <- function(fname, omdata, params, cond.means.data=FALSE) {
 	
 	results <- switch(bootstrap.type,
 			boot.ma = boot.ma.output.results(results, params, bootstrap.plot.path),
-			boot.meta.reg = boot.meta.reg.output.results(results, params, bootstrap.plot.path),
-			boot.meta.reg.cond.means = boot.meta.reg.cond.means.output.results(results, params, bootstrap.plot.path))
+			boot.meta.reg = boot.meta.reg.output.results(results, params, bootstrap.plot.path, cov.data),
+			boot.meta.reg.cond.means = boot.meta.reg.cond.means.output.results(omdata, results, params, bootstrap.plot.path, cov.data, cond.means.data))
 	results
 	
 }
@@ -275,7 +275,7 @@ boot.ma.output.results <- function(boot.results, params, bootstrap.plot.path) {
 	summary.msg <- paste(conf.interval.msg, "\n", mean.msg)
 	# Make histogram
 	png(file=bootstrap.plot.path)
-	plot.custom.boot(boot.results, title=as.character(params$histogram.title), xlab=as.character(params$histogram.xlab), ci.lb=conf.interval$norm[2], ci.ub=conf.interval$norm[3])
+	plot.custom.boot(boot.results, title=as.character(params$histogram.title), xlab=c(as.character(params$histogram.xlab)), ci.lb=conf.interval$norm[2], ci.ub=conf.interval$norm[3])
 	graphics.off()
 	
 	images <- c("Histogram"=bootstrap.plot.path)
@@ -299,26 +299,77 @@ calc.meta.reg.coeffs.and.cis <- function(boot.results) {
 	coeffs.and.cis
 }
 
-boot.meta.reg.output.results <- function(boot.results, params, bootstrap.plot.path) {
+boot.meta.reg.output.results <- function(boot.results, params, bootstrap.plot.path, cov.data) {
 	coeffs.and.cis <- calc.meta.reg.coeffs.and.cis(boot.results)
+	
 	
 	display.data <- cov.data$display.data
 	reg.disp <- create.regression.display(coeffs.and.cis, params, display.data)
-	output.results <- list("Summary"=reg.disp)
-	output.results
+
 	
-	# TODO: add histograms
+	
+	#### Get labels to label histograms with
+	cov.display.col <- display.data$cov.display.col
+	levels.display.col <- display.data$levels.display.col
+	factor.n.levels <- display.data$factor.n.levels
+	
+	non.empty.levels.labels    <- levels.display.col[levels.display.col!=""]
+	wanted.cov.display.col.labels <- cov.display.col[1:(length(cov.display.col)-length(non.empty.levels.labels))]
+	factor.index <- 0
+	for (n.level in factor.n.levels) {
+		# replace unwanted entry with ""
+		non.empty.levels.labels[(factor.index+1)] <- ""
+		factor.index <- factor.index + n.level
+	}
+	# remove ""
+	non.empty.levels.labels <- non.empty.levels.labels[non.empty.levels.labels!=""]
+	#### end of get labels to to label histograms with
+	
+	xlabels <- c(wanted.cov.display.col.labels,non.empty.levels.labels)
+	xlabels <- paste(xlabels, "Coefficient")
+	
+	# Make histograms
+	png(file=bootstrap.plot.path, width = 480, height = 480*length(xlabels))
+	plot.custom.boot(boot.results,
+					 title=as.character(params$histogram.title),
+					 xlabs=xlabels,
+					 ci.lb=coeffs.and.cis$ci.lb,
+					 ci.ub=coeffs.and.cis$ci.ub)
+	graphics.off()
+
+	images <- c("Histograms"=bootstrap.plot.path)
+	plot.names <- c("histograms"="histograms")
+	output.results <- list("images"=images,
+						   "Summary"=reg.disp)
+	output.results
 }
-boot.meta.reg.cond.means.output.results <- function(boot.results, params, bootstrap.plot.path) {
+boot.meta.reg.cond.means.output.results <- function(omdata, boot.results, params, bootstrap.plot.path, cov.data, cond.means.data) {
 	coeffs.and.cis <- calc.meta.reg.coeffs.and.cis(boot.results)
+	cat.ref.var.and.levels <- cov.data$cat.ref.var.and.levels
+	chosen.cov.name = as.character(cond.means.data$chosen.cov.name)
 	
 	boot.cond.means.disp <- boot.cond.means.display(omdata, coeffs.and.cis, params, cat.ref.var.and.levels, cond.means.data)
-	results <- list("Bootstrapped Meta-Regression Based Conditional Means"=boot.cond.means.disp)	
-	# TODO: add histograms
+
+	# Make histograms
+	xlabels <- cat.ref.var.and.levels[[chosen.cov.name]]
+	xlabels <- paste("Conditional Mean of", xlabels)
+	
+	png(file=bootstrap.plot.path, width = 480, height = 480*length(xlabels))
+	plot.custom.boot(boot.results,
+			title=as.character(params$histogram.title),
+			xlabs=xlabels,
+			ci.lb=coeffs.and.cis$ci.lb,
+			ci.ub=coeffs.and.cis$ci.ub)
+	graphics.off()
+	
+	images <- c("Histograms"=bootstrap.plot.path)
+	plot.names <- c("histograms"="histograms")
+	output.results <- list("images"=images,
+						   "Bootstrapped Meta-Regression Based Conditional Means"=boot.cond.means.disp)
+	output.results
 }
 
-
-plot.custom.boot <- function(x, title="Bootstrap Histogram", ci.lb, ci.ub, xlab="Effect Size") {
+plot.custom.boot <- function(boot.out, title="Bootstrap Histogram", ci.lb, ci.ub, xlabs=c("Effect Size")) {
 #
 #  Plots the Histogram 
 #
@@ -327,28 +378,25 @@ plot.custom.boot <- function(x, title="Bootstrap Histogram", ci.lb, ci.ub, xlab=
 	# Are all of the values of w equal to within the tolerance eps.
 		all(abs(w-mean(w, na.rm=TRUE)) < eps)
 	}
-	
-	qdist <- "norm"
-	boot.out <- x
-	index <-1
-	t <- boot.out$t[,index]
-	t0 <- boot.out$t0[index]
-	t <- t[is.finite(t)]
-	if (const(t, min(1e-8,mean(t, na.rm=TRUE)/1e6))) {
-		print(paste("All values of t* are equal to ", mean(t, na.rm=TRUE)))
-		return(invisible(boot.out))
+	num.hists <- length(xlabs)
+	par(mfcol=c(num.hists,1))
+	for (index in 1:num.hists) {
+		qdist <- "norm"
+		t <- boot.out$t[,index]
+		t0 <- boot.out$t0[index]
+		t <- t[is.finite(t)]
+		if (const(t, min(1e-8,mean(t, na.rm=TRUE)/1e6))) {
+			print(paste("All values of t* are equal to ", mean(t, na.rm=TRUE)))
+			return(invisible(boot.out))
+		}
+		nclass <- min(max(ceiling(length(t)/25),10),100)
+		R <- boot.out$R
+		
+		hist(t,nclass=nclass,probability=TRUE,xlab=xlabs[index], main=title)
+		abline(v=t0,lty=1)
+		abline(v=ci.lb[index],lty=3) # conf. interval lines
+		abline(v=ci.ub[index],lty=3)
 	}
-	nclass <- min(max(ceiling(length(t)/25),10),100)
-	R <- boot.out$R
-	
-	#par(mfrow=c(1,2))
-	hist(t,nclass=nclass,probability=TRUE,xlab=xlab, main=title)
-	abline(v=t0,lty=1)
-	abline(v=ci.lb,lty=3) # conf. interval lines
-	abline(v=ci.ub,lty=3)
-	
-	#par(mfrow=c(1,1))
-	#invisible(boot.out)
 }
 
 
