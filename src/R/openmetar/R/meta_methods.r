@@ -270,9 +270,9 @@ boot.ma.output.results <- function(boot.results, params, bootstrap.plot.path) {
 	conf.interval <- boot.ci(boot.out = boot.results, type = "norm")
 	mean_boot <- mean(boot.results$t)
 	
-	conf.interval.msg <- paste("The ", conf.interval$norm[1]*100, "% Confidence Interval: [", conf.interval$norm[2], ", ", conf.interval$norm[3])
-	mean.msg <- paste("The observed value of the effect size was ", boot.results$t0, ", while the mean over the replicates was ", mean_boot, ".")
-	summary.msg <- paste(conf.interval.msg, "\n", mean.msg)
+	conf.interval.msg <- paste("The ", conf.interval$norm[1]*100, "% Confidence Interval: [", round(conf.interval$norm[2],digits=params$digits), ", ", round(conf.interval$norm[3],digits=params$digits), "]", sep="")
+	mean.msg <- paste("The observed value of the effect size was ", round(boot.results$t0, digits=params$digits), ", while the mean over the replicates was ", round(mean_boot,digits=params$digits), ".", sep="")
+	summary.msg <- paste(conf.interval.msg, "\n", mean.msg, sep="")
 	# Make histogram
 	png(file=bootstrap.plot.path)
 	plot.custom.boot(boot.results, title=as.character(params$histogram.title), xlab=c(as.character(params$histogram.xlab)), ci.lb=conf.interval$norm[2], ci.ub=conf.interval$norm[3])
