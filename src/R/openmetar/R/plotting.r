@@ -782,7 +782,7 @@ pretty.metric.name <- function(metric) {
 #            forest plot              #
 ####################################### 
 forest.plot <- function(forest.data, outpath) {
-  png(filename=paste(outpath,"INTER",sep="")) # to fix windows popping out at you issue
+  png(filename=paste("r_tmp","INTER",sep="/")) # to fix windows popping out at you issue
 	
   # calculates plot sizes and layout, and then calls draw.forest.plot.
   # forest.data is a list contains the following fields:
@@ -1470,7 +1470,7 @@ create.plot.options <- function(forest.data, gapSize, plotWidth) {
 #######################################
  
 two.forest.plots <- function(forest.data, outpath) {
-   png(filename=paste(outpath,"INTER",sep="")) # to fix windows popping out at you issue
+   png(filename=paste("r_tmp","INTER",sep="/")) # to fix windows popping out at you issue
 	
    # draw two forest plots side by side.
    forest.data1 <- forest.data$left
@@ -1535,7 +1535,7 @@ two.forest.plots <- function(forest.data, outpath) {
 #       meta-regression scatter       #
 #######################################
 meta.regression.plot <- function(plot.data, outpath) {
-	png(filename=paste(outpath,"INTER",sep="")) # to fix windows popping out at you issue
+	png(filename=paste("r_tmp","INTER",sep="/")) # to fix windows popping out at you issue
 
     lweight = 1
     lpattern = "solid"
@@ -1589,7 +1589,7 @@ meta.regression.plot <- function(plot.data, outpath) {
 #          Diagnostic SROC           #
 ######################################
 sroc.plot <- function(plot.data, outpath){
-	png(filename=paste(outpath,"INTER",sep="")) # to fix windows popping out at you issue
+	png(filename=paste("r_tmp","INTER",sep="/")) # to fix windows popping out at you issue
 	
     # draw an SROC plot.
     lcol <- "blue"
