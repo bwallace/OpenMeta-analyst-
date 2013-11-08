@@ -26,7 +26,7 @@ SCALE_P = .5 # percent images are to be scaled
 
 # these are special forest plots, in that multiple parameters objects are
 # require to re-generate them (and we invoke a different method!)
-SIDE_BY_SIDE_FOREST_PLOTS = ("NLR and PLR Forest Plot", "Sensitivity and Specificity")
+SIDE_BY_SIDE_FOREST_PLOTS = ("NLR and PLR Forest Plot", "Sensitivity and Specificity", "Cumulative Forest Plot")
 ROW_HEIGHT = 15 # by trial-and-error; seems to work very well
 
 class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
@@ -358,14 +358,14 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
                 action = QAction("save pdf image as...", self)
                 QObject.connect(action, SIGNAL("triggered()"),
                                 lambda : self.save_image_as(params_path, title, 
-                                plot_type=plot_type))
+                                plot_type=plot_type, format="pdf"))
                 menu.addAction(action)
             def add_save_as_png_menu_action(menu):
                 action = QAction("save png image as...", self)
                 QObject.connect(action, SIGNAL("triggered()"),
                             lambda : self.save_image_as(params_path, title, 
                                             plot_type=plot_type,
-                                            unscaled_image = plot_img))
+                                            unscaled_image = plot_img, format="png"))
                 menu.addAction(action)
             def add_edit_plot_menu_action(menu):
                 # only know how to edit *simple* (i.e., _not_ side-by-side, as 
@@ -395,7 +395,10 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
     def _is_side_by_side_fp(self, title):
         return any([side_by_side in title for side_by_side in SIDE_BY_SIDE_FOREST_PLOTS])
 
-    def save_image_as(self, params_path, title, plot_type="forest", unscaled_image=None):
+    def save_image_as(self, params_path, title, plot_type="forest", unscaled_image=None, format=None):
+        
+        if format not in ["pdf","png"]:
+            raise Exception("Invalid format, needs to be either pdf or png!")
         
         if not unscaled_image:
             # note that the params object will, by convention,

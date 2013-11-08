@@ -157,8 +157,8 @@ class EditPlotWindow(QDialog, forms.ui_edit_forest_plot.Ui_edit_forest_plot_dlg)
         self.png_path = self.current_param_vals["fp_outpath"]
         meta_py_r.generate_forest_plot(self.png_path)
 
-        meta_py_r.write_out_plot_data("%s.plotdata" % self.img_params_path)
-
+        #meta_py_r.write_out_plot_data("%s.plotdata" % self.img_params_path)
+        meta_py_r.write_out_plot_data("%s" % self.img_params_path)
 
     def regenerate_graph(self):
         # this loads the plot.data into R's environment;
