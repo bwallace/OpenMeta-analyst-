@@ -19,6 +19,32 @@ cum_meta_analysis_ref = 'Cumulative Meta-Analysis: Lau, Joseph, et al. "Cumulati
 subgroup_ma_ref = "Subgroup Meta-Analysis: subgroup ma reference placeholder"
 loo_ma_ref = "Leave-one-out Meta-Analysis: LOO ma reference placeholder"
 
+
+
+gcum.ma.binary <- function(fname, binary.data, params) {
+	# will rename this properly later, need to distinguish with other version that i am refactoring
+	
+	# assert that the argument is the correct type
+	if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
+	
+	if (fname == "binary.fixed.inv.var") {
+		model.title <- paste("Binary Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
+	} else if (fname == "binary.fixed.mh") {
+		model.title <- paste("Binary Fixed-effect Model - Mantel Haenszel\n\nMetric: ", metric.name, sep="")
+	} else if (fname == "binary.fixed.peto") {
+		model.title <- paste("Binary Fixed-effect Model - Peto\n\nMetric: ", metric.name, sep="")
+	} else if (fname == "binary.random") {
+		model.title <- paste("Binary Random-Effects Model\n\nMetric: ", metric.name, sep="")
+	}
+	
+	
+    metafor.funcname <- switch(fname,
+                               binary.fixed.inv.var="rma.uni",
+                               binary.fixed.mh="rma.mh",
+                               binary.fixed.peto="rma.peto",
+                               binary.random="rma.uni")
+}
+
 ##################################
 #  binary cumulative MA          #
 ##################################
