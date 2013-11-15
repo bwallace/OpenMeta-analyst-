@@ -724,7 +724,7 @@ def ma_dataset_to_simple_network(table_model,
     treatments_table_str = _make_table_string_from_dict(treatments)
     treatments_r_str = "treatments <- read.table(textConnection('%s'), header=TRUE)" % treatments_table_str
     #ro.r(treatments_r_str)
-    _execute_r_string(treatments_r_str)
+    execute_r_string(treatments_r_str)
     
     # Make 'data' data_frame in R
     if data_type == BINARY:
@@ -754,11 +754,11 @@ def ma_dataset_to_simple_network(table_model,
             data['treatment'].append(treatment_id)
     data_table_str = _make_table_string_from_dict(data)
     data_table_r_str = "data <- read.table(textConnection('%s'), header=TRUE)" % data_table_str
-    _execute_r_string(data_table_r_str)
+    execute_r_string(data_table_r_str)
     
     ########## make the actual network ##########
     make_network_r_str = "network <- mtc.network(data, description=\"MEWANTFOOD\", treatments=treatments)"
-    _execute_r_string(make_network_r_str)
+    execute_r_string(make_network_r_str)
     
     # plot the network and return path to the image
     ro.r("png('%s')" % network_path)
@@ -816,9 +816,9 @@ def _make_table_string_from_dict(table_dict):
     
     return table_str
 
-def _execute_r_string(r_str):
+def execute_r_string(r_str):
     print("Executing: %s\n" % r_str)
-    ro.r(r_str)
+    return ro.r(r_str)
     
     
     
@@ -999,10 +999,12 @@ def _to_R_params(params):
 def run_diagnostic_multi(function_names, list_of_params, res_name="result", diag_data_name="tmp_obj"):
     r_params_str = "list(%s)" % ",".join([_to_R_params(p) for p in list_of_params])
     
-    ro.r("list.of.params <- %s" % r_params_str)
-    ro.r("f.names <- c(%s)" % ",".join(["'%s'" % f_name for f_name in function_names]))
-    
-    result = ro.r("multiple.diagnostic(f.names, list.of.params, %s)" % diag_data_name)
+    execute_r_string("list.of.params <- %s" % r_params_str)
+    execute_r_string("f.names <- c(%s)" % ",".join(["'%s'" % f_name for f_name in function_names]))
+    result = execute_r_string("multiple.diagnostic(f.names, list.of.params, %s)" % diag_data_name)
+    #ro.r("list.of.params <- %s" % r_params_str)
+    #ro.r("f.names <- c(%s)" % ",".join(["'%s'" % f_name for f_name in function_names]))
+    #result = ro.r("multiple.diagnostic(f.names, list.of.params, %s)" % diag_data_name)
 
     print("Got here is run diagnostic multi w/o error")
     return parse_out_results(result)

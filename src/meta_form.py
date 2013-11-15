@@ -1248,9 +1248,13 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         base_path = str(os.path.abspath(os.getcwd()))
         if self.out_path is None or save_as:
             # fix for issue #58,1. -- use current dataset name in save path
-            out_f = os.path.join(base_path, self.model.get_name())
-            out_f = unicode(QFileDialog.getSaveFileName(self, "OpenMeta[analyst] - Save File",
-                                                         out_f, "open meta files: (.oma)"))
+            if self.out_path:
+                out_f = unicode(self.out_path)
+            else:
+                out_f = os.path.join(base_path, self.model.get_name())
+            
+            out_f = unicode(QFileDialog.getSaveFileName(parent=self, caption="OpenMeta[analyst] - Save File",
+                                                        directory=out_f, filter="open meta files: (.oma)"))
             if out_f == "" or out_f == None:
                 return None
             else:

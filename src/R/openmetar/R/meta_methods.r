@@ -19,6 +19,32 @@ cum_meta_analysis_ref = 'Cumulative Meta-Analysis: Lau, Joseph, et al. "Cumulati
 subgroup_ma_ref = "Subgroup Meta-Analysis: subgroup ma reference placeholder"
 loo_ma_ref = "Leave-one-out Meta-Analysis: LOO ma reference placeholder"
 
+
+
+gcum.ma.binary <- function(fname, binary.data, params) {
+	# will rename this properly later, need to distinguish with other version that i am refactoring
+	
+	# assert that the argument is the correct type
+	if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
+	
+	if (fname == "binary.fixed.inv.var") {
+		model.title <- paste("Binary Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
+	} else if (fname == "binary.fixed.mh") {
+		model.title <- paste("Binary Fixed-effect Model - Mantel Haenszel\n\nMetric: ", metric.name, sep="")
+	} else if (fname == "binary.fixed.peto") {
+		model.title <- paste("Binary Fixed-effect Model - Peto\n\nMetric: ", metric.name, sep="")
+	} else if (fname == "binary.random") {
+		model.title <- paste("Binary Random-Effects Model\n\nMetric: ", metric.name, sep="")
+	}
+	
+	
+    metafor.funcname <- switch(fname,
+                               binary.fixed.inv.var="rma.uni",
+                               binary.fixed.mh="rma.mh",
+                               binary.fixed.peto="rma.peto",
+                               binary.random="rma.uni")
+}
+
 ##################################
 #  binary cumulative MA          #
 ##################################
@@ -108,7 +134,7 @@ cum.ma.binary <- function(fname, binary.data, params){
     # (mapping titles to pretty-printed text). In this case we have only one 
     # of each. 
     #    
-    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+    plot.params.paths <- c("Cumulative Forest Plot"=forest.plot.params.path) #hopefully this change (adding 'Cumulative' doesn't break OMA)
     images <- c("Cumulative Forest Plot"=forest.path)
     plot.names <- c("cumulative forest plot"="cumulative_forest_plot")
 	
@@ -491,8 +517,8 @@ loo.ma.binary <- function(fname, binary.data, params){
     # (mapping titles to pretty-printed text). In this case we have only one 
     # of each. 
     #     
-    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
-    images <- c("Leave-one-out Forest plot"=forest.path)
+    plot.params.paths <- c("Leave-one-out Forest Plot"=forest.plot.params.path)
+    images <- c("Leave-one-out Forest Plot"=forest.path)
     plot.names <- c("loo forest plot"="loo_forest_plot")
 	references <- c(res$References, loo_ma_ref)
     results <- list("images"=images,
@@ -601,7 +627,7 @@ cum.ma.continuous <- function(fname, cont.data, params){
     # (mapping titles to pretty-printed text). In this case we have only one 
     # of each. 
     #     
-    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+    plot.params.paths <- c("Cumulative Forest Plot"=forest.plot.params.path)
     images <- c("Cumulative Forest Plot"=forest.path)
     plot.names <- c("cumulative forest plot"="cumulative forest_plot")
 	
@@ -714,7 +740,7 @@ cum.ma.diagnostic <- function(fname, diagnostic.data, params){
 	# (mapping titles to pretty-printed text). In this case we have only one 
 	# of each. 
 	#    
-	plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+	plot.params.paths <- c("Cumulative Forest Plot"=forest.plot.params.path)
 	images <- c("Cumulative Forest Plot"=forest.path)
 	plot.names <- c("cumulative forest plot"="cumulative_forest_plot")
 	
@@ -872,7 +898,7 @@ loo.ma.continuous <- function(fname, cont.data, params){
     # (mapping titles to pretty-printed text). In this case we have only one 
     # of each. 
     #     
-    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+    plot.params.paths <- c("Leave-one-out Forest Plot"=forest.plot.params.path)
     images <- c("Leave-one-out Forest Plot"=forest.path)
     plot.names <- c("loo forest plot"="loo_forest_plot")
 	references <- c(res$References, loo_ma_ref)
@@ -956,7 +982,7 @@ subgroup.ma.binary <- function(fname, binary.data, params){
     # (mapping titles to pretty-printed text). In this case we have only one 
     # of each. 
     #     
-    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+    plot.params.paths <- c("Subgroup Forest Plot"=forest.plot.params.path)
     images <- c("Subgroup Forest Plot"=forest.path)
     plot.names <- c("subgroups forest plot"="subgroups_forest_plot")
 	references <- c(res$References, subgroup_ma_ref)
@@ -1052,7 +1078,7 @@ subgroup.ma.continuous <- function(fname, cont.data, params){
     # (mapping titles to pretty-printed text). In this case we have only one 
     # of each. 
     #    
-    plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+    plot.params.paths <- c("Subgroups Forest Plot"=forest.plot.params.path)
     images <- c("Subgroups Forest Plot"=forest.path)
     plot.names <- c("subgroups forest plot"="subgroups_forest_plot")
 	
