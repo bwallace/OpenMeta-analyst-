@@ -329,7 +329,7 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
 
         print "creating item @:%s" % position
         
-        item.setMatrix(matrix)
+        #item.setMatrix(matrix)
         self.scene.clearSelection()
         self.scene.addItem(item)
         item.setPos(position)
