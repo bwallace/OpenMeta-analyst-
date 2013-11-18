@@ -97,9 +97,7 @@ def reset_Rs_working_dir():
 
     # Fix paths issue in windows
     r_str = "setwd('%s')" % meta_globals.BASE_PATH
-    print("before replacement r_string: %s" % r_str)
     r_str = r_str.replace("\\","\\\\")
-    print("about to execute: %s" % r_str)
 
     # Executing r call with escaped backslashes
     ro.r(r_str) 
@@ -361,11 +359,6 @@ def none_to_null(x):
     if x is None:
         return ro.r['as.null']()
     return x
-
-@RfunctionCaller
-def evaluate_in_r(r_str):
-    res = ro.r(r_str)
-    return str(res)
 
 def get_params(method_name):
     param_list = ro.r("%s.parameters()" % method_name)
@@ -817,8 +810,14 @@ def _make_table_string_from_dict(table_dict):
     return table_str
 
 def execute_r_string(r_str):
-    print("Executing: %s\n" % r_str)
-    return ro.r(r_str)
+    
+    try:
+        print("Executing: %s\n" % r_str)
+        return ro.r(r_str)
+    except Exception as e:
+        # reset working directory in r then raise the error, hope this will address issue #244
+        reset_Rs_working_dir()
+        raise e
     
     
     

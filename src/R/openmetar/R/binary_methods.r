@@ -437,8 +437,8 @@ binary.fixed.peto <- function(binary.data, params) {
                         level=params$conf.level,
 						digits=params$digits,
 						add=c(params$adjust,params$adjust),
-						to=c(as.character(params$to), as.character(params$to)))
-						##drop00 = FALSE)  # needed in metafor 1.8, unknown in 1.6
+						to=c(as.character(params$to), as.character(params$to)),
+						drop00 = FALSE)  # needed in metafor 1.8, unknown in 1.6
         # Corrected values for y and SE
         binary.data@y <- res$yi
         binary.data@SE <- sqrt(res$vi)
