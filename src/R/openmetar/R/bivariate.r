@@ -48,13 +48,21 @@ bivariate.dx.test <- function(TP, FP, FN, TN)  {
       
     results <- c(true.positive ,false.negative, false.positive,  true.negative)
     data.reshape <- data.frame(results, group.id1 , group.id2, study.id)
-     
-    model <- lmer( results ~ 0 +  group.id1 + group.id2 + 
-                            ( 0 + group.id1 + group.id2  |study.id) ,
-                  family = binomial , data = data.reshape, nAGQ = 3) 
+    
+    # need to change after updated to lme4 1.0.5 from lme4 0.99
+    # model <- lmer( results ~ 0 +  group.id1 + group.id2 + 
+    #                         ( 0 + group.id1 + group.id2  |study.id) ,
+    #               family = binomial , data = data.reshape, nAGQ = 3)
+    model <- glmer( results ~ 0 +  group.id1 + group.id2 + 
+                        ( 0 + group.id1 + group.id2  |study.id) ,
+              family = binomial , data = data.reshape, nAGQ = 1) 
 
-    logit_sens <- model@fixef[1]
-    logist_spec <- model@fixef[2]
+    # same lme4 0.99 --> lme4 1.0.5 issue
+    #logit_sens <- model@fixef[1]
+    #logist_spec <- model@fixef[2]
+    logit_sens <- model@beta[1]
+    logist_spec <- model@beta[2]
+
     stde <- coef(summary(model))[, "Std. Error"]
 
     se_logit_sens <- stde[1]
