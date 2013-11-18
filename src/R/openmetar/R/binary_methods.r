@@ -197,6 +197,7 @@ binary.fixed.inv.var <- function(binary.data, params){
         res<-rma.uni(yi=binary.data@y, sei=binary.data@SE, slab=binary.data@study.names,
                                 level=params$conf.level, digits=params$digits, method="FE", add=c(params$adjust,params$adjust),
                                 to=c(as.character(params$to), as.character(params$to)))
+        pure.res <- res
         if (is.null(params$create.plot) || (is.null(params$write.to.file))) {
             if (is.null(params$write.to.file)) {
                 # Write results and study data to csv files 
@@ -242,7 +243,8 @@ binary.fixed.inv.var <- function(binary.data, params){
                 results <- list("images"=images,
 						        "Summary"=summary.disp,
                                 "plot_names"=plot.names, 
-                                "plot_params_paths"=plot.params.paths)
+                                "plot_params_paths"=plot.params.paths,
+                                "res"=pure.res)
             }
         }
         else {
@@ -307,7 +309,8 @@ binary.fixed.mh <- function(binary.data, params){
 					digits=params$digits,
 					measure=params$measure,
                     add=c(params$adjust, 0),
-					to=c(as.character(params$to), "none")) 
+					to=c(as.character(params$to), "none"))
+        pure.res <- res
         if (is.null(params$create.plot) || (is.null(params$write.to.file))) {
             if (is.null(binary.data@y) || is.null(binary.data@SE)) {
                 # compute point estimates for plot.data in case they are missing
@@ -360,8 +363,11 @@ binary.fixed.mh <- function(binary.data, params){
                 plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
                 images <- c("Forest Plot"=forest.path)
                 plot.names <- c("forest plot"="forest_plot")
-                results <- list("images"=images, "Summary"=summary.disp, 
-                            "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)
+                results <- list("images"=images,
+                                "Summary"=summary.disp, 
+                                "plot_names"=plot.names,
+                                "plot_params_paths"=plot.params.paths,
+                                "res"=pure.res)
             }
         }
         else {
@@ -439,6 +445,7 @@ binary.fixed.peto <- function(binary.data, params) {
 						add=c(params$adjust,params$adjust),
 						to=c(as.character(params$to), as.character(params$to)),
 						drop00 = FALSE)  # needed in metafor 1.8, unknown in 1.6
+        pure.res <- res
         # Corrected values for y and SE
         binary.data@y <- res$yi
         binary.data@SE <- sqrt(res$vi)
@@ -494,7 +501,8 @@ binary.fixed.peto <- function(binary.data, params) {
                 results <- list("images"=images,
 						        "Summary"=summary.disp,
                                 "plot_names"=plot.names,
-								"plot_params_paths"=plot.params.paths)
+								"plot_params_paths"=plot.params.paths,
+                                "res"=pure.res)
             }
         }
         else {
@@ -572,6 +580,7 @@ binary.random <- function(binary.data, params){
 					 add=c(params$adjust,params$adjust),
 					 to=as.character(params$to))
 					 ##drop00 = FALSE)  # needed in metafor 1.8, unknown in 1.6
+        pure.res <- res # store res before it gets messed with
         if (is.null(params$create.plot) || (is.null(params$write.to.file))) {
             if (is.null(binary.data@y) || is.null(binary.data@SE)) {
                 # compute point estimates for plot.data in case they are missing
@@ -606,16 +615,6 @@ binary.random <- function(binary.data, params){
                 metric.name <- pretty.metric.name(as.character(params$measure))
                 model.title <- paste("Binary Random-Effects Model\n\nMetric: ", metric.name, sep="")
 				
-				###############################
-				#print("RES HERE:")            #
-				#print(res)                    #
-				#
-				#print("Res weights here")
-				#print(res$study.weights)
-				#
-				#print("END OF RES HERE")
-				###############################
-				
                 # Create results display tables
                 summary.disp <- create.summary.disp(binary.data, params, res, model.title)
                 #
@@ -644,7 +643,9 @@ binary.random <- function(binary.data, params){
                 results <- list("images"=images,
 						        "Summary"=summary.disp,
                                 "plot_names"=plot.names,
-								"plot_params_paths"=plot.params.paths)
+								"plot_params_paths"=plot.params.paths,
+                                "res"=pure.res) # the results directly from metafor
+                                
             }
         }
         else {
@@ -655,6 +656,36 @@ binary.random <- function(binary.data, params){
 	references <- "this is a placeholder for binary random reference"
 	results[["References"]] <- references
     results
+}
+
+# Returns list mapping name-->type for the pure results output by metafor
+binary.random.value <- function() {
+    list(
+        b        = list(type="vector", description='estimated coefficients of the model.'),
+        se       = list(type="vector", description='standard errors of the coefficients.'),
+        zval     = list(type="vector", description='test statistics of the coefficients.'),
+        pval     = list(type="vector", description='p-values for the test statistics.'),
+        ci.lb    = list(type="vector", description='lower bound of the confidence intervals for the coefficients.'),
+        ci.ub    = list(type="vector", description='upper bound of the confidence intervals for the coefficients.'),
+        vb       = list(type="vector", description='variance-covariance matrix of the estimated coefficients.'),
+        tau2     = list(type="vector", description='estimated amount of (residual) heterogeneity. Always 0 when method="FE".'),
+        se.tau2  = list(type="vector", description='estimated standard error of the estimated amount of (residual) heterogeneity.'),
+        k        = list(type="vector", description='number of outcomes included in the model fitting.'),
+        p        = list(type="vector", description='number of coefficients in the model (including the intercept).'),
+        m        = list(type="vector", description='number of coefficients included in the omnibus test of coefficients.'),
+        QE       = list(type="vector", description='test statistic for the test of (residual) heterogeneity.'),
+        QEp      = list(type="vector", description='p-value for the test of (residual) heterogeneity.'),
+        QM       = list(type="vector", description='test statistic for the omnibus test of coefficients.'),
+        QMp      = list(type="vector", description='p-value for the omnibus test of coefficients.'),
+        I2       = list(type="vector", description='value of I2. See print.rma.uni for more details.'),
+        H2       = list(type="vector", description='value of H2. See print.rma.uni for more details.'),
+        R2       = list(type="vector", description='value of R2. See print.rma.uni for more details.'),
+        int.only = list(type="vector", description='logical that indicates whether the model is an intercept-only model.'),
+        yi       = list(type="vector", description='the vector of outcomes'),
+        vi       = list(type="vector", description='the corresponding sample variances'),
+        X        = list(type="matrix", description='the model matrix of the model'),
+        fit.stats= list(type="data.frame", description='a list with the log-likelihood, deviance, AIC, BIC, and AICc values under the unrestricted and restricted likelihood.')
+        )
 }
 
 
