@@ -256,6 +256,10 @@ binary.fixed.inv.var <- function(binary.data, params){
 	results[["References"]] <- references
     results
 }
+
+binary.fixed.inv.var.value.info <- function () {
+    rma.uni.value.info()
+}
                                 
 binary.fixed.inv.var.parameters <- function(){
     # parameters
@@ -379,6 +383,28 @@ binary.fixed.mh <- function(binary.data, params){
 	results[["References"]] = references
 	
     results
+}
+
+
+binary.fixed.mh.value.info <- function() {
+    list(
+        b        = list(type="vector", description='estimated coefficients of the model.'),
+        se       = list(type="vector", description='standard errors of the coefficients.'),
+        zval     = list(type="vector", description='test statistics of the coefficients.'),
+        pval     = list(type="vector", description='p-values for the test statistics.'),
+        ci.lb    = list(type="vector", description='lower bound of the confidence intervals for the coefficients.'),
+        ci.ub    = list(type="vector", description='upper bound of the confidence intervals for the coefficients.'),
+        QE       = list(type="vector", description='test statistic for the test of (residual) heterogeneity.'),
+        QEp      = list(type="vector", description='p-value for the test of (residual) heterogeneity.'),
+        MH       = list(type="vector", description='Cochran-Mantel-Haenszel test statistic (measure="OR") or Mantel-Haenszel test statistic (measure="IRR").'),
+        MHp      = list(type="vector", description='corresponding p-value'),
+        TA       = list(type="vector", description='Tarone’s heterogeneity test statistic (only when measure="OR").'), 
+        TAp      = list(type="vector", description='corresponding p-value (only when measure="OR").'), 
+        k        = list(type="vector", description='number of tables included in the analysis.'), 
+        yi       = list(type="vector", description='the vector of outcomes'),
+        vi       = list(type="vector", description='the corresponding sample variances'),
+        fit.stats= list(type="data.frame", description='a list with the log-likelihood, deviance, AIC, BIC, and AICc values under the unrestricted and restricted likelihood.')
+    )
 }
                                 
 binary.fixed.mh.parameters <- function(){
@@ -513,6 +539,23 @@ binary.fixed.peto <- function(binary.data, params) {
 	references <- "Fixed Peto: Yusuf, S., Peto, R., Lewis, J., Collins, R., & Sleight, P. (1985). Beta blockade during and after myocardial infarction: An overview of the randomized trials. Progress in Cardiovascular Disease, 27, 335-371."
 	results[["References"]] <- references
     results
+}
+
+binary.fixed.peto.value.info <- function() {
+    list(
+            b        = list(type="vector", description='estimated coefficients of the model.'),
+            se       = list(type="vector", description='standard errors of the coefficients.'),
+            zval     = list(type="vector", description='test statistics of the coefficients.'),
+            pval     = list(type="vector", description='p-values for the test statistics.'),
+            ci.lb    = list(type="vector", description='lower bound of the confidence intervals for the coefficients.'),
+            ci.ub    = list(type="vector", description='upper bound of the confidence intervals for the coefficients.'),
+            QE       = list(type="vector", description='test statistic for the test of heterogeneity.'),
+            QEp      = list(type="vector", description='p-value for the test of heterogeneity.'),
+            k        = list(type="vector", description='number of tables included in the analysis'),
+            yi       = list(type="vector", description='the vector of outcomes'),
+            vi       = list(type="vector", description='the corresponding sample variances'),
+            fit.stats= list(type="data.frame", description='a list with the log-likelihood, deviance, AIC, BIC, and AICc values under the unrestricted and restricted likelihood.')
+    )
 }
                               
 binary.fixed.peto.parameters <- function(){
@@ -659,33 +702,8 @@ binary.random <- function(binary.data, params){
 }
 
 # Returns list mapping name-->type for the pure results output by metafor
-binary.random.value <- function() {
-    list(
-        b        = list(type="vector", description='estimated coefficients of the model.'),
-        se       = list(type="vector", description='standard errors of the coefficients.'),
-        zval     = list(type="vector", description='test statistics of the coefficients.'),
-        pval     = list(type="vector", description='p-values for the test statistics.'),
-        ci.lb    = list(type="vector", description='lower bound of the confidence intervals for the coefficients.'),
-        ci.ub    = list(type="vector", description='upper bound of the confidence intervals for the coefficients.'),
-        vb       = list(type="vector", description='variance-covariance matrix of the estimated coefficients.'),
-        tau2     = list(type="vector", description='estimated amount of (residual) heterogeneity. Always 0 when method="FE".'),
-        se.tau2  = list(type="vector", description='estimated standard error of the estimated amount of (residual) heterogeneity.'),
-        k        = list(type="vector", description='number of outcomes included in the model fitting.'),
-        p        = list(type="vector", description='number of coefficients in the model (including the intercept).'),
-        m        = list(type="vector", description='number of coefficients included in the omnibus test of coefficients.'),
-        QE       = list(type="vector", description='test statistic for the test of (residual) heterogeneity.'),
-        QEp      = list(type="vector", description='p-value for the test of (residual) heterogeneity.'),
-        QM       = list(type="vector", description='test statistic for the omnibus test of coefficients.'),
-        QMp      = list(type="vector", description='p-value for the omnibus test of coefficients.'),
-        I2       = list(type="vector", description='value of I2. See print.rma.uni for more details.'),
-        H2       = list(type="vector", description='value of H2. See print.rma.uni for more details.'),
-        R2       = list(type="vector", description='value of R2. See print.rma.uni for more details.'),
-        int.only = list(type="vector", description='logical that indicates whether the model is an intercept-only model.'),
-        yi       = list(type="vector", description='the vector of outcomes'),
-        vi       = list(type="vector", description='the corresponding sample variances'),
-        X        = list(type="matrix", description='the model matrix of the model'),
-        fit.stats= list(type="data.frame", description='a list with the log-likelihood, deviance, AIC, BIC, and AICc values under the unrestricted and restricted likelihood.')
-        )
+binary.random.value.info <- function() {
+    rma.uni.value.info()
 }
 
 

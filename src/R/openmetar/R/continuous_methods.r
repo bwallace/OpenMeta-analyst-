@@ -159,6 +159,7 @@ continuous.fixed <- function(cont.data, params){
                      slab=cont.data@study.names,
                      method="FE", level=params$conf.level,
                      digits=params$digits)
+        pure.res <- res
         if (is.null(params$create.plot) || (is.null(params$write.to.file))) {
             if (is.null(params$write.to.file)) {
                 # Write results and study data to csv files
@@ -206,7 +207,8 @@ continuous.fixed <- function(cont.data, params){
                 results <- list("images"=images,
 						        "Summary"=summary.disp,
                                 "plot_names"=plot.names,
-								"plot_params_paths"=plot.params.paths)
+								"plot_params_paths"=plot.params.paths,
+                                "res"=pure.res)
             }
         }
         else {
@@ -267,7 +269,7 @@ continuous.random <- function(cont.data, params){
                      slab=cont.data@study.names,
                      method=params$rm.method, level=params$conf.level,
                      digits=params$digits)
-
+        pure.res<-res
         
         results <- list("Summary"=res)
 
@@ -325,7 +327,8 @@ continuous.random <- function(cont.data, params){
               results <- list("images"=images,
 					          "Summary"=summary.disp,
                               "plot_names"=plot.names,
-							  "plot_params_paths"=plot.params.paths)
+							  "plot_params_paths"=plot.params.paths,
+                              "res"=pure.res)
           }
        }
     }
@@ -334,6 +337,14 @@ continuous.random <- function(cont.data, params){
 	results[["References"]] <- references
 	
     results
+}
+
+continuous.random.value.info <- function() {
+    rma.uni.value.info()
+}
+
+continuous.fixed.value.info <- function() {
+    rma.uni.value.info()
 }
 
 

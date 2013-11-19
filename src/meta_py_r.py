@@ -1150,7 +1150,8 @@ def parse_out_results(result):
                 references_str += str(i+1) + ". " + ref + "\n"
             
             text_d[text_n] = references_str
-
+        elif text_n == "res": # ignore the special output for OpenMEE (may want to have this in the future for OpenMeta as well)
+            pass
         else:
             text_d[text_n]=str(text)
             
