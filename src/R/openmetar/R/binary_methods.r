@@ -197,22 +197,8 @@ binary.fixed.inv.var <- function(binary.data, params){
         res<-rma.uni(yi=binary.data@y, sei=binary.data@SE, slab=binary.data@study.names,
                                 level=params$conf.level, digits=params$digits, method="FE", add=c(params$adjust,params$adjust),
                                 to=c(as.character(params$to), as.character(params$to)))
+        pure.res <- res
         if (is.null(params$create.plot) || (is.null(params$write.to.file))) {
-            if (is.null(params$write.to.file)) {
-                # Write results and study data to csv files 
-                # Weights assigned to each study
-                res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
-				## GD EXPERIMENTAL ##############
-				res$study.names <- binary.data@study.names
-				res$study.years <- binary.data@years
-				##################################
-                results.path <- "./r_tmp/binary_fixed_inv_var_results.csv"
-                # @TODO Pass in results.path via params
-                data.path <- "./r_tmp/binary_fixed_inv_var_study_data.csv"
-                write.results.to.file(binary.data, params, res, outpath=results.path)
-                # write.bin.study.data.to.file(binary.data, params, res, data.path)
-                # @TODO: Check for non-numeric entries and replace with blanks to avoid errors.
-            }
             if (is.null(params$create.plot)) {
                 # Create forest plot and list to display summary of results
                 metric.name <- pretty.metric.name(as.character(params$measure))
@@ -239,10 +225,13 @@ binary.fixed.inv.var <- function(binary.data, params){
                 plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
                 images <- c("Forest Plot"=forest.path)
                 plot.names <- c("forest plot"="forest_plot")
+                pure.res$weights <- weights(res)
                 results <- list("images"=images,
 						        "Summary"=summary.disp,
                                 "plot_names"=plot.names, 
-                                "plot_params_paths"=plot.params.paths)
+                                "plot_params_paths"=plot.params.paths,
+                                "res"=pure.res,
+                                "weights"=weights(res))
             }
         }
         else {
@@ -253,6 +242,10 @@ binary.fixed.inv.var <- function(binary.data, params){
 	references <- "this is a placeholder for binary fixed effect inv var reference"
 	results[["References"]] <- references
     results
+}
+
+binary.fixed.inv.var.value.info <- function () {
+    rma.uni.value.info()
 }
                                 
 binary.fixed.inv.var.parameters <- function(){
@@ -307,31 +300,12 @@ binary.fixed.mh <- function(binary.data, params){
 					digits=params$digits,
 					measure=params$measure,
                     add=c(params$adjust, 0),
-					to=c(as.character(params$to), "none")) 
+					to=c(as.character(params$to), "none"))
+        pure.res <- res
         if (is.null(params$create.plot) || (is.null(params$write.to.file))) {
             if (is.null(binary.data@y) || is.null(binary.data@SE)) {
                 # compute point estimates for plot.data in case they are missing
                 binary.data <- compute.bin.point.estimates(binary.data, params)
-            }
-            if (is.null(params$write.to.file)) {
-                # Write results and study data to csv files
-                # Weights assigned to each study
-                A <- binary.data@g1O1
-                B <- binary.data@g1O2
-                C <- binary.data@g2O1
-                D <- binary.data@g2O2
-                weights <- B * C / (A + B + C + D)
-                res$study.weights <- weights / sum(weights)
-				## GD EXPERIMENTAL ##############
-				res$study.names <- binary.data@study.names
-				res$study.years <- binary.data@years
-				##################################
-                results.path <- "./r_tmp/binary_fixed_mh_results.csv"
-                # @TODO Pass in results.path via params
-                data.path <- "./r_tmp/binary_fixed_mh_study_data.csv"
-                write.results.to.file(binary.data, params, res, outpath=results.path)
-                # write.bin.study.data.to.file(binary.data, params, res, data.outpath=data.path)
-                # @TODO: Check for non-numeric entries and replace with blanks to avoid errors.
             }
             if (is.null(params$create.plot)) {
                 # Create forest plot and list to display summary of results
@@ -360,8 +334,13 @@ binary.fixed.mh <- function(binary.data, params){
                 plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
                 images <- c("Forest Plot"=forest.path)
                 plot.names <- c("forest plot"="forest_plot")
-                results <- list("images"=images, "Summary"=summary.disp, 
-                            "plot_names"=plot.names, "plot_params_paths"=plot.params.paths)
+                pure.res$weights <- weights(res)
+                results <- list("images"=images,
+                                "Summary"=summary.disp, 
+                                "plot_names"=plot.names,
+                                "plot_params_paths"=plot.params.paths,
+                                "res"=pure.res,
+                                "weights"=weights(res))
             }
         }
         else {
@@ -373,6 +352,28 @@ binary.fixed.mh <- function(binary.data, params){
 	results[["References"]] = references
 	
     results
+}
+
+
+binary.fixed.mh.value.info <- function() {
+    list(
+        b        = list(type="vector", description='estimated coefficients of the model.'),
+        se       = list(type="vector", description='standard errors of the coefficients.'),
+        zval     = list(type="vector", description='test statistics of the coefficients.'),
+        pval     = list(type="vector", description='p-values for the test statistics.'),
+        ci.lb    = list(type="vector", description='lower bound of the confidence intervals for the coefficients.'),
+        ci.ub    = list(type="vector", description='upper bound of the confidence intervals for the coefficients.'),
+        QE       = list(type="vector", description='test statistic for the test of (residual) heterogeneity.'),
+        QEp      = list(type="vector", description='p-value for the test of (residual) heterogeneity.'),
+        MH       = list(type="vector", description='Cochran-Mantel-Haenszel test statistic (measure="OR") or Mantel-Haenszel test statistic (measure="IRR").'),
+        MHp      = list(type="vector", description='corresponding p-value'),
+        TA       = list(type="vector", description='Tarone’s heterogeneity test statistic (only when measure="OR").'), 
+        TAp      = list(type="vector", description='corresponding p-value (only when measure="OR").'), 
+        k        = list(type="vector", description='number of tables included in the analysis.'), 
+        yi       = list(type="vector", description='the vector of outcomes'),
+        vi       = list(type="vector", description='the corresponding sample variances'),
+        fit.stats= list(type="data.frame", description='a list with the log-likelihood, deviance, AIC, BIC, and AICc values under the unrestricted and restricted likelihood.')
+    )
 }
                                 
 binary.fixed.mh.parameters <- function(){
@@ -437,8 +438,9 @@ binary.fixed.peto <- function(binary.data, params) {
                         level=params$conf.level,
 						digits=params$digits,
 						add=c(params$adjust,params$adjust),
-						to=c(as.character(params$to), as.character(params$to)))
-						##drop00 = FALSE)  # needed in metafor 1.8, unknown in 1.6
+						to=c(as.character(params$to), as.character(params$to)),
+						drop00 = FALSE)  # needed in metafor 1.8, unknown in 1.6
+        pure.res <- res
         # Corrected values for y and SE
         binary.data@y <- res$yi
         binary.data@SE <- sqrt(res$vi)
@@ -447,20 +449,6 @@ binary.fixed.peto <- function(binary.data, params) {
             if (is.null(binary.data@y) || is.null(binary.data@SE)) {
                 # compute point estimates for plot.data in case they are missing
                 binary.data <- compute.bin.point.estimates(binary.data, params)
-            }
-            if (is.null(params$write.to.file)) {
-                # Write results and study data to csv files  
-                res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
-				## GD EXPERIMENTAL ##############
-				res$study.names <- binary.data@study.names
-				res$study.years <- binary.data@years
-				##################################
-                results.path <- paste("./r_tmp/binary_fixed_peto_results.csv")
-                # @TODO Pass in results.path via params
-                data.path <- paste("./r_tmp/binary_fixed_peto_study_data.csv")
-                write.results.to.file(binary.data, params, res, outpath=results.path)
-                # write.bin.study.data.to.file(binary.data, params, res, data.outpath=data.path)
-                # @TODO: Check for non-numeric entries and replace with blanks to avoid errors.
             }
             if (is.null(params$create.plot)) {
                 # Create forest plot and list to display summary of results
@@ -491,10 +479,13 @@ binary.fixed.peto <- function(binary.data, params) {
                 plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
                 images <- c("Forest Plot"=forest.path)
                 plot.names <- c("forest plot"="forest_plot")
+                pure.res$weights <- weights(res)
                 results <- list("images"=images,
 						        "Summary"=summary.disp,
                                 "plot_names"=plot.names,
-								"plot_params_paths"=plot.params.paths)
+								"plot_params_paths"=plot.params.paths,
+                                "res"=pure.res,
+                                "weights"=weights(res))
             }
         }
         else {
@@ -505,6 +496,23 @@ binary.fixed.peto <- function(binary.data, params) {
 	references <- "Fixed Peto: Yusuf, S., Peto, R., Lewis, J., Collins, R., & Sleight, P. (1985). Beta blockade during and after myocardial infarction: An overview of the randomized trials. Progress in Cardiovascular Disease, 27, 335-371."
 	results[["References"]] <- references
     results
+}
+
+binary.fixed.peto.value.info <- function() {
+    list(
+            b        = list(type="vector", description='estimated coefficients of the model.'),
+            se       = list(type="vector", description='standard errors of the coefficients.'),
+            zval     = list(type="vector", description='test statistics of the coefficients.'),
+            pval     = list(type="vector", description='p-values for the test statistics.'),
+            ci.lb    = list(type="vector", description='lower bound of the confidence intervals for the coefficients.'),
+            ci.ub    = list(type="vector", description='upper bound of the confidence intervals for the coefficients.'),
+            QE       = list(type="vector", description='test statistic for the test of heterogeneity.'),
+            QEp      = list(type="vector", description='p-value for the test of heterogeneity.'),
+            k        = list(type="vector", description='number of tables included in the analysis'),
+            yi       = list(type="vector", description='the vector of outcomes'),
+            vi       = list(type="vector", description='the corresponding sample variances'),
+            fit.stats= list(type="data.frame", description='a list with the log-likelihood, deviance, AIC, BIC, and AICc values under the unrestricted and restricted likelihood.')
+    )
 }
                               
 binary.fixed.peto.parameters <- function(){
@@ -558,6 +566,8 @@ binary.random <- function(binary.data, params){
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
     
     results <- NULL
+    input.params <- params
+    
     if (length(binary.data@g1O1) == 1 || length(binary.data@y) == 1){
         res <- get.res.for.one.binary.study(binary.data, params)
          # Package res for use by overall method.
@@ -572,49 +582,17 @@ binary.random <- function(binary.data, params){
 					 add=c(params$adjust,params$adjust),
 					 to=as.character(params$to))
 					 ##drop00 = FALSE)  # needed in metafor 1.8, unknown in 1.6
+        pure.res <- res # store res before it gets messed with
         if (is.null(params$create.plot) || (is.null(params$write.to.file))) {
             if (is.null(binary.data@y) || is.null(binary.data@SE)) {
                 # compute point estimates for plot.data in case they are missing
                 binary.data <- compute.bin.point.estimates(binary.data, params)
-            }
-            if (is.null(params$write.to.file)) {
-                # Write results and study data to csv files
-                # Weights assigned to each study
-                weights <- 1 / (res$vi + res$tau2)
-                res$study.weights <- weights / sum(weights)
-				
-				## GD EXPERIMENTAL ##############
-				res$study.names <- binary.data@study.names
-				res$study.years <- binary.data@years
-				##################################
-				
-                # Write results and study data to csv files
-                results.path <- paste("./r_tmp/binary_random_results.csv")
-                # @TODO Pass in results.path via params
-                data.path <- paste("./r_tmp/binary_random_study_data.csv")
-                write.results.to.file(binary.data, params, res, outpath=results.path)
-                # write.bin.study.data.to.file(binary.data, params, res, data.outpath=data.path)
-                # @TODO: Check for non-numeric entries and replace with blanks to avoid errors.
-				###############################
-				print("THE WEIGHTS:")         #
-				print(res$study.weights)      #
-				###############################
             }
             if (is.null(params$create.plot)) {
                 # Create forest plot and list to display summary of results
                 #
                 metric.name <- pretty.metric.name(as.character(params$measure))
                 model.title <- paste("Binary Random-Effects Model\n\nMetric: ", metric.name, sep="")
-				
-				###############################
-				#print("RES HERE:")            #
-				#print(res)                    #
-				#
-				#print("Res weights here")
-				#print(res$study.weights)
-				#
-				#print("END OF RES HERE")
-				###############################
 				
                 # Create results display tables
                 summary.disp <- create.summary.disp(binary.data, params, res, model.title)
@@ -641,10 +619,15 @@ binary.random <- function(binary.data, params){
                 plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
                 images <- c("Forest Plot"=forest.path)
                 plot.names <- c("forest plot"="forest_plot")
-                results <- list("images"=images,
+                pure.res$weights <- weights(res) # not pure anymore, oh well
+                results <- list("input_data"=binary.data, # the data that was given to the routine in the first place
+                                "input_params"=input.params,
+                                "images"=images,
 						        "Summary"=summary.disp,
                                 "plot_names"=plot.names,
-								"plot_params_paths"=plot.params.paths)
+								"plot_params_paths"=plot.params.paths,
+                                "res"=pure.res, # the results directly from metafor in order to extract values of interests
+                                "weights"=weights(res))
             }
         }
         else {
@@ -655,6 +638,11 @@ binary.random <- function(binary.data, params){
 	references <- "this is a placeholder for binary random reference"
 	results[["References"]] <- references
     results
+}
+
+# Returns list mapping name-->type for the pure results output by metafor
+binary.random.value.info <- function() {
+    rma.uni.value.info()
 }
 
 
