@@ -628,6 +628,40 @@ rma.uni.value.info <- function() {
             yi       = list(type="vector", description='the vector of outcomes'),
             vi       = list(type="vector", description='the corresponding sample variances'),
             X        = list(type="matrix", description='the model matrix of the model'),
-            fit.stats= list(type="data.frame", description='a list with the log-likelihood, deviance, AIC, BIC, and AICc values under the unrestricted and restricted likelihood.')
+            fit.stats= list(type="data.frame", description='a list with the log-likelihood, deviance, AIC, BIC, and AICc values under the unrestricted and restricted likelihood.'),
+			
+			# not part of rma.uni output
+			weights = list(type="vector", description="weights in % given to the observed effects")
+	
+	
     )
+}
+
+cumul.rma.uni.value.info <- function() {
+	list(
+			estimate = list(type="vector", description='estimated coefficients of the model.'),
+			se       = list(type="vector", description='standard errors of the coefficients. NA if transf is used to transform the coefficients.'),
+			zval     = list(type="vector", description='test statistics of the coefficients.'),
+			pval     = list(type="vector", description='p-values for the test statistics.'),
+			ci.lb    = list(type="vector", description='lower bounds of the confidence intervals for the coefficients.'),                                              
+			ci.ub    = list(type="vector", description='upper bounds of the confidence intervals for the coefficients.'),
+			QE       = list(type="vector", description='test statistics for the tests of heterogeneity.'),
+			QEp      = list(type="vector", description='p-values for the tests of heterogeneity.'),
+			tau2     = list(type="vector", description='estimated amounts of (residual) heterogeneity (only for random-effects models).'),
+			I2       = list(type="vector", description='values of I2 .'),
+			H2       = list(type="vector", description='values of H2 .')		
+		)
+}
+
+cumul.mh.value.info <- function () {
+	list(
+			estimate = list(type="vector", description='estimated coefficients of the model.'),
+			se       = list(type="vector", description='standard errors of the coefficients. NA if transf is used to transform the coefficients.'),
+			zval     = list(type="vector", description='test statistics of the coefficients.'),
+			pval     = list(type="vector", description='p-values for the test statistics.'),
+			ci.lb    = list(type="vector", description='lower bounds of the confidence intervals for the coefficients.'),                                              
+			ci.ub    = list(type="vector", description='upper bounds of the confidence intervals for the coefficients.'),
+			QE       = list(type="vector", description='test statistics for the tests of heterogeneity.'),
+			QEp      = list(type="vector", description='p-values for the tests of heterogeneity.')
+		)
 }

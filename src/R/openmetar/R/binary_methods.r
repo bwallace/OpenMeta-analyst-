@@ -226,11 +226,14 @@ binary.fixed.inv.var <- function(binary.data, params){
                 images <- c("Forest Plot"=forest.path)
                 plot.names <- c("forest plot"="forest_plot")
                 pure.res$weights <- weights(res)
-                results <- list("images"=images,
+                results <- list("input_data"=binary.data,
+								"input_params"=input.params,
+								"images"=images,
 						        "Summary"=summary.disp,
                                 "plot_names"=plot.names, 
                                 "plot_params_paths"=plot.params.paths,
                                 "res"=pure.res,
+								"res.info"=binary.fixed.inv.var.value.info(),
                                 "weights"=weights(res))
             }
         }
@@ -335,11 +338,14 @@ binary.fixed.mh <- function(binary.data, params){
                 images <- c("Forest Plot"=forest.path)
                 plot.names <- c("forest plot"="forest_plot")
                 pure.res$weights <- weights(res)
-                results <- list("images"=images,
+                results <- list("input_data"=binary.data,
+								"input_params"=input.params,
+								"images"=images,
                                 "Summary"=summary.disp, 
                                 "plot_names"=plot.names,
                                 "plot_params_paths"=plot.params.paths,
                                 "res"=pure.res,
+								"res.info"=binary.fixed.mh.value.info(),
                                 "weights"=weights(res))
             }
         }
@@ -372,8 +378,11 @@ binary.fixed.mh.value.info <- function() {
         k        = list(type="vector", description='number of tables included in the analysis.'), 
         yi       = list(type="vector", description='the vector of outcomes'),
         vi       = list(type="vector", description='the corresponding sample variances'),
-        fit.stats= list(type="data.frame", description='a list with the log-likelihood, deviance, AIC, BIC, and AICc values under the unrestricted and restricted likelihood.')
-    )
+        fit.stats= list(type="data.frame", description='a list with the log-likelihood, deviance, AIC, BIC, and AICc values under the unrestricted and restricted likelihood.'),
+	
+		# not part of rma.mh default output
+		weights = list(type="vector", description="weights in % given to the observed effects")
+)
 }
                                 
 binary.fixed.mh.parameters <- function(){
@@ -480,11 +489,14 @@ binary.fixed.peto <- function(binary.data, params) {
                 images <- c("Forest Plot"=forest.path)
                 plot.names <- c("forest plot"="forest_plot")
                 pure.res$weights <- weights(res)
-                results <- list("images"=images,
+                results <- list("input_data"=binary.data,
+								"input_params"=input.params,
+								"images"=images,
 						        "Summary"=summary.disp,
                                 "plot_names"=plot.names,
 								"plot_params_paths"=plot.params.paths,
-                                "res"=pure.res,
+                                "res"=pure.res, # if res is here, res.info must be too
+								"res.info"=binary.fixed.peto.value.info(),
                                 "weights"=weights(res))
             }
         }
@@ -511,7 +523,10 @@ binary.fixed.peto.value.info <- function() {
             k        = list(type="vector", description='number of tables included in the analysis'),
             yi       = list(type="vector", description='the vector of outcomes'),
             vi       = list(type="vector", description='the corresponding sample variances'),
-            fit.stats= list(type="data.frame", description='a list with the log-likelihood, deviance, AIC, BIC, and AICc values under the unrestricted and restricted likelihood.')
+            fit.stats= list(type="data.frame", description='a list with the log-likelihood, deviance, AIC, BIC, and AICc values under the unrestricted and restricted likelihood.'),
+			
+			# not part of rma.peto output
+			weights = list(type="vector", description="weights in % given to the observed effects")
     )
 }
                               
@@ -627,7 +642,8 @@ binary.random <- function(binary.data, params){
                                 "plot_names"=plot.names,
 								"plot_params_paths"=plot.params.paths,
                                 "res"=pure.res, # the results directly from metafor in order to extract values of interests
-                                "weights"=weights(res))
+								"res.info"=binary.random.value.info(),
+								"weights"=weights(res))
             }
         }
         else {

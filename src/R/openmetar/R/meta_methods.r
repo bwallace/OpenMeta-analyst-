@@ -98,16 +98,16 @@ cum.ma.binary <- function(fname, binary.data, params){
         study.names <- c(study.names, paste("+ ",binary.data@study.names[count], sep=""))
     }
     metric.name <- pretty.metric.name(as.character(params.tmp$measure))
-    model.title <- ""
-    if (fname == "binary.fixed.inv.var") {
-        model.title <- paste("Binary Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
-    } else if (fname == "binary.fixed.mh") {
-        model.title <- paste("Binary Fixed-effect Model - Mantel Haenszel\n\nMetric: ", metric.name, sep="")
-    } else if (fname == "binary.fixed.peto") {
-        model.title <- paste("Binary Fixed-effect Model - Peto\n\nMetric: ", metric.name, sep="")
-    } else if (fname == "binary.random") {
-        model.title <- paste("Binary Random-Effects Model\n\nMetric: ", metric.name, sep="")
-    }
+	model.title <- switch(fname,
+                          binary.fixed.inv.var=paste("Binary Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep=""),
+                          binary.fixed.mh=paste("Binary Fixed-effect Model - Mantel Haenszel\n\nMetric: ", metric.name, sep=""),
+                          binary.fixed.peto=paste("Binary Fixed-effect Model - Peto\n\nMetric: ", metric.name, sep=""),
+                          binary.random=paste("Binary Random-Effects Model\n\nMetric: ", metric.name, sep=""))
+	value.info <- switch(fname,
+                         binary.fixed.inv.var = cumul.rma.uni.value.info(),
+                         binary.fixed.mh      = cumul.mh.value.info(),
+                         binary.fixed.peto    = cumul.mh.value.info(),
+                         binary.random        = cumul.rma.uni.value.info())
     cum.disp <- create.overall.display(res=cum.results, study.names, params, model.title, data.type="binary")
     forest.path <- paste(params$fp_outpath, sep="")
     params.cum <- params
@@ -143,21 +143,44 @@ cum.ma.binary <- function(fname, binary.data, params){
 			        "Cumulative Summary"=cum.disp, 
                     "plot_names"=plot.names, 
                     "plot_params_paths"=plot.params.paths, 
-					"References"=references)
+					"References"=references,
+					"res"=construct.sequential.res.output(cum.results, value.info, replacements=list(estimate='b')),
+					"res.info"=list(summary.table=list(type="data.frame", description=""))
+                   )
+					
     results
 }
 
-#bootstrap.binary <- function(fname, omdata, params) {
-#	res <- bootstrap(fname, omdata, "binary", params)
-#	res
-#}
-#
-#bootstrap.continuous <- function(fname, omdata, params) {
-#	res <- bootstrap(fname, omdata, "continuous", params)
-#	res
-#}
+construct.sequential.res.output <- function(seq.res, value.info, replacements=list()) {
+	# amalgamates outputs from analysis routines that are groups of other outputs
+	# Decided to leave these outputs as a table instead of broken up contrasted with how we deal with value.info elsewhere
+	# replacements is a list mapping names in value.info to names in the underlying fname if they don't match	
+	
+	value.names <- names(value.info) # all assumed to be vectors
+	results.table <- c()
+	
+	get.val<-function(x) {
+		if (name %in% names(replacements))
+			val <- x[[replacements[[name]]]]
+		else
+			val <- x[[name]]
+		
+		
 
-
+		if (is.null(val))
+			val <- NA
+		val
+	}
+	
+	for (name in value.names) {
+		column <- unlist(sapply(seq.res,get.val))
+		results.table <- cbind(results.table, column)
+	}
+	results.table <- as.data.frame(results.table)
+	names(results.table) <- value.names
+	
+	list(summary.table=results.table)
+}
 
 
 bootstrap <- function(fname, omdata, params, cond.means.data=FALSE) {
@@ -289,8 +312,6 @@ bootstrap <- function(fname, omdata, params, cond.means.data=FALSE) {
 	
 }
 
-
-
 boot.ma.output.results <- function(boot.results, params, bootstrap.plot.path) {
 	conf.interval <- boot.ci(boot.out = boot.results, type = "norm")
 	mean_boot <- mean(boot.results$t)
@@ -309,6 +330,7 @@ boot.ma.output.results <- function(boot.results, params, bootstrap.plot.path) {
 			"Summary"=summary.msg)
 	results
 }
+
 calc.meta.reg.coeffs.and.cis <- function(boot.results) {
 	dim.t <- dim(boot.results$t)
 	num.rows <- dim.t[1]
@@ -368,6 +390,7 @@ boot.meta.reg.output.results <- function(boot.results, params, bootstrap.plot.pa
 						   "Summary"=reg.disp)
 	output.results
 }
+
 boot.meta.reg.cond.means.output.results <- function(omdata, boot.results, params, bootstrap.plot.path, cov.data, cond.means.data) {
 	coeffs.and.cis <- calc.meta.reg.coeffs.and.cis(boot.results)
 	cat.ref.var.and.levels <- cov.data$cat.ref.var.and.levels
@@ -423,9 +446,6 @@ plot.custom.boot <- function(boot.out, title="Bootstrap Histogram", ci.lb, ci.ub
 		abline(v=ci.ub[index],lty=3)
 	}
 }
-
-
-
 
 ##################################
 #  binary leave-one-out MA       #
@@ -486,17 +506,11 @@ loo.ma.binary <- function(fname, binary.data, params){
     # Add overall results
     study.names <- c("Overall", paste("- ",binary.data@study.names, sep=""))
     metric.name <- pretty.metric.name(as.character(params$measure))
-    model.title <- ""
-    if (fname == "binary.fixed.inv.var") {
-        model.title <- paste("Binary Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
-    } else if (fname == "binary.fixed.mh") {
-        model.title <- paste("Binary Fixed-effect Model - Mantel Haenszel\n\nMetric: ", metric.name, sep="")
-    } else if (fname == "binary.fixed.peto") {
-        model.title <- paste("Binary Fixed-effect Model - Peto\n\nMetric: ", metric.name, sep="")
-    } else if (fname == "binary.random") {
-        model.title <- paste("Binary Random-Effects Model\n\nMetric: ", metric.name, sep="")
-    }
-    
+	model.title <- switch(fname,
+			binary.fixed.inv.var = paste("Binary Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep=""),
+			binary.fixed.mh = paste("Binary Fixed-effect Model - Mantel Haenszel\n\nMetric: ", metric.name, sep=""),
+			binary.fixed.peto = paste("Binary Fixed-effect Model - Peto\n\nMetric: ", metric.name, sep=""),
+			binary.random = paste("Binary Random-Effects Model\n\nMetric: ", metric.name, sep=""))
     loo.disp <- create.overall.display(res=loo.results, study.names, params, model.title, data.type="binary")
     forest.path <- paste(params$fp_outpath, sep="")
     plot.data <- create.plot.data.loo(binary.data, params, res=loo.results)
@@ -595,13 +609,14 @@ cum.ma.continuous <- function(fname, cont.data, params){
     }
     
     metric.name <- pretty.metric.name(as.character(params$measure))
-    model.title <- ""
-    if (fname == "continuous.fixed") {
-        model.title <- paste("Continuous Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
-    } else if (fname == "continuous.random") {
-        model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", metric.name, sep="")
-    }
-    cum.disp <- create.overall.display(res=cum.results, study.names, params, model.title, data.type="continuous")
+	model.title <- switch(fname,
+                          continuous.fixed  = paste("Continuous Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep=""),
+						  continuous.random = paste("Continuous Random-Effects Model\n\nMetric: ", metric.name, sep=""))
+    value.info <- switch(fname,
+						 continuous.fixed  = cumul.rma.uni.value.info(), 
+	                     continuous.random = cumul.rma.uni.value.info())
+	
+	cum.disp <- create.overall.display(res=cum.results, study.names, params, model.title, data.type="continuous")
     forest.path <- paste(params$fp_outpath, sep="")
     params.cum <- params
     params.cum$fp_col1_str <- "Cumulative Studies"
@@ -699,21 +714,13 @@ cum.ma.diagnostic <- function(fname, diagnostic.data, params){
 		study.names <- c(study.names, paste("+ ", diagnostic.data@study.names[count], sep=""))
 	}
 	metric.name <- pretty.metric.name(as.character(params.tmp$measure))
-	model.title <- ""
-	if (fname == "diagnostic.bivariate.ml") {
-		model.title <- paste("Diagnostic Bivariate - Maximum Likelihood\n\nMetric: ", metric.name, sep="") 
-	} else if (fname == "diagnostic.fixed.inv.var.") {
-		model.title <- paste("Diagnostic Fixed-Effect Inverse Variance\n\nMetric: ", metric.name, sep="")
-	} else if (fname == "diagnostic.fixed.mh") {
-		model.title <- paste("Diagnostic Fixed-Effect Mantel Haenszel\n\nMetric: ", metric.name, sep="")
-	} else if (fname == "diagnostic.fixed.peto") {
-		model.title <- paste("Diagnostic Fixed-Effect Peto\n\nMetric: ", metric.name, sep="")
-	} else if (fname == "diagnostic.hsroc") {
-		model.title <- paste("Diagnostic HSROC\n\nMetric: ", metric.name, sep="")
-	} else if (fname == "diagnostic.random") {
-		model.title <- paste("Diagnostic Random-Effects\n\nMetric: ", metric.name, sep="")
-	}
-	
+	model.title <- switch(fname,
+                          diagnostic.bivariate.ml  = paste("Diagnostic Bivariate - Maximum Likelihood\n\nMetric: ", metric.name, sep=""),
+                          diagnostic.fixed.inv.var = paste("Diagnostic Fixed-Effect Inverse Variance\n\nMetric: ", metric.name, sep=""),
+                          diagnostic.fixed.mh      = paste("Diagnostic Fixed-Effect Mantel Haenszel\n\nMetric: ", metric.name, sep=""),
+                          diagnostic.fixed.peto    = paste("Diagnostic Fixed-Effect Peto\n\nMetric: ", metric.name, sep=""),
+                          diagnostic.hsroc         = paste("Diagnostic HSROC\n\nMetric: ", metric.name, sep=""),
+                          diagnostic.random        = paste("Diagnostic Random-Effects\n\nMetric: ", metric.name, sep=""))
 	cum.disp <- create.overall.display(res=cum.results, study.names, params, model.title, data.type="diagnostic")
 	forest.path <- paste(params$fp_outpath, sep="")
 	params.cum <- params
@@ -872,12 +879,9 @@ loo.ma.continuous <- function(fname, cont.data, params){
     study.names <- c("Overall", paste("- ", cont.data@study.names, sep=""))
     params$data.type <- "continuous"
     metric.name <- pretty.metric.name(as.character(params$measure))
-    model.title <- ""
-    if (fname == "continuous.fixed") {
-        model.title <- paste("Continuous Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
-    } else if (fname == "continuous.random") {
-        model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", metric.name, sep="")
-    }
+	model.title <- switch(fname,
+			continuous.fixed=paste("Continuous Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep=""),
+			continuous.random=paste("Continuous Random-Effects Model\n\nMetric: ", metric.name, sep=""))
     loo.disp <- create.overall.display(res=loo.results, study.names, params, model.title, data.type="continuous")
     forest.path <- paste(params$fp_outpath, sep="")
     plot.data <- create.plot.data.loo(cont.data, params, res=loo.results)
@@ -950,16 +954,11 @@ subgroup.ma.binary <- function(fname, binary.data, params){
     subgroup.names <- paste("Subgroup ", subgroup.list, sep="")
     subgroup.names <- c(subgroup.names, "Overall")
     metric.name <- pretty.metric.name(as.character(params$measure))
-    model.title <- ""
-    if (fname == "binary.fixed.inv.var") {
-        model.title <- paste("Binary Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
-    } else if (fname == "binary.fixed.mh") {
-        model.title <- paste("Binary Fixed-effect Model - Mantel Haenszel\n\nMetric: ", metric.name, sep="")
-    } else if (fname == "binary.fixed.peto") {
-        model.title <- paste("Binary Fixed-effect Model - Peto\n\nMetric: ", metric.name, sep="")
-    } else if (fname == "binary.random") {
-        model.title <- paste("Binary Random-Effects Model\n\nMetric: ", metric.name, sep="")
-    }
+	model.title <- switch(fname,
+		binary.fixed.inv.var = paste("Binary Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep=""),
+		binary.fixed.mh = paste("Binary Fixed-effect Model - Mantel Haenszel\n\nMetric: ", metric.name, sep=""),
+		binary.fixed.peto = paste("Binary Fixed-effect Model - Peto\n\nMetric: ", metric.name, sep=""),
+		binary.random = paste("Binary Random-Effects Model\n\nMetric: ", metric.name, sep=""))
     subgroup.disp <- create.subgroup.display(subgroup.results, subgroup.names, params, model.title, data.type="binary")
     forest.path <- paste(params$fp_outpath, sep="")
     # pack up the data for forest plot.
@@ -1050,12 +1049,9 @@ subgroup.ma.continuous <- function(fname, cont.data, params){
     subgroup.names <- paste("Subgroup ", subgroup.list, sep="")
     subgroup.names <- c(subgroup.names, "Overall")
     metric.name <- pretty.metric.name(as.character(params$measure))
-    model.title <- ""
-    if (fname == "continuous.fixed") {
-        model.title <- paste("Continuous Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
-    } else if (fname == "continuous.random") {
-        model.title <- paste("Continuous Random-Effects Model\n\nMetric: ", metric.name, sep="")
-    }
+    model.title <- switch(fname,
+						  continuous.fixed = paste("Continuous Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep=""),
+						  continuous.random = paste("Continuous Random-Effects Model\n\nMetric: ", metric.name, sep=""))
     subgroup.disp <- create.overall.display(subgroup.results, subgroup.names, params, model.title, data.type="continuous")
     forest.path <- paste(params$fp_outpath, sep="")
     # pack up the data for forest plot.
@@ -1433,13 +1429,9 @@ loo.ma.diagnostic <- function(fname, diagnostic.data, params){
     # Add overall results
     study.names <- c("Overall", paste("- ", diagnostic.data@study.names, sep=""))
     metric.name <- pretty.metric.name(as.character(params$measure))
-    model.title <- ""
-    if (fname == "diagnostic.fixed") {
-        model.title <- paste("Diagnostic Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
-    } else if (fname == "diagnostic.random") {
-        model.title <- paste("Diagnostic Random-Effects Model\n\nMetric: ", metric.name, sep="")
-    }
-    
+	model.title <- switch(fname,
+			diagnostic.fixed = paste("Diagnostic Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep=""),
+			diagnostic.random = paste("Diagnostic Random-Effects Model\n\nMetric: ", metric.name, sep=""))
     loo.disp <- create.overall.display(res=loo.results, study.names, params, model.title, data.type="diagnostic")
         
     if (is.null(params$create.plot)) {
@@ -1731,13 +1723,9 @@ subgroup.ma.diagnostic <- function(fname, diagnostic.data, params, selected.cov)
     subgroup.names <- c(subgroup.names, "Overall")
     
     metric.name <- pretty.metric.name(params.tmp$measure)
-    model.title <- ""
-    if (fname == "diagnostic.fixed") {
-        model.title <- paste("Diagnostic Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep="") 
-    } else if (fname == "diagnostic.random") {
-        model.title <- paste("Diagnostic Random-Effects Model\n\nMetric: ", metric.name, sep="")
-    }
-    
+    model.title <- switch(fname,
+                          diagnostic.fixed = paste("Diagnostic Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep=""),
+                          diagnostic.random = paste("Diagnostic Random-Effects Model\n\nMetric: ", metric.name, sep=""))
     subgroup.disp <- create.subgroup.display(subgroup.results, subgroup.names, params, model.title, data.type="diagnostic")
     forest.path <- paste(params$fp_outpath, sep="")
     # pack up the data for forest plot.

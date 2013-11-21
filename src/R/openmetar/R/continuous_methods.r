@@ -161,21 +161,6 @@ continuous.fixed <- function(cont.data, params){
                      digits=params$digits)
         pure.res <- res
         if (is.null(params$create.plot) || (is.null(params$write.to.file))) {
-            if (is.null(params$write.to.file)) {
-                # Write results and study data to csv files
-                # Weights assigned to each study
-                res$study.weights <- (1 / res$vi) / sum(1 / res$vi)
-				## GD EXPERIMENTAL ##############
-				res$study.names <- cont.data@study.names
-				res$study.years <- cont.data@years
-				##################################
-                results.path <- paste("./r_tmp/cont_fixed_results.csv")
-                # @TODO Pass in results.path via params
-                data.path <- paste("./r_tmp/cont_fixed_study_data.csv")
-                write.results.to.file(cont.data, params, res, outpath=results.path)
-                # write.cont.study.data.to.file(cont.data, params, res, data.outpath=data.path)
-                # @TODO: Check for non-numeric entries and replace with blanks to avoid errors.
-            }
             if (is.null(params$create.plot)) {
                 # Create forest plot and list to display summary of results
                 metric.name <- pretty.metric.name(as.character(params$measure))
@@ -204,11 +189,16 @@ continuous.fixed <- function(cont.data, params){
                 plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
                 images <- c("Forest Plot"=forest.path)
                 plot.names <- c("forest plot"="forest_plot")
-                results <- list("images"=images,
+				pure.res$weights <- weights(res)
+                results <- list("input_data"=binary.data,
+								"input_params"=input.params,
+								"images"=images,
 						        "Summary"=summary.disp,
                                 "plot_names"=plot.names,
 								"plot_params_paths"=plot.params.paths,
-                                "res"=pure.res)
+                                "res"=pure.res,
+								"res.info"=continuous.fixed.value.info(),
+								"weights"=weights(res))
             }
         }
         else {
@@ -277,25 +267,6 @@ continuous.random <- function(cont.data, params){
         # @TODO this needs major re-factoring -- totally
         #   unreadable / illogical
         if (is.null(params$create.plot) || (is.null(params$write.to.file)) || params$create.plot || params$write.to.file) {
-          if (is.null(params$write.to.file) || params$write.to.file) {
-              # Write results and study data to csv files
-              # Weights assigned to each study
-              weights <- 1 / (res$vi + res$tau2)
-              res$study.weights <- weights / sum(weights)
-			  
-			  ## GD EXPERIMENTAL ##############
-			  res$study.names <- cont.data@study.names
-			  res$study.years <- cont.data@years
-			  ##################################
-			  
-              results.path <- "./r_tmp/cont_random_results.csv"
-              # @TODO Pass in results.path via params
-              data.path <- "./r_tmp/cont_random_study_data.csv"
-              write.results.to.file(cont.data, params, res, outpath=results.path)
-              # write.cont.study.data.to.file(cont.data, params, res, data.outpath=data.path)
-              # @TODO: Check for non-numeric entries and replace with blanks to avoid errors.
-          }
-
           if (is.null(params$create.plot) || params$create.plot) {
               # Create forest plot and list to display summary of results
               metric.name <- pretty.metric.name(as.character(params$measure))
@@ -324,11 +295,16 @@ continuous.random <- function(cont.data, params){
               plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
               images <- c("Forest Plot"=forest.path)
               plot.names <- c("forest plot"="forest_plot")
-              results <- list("images"=images,
+			  pure.res$weights <- weights(res)
+              results <- list("input_data"=binary.data,
+					  		  "input_params"=input.params,
+					  		  "images"=images,
 					          "Summary"=summary.disp,
                               "plot_names"=plot.names,
 							  "plot_params_paths"=plot.params.paths,
-                              "res"=pure.res)
+                              "res"=pure.res,
+							  "res.info"=continuous.random.value.info(),
+							  "weights"=weights(res))
           }
        }
     }
