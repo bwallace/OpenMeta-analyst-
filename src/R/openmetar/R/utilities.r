@@ -653,7 +653,7 @@ cumul.rma.uni.value.info <- function() {
 		)
 }
 
-cumul.mh.value.info <- function () {
+cumul.rma.mh.value.info <- function () {
 	list(
 			estimate = list(type="vector", description='estimated coefficients of the model.'),
 			se       = list(type="vector", description='standard errors of the coefficients. NA if transf is used to transform the coefficients.'),
@@ -664,4 +664,33 @@ cumul.mh.value.info <- function () {
 			QE       = list(type="vector", description='test statistics for the tests of heterogeneity.'),
 			QEp      = list(type="vector", description='p-values for the tests of heterogeneity.')
 		)
+}
+
+loo.rma.uni.value.info <- function () {
+	list(
+			estimate = list(type="vector", description='estimated coefficients of the model.'),
+			se       = list(type="vector", description='standard errors of the coefficients. NA if transf is used to transform the coefficients.'),
+			zval     = list(type="vector", description='test statistics of the coefficients.'),
+			pval     = list(type="vector", description='p-values for the test statistics.'),
+			ci.lb    = list(type="vector", description='lower bounds of the confidence intervals for the coefficients.'),                                              
+			ci.ub    = list(type="vector", description='upper bounds of the confidence intervals for the coefficients.'),
+			Q        = list(type="vector", description='test statistics for the tests of heterogeneity.'),
+			Qp       = list(type="vector", description='p-values for the tests of heterogeneity.'),
+			tau2     = list(type="vector", description='estimated amounts of (residual) heterogeneity (only for random-effects models).'),
+			I2       = list(type="vector", description='values of I2 .'),
+			H2       = list(type="vector", description='values of H2 .')	
+		)
+}
+
+loo.rma.mh.value.info <- function () {
+	list(
+			estimate = list(type="vector", description='estimated coefficients of the model.'),
+			se       = list(type="vector", description='standard errors of the coefficients. NA if transf is used to transform the coefficients.'),
+			zval     = list(type="vector", description='test statistics of the coefficients.'),
+			pval     = list(type="vector", description='p-values for the test statistics.'),
+			ci.lb    = list(type="vector", description='lower bounds of the confidence intervals for the coefficients.'),                                              
+			ci.ub    = list(type="vector", description='upper bounds of the confidence intervals for the coefficients.'),
+			Q        = list(type="vector", description='test statistics for the tests of heterogeneity.'),
+			Qp       = list(type="vector", description='p-values for the tests of heterogeneity.')
+	)
 }

@@ -160,6 +160,11 @@ continuous.fixed <- function(cont.data, params){
                      method="FE", level=params$conf.level,
                      digits=params$digits)
         pure.res <- res
+		
+		# add weights
+		res$weights <- weights(res)
+		results <- list("Summary"=res)
+		
         if (is.null(params$create.plot) || (is.null(params$write.to.file))) {
             if (is.null(params$create.plot)) {
                 # Create forest plot and list to display summary of results
@@ -201,9 +206,7 @@ continuous.fixed <- function(cont.data, params){
 								"weights"=weights(res))
             }
         }
-        else {
-            results <- list("Summary"=res)
-        } 
+
     }
 	
 	references <- "Fixed Effects Inverse Variance: this is a placeholder for continuous fixed reference"
@@ -261,6 +264,8 @@ continuous.random <- function(cont.data, params){
                      digits=params$digits)
         pure.res<-res
         
+		# add weights
+		res$weights <- weights(res)
         results <- list("Summary"=res)
 
         ###
@@ -307,6 +312,7 @@ continuous.random <- function(cont.data, params){
 							  "weights"=weights(res))
           }
        }
+
     }
 	
 	references <- "this is a placeholder for continuous random reference"

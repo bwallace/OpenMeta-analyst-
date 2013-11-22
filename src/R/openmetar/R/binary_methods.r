@@ -238,6 +238,8 @@ binary.fixed.inv.var <- function(binary.data, params){
             }
         }
         else {
+			# add weights
+			res$weights <- weights(res)
             results <- list("Summary"=res)
         }
     }
@@ -350,6 +352,8 @@ binary.fixed.mh <- function(binary.data, params){
             }
         }
         else {
+			# add weights
+			res$weights <- weights(res)
             results <- list("Summary"=res)
         }    
     }
@@ -501,6 +505,8 @@ binary.fixed.peto <- function(binary.data, params) {
             }
         }
         else {
+			# add weights
+			res$weights <- weights(res)
             results <- list("Summary"=res)
         }    
     }
@@ -647,6 +653,8 @@ binary.random <- function(binary.data, params){
             }
         }
         else {
+			# add weights
+			res$weights <- weights(res)
             results <- list("Summary"=res)
         }  
     }

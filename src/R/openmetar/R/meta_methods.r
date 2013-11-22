@@ -105,8 +105,8 @@ cum.ma.binary <- function(fname, binary.data, params){
                           binary.random=paste("Binary Random-Effects Model\n\nMetric: ", metric.name, sep=""))
 	value.info <- switch(fname,
                          binary.fixed.inv.var = cumul.rma.uni.value.info(),
-                         binary.fixed.mh      = cumul.mh.value.info(),
-                         binary.fixed.peto    = cumul.mh.value.info(),
+                         binary.fixed.mh      = cumul.rma.mh.value.info(),
+                         binary.fixed.peto    = cumul.rma.mh.value.info(),
                          binary.random        = cumul.rma.uni.value.info())
     cum.disp <- create.overall.display(res=cum.results, study.names, params, model.title, data.type="binary")
     forest.path <- paste(params$fp_outpath, sep="")
@@ -180,6 +180,38 @@ construct.sequential.res.output <- function(seq.res, value.info, replacements=li
 	names(results.table) <- value.names
 	
 	list(summary.table=results.table)
+}
+
+construct.subgroup.res.output <- function(subgroups.res) {
+	# value.info is the value.info from the basic fname
+	
+	subgroups.res.with.titles <- list()
+	i <- 0
+	for (res in subgroups.res) {
+		i <- i+1
+		hashmarks <- "###################################" # this is the 'value' to print under the label
+		title<-paste("SUBGROUP",i, sep="_")
+		toadd = list()
+		toadd[[title]]=hashmarks
+		toadd <- c(toadd, res)
+		subgroups.res.with.titles <- c(subgroups.res.with.titles, toadd)
+	}
+	subgroups.res.with.titles
+}
+
+construct.subgroup.value.info <- function(value.info, subgroup.list) {
+	# value.info is the value.info from the basic fname
+	
+	subgroup.value.info <- list()
+	i <- 0
+	for (subgroup in subgroup.list) {
+		i <- i+1
+		subgroup.info <- list()
+		title<-paste("SUBGROUP",i, sep="_")
+		subgroup.info[[title]] = list(type="vector", description=subgroup)
+		subgroup.value.info <- c(subgroup.value.info, subgroup.info, value.info)
+	}
+	subgroup.value.info
 }
 
 
@@ -511,7 +543,12 @@ loo.ma.binary <- function(fname, binary.data, params){
 			binary.fixed.mh = paste("Binary Fixed-effect Model - Mantel Haenszel\n\nMetric: ", metric.name, sep=""),
 			binary.fixed.peto = paste("Binary Fixed-effect Model - Peto\n\nMetric: ", metric.name, sep=""),
 			binary.random = paste("Binary Random-Effects Model\n\nMetric: ", metric.name, sep=""))
-    loo.disp <- create.overall.display(res=loo.results, study.names, params, model.title, data.type="binary")
+	value.info <- switch(fname,
+			binary.fixed.inv.var = loo.rma.uni.value.info(),
+			binary.fixed.mh      = loo.rma.mh.value.info(),
+			binary.fixed.peto    = loo.rma.mh.value.info(),
+			binary.random        = loo.rma.uni.value.info())
+	loo.disp <- create.overall.display(res=loo.results, study.names, params, model.title, data.type="binary")
     forest.path <- paste(params$fp_outpath, sep="")
     plot.data <- create.plot.data.loo(binary.data, params, res=loo.results)
     changed.params <- plot.data$changed.params
@@ -538,7 +575,14 @@ loo.ma.binary <- function(fname, binary.data, params){
 			        "Leave-one-out Summary"=loo.disp, 
                     "plot_names"=plot.names, 
                     "plot_params_paths"=plot.params.paths,
-					"References"=references)
+					"References"=references,
+					"res"=construct.sequential.res.output(loo.results,
+						                                  value.info,
+														  replacements=list(estimate='b',
+									                                        Q='QE',
+																			Qp='QEp')),
+					"res.info"=list(summary.table=list(type="data.frame", description=""))
+			)
     results
 }
 
@@ -650,7 +694,10 @@ cum.ma.continuous <- function(fname, cont.data, params){
 			        "Cumulative Summary"=cum.disp, 
                     "plot_names"=plot.names, 
                     "plot_params_paths"=plot.params.paths,
-					"References"=references)
+					"References"=references,
+					"res"=construct.sequential.res.output(cum.results, value.info, replacements=list(estimate='b')),
+					"res.info"=list(summary.table=list(type="data.frame", description=""))
+			)
     results
 }
 
@@ -882,7 +929,10 @@ loo.ma.continuous <- function(fname, cont.data, params){
 	model.title <- switch(fname,
 			continuous.fixed=paste("Continuous Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep=""),
 			continuous.random=paste("Continuous Random-Effects Model\n\nMetric: ", metric.name, sep=""))
-    loo.disp <- create.overall.display(res=loo.results, study.names, params, model.title, data.type="continuous")
+	value.info <- switch(fname,
+			continuous.fixed  = loo.rma.uni.value.info(), 
+			continuous.random = loo.rma.uni.value.info())
+	loo.disp <- create.overall.display(res=loo.results, study.names, params, model.title, data.type="continuous")
     forest.path <- paste(params$fp_outpath, sep="")
     plot.data <- create.plot.data.loo(cont.data, params, res=loo.results)
     changed.params <- plot.data$changed.params
@@ -909,7 +959,14 @@ loo.ma.continuous <- function(fname, cont.data, params){
 			        "Leave-one-out Summary"=loo.disp, 
                     "plot_names"=plot.names, 
                     "plot_params_paths"=plot.params.paths,
-					"References"=references)
+					"References"=references,
+					"res"=construct.sequential.res.output(loo.results,
+							value.info,
+							replacements=list(estimate='b',
+									Q='QE',
+									Qp='QEp')),
+					"res.info"=list(summary.table=list(type="data.frame", description=""))
+			)
     results
 }
 
@@ -959,6 +1016,11 @@ subgroup.ma.binary <- function(fname, binary.data, params){
 		binary.fixed.mh = paste("Binary Fixed-effect Model - Mantel Haenszel\n\nMetric: ", metric.name, sep=""),
 		binary.fixed.peto = paste("Binary Fixed-effect Model - Peto\n\nMetric: ", metric.name, sep=""),
 		binary.random = paste("Binary Random-Effects Model\n\nMetric: ", metric.name, sep=""))
+	value.info <- switch(fname,
+		binary.fixed.inv.var = binary.fixed.inv.var.value.info(),
+		binary.fixed.mh	     = binary.fixed.mh.value.info(),
+		binary.fixed.peto	 = binary.fixed.peto.value.info(),
+		binary.random	     = binary.random.value.info())
     subgroup.disp <- create.subgroup.display(subgroup.results, subgroup.names, params, model.title, data.type="binary")
     forest.path <- paste(params$fp_outpath, sep="")
     # pack up the data for forest plot.
@@ -988,7 +1050,9 @@ subgroup.ma.binary <- function(fname, binary.data, params){
 			        "Subgroup Summary"=subgroup.disp, 
                     "plot_names"=plot.names, 
                     "plot_params_paths"=plot.params.paths,
-					"References"=references)
+					"References"=references,
+					"res"      = construct.subgroup.res.output(subgroup.results),
+					"res.info" = construct.subgroup.value.info(value.info, subgroup.list))
     results
 }
 
@@ -1052,6 +1116,9 @@ subgroup.ma.continuous <- function(fname, cont.data, params){
     model.title <- switch(fname,
 						  continuous.fixed = paste("Continuous Fixed-effect Model - Inverse Variance\n\nMetric: ", metric.name, sep=""),
 						  continuous.random = paste("Continuous Random-Effects Model\n\nMetric: ", metric.name, sep=""))
+    value.info <- switch(fname,
+						 continuous.fixed  = continuous.fixed.value.info(),
+						 continuous.random = continuous.random.value.info())		   
     subgroup.disp <- create.overall.display(subgroup.results, subgroup.names, params, model.title, data.type="continuous")
     forest.path <- paste(params$fp_outpath, sep="")
     # pack up the data for forest plot.
@@ -1083,7 +1150,9 @@ subgroup.ma.continuous <- function(fname, cont.data, params){
 			        "Subgroup Summary"=subgroup.disp, 
                     "plot_names"=plot.names, 
                     "plot_params_paths"=plot.params.paths,
-					"References"=references)
+					"References"=references,
+					"res"      = construct.subgroup.res.output(subgroup.results),
+					"res.info" = construct.subgroup.value.info(value.info, subgroup.list))
     results
 }
 
