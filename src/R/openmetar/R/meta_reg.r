@@ -11,7 +11,7 @@
 
 library(metafor)
 
-meta.regression <- function(reg.data, params, cond.means.data=FALSE, stop.at.rma=FALSE) {
+meta.regression <- function(reg.data, params, cond.means.data=NULL, stop.at.rma=FALSE) {
 	cov.data <- extract.cov.data(reg.data)
 	cov.array <- cov.data$cov.array
 	cat.ref.var.and.levels <- cov.data$cat.ref.var.and.levels
@@ -24,20 +24,17 @@ meta.regression <- function(reg.data, params, cond.means.data=FALSE, stop.at.rma
 	res<-rma.uni(yi=reg.data@y, sei=reg.data@SE, slab=reg.data@study.names,
 					level=params$conf.level, digits=params$digits,
 					method=method, mods=cov.array)
+	pure.res<-res
 	# Used for when we just need the intermediate results (e.g. bootstrapping)
 	if (stop.at.rma) {
 		return(res) 
-	}
-				
-	print("\nRES from meta_reg\n"); print(res);
-	print("\nHere is the b:\n"); print(res$b);
-	print("\nAnd the vb:\n"); print(res$vb);
-				
+	}	
 				
 #   if (class(res)[1] != "try-error") {
        display.data <- cov.data$display.data
        reg.disp <- create.regression.display(res, params, display.data)
    
+	   # 1 continuous covariate, no categorical covariates
        if (display.data$n.cont.covs==1 & length(display.data$factor.n.levels)==0) {
             # if only 1 continuous covariate, create reg. plot
             betas <- res$b
@@ -64,13 +61,16 @@ meta.regression <- function(reg.data, params, cond.means.data=FALSE, stop.at.rma
             plot.names <- c("reg.plot"="reg.plot")
             reg.plot.params.path <- save.plot.data(plot.data)
             plot.params.paths <- c("Regression Plot"=plot.data.path)
-
+			pure.res$weights <- weights(res)
             results <- list("images"=images,
 					        "Summary"=reg.disp,
 							"plot_names"=plot.names,
-                            "plot_params_paths"=plot.params.paths)
+                            "plot_params_paths"=plot.params.paths,
+							"res"=pure.res,
+							"res.info"=rma.uni.value.info())
 		} else {
-			if (class(cond.means.data)!=class(FALSE)) {
+			# Give the conditional means results
+			if (isnt.null(cond.means.data)) {
 				mr.cond.means.disp <- cond_means_display(res, params, display.data, reg.data=reg.data, cat.ref.var.and.levels=cat.ref.var.and.levels, cond.means.data=cond.means.data)
 				results <- list("Summary"=reg.disp, "Conditional Means"=mr.cond.means.disp)
 			} else {
@@ -83,17 +83,10 @@ meta.regression <- function(reg.data, params, cond.means.data=FALSE, stop.at.rma
 					results <- list("Summary"=reg.disp)
 				}
 			}
-			
-			
-
         }
-#    } else {
-#        results <- res
-#    }
 	
 	references <- "Meta Regression: meta regression citation placeholder"
 	results[["References"]] <- references
-	
     results
 }
 
