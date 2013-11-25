@@ -195,7 +195,7 @@ continuous.fixed <- function(cont.data, params){
                 images <- c("Forest Plot"=forest.path)
                 plot.names <- c("forest plot"="forest_plot")
 				pure.res$weights <- weights(res)
-                results <- list("input_data"=binary.data,
+                results <- list("input_data"=cont.data,
 								"input_params"=input.params,
 								"images"=images,
 						        "Summary"=summary.disp,
@@ -301,7 +301,7 @@ continuous.random <- function(cont.data, params){
               images <- c("Forest Plot"=forest.path)
               plot.names <- c("forest plot"="forest_plot")
 			  pure.res$weights <- weights(res)
-              results <- list("input_data"=binary.data,
+              results <- list("input_data"=cont.data,
 					  		  "input_params"=input.params,
 					  		  "images"=images,
 					          "Summary"=summary.disp,
