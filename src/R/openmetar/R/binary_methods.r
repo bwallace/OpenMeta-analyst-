@@ -185,8 +185,12 @@ write.bin.study.data.to.file <- function(binary.data, params, res, data.outpath)
 ###################################################
 binary.fixed.inv.var <- function(binary.data, params){
     # assert that the argument is the correct type
-    if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")  
+    if (!("BinaryData" %in% class(binary.data)))
+		stop("Binary data expected.")
+	
     results <- NULL
+	input.params <- params
+	
     if (length(binary.data@g1O1) == 1 || length(binary.data@y) == 1){
         res <- get.res.for.one.binary.study(binary.data, params)
         # Package res for use by overall method.
@@ -290,8 +294,12 @@ binary.fixed.inv.var.overall <- function(results) {
 ############################################
 binary.fixed.mh <- function(binary.data, params){	
     # assert that the argument is the correct type
-    if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")  
+    if (!("BinaryData" %in% class(binary.data)))
+		stop("Binary data expected.")  
+	
     results <- NULL
+	input.params <- params
+	
     if (length(binary.data@g1O1) == 1 || length(binary.data@y) == 1){
         res <- get.res.for.one.binary.study(binary.data, params)
          # Package res for use by overall method.
@@ -437,7 +445,10 @@ binary.fixed.mh.overall <- function(results) {
 ##################################################
 binary.fixed.peto <- function(binary.data, params) {	
     # assert that the argument is the correct type
-    if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.") 
+    if (!("BinaryData" %in% class(binary.data)))
+		stop("Binary data expected.") 
+	
+	input.params <- params
     
     if (length(binary.data@g1O1) == 1) {
         res <- get.res.for.one.binary.study(binary.data, params)

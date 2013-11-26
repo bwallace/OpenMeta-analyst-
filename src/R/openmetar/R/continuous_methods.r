@@ -148,6 +148,8 @@ continuous.fixed <- function(cont.data, params){
     if (!("ContinuousData" %in% class(cont.data))) stop("Continuous data expected.")
     
     results <- NULL
+	input.params <- params
+	
     if (length(cont.data@study.names) == 1){
         # handle the case where only one study was passed in
         res <- get.res.for.one.cont.study(cont.data, params)   
@@ -248,9 +250,12 @@ continuous.fixed.overall <- function(results){
 ###############################
 continuous.random <- function(cont.data, params){
     # assert that the argument is the correct type
-    if (!("ContinuousData" %in% class(cont.data))) stop("Continuous data expected.")
+    if (!("ContinuousData" %in% class(cont.data)))
+		stop("Continuous data expected.")
     
     results <- NULL
+	input.params <- params
+	
     if (length(cont.data@study.names) == 1){
         # handle the case where only one study was passed in
         res <- get.res.for.one.cont.study(cont.data, params)   
