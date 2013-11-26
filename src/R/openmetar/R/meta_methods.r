@@ -302,7 +302,7 @@ bootstrap <- function(fname, omdata, params, cond.means.data=FALSE) {
 						boot.meta.reg = meta.reg.statistic,
 						boot.meta.reg.cond.means = meta.reg.cond.means.statistic)
 	extra.attempts <- 0
-	results <- boot(omdata.rows, statistic=statistic, R=params$num.bootstrap.replicates)
+	boot.res <- boot(omdata.rows, statistic=statistic, R=params$num.bootstrap.replicates)
 	params$extra.attempts <- extra.attempts
 
 	cat("Total extra attempts: "); cat(extra.attempts); cat("\n")
@@ -310,12 +310,49 @@ bootstrap <- function(fname, omdata, params, cond.means.data=FALSE) {
 
 	
 	results <- switch(bootstrap.type,
-			boot.ma = boot.ma.output.results(results, params, bootstrap.plot.path),
-			boot.meta.reg = boot.meta.reg.output.results(results, params, bootstrap.plot.path, cov.data),
-			boot.meta.reg.cond.means = boot.meta.reg.cond.means.output.results(omdata, results, params, bootstrap.plot.path, cov.data, cond.means.data))
+			boot.ma = boot.ma.output.results(boot.res, params, bootstrap.plot.path),
+			boot.meta.reg = boot.meta.reg.output.results(boot.res, params, bootstrap.plot.path, cov.data),
+			boot.meta.reg.cond.means = boot.meta.reg.cond.means.output.results(omdata, boot.res, params, bootstrap.plot.path, cov.data, cond.means.data))
+	
+	# For making textfile output of data
+	textfile.data <- construct.boot.res.and.value.info.for.results(results, boot.res, bootstrap.type)
+	results <- c(results, textfile.data) # res and res.info
+	
 	results
 	
 }
+
+# For making textfile output of data
+construct.boot.res.and.value.info.for.results <- function(results, boot.res, bootstrap.type) {
+	summary <- switch(bootstrap.type,
+					  boot.ma = results$Summary,
+				      boot.meta.reg = results$Summary,
+					  boot.meta.reg.cond.means = results[["Bootstrapped Meta-Regression Based Conditional Means"]])
+	summary.name <- switch(bootstrap.type,
+			          boot.ma = "Summary",
+					  boot.meta.reg = "Summary",
+					  boot.meta.reg.cond.means = "Bootstrapped Meta-Regression Based Conditional Means Summary")
+	xlabels <- switch(bootstrap.type,
+					  boot.ma = NA,
+					  boot.meta.reg = results$gui.ignore.xlabels,
+					  boot.meta.reg.cond.means = results$gui.ignore.xlabels)
+	res <- list()
+	res.info <- list()
+	res[[summary.name]] <- summary
+	res.info[[summary.name]] <- list(type="blob", description="")
+	
+	if (isnt.na(xlabels)) {
+		res[['coefficient_labels']] = xlabels
+		res.info[['coefficient_labels']] = list(type="vector", description="Coefficients in t given in the following order")
+	}
+	
+	res$t <- boot.res$t
+	res.info$t <- list(type="matrix", description="A matrix with #replicates rows, each of which is a bootstrap replicate")
+	
+	list(res=res,
+		 res.info=res.info)
+}
+
 
 boot.ma.output.results <- function(boot.results, params, bootstrap.plot.path) {
 	conf.interval <- boot.ci(boot.out = boot.results, type = "norm")
@@ -378,6 +415,7 @@ boot.meta.reg.output.results <- function(boot.results, params, bootstrap.plot.pa
 	#### end of get labels to to label histograms with
 	
 	xlabels <- c(wanted.cov.display.col.labels,non.empty.levels.labels)
+	xlabels.clean <- xlabels
 	xlabels <- paste(xlabels, "Coefficient")
 	
 	# Make histograms
@@ -392,7 +430,8 @@ boot.meta.reg.output.results <- function(boot.results, params, bootstrap.plot.pa
 	images <- c("Histograms"=bootstrap.plot.path)
 	plot.names <- c("histograms"="histograms")
 	output.results <- list("images"=images,
-						   "Summary"=reg.disp)
+						   "Summary"=reg.disp,
+						   "gui.ignore.xlabels"=xlabels.clean)
 	output.results
 }
 
@@ -405,6 +444,7 @@ boot.meta.reg.cond.means.output.results <- function(omdata, boot.results, params
 
 	# Make histograms
 	xlabels <- cat.ref.var.and.levels[[chosen.cov.name]]
+	xlabels.clean <- xlabels
 	xlabels <- paste("Conditional Mean of", xlabels)
 	
 	png(file=bootstrap.plot.path, width = 480, height = 480*length(xlabels))
@@ -418,7 +458,8 @@ boot.meta.reg.cond.means.output.results <- function(omdata, boot.results, params
 	images <- c("Histograms"=bootstrap.plot.path)
 	plot.names <- c("histograms"="histograms")
 	output.results <- list("images"=images,
-						   "Bootstrapped Meta-Regression Based Conditional Means"=boot.cond.means.disp)
+						   "Bootstrapped Meta-Regression Based Conditional Means"=boot.cond.means.disp,
+						   "gui.ignore.xlabels"=xlabels.clean)
 	output.results
 }
 

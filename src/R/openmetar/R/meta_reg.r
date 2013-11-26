@@ -72,14 +72,10 @@ meta.regression <- function(reg.data, params, cond.means.data=NULL, stop.at.rma=
 			mr.cond.means.disp <- cond_means_display(res, params, display.data, reg.data=reg.data, cat.ref.var.and.levels=cat.ref.var.and.levels, cond.means.data=cond.means.data)
 			res.output <- c(pure.res,
 							list(Conditional_Means_Section=paste("############################",cond.means.info(cond.means.data), sep="\n"),
-								 Conditional_Means=mr.cond.means.disp)
-				 			)
+								 Conditional_Means=mr.cond.means.disp))
 			res.output.info <- c(rma.uni.value.info(),
 								 list(Conditional_Means_Section = list(type="vector", description=""),
-						              Conditional_Means=list(type="blob", description=""))
-		 						)
-
-			
+						              Conditional_Means=list(type="blob", description="")))
 			results <- list("Summary"=reg.disp,
 							"Conditional Means"=mr.cond.means.disp,
 							"res"= res.output,
@@ -89,7 +85,16 @@ meta.regression <- function(reg.data, params, cond.means.data=NULL, stop.at.rma=
 							
 		} else if (display.data$n.cont.covs==0 & length(display.data$factor.n.levels)==1) {
 			adj.reg.disp <- adjusted_means_display(res, params, display.data)
-			results <- list("Summary"=reg.disp, "Adjusted Mean"=adj.reg.disp)	
+			res.output <- c(pure.res,
+							list(Adjusted_Means_Section="#############################",
+								 Adjusted_Means=adj.reg.disp))
+			res.output.info <- c(rma.uni.value.info(),
+								 list(Adjusted_Means_Section=list(type="vector", description=""),
+									  Adjusted_Means=list(type="blob", description="")))
+			results <- list("Summary"=reg.disp,
+                            "Adjusted Mean"=adj.reg.disp,
+							"res"=res.output,
+							"res.info"=res.output.info)
 		} else {
 			results <- list("Summary"=reg.disp,
 							"res"=pure.res,
