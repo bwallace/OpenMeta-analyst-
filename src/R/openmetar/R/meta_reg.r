@@ -68,27 +68,49 @@ meta.regression <- function(reg.data, params, cond.means.data=NULL, stop.at.rma=
                             "plot_params_paths"=plot.params.paths,
 							"res"=pure.res,
 							"res.info"=rma.uni.value.info())
+		} else if (isnt.null(cond.means.data)) { # Give the conditional means results
+			mr.cond.means.disp <- cond_means_display(res, params, display.data, reg.data=reg.data, cat.ref.var.and.levels=cat.ref.var.and.levels, cond.means.data=cond.means.data)
+			res.output <- c(pure.res,
+							list(Conditional_Means_Section=paste("############################",cond.means.info(cond.means.data), sep="\n"),
+								 Conditional_Means=mr.cond.means.disp)
+				 			)
+			res.output.info <- c(rma.uni.value.info(),
+								 list(Conditional_Means_Section = list(type="vector", description=""),
+						              Conditional_Means=list(type="blob", description=""))
+		 						)
+
+			
+			results <- list("Summary"=reg.disp,
+							"Conditional Means"=mr.cond.means.disp,
+							"res"= res.output,
+							"res.info"= res.output.info
+							  )
+							
+							
+		} else if (display.data$n.cont.covs==0 & length(display.data$factor.n.levels)==1) {
+			adj.reg.disp <- adjusted_means_display(res, params, display.data)
+			results <- list("Summary"=reg.disp, "Adjusted Mean"=adj.reg.disp)	
 		} else {
-			# Give the conditional means results
-			if (isnt.null(cond.means.data)) {
-				mr.cond.means.disp <- cond_means_display(res, params, display.data, reg.data=reg.data, cat.ref.var.and.levels=cat.ref.var.and.levels, cond.means.data=cond.means.data)
-				results <- list("Summary"=reg.disp, "Conditional Means"=mr.cond.means.disp)
-			} else {
-				if (display.data$n.cont.covs==0 & length(display.data$factor.n.levels)==1) {
-					adj.reg.disp <- adjusted_means_display(res, params, display.data)
-					results <- list("Summary"=reg.disp, "Adjusted Mean"=adj.reg.disp)
-					
-					
-				} else {
-					results <- list("Summary"=reg.disp)
-				}
-			}
-        }
+			results <- list("Summary"=reg.disp,
+							"res"=pure.res,
+							"res.info"=rma.uni.value.info())
+		}
 	
 	references <- "Meta Regression: meta regression citation placeholder"
 	results[["References"]] <- references
     results
 }
+
+cond.means.info <- function(cond.means.data) {
+	blurb <- paste("\nConditional means for '",as.character(cond.means.data$chosen.cov.name), "',\nstratified over its levels given the following values for the other covariates:\n", sep="")
+	for (name in names(cond.means.data)) {
+		if (name != 'chosen.cov.name') {
+			blurb <- paste(blurb, name, " = ", cond.means.data[[name]], "\n", sep="")
+		}
+	}
+	return(blurb)
+}
+
 
 extract.cov.data <- function(reg.data, dont.make.array = FALSE) {
   # separate continuous and factor covariates and extract data.
