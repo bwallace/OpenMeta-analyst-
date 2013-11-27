@@ -11,7 +11,7 @@
 
 library(metafor)
 
-meta.regression <- function(reg.data, params, cond.means.data=FALSE, stop.at.rma=FALSE) {
+meta.regression <- function(reg.data, params, cond.means.data=NULL, stop.at.rma=FALSE) {
 	cov.data <- extract.cov.data(reg.data)
 	cov.array <- cov.data$cov.array
 	cat.ref.var.and.levels <- cov.data$cat.ref.var.and.levels
@@ -24,20 +24,17 @@ meta.regression <- function(reg.data, params, cond.means.data=FALSE, stop.at.rma
 	res<-rma.uni(yi=reg.data@y, sei=reg.data@SE, slab=reg.data@study.names,
 					level=params$conf.level, digits=params$digits,
 					method=method, mods=cov.array)
+	pure.res<-res
 	# Used for when we just need the intermediate results (e.g. bootstrapping)
 	if (stop.at.rma) {
 		return(res) 
-	}
-				
-	print("\nRES from meta_reg\n"); print(res);
-	print("\nHere is the b:\n"); print(res$b);
-	print("\nAnd the vb:\n"); print(res$vb);
-				
+	}	
 				
 #   if (class(res)[1] != "try-error") {
        display.data <- cov.data$display.data
        reg.disp <- create.regression.display(res, params, display.data)
    
+	   # 1 continuous covariate, no categorical covariates
        if (display.data$n.cont.covs==1 & length(display.data$factor.n.levels)==0) {
             # if only 1 continuous covariate, create reg. plot
             betas <- res$b
@@ -64,38 +61,61 @@ meta.regression <- function(reg.data, params, cond.means.data=FALSE, stop.at.rma
             plot.names <- c("reg.plot"="reg.plot")
             reg.plot.params.path <- save.plot.data(plot.data)
             plot.params.paths <- c("Regression Plot"=plot.data.path)
-
+			pure.res$weights <- weights(res)
             results <- list("images"=images,
 					        "Summary"=reg.disp,
 							"plot_names"=plot.names,
-                            "plot_params_paths"=plot.params.paths)
+                            "plot_params_paths"=plot.params.paths,
+							"res"=pure.res,
+							"res.info"=rma.uni.value.info())
+		} else if (isnt.null(cond.means.data)) { # Give the conditional means results
+			mr.cond.means.disp <- cond_means_display(res, params, display.data, reg.data=reg.data, cat.ref.var.and.levels=cat.ref.var.and.levels, cond.means.data=cond.means.data)
+			res.output <- c(pure.res,
+							list(Conditional_Means_Section=paste("############################",cond.means.info(cond.means.data), sep="\n"),
+								 Conditional_Means=mr.cond.means.disp))
+			res.output.info <- c(rma.uni.value.info(),
+								 list(Conditional_Means_Section = list(type="vector", description=""),
+						              Conditional_Means=list(type="blob", description="")))
+			results <- list("Summary"=reg.disp,
+							"Conditional Means"=mr.cond.means.disp,
+							"res"= res.output,
+							"res.info"= res.output.info
+							  )
+							
+							
+		} else if (display.data$n.cont.covs==0 & length(display.data$factor.n.levels)==1) {
+			adj.reg.disp <- adjusted_means_display(res, params, display.data)
+			res.output <- c(pure.res,
+							list(Adjusted_Means_Section="#############################",
+								 Adjusted_Means=adj.reg.disp))
+			res.output.info <- c(rma.uni.value.info(),
+								 list(Adjusted_Means_Section=list(type="vector", description=""),
+									  Adjusted_Means=list(type="blob", description="")))
+			results <- list("Summary"=reg.disp,
+                            "Adjusted Mean"=adj.reg.disp,
+							"res"=res.output,
+							"res.info"=res.output.info)
 		} else {
-			if (class(cond.means.data)!=class(FALSE)) {
-				mr.cond.means.disp <- cond_means_display(res, params, display.data, reg.data=reg.data, cat.ref.var.and.levels=cat.ref.var.and.levels, cond.means.data=cond.means.data)
-				results <- list("Summary"=reg.disp, "Conditional Means"=mr.cond.means.disp)
-			} else {
-				if (display.data$n.cont.covs==0 & length(display.data$factor.n.levels)==1) {
-					adj.reg.disp <- adjusted_means_display(res, params, display.data)
-					results <- list("Summary"=reg.disp, "Adjusted Mean"=adj.reg.disp)
-					
-					
-				} else {
-					results <- list("Summary"=reg.disp)
-				}
-			}
-			
-			
-
-        }
-#    } else {
-#        results <- res
-#    }
+			results <- list("Summary"=reg.disp,
+							"res"=pure.res,
+							"res.info"=rma.uni.value.info())
+		}
 	
 	references <- "Meta Regression: meta regression citation placeholder"
 	results[["References"]] <- references
-	
     results
 }
+
+cond.means.info <- function(cond.means.data) {
+	blurb <- paste("\nConditional means for '",as.character(cond.means.data$chosen.cov.name), "',\nstratified over its levels given the following values for the other covariates:\n", sep="")
+	for (name in names(cond.means.data)) {
+		if (name != 'chosen.cov.name') {
+			blurb <- paste(blurb, name, " = ", cond.means.data[[name]], "\n", sep="")
+		}
+	}
+	return(blurb)
+}
+
 
 extract.cov.data <- function(reg.data, dont.make.array = FALSE) {
   # separate continuous and factor covariates and extract data.
