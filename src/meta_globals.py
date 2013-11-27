@@ -252,3 +252,37 @@ def matrix_as_table(matrix, col_width=None, spacing=2):
         
     matrix_formatted = "\n".join(matrix_formatted)
     return matrix_formatted
+
+def tabulate(lists, sep=" | ", return_col_widths=False, align=[]):
+    ''' Makes a pretty table from the lists in args'''
+    ''' each arg is a list '''
+    ''' if return_max_col_lenths is true, the return type is a tuple of (str, col_widths) '''
+    ''' align is a list the same length as lists telling how the column should be aligned ('L','R') etc '''
+    
+    if len(align) != len(lists):
+        align = ['L',]*len(lists) 
+    print("Align is now %s: " % align)
+    
+    # covert lists in args to string lists
+    string_lists = []
+    for arg in lists:
+        str_arg = [str(x) for x in arg]
+        string_lists.append(str_arg)
+    
+    # get max length of each element in each column
+    max_lengths = []
+    for arg in string_lists:
+        max_len = max([len(x) for x in arg])
+        max_lengths.append(max_len)
+        
+    data = zip(*string_lists)
+    out = []
+    for row in data:
+        row_str = ["{0:{align}{width}}".format(x, width=width,align='<' if row_alignment=='L' else '>') for x,width,row_alignment in zip(row,max_lengths,align)]
+        row_str = sep.join(row_str)
+        out.append(row_str)
+    out_str =  "\n".join(out)
+    
+    if return_col_widths:
+        return (out_str, max_lengths)
+    return out_str
