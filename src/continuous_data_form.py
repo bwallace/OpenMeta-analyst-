@@ -395,7 +395,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
             self.restore_ma_unit_and_tables(old_ma_unit, old_tables_data, old_correlation)
             return
         
-        self._update_ma_unit() # table --> ma_unit
+        self._copy_raw_data_from_table_to_ma_unit() # table --> ma_unit
         self.try_to_update_cur_outcome()
         
         new_ma_unit, new_tables_data = self._save_ma_unit_and_table_states(
@@ -468,7 +468,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
                 row_filled = False
         return row_filled
 
-    def _update_ma_unit(self):
+    def _copy_raw_data_from_table_to_ma_unit(self):
         for row_index, group_name in enumerate(self.cur_groups):
             grp_raw_data = self.ma_unit.get_raw_data_for_group(group_name)
             for col_index in range(len(grp_raw_data)):
@@ -574,7 +574,9 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
                 print "Computed vals:",computed_vals
                 for var_index, var_name in enumerate(var_names):  
                     self._set_val(row_index, var_index, computed_vals[var_name])
-                self._update_ma_unit()
+                self._copy_raw_data_from_table_to_ma_unit()
+            else:
+                print("Why didn't it succeed?: '%s'" % results_from_r["comment"])
                 
     def conf_level_to_alpha(self):
         alpha = 1-self.conf_level/100.0
@@ -648,7 +650,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
             self._set_val(0, var_index, pre_val, table)
             self._set_val(1, var_index, post_val, table)
             
-        self._update_ma_unit()
+        self._copy_raw_data_from_table_to_ma_unit()
         self.set_clear_btn_color()
         
         # function was invoked as a result of user interaction, not
@@ -898,7 +900,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
                 self._set_val(row, var_index, val, self.simple_table)
         
         self.impute_data()
-        self._update_ma_unit()
+        self._copy_raw_data_from_table_to_ma_unit()
         #self.set_clear_btn_color()
         
         # For undo/redo
@@ -938,7 +940,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
                     self._set_val(row_index, var_index, "", table=table)
         calc_fncs.block_signals(self.entry_widgets, False)
     
-        self._update_ma_unit()
+        self._copy_raw_data_from_table_to_ma_unit()
 
         # clear out effects stuff
         for metric in CONTINUOUS_ONE_ARM_METRICS + CONTINUOUS_TWO_ARM_METRICS:

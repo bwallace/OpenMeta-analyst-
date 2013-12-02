@@ -229,7 +229,7 @@ fillin.cont.1spell <- function(n=NA, mean=NA, sd=NA, se=NA, var=NA,
 		
 		# try the 2 sided p-value for the mean != 0
 		if(is.na(se))
-			se <- try(  mean/abs(qnorm(pval/2))  ,silent=TRUE)
+			se <- try(  abs(mean)/abs(qnorm(pval/2))  ,silent=TRUE)
 		
 		return(se)
 	}
@@ -342,6 +342,9 @@ fillin.cont.1spell <- function(n=NA, mean=NA, sd=NA, se=NA, var=NA,
 		}
 		
 	} # finished iterating
+
+	succeeded <- check.1spell.res(n=n, se=se)$succeeded
+	comment   <- check.1spell.res(n=n, se=se)$comment
 	
 	# Do checks:
 	if (is.na(mean)) {
@@ -357,8 +360,6 @@ fillin.cont.1spell <- function(n=NA, mean=NA, sd=NA, se=NA, var=NA,
 		comment <- paste(comment, "{n & sd} missing")
 	}
 	
-    succeeded <- check.1spell.res(n=n, se=se)$succeeded
-
     output.vector <- c(n, mean, sd, se, var, low, high, pval)
     output.names <- c("n", "mean", "sd", "se", "var", "low", "high", "pval")
     names(output.vector) <- output.names
