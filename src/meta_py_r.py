@@ -17,6 +17,7 @@ print("Entering meta_py_r for import probably")
 import math
 import os
 import meta_globals
+from meta_globals import tabulate
 
 import pdb
 from PyQt4.QtCore import pyqtRemoveInputHook
@@ -434,7 +435,7 @@ def get_available_methods(for_data_type=None, data_obj_name=None, metric=None):
     # for those methods are returned by a method with a name
     # ending in ".parameters"
     special_endings = [".parameters", ".is.feasible", ".overall",
-                       ".regression", "transform.f", ".pretty.names"]
+                       ".regression", "transform.f", ".pretty.names",".value.info"]
     is_special = lambda f: any([f.endswith(ending) for ending in special_endings])
     all_methods = [method for method in method_list if not is_special(method)]
     if for_data_type is not None:
@@ -1117,8 +1118,12 @@ def parse_out_results(result):
     text_d = {}
     image_var_name_d, image_params_paths_d, image_path_d  = {}, {}, {}
     image_order = None
+    
+    # Turn result into a nice dictionary
+    result = dict(zip(list(result.names), list(result)))
+    
 
-    for text_n, text in zip(list(result.names), list(result)):
+    for text_n, text in result.items():
         # some special cases, notably the plot names and the path for a forest
         # plot. TODO in the case of diagnostic data, we're probably going to 
         # need to parse out multiple forest plot param objects...
@@ -1150,17 +1155,17 @@ def parse_out_results(result):
                 references_str += str(i+1) + ". " + ref + "\n"
             
             text_d[text_n] = references_str
-        elif text_n == "res": # ignore the special output for OpenMEE (may want to have this in the future for OpenMeta as well)
+        elif text_n == "weights":
+            text_d[text_n] = make_weights_str(result)
+        elif text_n in ["res","res.info", "input_data","input_params"]: # ignore the special output for OpenMEE (may want to have this in the future for OpenMeta as well)
+            pass
+        elif "gui.ignore" in text_n:
             pass
         else:
-            text_d[text_n]=str(text)
-            
-            #pyqtRemoveInputHook()
-            #pdb.set_trace()
-            # Construct List of Weights for studies
-            (key, astring) = make_weights_list(text_n,text)
-            if key is not None:
-                text_d[key] = astring
+            if type(text)==rpy2.robjects.vectors.StrVector:
+                text_d[text_n] = text[0]
+            else:
+                text_d[text_n]=str(text)
 
     to_return = {"images":image_path_d,
                  "image_var_names":image_var_name_d,
@@ -1169,46 +1174,27 @@ def parse_out_results(result):
                  "image_order":image_order}
     
     return to_return
-    
-    
-def make_weights_list(text_n,text):
-    # Construct List of Weights for studies
-    if text_n.find("Summary") == -1: # 'Summary' not found
-        return (None,None)
-    
-    if not R_parse_tools.haskeys(text): # if the text is not a dictionary it won't have weights, trust me
-        return (None, None)
-    
-    summary_dict = R_parse_tools.rlist_to_pydict(text)
-    
-    if R_parse_tools.haskeys(summary_dict['MAResults']):
-        summary_dict['MAResults'] = R_parse_tools.rlist_to_pydict(summary_dict['MAResults'])
-    else:
-        return (None,None)
-    
-    # this is a silly thing to look for but its something I explicitly
-    # set in the random methods so I know it's there
-    if "study.names" in summary_dict['MAResults']: 
-        print("study.names found in maresults")
-        text_n_withoutSummary = text_n.replace("Summary","")
-        text_n_withoutSummary.strip()
-        key_name = text_n_withoutSummary + " Weights"
-        key_name = key_name.strip()
-        
-        study_names = R_parse_tools.R_iterable_to_pylist(summary_dict['MAResults']['study.names'])
-        study_years = R_parse_tools.R_iterable_to_pylist(summary_dict['MAResults']['study.years'])
-        study_weights = R_parse_tools.R_iterable_to_pylist(summary_dict['MAResults']['study.weights'])
-        
-        max_len = max([len(name) for name in study_names])
-        weights_txt = unicode("studies" + " "*(max_len-1) + "weights\n")
-        
-        for name,year,weight in zip(study_names, study_years, study_weights):
-            weights_txt += unicode("{0:{name_width}} {1} {2:4.1f}%\n").format(name, year, weight*100, name_width=max_len)
-        return (key_name, weights_txt)
-    else:
-        print("study.names not found")
-    return(None,None)
 
+def make_weights_str(results):
+    ''' Make a string representing the weights due to each study in the meta analysis '''
+    
+    # This function assumes that 'weights' and 'input_data' are actually in the results
+    if not ("weights" in results and "input_data" in results and "input_params" in results):
+        print("Uh oh")
+        raise Exception("make_weights_str() requires 'weights','input_data', and 'input_params' in the results")
+    
+    digits = results["input_params"].rx2("digits")[0]
+    digits = int(round(digits))
+    weights = list(results["weights"])
+    weights = ["{0:.{digits}f}%".format(x, digits=digits) for x in weights]
+    study_names = list(results["input_data"].do_slot("study.names"))
+    
+    table,widths = tabulate([study_names, weights],
+                            sep=": ", return_col_widths=True,
+                            align=['L','R'])
+    header = "{0:<{widths[0]}}  {1:<{widths[1]}}".format("study names", "weights", widths=widths)
+    table = "\n".join([header, table]) + "\n"
+    return table
 
 
 # Is this function obsolete?
