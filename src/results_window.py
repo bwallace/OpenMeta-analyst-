@@ -1,8 +1,9 @@
 #############################################
 #                                           #
-#  Byron C. Wallace                         #
-#  Brown University                         #
+#  Byron C. Wallace     George E. Dietz     #
+#  Brown University     CEBM@Brown          #
 #  OpenMeta[analyst]                        #
+#                                           #
 #                                           #
 #  This is the component responsible        #
 #  for rendering MA results.                #
@@ -255,10 +256,9 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         print "  title at: %s" % self.y_coord
         self.scene.addItem(text)
         qt_item = QTreeWidgetItem(self.nav_tree, [title])
-        self.scene.setSceneRect(0, 0, self.scene.width(), self.y_coord + padding)
+        self.scene.setSceneRect(0, 0, self.scene.width(), self.y_coord + text.boundingRect().height() + padding)
         print("  Setting position at (%d,%d)" % (self.x_coord, self.y_coord))                        
         text.setPos(self.position()) #####
-        #self.y_coord += padding
         self.y_coord += text.boundingRect().height()
         return qt_item
 
@@ -277,7 +277,7 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         #self.y_coord += txt_item.boundingRect.height()  #ROW_HEIGHT*text.count("\n")
         self.scene.setSceneRect(0, 0, max(self.scene.width(),
                                           txt_item.boundingRect().size().width()),
-                                          self.y_coord+padding)
+                                          self.y_coord+txt_item.boundingRect().height()+padding)
         
         self.y_coord += txt_item.boundingRect().height() ###
         txt_item.setPos(position)
@@ -325,7 +325,7 @@ class ResultsWindow(QMainWindow, ui_results_window.Ui_ResultsWindow):
         self.scene.setSceneRect(0, 0, \
                                    max(self.scene.width(), \
                                    item.boundingRect().size().width()),\
-                                   self.y_coord+padding)
+                                   self.y_coord + item.boundingRect().size().height() + padding)
 
         print "creating item @:%s" % position
         
