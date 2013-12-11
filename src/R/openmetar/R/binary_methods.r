@@ -253,16 +253,22 @@ binary.fixed.inv.var <- function(binary.data, params){
     results
 }
 
-binary.fixed.inv.var.value.info <- function () {
+binary.fixed.inv.var.value.info <- function() {
     rma.uni.value.info()
+}
+
+binary.fixed.inv.var.is.feasible.for.funnel <- function() {
+	TRUE
 }
                                 
 binary.fixed.inv.var.parameters <- function(){
     # parameters
     apply_adjustment_to = c("only0", "all")
     
-    params <- list("conf.level"="float", "digits"="int", 
-                            "adjust"="float", "to"=apply_adjustment_to)
+    params <- list("conf.level"="float",
+			       "digits"="int", 
+                   "adjust"="float",
+				   "to"=apply_adjustment_to)
     
     # default values
     defaults <- list("conf.level"=95, "digits"=3, "adjust"=.5, "to"="only0")
@@ -435,6 +441,10 @@ binary.fixed.mh.is.feasible <- function(binary.data, metric){
          length(binary.data@g1O1) > 0
 }
 
+binary.fixed.mh.is.feasible.for.funnel <- function() {
+	FALSE
+}
+
 binary.fixed.mh.overall <- function(results) {
     # this parses out the overall from the computed result
     res <- results$Summary
@@ -584,6 +594,10 @@ binary.fixed.peto.is.feasible <- function(binary.data, metric){
          length(binary.data@g1O1) > 0
 }
 
+binary.fixed.peto.is.feasible.for.funnel <- function() {
+	FALSE
+}
+
 binary.fixed.peto.overall <- function(results) {
     # this parses out the overall from the computed result
     res <- results$Summary
@@ -678,6 +692,10 @@ binary.random <- function(binary.data, params){
 # Returns list mapping name-->type for the pure results output by metafor
 binary.random.value.info <- function() {
     rma.uni.value.info()
+}
+
+binary.random.is.feasible.for.funnel <- function () {
+	TRUE
 }
 
 

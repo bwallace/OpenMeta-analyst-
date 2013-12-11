@@ -374,3 +374,10 @@ continuous.random.overall <- function(results){
     # this parses out the overall from the computed result
     res <- results$Summary
 }
+
+continuous.fixed.is.feasible.for.funnel <- function () {
+	TRUE
+}
+continuous.random.is.feasible.for.funnel <- function () {
+	TRUE
+}
