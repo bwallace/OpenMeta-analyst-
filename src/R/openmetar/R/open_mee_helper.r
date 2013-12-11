@@ -427,4 +427,112 @@ create.adjusted.regression.display <- function(res, params) {
 }
 
 ###### 
+failsafe.wrapper <- function(data, type="Rosenthal", alpha=.05, target=NULL, digits=4) {
+	# wraps metafor fsn() to yield results suitable for use in OpenMEE results window output
+	
+	res <- fsn(yi=data$yi, vi=data$vi, type=type, alpha=alpha, target=target, digits=digits)
+	
+	#results.info <- c(list(Summary=list(type="vector", description="Failsafe Analysis Summary")),
+	#		fsn.info())
+	
+	summary_str <- paste(capture.output(res), collapse="\n")
+	
+	
+	results <- list("Summary"  = res,
+			        "res"      = c(list(Summary=summary_str), res),
+					"res.info" = fsn.info()
+					)
+	results
+}
 
+fsn.info <- function() {
+	list(
+		Summary = list(type="vector", description="Failsafe Analysis Summary"),
+		type   = list(type="vector", description='the method used'),
+		fsnum  = list(type="vector", description='the calculated fail-safe N.'),
+		alpha  = list(type="vector", description='the target alpha level.'),
+		pval   = list(type="vector", description='the p-value of the observed results. NA for the Orwin method.'),
+		meanes = list(type="vector", description='the average effect size of the observed results. NA for the Rosenthal method.'),
+		target = list(type="vector", description= 'the target effect size. NA for the Rosenthal and Rosenberg methods.')
+	)
+}
+
+funnel.wrapper <- function(fname, data, params, ...) {
+	# fname: the name of the function that would have been called if this were
+	#        a regular meta-analysis
+	# data: binary or continuous data object
+	# params: parameters for function specified by fname
+	# ... : parameters for funnel()
+
+	
+	# set data (avoid some annoying copy pasta, too many calories)
+	binary.data <- data
+	cont.data <- data
+	
+	# run meta-analysis	
+	res <- switch(fname,
+                  binary.fixed.inv.var=rma.uni(yi=binary.data@y, sei=binary.data@SE, slab=binary.data@study.names,
+						  level=params$conf.level, digits=params$digits, method="FE", add=c(params$adjust,params$adjust),
+						  to=c(as.character(params$to), as.character(params$to))),
+		  		  binary.random=rma.uni(yi=binary.data@y, sei=binary.data@SE, 
+						  slab=binary.data@study.names,
+						  method=params$rm.method, level=params$conf.level,
+						  digits=params$digits,
+						  add=c(params$adjust,params$adjust),
+						  to=as.character(params$to)),
+	              continuous.fixed=rma.uni(yi=cont.data@y, sei=cont.data@SE, 
+	 		              slab=cont.data@study.names,
+	 		              method="FE", level=params$conf.level,
+	 		              digits=params$digits),
+	              continuous.random = rma.uni(yi=cont.data@y, sei=cont.data@SE, 
+	 		              slab=cont.data@study.names,
+	 		              method=params$rm.method, level=params$conf.level,
+	 		              digits=params$digits)
+		  		) # end of switch
+	
+	funnel.plot.data.path <- save.funnel.data(data, res, params)
+	
+	# draw plot
+	plot.path = paste(funnel.plot.data.path, ".png", sep="")
+	make.funnel.plot(plot.path, res, ...)
+	
+	results <- list(
+					images=c("Funnel Plot"=plot.path),
+					plot_params_paths=c("Funnel Plot"=funnel.plot.data.path),
+					References="funnel plot reference placeholder"
+			)
+	
+
+}
+
+make.funnel.plot <- function(outpath, res, ...) {
+	# make actual plot 
+	if (length(grep(".png", outpath)) != 0){
+		png(file=outpath, width=600, height=600)
+	}
+	else{
+		pdf(file=outpath, width=600, height=600)
+	}
+	
+	funnel(res, ...)
+	
+	graphics.off()
+}
+
+
+
+save.funnel.data <- function(data, res, params, out.path=NULL) {
+	# adapted from save.data() in utilities.r
+	
+	# save the data, result and plot parameters to a tmp file on disk
+	if (is.null(out.path)){
+		# by default, we use thecurrent system time as a 'unique enough' filename
+		out.path <- paste("r_tmp/", 
+				as.character(as.numeric(Sys.time())), sep="")
+	}
+	
+	save(data, file=paste(out.path, ".data", sep=""))
+	save(res, file=paste(out.path, ".res", sep=""))
+	save(params, file=paste(out.path, ".params", sep=""))
+	out.path
+}

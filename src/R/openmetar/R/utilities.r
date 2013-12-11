@@ -236,6 +236,7 @@ save.data <- function(om.data, res, params, plot.data, out.path=NULL) {
 
     save(om.data, file=paste(out.path, ".data", sep=""))
     save(res, file=paste(out.path, ".res", sep=""))
+	
     save(plot.data, file=paste(out.path, ".plotdata", sep=""))
     save(params, file=paste(out.path, ".params", sep=""))
     out.path
