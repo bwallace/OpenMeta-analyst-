@@ -491,7 +491,7 @@ funnel.wrapper <- function(fname, data, params, ...) {
 		  		) # end of switch
 	
 	funnel.params <- list(...)
-	funnel.plot.data.path <- save.funnel.data(res, params)
+	funnel.plot.data.path <- save.funnel.data(res=res, funnel.params=funnel.params)
 	
 	# draw plot & save funnel data
 	plot.path = paste(funnel.plot.data.path, ".png", sep="")
