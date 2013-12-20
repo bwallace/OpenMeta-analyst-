@@ -613,7 +613,7 @@ class DatasetModel(QAbstractTableModel):
                     
             adjusted_index = column-adjust_by
             val = value.toDouble()[0] if value.toDouble()[1] else ""
-            ma_unit.tx_groups[group_name].raw_data[adjusted_index] = val # TODO: ENC
+            ma_unit.tx_groups[group_name].raw_data[adjusted_index] = val
             
             # If a raw data column value is being edited, attempt to
             # update the corresponding outcome (if data permits)

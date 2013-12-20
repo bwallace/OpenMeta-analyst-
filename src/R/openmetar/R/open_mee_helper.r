@@ -457,6 +457,8 @@ fsn.info <- function() {
 	)
 }
 
+
+############################ Funnel Plot Code #################################
 funnel.wrapper <- function(fname, data, params, ...) {
 	# fname: the name of the function that would have been called if this were
 	#        a regular meta-analysis
@@ -546,9 +548,6 @@ get.funnel.params <- function(out.path) {
 	load(paste(out.path, ".funnel.params", sep=""))
 	funnel.params
 }
-	
-
-
 
 save.funnel.data <- function(res, funnel.params, data=NULL, params=NULL, out.path=NULL) {
 	# adapted from save.data() in utilities.r
@@ -566,3 +565,57 @@ save.funnel.data <- function(res, funnel.params, data=NULL, params=NULL, out.pat
 	save(funnel.params, file=paste(out.path, ".funnel.params", sep=""))
 	out.path
 }
+
+###################### end of funnel plot code ################################
+
+###################### Histogram code #########################
+make.histogram <- function(plot.path, data, params) {
+	# make actual plot 
+	if (length(grep(".png", plot.path)) != 0){
+		png(file=plot.path, width=600, height=600)
+	}
+	else{
+		pdf(file=plot.path) # the pdf device seems to not like setting height and width, width=600, height=600)
+	}
+	
+	qplot_param_keys = c("xlab","ylab","binwidth")
+	geom_histogram_keys = c("binwidth")
+	geom_bar_keys = c("binwidth", "fill","color")
+	# 'count_key_name': is not the actual name of the parameter,
+	#           the parameter appears to be just the first positional argument
+	# 'low','high': can be the name of a color or rgb e.g. "#132B43"
+	scale_fill_gradient_keys = c("count_key_name","low","high")
+	
+	
+	# parse params
+	qplot_params <- list()
+	geom_histogram_params <- list()
+	geom_bar_keys <- list()
+	if for 
+	
+	# No gradient
+	#qplot(foo,ylab="testing") + geom_bar(fill="red", color="blue")
+	
+	# with gradient
+	#qplot(foo,ylab="testing") + geom_histogram(aes(fill = ..count..)) + scale_fill_gradient("Count", low = "green", high = "red")
+}
+############## End of Histogram code #################################
+
+########################### Scatterplot code #################################
+make.scatterplot <- function(plot.path, data, params) {
+	
+	# http://www.cookbook-r.com/Graphs/Scatterplots_(ggplot2)/
+	ggplot(dat, aes(x=xvar, y=yvar)) +
+			geom_point(shape=1)      # Use hollow circles
+	
+	ggplot(dat, aes(x=xvar, y=yvar)) +
+			geom_point(shape=1) +    # Use hollow circles
+			geom_smooth(method=lm)   # Add linear regression line 
+	#  (by default includes 95% confidence region)
+	
+	ggplot(dat, aes(x=xvar, y=yvar)) +
+			geom_point(shape=1) +    # Use hollow circles
+			geom_smooth(method=lm,   # Add linear regression line
+					se=FALSE)    # Don't add shaded confidence region
+}
+######################## End of scatterplot code #############################
