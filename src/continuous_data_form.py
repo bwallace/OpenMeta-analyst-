@@ -769,7 +769,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
                 info = "In order to perform back-calculation most accurately, we need to know something about the assumptions about the two population standard deviations.\n*Are we assuming that both of the population standard deviations are the same (as in most parametric data analysis techniques)"
                 option0_txt = "yes (default)."
                 option1_txt = "no"
-                dialog = ChooseBackCalcResultForm(info, option0_txt, option1_txt) # TODO: rename this class to be more something more general i.e. a choice between two things
+                dialog = ChooseBackCalcResultForm(info, option0_txt, option1_txt)
                 dialog.setWindowTitle("Population SD Assumptions")
                 if dialog.exec_():
                     self.metric_parameter = True if dialog.getChoice() == 0 else False
@@ -876,7 +876,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
                 option1_txt = keys_to_names[key] + " = " + str(value[1])
                 print("Options (0,1)", value[0], value[1])
                 
-                dialog = ChooseBackCalcResultForm(info, option0_txt, option1_txt) # TODO: rename this class to be more something more general i.e. a choice between two things
+                dialog = ChooseBackCalcResultForm(info, option0_txt, option1_txt)
                 if dialog.exec_():
                     imputed[key] = value[0] if dialog.getChoice() == 0 else value[1]
                 else: # pressed cancel

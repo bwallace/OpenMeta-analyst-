@@ -411,11 +411,11 @@ class DatasetModel(QAbstractTableModel):
             
         
         if data_type == CONTINUOUS:
-            if float(s) < 0:
+            if float(s) <= 0:
                 if col in [3,6]:
-                    return False,"Count cannot be negative"
+                    return False,"Count cannot be zero or negative"
                 if col in [5,8]:
-                    return False,"Standard Deviation cannot be negative"
+                    return False,"Standard Deviation cannot be zero or negative"
             
         return True, None
 
@@ -613,7 +613,7 @@ class DatasetModel(QAbstractTableModel):
                     
             adjusted_index = column-adjust_by
             val = value.toDouble()[0] if value.toDouble()[1] else ""
-            ma_unit.tx_groups[group_name].raw_data[adjusted_index] = val # TODO: ENC
+            ma_unit.tx_groups[group_name].raw_data[adjusted_index] = val
             
             # If a raw data column value is being edited, attempt to
             # update the corresponding outcome (if data permits)

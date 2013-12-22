@@ -435,7 +435,8 @@ def get_available_methods(for_data_type=None, data_obj_name=None, metric=None):
     # for those methods are returned by a method with a name
     # ending in ".parameters"
     special_endings = [".parameters", ".is.feasible", ".overall",
-                       ".regression", "transform.f", ".pretty.names",".value.info"]
+                       ".regression", "transform.f", ".pretty.names",".value.info",
+                       "is.feasible.for.funnel"]
     is_special = lambda f: any([f.endswith(ending) for ending in special_endings])
     all_methods = [method for method in method_list if not is_special(method)]
     if for_data_type is not None:
