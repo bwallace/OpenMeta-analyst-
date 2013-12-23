@@ -503,7 +503,8 @@ funnel.wrapper <- function(fname, data, params, ...) {
 					images=c("Funnel Plot"=plot.path),
 					plot_params_paths=c("Funnel Plot"=funnel.plot.data.path),
 					References="funnel plot reference placeholder"
-			)
+					)
+					
 	
 
 }
@@ -571,7 +572,7 @@ save.funnel.data <- function(res, funnel.params, data=NULL, params=NULL, out.pat
 ###################### Histogram code #########################
 make.histogram <- function(plot.path, data, params) {
 	# make actual plot 
-	if (length(grep(".png", plot.path)) != 0){
+	if (length(grep(".png", plot.path)) != 0) {
 		png(file=plot.path, width=600, height=600)
 	}
 	else{
@@ -584,38 +585,71 @@ make.histogram <- function(plot.path, data, params) {
 	# 'count_key_name': is not the actual name of the parameter,
 	#           the parameter appears to be just the first positional argument
 	# 'low','high': can be the name of a color or rgb e.g. "#132B43"
-	scale_fill_gradient_keys = c("count_key_name","low","high")
-	
+	scale_fill_gradient_keys = c("name","low","high")
 	
 	# parse params
 	qplot_params <- list()
 	geom_histogram_params <- list()
-	geom_bar_keys <- list()
-	if for 
+	geom_bar_params <- list()
+	scale_fill_gradient_params <- list()
+	for (p in names(params)) {
+		if (p %in% qplot_param_keys) {
+			qplot_params[[p]] <- params[[p]]
+		}
+		if (p %in% geom_histogram_keys) {
+			geom_histogram_params[[p]] <- params[[p]]
+		}
+		if (p %in% geom_bar_keys) {
+			geom_bar_params[[p]] <- params[[p]]
+		}
+		if (p %in% scale_fill_gradient_keys) {
+			scale_fill_gradient_params[[p]] <- params[[p]]
+		}
+	}
 	
-	# No gradient
-	#qplot(foo,ylab="testing") + geom_bar(fill="red", color="blue")
+	if ("fill" %in% names(params)) {
+		# no gradient
+		myplot <- do.call(qplot, c(list(data), qplot_params)) + do.call(geom_bar, geom_bar_params)
+	} else { # gradient
+		params.for.qplot <- c(list(data), qplot_params)
+		myplot <- do.call(qplot, params.for.qplot) + geom_histogram(aes(fill = ..count..)) + do.call(scale_fill_gradient, scale_fill_gradient_params)			                             
+	}
 	
-	# with gradient
-	#qplot(foo,ylab="testing") + geom_histogram(aes(fill = ..count..)) + scale_fill_gradient("Count", low = "green", high = "red")
+	print(myplot)
+	if (is.null(x11)) {
+		graphics.off()
+	
+	}
 }
 ############## End of Histogram code #################################
 
+save.exploratory.data <- function(res, funnel.params, data=NULL, params=NULL, out.path=NULL) {
+
+	# save the data, result and plot parameters to a tmp file on disk
+	if (is.null(out.path)){
+		# by default, we use thecurrent system time as a 'unique enough' filename
+		out.path <- paste("r_tmp/", 
+				as.character(as.numeric(Sys.time())), sep="")
+	}
+	
+	#save(data, file=paste(out.path, ".data", sep=""))
+	save(res, file=paste(out.path, ".res", sep=""))
+	#save(params, file=paste(out.path, ".params", sep=""))
+	save(funnel.params, file=paste(out.path, ".funnel.params", sep=""))
+	out.path
+}
+
 ########################### Scatterplot code #################################
 make.scatterplot <- function(plot.path, data, params) {
+	if (length(grep(".png", plot.path)) != 0){
+		png(file=plot.path, width=600, height=600)
+	}
+	else{
+		pdf(file=plot.path) # the pdf device seems to not like setting height and width, width=600, height=600)
+	}
 	
-	# http://www.cookbook-r.com/Graphs/Scatterplots_(ggplot2)/
-	ggplot(dat, aes(x=xvar, y=yvar)) +
-			geom_point(shape=1)      # Use hollow circles
-	
-	ggplot(dat, aes(x=xvar, y=yvar)) +
-			geom_point(shape=1) +    # Use hollow circles
-			geom_smooth(method=lm)   # Add linear regression line 
-	#  (by default includes 95% confidence region)
-	
-	ggplot(dat, aes(x=xvar, y=yvar)) +
-			geom_point(shape=1) +    # Use hollow circles
-			geom_smooth(method=lm,   # Add linear regression line
-					se=FALSE)    # Don't add shaded confidence region
+	do.call(qplot, c(list(data$xvar, data$yvar, data=data), params))
+	#qplot(data$xvar, data$yvar, data=data)
+	graphics.off()
 }
 ######################## End of scatterplot code #############################
