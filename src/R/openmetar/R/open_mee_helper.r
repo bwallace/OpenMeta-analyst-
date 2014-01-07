@@ -570,6 +570,40 @@ save.funnel.data <- function(res, funnel.params, data=NULL, params=NULL, out.pat
 ###################### end of funnel plot code ################################
 
 ###################### Histogram code #########################
+
+exploratory.plotter <- function(data, params, plot.type) {
+	# Main function to call from python side to make a histogram or scatterplot
+	
+	plot.data.path = save.exploratory.data(data, params)
+	
+	# draw plot & save funnel data
+	plot.path = paste(plot.data.path, ".png", sep="")
+	
+	if (plot.type=="HISTOGRAM") {
+		make.histogram(plot.path, data, params)
+		images <- c("Histogram"=plot.path)
+		plot_params_paths <- c("Histogram"=plot.data.path)
+	}
+	else if (plot.type=="SCATTERPLOT") {
+		make.scatterplot(plot.path, data, params)
+		images <- c("Scatterplot"=plot.path)
+		plot_params_paths <- c("Scatterplot"=plot.data.path)
+	}
+	else
+		stop("Unrecognized plot type")
+	
+	
+	
+	results <- list(
+			images=images,
+			plot_params_paths=plot_params_paths
+			#References="funnel plot reference placeholder"
+	)
+	
+	
+	
+}
+
 make.histogram <- function(plot.path, data, params) {
 	# make actual plot 
 	if (length(grep(".png", plot.path)) != 0) {
@@ -607,24 +641,25 @@ make.histogram <- function(plot.path, data, params) {
 		}
 	}
 	
-	if ("fill" %in% names(params)) {
-		# no gradient
-		myplot <- do.call(qplot, c(list(data), qplot_params)) + do.call(geom_bar, geom_bar_params)
-	} else { # gradient
+	if (params[['GRADIENT']]) {
 		params.for.qplot <- c(list(data), qplot_params)
 		myplot <- do.call(qplot, params.for.qplot) + geom_histogram(aes(fill = ..count..)) + do.call(scale_fill_gradient, scale_fill_gradient_params)			                             
+	} else { # gradient
+		# no gradient
+		myplot <- do.call(qplot, c(list(data), qplot_params)) + do.call(geom_bar, geom_bar_params)
 	}
 	
 	print(myplot)
-	if (is.null(x11)) {
-		graphics.off()
-	
-	}
+	graphics.off()
 }
-############## End of Histogram code #################################
 
-save.exploratory.data <- function(res, funnel.params, data=NULL, params=NULL, out.path=NULL) {
+get.exploratory.params <- function(out.path) {
+	# accessor for python to load the stored histogram params
+	load(paste(out.path, ".params", sep=""))
+	params
+}
 
+save.exploratory.data <- function(data, params, out.path=NULL) {
 	# save the data, result and plot parameters to a tmp file on disk
 	if (is.null(out.path)){
 		# by default, we use thecurrent system time as a 'unique enough' filename
@@ -632,12 +667,37 @@ save.exploratory.data <- function(res, funnel.params, data=NULL, params=NULL, ou
 				as.character(as.numeric(Sys.time())), sep="")
 	}
 	
-	#save(data, file=paste(out.path, ".data", sep=""))
-	save(res, file=paste(out.path, ".res", sep=""))
-	#save(params, file=paste(out.path, ".params", sep=""))
-	save(funnel.params, file=paste(out.path, ".funnel.params", sep=""))
+	save(data, file=paste(out.path, ".data", sep=""))
+	save(params, file=paste(out.path, ".params", sep=""))
 	out.path
 }
+
+# FOR SCATTERPLOT OR HISTOGRAM
+regenerate.exploratory.plot <- function(out.path, plot.path, plot.type, edited.params=NULL) {
+	# Used when saving or editing the plot
+	
+	# out.path is the path to r_tmp/{timestamp}* or whatever
+	
+	# load data and params in to function workspace
+	load(paste(out.path, ".data", sep=""))
+	
+	# load the stored params when we are just saving, not editing
+	if (is.null(edited.histogram.params)) {
+		load(paste(out.path, ".params", sep=""))
+	}
+	else {
+		params <- edited.params
+		save.exploratory.data(data, params, out.path=out.path)
+	}
+	
+	if (plot.type=="SCATTERPLOT")
+		make.scatterplot(plot.path, data, params)
+	else if (plot.type=="HISTOGRAM")
+		make.histogram(plot.path, data, params)
+	else
+		stop("unrecognized plot type")
+}
+############## End of Histogram code #################################
 
 ########################### Scatterplot code #################################
 make.scatterplot <- function(plot.path, data, params) {
@@ -648,8 +708,9 @@ make.scatterplot <- function(plot.path, data, params) {
 		pdf(file=plot.path) # the pdf device seems to not like setting height and width, width=600, height=600)
 	}
 	
-	do.call(qplot, c(list(data$xvar, data$yvar, data=data), params))
+	myplot <- do.call(qplot, c(list(data$xvar, data$yvar, data=data), params))
 	#qplot(data$xvar, data$yvar, data=data)
+	print(myplot)
 	graphics.off()
 }
 ######################## End of scatterplot code #############################
