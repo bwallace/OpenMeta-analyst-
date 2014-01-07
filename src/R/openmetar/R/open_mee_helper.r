@@ -613,7 +613,7 @@ make.histogram <- function(plot.path, data, params) {
 		pdf(file=plot.path) # the pdf device seems to not like setting height and width, width=600, height=600)
 	}
 	
-	qplot_param_keys = c("xlab","ylab","binwidth")
+	qplot_param_keys = c("xlab","ylab","xlim", "ylim", "binwidth")
 	geom_histogram_keys = c("binwidth")
 	geom_bar_keys = c("binwidth", "fill","color")
 	# 'count_key_name': is not the actual name of the parameter,
