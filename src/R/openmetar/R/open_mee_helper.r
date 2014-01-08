@@ -503,7 +503,8 @@ funnel.wrapper <- function(fname, data, params, ...) {
 					images=c("Funnel Plot"=plot.path),
 					plot_params_paths=c("Funnel Plot"=funnel.plot.data.path),
 					References="funnel plot reference placeholder"
-			)
+					)
+					
 	
 
 }
@@ -569,8 +570,137 @@ save.funnel.data <- function(res, funnel.params, data=NULL, params=NULL, out.pat
 ###################### end of funnel plot code ################################
 
 ###################### Histogram code #########################
+
+exploratory.plotter <- function(data, params, plot.type) {
+	# Main function to call from python side to make a histogram or scatterplot
+	
+	plot.data.path = save.exploratory.data(data, params)
+	
+	# draw plot & save funnel data
+	plot.path = paste(plot.data.path, ".png", sep="")
+	
+	if (plot.type=="HISTOGRAM") {
+		make.histogram(plot.path, data, params)
+		images <- c("Histogram"=plot.path)
+		plot_params_paths <- c("Histogram"=plot.data.path)
+	}
+	else if (plot.type=="SCATTERPLOT") {
+		make.scatterplot(plot.path, data, params)
+		images <- c("Scatterplot"=plot.path)
+		plot_params_paths <- c("Scatterplot"=plot.data.path)
+	}
+	else
+		stop("Unrecognized plot type")
+	
+	
+	
+	results <- list(
+			images=images,
+			plot_params_paths=plot_params_paths
+			#References="funnel plot reference placeholder"
+	)
+	
+	
+	
+}
+
 make.histogram <- function(plot.path, data, params) {
 	# make actual plot 
+	if (length(grep(".png", plot.path)) != 0) {
+		png(file=plot.path, width=600, height=600)
+	}
+	else{
+		pdf(file=plot.path) # the pdf device seems to not like setting height and width, width=600, height=600)
+	}
+	
+	qplot_param_keys = c("xlab","ylab","xlim", "ylim", "binwidth")
+	geom_histogram_keys = c("binwidth")
+	geom_bar_keys = c("binwidth", "fill","color")
+	# 'count_key_name': is not the actual name of the parameter,
+	#           the parameter appears to be just the first positional argument
+	# 'low','high': can be the name of a color or rgb e.g. "#132B43"
+	scale_fill_gradient_keys = c("name","low","high")
+	
+	# parse params
+	qplot_params <- list()
+	geom_histogram_params <- list()
+	geom_bar_params <- list()
+	scale_fill_gradient_params <- list()
+	for (p in names(params)) {
+		if (p %in% qplot_param_keys) {
+			qplot_params[[p]] <- params[[p]]
+		}
+		if (p %in% geom_histogram_keys) {
+			geom_histogram_params[[p]] <- params[[p]]
+		}
+		if (p %in% geom_bar_keys) {
+			geom_bar_params[[p]] <- params[[p]]
+		}
+		if (p %in% scale_fill_gradient_keys) {
+			scale_fill_gradient_params[[p]] <- params[[p]]
+		}
+	}
+	
+	if (params[['GRADIENT']]) {
+		params.for.qplot <- c(list(data), qplot_params)
+		myplot <- do.call(qplot, params.for.qplot) + geom_histogram(aes(fill = ..count..)) + do.call(scale_fill_gradient, scale_fill_gradient_params)			                             
+	} else { # gradient
+		# no gradient
+		myplot <- do.call(qplot, c(list(data), qplot_params)) + do.call(geom_bar, geom_bar_params)
+	}
+	
+	print(myplot)
+	graphics.off()
+}
+
+get.exploratory.params <- function(out.path) {
+	# accessor for python to load the stored histogram params
+	load(paste(out.path, ".params", sep=""))
+	params
+}
+
+save.exploratory.data <- function(data, params, out.path=NULL) {
+	# save the data, result and plot parameters to a tmp file on disk
+	if (is.null(out.path)){
+		# by default, we use thecurrent system time as a 'unique enough' filename
+		out.path <- paste("r_tmp/", 
+				as.character(as.numeric(Sys.time())), sep="")
+	}
+	
+	save(data, file=paste(out.path, ".data", sep=""))
+	save(params, file=paste(out.path, ".params", sep=""))
+	out.path
+}
+
+# FOR SCATTERPLOT OR HISTOGRAM
+regenerate.exploratory.plot <- function(out.path, plot.path, plot.type, edited.params=NULL) {
+	# Used when saving or editing the plot
+	
+	# out.path is the path to r_tmp/{timestamp}* or whatever
+	
+	# load data and params in to function workspace
+	load(paste(out.path, ".data", sep=""))
+	
+	# load the stored params when we are just saving, not editing
+	if (is.null(edited.histogram.params)) {
+		load(paste(out.path, ".params", sep=""))
+	}
+	else {
+		params <- edited.params
+		save.exploratory.data(data, params, out.path=out.path)
+	}
+	
+	if (plot.type=="SCATTERPLOT")
+		make.scatterplot(plot.path, data, params)
+	else if (plot.type=="HISTOGRAM")
+		make.histogram(plot.path, data, params)
+	else
+		stop("unrecognized plot type")
+}
+############## End of Histogram code #################################
+
+########################### Scatterplot code #################################
+make.scatterplot <- function(plot.path, data, params) {
 	if (length(grep(".png", plot.path)) != 0){
 		png(file=plot.path, width=600, height=600)
 	}
@@ -578,44 +708,9 @@ make.histogram <- function(plot.path, data, params) {
 		pdf(file=plot.path) # the pdf device seems to not like setting height and width, width=600, height=600)
 	}
 	
-	qplot_param_keys = c("xlab","ylab","binwidth")
-	geom_histogram_keys = c("binwidth")
-	geom_bar_keys = c("binwidth", "fill","color")
-	# 'count_key_name': is not the actual name of the parameter,
-	#           the parameter appears to be just the first positional argument
-	# 'low','high': can be the name of a color or rgb e.g. "#132B43"
-	scale_fill_gradient_keys = c("count_key_name","low","high")
-	
-	
-	# parse params
-	qplot_params <- list()
-	geom_histogram_params <- list()
-	geom_bar_keys <- list()
-	if for 
-	
-	# No gradient
-	#qplot(foo,ylab="testing") + geom_bar(fill="red", color="blue")
-	
-	# with gradient
-	#qplot(foo,ylab="testing") + geom_histogram(aes(fill = ..count..)) + scale_fill_gradient("Count", low = "green", high = "red")
-}
-############## End of Histogram code #################################
-
-########################### Scatterplot code #################################
-make.scatterplot <- function(plot.path, data, params) {
-	
-	# http://www.cookbook-r.com/Graphs/Scatterplots_(ggplot2)/
-	ggplot(dat, aes(x=xvar, y=yvar)) +
-			geom_point(shape=1)      # Use hollow circles
-	
-	ggplot(dat, aes(x=xvar, y=yvar)) +
-			geom_point(shape=1) +    # Use hollow circles
-			geom_smooth(method=lm)   # Add linear regression line 
-	#  (by default includes 95% confidence region)
-	
-	ggplot(dat, aes(x=xvar, y=yvar)) +
-			geom_point(shape=1) +    # Use hollow circles
-			geom_smooth(method=lm,   # Add linear regression line
-					se=FALSE)    # Don't add shaded confidence region
+	myplot <- do.call(qplot, c(list(data$x, data$y, data=data), params))
+	#qplot(data$xvar, data$yvar, data=data)
+	print(myplot)
+	graphics.off()
 }
 ######################## End of scatterplot code #############################
