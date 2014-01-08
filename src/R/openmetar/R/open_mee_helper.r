@@ -708,7 +708,7 @@ make.scatterplot <- function(plot.path, data, params) {
 		pdf(file=plot.path) # the pdf device seems to not like setting height and width, width=600, height=600)
 	}
 	
-	myplot <- do.call(qplot, c(list(data$xvar, data$yvar, data=data), params))
+	myplot <- do.call(qplot, c(list(data$x, data$y, data=data), params))
 	#qplot(data$xvar, data$yvar, data=data)
 	print(myplot)
 	graphics.off()
