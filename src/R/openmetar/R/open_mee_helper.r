@@ -682,7 +682,7 @@ regenerate.exploratory.plot <- function(out.path, plot.path, plot.type, edited.p
 	load(paste(out.path, ".data", sep=""))
 	
 	# load the stored params when we are just saving, not editing
-	if (is.null(edited.histogram.params)) {
+	if (is.null(edited.params)) {
 		load(paste(out.path, ".params", sep=""))
 	}
 	else {
