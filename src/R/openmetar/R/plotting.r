@@ -86,17 +86,25 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     lb.overall <- res$ci.lb[1]
     ub.overall <- res$ci.ub[1]
     y <- om.data@y
-    study.ci.bounds <- calc.ci.bounds(om.data, params)
+    study.ci.bounds <- calc.ci.bounds(om.data, params, ni=n)
     lb <- study.ci.bounds$lb
     ub <- study.ci.bounds$ub
         
-    y.disp <- eval(call(transform.name, params$measure))$display.scale(y, n)
-    lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb, n)
-    ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub, n)
+    #y.disp <- eval(call(transform.name, params$measure))$display.scale(y, n)
+    #lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb, n)
+    #ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub, n)
     
-    y.overall.disp <- eval(call(transform.name, params$measure))$display.scale(y.overall, n)
-    lb.overall.disp <- eval(call(transform.name, params$measure))$display.scale(lb.overall, n)
-    ub.overall.disp <- eval(call(transform.name, params$measure))$display.scale(ub.overall, n)
+    #y.overall.disp <- eval(call(transform.name, params$measure))$display.scale(y.overall, n)
+    #lb.overall.disp <- eval(call(transform.name, params$measure))$display.scale(lb.overall, n)
+    #ub.overall.disp <- eval(call(transform.name, params$measure))$display.scale(ub.overall, n)
+	
+	y.disp <- eval(call(transform.name, params$measure))$display.scale(y, ni=n)
+	lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb, ni=n)
+	ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub, ni=n)
+	
+	y.overall.disp <- eval(call(transform.name, params$measure))$display.scale(y.overall, ni=n)
+	lb.overall.disp <- eval(call(transform.name, params$measure))$display.scale(lb.overall, ni=n)
+	ub.overall.disp <- eval(call(transform.name, params$measure))$display.scale(ub.overall, ni=n)
     
     y <- c(y, y.overall)
     lb <- c(lb, lb.overall)

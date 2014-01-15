@@ -50,6 +50,7 @@ def execute_r_string(r_str):
         return ro.r(r_str)
     except Exception as e:
         # reset working directory in r then raise the error, hope this will address issue #244
+        print("something bad happened in R")
         reset_Rs_working_dir()
         raise e
 
@@ -1473,12 +1474,12 @@ def effect_for_study(e1, n1, e2=None, n2=None, two_arm=True,
 
     # we return both the transformed and untransformed scales here
     est_and_ci = (point_est, lower, upper)
-    transformed_est_and_ci = binary_convert_scale(est_and_ci, metric)
+    transformed_est_and_ci = binary_convert_scale(est_and_ci, metric, n1=n1)
     return {"calc_scale":est_and_ci, "display_scale":transformed_est_and_ci}
 
-def binary_convert_scale(x, metric_name, convert_to="display.scale"):
+def binary_convert_scale(x, metric_name, convert_to="display.scale", n1=None):
     # convert_to is either 'display.scale' or 'calc.scale'
-    return generic_convert_scale(x, metric_name, "binary", convert_to)
+    return generic_convert_scale(x, metric_name, "binary", convert_to, n1)
     
 def continuous_convert_scale(x, metric_name, convert_to="display.scale"):
     return generic_convert_scale(x, metric_name, "continuous", convert_to)
@@ -1488,7 +1489,7 @@ def diagnostic_convert_scale(x, metric_name, convert_to="display.scale"):
 
 
 @RfunctionCaller
-def generic_convert_scale(x, metric_name, data_type, convert_to="display.scale"):
+def generic_convert_scale(x, metric_name, data_type, convert_to="display.scale", n1=None):
     r_str = "trans.f <- %s.transform.f('%s')" % (data_type, metric_name)
     execute_r_string(r_str)
 
@@ -1497,9 +1498,17 @@ def generic_convert_scale(x, metric_name, data_type, convert_to="display.scale")
     islist = isinstance(x, list) or isinstance(x, tuple) # being loose with what qualifies as a 'list' here.
     if islist:
         execute_r_string("x <- c%s" % str(x))
+        if metric_name == "PFT":
+            execute_r_string("ni<-c%s" % str((n1,)*len(x)))
     else:
         execute_r_string("x <- %s" % str(x))
-    transformed = execute_r_string("trans.f$%s(x)" % convert_to)
+        if metric_name == "PFT":
+            execute_r_string("ni<-%s" % str(n1))
+    
+    if metric_name == "PFT":
+        transformed = execute_r_string("trans.f$%s(x=x, ni=ni)" % convert_to)
+    else:
+        transformed = execute_r_string("trans.f$%s(x)" % convert_to)
     transformed_ls = [x_i for x_i in transformed]
     if not islist:
         # scalar

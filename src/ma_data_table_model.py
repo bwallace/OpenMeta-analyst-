@@ -430,7 +430,11 @@ class DatasetModel(QAbstractTableModel):
         group_str = self.get_cur_group_str()
         
         ###binary_display_scale = meta_py_r.binary_convert_scale(x, metric_name, convert_to)
-        binary_display_scale = lambda x: meta_py_r.binary_convert_scale(x, self.current_effect, convert_to="display.scale")
+        if self.current_effect == "PFT":
+            e1, n1, e2, n2 = self.get_cur_raw_data_for_study(study_index=row)
+            binary_display_scale = lambda x: meta_py_r.binary_convert_scale(x, self.current_effect, convert_to="display.scale", n1=n1)
+        else:
+            binary_display_scale = lambda x: meta_py_r.binary_convert_scale(x, self.current_effect, convert_to="display.scale")
         continuous_display_scale = lambda x: meta_py_r.continuous_convert_scale(x, self.current_effect, convert_to="display.scale")
         
         
@@ -651,10 +655,18 @@ class DatasetModel(QAbstractTableModel):
                     print("Input value is %s" % str(display_scale_val))
 
                     # Will be binary or continuous
-                    calc_scale_val = self._get_calc_scale_value(display_scale_val,
+                    e1, n1, e2, n2 = self.get_cur_raw_data_for_study(study_index=row)
+                    if self.current_effect == "PFT":
+                        calc_scale_val = self._get_calc_scale_value(display_scale_val,
+                                                                    data_type=current_data_type,
+                                                                    effect=self.current_effect,n1=n1)
+                        conv_to_disp_scale = self._get_conv_to_display_scale(data_type=current_data_type,
+                                                                             effect=self.current_effect, n1=n1)
+                    else:
+                        calc_scale_val = self._get_calc_scale_value(display_scale_val,
                                                                 data_type=current_data_type,
                                                                 effect=self.current_effect)
-                    conv_to_disp_scale = self._get_conv_to_display_scale(data_type=current_data_type,
+                        conv_to_disp_scale = self._get_conv_to_display_scale(data_type=current_data_type,
                                                                          effect=self.current_effect)
                     
                     ma_unit = self.get_current_ma_unit_for_study(index.row())
@@ -1651,7 +1663,7 @@ class DatasetModel(QAbstractTableModel):
                 # (e.g., log) and a version on the continuous/display scale to present to the
                 # user via the UI.
                 ma_unit.set_effect_and_ci(self.current_effect, group_str, est, lower, upper, mult=self.mult)
-                conv_to_disp_scale = self._get_conv_to_display_scale(data_type, effect=self.current_effect)
+                conv_to_disp_scale = self._get_conv_to_display_scale(data_type, effect=self.current_effect, n1=n1)
                 ma_unit.calculate_display_effect_and_ci(
                                 self.current_effect, group_str,
                                 conv_to_disp_scale,
@@ -1868,14 +1880,14 @@ class DatasetModel(QAbstractTableModel):
                                                       check_if_necessary=True)
         print("Finished calculating display effect and cis")
 
-    def _get_conv_to_display_scale(self, data_type, effect):
+    def _get_conv_to_display_scale(self, data_type, effect, n1=None):
         ''' Returns appropriate conv_to_display_scale function '''
         
         if None in [data_type, effect]:
             print("_get_conv_to_display_scale got None for either data_type, or effect")
 
         if data_type == BINARY:
-            conv_to_disp_scale = lambda x: meta_py_r.binary_convert_scale(x, effect, convert_to="display.scale")
+            conv_to_disp_scale = lambda x: meta_py_r.binary_convert_scale(x, effect, convert_to="display.scale", n1=n1)
         elif data_type == CONTINUOUS:
             conv_to_disp_scale = lambda x: meta_py_r.continuous_convert_scale(x, effect, convert_to="display.scale")
         elif data_type == DIAGNOSTIC:
@@ -1885,7 +1897,7 @@ class DatasetModel(QAbstractTableModel):
         
         return conv_to_disp_scale
     
-    def _get_calc_scale_value(self, display_scale_val=None, data_type=None, effect=None):
+    def _get_calc_scale_value(self, display_scale_val=None, data_type=None, effect=None, n1=None):
         ''' Gets the calc-scale value of the given display_scale value'''
         
         if None in [display_scale_val, data_type, effect]:
@@ -1893,7 +1905,7 @@ class DatasetModel(QAbstractTableModel):
         
         calc_scale_val = None
         if data_type == BINARY:
-            calc_scale_val = meta_py_r.binary_convert_scale(display_scale_val, effect, convert_to="calc.scale")
+            calc_scale_val = meta_py_r.binary_convert_scale(display_scale_val, effect, convert_to="calc.scale", n1=n1)
         elif data_type == CONTINUOUS:
             calc_scale_val = meta_py_r.continuous_convert_scale(display_scale_val, effect, convert_to="calc.scale")
         elif data_type == DIAGNOSTIC:

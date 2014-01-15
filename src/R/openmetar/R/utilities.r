@@ -148,9 +148,12 @@ create.summary.disp <- function(om.data, params, res, model.title) {
     }
         
     res.title <- " Model Results"
-    y.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$b, list(ni=n)))
-    lb.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$ci.lb, list(ni=n)))
-    ub.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$ci.ub, list(ni=n)))
+    #y.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$b, list(ni=n)))
+    #lb.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$ci.lb, list(ni=n)))
+    #ub.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$ci.ub, list(ni=n)))
+	y.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$b, ni=n))
+	lb.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$ci.lb, ni=n))
+	ub.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$ci.ub, ni=n))
     se <- sprintf(digits.str, res$se)
    
     
@@ -484,6 +487,7 @@ calc.ci.bounds <- function(om.data, params, ...) {
     mult <- abs(qnorm(alpha/2.0))
     lb <- y - mult*om.data@SE
     ub <- y + mult*om.data@SE
+	extra.args <- list(...)
     # Check that bounds are in the range of the transformation and truncate if necessary.
     if (params$measure=="PR") {
       for (i in 1:length(lb)) {  
@@ -498,6 +502,7 @@ calc.ci.bounds <- function(om.data, params, ...) {
       }
     }
     if (params$measure=="PFT") {
+		n <- extra.args[['ni']]
         for (i in 1:length(lb)) {  
             lb[i] <- max(lb[i], transf.pft(0, n[i]))
             ub[i] <- min(ub[i], transf.pft(1, n[i]))
