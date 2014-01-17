@@ -128,6 +128,9 @@ create.summary.disp <- function(om.data, params, res, model.title) {
     if (params$measure=="PFT" && length(om.data@g1O1) > 0 && length(om.data@g1O2) > 0) {
       n <- om.data@g1O1 + om.data@g1O2  # Number of subjects - needed for Freeman-Tukey double arcsine trans.
     }
+	else {
+		n <- NULL # don't need n except for PFT (freeman-tukey)
+	}
     if (!is.null(res$QE)) {
       I2 <- max(0, (res$QE - degf)/res$QE)
       I2 <- paste(100 * round(I2, digits = 2), "%", sep="")

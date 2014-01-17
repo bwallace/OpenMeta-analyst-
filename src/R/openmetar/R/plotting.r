@@ -29,7 +29,10 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     # Set n, the number of studies, for PFT metric.
     if (params$measure=="PFT" && length(om.data@g1O1) > 1 && length(om.data@g1O2)) {
         n <- om.data@g1O1 + om.data@g1O2  # Number of subjects
-    }    
+    }
+	else {
+		n <- NULL # not needed except for pft
+	}
     
     if (params$fp_plot_lb == "[default]") {
         plot.options$plot.lb <- params$fp_plot_lb
