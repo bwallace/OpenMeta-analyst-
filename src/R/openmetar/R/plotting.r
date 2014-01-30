@@ -380,6 +380,9 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, 
     if (params$measure=="PFT" && length(om.data@g1O1) > 1 && length(om.data@g1O2)) {
       n <- om.data@g1O1 + om.data@g1O2  # Number of subjects
     }
+	else {
+		n <- NULL
+	}
     
     ## TO DO - don't really nead three transforms - the transform only depends on the measure.
     if (data.type == "continuous") {

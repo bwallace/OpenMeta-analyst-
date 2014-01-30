@@ -414,6 +414,11 @@ create.subgroup.display <- function(res, study.names, params, model.title, data.
     het.array <- array(dim=c(length(study.names) + 1, 4))
     #QLabel =  paste("Q(df = ", degf, ")", sep="")
     
+	# hmm....
+	n <- length(study.names)
+	
+	
+	
     subgroup.array[1,] <- c("Subgroups", "Studies", "Estimate", "Lower bound", "Upper bound", "Std. error", "p-Val")
     het.array[1,] <- c("Studies", "Q (df)",
                            "Het. p-Val", "I^2")
