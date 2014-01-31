@@ -374,9 +374,9 @@ create.overall.display <- function(res, study.names, params, model.title, data.t
       ub <- res[[count]]$ci.ub
       se <- res[[count]]$se
       digits.str <- paste("%.", params$digits, "f", sep="")
-      y.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(y, n))
-      lb.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(lb, n))
-      ub.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(ub, n))
+      y.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(y, n=NULL))
+      lb.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(lb, n=NULL))
+      ub.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(ub, n=NULL))
       se.disp <- sprintf(digits.str, se)
       
       if (!is.null(res[[count]]$pval)) {

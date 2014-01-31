@@ -233,8 +233,11 @@ create.plot.data.overall <- function(om.data, params, res, res.overall){
     scale.str <- get.scale(params)
     # Set n, the number of studies, for PFT metric.
     if (params$measure=="PFT" && length(om.data@g1O1) > 1 && length(om.data@g1O2)) {
-      n <- om.data@g1O1 + om.data@g1O2  # Number of subjects
+        n <- om.data@g1O1 + om.data@g1O2  # Number of subjects
     }
+	else {
+	    n <- NULL
+	}
     
     ## TO DO - don't really nead three transforms - the transform only depends on the measure.
     transform.name <- get.transform.name(om.data)
