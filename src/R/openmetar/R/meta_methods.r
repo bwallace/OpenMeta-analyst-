@@ -187,6 +187,12 @@ construct.subgroup.value.info <- function(value.info, subgroup.list) {
 	subgroup.value.info
 }
 
+bootstrap.binary <- function(fname, omdata, params, cond.means.data=FALSE) {
+	bootstrap(fname, omdata, params, cond.means.data)
+}
+bootstrap.continuous <- function(fname, omdata, params, cond.means.data=FALSE) {
+	bootstrap(fname, omdata, params, cond.means.data)
+}
 
 bootstrap <- function(fname, omdata, params, cond.means.data=FALSE) {
 	# fname: the function name that runs the basic-meta-analysis
