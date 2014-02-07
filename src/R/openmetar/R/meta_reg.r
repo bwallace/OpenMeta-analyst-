@@ -11,92 +11,86 @@
 
 library(metafor)
 
-gfactor <- function(x, ref.value=NULL) {
-	### Transforms x in to a factor, with ref.value being the first level ###
-	
-	# Just set reference value to be the first value if ref.value not specified
-	if (is.null(ref.value)) {
-		ref.value <- x[1]
-	}
-	
-	# sort levels, sticking ref.value at the front
-	levels <- unique(x)
-	levels.without.ref.value <- levels[levels!=ref.value]
-	levels <- c(ref.value, sort(levels.without.ref.value))
-	
-	factor(x, levels=levels)
-}
+#gfactor <- function(x, ref.value=NULL) {
+#	### Transforms x in to a factor, with ref.value being the first level ###
+#	
+#	# Just set reference value to be the first value if ref.value not specified
+#	if (is.null(ref.value)) {
+#		ref.value <- x[1]
+#	}
+#	
+#	# sort levels, sticking ref.value at the front
+#	levels <- unique(x)
+#	levels.without.ref.value <- levels[levels!=ref.value]
+#	levels <- c(ref.value, sort(levels.without.ref.value))
+#	
+#	factor(x, levels=levels)
+#}
 
 
 regression.wrapper <- function(data, mods.str, method, level, digits, btt=NULL) {
 	# Construct call to rma
-	call_str <- sprintf("rma.uni(yi,vi, mods=%s, data=data, method=%s, level=%f, digits=%d)", mods.str, method, level, digits)
+	call_str <- sprintf("rma.uni(yi,vi, mods=%s, data=data, method=\"%s\", level=%f, digits=%d)", mods.str, method, level, digits)
+	cat(call_str,"\n")
 	expr<-parse(text=call_str) # convert to expression
 	res <- eval(expr) # evaluate expression
 	res
 }
 
-make.mods.str <-function(mods.info, data) {
-	# builds of the mods string as specified by the information in mods.info
-	# also, transforms the factor part of data 
-	# also outputs a character vector of the names of each coefficient
+make.mods.str <-function(mods) {
+	# Builds the mods string as specified by the information in mods
+	# The order will be numeric, categorical, then interaction moderators
+	# factors in data already assumed to be factors with ref.value set as first
+	#     level
 	
-	mods.str.components <- c()
-	coeff.names <- c("Intercept")
+	str.els <- c() # mods string elements
 	
-	for (i in 1:nrow(mods.info)) {
-		name = mods.info[i,'name']
-		type = mods.info[i,'type']
-		ref.value = mods.info[i,'ref.value']
-		
-		if (type=="numeric") {
-			mods.str.components <- c(mods.str.components, name)
-			coeff.names <- c(coeff.names,name)
-		} else if (type=="factor") {
-			coeff.as.factor <- gfactor(data[[name]],ref.value)
-			coeff.levels <- levels(coeff.as.factor)
-			for (lvl in coeff.levels[2:]) { # we ignore the first level since it is is the reference
-				
-			}
-		} else = {
-			stop("what the hell is this thing?")	
-		}
+	# numeric 
+	for (mod in mods[["numeric"]]) {
+		str.els <- c(str.els, mod)
 	}
 	
+	# categorical
+	for (mod in mods[["categorical"]]) {
+		str.els <- c(str.els, mod)
+	}
 	
+	# interactions
+	for (interaction in names(mods[['interactions']]))
+		str.els <- c(str.els, interaction)
+
+	mods.str <- paste("~", paste(str.els,collapse=" + "), sep=" ")
+	cat(mods.str,"\n")
+	mods.str
 }
 
 
 
-g.meta.regression <- function(data, mods.info, method, level, digits) {
+g.meta.regression <- function(data, mods, method, level, digits) {
 	# This is s a thin wrapper to metafor's meta regression functionality
 	# in order to let R do the dummy coding for us
 	#
 	# mods.str: string to be passed to metafor to implement the moderators
 	#     e.g. ~ gfactor(alloc)+ablat+gfactor(country)+gfactor(alloc):gfactor(country)
-	# mods.info: ordered info about each term in the mods.str in the
-	#            following format (dataframe) with each term appearing in the
-	#            order it appeared in the mods.str
-#	     mods.info <- data.frame(
-#	                        name=I(c("alloc","ablat","country","alloc:country")),
-#							type=I(c("factor","numeric","factor","interaction")),
-#	                        ref.value=I(c("random",NA,"USA",NA))
-#	                            )
-    #                      
+	# mods: list(numeric=c(...numeric moderators...),
+	#            categorical=c(...categorical moderators...),
+	#            interactions=list("A:B"=c("A","B"),"B:C"=c("B",C"),...)
+	#            )
+	#     Note that the interaction names should be as they appear in the mods
+	#     string formula
 	# data: should be a dataframe of the type that metafor likes ie
 	# yi and vi for the effect and variance columns
 	# slab holds study names
 	# the parts that are 'factors' have already been made in to factors with
-	# the appropriate reference values using gfactor() e.g.
-	# for 
+	# the appropriate reference values
 	
-	mods.str <- make.mods.str(mods.info, data)
+	mods.str <- make.mods.str(mods)
 	
 	# obtain regression result rma.uni
 	res <- regression.wrapper(data, mods.str, method, level, digits,btt)
 
 	results <- list(#"images"=images,
-			"Summary"=reg.disp,
+			#"Summary"=reg.disp,
 			#"plot_names"=plot.names,
 			#"plot_params_paths"=plot.params.paths,
 			"res"=res,
