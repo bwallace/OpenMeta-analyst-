@@ -90,7 +90,7 @@ g.meta.regression <- function(data, mods, method, level, digits) {
 	res <- regression.wrapper(data, mods.str, method, level, digits,btt)
 
 	results <- list(#"images"=images,
-			#"Summary"=reg.disp,
+			"Summary"=res,
 			#"plot_names"=plot.names,
 			#"plot_params_paths"=plot.params.paths,
 			"res"=res,
