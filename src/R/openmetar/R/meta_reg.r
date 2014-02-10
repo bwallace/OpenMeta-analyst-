@@ -56,17 +56,109 @@ make.mods.str <-function(mods) {
 	}
 	
 	# interactions
-	for (interaction in names(mods[['interactions']]))
+	for (interaction in names(mods[['interactions']])) {
 		str.els <- c(str.els, interaction)
+	}
+		
 
 	mods.str <- paste("~", paste(str.els,collapse=" + "), sep=" ")
 	cat(mods.str,"\n")
 	mods.str
 }
 
+make.design.matrix <- function(strat.cov, mods, cond.means.data, data) {
+	# Make design matrix for conditional means
+	# strat.cov is the name of the covariate in data to stratify over
+	
+	nlevels <- length(levels(data$strat.cov)) # num of levels in strat.cov
+	rownames <- levels(data$strat.cov)
+	dimnames <- list(rownames)
+	dsn.matrix <- matrix(rep(1,n.levels), dimnames=dimnames) # intercept column
+	
+	# 1 column for each numeric moderator
+	for (mod in mods[["numeric"]]) {
+		value <- cond.means.data[[mod]]
+		dsn.matrix <- cbind(dsg.matrix,rep(value,n.levels))
+	}
+	
+	# qi-1 columns for each categorical modertor where q is the # of levels of
+	# the moderator
+	for (mod in mods[["categorical"]]) {
+		l.mod <- levels(data[[mod]]) # levels of the moderator
+		mod.matrix <- c()
+		
+		if (mod==strat.cov) {
+			# iterate over the levels of the moderator
+			for (x in l.mod) {
+				x.coded <- coded.cat.mod.level(x, l.mod)
+				mod.matrix <- rbind(mod.matrix,x.coded)
+			}
+		} else {
+			# just replicate the coding of the desired level
+			value <- cond.means.data[[mod]]
+			lvl.coded <- coded.cat.mod.level(x, l.mod)
+			for (x in l.mod) {
+				mod.matrix <- rbind(mod.matrix, lvl.coded)
+			}
+		} # end of else
+	} # end for categorical
+	dsn.matrix <- cbind(dsn.matrix, mod.matrix) 
+	
+	# interactions
+	for (interaction in names(mods[['interactions']])) {
+		interaction.vars <- mods[['interactions']][[interaction]]
+		# What type of interaction? CAT:CAT, CAT:CONT, or CONT:CONT?
+		
+		cat.cat <- (interaction.vars[1] %in% mods[['categorical']]) && (interaction.vars[2] %in% mods[['categorical']])
+		# same thing
+		cat.cont <- (interaction.vars[1] %in% mods[['categorical']]) && (interaction.vars[2] %in% mods[['numeric']])
+		cont.cat <- (interaction.vars[1] %in% mods[['numeric']]) && (interaction.vars[2] %in% mods[['categorical']])
+		cat.cont <- cat.cont || cont.cat
+		
+		if (cat.cat) {
+			# two categorical variables Note: (p-1)*(q-1) columns where p and q
+		    # are the # of levels in the first categorical var and the 2nd
+		    # respectively
+		
+			for (cat1lvl in ) # finish later......
+		} else if (cat.cont) {
+			# one categorical, one continuous # (p-1) columns
+		} else {
+			# two continuous variables # 1 column		
+		}
+		
+	}
+	
+	
+}
+
+coded.cat.mod.level <- function(lvl, l.mod) {
+	# gives a coded representation of the moderator according to the order
+	# of levels in l.mod
+	# l.mod: levels in the moderator
+	# lvl chosen lvl to get the coding for
+	#
+	# E.g. if levels(moderator) == c("USA","CANADA","CHINA")
+	# lvl
+	# "USA" --> c(0,0)
+	# "CANADA" --> c(1,0)
+	# "CHINA" -- > c(0,1)
+	
+	# Find index of lvl in l.mod
+	index <- match(lvl, l.mod)
+	n.levels <- length(l.mod)
+	
+	# Make coding matrix e.g.
+	# USA    0 0 # zero vector
+	# CANADA 1 0 # identity matrix 
+	# CHINA  0 1 # 
+	code.matrix <- rbind(rep(0,n.levels.-1),diag(n.levels-1))
+	code.matrix[index,]
+}
 
 
-g.meta.regression <- function(data, mods, method, level, digits) {
+
+g.meta.regression <- function(data, mods, method, level, digits, btt=NULL) {
 	# This is s a thin wrapper to metafor's meta regression functionality
 	# in order to let R do the dummy coding for us
 	#
@@ -90,11 +182,33 @@ g.meta.regression <- function(data, mods, method, level, digits) {
 	res <- regression.wrapper(data, mods.str, method, level, digits,btt)
 
 	results <- list(#"images"=images,
-			"Summary"=res,
+			"Summary"=paste(capture.output(res), collapse="\n"), # convert print output to a string
 			#"plot_names"=plot.names,
 			#"plot_params_paths"=plot.params.paths,
 			"res"=res,
 			"res.info"=rma.uni.value.info())
+}
+
+g.meta.regression.cond.means <- function(data, mods, method, level, digits, strat_cov, cond.means.data,btt=NULL) {
+	# Same as g.meta.regression. except we have conditional means output
+	# strat_cov: the categorical covariate (name) to stratify the results of the conditional means over
+	# cond.means.data: The values for the other covariates given as a list:
+	#     List(cov1_name=cov1_val, cov2_cat_name=cov2_level,...)
+	
+	mods.str <- make.mods.str(mods)
+	
+	# obtain regression result rma.uni
+	res <- regression.wrapper(data, mods.str, method, level, digits,btt)
+	
+	A <- make.design.matrix(strat.cov, mods, cond.means.data, data)
+	
+#	new_betas  <- t(a) %*% matrix(rma.results$b, ncol=1)
+#	new_cov   <- t(a) %*% rma.results$vb %*% a
+#	new_vars <- diag(new_cov)
+#	new_lowers <- new_betas - mult*sqrt(new_vars)
+#	new_uppers <- new_betas + mult*sqrt(new_vars)
+#	new_se     <- sqrt(new_vars)
+	
 }
 
 
