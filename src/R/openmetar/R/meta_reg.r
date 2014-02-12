@@ -69,6 +69,9 @@ make.mods.str <-function(mods) {
 make.design.matrix <- function(strat.cov, mods, cond.means.data, data) {
 	# Make design matrix for conditional means
 	# strat.cov is the name of the covariate in data to stratify over
+	# This code is very sensitive to the fact that when there is an interaction
+	# of the form A:B, the coefficients are given such that the A coefficients iterate
+	# before the B coefficients
 	
 	nlevels <- length(levels(data$strat.cov)) # num of levels in strat.cov
 	rownames <- levels(data$strat.cov)
@@ -81,6 +84,9 @@ make.design.matrix <- function(strat.cov, mods, cond.means.data, data) {
 		dsn.matrix <- cbind(dsg.matrix,rep(value,n.levels))
 	}
 	
+	### NOTE: In following code mod.matrix is the part of the matrix to be stuck
+	###       on to dsn.matrix corresponding to a categorical moderator or
+	###       an interaction
 	# qi-1 columns for each categorical modertor where q is the # of levels of
 	# the moderator
 	for (mod in mods[["categorical"]]) {
@@ -97,7 +103,7 @@ make.design.matrix <- function(strat.cov, mods, cond.means.data, data) {
 			# just replicate the coding of the desired level
 			value <- cond.means.data[[mod]]
 			lvl.coded <- coded.cat.mod.level(x, l.mod)
-			for (x in l.mod) {
+			for (x in 1:nlevels) {
 				mod.matrix <- rbind(mod.matrix, lvl.coded)
 			}
 		} # end of else
@@ -114,23 +120,100 @@ make.design.matrix <- function(strat.cov, mods, cond.means.data, data) {
 		cat.cont <- (interaction.vars[1] %in% mods[['categorical']]) && (interaction.vars[2] %in% mods[['numeric']])
 		cont.cat <- (interaction.vars[1] %in% mods[['numeric']]) && (interaction.vars[2] %in% mods[['categorical']])
 		cat.cont <- cat.cont || cont.cat
+		overall.mod.matrix <- c()
 		
 		if (cat.cat) {
 			# two categorical variables Note: (p-1)*(q-1) columns where p and q
 		    # are the # of levels in the first categorical var and the 2nd
 		    # respectively
-		
-			for (cat1lvl in ) # finish later......
+			
+			cat1.levels <- levels(data[[interaction.vars[1]]])
+			cat2.levels <- levels(data[[interaction.vars[2]]])
+			
+			if (strat.cov %in% interaction.vars) {
+				# One of the variables in the interaction is the stratification variable		
+				strat.cov.is.first <- strat.cov ==  interaction.vars[1]
+				if (strat.cov.is.first) {
+					# iterate over levels of first cov, keeping 2nd cov level constant
+					value2 <- cond.means.data[[interaction.vars[2]]]
+					mod.matrix <- c()
+					for (value1 in cat1.levels) {
+						row.vector <- get.row.vector.cat.cat(
+								cat1.levels, cat2.levels,
+								value1, value2)
+						mod.matrix <- rbind(mod.matrix,row.vector)
+					}
+				}
+				else {
+					# strat.cov is 2nd
+					# Iterate over levels of 2nd cov, keeping the 1st cov level
+				    # constant.
+					value1 = cond.means.data[[interaction.vars[1]]]
+					mod.matrix <- c()
+					for (value2 in cat2.levels) {
+						row.vector <- get.row.vector.cat.cat(
+								cat1.levels, cat2.levels,
+								value1, value2)
+						mod.matrix <- rbind(mod.matrix,row.vector)
+					}
+				}
+			
+			    
+			
+			} else {
+				# Neither of the variables in the interaction is the stratification variable
+				value1 = cond.means.data[[interaction.vars[1]]]
+				value2 = cond.means.data[[interaction.vars[2]]]
+				
+				row.vector <- get.row.vector.cat.cat(
+						cat1.levels, cat2.levels,
+						value1, value2)
+				
+				mod.matrix <- c()
+				for (i in 1:nlevels) {
+					mod.matrix <- rbind(mod.matrix,row.vector)
+				}
+			} # end else strat.cov cat:cat
 		} else if (cat.cont) {
 			# one categorical, one continuous # (p-1) columns
+			if (strat.cov %in% interaction.vars) {
+				# One of the variables in the interaction is the stratification variable
+                #TODO
 		} else {
-			# two continuous variables # 1 column		
-		}
+                # Neither of the variables in the interaction is the stratification variable
+                # TODO
+			}
 		
-	}
-	
+		} else {
+			# two continuous variables # 1 column
+            # TODO
+		}
+		overall.mod.matrix <- cbind(overall.mod.matrix,mod.matrix)
+		
+	} # end for interactions
+	dsn.matrix <- cbind(dsn.matrix, overall.mod.matrix)
 	
 }
+
+#mod.matrix.for.strat.cov.in.cat.cat <- function()
+get.row.vector.cat.cat <- function(cat1.levels, cat2.levels, value1, value2) {	
+	# Returns a row vector for part of the mod.matrix for a cat:cat interaction
+	# given the levels of the categories and the values the categories take
+	row.vector <- c()
+	# We need to generate a vector, then replicate it 
+	# iterate over column values
+	# Note: we ignore the first level in each category 
+	#       since it is naturally coded
+	for (y in cat2.levels[2,]) {
+		# rma varies 1st covariate faster than 2nd
+		for (x in cat1.levels[2,]) {
+			row.vector <- c(row.vector, ifelse(y==value2 && x==value1, 1,0))
+		}
+	}
+	
+	return(row.vector)
+}
+
 
 coded.cat.mod.level <- function(lvl, l.mod) {
 	# gives a coded representation of the moderator according to the order
