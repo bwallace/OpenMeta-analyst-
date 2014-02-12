@@ -73,15 +73,16 @@ make.design.matrix <- function(strat.cov, mods, cond.means.data, data) {
 	# of the form A:B, the coefficients are given such that the A coefficients iterate
 	# before the B coefficients
 	
-	nlevels <- length(levels(data$strat.cov)) # num of levels in strat.cov
-	rownames <- levels(data$strat.cov)
-	dimnames <- list(rownames)
-	dsn.matrix <- matrix(rep(1,n.levels), dimnames=dimnames) # intercept column
+	nlevels <- length(levels(data[[strat.cov]])) # num of levels in strat.cov
+	rownames <- levels(data[[strat.cov]])
+	colnames <- c("Intercept")
+	dsn.matrix <- matrix(rep(1,nlevels)) # intercept column
 	
 	# 1 column for each numeric moderator
 	for (mod in mods[["numeric"]]) {
 		value <- cond.means.data[[mod]]
-		dsn.matrix <- cbind(dsg.matrix,rep(value,n.levels))
+		dsn.matrix <- cbind(dsn.matrix,rep(value,nlevels))
+		colnames<-c(colnames, mod)
 	}
 	
 	### NOTE: In following code mod.matrix is the part of the matrix to be stuck
@@ -102,13 +103,16 @@ make.design.matrix <- function(strat.cov, mods, cond.means.data, data) {
 		} else {
 			# just replicate the coding of the desired level
 			value <- cond.means.data[[mod]]
-			lvl.coded <- coded.cat.mod.level(x, l.mod)
+			lvl.coded <- coded.cat.mod.level(value, l.mod)
 			for (x in 1:nlevels) {
 				mod.matrix <- rbind(mod.matrix, lvl.coded)
 			}
 		} # end of else
+
+		dsn.matrix <- cbind(dsn.matrix, mod.matrix)
+		colnames<-c(colnames, paste(mod, l.mod[2:length(l.mod)],sep=""))
 	} # end for categorical
-	dsn.matrix <- cbind(dsn.matrix, mod.matrix) 
+	
 	
 	# interactions
 	for (interaction in names(mods[['interactions']])) {
@@ -157,9 +161,6 @@ make.design.matrix <- function(strat.cov, mods, cond.means.data, data) {
 						mod.matrix <- rbind(mod.matrix,row.vector)
 					}
 				}
-			
-			    
-			
 			} else {
 				# Neither of the variables in the interaction is the stratification variable
 				value1 = cond.means.data[[interaction.vars[1]]]
@@ -174,25 +175,87 @@ make.design.matrix <- function(strat.cov, mods, cond.means.data, data) {
 					mod.matrix <- rbind(mod.matrix,row.vector)
 				}
 			} # end else strat.cov cat:cat
+			
+			### Generate column labels
+			# names of interaction vars
+			intvar1 <- interaction.vars[1]
+			intvar2 <- interaction.vars[2]
+			col.names.for.interaction <- c()
+			for (y in cat2.levels[2:length(cat2.levels)]) {
+				for (x in cat1.levels[2:length(cat1.levels)]) {
+					col.names.for.interaction <- c(col.names.for.interaction, paste(intvar1, x, ":",intvar2,y,sep=""))
+				}
+			}
+			colnames<-c(colnames, col.names.for.interaction)
 		} else if (cat.cont) {
 			# one categorical, one continuous # (p-1) columns
 			if (strat.cov %in% interaction.vars) {
 				# One of the variables in the interaction is the stratification variable
-                #TODO
-		} else {
-                # Neither of the variables in the interaction is the stratification variable
-                # TODO
+				if (strat.cov==interaction.vars[1]) {
+					strat.levels <- levels(data[[interaction.vars[1]]])
+					cont.val <- cond.means.data[[interaction.vars[2]]]
+				} else {
+					strat.levels <- levels(data[[interaction.vars[2]]])
+					cont.val <- cond.means.data[[interaction.vars[1]]]
+				}
+				
+				mod.matrix <- c()
+				for (x in strat.levels) {
+					row.vector <- get.row.vector.cat.cont(strat.levels, x, cont.val)
+					mod.matrix <- rbind(mod.matrix,row.vector)
+				}
+				
+		    } else {
+             	# Neither of the variables in the interaction is the stratification variable
+                value1 <- cond.means.data[[interaction.vars[1]]]
+                value2 <- cond.means.data[[interaction.vars[2]]]
+				# Which of the interactions is the numeric, which the categorical?
+				if (class(value1) == "numeric") {
+					cont.val <- value1
+					cat.val <- value2
+					cat.levels <- levels(data[[interaction.vars[2]]])
+				} else {
+					cont.val <- value2
+					cat.val <- value1
+					cat.levels <- levels(data[[interaction.vars[1]]])
+				}
+			
+				row.vector <- get.row.vector.cat.cont(cat.levels, cat.val, cont.val)
+				mod.matrix <- c()
+				for (i in 1:nlevels) {
+					mod.matrix <- rbind(mod.matrix,row.vector)
+				}
 			}
-		
+			
+			### Make column labels
+			intVar1 <- interaction.vars[1]
+			intVar2 <- interaction.vars[2]
+			if (intVar1 %in% mods[["numeric"]]) {
+				cont.var <- intVar1
+				cat.var <- intVar2
+			} else {
+				cont.var <- intVar2
+				cat.var <- intVar1
+			}
+			cat.levels <- levels(data[[cat.var]])
+			# Continuous label comes first, followed by cat levels
+            colnames <- c(colnames, paste(cont.var,":",cat.levels[2:length(cat.levels)],sep=""))
+			### END of make column labels
 		} else {
 			# two continuous variables # 1 column
-            # TODO
+	        value1 <- cond.means.data[[interaction.vars[1]]]
+	        value2 <- cond.means.data[[interaction.vars[2]]]
+			mod.matrix <- rep(value1*value2, nlevels)
+			
+			colnames <- c(colnames, paste(interaction.vars[1],":",interaction.vars[2], sep=""))
 		}
 		overall.mod.matrix <- cbind(overall.mod.matrix,mod.matrix)
 		
 	} # end for interactions
 	dsn.matrix <- cbind(dsn.matrix, overall.mod.matrix)
-	
+	# Set helpful dimnames
+	dimnames(dsn.matrix) <- list(rownames, colnames)
+	return(dsn.matrix)
 }
 
 #mod.matrix.for.strat.cov.in.cat.cat <- function()
@@ -202,16 +265,30 @@ get.row.vector.cat.cat <- function(cat1.levels, cat2.levels, value1, value2) {
 	row.vector <- c()
 	# We need to generate a vector, then replicate it 
 	# iterate over column values
-	# Note: we ignore the first level in each category 
-	#       since it is naturally coded
-	for (y in cat2.levels[2,]) {
+	# Note: we ignore the first level in each category since it is naturally
+	# coded
+	for (y in cat2.levels[2:length(cat2.levels)]) {
 		# rma varies 1st covariate faster than 2nd
-		for (x in cat1.levels[2,]) {
+		for (x in cat1.levels[2:length(cat1.levels)]) {
 			row.vector <- c(row.vector, ifelse(y==value2 && x==value1, 1,0))
 		}
 	}
 	
 	return(row.vector)
+}
+
+get.row.vector.cat.cont <- function(cat.levels, cat.val, cont.val) {
+	# cat.levels: levels of categorical covariate
+	# cat.val: chosen value of categorical variable (a level)
+	# cont.val: chosen value of continuous variable
+	
+	row <- c()
+	# ignore first level since it is naturally coded
+	for (x in cat.levels[2:length(cat.levels)]) {
+		row <- c(row, ifelse(x==cat.val, 1, 0))
+	}
+	row <- cont.val * row
+	return(row)
 }
 
 
@@ -235,7 +312,7 @@ coded.cat.mod.level <- function(lvl, l.mod) {
 	# USA    0 0 # zero vector
 	# CANADA 1 0 # identity matrix 
 	# CHINA  0 1 # 
-	code.matrix <- rbind(rep(0,n.levels.-1),diag(n.levels-1))
+	code.matrix <- rbind(rep(0,n.levels-1),diag(n.levels-1))
 	code.matrix[index,]
 }
 
@@ -272,7 +349,7 @@ g.meta.regression <- function(data, mods, method, level, digits, btt=NULL) {
 			"res.info"=rma.uni.value.info())
 }
 
-g.meta.regression.cond.means <- function(data, mods, method, level, digits, strat_cov, cond.means.data,btt=NULL) {
+g.meta.regression.cond.means <- function(data, mods, method, level, digits, strat.cov, cond.means.data) {
 	# Same as g.meta.regression. except we have conditional means output
 	# strat_cov: the categorical covariate (name) to stratify the results of the conditional means over
 	# cond.means.data: The values for the other covariates given as a list:
@@ -281,17 +358,30 @@ g.meta.regression.cond.means <- function(data, mods, method, level, digits, stra
 	mods.str <- make.mods.str(mods)
 	
 	# obtain regression result rma.uni
-	res <- regression.wrapper(data, mods.str, method, level, digits,btt)
+	res <- regression.wrapper(data, mods.str, method, level, digits,btt=NULL)
 	
+	### Generate conditional means output
 	A <- make.design.matrix(strat.cov, mods, cond.means.data, data)
+	new_betas <- A %*% res$b
+	new_cov   <- A %*% res$vb %*% t(A)
+	new_vars <- diag(new_cov)
+	alpha <- 1.0-(level/100.0)
+	mult <- abs(qnorm(alpha/2.0))
+	new_lowers <- new_betas - mult*sqrt(new_vars)
+	new_uppers <- new_betas + mult*sqrt(new_vars)
+	new_se     <- sqrt(new_vars)
 	
-#	new_betas  <- t(a) %*% matrix(rma.results$b, ncol=1)
-#	new_cov   <- t(a) %*% rma.results$vb %*% a
-#	new_vars <- diag(new_cov)
-#	new_lowers <- new_betas - mult*sqrt(new_vars)
-#	new_uppers <- new_betas + mult*sqrt(new_vars)
-#	new_se     <- sqrt(new_vars)
+	cond.means.df <- data.frame(cond.mean=new_betas, se=new_se, var=new_vars, ci.lb=new_lowers, ci.ub=new_uppers)
+	cond.means.df <- round(cond.means.df, digits=digits)
+	### END of conditional means output generation
 	
+	results<-list(
+			      "Summary"=paste(capture.output(res), collapse="\n"),
+				  "res"=res,
+				  "res.info"=rma.uni.value.info(),
+				  "Conditional Means Summary"=paste(capture.output(cond.means.df), collapse="\n"),
+				  "res.cond.means"=cond.means.df
+				)
 }
 
 
