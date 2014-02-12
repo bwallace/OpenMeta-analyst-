@@ -115,6 +115,7 @@ make.design.matrix <- function(strat.cov, mods, cond.means.data, data) {
 	
 	
 	# interactions
+	interaction.mod.matrix <- c()
 	for (interaction in names(mods[['interactions']])) {
 		interaction.vars <- mods[['interactions']][[interaction]]
 		# What type of interaction? CAT:CAT, CAT:CONT, or CONT:CONT?
@@ -124,7 +125,6 @@ make.design.matrix <- function(strat.cov, mods, cond.means.data, data) {
 		cat.cont <- (interaction.vars[1] %in% mods[['categorical']]) && (interaction.vars[2] %in% mods[['numeric']])
 		cont.cat <- (interaction.vars[1] %in% mods[['numeric']]) && (interaction.vars[2] %in% mods[['categorical']])
 		cat.cont <- cat.cont || cont.cat
-		overall.mod.matrix <- c()
 		
 		if (cat.cat) {
 			# two categorical variables Note: (p-1)*(q-1) columns where p and q
@@ -249,10 +249,10 @@ make.design.matrix <- function(strat.cov, mods, cond.means.data, data) {
 			
 			colnames <- c(colnames, paste(interaction.vars[1],":",interaction.vars[2], sep=""))
 		}
-		overall.mod.matrix <- cbind(overall.mod.matrix,mod.matrix)
+		interaction.mod.matrix <- cbind(overall.mod.matrix,mod.matrix)
 		
 	} # end for interactions
-	dsn.matrix <- cbind(dsn.matrix, overall.mod.matrix)
+	dsn.matrix <- cbind(dsn.matrix, interaction.mod.matrix)
 	# Set helpful dimnames
 	dimnames(dsn.matrix) <- list(rownames, colnames)
 	return(dsn.matrix)
@@ -362,6 +362,7 @@ g.meta.regression.cond.means <- function(data, mods, method, level, digits, stra
 	
 	### Generate conditional means output
 	A <- make.design.matrix(strat.cov, mods, cond.means.data, data)
+	cat("Design Matrix:\n", A)
 	new_betas <- A %*% res$b
 	new_cov   <- A %*% res$vb %*% t(A)
 	new_vars <- diag(new_cov)
@@ -372,14 +373,25 @@ g.meta.regression.cond.means <- function(data, mods, method, level, digits, stra
 	new_se     <- sqrt(new_vars)
 	
 	cond.means.df <- data.frame(cond.mean=new_betas, se=new_se, var=new_vars, ci.lb=new_lowers, ci.ub=new_uppers)
-	cond.means.df <- round(cond.means.df, digits=digits)
+	
+	# Construct pretty output
+	cond.means.df.rounded <- round(cond.means.df, digits=digits)
+	cond.means.df.str <- paste(capture.output(cond.means.df.rounded), collapse="\n")
+	cond.means.data.names <- sort(names(cond.means.data))
+	cond.means.data.vals  <- sapply(cond.means.data.names, function(x) cond.means.data[[x]])
+	lines = paste(cond.means.data.names, cond.means.data.vals, sep=": ")
+	other.vals.str <- paste(lines, sep="\n")
+	cond.means.summary <- paste("The conditional means are calculated over the levels of: ", strat.cov,
+			"\nThe other covariates had selected values of:\n",
+			other.vals.str,"\n",cond.means.df.str,sep="")
+	
 	### END of conditional means output generation
 	
 	results<-list(
 			      "Summary"=paste(capture.output(res), collapse="\n"),
 				  "res"=res,
 				  "res.info"=rma.uni.value.info(),
-				  "Conditional Means Summary"=paste(capture.output(cond.means.df), collapse="\n"),
+				  "Conditional Means Summary"=cond.means.summary,
 				  "res.cond.means"=cond.means.df
 				)
 }
