@@ -31,7 +31,7 @@ library(metafor)
 regression.wrapper <- function(data, mods.str, method, level, digits, btt=NULL) {
 	# Construct call to rma
 	call_str <- sprintf("rma.uni(yi,vi, mods=%s, data=data, method=\"%s\", level=%f, digits=%d)", mods.str, method, level, digits)
-	cat(call_str,"\n")
+	#cat(call_str,"\n")
 	expr<-parse(text=call_str) # convert to expression
 	res <- eval(expr) # evaluate expression
 	res
@@ -436,7 +436,7 @@ g.bootstrap.meta.regression <- function(data, mods, method, level, digits, n.rep
 					  }, error = function(e) {
 						failures <<- failures + 1
 						indices <- sample.int(nrow(data), size=length(indices), replace=TRUE)
-						cat("Error in regression wrapper:",e,"\n")
+						cat("Error in regression wrapper: ",e$message,"\n")
 						next
 					  })
 			# Everything worked alright
@@ -540,7 +540,7 @@ g.bootstrap.meta.regression.cond.means <- function(
 					}, error = function(e) {
 						failures <<- failures + 1
 						indices <- sample.int(nrow(data), size=length(indices), replace=TRUE)
-						cat("Error in regression wrapper:",e,"\n")
+						cat("Error in regression wrapper: ",e$message,"\n")
 						next
 					})
 			# Everything worked alright
