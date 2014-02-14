@@ -396,6 +396,108 @@ g.meta.regression.cond.means <- function(data, mods, method, level, digits, stra
 				)
 }
 
+g.bootstrap.meta.regression <- function(data, mods, method, level, digits, n.replicates, histogram.title="", bootstrap.plot.path="./r_tmp/bootstrap.png") {
+	# Bootstrapped meta-regression
+	# A subset is valid if, for each categorical variable, all the levels are
+	# preset
+	
+	mods.str <- make.mods.str(mods)
+	
+	# obtain overall regression result rma.uni
+	res <- regression.wrapper(data, mods.str, method, level, digits,btt=NULL)
+	
+	###### Bootstrap
+	max.failures <- 5*n.replicates # # failures generating test statistic before we give up
+	# Count number of levels for each categorical covariate
+	cat.mods.level.counts <- list()
+	for (mod in mods[["categorical"]]) {
+		n.levels <- length(levels(data[[mod]]))
+		cat.mods.level.counts[[mod]] <- n.levels
+	}
+	
+	# Statistic passed to boot
+	meta.reg.statistic <- function(data, indices) {
+		ok = FALSE
+		cat("failures: ",failures)
+		while (!ok) {
+			if (failures > max.failures) {
+			    stop("Number of failed attempts exceeded 5x the number of replicates")
+			}
+			if (!subset.ok(data,indices)) {
+				# Subset chosen was not ok
+				failures <<- failures+1
+				indices <- sample.int(nrow(data), size=length(indices), replace=TRUE)
+				cat("subset not ok\n")
+				next
+			}
+			
+			res.tmp <- tryCatch({
+						regression.wrapper(data[indices,], mods.str, method, level, digits,btt=NULL)
+					  }, error = function(e) {
+						failures <<- failures + 1
+						indices <- sample.int(nrow(data), size=length(indices), replace=TRUE)
+						cat("Error in regression wrapper:",e,"\n")
+						next
+					  })
+			# Everything worked alright
+			ok <- TRUE
+		} # end while
+		res.tmp$b[,1] # b is a matrix
+	}
+	
+	subset.ok <- function(data, indices) {
+		# Are all the categorical levels present in the subset?
+		data.subset = data[indices,]
+		
+		for (mod in mods[["categorical"]]) {
+			n.levels <- length(unique(data[[mod]]))
+			if (n.levels != cat.mods.level.counts[[mod]]) {
+				return(FALSE)
+			}
+		}
+		return(TRUE)
+	}
+	
+	# Run the bootstrap analysis
+	failures <- 0
+	res.boot <- boot(data, statistic=meta.reg.statistic, R=n.replicates)
+	
+	### Construct output
+	coeff.names <- names(res.boot$t0)
+	b=res.boot$t0
+	ci.lb <- c()
+	ci.ub <- c()
+	for (i in 1:length(res.boot$t0)) {
+		ci <- boot.ci(boot.out=res.boot, type="norm", index=i, conf=level/100)# conf. interval
+		ci.lb <- c(ci.lb, ci[["normal"]][2])
+		ci.ub <- c(ci.ub, ci[["normal"]][3])
+	}
+	boot.summary.df <- data.frame(estimate=b, "Lower Bound"=ci.lb, "Upper Bound"=ci.ub)
+	rownames(boot.summary.df) <- coeff.names
+	# summary text
+	boot.summary.df.str <- paste(capture.output(boot.summary.df), collapse="\n")
+	summary.txt <- sprintf("# Bootstrap replicates: %d\n# of failures: %d\n\n%s", n.replicates,failures, boot.summary.df.str)
+
+	
+	# Make histograms
+	xlabels <- coeff.names
+	png(file=bootstrap.plot.path, width = 480, height = 480*length(xlabels))
+	plot.custom.boot(res.boot,
+			title=as.character(histogram.title),
+			xlabs=xlabels,
+			ci.lb=boot.summary.df[["Lower Bound"]],
+			ci.ub=boot.summary.df[["Upper Bound"]])
+	graphics.off()
+	images <- c("Histograms"=bootstrap.plot.path)
+
+	# Output results
+	results<-list(
+		    "images"=images,
+			"Bootstrapped Meta Regression Summary"=summary.txt,
+			"res.boot"=res.boot
+	)
+}
+
 
 meta.regression <- function(reg.data, params, cond.means.data=NULL, stop.at.rma=FALSE) {
 	cov.data <- extract.cov.data(reg.data)
