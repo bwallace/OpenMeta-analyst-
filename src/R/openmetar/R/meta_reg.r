@@ -249,7 +249,7 @@ make.design.matrix <- function(strat.cov, mods, cond.means.data, data) {
 			
 			colnames <- c(colnames, paste(interaction.vars[1],":",interaction.vars[2], sep=""))
 		}
-		interaction.mod.matrix <- cbind(overall.mod.matrix,mod.matrix)
+		interaction.mod.matrix <- cbind(interaction.mod.matrix,mod.matrix)
 		
 	} # end for interactions
 	dsn.matrix <- cbind(dsn.matrix, interaction.mod.matrix)
@@ -403,8 +403,8 @@ g.bootstrap.meta.regression <- function(data, mods, method, level, digits, n.rep
 	
 	mods.str <- make.mods.str(mods)
 	
-	# obtain overall regression result rma.uni
-	res <- regression.wrapper(data, mods.str, method, level, digits,btt=NULL)
+	### obtain overall regression result rma.uni
+	##res <- regression.wrapper(data, mods.str, method, level, digits,btt=NULL)
 	
 	###### Bootstrap
 	max.failures <- 5*n.replicates # # failures generating test statistic before we give up
@@ -495,6 +495,121 @@ g.bootstrap.meta.regression <- function(data, mods, method, level, digits, n.rep
 		    "images"=images,
 			"Bootstrapped Meta Regression Summary"=summary.txt,
 			"res.boot"=res.boot
+	)
+}
+
+g.bootstrap.meta.regression.cond.means <- function(
+    data, mods, method, level, digits, strat.cov, cond.means.data,
+    n.replicates, histogram.title="", bootstrap.plot.path="./r_tmp/bootstrap.png") {
+	# Bootstrapped meta-regression Conditional means
+	# A subset is valid if, for each categorical variable, all the levels are
+	# preset
+	
+	mods.str <- make.mods.str(mods)
+	
+	### Generate conditional means
+	A <- make.design.matrix(strat.cov, mods, cond.means.data, data)
+
+	###### Bootstrap
+	max.failures <- 5*n.replicates # # failures generating test statistic before we give up
+	# Count number of levels for each categorical covariate
+	cat.mods.level.counts <- list()
+	for (mod in mods[["categorical"]]) {
+		n.levels <- length(levels(data[[mod]]))
+		cat.mods.level.counts[[mod]] <- n.levels
+	}
+	
+	# Statistic passed to boot
+	cond.means.reg.statistic <- function(data, indices) {
+		ok = FALSE
+		cat("failures: ",failures)
+		while (!ok) {
+			if (failures > max.failures) {
+				stop("Number of failed attempts exceeded 5x the number of replicates")
+			}
+			if (!subset.ok(data,indices)) {
+				# Subset chosen was not ok
+				failures <<- failures+1
+				indices <- sample.int(nrow(data), size=length(indices), replace=TRUE)
+				cat("subset not ok\n")
+				next
+			}
+			
+			res.tmp <- tryCatch({
+						regression.wrapper(data[indices,], mods.str, method, level, digits,btt=NULL)
+					}, error = function(e) {
+						failures <<- failures + 1
+						indices <- sample.int(nrow(data), size=length(indices), replace=TRUE)
+						cat("Error in regression wrapper:",e,"\n")
+						next
+					})
+			# Everything worked alright
+			ok <- TRUE
+		} # end while
+		tmp.betas <- A %*% res.tmp$b
+		tmp.betas[,1]
+	}
+	
+	subset.ok <- function(data, indices) {
+		# Are all the categorical levels present in the subset?
+		data.subset = data[indices,]
+		
+		for (mod in mods[["categorical"]]) {
+			n.levels <- length(unique(data[[mod]]))
+			if (n.levels != cat.mods.level.counts[[mod]]) {
+				return(FALSE)
+			}
+		}
+		return(TRUE)
+	}
+	
+	# Run the bootstrap analysis
+	failures <- 0
+	res.boot <- boot(data, statistic=cond.means.reg.statistic, R=n.replicates)
+	
+	### Construct output
+	coeff.names <- levels(data[[strat.cov]])
+	b=res.boot$t0
+	ci.lb <- c()
+	ci.ub <- c()
+	for (i in 1:length(res.boot$t0)) {
+		ci <- boot.ci(boot.out=res.boot, type="norm", index=i, conf=level/100)# conf. interval
+		ci.lb <- c(ci.lb, ci[["normal"]][2])
+		ci.ub <- c(ci.ub, ci[["normal"]][3])
+	}
+	boot.summary.df <- data.frame(cond.mean=b, "Lower Bound"=ci.lb, "Upper Bound"=ci.ub)
+	rownames(boot.summary.df) <- coeff.names
+	
+	### Summary text
+	boot.summary.df.rounded <- round(boot.summary.df, digits=digits)
+	boot.summary.df.rounded.str <- paste(capture.output(boot.summary.df.rounded), collapse="\n")
+	bootstrap.summary <- sprintf("Bootstrap:\n  # Bootstrap replicates: %d\n  # of failures: %d", n.replicates,failures)
+	# Conditional means summary
+	cond.means.data.names <- sort(names(cond.means.data))
+	cond.means.data.vals  <- sapply(cond.means.data.names, function(x) cond.means.data[[x]])
+	lines = paste(cond.means.data.names, cond.means.data.vals, sep=": ")
+	other.vals.str <- paste(lines, sep="\n")
+	cond.means.summary <- paste("The conditional means are calculated over the levels of: ", strat.cov,
+			"\nThe other covariates had selected values of:\n",
+			other.vals.str,sep="")
+	summary.txt <- sprintf("%s\n%s\nResults:\n%s", bootstrap.summary, cond.means.summary,boot.summary.df.rounded.str)
+	
+	# Make histograms
+	xlabels <- coeff.names
+	png(file=bootstrap.plot.path, width = 480, height = 480*length(xlabels))
+	plot.custom.boot(res.boot,
+			title=as.character(histogram.title),
+			xlabs=xlabels,
+			ci.lb=boot.summary.df[["Lower Bound"]],
+			ci.ub=boot.summary.df[["Upper Bound"]])
+	graphics.off()
+	images <- c("Histograms"=bootstrap.plot.path)
+	
+	# Output results
+	results<-list(
+			"images"=images,
+			"Bootstrapped Conditional Means Meta Regression Summary"=summary.txt,
+			"res"=boot.summary.df
 	)
 }
 
