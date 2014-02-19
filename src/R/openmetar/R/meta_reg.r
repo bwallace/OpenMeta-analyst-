@@ -475,8 +475,9 @@ g.bootstrap.meta.regression <- function(data, mods, method, level, digits, n.rep
 	boot.summary.df <- data.frame(estimate=b, "Lower Bound"=ci.lb, "Upper Bound"=ci.ub)
 	rownames(boot.summary.df) <- coeff.names
 	# summary text
-	boot.summary.df.str <- paste(capture.output(boot.summary.df), collapse="\n")
-	summary.txt <- sprintf("# Bootstrap replicates: %d\n# of failures: %d\n\n%s", n.replicates,failures, boot.summary.df.str)
+    boot.summary.df.rounded <- round(boot.summary.df, digits=digits)
+	boot.summary.df.rounded.str <- paste(capture.output(boot.summary.df.rounded), collapse="\n")
+	summary.txt <- sprintf("# Bootstrap replicates: %d\n# of failures: %d\n\n%s", n.replicates,failures, boot.summary.df.rounded.str)
 
 	
 	# Make histograms
@@ -493,8 +494,8 @@ g.bootstrap.meta.regression <- function(data, mods, method, level, digits, n.rep
 	# Output results
 	results<-list(
 		    "images"=images,
-			"Bootstrapped Meta Regression Summary"=summary.txt,
-			"res.boot"=res.boot
+			"Bootstrapped Meta Regression Summary"=summary.txt
+			#"res.boot"=res.boot
 	)
 }
 
