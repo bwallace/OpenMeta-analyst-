@@ -45,10 +45,10 @@ sys.path = sys.path[:4]
 # 8/21/12 -- TEMPORARY -- need to add this back!
 #print "\n\nok, mac user -- I'm setting your R path temporarily (this console only).\n\ns"
 os.environ["R"] = \
-    os.path.join(DIR_NAME, "R_dist", "3.0.1", "bin")
+    os.path.join(DIR_NAME, "R_dist", "3.0.2", "bin")
 
 os.environ["R_HOME"] = \
-    os.path.join(DIR_NAME, "R_dist", "3.0.1")
+    os.path.join(DIR_NAME, "R_dist", "3.0.2")
     
 # For some reason, the X11 shows up in the build on Jens's computer but not on mine when doing diagnostic HSROC
 os.environ["R_INTERACTIVE_DEVICE"] = "pdf"

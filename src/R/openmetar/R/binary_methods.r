@@ -37,6 +37,9 @@ compute.bin.point.estimates <- function(binary.data, params) {
 
 binary.transform.f <- function(metric.str){
     display.scale <- function(x, ...){
+		
+		extra.args <- list(...)
+		
         if (metric.str %in% binary.log.metrics){
             exp(x)
         } else if (metric.str %in% binary.logit.metrics){
@@ -44,12 +47,13 @@ binary.transform.f <- function(metric.str){
         } else if (metric.str %in% binary.arcsine.metrics){
             invarcsine.sqrt(x)
         } else if (metric.str %in% binary.freeman_tukey.metrics){
+			  ni <- extra.args[['ni']]
               if (length(x)==1) {
                    # If x has length 1, use harmonic mean inverse transform, which takes the harmonic mean of n as second arg. 
                    # If n also has length 1, this is the same as trans.ipft(x,n).
-                  transf.ipft.hm(x, targs=list(ni=n))
+                  transf.ipft.hm(x, targs=list(ni=ni))
               } else {
-                  transf.ipft(x, n)
+                  transf.ipft(x, ni)
               }
         } else {  
             # identity function
@@ -59,6 +63,8 @@ binary.transform.f <- function(metric.str){
 
     
     calc.scale <- function(x, ...){
+		
+		extra.args <- list(...)
         if (metric.str %in% binary.log.metrics){
             log(x)
         } else if (metric.str %in% binary.logit.metrics){
@@ -66,8 +72,9 @@ binary.transform.f <- function(metric.str){
         } else if (metric.str %in% binary.arcsine.metrics){
             arcsine.sqrt(x) 
         } else if (metric.str %in% binary.freeman_tukey.metrics){
+			ni <- extra.args[['ni']]
           if (length(x)==1) {
-             transf.pft(x, n)
+             transf.pft(x, ni)
           }
         } else {
             # identity function

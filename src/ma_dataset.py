@@ -765,7 +765,7 @@ class MetaAnalyticUnit:
     def set_display_se(self, effect, group_str, se):
         self.effects_dict[effect][group_str]["display_se"] = se
         
-    def calculate_display_effect_and_ci(self, effect, group_str, convert_to_display_scale, conf_level=None, mult=None, check_if_necessary=False):
+    def calculate_display_effect_and_ci(self, effect, group_str, convert_to_display_scale, conf_level=None, mult=None, check_if_necessary=False, n1=None):
         if None in [conf_level, mult]:
             raise ValueError("confidence level & mult must be specified")
         

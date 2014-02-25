@@ -29,7 +29,10 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     # Set n, the number of studies, for PFT metric.
     if (params$measure=="PFT" && length(om.data@g1O1) > 1 && length(om.data@g1O2)) {
         n <- om.data@g1O1 + om.data@g1O2  # Number of subjects
-    }    
+    }
+	else {
+		n <- NULL # not needed except for pft
+	}
     
     if (params$fp_plot_lb == "[default]") {
         plot.options$plot.lb <- params$fp_plot_lb
@@ -86,17 +89,25 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     lb.overall <- res$ci.lb[1]
     ub.overall <- res$ci.ub[1]
     y <- om.data@y
-    study.ci.bounds <- calc.ci.bounds(om.data, params)
+    study.ci.bounds <- calc.ci.bounds(om.data, params, ni=n)
     lb <- study.ci.bounds$lb
     ub <- study.ci.bounds$ub
         
-    y.disp <- eval(call(transform.name, params$measure))$display.scale(y, n)
-    lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb, n)
-    ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub, n)
+    #y.disp <- eval(call(transform.name, params$measure))$display.scale(y, n)
+    #lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb, n)
+    #ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub, n)
     
-    y.overall.disp <- eval(call(transform.name, params$measure))$display.scale(y.overall, n)
-    lb.overall.disp <- eval(call(transform.name, params$measure))$display.scale(lb.overall, n)
-    ub.overall.disp <- eval(call(transform.name, params$measure))$display.scale(ub.overall, n)
+    #y.overall.disp <- eval(call(transform.name, params$measure))$display.scale(y.overall, n)
+    #lb.overall.disp <- eval(call(transform.name, params$measure))$display.scale(lb.overall, n)
+    #ub.overall.disp <- eval(call(transform.name, params$measure))$display.scale(ub.overall, n)
+	
+	y.disp <- eval(call(transform.name, params$measure))$display.scale(y, ni=n)
+	lb.disp <- eval(call(transform.name, params$measure))$display.scale(lb, ni=n)
+	ub.disp <- eval(call(transform.name, params$measure))$display.scale(ub, ni=n)
+	
+	y.overall.disp <- eval(call(transform.name, params$measure))$display.scale(y.overall, ni=n)
+	lb.overall.disp <- eval(call(transform.name, params$measure))$display.scale(lb.overall, ni=n)
+	ub.overall.disp <- eval(call(transform.name, params$measure))$display.scale(ub.overall, ni=n)
     
     y <- c(y, y.overall)
     lb <- c(lb, lb.overall)
@@ -222,8 +233,11 @@ create.plot.data.overall <- function(om.data, params, res, res.overall){
     scale.str <- get.scale(params)
     # Set n, the number of studies, for PFT metric.
     if (params$measure=="PFT" && length(om.data@g1O1) > 1 && length(om.data@g1O2)) {
-      n <- om.data@g1O1 + om.data@g1O2  # Number of subjects
+        n <- om.data@g1O1 + om.data@g1O2  # Number of subjects
     }
+	else {
+	    n <- NULL
+	}
     
     ## TO DO - don't really nead three transforms - the transform only depends on the measure.
     transform.name <- get.transform.name(om.data)
@@ -369,6 +383,9 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, 
     if (params$measure=="PFT" && length(om.data@g1O1) > 1 && length(om.data@g1O2)) {
       n <- om.data@g1O1 + om.data@g1O2  # Number of subjects
     }
+	else {
+		n <- NULL
+	}
     
     ## TO DO - don't really nead three transforms - the transform only depends on the measure.
     if (data.type == "continuous") {

@@ -128,6 +128,9 @@ create.summary.disp <- function(om.data, params, res, model.title) {
     if (params$measure=="PFT" && length(om.data@g1O1) > 0 && length(om.data@g1O2) > 0) {
       n <- om.data@g1O1 + om.data@g1O2  # Number of subjects - needed for Freeman-Tukey double arcsine trans.
     }
+	else {
+		n <- NULL # don't need n except for PFT (freeman-tukey)
+	}
     if (!is.null(res$QE)) {
       I2 <- max(0, (res$QE - degf)/res$QE)
       I2 <- paste(100 * round(I2, digits = 2), "%", sep="")
@@ -148,9 +151,12 @@ create.summary.disp <- function(om.data, params, res, model.title) {
     }
         
     res.title <- " Model Results"
-    y.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$b, list(ni=n)))
-    lb.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$ci.lb, list(ni=n)))
-    ub.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$ci.ub, list(ni=n)))
+    #y.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$b, list(ni=n)))
+    #lb.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$ci.lb, list(ni=n)))
+    #ub.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$ci.ub, list(ni=n)))
+	y.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$b, ni=n))
+	lb.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$ci.lb, ni=n))
+	ub.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(res$ci.ub, ni=n))
     se <- sprintf(digits.str, res$se)
    
     
@@ -368,9 +374,9 @@ create.overall.display <- function(res, study.names, params, model.title, data.t
       ub <- res[[count]]$ci.ub
       se <- res[[count]]$se
       digits.str <- paste("%.", params$digits, "f", sep="")
-      y.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(y, n))
-      lb.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(lb, n))
-      ub.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(ub, n))
+      y.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(y, n=NULL))
+      lb.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(lb, n=NULL))
+      ub.disp <- sprintf(digits.str, eval(call(transform.name, params$measure))$display.scale(ub, n=NULL))
       se.disp <- sprintf(digits.str, se)
       
       if (!is.null(res[[count]]$pval)) {
@@ -408,6 +414,11 @@ create.subgroup.display <- function(res, study.names, params, model.title, data.
     het.array <- array(dim=c(length(study.names) + 1, 4))
     #QLabel =  paste("Q(df = ", degf, ")", sep="")
     
+	# hmm....
+	n <- length(study.names)
+	
+	
+	
     subgroup.array[1,] <- c("Subgroups", "Studies", "Estimate", "Lower bound", "Upper bound", "Std. error", "p-Val")
     het.array[1,] <- c("Studies", "Q (df)",
                            "Het. p-Val", "I^2")
@@ -484,6 +495,7 @@ calc.ci.bounds <- function(om.data, params, ...) {
     mult <- abs(qnorm(alpha/2.0))
     lb <- y - mult*om.data@SE
     ub <- y + mult*om.data@SE
+	extra.args <- list(...)
     # Check that bounds are in the range of the transformation and truncate if necessary.
     if (params$measure=="PR") {
       for (i in 1:length(lb)) {  
@@ -498,6 +510,7 @@ calc.ci.bounds <- function(om.data, params, ...) {
       }
     }
     if (params$measure=="PFT") {
+		n <- extra.args[['ni']]
         for (i in 1:length(lb)) {  
             lb[i] <- max(lb[i], transf.pft(0, n[i]))
             ub[i] <- min(ub[i], transf.pft(1, n[i]))

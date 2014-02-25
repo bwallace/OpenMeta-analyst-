@@ -714,3 +714,60 @@ make.scatterplot <- function(plot.path, data, params) {
 	graphics.off()
 }
 ######################## End of scatterplot code #############################
+
+model.building <- function(data, full.mods, reduced.mods, method, level, digits, btt=NULL) {
+	# This is s a thin wrapper to metafor's meta regression functionality
+	# in order to let R do the dummy coding for us
+	#
+	# mods.str: string to be passed to metafor to implement the moderators
+	#     e.g. ~ gfactor(alloc)+ablat+gfactor(country)+gfactor(alloc):gfactor(country)
+	# mods: list(numeric=c(...numeric moderators...),
+	#            categorical=c(...categorical moderators...),
+	#            interactions=list("A:B"=c("A","B"),"B:C"=c("B",C"),...)
+	#            )
+	#     Note that the interaction names should be as they appear in the mods
+	#     string formula
+	# data: should be a dataframe of the type that metafor likes ie
+	# yi and vi for the effect and variance columns
+	# slab holds study names
+	# the parts that are 'factors' have already been made in to factors with
+	# the appropriate reference values
+	
+	full.mods.str <- make.mods.str(full.mods)
+	reduced.mods.str <- make.mods.str(reduced.mods)
+	
+	# obtain regression result rma.uni
+	full.res    <- regression.wrapper(data, full.mods.str, method, level, digits,btt)
+	reduced.res <- regression.wrapper(data, reduced.mods.str, method, level, digits,btt)
+	
+	res <- anova(full.res, reduced.res, digits=digits)
+	
+	# temporarily widen console for printing
+	old.width <- getOption("width")
+	options(width=1000)
+	summary.str <- paste(capture.output(res), collapse="\n") # convert print output to a string
+	options(width=old.width)
+	
+	results <- list(#"images"=images,
+			"Summary"=summary.str,
+			#"plot_names"=plot.names,
+			#"plot_params_paths"=plot.params.paths,
+			"res"=res,
+			"res.info"=model.building.value.info())
+}
+
+model.building.value.info <- function() {
+    list(
+        fit.stats.f = list(type="vector", description="log-likelihood, deviance, AIC, BIC, and AICc for the full model."),
+        fit.stats.r = list(type="vector", description="log-likelihood, deviance, AIC, BIC, and AICc for the reduced model."),
+        p.f         = list(type="vector", description="number of parameters in the full model."),
+        p.r         = list(type="vector", description="number of parameters in the reduced model."),
+        LRT         = list(type="vector", description="likelihood ratio test statistic."),
+        pval        = list(type="vector", description="p-value for the likelihood ratio test."),
+        QE.f        = list(type="vector", description="test statistic for the test of (residual) heterogeneity from the full model."),
+        QE.r        = list(type="vector", description="test statistic for the test of (residual) heterogeneity from the reduced model."),
+        tau2.f      = list(type="vector", description="estimated  2 value from the full model."),
+        tau2.r      = list(type="vector", description="estimated  2 value from the reduced model."),
+        R2          = list(type="vector", description="amount of (residual) heterogeneity in the reduced model that is accounted for in the full model. NA( for fixed-effects models or if the amount of heterogeneity in the reduced model is equal to zero. This can be regarded as a pseudo R2 statistic (Raudenbush, 2009).")
+    )
+}
