@@ -61,7 +61,15 @@ make.mods.str <-function(mods) {
 	}
 		
 
-	mods.str <- paste("~", paste(str.els,collapse=" + "), sep=" ")
+	
+	# fix for issue #122 of OpenMEE
+	if (length(str.els)!=0) {
+		# normal case
+		mods.str <- paste("~", paste(str.els,collapse=" + "), sep=" ")
+	} else { # no string elements
+		mods.str <- "~ 1"
+	}
+	
 	cat(mods.str,"\n")
 	mods.str
 }
