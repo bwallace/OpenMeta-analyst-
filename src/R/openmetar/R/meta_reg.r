@@ -899,3 +899,4 @@ categorical.meta.regression <- function(reg.data, params, cov.names) {
   reg.disp <- create.regression.disp(res, params, cov.names=dimnames(cov.data)[[2]]) 
   results <- list("Summary"=reg.disp)
 }
+
