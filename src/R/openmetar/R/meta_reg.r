@@ -340,13 +340,23 @@ g.meta.regression <- function(data, mods, method, level, digits, btt=NULL) {
 	
 	# obtain regression result rma.uni
 	res <- regression.wrapper(data, mods.str, method, level, digits,btt)
+	
+	# Add residuals to additional values output
+	residuals <- rstandard(res, digits=digits) # is a dataframe
+	residuals$slab <- data$slab
+	res_and_residuals <- res
+	res_and_residuals$residuals <- residuals
+	res_and_residuals.info <- c(rma.uni.value.info(),
+			                    list(residuals=list(type="blob", description="Standardized residuals for fitted models")))
+					
+	
 
 	results <- list(#"images"=images,
 			"Summary"=paste(capture.output(res), collapse="\n"), # convert print output to a string
 			#"plot_names"=plot.names,
 			#"plot_params_paths"=plot.params.paths,
-			"res"=res,
-			"res.info"=rma.uni.value.info())
+			"res"=res_and_residuals, #res,
+			"res.info"=res_and_residuals.info)# rma.uni.value.info())
 }
 
 g.meta.regression.cond.means <- function(data, mods, method, level, digits, strat.cov, cond.means.data) {

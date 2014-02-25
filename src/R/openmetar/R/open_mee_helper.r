@@ -740,7 +740,7 @@ model.building <- function(data, full.mods, reduced.mods, method, level, digits,
 	full.res    <- regression.wrapper(data, full.mods.str, method, level, digits,btt)
 	reduced.res <- regression.wrapper(data, reduced.mods.str, method, level, digits,btt)
 	
-	res <- anova(full.res, reduced.res)
+	res <- anova(full.res, reduced.res, digits=digits)
 	
 	# temporarily widen console for printing
 	old.width <- getOption("width")
