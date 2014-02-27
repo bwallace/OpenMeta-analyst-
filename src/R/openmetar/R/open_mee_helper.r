@@ -795,12 +795,13 @@ phylo.wrapper <- function(data, method, level, digits, mods.str="~ 1", btt=NULL)
 	res
 }
 
-phylo.meta.analysis <- function(tree, evo.model, data, method, level, digits, lambda=1.0, alpha=1.0, btt=NULL) {
+phylo.meta.analysis <- function(tree, evo.model, data, method, level, digits, include_slambda=1.0, alpha=1.0, btt=NULL) {
 	# data: should be a dataframe of the type that metafor likes ie
-	# yi and vi for the effect and variance columns
-	# slab holds study names
-	# the parts that are 'factors' have already been made in to factors with
-	# the appropriate reference values
+	#   yi and vi for the effect and variance columns
+	#   slab holds study names
+	#   the parts that are 'factors' have already been made in to factors with
+	#   the appropriate reference values
+	#   should include 'species' column 
 	# evo.model: "BM" or "OU" # evolutionary model
 	
 	# blankDataFrame used to extract correlation matrix
@@ -817,12 +818,17 @@ phylo.meta.analysis <- function(tree, evo.model, data, method, level, digits, la
 	######## end of constructing phylogenetic correlation matrix for rma.mv #########
 	
 	# additional columns needed for rma.mv
-	betweenStudyVariance <- rep(1:nrow(theData)) # used to initialize a random-effects meta-analysis
-	phylogenyVariance <- theData$species # used to initialize phylogeny as a random-factor in analyses
+	betweenStudyVariance <- rep(1:nrow(data)) # used to initialize a random-effects meta-analysis
+	phylogenyVariance <- data$species # used to initialize phylogeny as a random-factor in analyses
 	
 	
 	
+	## fixed-effect meta-analysis including phylogeny as a random factor
+	FEMA_C <- rma.mv(yi, vi, data=data, random = list(~ 1 | phylogenyVariance), R=list(phylogenyVariance=C)) 
 	
+	## random-effects meta-analysis including species and phylogeny as random factors (phylogenetic meta-analysis with a random-effects model), 
+	## here 'species' is included as a random factor because we have multiple replicates within species (e.g., two A's)
+	REMA_RF_species_C <- rma.mv(yi, vi, data=data, random = list(~ 1 | betweenStudyVariance, ~ 1 | species, ~ 1 | phylogenyVariance), R=list(phylogenyVariance=C)) 
 	
 	
 	
