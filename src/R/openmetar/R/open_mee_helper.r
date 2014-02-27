@@ -771,3 +771,71 @@ model.building.value.info <- function() {
         R2          = list(type="vector", description="amount of (residual) heterogeneity in the reduced model that is accounted for in the full model. NA( for fixed-effects models or if the amount of heterogeneity in the reduced model is equal to zero. This can be regarded as a pseudo R2 statistic (Raudenbush, 2009).")
     )
 }
+
+validate.tree <- function(tree) {
+	# error checking for phylogenetic tree
+	
+	if (!is.ultrametric(tree)) {
+		stop("Your tree is not ultrametric, it may not fit a BM model of evolution.")
+	}
+	
+	speciesDuplicates <- data.frame(table(tree$tip.label))
+	if(nrow(speciesDuplicates[speciesDuplicates[,2]>1,]) > 0) {
+		stop("Sorry, there are dublicate species names in the tree, please provide unique names for each duplicate.")
+	}
+		
+}
+
+phylo.wrapper <- function(data, method, level, digits, mods.str="~ 1", btt=NULL) {
+	# Construct call to rma
+	call_str <- sprintf("rma.uni(yi,vi, mods=%s, data=data, method=\"%s\", level=%f, digits=%d)", mods.str, method, level, digits)
+	#cat(call_str,"\n")
+	expr<-parse(text=call_str) # convert to expression
+	res <- eval(expr) # evaluate expression
+	res
+}
+
+phylo.meta.analysis <- function(tree, evo.model, data, method, level, digits, lambda=1.0, alpha=1.0, btt=NULL) {
+	# data: should be a dataframe of the type that metafor likes ie
+	# yi and vi for the effect and variance columns
+	# slab holds study names
+	# the parts that are 'factors' have already been made in to factors with
+	# the appropriate reference values
+	# evo.model: "BM" or "OU" # evolutionary model
+	
+	# blankDataFrame used to extract correlation matrix
+	blankDataFrame <- data.frame(tree$tip.label)
+	rownames(blankDataFrame) <- tree$tip.label
+	
+	if(evo.model == "BM") {
+		M <- corPagel(value = lambda, phy = tree, fixed=TRUE) # ape function to define model
+	} else {
+		M <- corMartins(value = alpha, phy = tree, fixed=TRUE) # ape function to define model
+	}
+	C <- corMatrix(Initialize(M, blankDataFrame)) # nlme function corMatrix to extract correlation matrix from model
+	
+	######## end of constructing phylogenetic correlation matrix for rma.mv #########
+	
+	# additional columns needed for rma.mv
+	betweenStudyVariance <- rep(1:nrow(theData)) # used to initialize a random-effects meta-analysis
+	phylogenyVariance <- theData$species # used to initialize phylogeny as a random-factor in analyses
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	# obtain regression result rma.uni
+	res <- regression.wrapper(data, method, level, digits,btt)
+	
+	
+	results <- list(#"images"=images,
+			"Summary"=paste(capture.output(res), collapse="\n"), # convert print output to a string
+			#"plot_names"=plot.names,
+			#"plot_params_paths"=plot.params.paths,
+			"res"=res,
+			"res.info"=rma.uni.value.info())
+}
