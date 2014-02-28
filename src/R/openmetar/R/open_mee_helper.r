@@ -786,16 +786,18 @@ validate.tree <- function(tree) {
 		
 }
 
-phylo.wrapper <- function(data, method, level, digits, mods.str="~ 1", btt=NULL) {
-	# Construct call to rma
-	call_str <- sprintf("rma.uni(yi,vi, mods=%s, data=data, method=\"%s\", level=%f, digits=%d)", mods.str, method, level, digits)
-	#cat(call_str,"\n")
-	expr<-parse(text=call_str) # convert to expression
-	res <- eval(expr) # evaluate expression
-	res
-}
+#phylo.wrapper <- function(data, method, level, digits, mods.str="~ 1", btt=NULL) {
+#	# Construct call to rma
+#	call_str <- sprintf("rma.uni(yi,vi, mods=%s, data=data, method=\"%s\", level=%f, digits=%d)", mods.str, method, level, digits)
+#	#cat(call_str,"\n")
+#	expr<-parse(text=call_str) # convert to expression
+#	res <- eval(expr) # evaluate expression
+#	res
+#}
 
-phylo.meta.analysis <- function(tree, evo.model, data, method, level, digits, include_slambda=1.0, alpha=1.0, btt=NULL) {
+phylo.meta.analysis <- function(tree, evo.model, 
+                                data, method, level, digits, btt=NULL,
+                                lambda=1.0, alpha=1.0, include.species=TRUE) {
 	# data: should be a dataframe of the type that metafor likes ie
 	#   yi and vi for the effect and variance columns
 	#   slab holds study names
@@ -803,6 +805,7 @@ phylo.meta.analysis <- function(tree, evo.model, data, method, level, digits, in
 	#   the appropriate reference values
 	#   should include 'species' column 
 	# evo.model: "BM" or "OU" # evolutionary model
+	# include.species: TRUE or FALSE, include species as random factor if possible 
 	
 	# blankDataFrame used to extract correlation matrix
 	blankDataFrame <- data.frame(tree$tip.label)
@@ -821,21 +824,21 @@ phylo.meta.analysis <- function(tree, evo.model, data, method, level, digits, in
 	betweenStudyVariance <- rep(1:nrow(data)) # used to initialize a random-effects meta-analysis
 	phylogenyVariance <- data$species # used to initialize phylogeny as a random-factor in analyses
 	
-	
-	
-	## fixed-effect meta-analysis including phylogeny as a random factor
-	FEMA_C <- rma.mv(yi, vi, data=data, random = list(~ 1 | phylogenyVariance), R=list(phylogenyVariance=C)) 
-	
-	## random-effects meta-analysis including species and phylogeny as random factors (phylogenetic meta-analysis with a random-effects model), 
-	## here 'species' is included as a random factor because we have multiple replicates within species (e.g., two A's)
-	REMA_RF_species_C <- rma.mv(yi, vi, data=data, random = list(~ 1 | betweenStudyVariance, ~ 1 | species, ~ 1 | phylogenyVariance), R=list(phylogenyVariance=C)) 
-	
-	
-	
-	
-	
-	# obtain regression result rma.uni
-	res <- regression.wrapper(data, method, level, digits,btt)
+	if (include.species) {
+		unique.species <- unique(data$species)
+		if (length(unique.species) == length(data$species)) {
+			stop("All species are unique, no good")
+		}
+		## random-effects meta-analysis including species and phylogeny as random factors (phylogenetic meta-analysis with a random-effects model), 
+		## here 'species' is included as a random factor because we have multiple replicates within species (e.g., two A's)
+		res <- rma.mv(yi, vi, data=data, random = list(~ 1 | betweenStudyVariance, ~ 1 | species, ~ 1 | phylogenyVariance), R=list(phylogenyVariance=C)) 
+	} else {
+		# include phylogeny as a random factor
+		res <- rma.mv(yi, vi, data=data, random = list(~ 1 | phylogenyVariance), R=list(phylogenyVariance=C))
+	}
+	 
+	# TODO: write rma.mv.value.info
+	# TODO: make forest plot
 	
 	
 	results <- list(#"images"=images,
@@ -843,5 +846,9 @@ phylo.meta.analysis <- function(tree, evo.model, data, method, level, digits, in
 			#"plot_names"=plot.names,
 			#"plot_params_paths"=plot.params.paths,
 			"res"=res,
-			"res.info"=rma.uni.value.info())
+			#"res.info"=rma.uni.value.info())
+}
+
+rma.mv.value.info <- function() {
+	list() # finish later
 }
