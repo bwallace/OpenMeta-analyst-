@@ -813,7 +813,7 @@ phylo.meta.analysis <- function(tree, evo.model,
 	
 	if(evo.model == "BM") {
 		M <- corPagel(value = lambda, phy = tree, fixed=TRUE) # ape function to define model
-	} else {
+	} else { # model is "OU"
 		M <- corMartins(value = alpha, phy = tree, fixed=TRUE) # ape function to define model
 	}
 	C <- corMatrix(Initialize(M, blankDataFrame)) # nlme function corMatrix to extract correlation matrix from model
@@ -845,8 +845,9 @@ phylo.meta.analysis <- function(tree, evo.model,
 			"Summary"=paste(capture.output(res), collapse="\n"), # convert print output to a string
 			#"plot_names"=plot.names,
 			#"plot_params_paths"=plot.params.paths,
-			"res"=res,
+			"res"=res
 			#"res.info"=rma.uni.value.info())
+            )
 }
 
 rma.mv.value.info <- function() {
