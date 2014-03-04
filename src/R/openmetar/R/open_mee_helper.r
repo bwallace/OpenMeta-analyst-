@@ -831,10 +831,11 @@ phylo.meta.analysis <- function(tree, evo.model,
 		}
 		## random-effects meta-analysis including species and phylogeny as random factors (phylogenetic meta-analysis with a random-effects model), 
 		## here 'species' is included as a random factor because we have multiple replicates within species (e.g., two A's)
-		res <- rma.mv(yi, vi, data=data, random = list(~ 1 | betweenStudyVariance, ~ 1 | species, ~ 1 | phylogenyVariance), R=list(phylogenyVariance=C)) 
+		#res <- rma.mv(yi, vi, data=data, random = list(~ 1 | betweenStudyVariance, ~ 1 | data$species, ~ 1 | phylogenyVariance), R=list(phylogenyVariance=C)) 
+		rma.mv(yi, vi, data = data, random = list(~1 | betweenStudyVariance, ~1 | species , ~1 | phylogenyVariance), R = list(phylogenyVariance = C))
 	} else {
 		# include phylogeny as a random factor
-		res <- rma.mv(yi, vi, data=data, random = list(~ 1 | phylogenyVariance), R=list(phylogenyVariance=C))
+		res <- rma.mv(data$yi, data$vi, data=data, random = list(~ 1 | phylogenyVariance), R=list(phylogenyVariance=C))
 	}
 	 
 	# TODO: write rma.mv.value.info
