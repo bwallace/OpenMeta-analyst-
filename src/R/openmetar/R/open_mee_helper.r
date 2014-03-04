@@ -796,7 +796,8 @@ validate.tree <- function(tree) {
 #}
 
 phylo.meta.analysis <- function(tree, evo.model, 
-                                data, method, level, digits, btt=NULL,
+                                data, method, level, digits, plot.params,
+								btt=NULL,
                                 lambda=1.0, alpha=1.0, include.species=TRUE) {
 	# data: should be a dataframe of the type that metafor likes ie
 	#   yi and vi for the effect and variance columns
@@ -832,7 +833,7 @@ phylo.meta.analysis <- function(tree, evo.model,
 		## random-effects meta-analysis including species and phylogeny as random factors (phylogenetic meta-analysis with a random-effects model), 
 		## here 'species' is included as a random factor because we have multiple replicates within species (e.g., two A's)
 		#res <- rma.mv(yi, vi, data=data, random = list(~ 1 | betweenStudyVariance, ~ 1 | data$species, ~ 1 | phylogenyVariance), R=list(phylogenyVariance=C)) 
-		rma.mv(yi, vi, data = data, random = list(~1 | betweenStudyVariance, ~1 | species , ~1 | phylogenyVariance), R = list(phylogenyVariance = C))
+		res <- rma.mv(yi, vi, data = data, random = list(~1 | betweenStudyVariance, ~1 | species , ~1 | phylogenyVariance), R = list(phylogenyVariance = C))
 	} else {
 		# include phylogeny as a random factor
 		res <- rma.mv(data$yi, data$vi, data=data, random = list(~ 1 | phylogenyVariance), R=list(phylogenyVariance=C))
@@ -840,17 +841,61 @@ phylo.meta.analysis <- function(tree, evo.model,
 	 
 	# TODO: write rma.mv.value.info
 	# TODO: make forest plot
-	
+
+##
+## generate forest plot 
+##
+#forest.path <- paste(params$fp_outpath, sep="")
+#plot.data <- create.plot.data.continuous(cont.data, params, res)
+#changed.params <- plot.data$changed.params
+## list of changed params values
+#params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
+#changed.params <- c(changed.params, params.changed.in.forest.plot)
+#params[names(changed.params)] <- changed.params
+## dump the forest plot params to disk; return path to
+## this .Rdata for later use
+#forest.plot.params.path <- save.data(cont.data, res, params, plot.data)
+##
+#	# Now we package the results in a dictionary (technically, a named 
+#	# vector). In particular, there are two fields that must be returned; 
+#	# a dictionary of images (mapping titles to image paths) and a list of texts
+#	# (mapping titles to pretty-printed text). In this case we have only one 
+#	# of each. 
+#	plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+#	images <- c("Forest Plot"=forest.path)
+#	plot.names <- c("forest plot"="forest_plot")
 	
 	results <- list(#"images"=images,
 			"Summary"=paste(capture.output(res), collapse="\n"), # convert print output to a string
 			#"plot_names"=plot.names,
 			#"plot_params_paths"=plot.params.paths,
-			"res"=res
-			#"res.info"=rma.uni.value.info())
-            )
+			"res"=res,
+			"res.info"=rma.mv.value.info())
 }
 
 rma.mv.value.info <- function() {
-	list() # finish later
+	list(
+			b         = list(type="matrix", description='estimated coefficients of the model.'),
+			se        = list(type="vector", description='standard errors of the coefficients.'),
+			zval      = list(type="vector", description='test statistics of the coefficients.'),
+			pval      = list(type="vector", description='p-values for the test statistics.'),
+			ci.lb     = list(type="vector", description='lower bound of the confidence intervals for the coefficients.'),
+			ci.ub     = list(type="vector", description='upper bound of the confidence intervals for the coefficients.'),
+			vb        = list(type="matrix", description='variance-covariance matrix of the estimated coefficients.'),
+			sigma2    = list(type="vector", description='estimated sigma^2 value(s)'),
+			tau2      = list(type="vector", description='estimated taU^2 values'),
+			rho       = list(type="vector", description='estimated ρ value(s).'),
+			k         = list(type="vector", description='number of studies included in the model.'),
+			p         = list(type="vector", description='number of coefficients in the model (including the intercept).'),
+			m         = list(type="vector", description='number of coefficients included in the omnibus test of coefficients.'),
+			QE        = list(type="matrix", description='test statistic for the test of (residual) heterogeneity.'),
+			QEp       = list(type="matrix", description='p-value for the test of (residual) heterogeneity.'),
+			QM        = list(type="vector", description='test statistic for the omnibus test of coefficients.'),
+			QMp       = list(type="vector", description='p-value for the omnibus test of coefficients.'),
+			int.only  = list(type="vector", description='logical that indicates whether the model is an intercept-only model.'),
+			yi        = list(type="vector", description='the vector of outcomes'),
+			V         = list(type="matrix", description='the corresponding variance-covariance matrix of the sampling errors'),
+			X         = list(type="matrix", description='and the model matrix of the model.'),
+			fit.stats = list(type="data.frame", description='a list with the log-likelihood, deviance, AIC, BIC, and AICc values')	
+	)
 }
