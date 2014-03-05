@@ -1,13 +1,51 @@
 # Special methods for helping out OpenMEE
 
+trans.scale.single.val.to.raw.scale <- function(value, metric) {
+	# transforms a single value in the 'transformed' scale back to the 'raw' scale
+	
+	unlog <- function(x) {exp(x)}
+	no.change <- function(x) {x}
+	ztor <- function(x) {transf.ztor(x)}
+	
+	raw.scale.val <- switch(metric,
+			SMD = no.change(value), # Hedges d
+			ROM = unlog(value),     # Ln Response Ratio
+			OR  = unlog(value),     # Log Odds Ratio
+			RD  = no.change(value), # Rate Difference
+			RR  = unlog(value),     # Log Relative Rate
+			ZCOR = ztor(value),      # Fisher's Z-transform
+			GEN = no.change(value)
+	)
+	raw.scale.val
+}
+
+raw.scale.single.val.to.trans.scale <- function(value, metric) {
+	no.change <- function(x) {x}
+	relog     <- function(x) {log(x)}
+	rtoz      <- function(x) {transf.rtoz(x)}
+	
+	trans.scale.val <- switch(metric,
+			SMD = no.change(), # Hedges d
+			ROM = relog(),     # Ln Response Ratio
+			OR  = relog(),     # Log Odds Ratio
+			RD  = no.change(), # Rate Difference
+			RR  = relog(),     # Log Relative Rate
+			ZCOR = rtoz(),     # Fisher's Z-transform
+			GEN  = no.change() # generic effect 
+	)
+	trans.scale.val
+}
+
 trans.to.raw <- function(metric, source.data, conf.level) {
 	# transforms data given in source.data dataframe and returns the result
 	# in another dataframe
 	#
-	# Source data consists of an effect size and variance
-	# The return value consists of effect size, lower bound, upper_bound
-	#
-	# metric is given as the trans-metric name (like escalc expects)
+	# Source data consists of an effect size and variance:
+	#    source.data = data.frame(yi=c(...), vi=c(...))
+	# The return value consists of effect size, lower bound, upper_bound:
+	#    return value: data.frame(yi=c(...), lb=c(...), ub=c(...))
+	# metric is given as the trans-metric name (like escalc expects):
+	#    SMD, ROM, OR, RD, RR, ZCOR, GEN
 	
 	alpha <- 1.0-(conf.level/100.0)
 	mult <- abs(qnorm(alpha/2.0))
@@ -44,7 +82,8 @@ trans.to.raw <- function(metric, source.data, conf.level) {
 			OR  = unlog(),     # Log Odds Ratio
 			RD  = no.change(), # Rate Difference
 			RR  = unlog(),     # Log Relative Rate
-			ZCOR = ztor()      # Fisher's Z-transform
+			ZCOR = ztor(),      # Fisher's Z-transform
+			GEN = no.change()
 			)
 }
 
@@ -101,7 +140,8 @@ raw.to.trans <- function(metric, source.data, conf.level) {
 			OR  = relog(),     # Log Odds Ratio
 			RD  = no.change(), # Rate Difference
 			RR  = relog(),     # Log Relative Rate
-			ZCOR = rtoz()      # Fisher's Z-transform
+			ZCOR = rtoz(),     # Fisher's Z-transform
+			GEN  = no.change() # generic effect 
 	)
 }
 
@@ -796,7 +836,7 @@ validate.tree <- function(tree) {
 #}
 
 phylo.meta.analysis <- function(tree, evo.model, 
-                                data, method, level, digits, plot.params,
+                                data, method, level, digits, plot.params, metric,
 								btt=NULL,
                                 lambda=1.0, alpha=1.0, include.species=TRUE) {
 	# data: should be a dataframe of the type that metafor likes ie
@@ -839,36 +879,31 @@ phylo.meta.analysis <- function(tree, evo.model,
 		res <- rma.mv(data$yi, data$vi, data=data, random = list(~ 1 | phylogenyVariance), R=list(phylogenyVariance=C))
 	}
 	 
-	# TODO: write rma.mv.value.info
 	# TODO: make forest plot
 
-##
-## generate forest plot 
-##
-#forest.path <- paste(params$fp_outpath, sep="")
-#plot.data <- create.plot.data.continuous(cont.data, params, res)
-#changed.params <- plot.data$changed.params
-## list of changed params values
-#params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
-#changed.params <- c(changed.params, params.changed.in.forest.plot)
-#params[names(changed.params)] <- changed.params
-## dump the forest plot params to disk; return path to
-## this .Rdata for later use
-#forest.plot.params.path <- save.data(cont.data, res, params, plot.data)
-##
+	##
+	## generate forest plot 
+	##
+	forest.path <- paste(params$fp_outpath, sep="")
+	plot.data <- create.phylogenetic.ma.plot.data(data, res, params=plot.params, conf.level=level, metric=metric)
+	forest.plot(forest.data=plot.data, outpath=forest.path)
+	## dump the forest plot params to disk; return path to
+	## this .Rdata for later use
+	forest.plot.params.path <- save.data(cont.data, res, params, plot.data)
+
 #	# Now we package the results in a dictionary (technically, a named 
 #	# vector). In particular, there are two fields that must be returned; 
 #	# a dictionary of images (mapping titles to image paths) and a list of texts
 #	# (mapping titles to pretty-printed text). In this case we have only one 
 #	# of each. 
-#	plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
-#	images <- c("Forest Plot"=forest.path)
-#	plot.names <- c("forest plot"="forest_plot")
+	plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+	images <- c("Forest Plot"=forest.path)
+	plot.names <- c("forest plot"="forest_plot")
 	
-	results <- list(#"images"=images,
+	results <- list("images"=images,
 			"Summary"=paste(capture.output(res), collapse="\n"), # convert print output to a string
-			#"plot_names"=plot.names,
-			#"plot_params_paths"=plot.params.paths,
+			"plot_names"=plot.names,
+			"plot_params_paths"=plot.params.paths,
 			"res"=res,
 			"res.info"=rma.mv.value.info())
 }
