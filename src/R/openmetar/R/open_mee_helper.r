@@ -878,18 +878,29 @@ phylo.meta.analysis <- function(tree, evo.model,
 		# include phylogeny as a random factor
 		res <- rma.mv(data$yi, data$vi, data=data, random = list(~ 1 | phylogenyVariance), R=list(phylogenyVariance=C))
 	}
-	 
-	# TODO: make forest plot
+	
+	#### Set confidence level, then unset it later on.
+	old.global.conf.level <- get.global.conf.level(NA.if.missing=TRUE)
+	set.global.conf.level(level)
 
-	##
-	## generate forest plot 
-	##
-	forest.path <- paste(params$fp_outpath, sep="")
-	plot.data <- create.phylogenetic.ma.plot.data(data, res, params=plot.params, conf.level=level, metric=metric)
-	forest.plot(forest.data=plot.data, outpath=forest.path)
+	###########################################################################
+	## Generate forest plot                                                  ##
+	##                                                                       ##
+	forest.path <- paste(plot.params$fp_outpath, sep="")
+	plot.data <- create.phylogenetic.ma.plot.data(data, res, params=plot.params, conf.level=level)
 	## dump the forest plot params to disk; return path to
 	## this .Rdata for later use
-	forest.plot.params.path <- save.data(cont.data, res, params, plot.data)
+	forest.plot.params.path <- save.plot.data.and.params(plot.data, plot.params)
+	# Make the actual plot
+	forest.plot(forest.data=plot.data, outpath=forest.path)
+
+	##### Revert confidence level
+    set.global.conf.level(old.global.conf.level)
+	
+	##                                                                       ##
+	## End of forest plot generation                                         ##
+	###########################################################################
+	
 
 #	# Now we package the results in a dictionary (technically, a named 
 #	# vector). In particular, there are two fields that must be returned; 

@@ -9,7 +9,7 @@
 ## this .Rdata for later use
 #forest.plot.params.path <- save.data(cont.data, res, params, plot.data)
 
-create.phylogenetic.ma.plot.data <- function (data, res, params, conf.level, metric) {
+create.phylogenetic.ma.plot.data <- function (data, res, params, conf.level) {
 # creates plot.data for forest.plot to make a forest plot with
 # calculates plot sizes and layout
 # outputs: forest.data is a list contains the following fields:
@@ -47,8 +47,9 @@ create.phylogenetic.ma.plot.data <- function (data, res, params, conf.level, met
 #
 # - plot range - range of x-values in which to draw plot
 	
-	forest.data <- list()
+	metric <- as.character(params$measure) # we need the metric for transformation/scaling issues
 	
+	forest.data <- list()
 	#alpha <- 1.0-(conf.level/100.0)
 	#mult <- abs(qnorm(alpha/2.0))
 	
@@ -134,7 +135,7 @@ create.phylogenetic.ma.plot.data <- function (data, res, params, conf.level, met
 	
 	
 	### options
-	forest.data$options <- plot.plot.options
+	forest.data$options <- plot.options
 	
 	### plot.range
 	plot.range <- calc.plot.range(effects, plot.options)
@@ -150,7 +151,7 @@ create.phylogenetic.ma.plot.data <- function (data, res, params, conf.level, met
 #		plot.range.disp.lower <- plot.range[1]
 #		plot.range.disp.upper <- plot.range[2]
 #	}
-#	plot.data$plot.range <- plot.range
+	forest.data$plot.range <- plot.range
 	
 	forest.data
 }
