@@ -945,3 +945,19 @@ rma.mv.value.info <- function() {
 			fit.stats = list(type="data.frame", description='a list with the log-likelihood, deviance, AIC, BIC, and AICc values')	
 	)
 }
+
+#forest.plot.wrapper <- function(forest.data, outpath) {
+#	if ("conf.level" %in% names(forest.data)) {
+#		#### Set confidence level, then unset it later on.
+#		old.global.conf.level <- get.global.conf.level(NA.if.missing=TRUE)
+#		set.global.conf.level(conf.level)
+#		
+#		forest.plot(forest.data, outpath)
+#		
+#		##### Revert confidence level
+#		set.global.conf.level(old.global.conf.level)
+#	} else {
+#		forest.plot(forest.data, outpath)
+#	}
+#}
+

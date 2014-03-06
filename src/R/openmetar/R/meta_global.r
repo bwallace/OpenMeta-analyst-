@@ -14,7 +14,7 @@ set.global.conf.level <- function(conf.level) {
 }
 
 get.global.conf.level <- function(NA.if.missing=FALSE) {
-	if (!("CONF.LEVEL.GLOBAL" %in% ls())) {
+	if (!("CONF.LEVEL.GLOBAL" %in% ls(envir=globalenv()))) {
 		if (NA.if.missing) {
 			return(NA)
 		} else {

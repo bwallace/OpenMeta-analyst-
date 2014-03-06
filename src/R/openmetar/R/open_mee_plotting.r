@@ -46,9 +46,11 @@ create.phylogenetic.ma.plot.data <- function (data, res, params, conf.level) {
 # - options - plot options
 #
 # - plot range - range of x-values in which to draw plot
+#
 	
 	metric <- as.character(params$measure) # we need the metric for transformation/scaling issues
 	
+	#forest.data <- list(conf.level=conf.level)
 	forest.data <- list()
 	#alpha <- 1.0-(conf.level/100.0)
 	#mult <- abs(qnorm(alpha/2.0))
