@@ -961,3 +961,23 @@ rma.mv.value.info <- function() {
 #	}
 #}
 
+impute <- function(data, m, maxit, defaultMethod) {
+	imp.result = mice(data=data, m=m, maxit=maxit, defaultMethod=defaultMethod)
+	
+	# Plotting code for inspection of imputation results?
+#	library(lattice)
+#	com <- complete(imp, "long", inc=T)
+#	col <- rep(c("blue","red")[1+as.numeric(is.na(imp$data$chl))],6)
+#	stripplot(chl~.imp, data=com, jit=TRUE, fac=0.8, col=col, pch=20,
+#			+ cex=1.4, xlab="Imputation number")
+	
+	imputation.choices = list()
+	for (x in 1:m) {
+		imputation.choices[[x]]<-complete(imp.result,x)
+	}
+	
+	results = list("res"=imp.result,
+				   "Summary"=paste(capture.output(imp.result), collapse="\n"),
+				   "imputations"=imputation.choices)
+	
+}

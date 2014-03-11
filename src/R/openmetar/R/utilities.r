@@ -228,6 +228,7 @@ save.plot.data <- function(plot.data, out.path=NULL) {
     out.path
 }
 
+# For OpenMEE phylogenetic forest plot
 save.plot.data.and.params <- function(plot.data, params, out.path=NULL) {
 	# saves plot data to the r_tmp directory
 	if (is.null(out.path)){
