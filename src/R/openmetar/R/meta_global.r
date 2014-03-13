@@ -13,7 +13,14 @@ set.global.conf.level <- function(conf.level) {
 	return(CONF.LEVEL.GLOBAL)
 }
 
-get.global.conf.level <- function() {
+get.global.conf.level <- function(NA.if.missing=FALSE) {
+	if (!("CONF.LEVEL.GLOBAL" %in% ls(envir=globalenv()))) {
+		if (NA.if.missing) {
+			return(NA)
+		} else {
+			stop("Global confidence level not defined")
+		}
+	}
 	return(CONF.LEVEL.GLOBAL)
 }
 ################################################################################

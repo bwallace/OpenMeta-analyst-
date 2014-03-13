@@ -215,7 +215,7 @@ create.summary.disp <- function(om.data, params, res, model.title) {
     summary.disp
 }
 
-# @TODO should merge this with below
+# @TODO should merge this with save.data below
 save.plot.data <- function(plot.data, out.path=NULL) {
     # saves plot data to the r_tmp directory
     if (is.null(out.path)){
@@ -227,6 +227,25 @@ save.plot.data <- function(plot.data, out.path=NULL) {
     save(plot.data, file=paste(out.path, ".plotdata", sep=""))
     out.path
 }
+
+# For OpenMEE phylogenetic forest plot
+save.plot.data.and.params <- function(plot.data, params, out.path=NULL) {
+	# saves plot data to the r_tmp directory
+	if (is.null(out.path)){
+		# by default, we use thecurrent system time as a 'unique enough' filename
+		out.path <- paste("r_tmp/", 
+				as.character(as.numeric(Sys.time())), sep="")
+	}
+	
+	### save plot data
+	save(plot.data, file=paste(out.path, ".plotdata", sep=""))
+	
+	### save params
+	save(params, file=paste(out.path, ".params", sep=""))
+	
+	out.path
+}
+
 
 save.data <- function(om.data, res, params, plot.data, out.path=NULL) {
     # this saves *all* the data for certain types of plots, in contrast

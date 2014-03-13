@@ -797,7 +797,7 @@ pretty.metric.name <- function(metric) {
 
 #######################################
 #            forest plot              #
-####################################### 
+#######################################
 forest.plot <- function(forest.data, outpath) {
   png(filename=paste("r_tmp","INTER",sep="/")) # to fix windows popping out at you issue
 	

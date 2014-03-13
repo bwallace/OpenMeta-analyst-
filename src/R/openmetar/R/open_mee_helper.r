@@ -1,13 +1,51 @@
 # Special methods for helping out OpenMEE
 
+trans.scale.single.val.to.raw.scale <- function(value, metric) {
+	# transforms a single value in the 'transformed' scale back to the 'raw' scale
+	
+	unlog <- function(x) {exp(x)}
+	no.change <- function(x) {x}
+	ztor <- function(x) {transf.ztor(x)}
+	
+	raw.scale.val <- switch(metric,
+			SMD = no.change(value), # Hedges d
+			ROM = unlog(value),     # Ln Response Ratio
+			OR  = unlog(value),     # Log Odds Ratio
+			RD  = no.change(value), # Rate Difference
+			RR  = unlog(value),     # Log Relative Rate
+			ZCOR = ztor(value),      # Fisher's Z-transform
+			GEN = no.change(value)
+	)
+	raw.scale.val
+}
+
+raw.scale.single.val.to.trans.scale <- function(value, metric) {
+	no.change <- function(x) {x}
+	relog     <- function(x) {log(x)}
+	rtoz      <- function(x) {transf.rtoz(x)}
+	
+	trans.scale.val <- switch(metric,
+			SMD = no.change(), # Hedges d
+			ROM = relog(),     # Ln Response Ratio
+			OR  = relog(),     # Log Odds Ratio
+			RD  = no.change(), # Rate Difference
+			RR  = relog(),     # Log Relative Rate
+			ZCOR = rtoz(),     # Fisher's Z-transform
+			GEN  = no.change() # generic effect 
+	)
+	trans.scale.val
+}
+
 trans.to.raw <- function(metric, source.data, conf.level) {
 	# transforms data given in source.data dataframe and returns the result
 	# in another dataframe
 	#
-	# Source data consists of an effect size and variance
-	# The return value consists of effect size, lower bound, upper_bound
-	#
-	# metric is given as the trans-metric name (like escalc expects)
+	# Source data consists of an effect size and variance:
+	#    source.data = data.frame(yi=c(...), vi=c(...))
+	# The return value consists of effect size, lower bound, upper_bound:
+	#    return value: data.frame(yi=c(...), lb=c(...), ub=c(...))
+	# metric is given as the trans-metric name (like escalc expects):
+	#    SMD, ROM, OR, RD, RR, ZCOR, GEN
 	
 	alpha <- 1.0-(conf.level/100.0)
 	mult <- abs(qnorm(alpha/2.0))
@@ -44,7 +82,8 @@ trans.to.raw <- function(metric, source.data, conf.level) {
 			OR  = unlog(),     # Log Odds Ratio
 			RD  = no.change(), # Rate Difference
 			RR  = unlog(),     # Log Relative Rate
-			ZCOR = ztor()      # Fisher's Z-transform
+			ZCOR = ztor(),      # Fisher's Z-transform
+			GEN = no.change()
 			)
 }
 
@@ -101,7 +140,8 @@ raw.to.trans <- function(metric, source.data, conf.level) {
 			OR  = relog(),     # Log Odds Ratio
 			RD  = no.change(), # Rate Difference
 			RR  = relog(),     # Log Relative Rate
-			ZCOR = rtoz()      # Fisher's Z-transform
+			ZCOR = rtoz(),     # Fisher's Z-transform
+			GEN  = no.change() # generic effect 
 	)
 }
 
@@ -796,7 +836,8 @@ validate.tree <- function(tree) {
 #}
 
 phylo.meta.analysis <- function(tree, evo.model, 
-                                data, method, level, digits, btt=NULL,
+                                data, method, level, digits, plot.params, metric,
+								btt=NULL,
                                 lambda=1.0, alpha=1.0, include.species=TRUE) {
 	# data: should be a dataframe of the type that metafor likes ie
 	#   yi and vi for the effect and variance columns
@@ -831,25 +872,112 @@ phylo.meta.analysis <- function(tree, evo.model,
 		}
 		## random-effects meta-analysis including species and phylogeny as random factors (phylogenetic meta-analysis with a random-effects model), 
 		## here 'species' is included as a random factor because we have multiple replicates within species (e.g., two A's)
-		res <- rma.mv(yi, vi, data=data, random = list(~ 1 | betweenStudyVariance, ~ 1 | species, ~ 1 | phylogenyVariance), R=list(phylogenyVariance=C)) 
+		#res <- rma.mv(yi, vi, data=data, random = list(~ 1 | betweenStudyVariance, ~ 1 | data$species, ~ 1 | phylogenyVariance), R=list(phylogenyVariance=C)) 
+		res <- rma.mv(yi, vi, data = data, random = list(~1 | betweenStudyVariance, ~1 | species , ~1 | phylogenyVariance), R = list(phylogenyVariance = C))
 	} else {
 		# include phylogeny as a random factor
-		res <- rma.mv(yi, vi, data=data, random = list(~ 1 | phylogenyVariance), R=list(phylogenyVariance=C))
+		res <- rma.mv(data$yi, data$vi, data=data, random = list(~ 1 | phylogenyVariance), R=list(phylogenyVariance=C))
 	}
-	 
-	# TODO: write rma.mv.value.info
-	# TODO: make forest plot
 	
+	#### Set confidence level, then unset it later on.
+	old.global.conf.level <- get.global.conf.level(NA.if.missing=TRUE)
+	set.global.conf.level(level)
+
+	###########################################################################
+	## Generate forest plot                                                  ##
+	##                                                                       ##
+	forest.path <- paste(plot.params$fp_outpath, sep="")
+	plot.data <- create.phylogenetic.ma.plot.data(data, res, params=plot.params, conf.level=level)
+	## dump the forest plot params to disk; return path to
+	## this .Rdata for later use
+	forest.plot.params.path <- save.plot.data.and.params(plot.data, plot.params)
+	# Make the actual plot
+	forest.plot(forest.data=plot.data, outpath=forest.path)
+
+	##### Revert confidence level
+    set.global.conf.level(old.global.conf.level)
 	
-	results <- list(#"images"=images,
+	##                                                                       ##
+	## End of forest plot generation                                         ##
+	###########################################################################
+	
+
+#	# Now we package the results in a dictionary (technically, a named 
+#	# vector). In particular, there are two fields that must be returned; 
+#	# a dictionary of images (mapping titles to image paths) and a list of texts
+#	# (mapping titles to pretty-printed text). In this case we have only one 
+#	# of each. 
+	plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
+	images <- c("Forest Plot"=forest.path)
+	plot.names <- c("forest plot"="forest_plot")
+	
+	results <- list("images"=images,
 			"Summary"=paste(capture.output(res), collapse="\n"), # convert print output to a string
-			#"plot_names"=plot.names,
-			#"plot_params_paths"=plot.params.paths,
-			"res"=res
-			#"res.info"=rma.uni.value.info())
-            )
+			"plot_names"=plot.names,
+			"plot_params_paths"=plot.params.paths,
+			"res"=res,
+			"res.info"=rma.mv.value.info())
 }
 
 rma.mv.value.info <- function() {
-	list() # finish later
+	list(
+			b         = list(type="matrix", description='estimated coefficients of the model.'),
+			se        = list(type="vector", description='standard errors of the coefficients.'),
+			zval      = list(type="vector", description='test statistics of the coefficients.'),
+			pval      = list(type="vector", description='p-values for the test statistics.'),
+			ci.lb     = list(type="vector", description='lower bound of the confidence intervals for the coefficients.'),
+			ci.ub     = list(type="vector", description='upper bound of the confidence intervals for the coefficients.'),
+			vb        = list(type="matrix", description='variance-covariance matrix of the estimated coefficients.'),
+			sigma2    = list(type="vector", description='estimated sigma^2 value(s)'),
+			tau2      = list(type="vector", description='estimated taU^2 values'),
+			rho       = list(type="vector", description='estimated ρ value(s).'),
+			k         = list(type="vector", description='number of studies included in the model.'),
+			p         = list(type="vector", description='number of coefficients in the model (including the intercept).'),
+			m         = list(type="vector", description='number of coefficients included in the omnibus test of coefficients.'),
+			QE        = list(type="matrix", description='test statistic for the test of (residual) heterogeneity.'),
+			QEp       = list(type="matrix", description='p-value for the test of (residual) heterogeneity.'),
+			QM        = list(type="vector", description='test statistic for the omnibus test of coefficients.'),
+			QMp       = list(type="vector", description='p-value for the omnibus test of coefficients.'),
+			int.only  = list(type="vector", description='logical that indicates whether the model is an intercept-only model.'),
+			yi        = list(type="vector", description='the vector of outcomes'),
+			V         = list(type="matrix", description='the corresponding variance-covariance matrix of the sampling errors'),
+			X         = list(type="matrix", description='and the model matrix of the model.'),
+			fit.stats = list(type="data.frame", description='a list with the log-likelihood, deviance, AIC, BIC, and AICc values')	
+	)
+}
+
+#forest.plot.wrapper <- function(forest.data, outpath) {
+#	if ("conf.level" %in% names(forest.data)) {
+#		#### Set confidence level, then unset it later on.
+#		old.global.conf.level <- get.global.conf.level(NA.if.missing=TRUE)
+#		set.global.conf.level(conf.level)
+#		
+#		forest.plot(forest.data, outpath)
+#		
+#		##### Revert confidence level
+#		set.global.conf.level(old.global.conf.level)
+#	} else {
+#		forest.plot(forest.data, outpath)
+#	}
+#}
+
+impute <- function(data, m, maxit, defaultMethod) {
+	imp.result = mice(data=data, m=m, maxit=maxit, defaultMethod=defaultMethod)
+	
+	# Plotting code for inspection of imputation results?
+#	library(lattice)
+#	com <- complete(imp, "long", inc=T)
+#	col <- rep(c("blue","red")[1+as.numeric(is.na(imp$data$chl))],6)
+#	stripplot(chl~.imp, data=com, jit=TRUE, fac=0.8, col=col, pch=20,
+#			+ cex=1.4, xlab="Imputation number")
+	
+	imputation.choices = list()
+	for (x in 1:m) {
+		imputation.choices[[x]]<-complete(imp.result,x)
+	}
+	
+	results = list("res"=imp.result,
+				   "Summary"=paste(capture.output(imp.result), collapse="\n"),
+				   "imputations"=imputation.choices)
+	
 }
