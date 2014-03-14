@@ -31,7 +31,8 @@ library(metafor)
 regression.wrapper <- function(data, mods.str, method, level, digits, btt=NULL) {
 	# Construct call to rma
 	call_str <- sprintf("rma.uni(yi,vi, mods=%s, data=data, method=\"%s\", level=%f, digits=%d)", mods.str, method, level, digits)
-	#cat(call_str,"\n")
+	#printf(sprintf("Call str: %s\n", call_str))
+	cat(call_str,"\n")
 	expr<-parse(text=call_str) # convert to expression
 	res <- eval(expr) # evaluate expression
 	res
@@ -356,11 +357,22 @@ g.meta.regression <- function(data, mods, method, level, digits, btt=NULL) {
 	res_and_residuals$residuals <- residuals
 	res_and_residuals.info <- c(rma.uni.value.info(),
 			                    list(residuals=list(type="blob", description="Standardized residuals for fitted models")))
-					
 	
+	Summary <- paste(capture.output(res), collapse="\n")  # convert print output to a string
+	# add regression model formula to output
+	regression.model.formula.str <- sprintf("Regression model formula: yi %s", mods.str)
+	Summary <- paste(Summary, regression.model.formula.str, sep="\n\n")
+	# add regresison model equation to output
+	est.coeffs <- round(res$b[,1], digits=digits)
+	tmp <- est.coeffs[2:length(est.coeffs)] # w/o intercept
+	tmp <- paste(tmp, names(tmp), sep="*")
+	tmp <- paste(tmp, collapse=" + ")
+	reg.equation <- paste(est.coeffs[1],tmp, sep=" + ")
+	reg.equation.str <- sprintf("Regression model equation: %s", reg.equation)
+	Summary <- paste(Summary, reg.equation.str, sep="\n")
 
 	results <- list(#"images"=images,
-			"Summary"=paste(capture.output(res), collapse="\n"), # convert print output to a string
+			"Summary"=Summary,
 			#"plot_names"=plot.names,
 			#"plot_params_paths"=plot.params.paths,
 			"res"=res_and_residuals, #res,
