@@ -190,16 +190,11 @@ construct.subgroup.value.info <- function(value.info, subgroup.list) {
 	
 	subgroup.value.info <- list()
 	for (subgroup_name in subgroup.list) {
-		subgroup.title<-paste("SUBGROUP",subgroup_name, sep="_")
+		subgroup.title<-paste("Subgroup",subgroup_name, sep=" ")
 		subgroup.value.info[[subgroup.title]] = value.info
 	}
-	
+	subgroup.value.info[["Overall"]] = value.info
 	subgroup.value.info
-	
-	
-	
-	
-	
 }
 
 
