@@ -116,6 +116,20 @@ round.display <- function(x, digits) {
     x.disp
 }
 
+g.round.display.zval <- function(x, digits) {
+	# just for use in # create.subgroup.display for rounding the (single) zvals
+	digits.str <- paste("%.", digits, "f", sep="")
+	x.disp <- c()
+	
+	x.disp[x < 0 && abs(x) < 10^(-digits)] <- paste(">","-",10^(-digits)," & <0",sep="")
+	x.disp[x < 0 && abs(x) >= 10^(-digits)] <- sprintf(digits.str, x[x < 0 && abs(x)>=10^(-digits)])
+	
+	x.disp[x>0 && x < 10^(-digits)] <- paste("< ", 10^(-digits), sep="")
+	x.disp[x>0 && x >= 10^(-digits)] <- sprintf(digits.str, x[x>0 && x>=10^(-digits)])
+	x.disp
+}
+	
+
 create.summary.disp <- function(om.data, params, res, model.title) {
     # create tables for diplaying summary of ma results
     digits.str <- paste("%.", params$digits, "f", sep="")
@@ -429,7 +443,7 @@ create.subgroup.display <- function(res, study.names, params, model.title, data.
     } else if (metric.is.logit.scale(params$measure)) {
         scale.str <- "logit"
     }
-    subgroup.array <- array(dim=c(length(study.names) + 1, 7))
+    subgroup.array <- array(dim=c(length(study.names) + 1, 8))
     het.array <- array(dim=c(length(study.names) + 1, 4))
     #QLabel =  paste("Q(df = ", degf, ")", sep="")
     
@@ -438,7 +452,7 @@ create.subgroup.display <- function(res, study.names, params, model.title, data.
 	
 	
 	
-    subgroup.array[1,] <- c("Subgroups", "Studies", "Estimate", "Lower bound", "Upper bound", "Std. error", "p-Val")
+    subgroup.array[1,] <- c("Subgroups", "Studies", "Estimate", "Lower bound", "Upper bound", "Std. error", "p-Val", "z-Val")
     het.array[1,] <- c("Studies", "Q (df)",
                            "Het. p-Val", "I^2")
     # unpack the data
@@ -474,7 +488,7 @@ create.subgroup.display <- function(res, study.names, params, model.title, data.
         pVal <- "NA"
       }
       if (!is.null(res[[count]]$zval)) {
-        zVal <- round.display(res[[count]]$zval, digits=params$digits)
+        zVal <- g.round.display.zval(res[[count]]$zval, digits=params$digits)
       } else {
         zVal <- "NA"
       }
@@ -486,7 +500,7 @@ create.subgroup.display <- function(res, study.names, params, model.title, data.
 	  if (is.null(num.studies))
 	     num.studies <- 1;
 	  
-      subgroup.array[count+1,] <- c(study.names[count], num.studies, y.disp, lb.disp, ub.disp, se.disp, pVal)
+      subgroup.array[count+1,] <- c(study.names[count], num.studies, y.disp, lb.disp, ub.disp, se.disp, pVal, zVal)
       het.array[count+1,] <- c(study.names[count], QE, QEp, I2)
 	  
     }
