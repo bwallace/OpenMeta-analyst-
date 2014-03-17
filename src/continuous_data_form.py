@@ -576,8 +576,10 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
                     self._set_val(row_index, var_index, computed_vals[var_name])
                 self._copy_raw_data_from_table_to_ma_unit()
             else:
-                print("Why didn't it succeed?: '%s'" % results_from_r["comment"])
-                
+                try:
+                    print("Why didn't it succeed?: '%s'" % results_from_r["comment"])
+                except KeyError:
+                    pass
     def conf_level_to_alpha(self):
         alpha = 1-self.conf_level/100.0
         return alpha
