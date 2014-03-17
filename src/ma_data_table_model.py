@@ -554,7 +554,8 @@ class DatasetModel(QAbstractTableModel):
             if name == "" and not allow_empty_names:
                 # just ignore -- we don't allow empty study names
                 return False
-            if name in self.dataset.get_study_names():
+            # if we already have the name and the name is not just the current name
+            if name in self.dataset.get_study_names() and name != study.name:
                 msg = "Duplicate study names not allowed"
                 self.emit(SIGNAL("dataError(QString)"), QString(msg))
                 return False
