@@ -741,3 +741,8 @@ loo.rma.mh.value.info <- function () {
 			Qp       = list(type="vector", description='p-values for the tests of heterogeneity.')
 	)
 }
+
+capture.output.and.collapse <- function (x) {
+	output <- paste(capture.output(x), collapse="\n")
+	output
+}

@@ -725,8 +725,8 @@ meta.regression <- function(reg.data, params, cond.means.data=NULL, stop.at.rma=
 			res.output.info <- c(rma.uni.value.info(),
 								 list(Adjusted_Means_Section=list(type="vector", description=""),
 									  Adjusted_Means=list(type="blob", description="")))
-			results <- list("Summary"=reg.disp,
-                            "Adjusted Mean"=adj.reg.disp,
+			results <- list("Summary"=capture.output.and.collapse(reg.disp),
+                            "Adjusted Mean"=capture.output.and.collapse(adj.reg.disp),
 							"res"=res.output,
 							"res.info"=res.output.info)
 		} else {
@@ -851,9 +851,9 @@ binary.fixed.meta.regression <- function(reg.data, params){
                                   regline = TRUE)   
         images <- c("Regression Plot"=plot.path)
         plot.names <- c("forest plot"="reg.plot")
-        results <- list("images"=images, "Summary"=reg.disp, "plot_names"=plot.names)
+        results <- list("images"=images, "Summary"=capture.output.and.collapse(reg.disp), "plot_names"=plot.names)
     } else {
-        results <- list("Summary"=reg.disp)
+        results <- list("Summary"=capture.output.and.collapse(reg.disp))
     }
 
 }
@@ -888,7 +888,7 @@ random.meta.regression <- function(reg.data, params, cov.name){
                                   regline = TRUE)   
     images <- c("Regression Plot"=plot.path)
     plot.names <- c("forest plot"="reg.plot")
-    results <- list("images"=images, "Summary"=reg.disp, "plot_names"=plot.names)
+    results <- list("images"=images, "Summary"=capture.output.and.collapse(reg.disp), "plot_names"=plot.names)
     results
 }
 
