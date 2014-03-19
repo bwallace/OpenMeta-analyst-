@@ -30,7 +30,13 @@ library(metafor)
 
 regression.wrapper <- function(data, mods.str, method, level, digits, btt=NULL) {
 	# Construct call to rma
-	call_str <- sprintf("rma.uni(yi,vi, mods=%s, data=data, method=\"%s\", level=%f, digits=%d)", mods.str, method, level, digits)
+	if (!is.null(btt)) {
+		btt.str <- paste("c(",paste(btt,collapse=", "),")", sep="")
+		call_str <- sprintf("rma.uni(yi,vi, mods=%s, data=data, method=\"%s\", level=%f, digits=%d, btt=%s)", mods.str, method, level, digits, btt.str)
+	} else {
+		call_str <- sprintf("rma.uni(yi,vi, mods=%s, data=data, method=\"%s\", level=%f, digits=%d)", mods.str, method, level, digits)
+				
+	}
 	#printf(sprintf("Call str: %s\n", call_str))
 	cat(call_str,"\n")
 	expr<-parse(text=call_str) # convert to expression
@@ -379,7 +385,7 @@ g.meta.regression <- function(data, mods, method, level, digits, btt=NULL) {
 			"res.info"=res_and_residuals.info)# rma.uni.value.info())
 }
 
-g.meta.regression.cond.means <- function(data, mods, method, level, digits, strat.cov, cond.means.data) {
+g.meta.regression.cond.means <- function(data, mods, method, level, digits, strat.cov, cond.means.data, btt=NULL) {
 	# Same as g.meta.regression. except we have conditional means output
 	# strat_cov: the categorical covariate (name) to stratify the results of the conditional means over
 	# cond.means.data: The values for the other covariates given as a list:
@@ -388,7 +394,7 @@ g.meta.regression.cond.means <- function(data, mods, method, level, digits, stra
 	mods.str <- make.mods.str(mods)
 	
 	# obtain regression result rma.uni
-	res <- regression.wrapper(data, mods.str, method, level, digits,btt=NULL)
+	res <- regression.wrapper(data, mods.str, method, level, digits,btt)
 	
 	### Generate conditional means output
 	A <- make.design.matrix(strat.cov, mods, cond.means.data, data)
@@ -426,7 +432,9 @@ g.meta.regression.cond.means <- function(data, mods, method, level, digits, stra
 				)
 }
 
-g.bootstrap.meta.regression <- function(data, mods, method, level, digits, n.replicates, histogram.title="", bootstrap.plot.path="./r_tmp/bootstrap.png") {
+g.bootstrap.meta.regression <- function(data, mods, method, level, digits,
+		n.replicates, histogram.title="", bootstrap.plot.path="./r_tmp/bootstrap.png",
+		btt=NULL) {
 	# Bootstrapped meta-regression
 	# A subset is valid if, for each categorical variable, all the levels are
 	# preset
@@ -462,7 +470,7 @@ g.bootstrap.meta.regression <- function(data, mods, method, level, digits, n.rep
 			}
 			
 			res.tmp <- tryCatch({
-						regression.wrapper(data[indices,], mods.str, method, level, digits,btt=NULL)
+						regression.wrapper(data[indices,], mods.str, method, level, digits,btt)
 					  }, error = function(e) {
 						failures <<- failures + 1
 						indices <- sample.int(nrow(data), size=length(indices), replace=TRUE)
@@ -531,7 +539,8 @@ g.bootstrap.meta.regression <- function(data, mods, method, level, digits, n.rep
 
 g.bootstrap.meta.regression.cond.means <- function(
     data, mods, method, level, digits, strat.cov, cond.means.data,
-    n.replicates, histogram.title="", bootstrap.plot.path="./r_tmp/bootstrap.png") {
+    n.replicates, histogram.title="", bootstrap.plot.path="./r_tmp/bootstrap.png",
+	btt=NULL) {
 	# Bootstrapped meta-regression Conditional means
 	# A subset is valid if, for each categorical variable, all the levels are
 	# preset
@@ -567,7 +576,7 @@ g.bootstrap.meta.regression.cond.means <- function(
 			}
 			
 			res.tmp <- tryCatch({
-						regression.wrapper(data[indices,], mods.str, method, level, digits,btt=NULL)
+						regression.wrapper(data[indices,], mods.str, method, level, digits,btt)
 					}, error = function(e) {
 						failures <<- failures + 1
 						indices <- sample.int(nrow(data), size=length(indices), replace=TRUE)
@@ -929,4 +938,3 @@ categorical.meta.regression <- function(reg.data, params, cov.names) {
   reg.disp <- create.regression.disp(res, params, cov.names=dimnames(cov.data)[[2]]) 
   results <- list("Summary"=reg.disp)
 }
-
