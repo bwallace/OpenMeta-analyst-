@@ -971,13 +971,150 @@ impute <- function(data, m, maxit, defaultMethod) {
 #	stripplot(chl~.imp, data=com, jit=TRUE, fac=0.8, col=col, pch=20,
 #			+ cex=1.4, xlab="Imputation number")
 	
-	imputation.choices = list()
+	imputation.choices <- list()
 	for (x in 1:m) {
 		imputation.choices[[x]]<-complete(imp.result,x)
 	}
 	
-	results = list("res"=imp.result,
+	results <- list("res"=imp.result,
 				   "Summary"=paste(capture.output(imp.result), collapse="\n"),
 				   "imputations"=imputation.choices)
 	
+}
+
+
+multiply.imputed.meta.analysis <- function(imputed.datasets, rma.args) {
+	# Meta analysis with multiply imputed data sets as described here:
+	# http://sites.stat.psu.edu/~jls/mifaq.html#howto
+	
+	# rma.args list a list of arguments to the rma.uni function.
+	#     includes: method, level, digits
+	
+	
+	digits = rma.args$digits
+	do.analysis <- function(imputed.dataset) {
+		res <- rma.uni(yi,vi, data=imputed.dataset, method=rma.args$method, level=rma.args$level, digits=rma.args$digits)
+	}
+	
+	# list of res objects that are the result of doing a meta-analysis on the 
+	# imputed dataset
+	res.objects <- lapply(imputed.datasets, do.analysis)
+	
+    #### Calculate overall quantities for the multiple imputation
+	# Quantities for which we standard errors in the result are:
+	# b and tau2, the corresponding standard errors are se and se.tau2
+	# b
+	b.all <- sapply(res.objects,function(x) {x$b}) # collect b together
+	se.all <- sapply(res.objects, function(x) {x$se})
+	b.data <- multiply.imputed.helper(b.all, se.all)
+	
+	# tau2
+	tau2.all <- sapply(res.objects, function(x) {x$tau2})
+	se.tau2.all <- sapply(res.objects, function(x) {x$se.tau2})
+	tau2.data <- multiply.imputed.helper(tau2.all, se.tau2.all)
+	
+
+	
+	# Construct summary
+	res1 <- res.objects[[1]]
+	title <- switch(res1$method,
+			        FE="Fixed-Effects Model",
+					"Random Effects Model"
+					)
+	title <- paste("Multiply Imputed", title)
+	title <- paste(title, "(k = ", res1$k, "; tau^2 estimator: ", res1$method, ")", sep="")
+	
+	summary <- title
+	summary <- paste(summary, "\n\n", sep="")
+	summary <- paste(summary, "Multiple Imputation Data:\n", "\t# Imputations: ", length(res.objects), "\n", sep="")
+	
+	
+	tau2.str <- sprintf("tau^2 (estimated amount of total heterogeneity): %s (SE = %s, CI = [%s,%s], df = %s, r = %s, gamma = %s)",
+			            round(tau2.data$est, digits),
+				        round(tau2.data$se, digits),
+						round(tau2.data$ci.lb, digits),
+						round(tau2.data$ci.ub, digits),
+						round(tau2.data$df, digits),
+						round(tau2.data$r, digits),
+						round(tau2.data$gamma, digits))
+	tau.str <- sprintf("tau (square root of estimated tau^2 value):       %s", round(sqrt(tau2.data$est), digits) )
+	
+	model.results.str <- "Model Results:\n\n"
+	model.results.df <- data.frame(estimate=b.data$est, se=b.data$se, ci.lb=b.data$ci.lb, ci.ub=b.data$ci.ub, df=b.data$db, r=b.data$r, gamma=b.data$gamma)
+	model.results.df <- round(model.results.df, digits)
+	model.results.str <- paste(model.results.str, capture.output(model.results.df), "\n", sep="")
+	
+	summary <- paste(summary, tau2.str, tau.str, model.result.str, sep="\n")
+	
+#Random-Effects Model (k = 13; tau^2 estimator: REML)
+#
+#tau^2 (estimated amount of total heterogeneity): 0.3132 (SE = 0.1664)
+#tau (square root of estimated tau^2 value):      0.5597
+#I^2 (total heterogeneity / total variability):   92.22%
+#		H^2 (total variability / sampling variability):  12.86
+#
+#Test for Heterogeneity: 
+#			Q(df = 12) = 152.2330, p-val < .0001
+#
+#Model Results:
+#		
+#		estimate       se     zval     pval    ci.lb    ci.ub          
+#-0.7145   0.1798  -3.9744   <.0001  -1.0669  -0.3622      *** 
+#		
+#	---
+#Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+	
+	
+	# References
+	references = "Rubin, D.B. (1987) Multiple Imputation for Nonresponse in Surveys. J. Wiley & Sons, New York."
+	
+	results <- list("Summary"=summary,
+			        #"res"=NULL,
+					#"res.info"=NULL,
+					"References"=references)
+	
+}
+
+multiply.imputed.helper <- function(x, se) {
+	# makes calculations as shown on http://sites.stat.psu.edu/~jls/mifaq.html#howto
+	# and outputs results (overall estimate, overall se, and confidence intervals
+	# from Student's t-distribution
+	# 
+	# Inputs:
+	# x is a vector of a scalar quantity of interest (with each element of the
+	#   vector being from one of the imputations)
+	# se is a vector of standard errors corresponding to x
+	
+	m <- length(x) # number of entries
+	
+	# overall estimate
+	Qbar <- mean(x)
+	
+	# within-imputation variance
+	Ubar <- mean(se)
+	
+	# between imputation variance
+	B <- (1/(m-1))*sum((x-Qbar)^2)
+	
+	# Total variance
+	T <- Ubar + (1 + 1/m)*B
+	
+	# overall standard error
+	se.overall <- sqrt(T)
+	
+	### Calculate confidence intervals
+	# first calculate degrees of freedom
+	df = (m-1)*(1+(m*Ubar)/((m+1)*B))^2
+	
+ 	ci.lb <- Qbar - df*se.overall # lower confidence limit
+	ci.ub <- Qbar + df*se.overall # upper confidence limit
+	
+	
+	########## Calculate rate of missing information
+	# relative increase in variance due to nonresponse
+	r <- ((1+m^-1)*B)/Ubar
+	# estimated rate in missing information
+	gamma <- (r+2/(df+3))/(r+1)
+	
+	list(est=Qbar, se=se.overall, ci.lb=ci.lb, ci.ub=ci.ub, df=df, r=r, gamma=gamma)
 }
