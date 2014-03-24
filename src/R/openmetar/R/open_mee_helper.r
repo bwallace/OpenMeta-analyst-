@@ -946,20 +946,6 @@ rma.mv.value.info <- function() {
 	)
 }
 
-#forest.plot.wrapper <- function(forest.data, outpath) {
-#	if ("conf.level" %in% names(forest.data)) {
-#		#### Set confidence level, then unset it later on.
-#		old.global.conf.level <- get.global.conf.level(NA.if.missing=TRUE)
-#		set.global.conf.level(conf.level)
-#		
-#		forest.plot(forest.data, outpath)
-#		
-#		##### Revert confidence level
-#		set.global.conf.level(old.global.conf.level)
-#	} else {
-#		forest.plot(forest.data, outpath)
-#	}
-#}
 
 impute <- function(data, m, maxit, defaultMethod) {
 	imp.result = mice(data=data, m=m, maxit=maxit, defaultMethod=defaultMethod)
@@ -983,22 +969,38 @@ impute <- function(data, m, maxit, defaultMethod) {
 }
 
 
-multiply.imputed.meta.analysis <- function(imputed.datasets, rma.args) {
+multiply.imputed.meta.analysis <- function(imputed.datasets, rma.args, mods=NULL, {
 	# Meta analysis with multiply imputed data sets as described here:
 	# http://sites.stat.psu.edu/~jls/mifaq.html#howto
+	# Also does regression if mods is not NULL
 	
+	# imputed datasets 
 	# rma.args list a list of arguments to the rma.uni function.
 	#     includes: method, level, digits
+	# same mods argument as in g.meta.regression
 	
 	
 	digits = rma.args$digits
+	if (!is.null(mods)) {
+		# mods.str: string to be passed to metafor to implement the moderators
+		#     e.g. ~ gfactor(alloc)+ablat+gfactor(country)+gfactor(alloc):gfactor(country)
+		mods.str <- make.mods.str(mods)
+	}
 	do.analysis <- function(imputed.dataset) {
-		res <- rma.uni(yi,vi, data=imputed.dataset, method=rma.args$method, level=rma.args$level, digits=rma.args$digits)
+		if (is.null(mods)) {
+			res <- rma.uni(yi,vi, data=imputed.dataset, method=rma.args$method, level=rma.args$level, digits=rma.args$digits)
+		} else {
+			res <- regression.wrapper(data, mods.str, method, level, digits,btt=NULL)
+		}
+		res
 	}
 	
 	# list of res objects that are the result of doing a meta-analysis on the 
 	# imputed dataset
 	res.objects <- lapply(imputed.datasets, do.analysis)
+	
+	# Useful for various purposes like getting intercept names and such
+	res1 <- res.objects[[1]]
 	
     #### Calculate overall quantities for the multiple imputation
 	# Quantities for which we standard errors in the result are:
@@ -1006,7 +1008,28 @@ multiply.imputed.meta.analysis <- function(imputed.datasets, rma.args) {
 	# b
 	b.all <- sapply(res.objects,function(x) {x$b}) # collect b together
 	se.all <- sapply(res.objects, function(x) {x$se})
-	b.data <- multiply.imputed.helper(b.all, se.all)
+	
+	if (class(b.all)=="matrix") {
+		# Account for b.all and se.all if they are matrices instead of vectors
+		nrows <- nrow(res1$b)
+		column.names <- c("est", "se", "ci.lb", "ci.ub", "df", "r", "gamma")
+		# make empty matrix to store data
+		b.data <- matrix(nrow=nrows,
+				         ncol=length(column.names),
+						 dimnames=list(rownames(res1$b), column.names)
+				 )
+		for (row in 1:nrows) {
+			b.row <- b.all[row,] # row of the b matrix (e.g. all the intercepts of the meta-analyses)
+			se.row <- se.all[row,]
+			b.row.data <- multiply.imputed.helper(b.row, se.row)
+			for (name in column.names) {
+				b.data[row, name] <- b.row.data$name
+			}
+		}
+		b.data <- as.data.frame(b.data) # convert to dataframe		
+	} else { # b.all is just a vector
+	    b.data <- multiply.imputed.helper(b.all, se.all)
+	}
 	
 	# tau2
 	tau2.all <- sapply(res.objects, function(x) {x$tau2})
@@ -1016,7 +1039,6 @@ multiply.imputed.meta.analysis <- function(imputed.datasets, rma.args) {
 
 	
 	# Construct summary
-	res1 <- res.objects[[1]]
 	title <- switch(res1$method,
 			        FE="Fixed-Effects Model",
 					"Random Effects Model"
@@ -1041,6 +1063,7 @@ multiply.imputed.meta.analysis <- function(imputed.datasets, rma.args) {
 	
 	model.results.str <- "Model Results:\n\n"
 	model.results.df <- data.frame(estimate=b.data$est, se=b.data$se, ci.lb=b.data$ci.lb, ci.ub=b.data$ci.ub, df=b.data$db, r=b.data$r, gamma=b.data$gamma)
+	rownames(model.results.df) <- rownames(res1$b)
 	model.results.df <- round(model.results.df, digits)
 	model.results.str <- paste(model.results.str, capture.output(model.results.df), "\n", sep="")
 	
@@ -1116,5 +1139,5 @@ multiply.imputed.helper <- function(x, se) {
 	# estimated rate in missing information
 	gamma <- (r+2/(df+3))/(r+1)
 	
-	list(est=Qbar, se=se.overall, ci.lb=ci.lb, ci.ub=ci.ub, df=df, r=r, gamma=gamma)
+	data.frame(est=Qbar, se=se.overall, ci.lb=ci.lb, ci.ub=ci.ub, df=df, r=r, gamma=gamma)
 }

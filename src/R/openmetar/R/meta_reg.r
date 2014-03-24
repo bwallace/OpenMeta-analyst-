@@ -337,8 +337,6 @@ g.meta.regression <- function(data, mods, method, level, digits, btt=NULL) {
 	# This is s a thin wrapper to metafor's meta regression functionality
 	# in order to let R do the dummy coding for us
 	#
-	# mods.str: string to be passed to metafor to implement the moderators
-	#     e.g. ~ gfactor(alloc)+ablat+gfactor(country)+gfactor(alloc):gfactor(country)
 	# mods: list(numeric=c(...numeric moderators...),
 	#            categorical=c(...categorical moderators...),
 	#            interactions=list("A:B"=c("A","B"),"B:C"=c("B",C"),...)
@@ -351,6 +349,8 @@ g.meta.regression <- function(data, mods, method, level, digits, btt=NULL) {
 	# the parts that are 'factors' have already been made in to factors with
 	# the appropriate reference values
 	
+	# mods.str: string to be passed to metafor to implement the moderators
+	#     e.g. ~ gfactor(alloc)+ablat+gfactor(country)+gfactor(alloc):gfactor(country)
 	mods.str <- make.mods.str(mods)
 	
 	# obtain regression result rma.uni
