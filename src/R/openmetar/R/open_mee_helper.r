@@ -969,7 +969,7 @@ impute <- function(data, m, maxit, defaultMethod) {
 }
 
 
-multiply.imputed.meta.analysis <- function(imputed.datasets, rma.args, mods=NULL, {
+multiply.imputed.meta.analysis <- function(imputed.datasets, rma.args, mods=NULL) {
 	# Meta analysis with multiply imputed data sets as described here:
 	# http://sites.stat.psu.edu/~jls/mifaq.html#howto
 	# Also does regression if mods is not NULL
