@@ -990,7 +990,11 @@ multiply.imputed.meta.analysis <- function(imputed.datasets, rma.args, mods=NULL
 		if (is.null(mods)) {
 			res <- rma.uni(yi,vi, data=imputed.dataset, method=rma.args$method, level=rma.args$level, digits=rma.args$digits)
 		} else {
-			res <- regression.wrapper(data, mods.str, method, level, digits,btt=NULL)
+			res <- regression.wrapper(data=imputed.dataset,
+					                  mods.str=mods.str,
+									  method=rma.args$method,
+									  level=rma.args$level,
+									  digits=rma.args$digits,btt=NULL)
 		}
 		res
 	}
@@ -1023,7 +1027,7 @@ multiply.imputed.meta.analysis <- function(imputed.datasets, rma.args, mods=NULL
 			se.row <- se.all[row,]
 			b.row.data <- multiply.imputed.helper(b.row, se.row)
 			for (name in column.names) {
-				b.data[row, name] <- b.row.data$name
+				b.data[row, name] <- b.row.data[[name]]
 			}
 		}
 		b.data <- as.data.frame(b.data) # convert to dataframe		
@@ -1062,31 +1066,14 @@ multiply.imputed.meta.analysis <- function(imputed.datasets, rma.args, mods=NULL
 	tau.str <- sprintf("tau (square root of estimated tau^2 value):       %s", round(sqrt(tau2.data$est), digits) )
 	
 	model.results.str <- "Model Results:\n\n"
-	model.results.df <- data.frame(estimate=b.data$est, se=b.data$se, ci.lb=b.data$ci.lb, ci.ub=b.data$ci.ub, df=b.data$db, r=b.data$r, gamma=b.data$gamma)
+	model.results.df <- data.frame(estimate=b.data$est, se=b.data$se, ci.lb=b.data$ci.lb, ci.ub=b.data$ci.ub, df=b.data$df, r=b.data$r, gamma=b.data$gamma)
 	rownames(model.results.df) <- rownames(res1$b)
 	model.results.df <- round(model.results.df, digits)
-	model.results.str <- paste(model.results.str, capture.output(model.results.df), "\n", sep="")
+	model.results.str <- paste(model.results.str,
+			                   capture.wide.string(model.results.df),
+							   "\n", sep="")
 	
-	summary <- paste(summary, tau2.str, tau.str, model.result.str, sep="\n")
-	
-#Random-Effects Model (k = 13; tau^2 estimator: REML)
-#
-#tau^2 (estimated amount of total heterogeneity): 0.3132 (SE = 0.1664)
-#tau (square root of estimated tau^2 value):      0.5597
-#I^2 (total heterogeneity / total variability):   92.22%
-#		H^2 (total variability / sampling variability):  12.86
-#
-#Test for Heterogeneity: 
-#			Q(df = 12) = 152.2330, p-val < .0001
-#
-#Model Results:
-#		
-#		estimate       se     zval     pval    ci.lb    ci.ub          
-#-0.7145   0.1798  -3.9744   <.0001  -1.0669  -0.3622      *** 
-#		
-#	---
-#Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
-	
+	summary <- paste(summary, tau2.str, tau.str, model.results.str, sep="\n")
 	
 	# References
 	references = "Rubin, D.B. (1987) Multiple Imputation for Nonresponse in Surveys. J. Wiley & Sons, New York."
@@ -1096,6 +1083,15 @@ multiply.imputed.meta.analysis <- function(imputed.datasets, rma.args, mods=NULL
 					#"res.info"=NULL,
 					"References"=references)
 	
+}
+
+capture.wide.string <- function(x) {
+	# temporarily widen console for printing
+	old.width <- getOption("width")
+	options(width=1000)
+	out.str <- paste(capture.output(x), collapse="\n") # convert print output to a string
+	options(width=old.width)
+	out.str
 }
 
 multiply.imputed.helper <- function(x, se) {
@@ -1140,4 +1136,27 @@ multiply.imputed.helper <- function(x, se) {
 	gamma <- (r+2/(df+3))/(r+1)
 	
 	data.frame(est=Qbar, se=se.overall, ci.lb=ci.lb, ci.ub=ci.ub, df=df, r=r, gamma=gamma)
+}
+
+combine.imputations.with.dataset <- function(source.dataset, imputations) {
+	# source.dataset is a complete (well, missing NAs and such) dataframe (with yi, vi, slab, etc)
+	# imputations is a list of dataframes containing imputed covariate values
+	# Makes list of datasets with imputed data
+	
+	output = list()
+	for (i in 1:length(imputations)) {
+		imp <- imputations[[i]]
+		tmp <- source.dataset
+		# copy over imputed data to tmp
+		for (cov_name in names(imp)) {
+			if (is.factor(source.dataset[[cov_name]])) {
+				levels.of.factor <- levels(source.dataset[[cov_name]])
+				tmp[[cov_name]] <- factor(imp[[cov_name]], levels=levels.of.factor)
+			} else {
+				tmp[[cov_name]] <- imp[[cov_name]]
+			}
+		}
+		output[[i]] <- tmp
+	}
+	output
 }
