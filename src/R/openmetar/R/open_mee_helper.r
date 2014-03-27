@@ -988,13 +988,16 @@ multiply.imputed.meta.analysis <- function(imputed.datasets, rma.args, mods=NULL
 	}
 	do.analysis <- function(imputed.dataset) {
 		if (is.null(mods)) {
-			res <- rma.uni(yi,vi, data=imputed.dataset, method=rma.args$method, level=rma.args$level, digits=rma.args$digits)
+			res <- rma.uni(yi,vi, data=imputed.dataset, method=rma.args$method, level=rma.args$level,
+					#digits=rma.args$digits
+			       )
 		} else {
 			res <- regression.wrapper(data=imputed.dataset,
 					                  mods.str=mods.str,
 									  method=rma.args$method,
 									  level=rma.args$level,
-									  digits=rma.args$digits,btt=NULL)
+									  digits=6,
+									  btt=NULL)
 		}
 		res
 	}
@@ -1065,7 +1068,7 @@ multiply.imputed.meta.analysis <- function(imputed.datasets, rma.args, mods=NULL
 						round(tau2.data$gamma, digits))
 	tau.str <- sprintf("tau (square root of estimated tau^2 value):       %s", round(sqrt(tau2.data$est), digits) )
 	
-	model.results.str <- "Model Results:\n\n"
+	model.results.str <- "\nModel Results:\n\n"
 	model.results.df <- data.frame(estimate=b.data$est, se=b.data$se, ci.lb=b.data$ci.lb, ci.ub=b.data$ci.ub, df=b.data$df, r=b.data$r, gamma=b.data$gamma)
 	rownames(model.results.df) <- rownames(res1$b)
 	model.results.df <- round(model.results.df, digits)
@@ -1076,11 +1079,26 @@ multiply.imputed.meta.analysis <- function(imputed.datasets, rma.args, mods=NULL
 	summary <- paste(summary, tau2.str, tau.str, model.results.str, sep="\n")
 	
 	# References
-	references = "Rubin, D.B. (1987) Multiple Imputation for Nonresponse in Surveys. J. Wiley & Sons, New York."
+	references <- "Rubin, D.B. (1987) Multiple Imputation for Nonresponse in Surveys. J. Wiley & Sons, New York."
+	
+	# build res (individual results objects from imputations)
+	res <- list()
+	for (i in 1:length(res.objects)) {
+		key <- paste("result ", i)
+		res[[key]] <- capture.wide.string(res.objects[[i]])
+	}
+	
+	# build res.info
+	res.info <- list()
+	for (i in 1:length(res.objects)) {
+		key <- paste("result ", i)
+		res.info[[key]] <- list(type="vector", description=paste('meta analysis result ', i))
+	}
+	
 	
 	results <- list("Summary"=summary,
-			        #"res"=NULL,
-					#"res.info"=NULL,
+			        "res"=res,
+					"res.info"=res.info,
 					"References"=references)
 	
 }
