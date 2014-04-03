@@ -1128,7 +1128,7 @@ multiply.imputed.helper <- function(x, se) {
 	Qbar <- mean(x)
 	
 	# within-imputation variance
-	Ubar <- mean(se)
+	Ubar <- mean(se^2)
 	
 	# between imputation variance
 	B <- (1/(m-1))*sum((x-Qbar)^2)
@@ -1141,7 +1141,9 @@ multiply.imputed.helper <- function(x, se) {
 	
 	### Calculate confidence intervals
 	# first calculate degrees of freedom
-	df = (m-1)*(1+(m*Ubar)/((m+1)*B))^2
+	#df = (m-1)*(1+(m*Ubar)/((m+1)*B))^2
+	df <- (m-1)*(1+Ubar/((1+1/m)*B)  )^2
+	cat("df: ", df)
 	
  	ci.lb <- Qbar - df*se.overall # lower confidence limit
 	ci.ub <- Qbar + df*se.overall # upper confidence limit
