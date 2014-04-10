@@ -1019,7 +1019,7 @@ multiply.imputed.meta.analysis <- function(imputed.datasets, rma.args, mods=NULL
 	if (class(b.all)=="matrix") {
 		# Account for b.all and se.all if they are matrices instead of vectors
 		nrows <- nrow(res1$b)
-		column.names <- c("est", "se", "ci.lb", "ci.ub", "df", "r", "gamma")
+		column.names <- c("est", "se", "ci.lb", "ci.ub", "df", "r", "lambda")
 		# make empty matrix to store data
 		b.data <- matrix(nrow=nrows,
 				         ncol=length(column.names),
@@ -1058,18 +1058,18 @@ multiply.imputed.meta.analysis <- function(imputed.datasets, rma.args, mods=NULL
 	summary <- paste(summary, "Multiple Imputation Data:\n", "\t# Imputations: ", length(res.objects), "\n", sep="")
 	
 	
-	tau2.str <- sprintf("tau^2 (estimated amount of total heterogeneity): %s (SE = %s, CI = [%s,%s], df = %s, r = %s, gamma = %s)",
+	tau2.str <- sprintf("tau^2 (estimated amount of total heterogeneity): %s (SE = %s, CI = [%s,%s], df = %s, r = %s, lambda = %s)",
 			            round(tau2.data$est, digits),
 				        round(tau2.data$se, digits),
 						round(tau2.data$ci.lb, digits),
 						round(tau2.data$ci.ub, digits),
 						round(tau2.data$df, digits),
 						round(tau2.data$r, digits),
-						round(tau2.data$gamma, digits))
+						round(tau2.data$lambda, digits))
 	tau.str <- sprintf("tau (square root of estimated tau^2 value):       %s", round(sqrt(tau2.data$est), digits) )
 	
 	model.results.str <- "\nModel Results:\n\n"
-	model.results.df <- data.frame(estimate=b.data$est, se=b.data$se, ci.lb=b.data$ci.lb, ci.ub=b.data$ci.ub, df=b.data$df, r=b.data$r, gamma=b.data$gamma)
+	model.results.df <- data.frame(estimate=b.data$est, se=b.data$se, ci.lb=b.data$ci.lb, ci.ub=b.data$ci.ub, df=b.data$df, r=b.data$r, lambda=b.data$lambda)
 	rownames(model.results.df) <- rownames(res1$b)
 	model.results.df <- round(model.results.df, digits)
 	model.results.str <- paste(model.results.str,
@@ -1116,6 +1116,8 @@ multiply.imputed.helper <- function(x, se) {
 	# makes calculations as shown on http://sites.stat.psu.edu/~jls/mifaq.html#howto
 	# and outputs results (overall estimate, overall se, and confidence intervals
 	# from Student's t-distribution
+	# For corrected version: http://support.sas.com/documentation/cdl/en/statug/63033/HTML/default/viewer.htm#statug_mi_sect030.htm
+	
 	# 
 	# Inputs:
 	# x is a vector of a scalar quantity of interest (with each element of the
@@ -1123,39 +1125,51 @@ multiply.imputed.helper <- function(x, se) {
 	# se is a vector of standard errors corresponding to x
 	
 	m <- length(x) # number of entries
+	w = se^2
 	
 	# overall estimate
 	Qbar <- mean(x)
 	
 	# within-imputation variance
-	Ubar <- mean(se^2)
+	Wbar <- mean(se^2)
 	
 	# between imputation variance
-	B <- (1/(m-1))*sum((x-Qbar)^2)
+	X1 <- 1/(m-1)
+	X2 <- sum((x-Qbar)^2)
+	B <- X1*X2
 	
 	# Total variance
-	T <- Ubar + (1 + 1/m)*B
+	T <- Wbar + (1+1/m)*B
 	
 	# overall standard error
 	se.overall <- sqrt(T)
 	
+	# The statistic (Q-Qbar)T^-(1/2) is approximately distributed as t with vm degrees of freedom
 	### Calculate confidence intervals
 	# first calculate degrees of freedom
-	#df = (m-1)*(1+(m*Ubar)/((m+1)*B))^2
-	df <- (m-1)*(1+Ubar/((1+1/m)*B)  )^2
-	cat("df: ", df)
+	X1 <- m-1
+	X2 <- Wbar/((1+m^-1)*B)
+	vm <- X1*(1+X2)^2 # unadjusted degrees of freedom from Rubin (1987)
 	
- 	ci.lb <- Qbar - df*se.overall # lower confidence limit
-	ci.ub <- Qbar + df*se.overall # upper confidence limit
+	## Other useful statistics
+	r <- ((1+m^-1)*B)/Wbar      # rel. increase in variance due to nonresponse
+	lambda <- (r+2/(vm+3))/(r+1) # fraction of missing information
+	
+	# Calculate adjusted degrees of freedom from Rubin (1999)
+	v0 = ?????? 
+	gamma <- (1+m^-1)*B/T
+	vobs <- (1-gamma)*v0*(v0+1)/(v0+3)
+
+	vm <- (1/vm+1/vobs)^-1
 	
 	
-	########## Calculate rate of missing information
-	# relative increase in variance due to nonresponse
-	r <- ((1+m^-1)*B)/Ubar
-	# estimated rate in missing information
-	gamma <- (r+2/(df+3))/(r+1)
+ 	ci.lb <- Qbar - vm*se.overall # lower confidence limit
+	ci.ub <- Qbar + vm*se.overall # upper confidence limit
 	
-	data.frame(est=Qbar, se=se.overall, ci.lb=ci.lb, ci.ub=ci.ub, df=df, r=r, gamma=gamma)
+	
+
+	
+	data.frame(est=Qbar, se=se.overall, ci.lb=ci.lb, ci.ub=ci.ub, df=vm, r=r, lambda=lambda)
 }
 
 combine.imputations.with.dataset <- function(source.dataset, imputations) {
