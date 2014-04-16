@@ -1016,6 +1016,9 @@ multiply.imputed.meta.analysis <- function(imputed.datasets, rma.args, mods=NULL
 	b.all <- sapply(res.objects,function(x) {x$b}) # collect b together
 	se.all <- sapply(res.objects, function(x) {x$se})
 	
+	# v0 (complete data degrees of freedom) for multiple imputation correction (see Rubin 1999)
+	v0 = nrow(imputed.datasets[[1]]) - (length(res1$b)-1) # i.e. k-p, subtract 1 from b because intercept included
+	
 	if (class(b.all)=="matrix") {
 		# Account for b.all and se.all if they are matrices instead of vectors
 		nrows <- nrow(res1$b)
@@ -1028,20 +1031,20 @@ multiply.imputed.meta.analysis <- function(imputed.datasets, rma.args, mods=NULL
 		for (row in 1:nrows) {
 			b.row <- b.all[row,] # row of the b matrix (e.g. all the intercepts of the meta-analyses)
 			se.row <- se.all[row,]
-			b.row.data <- multiply.imputed.helper(b.row, se.row)
+			b.row.data <- multiply.imputed.helper(b.row, se.row, v0)
 			for (name in column.names) {
 				b.data[row, name] <- b.row.data[[name]]
 			}
 		}
 		b.data <- as.data.frame(b.data) # convert to dataframe		
 	} else { # b.all is just a vector
-	    b.data <- multiply.imputed.helper(b.all, se.all)
+	    b.data <- multiply.imputed.helper(b.all, se.all, v0)
 	}
 	
 	# tau2
 	tau2.all <- sapply(res.objects, function(x) {x$tau2})
 	se.tau2.all <- sapply(res.objects, function(x) {x$se.tau2})
-	tau2.data <- multiply.imputed.helper(tau2.all, se.tau2.all)
+	tau2.data <- multiply.imputed.helper(tau2.all, se.tau2.all, v0)
 	
 
 	
@@ -1079,7 +1082,8 @@ multiply.imputed.meta.analysis <- function(imputed.datasets, rma.args, mods=NULL
 	summary <- paste(summary, tau2.str, tau.str, model.results.str, sep="\n")
 	
 	# References
-	references <- "Rubin, D.B. (1987) Multiple Imputation for Nonresponse in Surveys. J. Wiley & Sons, New York."
+	references <- c("Barnard, J. & Rubin, D.B. (1999). Small-sample degrees of freedom with multiple imputation. Biometrika 86, 948-955.",
+			"Rubin, D.B. (1987) Multiple Imputation for Nonresponse in Surveys. J. Wiley & Sons, New York.")
 	
 	# build res (individual results objects from imputations)
 	res <- list()
@@ -1112,7 +1116,7 @@ capture.wide.string <- function(x) {
 	out.str
 }
 
-multiply.imputed.helper <- function(x, se) {
+multiply.imputed.helper <- function(x, se, v0) {
 	# makes calculations as shown on http://sites.stat.psu.edu/~jls/mifaq.html#howto
 	# and outputs results (overall estimate, overall se, and confidence intervals
 	# from Student's t-distribution
@@ -1123,6 +1127,7 @@ multiply.imputed.helper <- function(x, se) {
 	# x is a vector of a scalar quantity of interest (with each element of the
 	#   vector being from one of the imputations)
 	# se is a vector of standard errors corresponding to x
+	# v0 is the complete data degrees of freedom
 	
 	m <- length(x) # number of entries
 	w = se^2
@@ -1156,7 +1161,7 @@ multiply.imputed.helper <- function(x, se) {
 	lambda <- (r+2/(vm+3))/(r+1) # fraction of missing information
 	
 	# Calculate adjusted degrees of freedom from Rubin (1999)
-	v0 = ?????? 
+	#v0 = ?????? 
 	gamma <- (1+m^-1)*B/T
 	vobs <- (1-gamma)*v0*(v0+1)/(v0+3)
 
@@ -1165,8 +1170,6 @@ multiply.imputed.helper <- function(x, se) {
 	
  	ci.lb <- Qbar - vm*se.overall # lower confidence limit
 	ci.ub <- Qbar + vm*se.overall # upper confidence limit
-	
-	
 
 	
 	data.frame(est=Qbar, se=se.overall, ci.lb=ci.lb, ci.ub=ci.ub, df=vm, r=r, lambda=lambda)
