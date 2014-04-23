@@ -333,7 +333,7 @@ coded.cat.mod.level <- function(lvl, l.mod) {
 
 
 
-g.meta.regression <- function(data, mods, method, level, digits, btt=NULL) {
+g.meta.regression <- function(data, mods, method, level, digits, measure, btt=NULL) {
 	# This is s a thin wrapper to metafor's meta regression functionality
 	# in order to let R do the dummy coding for us
 	#
@@ -376,13 +376,117 @@ g.meta.regression <- function(data, mods, method, level, digits, btt=NULL) {
 	reg.equation <- paste(est.coeffs[1],tmp, sep=" + ")
 	reg.equation.str <- sprintf("Regression model equation: %s", reg.equation)
 	Summary <- paste(Summary, reg.equation.str, sep="\n")
-
+	
 	results <- list(#"images"=images,
 			"Summary"=Summary,
 			#"plot_names"=plot.names,
 			#"plot_params_paths"=plot.params.paths,
 			"res"=res_and_residuals, #res,
 			"res.info"=res_and_residuals.info)# rma.uni.value.info())
+	
+	########################################################################
+
+	# 1 continuous covariate, no categorical covariates
+	if (is.single.numeric.covariate(mods)) {
+		# if only 1 continuous covariate, create reg. plot
+		betas <- res$b
+		fitted.line <- list(intercept=betas[1], slope=betas[2])
+		plot.path <- "./r_tmp/reg.png"
+	    cov.name <- mods[['numeric']][[1]]
+		cov.vals <- data[[cov.name]]
+		plot.data <- g.create.plot.data.reg(data, cov.name, cov.vals, measure, level, fitted.line)
+		
+		# @TODO x and y labels ought to be passed in, probably
+		
+		plot.data$xlabel <- cov.name
+		
+		scale.str <- g.get.scale(measure)
+		if ((scale.str=="standard") || (scale.str=="arcsine")) {
+			scale.str <- ""
+			# This is for the y-axis label on regression plot - don't add "standard" or "arcsine" to label.
+		}
+		plot.data$ylabel <- paste(scale.str, " ", pretty.metric.name(as.character(measure)), sep="")
+		meta.regression.plot(plot.data, plot.path)
+		
+		# write the plot data to disk so we can save it
+		# @TODO will want to write the params data, too,
+		# eventually
+		plot.data.path <- save.plot.data(plot.data)
+		
+		images <- c("Regression Plot"=plot.path)
+		plot.names <- c("reg.plot"="reg.plot")
+		reg.plot.params.path <- save.plot.data(plot.data)
+		plot.params.paths <- c("Regression Plot"=plot.data.path)
+		
+		# add regression plot to results
+		results[['images']] <- images
+		results[['plot_names']] <- plot.names
+		results[['plot_params_paths']] <- plot.params.paths
+		########################################################################
+	}
+	results
+}
+
+is.single.numeric.covariate <- function(mods) {
+	# Does mods only describe a single numeric covariate?
+	count.numeric <- length(mods[['numeric']])
+	count.categorical <- length(mods[['categorical']])
+	count.interactions <- length(mods[['interactions']])
+	
+	if (count.numeric==1 && count.categorical + count.interactions == 0) {
+		return(TRUE)
+	} else {
+		return(FALSE)
+	}
+}
+
+# create regression plot data for g.meta.regression function
+g.create.plot.data.reg <- function(reg.data, cov.name, cov.vals, measure, level, fitted.line) {
+	scale.str <- g.get.scale(measure)
+	plot.data <- list("fitted.line" = fitted.line,
+			types = c(rep(0, length(reg.data$slab))),
+			scale = scale.str,
+			covariate = list(varname = cov.name, values = cov.vals))
+	alpha <- 1.0-(level/100.0)
+	mult <- abs(qnorm(alpha/2.0))
+	
+	
+	y <- reg.data$yi
+	se <- sqrt(reg.data$vi)
+	effects <- list(ES = y,
+			se = se)
+	plot.data$effects <- effects
+	
+	###
+	# @TODO; these need to be set by the user,
+	# will probably be placed on the params object
+	plot.data$sym.size <- 1
+	plot.data$lcol <- "darkred"
+	plot.data$lweight <- 3
+	plot.data$lpattern <- "dotted"
+	plot.data$plotregion <- "n"
+	plot.data$mcolor <- "darkgreen"
+	plot.data$regline <- TRUE
+	
+	plot.data
+}
+
+# get scale for g.meta.regression function and derivatives
+g.get.scale <- function (measure) 
+{
+	if (metric.is.log.scale(measure)) {
+		scale <- "log"
+	}
+	else if (metric.is.logit.scale(measure)) {
+		scale <- "logit"
+	}
+	else if (metric.is.arcsine.scale(measure)) {
+		scale <- "arcsine"
+	}
+	else {
+		scale <- "standard"
+	}
+	scale
 }
 
 g.meta.regression.cond.means <- function(data, mods, method, level, digits, strat.cov, cond.means.data, btt=NULL) {
