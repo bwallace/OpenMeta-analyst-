@@ -1225,3 +1225,58 @@ combine.imputations.with.dataset <- function(source.dataset, imputations) {
 	}
 	output
 }
+
+
+###################### special output for regression ##########################
+reg.output.helper <- function(theData, rma.results, model.formula, digits=5) {
+	# Adapted from code by M.Lajeunesse by G.Dietz
+	
+	# apparently, anova or lm requires rma.results to be global
+	rma.results <<- rma.results
+	# get model sums of squares from lm based on metafor's tau
+	effects.results <- anova(lm(model.formula, weight=1/(vi+rma.results$tau), data=theData))
+
+	# get summary of the Overall Model	
+	printModelSummary <- function(ANOVA = effects.results) {
+		effectsRange <- nrow(ANOVA) - 1
+		model.summary <- data.frame(
+				SOURCE = c("model", "residual error", "total"), 
+				Q = c(
+						sum(ANOVA[1:effectsRange,2]),
+						ANOVA[effectsRange + 1,2],
+						sum(ANOVA[1:effectsRange,2]) + ANOVA[effectsRange + 1,2]
+				), 
+				DF = c(
+						sum(ANOVA[1:effectsRange,1]),
+						ANOVA[effectsRange + 1,1],
+						sum(ANOVA[1:effectsRange,1]) + ANOVA[effectsRange + 1,1]
+				), 
+				P = c(
+						1.0 - pchisq(sum(ANOVA[1:effectsRange,2]), df=sum(ANOVA[1:effectsRange,1])),
+						1.0 - pchisq(ANOVA[effectsRange + 1,2], df=ANOVA[effectsRange + 1,1]),
+						1.0 - pchisq(sum(ANOVA[1:effectsRange,2]) + ANOVA[effectsRange + 1,2], df= sum(ANOVA[1:effectsRange,1]) + ANOVA[effectsRange + 1,1])
+				)
+		)
+		print(model.summary, row.names = FALSE, digits = digits)
+	}
+	#printModelSummary(effects.results)
+	model.summary <- paste(capture.output(printModelSummary(effects.results)), collapse="\n")
+	
+	# get summary of the Effect Tests
+	printEffectTestsSummary <- function(ANOVA = effects.results) {
+		effectsRange <- nrow(ANOVA) - 1
+		mainEffects <- rownames(ANOVA[1:effectsRange,])
+		model.summary <- data.frame(
+				SOURCE = mainEffects, 
+				Q = ANOVA[1:effectsRange,2], 
+				DF = ANOVA[1:effectsRange,1], 
+				P = 1 - pchisq(ANOVA[1:effectsRange,2], ANOVA[1:effectsRange,1])
+		)
+		print(model.summary, row.names = FALSE, digits = digits)
+	}
+	#printEffectTestsSummary(effects.results)
+	effects.tests.summary <- paste(capture.output(printEffectTestsSummary(effects.results)), collapse="\n")
+	
+	list("Model Summary"=model.summary,
+	     "Effect Tests Summary"=effects.tests.summary)
+}

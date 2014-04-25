@@ -377,6 +377,15 @@ g.meta.regression <- function(data, mods, method, level, digits, measure, btt=NU
 	reg.equation.str <- sprintf("Regression model equation: %s", reg.equation)
 	Summary <- paste(Summary, reg.equation.str, sep="\n")
 	
+	# add more output by Marc
+	model.formula.str <- paste("yi", mods.str)
+	model.formula <- eval(model.formula.str)
+	more.output <- reg.output.helper(theData=data, rma.results=res, model.formula=model.formula, digits=digits)
+	for (name in names(more.output)) {
+		item.str <- sprintf("%s:\n%s", name, more.output[[name]])
+		Summary <- paste(Summary, item.str, sep="\n\n")
+	}
+	
 	results <- list(#"images"=images,
 			"Summary"=Summary,
 			#"plot_names"=plot.names,
