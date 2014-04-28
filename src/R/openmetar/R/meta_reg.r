@@ -381,10 +381,13 @@ g.meta.regression <- function(data, mods, method, level, digits, measure, btt=NU
 	model.formula.str <- paste("yi", mods.str)
 	model.formula <- eval(model.formula.str)
 	more.output <- reg.output.helper(theData=data, rma.results=res, model.formula=model.formula, digits=digits)
+	pre.summary <- ""
 	for (name in names(more.output)) {
-		item.str <- sprintf("%s:\n%s", name, more.output[[name]])
-		Summary <- paste(Summary, item.str, sep="\n\n")
+		dashes <- paste(rep("-", nchar(name)+2), collapse="")
+		item.str <- sprintf("%s:\n%s\n%s", name, dashes, more.output[[name]])
+		pre.summary <- paste(pre.summary, item.str, sep="\n\n")
 	}
+	Summary <- paste(pre.summary, Summary, sep="\n\n")
 	
 	results <- list(#"images"=images,
 			"Summary"=Summary,
