@@ -935,8 +935,8 @@ phylo.meta.analysis <- function(tree, evo.model,
 #	# a dictionary of images (mapping titles to image paths) and a list of texts
 #	# (mapping titles to pretty-printed text). In this case we have only one 
 #	# of each. 
-	plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
-	images <- c("Forest Plot"=forest.path)
+	plot.params.paths <- c("Forest Plot__phylo"=forest.plot.params.path)
+	images <- c("Forest Plot__phylo"=forest.path)
 	plot.names <- c("forest plot"="forest_plot")
 	
 	results <- list("images"=images,
