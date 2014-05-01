@@ -907,28 +907,37 @@ phylo.meta.analysis <- function(tree, evo.model,
 		res <- rma.mv(data$yi, data$vi, data=data, random = list(~ 1 | phylogenyVariance), R=list(phylogenyVariance=C))
 	}
 	
-	#### Set confidence level, then unset it later on.
-	old.global.conf.level <- get.global.conf.level(NA.if.missing=TRUE)
-	set.global.conf.level(level)
+#	#### Set confidence level, then unset it later on.
+#	old.global.conf.level <- get.global.conf.level(NA.if.missing=TRUE)
+#	set.global.conf.level(level)
+#
+#	###########################################################################
+#	## Generate forest plot                                                  ##
+#	##                                                                       ##
+#	forest.path <- paste(plot.params$fp_outpath, sep="")
+#	plot.data <- create.phylogenetic.ma.plot.data(data, res, params=plot.params, conf.level=level)
+#	## dump the forest plot params to disk; return path to
+#	## this .Rdata for later use
+#	forest.plot.params.path <- save.plot.data.and.params(plot.data, plot.params, res=res, level=level)
+#	# Make the actual plot
+#	forest.plot(forest.data=plot.data, outpath=forest.path)
+#
+#	##### Revert confidence level
+#    set.global.conf.level(old.global.conf.level)
+#	
+#	##                                                                       ##
+#	## End of forest plot generation                                         ##
+#	###########################################################################
 
-	###########################################################################
-	## Generate forest plot                                                  ##
-	##                                                                       ##
-	forest.path <- paste(plot.params$fp_outpath, sep="")
-	plot.data <- create.phylogenetic.ma.plot.data(data, res, params=plot.params, conf.level=level)
-	## dump the forest plot params to disk; return path to
-	## this .Rdata for later use
-	forest.plot.params.path <- save.plot.data.and.params(plot.data, plot.params)
-	# Make the actual plot
-	forest.plot(forest.data=plot.data, outpath=forest.path)
-
-	##### Revert confidence level
-    set.global.conf.level(old.global.conf.level)
-	
-	##                                                                       ##
-	## End of forest plot generation                                         ##
-	###########################################################################
-	
+	# generate forest plot
+	paths = regenerate_phylo_forest_plot(
+			     plot.params=plot.params,
+			     data=data,
+				 res=res,
+				 level=level,
+				 params.out.path=NULL, out.path=NULL)
+	forest.path <- paths[["img.path"]]
+	forest.plot.params.path <- paths[["params.path"]] 
 
 #	# Now we package the results in a dictionary (technically, a named 
 #	# vector). In particular, there are two fields that must be returned; 
@@ -945,6 +954,38 @@ phylo.meta.analysis <- function(tree, evo.model,
 			"plot_params_paths"=plot.params.paths,
 			"res"=res,
 			"res.info"=rma.mv.value.info())
+}
+
+regenerate_phylo_forest_plot <- function(plot.params, data, res, level, params.out.path=NULL, out.path=NULL) {
+	#### Set confidence level, then unset it later on.
+	old.global.conf.level <- get.global.conf.level(NA.if.missing=TRUE)
+	set.global.conf.level(level)
+	                                                                     ##
+	if (is.null(out.path)) {
+		forest.path <- paste(plot.params$fp_outpath, sep="")
+	} else {
+		forest.path <- paste(out.path, sep="")
+	}
+	
+	plot.data <- create.phylogenetic.ma.plot.data(data, res, params=plot.params, conf.level=level)
+	## dump the forest plot params to disk; return path to
+	## this .Rdata for later use
+	forest.plot.params.path <- save.plot.data.and.params(
+			#plot.data=plot.data,
+			data=data,
+			params=plot.params,
+			res=res,
+			level=level,
+			out.path=params.out.path)
+	# Make the actual plot
+	forest.plot(forest.data=plot.data, outpath=forest.path)
+	
+	##### Revert confidence level
+	set.global.conf.level(old.global.conf.level)
+	
+	list("img.path"=forest.path,
+		 "params.path"=forest.plot.params.path)
+	
 }
 
 rma.mv.value.info <- function() {
