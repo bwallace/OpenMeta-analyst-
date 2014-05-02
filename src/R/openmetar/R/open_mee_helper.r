@@ -25,13 +25,13 @@ raw.scale.single.val.to.trans.scale <- function(value, metric) {
 	rtoz      <- function(x) {transf.rtoz(x)}
 	
 	trans.scale.val <- switch(metric,
-			SMD = no.change(), # Hedges d
-			ROM = relog(),     # Ln Response Ratio
-			OR  = relog(),     # Log Odds Ratio
-			RD  = no.change(), # Rate Difference
-			RR  = relog(),     # Log Relative Rate
-			ZCOR = rtoz(),     # Fisher's Z-transform
-			GEN  = no.change() # generic effect 
+			SMD = no.change(value), # Hedges d
+			ROM = relog(value),     # Ln Response Ratio
+			OR  = relog(value),     # Log Odds Ratio
+			RD  = no.change(value), # Rate Difference
+			RR  = relog(value),     # Log Relative Rate
+			ZCOR = rtoz(value),     # Fisher's Z-transform
+			GEN  = no.change(value) # generic effect 
 	)
 	trans.scale.val
 }
