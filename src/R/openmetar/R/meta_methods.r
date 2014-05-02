@@ -157,20 +157,7 @@ construct.sequential.res.output <- function(seq.res, value.info, replacements=li
 
 construct.subgroup.res.output <- function(subgroups.res) {
 	# output is a list of subgroup results
-	
-#	subgroups.res.with.titles <- list()
-#	i <- 0
-#	for (res in subgroups.res) {
-#		i <- i+1
-#		hashmarks <- "###################################" # this is the 'value' to print under the label
-#		title<-paste("SUBGROUP",i, sep="_")
-#		toadd = list()
-#		toadd[[title]]=hashmarks
-#		toadd <- c(toadd, res)
-#		subgroups.res.with.titles <- c(subgroups.res.with.titles, toadd)
-#	}
-#	subgroups.res.with.titles
-	
+
 	output = list()
 	count = 0
 	for (res in subgroups.res) {
@@ -1778,9 +1765,6 @@ multiple.subgroup.diagnostic <- function(fnames, params.list, diagnostic.data) {
 					           "plot_names"=plot.names, 
                                "plot_params_paths"=plot.params.paths,
 							   "References"=references))
-    #results$images <- images
-    #results$plot.names <- plot.names
-    #results$plot.params.paths <- plot.params.paths
     results
 }
 

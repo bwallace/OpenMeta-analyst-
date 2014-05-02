@@ -360,7 +360,6 @@ multiple.diagnostic <- function(fnames, params.list, diagnostic.data) {
             names(summary.tmp) <- paste(eval(parse(text=paste("pretty.names$measure$",params.list[[count]]$measure,sep=""))), " Summary", sep="")
       
 		    references <- c(references, results.tmp$References)
-			
 			results <- c(results, summary.tmp)
         }
     }
