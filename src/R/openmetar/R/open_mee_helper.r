@@ -906,28 +906,6 @@ phylo.meta.analysis <- function(tree, evo.model,
 		# include phylogeny as a random factor
 		res <- rma.mv(data$yi, data$vi, data=data, random = list(~ 1 | phylogenyVariance), R=list(phylogenyVariance=C))
 	}
-	
-#	#### Set confidence level, then unset it later on.
-#	old.global.conf.level <- get.global.conf.level(NA.if.missing=TRUE)
-#	set.global.conf.level(level)
-#
-#	###########################################################################
-#	## Generate forest plot                                                  ##
-#	##                                                                       ##
-#	forest.path <- paste(plot.params$fp_outpath, sep="")
-#	plot.data <- create.phylogenetic.ma.plot.data(data, res, params=plot.params, conf.level=level)
-#	## dump the forest plot params to disk; return path to
-#	## this .Rdata for later use
-#	forest.plot.params.path <- save.plot.data.and.params(plot.data, plot.params, res=res, level=level)
-#	# Make the actual plot
-#	forest.plot(forest.data=plot.data, outpath=forest.path)
-#
-#	##### Revert confidence level
-#    set.global.conf.level(old.global.conf.level)
-#	
-#	##                                                                       ##
-#	## End of forest plot generation                                         ##
-#	###########################################################################
 
 	# generate forest plot
 	paths = regenerate_phylo_forest_plot(
@@ -1320,4 +1298,62 @@ reg.output.helper <- function(theData, rma.results, model.formula, digits=5) {
 	
 	list("Model Summary"=model.summary,
 	     "Effect Tests Summary"=effects.tests.summary)
+}
+
+forest.plot.of.regression.coefficients <- function(coeffs, ci.lb, ci.ub, labels, exclude.intercept=TRUE, filepath=NULL, toFile=TRUE) {
+	# b and se are as they come from metafor
+	# b is a m*1 matrix with rownames the names of the coefficients
+	# se is a vector
+	
+	n <- length(coeffs)
+	if (exclude.intercept) {
+		mean <- coeffs[2:n]
+	    lower <- ci.lb[2:n]
+		upper <- ci.ub[2:n]
+		used.labels <- labels[2:n]
+		tabletext <- cbind(c("Coefficient", used.labels))
+		n <- length(coeffs)-1
+	} else {
+		mean <- coeffs
+		lower <- ci.lb
+		upper <- ci.ub
+		used.labels <- labels
+		tabletext <- cbind(c("Coefficient", labels))
+		
+	}
+	
+	# attach NA to beginning to line up with labels
+	#mean <- c(NA, mean)
+	#lower <- c(NA, lower)
+	#upper <- c(NA, upper)
+	if (toFile) {
+		if (length(grep(".png", filepath)) != 0) {
+			png(filename=filepath)
+		} else {
+			pdf(file=filepath)
+		}
+	}
+    #forestplot(tabletext, mean=mean, lower=lower, upper=upper, is.summary=c(TRUE, rep(FALSE, n)))
+	input.df <- data.frame(x = factor(used.labels,levels=rev(used.labels)), y = mean, ylo = lower, yhi = upper)
+	g.forest.plot(input.df)
+	
+    if (toFile) {
+		graphics.off()
+	}
+}
+
+
+g.forest.plot <- function(d){
+	# adapted from http://www.r-bloggers.com/forest-plots-using-r-and-ggplot2/
+# d is a data frame with 4 columns
+# d$x gives variable names
+# d$y gives center point
+# d$ylo gives lower limits
+# d$yhi gives upper limits
+	require(ggplot2)
+	p <- ggplot(d, aes(x=x, y=y, ymin=ylo, ymax=yhi))+geom_pointrange()+
+			coord_flip() + geom_hline(aes(x=0), lty=2) + xlab('Coefficient') + ylab('')
+	
+	print(p)
+	return(p)
 }

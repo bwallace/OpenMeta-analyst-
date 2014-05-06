@@ -333,7 +333,9 @@ coded.cat.mod.level <- function(lvl, l.mod) {
 
 
 
-g.meta.regression <- function(data, mods, method, level, digits, measure, btt=NULL) {
+g.meta.regression <- function(data, mods, method, level, digits, measure, btt=NULL,
+		make.coeff.forest.plot=FALSE, exclude.intercept=FALSE)# For coefficient forest plot
+{
 	# This is s a thin wrapper to metafor's meta regression functionality
 	# in order to let R do the dummy coding for us
 	#
@@ -398,6 +400,9 @@ g.meta.regression <- function(data, mods, method, level, digits, measure, btt=NU
 	
 	########################################################################
 
+	images <- c()
+	plot.names <- c()
+	plot.params.paths <- c()
 	# 1 continuous covariate, no categorical covariates
 	if (is.single.numeric.covariate(mods)) {
 		# if only 1 continuous covariate, create reg. plot
@@ -436,6 +441,23 @@ g.meta.regression <- function(data, mods, method, level, digits, measure, btt=NU
 		results[['plot_params_paths']] <- plot.params.paths
 		########################################################################
 	}
+	
+	coeff.forest.plot.path <- paste("r_tmp/", "bforestplot_", as.character(as.numeric(Sys.time())), ".png", sep = "")
+	if (make.coeff.forest.plot) {
+		forest.plot.of.regression.coefficients(as.vector(res$b), res$ci.lb, res$ci.ub, labels=rownames(res$b), exclude.intercept=exclude.intercept, filepath=coeff.forest.plot.path)
+		images <- c(images, "Forest Plot of Coefficients"=coeff.forest.plot.path)
+		plot.names <- c(plot.names, "coeff.forest.plot"="coeff.forest.plot")
+		plot.params.paths <- c("Forest Plot of Coefficients"="")
+	}
+	
+	# add regression plot to results
+	if (length(images)>0)
+		results[['images']] <- images
+	if (length(plot.names)>0)
+		results[['plot_names']] <- plot.names
+	if (length(plot.params.paths)>0)
+		results[['plot_params_paths']] <- plot.params.paths
+	
 	results
 }
 
