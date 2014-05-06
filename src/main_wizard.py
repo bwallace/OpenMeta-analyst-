@@ -338,7 +338,8 @@ class CsvImportPage(QWizardPage, forms.ui_csv_import_page.Ui_WizardPage):
         # Are the years integers?
         for row in range(len(self.imported_data)):
             try:
-                int(self.imported_data[row][DatasetModel.YEAR])
+                # -1 since the imported data doesn't have an 'include' column
+                int(self.imported_data[row][DatasetModel.YEAR-1])
             except ValueError:
                 QMessageBox.warning(self, "Whoops", "The year at row " + str(row+1) + " is not an integer number.")
                 self.imported_data_ok = False
