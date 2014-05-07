@@ -1304,6 +1304,7 @@ forest.plot.of.regression.coefficients <- function(coeffs, ci.lb, ci.ub, labels,
 	# b and se are as they come from metafor
 	# b is a m*1 matrix with rownames the names of the coefficients
 	# se is a vector
+	# filepath does not include the extension i.e. ".png" or ".pdf" but just the 'base' filename like /r_tmp/3434847
 	
 	n <- length(coeffs)
 	if (exclude.intercept) {
@@ -1311,35 +1312,20 @@ forest.plot.of.regression.coefficients <- function(coeffs, ci.lb, ci.ub, labels,
 	    lower <- ci.lb[2:n]
 		upper <- ci.ub[2:n]
 		used.labels <- labels[2:n]
-		tabletext <- cbind(c("Coefficient", used.labels))
 		n <- length(coeffs)-1
 	} else {
 		mean <- coeffs
 		lower <- ci.lb
 		upper <- ci.ub
 		used.labels <- labels
-		tabletext <- cbind(c("Coefficient", labels))
-		
 	}
 	
-	# attach NA to beginning to line up with labels
-	#mean <- c(NA, mean)
-	#lower <- c(NA, lower)
-	#upper <- c(NA, upper)
-	if (toFile) {
-		if (length(grep(".png", filepath)) != 0) {
-			png(filename=filepath)
-		} else {
-			pdf(file=filepath)
-		}
-	}
-    #forestplot(tabletext, mean=mean, lower=lower, upper=upper, is.summary=c(TRUE, rep(FALSE, n)))
+	# make the actual plot
 	input.df <- data.frame(x = factor(used.labels,levels=rev(used.labels)), y = mean, ylo = lower, yhi = upper)
-	g.forest.plot(input.df)
-	
-    if (toFile) {
-		graphics.off()
-	}
+	# save input data
+	cat(filepath)
+	save.coeff.forest.plot.data(input.df, filepath)
+	regenerate.coeff.forest.plot(input.df, filepath, "png")
 }
 
 
@@ -1356,4 +1342,27 @@ g.forest.plot <- function(d){
 	
 	print(p)
 	return(p)
+}
+
+regenerate.coeff.forest.plot <- function(input.df, filepath, format) {
+	if (format == "png") {
+		png(filename=paste(filepath,".png",sep=""))
+	} else {
+		pdf(file=paste(filepath,".pdf",sep=""))
+	}
+
+	g.forest.plot(input.df)
+	dev.off()
+}
+
+save.coeff.forest.plot.data <- function(input.df, params_path) {
+	# save the data, result and plot parameters to a tmp file on disk
+	if (is.null(params_path)){
+		# by default, we use thecurrent system time as a 'unique enough' filename
+		params_path <- paste("r_tmp/", 
+				as.character(as.numeric(Sys.time())), sep="")
+	}
+	
+	save(input.df, file=paste(params_path, ".coef_fp_data", sep=""))
+	params_path
 }

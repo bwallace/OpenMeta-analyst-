@@ -442,12 +442,13 @@ g.meta.regression <- function(data, mods, method, level, digits, measure, btt=NU
 		########################################################################
 	}
 	
-	coeff.forest.plot.path <- paste("r_tmp/", "bforestplot_", as.character(as.numeric(Sys.time())), ".png", sep = "")
+	coeff.forest.plot.path <- paste("r_tmp/", "bforestplot_", as.character(as.numeric(Sys.time())), sep = "")
+	
 	if (make.coeff.forest.plot) {
 		forest.plot.of.regression.coefficients(as.vector(res$b), res$ci.lb, res$ci.ub, labels=rownames(res$b), exclude.intercept=exclude.intercept, filepath=coeff.forest.plot.path)
-		images <- c(images, "Forest Plot of Coefficients"=coeff.forest.plot.path)
+		images <- c(images, "Forest Plot of Coefficients"=paste(coeff.forest.plot.path,".png",sep=""))
 		plot.names <- c(plot.names, "coeff.forest.plot"="coeff.forest.plot")
-		plot.params.paths <- c("Forest Plot of Coefficients"="")
+		plot.params.paths <- c("Forest Plot of Coefficients"=coeff.forest.plot.path)
 	}
 	
 	# add regression plot to results
