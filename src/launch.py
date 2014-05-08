@@ -7,6 +7,7 @@ import sys
 import time
 import meta_py_r
 import meta_form
+import meta_globals
 
 from meta_form import DISABLE_NETWORK_STUFF
 
@@ -43,6 +44,9 @@ def load_R_libraries(app, splash=None):
 
 def start():
     app = QtGui.QApplication(sys.argv)
+    app.setApplicationName("OpenMetaAnalyst")
+    app.setOrganizationName("CEBM")
+    meta_globals.setup_directories()
     
     splash_pixmap = QPixmap(":/misc/splash.png")
     splash = QSplashScreen(splash_pixmap)

@@ -179,11 +179,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 QApplication.quit()
             
     def closeEvent(self, event):
-        if self.current_data_unsaved:
-            if not self.user_is_going_to_lose_data():
-                # then they canceled!
-                event.ignore()
-        print "*** goodbye, dear analyst. ***"
+        self.quit()
 
 
     def _model_about_to_be_reset(self):
@@ -199,7 +195,13 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
     def create_new_dataset(self, use_undo_framework=True):
         if self.current_data_unsaved:
-            self.user_is_going_to_lose_data()
+            choice = self.prompt_to_save_unsaved_data()
+            if choice == QMessageBox.Yes:
+                self.save()
+            elif choice == QMessageBox.No:
+                pass
+            else: # cancel
+                return
         
         wizard = main_wizard.MainWizard(parent=self, path="new_dataset")
         if wizard.exec_():
@@ -975,8 +977,12 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         '''
         
         if self.current_data_unsaved:
-            if not self.user_is_going_to_lose_data():
-                # then they canceled!
+            choice = self.prompt_to_save_unsaved_data()
+            if choice == QMessageBox.Yes:
+                self.save()
+            elif choice == QMessageBox.No:
+                pass
+            else: # cancel
                 return
 
         # if no file path is provided, prompt the user.
@@ -992,7 +998,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             self.user_prefs['recent datasets'].remove(file_path)
         
         self.user_prefs['recent datasets'].append(file_path)
-        self._save_user_prefs()
         
         
         data_model = None
@@ -1222,36 +1227,36 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         
     def quit(self):
         if self.current_data_unsaved:
-            if self.user_is_going_to_lose_data():
-                QApplication.quit()
-        else:
-            # otherwise, just shutdown
-            QApplication.quit()
-
-    def user_is_going_to_lose_data(self):
-        save_first = QMessageBox.warning(self,
+            choice = self.prompt_to_save_unsaved_data()
+            if choice == QMessageBox.Yes:
+                self.save()
+            elif choice == QMessageBox.No:
+                pass
+            else: # Cancel
+                return 
+                
+        meta_globals.save_settings()
+        QApplication.quit()
+    
+    def prompt_to_save_unsaved_data(self):
+        choice = QMessageBox.warning(self,
                         "Warning",
-                        "you've made unsaved changes to your data. what do you want to do with them?",
-                        QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel)
-        
-        if save_first == QMessageBox.Save:
-            self.save()        
-
-        # return true so long as the user didn't *cancel*
-        return save_first != QMessageBox.Cancel
+                        "you've made unsaved changes to your data. Do you want to save your changes?",
+                        QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+        return choice
 
     def save_as(self):
         return self.save(save_as=True)
 
     def save(self, save_as=False):
         
-        base_path = str(os.path.abspath(os.getcwd()))
+        docs_path = meta_globals.get_user_documents_path()
         if self.out_path is None or save_as:
-            # fix for issue #58,1. -- use current dataset name in save path
+            # use current out_path otherwise base it on the current dataset name
             if self.out_path:
                 out_f = unicode(self.out_path)
             else:
-                out_f = os.path.join(base_path, self.model.get_name())
+                out_f = os.path.join(docs_path, self.model.get_name())
             
             out_f = unicode(QFileDialog.getSaveFileName(parent=self, caption="OpenMeta[analyst] - Save File",
                                                         directory=out_f, filter="open meta files: (.oma)"))
@@ -1285,7 +1290,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             # update user preferences to save the location of 
             # this dataset
             self.user_prefs['recent datasets'].append(self.out_path)
-            self._save_user_prefs()
             self.dataset_file_lbl.setText("open file: %s" % self.out_path)
             self.current_data_unsaved = False
         except Exception, e:
@@ -1293,60 +1297,19 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             print e
             raise Exception, "whoops. exception thrown attempting to save."
 
-    def load_user_prefs(self):
-        '''
-        Attempts to read a local dictionary of preferences
-        ('user_prefs.dict'). If not such file exists, this file
-        is created with defaults.
-        '''
-        
-        self.user_prefs = {}
-        if os.path.exists(meta_globals.PREFS_PATH):
-            try:
-                self.user_prefs = pickle.load(open(meta_globals.PREFS_PATH))
-            except:
-                print "preferences dictionary is corrupt! using defaults"
-                self.user_prefs = self._default_user_prefs()
-        else:
-            self.user_prefs = self._default_user_prefs()
 
-        # for backwards-compatibility
-        if not "method_params" in self.user_prefs:
-            self.user_prefs["method_params"] = {}
-
-        self._save_user_prefs()
-        print "loaded user preferences: %s" % self.user_prefs
         
     def _show_tom(self):
         tom_dlg = easter_egg.TomDialog(parent=self)
         tom_dlg.exec_()
-        
-    #def _show_picture(self, person):
-    #    persondlg = easter_egg.PersonDialog(parent=self, person=person)
-        
-        
 
     def update_user_prefs(self, field, value):
         self.user_prefs[field] = value
-        self._save_user_prefs()
             
     def get_user_method_params_d(self):
         return self.user_prefs["method_params"]
 
-    def _save_user_prefs(self):
-        try:
-            fout = open(meta_globals.PREFS_PATH, 'wb')
-            pickle.dump(self.user_prefs, fout)
-            fout.close()
-        except:
-            print "failed to write preferences data!"
-        
-    def _default_user_prefs(self):       
-        return {"splash":True,
-                "digits":3,
-                "recent datasets":[], 
-                "method_params":{},
-                }
+
         
     def _make_new_dataset_and_setup_spreadsheet(self,dataset_info):
         is_diag = dataset_info['data_type'] == "diagnostic"

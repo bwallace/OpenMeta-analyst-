@@ -283,9 +283,9 @@ class MA_Specs(QDialog, forms.ui_ma_specs.Ui_Dialog):
 
         # update the user_preferences object for the selected method
         # with the values selected for this run
-        current_dict = self.parent().get_user_method_params_d()
-        current_dict[self.current_method] = self.current_param_vals
-        self.parent().update_user_prefs("method_params", current_dict)
+        #current_dict = self.parent().get_user_method_params_d()
+        #current_dict[self.current_method] = self.current_param_vals
+        #self.parent().update_user_prefs("method_params", current_dict)
         self.parent().analysis(result)
         self.accept()
 

@@ -105,14 +105,19 @@ def RfunctionCaller(function):
 
 @RfunctionCaller
 def reset_Rs_working_dir():
+    ''' resets R's working directory to the the application base_path, not to r_tmp!'''
     print("resetting R working dir")
 
     # Fix paths issue in windows
-    r_str = "setwd('%s')" % meta_globals.BASE_PATH
-    r_str = r_str.replace("\\","\\\\")
+    base_path = meta_globals.get_base_path()
+    base_path = meta_globals.to_posix_path(base_path)
 
+    print("Trying to set base_path to %s" % base_path)
+    r_str = "setwd('%s')" % base_path
     # Executing r call with escaped backslashes
-    ro.r(r_str) 
+    ro.r(r_str)
+
+    print("Set R's working directory to %s" % base_path)
 
 @RfunctionCaller
 def impute_diag_data(diag_data_dict):
