@@ -137,6 +137,7 @@ create.summary.disp <- function(om.data, params, res, model.title) {
     scale.str <- get.scale(params)
     tau2 <- sprintf(digits.str, res$tau2)
     degf <- res$k - 1
+    I2 <- round(res$I2, digits=params$digits)
     QLabel =  paste("Q(df=", degf, ")", sep="")
     # Set n, the vector of numbers of studies, for PFT metric.
     if (params$measure=="PFT" && length(om.data@g1O1) > 0 && length(om.data@g1O2) > 0) {
@@ -146,11 +147,8 @@ create.summary.disp <- function(om.data, params, res, model.title) {
 		n <- NULL # don't need n except for PFT (freeman-tukey)
 	}
     if (!is.null(res$QE)) {
-      I2 <- max(0, (res$QE - degf)/res$QE)
-      I2 <- paste(100 * round(I2, digits = 2), "%", sep="")
       QE <- sprintf(digits.str, res$QE)
     } else {
-      I2 <- "NA"
       QE <- "NA"
     }
     if (!is.null(res$QEp)) {
