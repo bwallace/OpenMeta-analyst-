@@ -19,18 +19,12 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4 import QtCore, QtGui
 
-#import pdb
-#import sys
 import copy
-import os
-#import sip
 
 import forms.ui_ma_specs
-import meta_py_r
-from meta_globals import (check_plot_bound, DIAG_METRIC_NAMES_D, 
-                          METHODS_WITH_NO_FOREST_PLOT, ONE_ARM_METRICS,
-                          seems_sane)
-import meta_globals
+#import meta_py_r
+from meta_globals import *
+from settings import *
 import diagnostic_explain
 
 ###
@@ -168,7 +162,7 @@ class MA_Specs(QDialog, forms.ui_ma_specs.Ui_Dialog):
         result = None
         
         if self.data_type == "binary":
-            data_type = meta_globals.BINARY
+            data_type = BINARY
         
         if self.data_type not in ["binary","continuous"]:
             raise ValueError("Network Analysis can currently only be done with binary or continuous data")
@@ -281,11 +275,6 @@ class MA_Specs(QDialog, forms.ui_ma_specs.Ui_Dialog):
 
         bar.hide()
 
-        # update the user_preferences object for the selected method
-        # with the values selected for this run
-        #current_dict = self.parent().get_user_method_params_d()
-        #current_dict[self.current_method] = self.current_param_vals
-        #self.parent().update_user_prefs("method_params", current_dict)
         self.parent().analysis(result)
         self.accept()
 
@@ -612,10 +601,10 @@ class MA_Specs(QDialog, forms.ui_ma_specs.Ui_Dialog):
         # they selected then are automatically set as the defaults now.
         # these defaults, if they exist, are stored in the user_preferences 
         # dictionary
-        method_params = self.parent().user_prefs["method_params"]
-        if self.current_method in method_params:
-            print "loading default from user preferences!"
-            self.current_defaults = method_params[self.current_method]
+#         method_params = self.parent().user_prefs["method_params"]
+#         if self.current_method in method_params:
+#             print "loading default from user preferences!"
+#             self.current_defaults = method_params[self.current_method]
             
         # override conf.level with global conf.level
         self.current_defaults['conf.level'] = self.conf_level
@@ -705,8 +694,7 @@ class MA_Specs(QDialog, forms.ui_ma_specs.Ui_Dialog):
             # we'll here tell the user what's up (issue #83, issue #115)
             # (but we only show it if they haven't disabled this)
 
-            if not ("explain_diag" in self.parent().user_prefs) or \
-                    self.parent().user_prefs["explain_diag"]:
+            if get_setting("explain_diag"):
                 diag_explain_window = diagnostic_explain.DiagnosticExplain(parent=self)
                 diag_explain_window.show()
 
