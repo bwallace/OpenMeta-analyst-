@@ -30,8 +30,15 @@ library(metafor)
 
 regression.wrapper <- function(data, mods.str, method, level, digits, btt=NULL) {
 	# Construct call to rma
-	call_str <- sprintf("rma.uni(yi,vi, mods=%s, data=data, method=\"%s\", level=%f, digits=%d)", mods.str, method, level, digits)
-	#cat(call_str,"\n")
+	if (!is.null(btt)) {
+		btt.str <- paste("c(",paste(btt,collapse=", "),")", sep="")
+		call_str <- sprintf("rma.uni(yi,vi, mods=%s, data=data, method=\"%s\", level=%f, digits=%d, btt=%s)", mods.str, method, level, digits, btt.str)
+	} else {
+		call_str <- sprintf("rma.uni(yi,vi, mods=%s, data=data, method=\"%s\", level=%f, digits=%d)", mods.str, method, level, digits)
+				
+	}
+	#printf(sprintf("Call str: %s\n", call_str))
+	cat(call_str,"\n")
 	expr<-parse(text=call_str) # convert to expression
 	res <- eval(expr) # evaluate expression
 	res
@@ -330,8 +337,6 @@ g.meta.regression <- function(data, mods, method, level, digits, btt=NULL) {
 	# This is s a thin wrapper to metafor's meta regression functionality
 	# in order to let R do the dummy coding for us
 	#
-	# mods.str: string to be passed to metafor to implement the moderators
-	#     e.g. ~ gfactor(alloc)+ablat+gfactor(country)+gfactor(alloc):gfactor(country)
 	# mods: list(numeric=c(...numeric moderators...),
 	#            categorical=c(...categorical moderators...),
 	#            interactions=list("A:B"=c("A","B"),"B:C"=c("B",C"),...)
@@ -344,6 +349,8 @@ g.meta.regression <- function(data, mods, method, level, digits, btt=NULL) {
 	# the parts that are 'factors' have already been made in to factors with
 	# the appropriate reference values
 	
+	# mods.str: string to be passed to metafor to implement the moderators
+	#     e.g. ~ gfactor(alloc)+ablat+gfactor(country)+gfactor(alloc):gfactor(country)
 	mods.str <- make.mods.str(mods)
 	
 	# obtain regression result rma.uni
@@ -356,18 +363,29 @@ g.meta.regression <- function(data, mods, method, level, digits, btt=NULL) {
 	res_and_residuals$residuals <- residuals
 	res_and_residuals.info <- c(rma.uni.value.info(),
 			                    list(residuals=list(type="blob", description="Standardized residuals for fitted models")))
-					
 	
+	Summary <- paste(capture.output(res), collapse="\n")  # convert print output to a string
+	# add regression model formula to output
+	regression.model.formula.str <- sprintf("Regression model formula: yi %s", mods.str)
+	Summary <- paste(Summary, regression.model.formula.str, sep="\n\n")
+	# add regresison model equation to output
+	est.coeffs <- round(res$b[,1], digits=digits)
+	tmp <- est.coeffs[2:length(est.coeffs)] # w/o intercept
+	tmp <- paste(tmp, names(tmp), sep="*")
+	tmp <- paste(tmp, collapse=" + ")
+	reg.equation <- paste(est.coeffs[1],tmp, sep=" + ")
+	reg.equation.str <- sprintf("Regression model equation: %s", reg.equation)
+	Summary <- paste(Summary, reg.equation.str, sep="\n")
 
 	results <- list(#"images"=images,
-			"Summary"=paste(capture.output(res), collapse="\n"), # convert print output to a string
+			"Summary"=Summary,
 			#"plot_names"=plot.names,
 			#"plot_params_paths"=plot.params.paths,
 			"res"=res_and_residuals, #res,
 			"res.info"=res_and_residuals.info)# rma.uni.value.info())
 }
 
-g.meta.regression.cond.means <- function(data, mods, method, level, digits, strat.cov, cond.means.data) {
+g.meta.regression.cond.means <- function(data, mods, method, level, digits, strat.cov, cond.means.data, btt=NULL) {
 	# Same as g.meta.regression. except we have conditional means output
 	# strat_cov: the categorical covariate (name) to stratify the results of the conditional means over
 	# cond.means.data: The values for the other covariates given as a list:
@@ -376,7 +394,7 @@ g.meta.regression.cond.means <- function(data, mods, method, level, digits, stra
 	mods.str <- make.mods.str(mods)
 	
 	# obtain regression result rma.uni
-	res <- regression.wrapper(data, mods.str, method, level, digits,btt=NULL)
+	res <- regression.wrapper(data, mods.str, method, level, digits,btt)
 	
 	### Generate conditional means output
 	A <- make.design.matrix(strat.cov, mods, cond.means.data, data)
@@ -414,7 +432,9 @@ g.meta.regression.cond.means <- function(data, mods, method, level, digits, stra
 				)
 }
 
-g.bootstrap.meta.regression <- function(data, mods, method, level, digits, n.replicates, histogram.title="", bootstrap.plot.path="./r_tmp/bootstrap.png") {
+g.bootstrap.meta.regression <- function(data, mods, method, level, digits,
+		n.replicates, histogram.title="", bootstrap.plot.path="./r_tmp/bootstrap.png",
+		btt=NULL) {
 	# Bootstrapped meta-regression
 	# A subset is valid if, for each categorical variable, all the levels are
 	# preset
@@ -450,7 +470,7 @@ g.bootstrap.meta.regression <- function(data, mods, method, level, digits, n.rep
 			}
 			
 			res.tmp <- tryCatch({
-						regression.wrapper(data[indices,], mods.str, method, level, digits,btt=NULL)
+						regression.wrapper(data[indices,], mods.str, method, level, digits,btt)
 					  }, error = function(e) {
 						failures <<- failures + 1
 						indices <- sample.int(nrow(data), size=length(indices), replace=TRUE)
@@ -519,7 +539,8 @@ g.bootstrap.meta.regression <- function(data, mods, method, level, digits, n.rep
 
 g.bootstrap.meta.regression.cond.means <- function(
     data, mods, method, level, digits, strat.cov, cond.means.data,
-    n.replicates, histogram.title="", bootstrap.plot.path="./r_tmp/bootstrap.png") {
+    n.replicates, histogram.title="", bootstrap.plot.path="./r_tmp/bootstrap.png",
+	btt=NULL) {
 	# Bootstrapped meta-regression Conditional means
 	# A subset is valid if, for each categorical variable, all the levels are
 	# preset
@@ -555,7 +576,7 @@ g.bootstrap.meta.regression.cond.means <- function(
 			}
 			
 			res.tmp <- tryCatch({
-						regression.wrapper(data[indices,], mods.str, method, level, digits,btt=NULL)
+						regression.wrapper(data[indices,], mods.str, method, level, digits,btt)
 					}, error = function(e) {
 						failures <<- failures + 1
 						indices <- sample.int(nrow(data), size=length(indices), replace=TRUE)
@@ -634,107 +655,108 @@ g.bootstrap.meta.regression.cond.means <- function(
 
 
 meta.regression <- function(reg.data, params, cond.means.data=NULL, stop.at.rma=FALSE) {
-  cov.data <- extract.cov.data(reg.data)
-  cov.array <- cov.data$cov.array
-  cat.ref.var.and.levels <- cov.data$cat.ref.var.and.levels
+	cov.data <- extract.cov.data(reg.data)
+	cov.array <- cov.data$cov.array
+	cat.ref.var.and.levels <- cov.data$cat.ref.var.and.levels
 
-  # remove when and if method dialog is added
-  method <- as.character(params$rm.method)
+	# remove when and if method dialog is added
+	method <- as.character(params$rm.method)
    
 
-  res<-rma.uni(yi=reg.data@y, sei=reg.data@SE, slab=reg.data@study.names,
-          level=params$conf.level, digits=params$digits,
-          method=method, mods=cov.array)
-  pure.res<-res
-  # Used for when we just need the intermediate results (e.g. bootstrapping)
-  if (stop.at.rma) {
-    return(res) 
-  } 
+	
+	res<-rma.uni(yi=reg.data@y, sei=reg.data@SE, slab=reg.data@study.names,
+					level=params$conf.level, digits=params$digits,
+					method=method, mods=cov.array)
+	pure.res<-res
+	# Used for when we just need the intermediate results (e.g. bootstrapping)
+	if (stop.at.rma) {
+		return(res) 
+	}	
+				
+#   if (class(res)[1] != "try-error") {
+       display.data <- cov.data$display.data
+       reg.disp <- create.regression.display(res, params, display.data)
+   
+	   # 1 continuous covariate, no categorical covariates
+       if (display.data$n.cont.covs==1 & length(display.data$factor.n.levels)==0) {
+            # if only 1 continuous covariate, create reg. plot
+            betas <- res$b
+            fitted.line <- list(intercept=betas[1], slope=betas[2])
+            plot.path <- "./r_tmp/reg.png"
+            plot.data <- create.plot.data.reg(reg.data, params, fitted.line)
 
-  display.data <- cov.data$display.data
-  reg.disp <- create.regression.display(res, params, display.data)
+            # @TODO x and y labels ought to be passed in, probably
+            plot.data$xlabel <- reg.data@covariates[[1]]@cov.name
+            scale.str <- get.scale(params)
+            if ((scale.str=="standard") || (scale.str=="arcsine")) {
+                scale.str <- ""
+                # This is for the y-axis label on regression plot - don't add "standard" or "arcsine" to label.
+            }
+            plot.data$ylabel <- paste(scale.str, " ", pretty.metric.name(as.character(params$measure)), sep="")
+            meta.regression.plot(plot.data, plot.path)
+            
+            # write the plot data to disk so we can save it
+            # @TODO will want to write the params data, too,
+            # eventually
+            plot.data.path <- save.plot.data(plot.data)
 
-  # 1 continuous covariate, no categorical covariates
-  if (display.data$n.cont.covs==1 & length(display.data$factor.n.levels)==0) {
-      # if only 1 continuous covariate, create reg. plot
-      betas <- res$b
-      fitted.line <- list(intercept=betas[1], slope=betas[2])
-      plot.path <- "./r_tmp/reg.png"
-      plot.data <- create.plot.data.reg(reg.data, params, fitted.line)
-
-      # @TODO x and y labels ought to be passed in, probably
-      plot.data$xlabel <- reg.data@covariates[[1]]@cov.name
-      scale.str <- get.scale(params)
-      if ((scale.str=="standard") || (scale.str=="arcsine")) {
-          scale.str <- ""
-          # This is for the y-axis label on regression plot - don't add "standard" or "arcsine" to label.
-      }
-      plot.data$ylabel <- paste(scale.str, " ", pretty.metric.name(as.character(params$measure)), sep="")
-      meta.regression.plot(plot.data, plot.path)
-      
-      # write the plot data to disk so we can save it
-      # @TODO will want to write the params data, too,
-      # eventually
-      plot.data.path <- save.plot.data(plot.data)
-
-      images <- c("Regression Plot"=plot.path)
-      plot.names <- c("reg.plot"="reg.plot")
-      reg.plot.params.path <- save.plot.data(plot.data)
-      plot.params.paths <- c("Regression Plot"=plot.data.path)
-      pure.res$weights <- weights(res)
-      results <- list("images"=images,
-            "Summary"=reg.disp,
-            "plot_names"=plot.names,
-            "plot_params_paths"=plot.params.paths,
-            "res"=pure.res,
-            "res.info"=rma.uni.value.info())
-  } else if (isnt.null(cond.means.data)) { 
-      # Give the conditional means results
-      mr.cond.means.disp <- cond_means_display(res, params, display.data, reg.data=reg.data, cat.ref.var.and.levels=cat.ref.var.and.levels, cond.means.data=cond.means.data)
-      res.output <- c(pure.res,
-              list(Conditional_Means_Section=paste("############################",cond.means.info(cond.means.data), sep="\n"),
-                 Conditional_Means=mr.cond.means.disp))
-      res.output.info <- c(rma.uni.value.info(),
-                 list(Conditional_Means_Section = list(type="vector", description=""),
-                          Conditional_Means=list(type="blob", description="")))
-      results <- list("Summary"=reg.disp,
-              "Conditional Means"=mr.cond.means.disp,
-              "res"= res.output,
-              "res.info"= res.output.info
-                )
-              
-              
-    } else if (display.data$n.cont.covs==0 & length(display.data$factor.n.levels)==1) {
-      adj.reg.disp <- adjusted_means_display(res, params, display.data)
-      res.output <- c(pure.res,
-              list(Adjusted_Means_Section="#############################",
-                 Adjusted_Means=adj.reg.disp))
-      res.output.info <- c(rma.uni.value.info(),
-                 list(Adjusted_Means_Section=list(type="vector", description=""),
-                    Adjusted_Means=list(type="blob", description="")))
-      results <- list("Summary"=reg.disp,
-                            "Adjusted Mean"=adj.reg.disp,
-              "res"=res.output,
-              "res.info"=res.output.info)
-    } else {
-      results <- list("Summary"=reg.disp,
-              "res"=pure.res,
-              "res.info"=rma.uni.value.info())
-    }
-  
-  references <- "Meta Regression: meta regression citation placeholder"
-  results[["References"]] <- references
+            images <- c("Regression Plot"=plot.path)
+            plot.names <- c("reg.plot"="reg.plot")
+            reg.plot.params.path <- save.plot.data(plot.data)
+            plot.params.paths <- c("Regression Plot"=plot.data.path)
+			pure.res$weights <- weights(res)
+            results <- list("images"=images,
+					        "Summary"=reg.disp,
+							"plot_names"=plot.names,
+                            "plot_params_paths"=plot.params.paths,
+							"res"=pure.res,
+							"res.info"=rma.uni.value.info())
+		} else if (isnt.null(cond.means.data)) { # Give the conditional means results
+			mr.cond.means.disp <- cond_means_display(res, params, display.data, reg.data=reg.data, cat.ref.var.and.levels=cat.ref.var.and.levels, cond.means.data=cond.means.data)
+			res.output <- c(pure.res,
+							list(Conditional_Means_Section=paste("############################",cond.means.info(cond.means.data), sep="\n"),
+								 Conditional_Means=mr.cond.means.disp))
+			res.output.info <- c(rma.uni.value.info(),
+								 list(Conditional_Means_Section = list(type="vector", description=""),
+						              Conditional_Means=list(type="blob", description="")))
+			results <- list("Summary"=reg.disp,
+							"Conditional Means"=mr.cond.means.disp,
+							"res"= res.output,
+							"res.info"= res.output.info
+							  )
+							
+							
+		} else if (display.data$n.cont.covs==0 & length(display.data$factor.n.levels)==1) {
+			adj.reg.disp <- adjusted_means_display(res, params, display.data)
+			res.output <- c(pure.res,
+							list(Adjusted_Means_Section="#############################",
+								 Adjusted_Means=adj.reg.disp))
+			res.output.info <- c(rma.uni.value.info(),
+								 list(Adjusted_Means_Section=list(type="vector", description=""),
+									  Adjusted_Means=list(type="blob", description="")))
+			results <- list("Summary"=capture.output.and.collapse(reg.disp),
+                            "Adjusted Mean"=capture.output.and.collapse(adj.reg.disp),
+							"res"=res.output,
+							"res.info"=res.output.info)
+		} else {
+			results <- list("Summary"=reg.disp,
+							"res"=pure.res,
+							"res.info"=rma.uni.value.info())
+		}
+	
+	references <- "Meta Regression: meta regression citation placeholder"
+	results[["References"]] <- references
     results
 }
 
 cond.means.info <- function(cond.means.data) {
-  blurb <- paste("\nConditional means for '",as.character(cond.means.data$chosen.cov.name), "',\nstratified over its levels given the following values for the other covariates:\n", sep="")
-  for (name in names(cond.means.data)) {
-    if (name != 'chosen.cov.name') {
-      blurb <- paste(blurb, name, " = ", cond.means.data[[name]], "\n", sep="")
-    }
-  }
-  return(blurb)
+	blurb <- paste("\nConditional means for '",as.character(cond.means.data$chosen.cov.name), "',\nstratified over its levels given the following values for the other covariates:\n", sep="")
+	for (name in names(cond.means.data)) {
+		if (name != 'chosen.cov.name') {
+			blurb <- paste(blurb, name, " = ", cond.means.data[[name]], "\n", sep="")
+		}
+	}
+	return(blurb)
 }
 
 
@@ -758,8 +780,8 @@ extract.cov.data <- function(reg.data, dont.make.array = FALSE) {
     cov.name <- cov@cov.name
     cov.vals <- cov@cov.vals
     cov.type <- cov@cov.type
-  #debug_print <- paste(c("Cov name: ", cov.name, "\nCov type: ", cov.type,"\n"))
-  #print(debug_print)
+	#debug_print <- paste(c("Cov name: ", cov.name, "\nCov type: ", cov.type,"\n"))
+	#print(debug_print)
     ref.var <- cov@ref.var
     if (cov.type=="continuous") {
       cov.col <- array(cov.vals, dim=c(length(reg.data@y), 1), 
@@ -775,17 +797,17 @@ extract.cov.data <- function(reg.data, dont.make.array = FALSE) {
       levels.minus.NA <- setdiff(levels, "")
       # Levels except for reference variable
       levels.minus.ref.var <- setdiff(levels.minus.NA, ref.var)
-    
-    
+	  
+	  
       cov.cols <- array(dim=c(length(reg.data@y), length(levels.minus.ref.var)))
       studies.col <- c(sum(cov.vals==ref.var))
       for (col.index in 1:length(levels.minus.ref.var)) {
-        level <- levels.minus.ref.var[col.index]
-        if (!dont.make.array) {
+           level <- levels.minus.ref.var[col.index]
+		   if (!dont.make.array) {
                cov.cols[cov.vals!="" & cov.vals!=level, col.index] <- 0
                cov.cols[cov.vals!="" & cov.vals==level, col.index] <- 1
-        }
-        studies.col <- c(studies.col, sum(cov.vals==level)) 
+	       }
+           studies.col <- c(studies.col, sum(cov.vals==level)) 
       }
       factor.cov.array <- cbind(factor.cov.array, cov.cols)
       factor.n.levels <- c(factor.n.levels, length(levels.minus.NA))
@@ -793,8 +815,8 @@ extract.cov.data <- function(reg.data, dont.make.array = FALSE) {
       factor.studies.display.col <- c() 
       levels.display.col <- c(levels.display.col, ref.var, levels.minus.ref.var)
       studies.display.col <- c(studies.display.col, studies.col)
-      ref.var.and.levels.in.order <- c(ref.var, levels.minus.ref.var) ####
-      cat.cov.ref.var.and.levels[[cov.name]] <- ref.var.and.levels.in.order ####
+	  ref.var.and.levels.in.order <- c(ref.var, levels.minus.ref.var) ####
+	  cat.cov.ref.var.and.levels[[cov.name]] <- ref.var.and.levels.in.order ####
       }
   }
   cov.array <- cbind(cont.cov.array, factor.cov.array)
@@ -838,9 +860,9 @@ binary.fixed.meta.regression <- function(reg.data, params){
                                   regline = TRUE)   
         images <- c("Regression Plot"=plot.path)
         plot.names <- c("forest plot"="reg.plot")
-        results <- list("images"=images, "Summary"=reg.disp, "plot_names"=plot.names)
+        results <- list("images"=images, "Summary"=capture.output.and.collapse(reg.disp), "plot_names"=plot.names)
     } else {
-        results <- list("Summary"=reg.disp)
+        results <- list("Summary"=capture.output.and.collapse(reg.disp))
     }
 
 }
@@ -875,7 +897,7 @@ random.meta.regression <- function(reg.data, params, cov.name){
                                   regline = TRUE)   
     images <- c("Regression Plot"=plot.path)
     plot.names <- c("forest plot"="reg.plot")
-    results <- list("images"=images, "Summary"=reg.disp, "plot_names"=plot.names)
+    results <- list("images"=images, "Summary"=capture.output.and.collapse(reg.disp), "plot_names"=plot.names)
     results
 }
 
@@ -916,4 +938,3 @@ categorical.meta.regression <- function(reg.data, params, cov.names) {
   reg.disp <- create.regression.disp(res, params, cov.names=dimnames(cov.data)[[2]]) 
   results <- list("Summary"=reg.disp)
 }
-

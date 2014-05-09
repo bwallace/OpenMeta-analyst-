@@ -240,7 +240,7 @@ binary.fixed.inv.var <- function(binary.data, params){
                 results <- list("input_data"=binary.data,
 								"input_params"=input.params,
 								"images"=images,
-						        "Summary"=summary.disp,
+						        "Summary"=capture.output.and.collapse(summary.disp),
                                 "plot_names"=plot.names, 
                                 "plot_params_paths"=plot.params.paths,
                                 "res"=pure.res,
@@ -364,7 +364,7 @@ binary.fixed.mh <- function(binary.data, params){
                 results <- list("input_data"=binary.data,
 								"input_params"=input.params,
 								"images"=images,
-                                "Summary"=summary.disp, 
+                                "Summary"=capture.output.and.collapse(summary.disp), 
                                 "plot_names"=plot.names,
                                 "plot_params_paths"=plot.params.paths,
                                 "res"=pure.res,
@@ -524,7 +524,7 @@ binary.fixed.peto <- function(binary.data, params) {
                 results <- list("input_data"=binary.data,
 								"input_params"=input.params,
 								"images"=images,
-						        "Summary"=summary.disp,
+						        "Summary"=capture.output.and.collapse(summary.disp),
                                 "plot_names"=plot.names,
 								"plot_params_paths"=plot.params.paths,
                                 "res"=pure.res, # if res is here, res.info must be too
@@ -676,7 +676,7 @@ binary.random <- function(binary.data, params){
                 results <- list("input_data"=binary.data, # the data that was given to the routine in the first place
                                 "input_params"=input.params,
                                 "images"=images,
-						        "Summary"=summary.disp,
+						        "Summary"=capture.output.and.collapse(summary.disp),
                                 "plot_names"=plot.names,
 								"plot_params_paths"=plot.params.paths,
                                 "res"=pure.res, # the results directly from metafor in order to extract values of interests

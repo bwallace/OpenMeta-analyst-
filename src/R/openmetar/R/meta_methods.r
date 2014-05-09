@@ -156,36 +156,47 @@ construct.sequential.res.output <- function(seq.res, value.info, replacements=li
 }
 
 construct.subgroup.res.output <- function(subgroups.res) {
-	# value.info is the value.info from the basic fname
+	# output is a list of subgroup results
 	
-	subgroups.res.with.titles <- list()
-	i <- 0
+#	subgroups.res.with.titles <- list()
+#	i <- 0
+#	for (res in subgroups.res) {
+#		i <- i+1
+#		hashmarks <- "###################################" # this is the 'value' to print under the label
+#		title<-paste("SUBGROUP",i, sep="_")
+#		toadd = list()
+#		toadd[[title]]=hashmarks
+#		toadd <- c(toadd, res)
+#		subgroups.res.with.titles <- c(subgroups.res.with.titles, toadd)
+#	}
+#	subgroups.res.with.titles
+	
+	output = list()
+	count = 0
 	for (res in subgroups.res) {
-		i <- i+1
-		hashmarks <- "###################################" # this is the 'value' to print under the label
-		title<-paste("SUBGROUP",i, sep="_")
-		toadd = list()
-		toadd[[title]]=hashmarks
-		toadd <- c(toadd, res)
-		subgroups.res.with.titles <- c(subgroups.res.with.titles, toadd)
+		count <- count + 1
+		output[[count]] <- res
 	}
-	subgroups.res.with.titles
+	output
 }
 
 construct.subgroup.value.info <- function(value.info, subgroup.list) {
 	# value.info is the value.info from the basic fname
+	# subgroup.list is a character vector of subgroup names
+	# Subgroup value info will be a list of single value infos mofo e.g.
+	#     list('Subgroup X'=list(b=list(type="vector" ......), ....),
+	#          'Subgroup Y'=list(b=list(type="vector" ......), ....)
+	#         )
 	
 	subgroup.value.info <- list()
-	i <- 0
-	for (subgroup in subgroup.list) {
-		i <- i+1
-		subgroup.info <- list()
-		title<-paste("SUBGROUP",i, sep="_")
-		subgroup.info[[title]] = list(type="vector", description=subgroup)
-		subgroup.value.info <- c(subgroup.value.info, subgroup.info, value.info)
+	for (subgroup_name in subgroup.list) {
+		subgroup.title<-paste("Subgroup",subgroup_name, sep=" ")
+		subgroup.value.info[[subgroup.title]] = value.info
 	}
+	subgroup.value.info[["Overall"]] = value.info
 	subgroup.value.info
 }
+
 
 bootstrap.binary <- function(fname, omdata, params, cond.means.data=FALSE) {
 	bootstrap(fname, omdata, params, cond.means.data)
