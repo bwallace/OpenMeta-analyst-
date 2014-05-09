@@ -8,8 +8,6 @@
 # Custom QTableView, implements copy/paste and undo/redo.   #
 #############################################################
 
-import pdb
-
 print("In ma_data_table_view: Importing pyqt4 stuff")
 from PyQt4 import QtCore, QtGui
 from PyQt4.Qt import *

@@ -1,4 +1,0 @@
-for FILE in *.py
-do
-git mv $FILE $FILE.bak;
-done

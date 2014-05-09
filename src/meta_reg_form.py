@@ -1,5 +1,4 @@
 from PyQt4.Qt import *
-import pdb
 
 import forms.ui_meta_reg
 import meta_py_r

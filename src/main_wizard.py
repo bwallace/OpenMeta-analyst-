@@ -4,10 +4,8 @@ import forms.ui_data_type_page
 import forms.ui_outcome_name_page
 import forms.ui_welcome_page
 
-from PyQt4.Qt import *
+from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-from PyQt4 import QtCore, QtGui
-import pdb
 import meta_globals
 from ma_data_table_model import DatasetModel
 
@@ -18,12 +16,8 @@ class WelcomePage(QWizardPage, forms.ui_welcome_page.Ui_WizardPage):
         self.setupUi(self)
         
         self.recent_datasets = recent_datasets
-        self.recent_datasets.reverse() # most recently accessed dataset first
-        
         self.selected_dataset = None
-        
-        self.setPixmap(QtGui.QWizard.BackgroundPixmap, QtGui.QPixmap(':/wizard_images/wizard_images/forest.jpg'))
-
+        self.setPixmap(QWizard.BackgroundPixmap, QPixmap(':/wizard_images/wizard_images/forest.jpg'))
         self._setup_connections()
         
     def initializePage(self):
@@ -52,7 +46,7 @@ class WelcomePage(QWizardPage, forms.ui_welcome_page.Ui_WizardPage):
             # then add a drop-down to the 'open recent' 
             # button with the recent datasets.
             qm = QMenu()
-            for dataset in self.recent_datasets:
+            for dataset in self.recent_datasets[::-1]: # most recent dataset is last in list
                 action_item = QAction(QString(dataset), qm)
                 qm.addAction(action_item)
                 # I wanted to handle this with lambdas, but the method would
@@ -105,7 +99,7 @@ class DataTypePage(QWizardPage, forms.ui_data_type_page.Ui_DataTypePage):
         
         QObject.connect(self.buttonGroup, SIGNAL("buttonClicked(QAbstractButton*)"), self._button_selected)
         
-        self.setPixmap(QtGui.QWizard.BackgroundPixmap, QtGui.QPixmap(':/wizard_images/wizard_images/laplace.jpg'))
+        self.setPixmap(QWizard.BackgroundPixmap, QPixmap(':/wizard_images/wizard_images/laplace.jpg'))
     
     def initializePage(self):
         #self.wizard().adjustSize()
@@ -183,7 +177,7 @@ class DataTypePage(QWizardPage, forms.ui_data_type_page.Ui_DataTypePage):
         
         
 ###############################################################################
-class ChooseMetricPage(QtGui.QWizardPage, forms.ui_choose_metric_page.Ui_WizardPage):
+class ChooseMetricPage(QWizardPage, forms.ui_choose_metric_page.Ui_WizardPage):
     def __init__(self, parent=None):
         super(ChooseMetricPage, self).__init__(parent)
         self.setupUi(self)
@@ -213,7 +207,7 @@ class ChooseMetricPage(QtGui.QWizardPage, forms.ui_choose_metric_page.Ui_WizardP
             # Resize the dialog
             self.metric_cbo_box.blockSignals(False)
         
-        self.setPixmap(QtGui.QWizard.BackgroundPixmap, QtGui.QPixmap(':/wizard_images/wizard_images/airy.jpg'))
+        self.setPixmap(QWizard.BackgroundPixmap, QPixmap(':/wizard_images/wizard_images/airy.jpg'))
         #self.wizard().adjustSize()
         
     def _metric_choice_changed(self, newindex):
@@ -234,7 +228,7 @@ class CsvImportPage(QWizardPage, forms.ui_csv_import_page.Ui_WizardPage):
         self.connect(self.from_excel_chkbx,  SIGNAL("stateChanged(int)"), self._rebuild_display)
         self.connect(self.has_headers_chkbx, SIGNAL("stateChanged(int)"), self._rebuild_display)
         
-        self.setPixmap(QtGui.QWizard.BackgroundPixmap, QtGui.QPixmap(':/wizard_images/wizard_images/cochran.jpg'))
+        self.setPixmap(QWizard.BackgroundPixmap, QPixmap(':/wizard_images/wizard_images/cochran.jpg'))
     
     def initializePage(self):
         ######################################################
@@ -461,7 +455,7 @@ class OutcomeNamePage(QWizardPage, forms.ui_outcome_name_page.Ui_WizardPage):
         super(OutcomeNamePage, self).__init__(parent)
         self.setupUi(self)
         
-        self.setPixmap(QtGui.QWizard.BackgroundPixmap, QtGui.QPixmap(':/wizard_images/wizard_images/fisher.jpg'))
+        self.setPixmap(QWizard.BackgroundPixmap, QPixmap(':/wizard_images/wizard_images/fisher.jpg'))
         
         self.registerField("outcomeName*", self.outcome_name_LineEdit)
         
@@ -476,7 +470,7 @@ class OutcomeNamePage(QWizardPage, forms.ui_outcome_name_page.Ui_WizardPage):
             return -1
 ################################################################################          
 Page_Welcome, Page_DataType, Page_ChooseMetric, Page_OutcomeName, Page_CsvImport = range(5)
-class MainWizard(QtGui.QWizard):
+class MainWizard(QWizard):
     def __init__(self, parent=None, path=None, recent_datasets=[]):
         super(MainWizard, self).__init__(parent)
         
@@ -569,7 +563,7 @@ if __name__ == '__main__':
 
     import sys
 
-    app = QtGui.QApplication(sys.argv)
+    app = QApplication(sys.argv)
     wizard = MainWizard()
     wizard.show()
     sys.exit(app.exec_())

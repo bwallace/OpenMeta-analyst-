@@ -12,7 +12,6 @@
 
 import random
 from PyQt4.Qt import *
-import pdb
 import os
 import sys
 import ui_results_window
