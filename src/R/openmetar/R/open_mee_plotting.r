@@ -102,7 +102,7 @@ create.phylogenetic.ma.plot.data <- function (data, res, params, conf.level) {
 		pval.str <- paste0("< ", cutoff)
 	}
 	overall.str <- sprintf("Overall (P %s)", pval.str) # I^2 not in rma.mv ??
-	label <- c("Studies",data$slab,overall.str)
+	label <- c(as.character(params$fp_col1_str),data$slab,overall.str)
 	forest.data$label <- label # attach to forest.data
 	
 	### types
@@ -117,20 +117,22 @@ create.phylogenetic.ma.plot.data <- function (data, res, params, conf.level) {
 	if (params$fp_plot_lb == "[default]") {
 		plot.options$plot.lb <- params$fp_plot_lb
 	} else {
-		plot.lb <- eval(parse(text=paste("c(", params$fp_plot_lb, ")", sep="")))
-		#plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(plot.lb, n)
+		#plot.lb <- eval(parse(text=paste("c(", params$fp_plot_lb, ")", sep="")))
+		####plot.options$plot.lb <- eval(call(transform.name, params$measure))$calc.scale(plot.lb, n)
+		plot.lb <- as.numeric(as.character(params$fp_plot_lb))
 		plot.options$plot.lb <- raw.scale.single.val.to.trans.scale(plot.lb, metric)
 	} 
 	
 	if (params$fp_plot_ub == "[default]")  {
 		plot.options$plot.ub <- params$fp_plot_ub
 	} else {
-		plot.ub <- eval(parse(text=paste("c(", params$fp_plot_ub, ")", sep="")))
+		#plot.ub <- eval(parse(text=paste("c(", params$fp_plot_ub, ")", sep="")))
 		if (scale == "logit") {
 			plot.ub <- min(1, plot.ub)
 		}  
 		#plot.options$plot.ub <- eval(call(transform.name, params$measure))$calc.scale(plot.ub, n)
-		plot.options$plot.lb <- raw.scale.single.val.to.trans.scale(plot.ub, metric)
+		plot.ub <- as.numeric(as.character(params$fp_plot_ub))
+		plot.options$plot.ub <- raw.scale.single.val.to.trans.scale(plot.ub, metric)
 	} 
 	########################## end of yucky code ##############################
 	

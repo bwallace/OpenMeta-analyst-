@@ -25,13 +25,13 @@ raw.scale.single.val.to.trans.scale <- function(value, metric) {
 	rtoz      <- function(x) {transf.rtoz(x)}
 	
 	trans.scale.val <- switch(metric,
-			SMD = no.change(), # Hedges d
-			ROM = relog(),     # Ln Response Ratio
-			OR  = relog(),     # Log Odds Ratio
-			RD  = no.change(), # Rate Difference
-			RR  = relog(),     # Log Relative Rate
-			ZCOR = rtoz(),     # Fisher's Z-transform
-			GEN  = no.change() # generic effect 
+			SMD = no.change(value), # Hedges d
+			ROM = relog(value),     # Ln Response Ratio
+			OR  = relog(value),     # Log Odds Ratio
+			RD  = no.change(value), # Rate Difference
+			RR  = relog(value),     # Log Relative Rate
+			ZCOR = rtoz(value),     # Fisher's Z-transform
+			GEN  = no.change(value) # generic effect 
 	)
 	trans.scale.val
 }
@@ -740,7 +740,7 @@ regenerate.exploratory.plot <- function(out.path, plot.path, plot.type, edited.p
 ############## End of Histogram code #################################
 
 ########################### Scatterplot code #################################
-make.scatterplot <- function(plot.path, data, params) {
+make.scatterplot <- function(plot.path, mydata, params) {
 	if (length(grep(".png", plot.path)) != 0){
 		png(file=plot.path, width=600, height=600)
 	}
@@ -748,9 +748,37 @@ make.scatterplot <- function(plot.path, data, params) {
 		pdf(file=plot.path) # the pdf device seems to not like setting height and width, width=600, height=600)
 	}
 	
-	myplot <- do.call(qplot, c(list(data$x, data$y, data=data), params))
+	#labels = 1:length(data$x)
+	
+	#myplot <- do.call(qplot, c(list(data$x, data$y, data=data, labels=labels), params))
 	#qplot(data$xvar, data$yvar, data=data)
-	print(myplot)
+	if ('slab' %in% names(mydata)) {
+		# rpy2 converts strvectors to Factors in dataframes by default
+		mydata$slab <- as.character(mydata$slab)
+	}
+	
+	tmp.data <<- mydata
+	
+	p <- ggplot(tmp.data, aes(x=x, y=y, label=tmp.data$slab, hjust=0, vjust=0)) + geom_point()
+	# add on parameters
+	if ('slab' %in% names(mydata)) {
+		p <- p+geom_text()
+	}
+	if ('xlab' %in% names(params)) {
+		p <- p + xlab(params$xlab)
+	}
+	if ('ylab' %in% names(params)) {
+		p <- p + ylab(params$ylab)
+    }
+	if ('xlim' %in% names(params)) {
+		p <- p + xlim(params$xlim)
+	}
+	if ('ylim' %in% names(params)) {
+		p <- p + ylim(params$ylim)
+	}
+	
+	print(p)
+	
 	graphics.off()
 }
 ######################## End of scatterplot code #############################
@@ -878,37 +906,24 @@ phylo.meta.analysis <- function(tree, evo.model,
 		# include phylogeny as a random factor
 		res <- rma.mv(data$yi, data$vi, data=data, random = list(~ 1 | phylogenyVariance), R=list(phylogenyVariance=C))
 	}
-	
-	#### Set confidence level, then unset it later on.
-	old.global.conf.level <- get.global.conf.level(NA.if.missing=TRUE)
-	set.global.conf.level(level)
 
-	###########################################################################
-	## Generate forest plot                                                  ##
-	##                                                                       ##
-	forest.path <- paste(plot.params$fp_outpath, sep="")
-	plot.data <- create.phylogenetic.ma.plot.data(data, res, params=plot.params, conf.level=level)
-	## dump the forest plot params to disk; return path to
-	## this .Rdata for later use
-	forest.plot.params.path <- save.plot.data.and.params(plot.data, plot.params)
-	# Make the actual plot
-	forest.plot(forest.data=plot.data, outpath=forest.path)
-
-	##### Revert confidence level
-    set.global.conf.level(old.global.conf.level)
-	
-	##                                                                       ##
-	## End of forest plot generation                                         ##
-	###########################################################################
-	
+	# generate forest plot
+	paths = regenerate_phylo_forest_plot(
+			     plot.params=plot.params,
+			     data=data,
+				 res=res,
+				 level=level,
+				 params.out.path=NULL, out.path=NULL)
+	forest.path <- paths[["img.path"]]
+	forest.plot.params.path <- paths[["params.path"]] 
 
 #	# Now we package the results in a dictionary (technically, a named 
 #	# vector). In particular, there are two fields that must be returned; 
 #	# a dictionary of images (mapping titles to image paths) and a list of texts
 #	# (mapping titles to pretty-printed text). In this case we have only one 
 #	# of each. 
-	plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
-	images <- c("Forest Plot"=forest.path)
+	plot.params.paths <- c("Forest Plot__phylo"=forest.plot.params.path)
+	images <- c("Forest Plot__phylo"=forest.path)
 	plot.names <- c("forest plot"="forest_plot")
 	
 	results <- list("images"=images,
@@ -917,6 +932,38 @@ phylo.meta.analysis <- function(tree, evo.model,
 			"plot_params_paths"=plot.params.paths,
 			"res"=res,
 			"res.info"=rma.mv.value.info())
+}
+
+regenerate_phylo_forest_plot <- function(plot.params, data, res, level, params.out.path=NULL, out.path=NULL) {
+	#### Set confidence level, then unset it later on.
+	old.global.conf.level <- get.global.conf.level(NA.if.missing=TRUE)
+	set.global.conf.level(level)
+	                                                                     ##
+	if (is.null(out.path)) {
+		forest.path <- paste(plot.params$fp_outpath, sep="")
+	} else {
+		forest.path <- paste(out.path, sep="")
+	}
+	
+	plot.data <- create.phylogenetic.ma.plot.data(data, res, params=plot.params, conf.level=level)
+	## dump the forest plot params to disk; return path to
+	## this .Rdata for later use
+	forest.plot.params.path <- save.plot.data.and.params(
+			#plot.data=plot.data,
+			data=data,
+			params=plot.params,
+			res=res,
+			level=level,
+			out.path=params.out.path)
+	# Make the actual plot
+	forest.plot(forest.data=plot.data, outpath=forest.path)
+	
+	##### Revert confidence level
+	set.global.conf.level(old.global.conf.level)
+	
+	list("img.path"=forest.path,
+		 "params.path"=forest.plot.params.path)
+	
 }
 
 rma.mv.value.info <- function() {
@@ -1196,4 +1243,126 @@ combine.imputations.with.dataset <- function(source.dataset, imputations) {
 		output[[i]] <- tmp
 	}
 	output
+}
+
+
+###################### special output for regression ##########################
+reg.output.helper <- function(theData, rma.results, model.formula, digits=5) {
+	# Adapted from code by M.Lajeunesse by G.Dietz
+	
+	# apparently, anova or lm requires rma.results to be global
+	rma.results <<- rma.results
+	# get model sums of squares from lm based on metafor's tau
+	effects.results <- anova(lm(model.formula, weight=1/(vi+rma.results$tau), data=theData))
+
+	# get summary of the Overall Model	
+	printModelSummary <- function(ANOVA = effects.results) {
+		effectsRange <- nrow(ANOVA) - 1
+		model.summary <- data.frame(
+				SOURCE = c("model", "residual error", "total"), 
+				Q = c(
+						sum(ANOVA[1:effectsRange,2]),
+						ANOVA[effectsRange + 1,2],
+						sum(ANOVA[1:effectsRange,2]) + ANOVA[effectsRange + 1,2]
+				), 
+				DF = c(
+						sum(ANOVA[1:effectsRange,1]),
+						ANOVA[effectsRange + 1,1],
+						sum(ANOVA[1:effectsRange,1]) + ANOVA[effectsRange + 1,1]
+				), 
+				P = c(
+						1.0 - pchisq(sum(ANOVA[1:effectsRange,2]), df=sum(ANOVA[1:effectsRange,1])),
+						1.0 - pchisq(ANOVA[effectsRange + 1,2], df=ANOVA[effectsRange + 1,1]),
+						1.0 - pchisq(sum(ANOVA[1:effectsRange,2]) + ANOVA[effectsRange + 1,2], df= sum(ANOVA[1:effectsRange,1]) + ANOVA[effectsRange + 1,1])
+				)
+		)
+		print(model.summary, row.names = FALSE, digits = digits)
+	}
+	#printModelSummary(effects.results)
+	model.summary <- paste(capture.output(printModelSummary(effects.results)), collapse="\n")
+	
+	# get summary of the Effect Tests
+	printEffectTestsSummary <- function(ANOVA = effects.results) {
+		effectsRange <- nrow(ANOVA) - 1
+		mainEffects <- rownames(ANOVA[1:effectsRange,])
+		model.summary <- data.frame(
+				SOURCE = mainEffects, 
+				Q = ANOVA[1:effectsRange,2], 
+				DF = ANOVA[1:effectsRange,1], 
+				P = 1 - pchisq(ANOVA[1:effectsRange,2], ANOVA[1:effectsRange,1])
+		)
+		print(model.summary, row.names = FALSE, digits = digits)
+	}
+	#printEffectTestsSummary(effects.results)
+	effects.tests.summary <- paste(capture.output(printEffectTestsSummary(effects.results)), collapse="\n")
+	
+	list("Model Summary"=model.summary,
+	     "Effect Tests Summary"=effects.tests.summary)
+}
+
+forest.plot.of.regression.coefficients <- function(coeffs, ci.lb, ci.ub, labels, exclude.intercept=TRUE, filepath=NULL, toFile=TRUE) {
+	# b and se are as they come from metafor
+	# b is a m*1 matrix with rownames the names of the coefficients
+	# se is a vector
+	# filepath does not include the extension i.e. ".png" or ".pdf" but just the 'base' filename like /r_tmp/3434847
+	
+	n <- length(coeffs)
+	if (exclude.intercept) {
+		mean <- coeffs[2:n]
+	    lower <- ci.lb[2:n]
+		upper <- ci.ub[2:n]
+		used.labels <- labels[2:n]
+		n <- length(coeffs)-1
+	} else {
+		mean <- coeffs
+		lower <- ci.lb
+		upper <- ci.ub
+		used.labels <- labels
+	}
+	
+	# make the actual plot
+	input.df <- data.frame(x = factor(used.labels,levels=rev(used.labels)), y = mean, ylo = lower, yhi = upper)
+	# save input data
+	cat(filepath)
+	save.coeff.forest.plot.data(input.df, filepath)
+	regenerate.coeff.forest.plot(input.df, filepath, "png")
+}
+
+
+g.forest.plot <- function(d){
+	# adapted from http://www.r-bloggers.com/forest-plots-using-r-and-ggplot2/
+# d is a data frame with 4 columns
+# d$x gives variable names
+# d$y gives center point
+# d$ylo gives lower limits
+# d$yhi gives upper limits
+	require(ggplot2)
+	p <- ggplot(d, aes(x=x, y=y, ymin=ylo, ymax=yhi))+geom_pointrange()+
+			coord_flip() + geom_hline(aes(x=0), lty=2) + xlab('Coefficient') + ylab('')
+	
+	print(p)
+	return(p)
+}
+
+regenerate.coeff.forest.plot <- function(input.df, filepath, format) {
+	if (format == "png") {
+		png(filename=paste(filepath,".png",sep=""))
+	} else {
+		pdf(file=paste(filepath,".pdf",sep=""))
+	}
+
+	g.forest.plot(input.df)
+	dev.off()
+}
+
+save.coeff.forest.plot.data <- function(input.df, params_path) {
+	# save the data, result and plot parameters to a tmp file on disk
+	if (is.null(params_path)){
+		# by default, we use thecurrent system time as a 'unique enough' filename
+		params_path <- paste("r_tmp/", 
+				as.character(as.numeric(Sys.time())), sep="")
+	}
+	
+	save(input.df, file=paste(params_path, ".coef_fp_data", sep=""))
+	params_path
 }

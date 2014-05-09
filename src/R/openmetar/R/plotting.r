@@ -612,6 +612,8 @@ create.plot.data.reg <- function(reg.data, params, fitted.line) {
      plot.data
 }
 
+
+
 set.plot.options <- function(params) {
     # set default plot options
     plot.options <- list()

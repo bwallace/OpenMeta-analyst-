@@ -137,6 +137,7 @@ create.summary.disp <- function(om.data, params, res, model.title) {
     scale.str <- get.scale(params)
     tau2 <- sprintf(digits.str, res$tau2)
     degf <- res$k - 1
+    I2 <- round(res$I2, digits=params$digits)
     QLabel =  paste("Q(df=", degf, ")", sep="")
     # Set n, the vector of numbers of studies, for PFT metric.
     if (params$measure=="PFT" && length(om.data@g1O1) > 0 && length(om.data@g1O2) > 0) {
@@ -146,11 +147,8 @@ create.summary.disp <- function(om.data, params, res, model.title) {
 		n <- NULL # don't need n except for PFT (freeman-tukey)
 	}
     if (!is.null(res$QE)) {
-      I2 <- max(0, (res$QE - degf)/res$QE)
-      I2 <- paste(100 * round(I2, digits = 2), "%", sep="")
       QE <- sprintf(digits.str, res$QE)
     } else {
-      I2 <- "NA"
       QE <- "NA"
     }
     if (!is.null(res$QEp)) {
@@ -243,7 +241,7 @@ save.plot.data <- function(plot.data, out.path=NULL) {
 }
 
 # For OpenMEE phylogenetic forest plot
-save.plot.data.and.params <- function(plot.data, params, out.path=NULL) {
+save.plot.data.and.params <- function(data, params, res, level, out.path=NULL) {
 	# saves plot data to the r_tmp directory
 	if (is.null(out.path)){
 		# by default, we use thecurrent system time as a 'unique enough' filename
@@ -252,10 +250,16 @@ save.plot.data.and.params <- function(plot.data, params, out.path=NULL) {
 	}
 	
 	### save plot data
-	save(plot.data, file=paste(out.path, ".plotdata", sep=""))
+	save(data, file=paste(out.path, ".data", sep=""))
 	
 	### save params
 	save(params, file=paste(out.path, ".params", sep=""))
+	
+	### save res
+	save(res, file=paste(out.path, ".res", sep=""))
+	
+	### save level
+	save(level, file=paste(out.path, ".level", sep=""))
 	
 	out.path
 }
