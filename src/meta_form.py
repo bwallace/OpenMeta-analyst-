@@ -9,25 +9,19 @@
 #                                    # 
 ######################################
 
-import sys
-import os
-import pdb
 import pickle
-print "about to import PyQt4..."
 from PyQt4 import QtCore, QtGui
 from PyQt4.Qt import *
-print "success!"
-#from os import urandom as _urandom
-#import nose # for unit tests
 import copy
 
 ## hand-rolled modules
 import ui_meta
-#import meta_py_r ####
 import ma_data_table_view
 import ma_data_table_model
 import meta_globals
+from meta_globals import *
 import ma_dataset
+from settings import *
 
 # additional forms
 import add_new_dialogs
@@ -47,9 +41,7 @@ import easter_egg
 # for the help
 import webbrowser
 
-DISABLE_NETWORK_STUFF = True # disable this until we can package jags, rjags, getmc
 
-DEFAULT_DATASET_NAME = unicode("untitled_dataset", "utf-8")
 
 import forms.ui_running
 class ImportProgress(QDialog, forms.ui_running.Ui_running):
@@ -76,16 +68,11 @@ class ImportProgress(QDialog, forms.ui_running.Ui_running):
 class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
     def __init__(self, parent=None):
-        #
         # We follow the advice given by Mark Summerfield in his Python QT book: 
         # Namely, we use multiple inheritance to gain access to the ui. We take
         # this approach throughout OpenMeta.
-        #
         super(MetaForm, self).__init__(parent)
         self.setupUi(self)
-        
-        #self.conf_level = meta_globals.DEFAULT_CONF_LEVEL
-        #meta_globals.set_global_conf_level(meta_globals.DEFAULT_CONF_LEVEL)
         
         # crazy number to indicate the conf level hasn't really been set yet
         self.cl_label=QLabel("confidence level: {:.1%}".format(meta_globals.DEFAULT_CONF_LEVEL/2/100.0))
@@ -113,7 +100,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # navigate along the *dimensions*)
         self.dimensions =["outcome", "follow-up", "group"]
         self.cur_dimension_index = 0
-        ###self.cur_dimension = "outcome"             DELETE
         self.update_dimension()
         self._setup_connections()
         self.tableView.setSelectionMode(QTableView.ContiguousSelection)
@@ -132,7 +118,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # by default, disable meta-regression (until we have covariates)
         self.action_meta_regression.setEnabled(False)
         
-        self.load_user_prefs()
+        load_settings()
         self.populate_open_recent_menu()
         
         # The most important code of the entire application
@@ -149,41 +135,18 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
     
 
     def start(self):
-        ####################################################
-        # this (toy-data) is almost certainly antiquated   #
-        # and should be removed or updated                 #
-        ####################################################
-        if len(sys.argv)>1 and sys.argv[-1]=="--toy-data":
-            # toy data for now
-            data_model = _gen_some_data()
-            self.model = ma_data_table_model.DatasetModel(dataset=data_model)
-            self.display_outcome("death")
-            self.model.set_current_time_point(0)
-            self.model.current_effect = "OR"
-            self.model.try_to_update_outcomes()
-            self.model.reset()
-            self.tableView.resizeColumnsToContents()
+        # show the welcome dialog 
+        start_up_wizard = main_wizard.MainWizard(parent=self, 
+                    recent_datasets=get_setting('recent_files'))
+        
+        if start_up_wizard.exec_():
+            wizard_data = start_up_wizard.get_results()
+            self._handle_wizard_results(wizard_data)
         else:
-            ###
-            # show the welcome dialog 
-            start_up_wizard = main_wizard.MainWizard(parent=self, 
-                        recent_datasets=self.user_prefs['recent datasets'])
-            
-            ###
-            # fix for issue #158
-            # formerly self.show()
-            if start_up_wizard.exec_():
-                wizard_data = start_up_wizard.get_results()
-                self._handle_wizard_results(wizard_data)
-            else:
-                QApplication.quit()
+            QApplication.quit()
             
     def closeEvent(self, event):
-        if self.current_data_unsaved:
-            if not self.user_is_going_to_lose_data():
-                # then they canceled!
-                event.ignore()
-        print "*** goodbye, dear analyst. ***"
+        self.quit()
 
 
     def _model_about_to_be_reset(self):
@@ -199,7 +162,13 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
     def create_new_dataset(self, use_undo_framework=True):
         if self.current_data_unsaved:
-            self.user_is_going_to_lose_data()
+            choice = self.prompt_to_save_unsaved_data()
+            if choice == QMessageBox.Yes:
+                self.save()
+            elif choice == QMessageBox.No:
+                pass
+            else: # cancel
+                return
         
         wizard = main_wizard.MainWizard(parent=self, path="new_dataset")
         if wizard.exec_():
@@ -298,7 +267,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.tableView.edit(index)
          
     def populate_open_recent_menu(self):
-        recent_datasets = self.user_prefs['recent datasets']
+        recent_datasets = get_setting('recent_files')
         recent_datasets.reverse() # most-recent first
         # qt designer inexplicably forcing the _2. not sure why; 
         # gave up struggling with it. grr.
@@ -334,7 +303,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         
     def _setup_connections(self, menu_actions=True):
         ''' Signals & slots '''
-        #QObject.connect(self.tableView.model(), SIGNAL("conf_level_changed()"), self._change_conf_level_label)
         QObject.connect(self.tableView.model(), SIGNAL("pyCellContentChanged(PyQt_PyObject, PyQt_PyObject, PyQt_PyObject, PyQt_PyObject)"),
                                                                 self.tableView.cell_content_changed)
 
@@ -361,11 +329,9 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         # and this hook allows the model to pass along error messages to the
         # user. the data checking happens in ma_dataset (specifically, in the
         # setData method)                                     
-        QObject.connect(self.tableView.model(), SIGNAL("dataError(QString)"), 
-                                                                self.data_error)
+        QObject.connect(self.tableView.model(), SIGNAL("dataError(QString)"), self.data_error)
 
-        QObject.connect(self.tableView, SIGNAL("dataDirtied()"),
-                                                self.data_dirtied)                                                       
+        QObject.connect(self.tableView, SIGNAL("dataDirtied()"), self.data_dirtied)                                                       
         if menu_actions:                
             QObject.connect(self.nav_add_btn, SIGNAL("pressed()"), self.add_new)
             QObject.connect(self.nav_right_btn, SIGNAL("pressed()"), self.next)
@@ -480,7 +446,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         form.show()
 
     def show_help(self):
-        webbrowser.open(meta_globals.PATH_TO_HELP)
+        webbrowser.open(meta_globals.HELP_URL)
 
     def meta_subgroup(self, selected_cov):
         form = None
@@ -975,8 +941,12 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         '''
         
         if self.current_data_unsaved:
-            if not self.user_is_going_to_lose_data():
-                # then they canceled!
+            choice = self.prompt_to_save_unsaved_data()
+            if choice == QMessageBox.Yes:
+                self.save()
+            elif choice == QMessageBox.No:
+                pass
+            else: # cancel
                 return
 
         # if no file path is provided, prompt the user.
@@ -987,13 +957,7 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             if file_path == "":
                 return False                                               
 
-        if file_path in self.user_prefs['recent datasets']:
-            # delete it; we'll re-insert it
-            self.user_prefs['recent datasets'].remove(file_path)
-        
-        self.user_prefs['recent datasets'].append(file_path)
-        self._save_user_prefs()
-        
+        add_file_to_recent_files(file_path)
         
         data_model = None
         print "loading %s..." % file_path
@@ -1013,7 +977,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         self.out_path = file_path
         
         state_dict = None
-        check_for_appropriate_metric = False # only if we guess at the current state
         try:
             state_dict = pickle.load(open(file_path + ".state"))
             print "found state dictionary: \n%s" % state_dict
@@ -1021,7 +984,6 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             print "no state dictionary found -- using 'reasonable' defaults"
             state_dict = self.tableView.model().make_reasonable_stateful_dict(data_model)
             print "made state dictionary: \n%s" % state_dict
-            check_for_appropriate_metric = True
 
         prev_dataset = self.model.dataset.copy()
         
@@ -1222,36 +1184,36 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
         
     def quit(self):
         if self.current_data_unsaved:
-            if self.user_is_going_to_lose_data():
-                QApplication.quit()
-        else:
-            # otherwise, just shutdown
-            QApplication.quit()
-
-    def user_is_going_to_lose_data(self):
-        save_first = QMessageBox.warning(self,
+            choice = self.prompt_to_save_unsaved_data()
+            if choice == QMessageBox.Yes:
+                self.save()
+            elif choice == QMessageBox.No:
+                pass
+            else: # Cancel
+                return 
+                
+        save_settings()
+        QApplication.quit()
+    
+    def prompt_to_save_unsaved_data(self):
+        choice = QMessageBox.warning(self,
                         "Warning",
-                        "you've made unsaved changes to your data. what do you want to do with them?",
-                        QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel)
-        
-        if save_first == QMessageBox.Save:
-            self.save()        
-
-        # return true so long as the user didn't *cancel*
-        return save_first != QMessageBox.Cancel
+                        "you've made unsaved changes to your data. Do you want to save your changes?",
+                        QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+        return choice
 
     def save_as(self):
         return self.save(save_as=True)
 
     def save(self, save_as=False):
         
-        base_path = str(os.path.abspath(os.getcwd()))
+        docs_path = get_user_documents_path()
         if self.out_path is None or save_as:
-            # fix for issue #58,1. -- use current dataset name in save path
+            # use current out_path otherwise base it on the current dataset name
             if self.out_path:
                 out_f = unicode(self.out_path)
             else:
-                out_f = os.path.join(base_path, self.model.get_name())
+                out_f = os.path.join(docs_path, self.model.get_name())
             
             out_f = unicode(QFileDialog.getSaveFileName(parent=self, caption="OpenMeta[analyst] - Save File",
                                                         directory=out_f, filter="open meta files: (.oma)"))
@@ -1281,11 +1243,10 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             f = open(self.out_path + ".state", 'wb')
             pickle.dump(d, f)
             f.close()
-            ###
-            # update user preferences to save the location of 
-            # this dataset
-            self.user_prefs['recent datasets'].append(self.out_path)
-            self._save_user_prefs()
+
+            # add dataset to recent files
+            add_file_to_recent_files(self.out_path)
+            
             self.dataset_file_lbl.setText("open file: %s" % self.out_path)
             self.current_data_unsaved = False
         except Exception, e:
@@ -1293,61 +1254,12 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
             print e
             raise Exception, "whoops. exception thrown attempting to save."
 
-    def load_user_prefs(self):
-        '''
-        Attempts to read a local dictionary of preferences
-        ('user_prefs.dict'). If not such file exists, this file
-        is created with defaults.
-        '''
-        
-        self.user_prefs = {}
-        if os.path.exists(meta_globals.PREFS_PATH):
-            try:
-                self.user_prefs = pickle.load(open(meta_globals.PREFS_PATH))
-            except:
-                print "preferences dictionary is corrupt! using defaults"
-                self.user_prefs = self._default_user_prefs()
-        else:
-            self.user_prefs = self._default_user_prefs()
 
-        # for backwards-compatibility
-        if not "method_params" in self.user_prefs:
-            self.user_prefs["method_params"] = {}
-
-        self._save_user_prefs()
-        print "loaded user preferences: %s" % self.user_prefs
         
     def _show_tom(self):
         tom_dlg = easter_egg.TomDialog(parent=self)
         tom_dlg.exec_()
-        
-    #def _show_picture(self, person):
-    #    persondlg = easter_egg.PersonDialog(parent=self, person=person)
-        
-        
 
-    def update_user_prefs(self, field, value):
-        self.user_prefs[field] = value
-        self._save_user_prefs()
-            
-    def get_user_method_params_d(self):
-        return self.user_prefs["method_params"]
-
-    def _save_user_prefs(self):
-        try:
-            fout = open(meta_globals.PREFS_PATH, 'wb')
-            pickle.dump(self.user_prefs, fout)
-            fout.close()
-        except:
-            print "failed to write preferences data!"
-        
-    def _default_user_prefs(self):       
-        return {"splash":True,
-                "digits":3,
-                "recent datasets":[], 
-                "method_params":{},
-                }
-        
     def _make_new_dataset_and_setup_spreadsheet(self,dataset_info):
         is_diag = dataset_info['data_type'] == "diagnostic"
         self.new_dataset(is_diag=is_diag)
@@ -1513,152 +1425,4 @@ class Command_Change_Conf_Level(QUndoCommand):
         self.mainform.model.reset()
         print("Global Confidence level is now: %f" % self.mainform.model.get_global_conf_level())
         
-
-#############################################################################
-#  Unit tests! Use nose
-#           [http://somethingaboutorange.com/mrl/projects/nose] or just
-#           > easy_install nose
-#
-#   e.g., while in this directory:
-#           > nosetests meta_form
-#
-##############################################################################
-def _gen_some_data():
-    ''' For testing purposes. Generates a toy dataset.'''
-    dataset = ma_dataset.Dataset()
-    studies = [ma_dataset.Study(i, name=study, year=y) for i, study, y in zip(range(3),
-                        ["trik", "wallace", "lau"], [1984, 1990, 2000])]
-    raw_data = [
-                                [ [10, 100] , [15, 100] ], [ [20, 200] , [25, 200] ],
-                                [ [30, 300] , [35, 300] ]
-                      ]
-  
-    outcome = ma_dataset.Outcome("death", meta_globals.BINARY)
-    dataset.add_outcome(outcome)
-
-    for study in studies:
-        dataset.add_study(study)
-    
-    for study,data in zip(dataset.studies, raw_data):
-        study.add_ma_unit(ma_dataset.MetaAnalyticUnit(outcome, raw_data=data), "baseline")
-    
-    return dataset
-
-
-def _setup_app():
-    app = QtGui.QApplication(sys.argv)
-    meta = MetaForm()
-    meta.tableView.setSelectionMode(QTableView.ContiguousSelection)
-    meta.show()
-    return (meta, app)
-
-def _tear_down_app(app):
-    sys.exit(app.exec_())
-
-
-def binary_meta_analysis_test():
-    meta, app = _setup_app()
-    meta.open(os.path.join("test_data", "amino.oma"))
-
-    ####
-    # TODO -- run through all metrics here
-
-def copy_paste_test():
-    meta, app = _setup_app()
-
-    # generate some faux data, set up the
-    # tableview model
-    #data_model = _gen_some_data()
-    meta.open(os.path.join("test_data", "amino.oma"))
-
-    #test_model = DatasetModel(dataset=data_model)
-    #meta.tableView.setModel(test_model)
-
-    upper_left_index = meta.tableView.model().createIndex(0, 1)
-    lower_right_index = meta.tableView.model().createIndex(1, 2)
-    copied = meta.tableView.copy_contents_in_range(upper_left_index, lower_right_index,
-                                                                                    to_clipboard=False)
-
-    tester = "trik\t1984\nwallace\t1990"
-
-    assert(copied == tester)
-    print "ok.. copied correctly"
-    
-    # now ascertain that we can paste it. first, copy (the same string) to the clipboard
-    copied = meta.tableView.copy_contents_in_range(upper_left_index, lower_right_index,
-                                                                                to_clipboard=True)
-    upper_left_index = meta.tableView.model().createIndex(1, 1)
-
-    # originally, the second row is wallace
-    assert(str(meta.tableView.model().data(upper_left_index).toString()) == "wallace")
-    meta.tableView.paste_from_clipboard(upper_left_index)
-    # now, the 2nd row (index:1) should contain trik
-    assert(str(meta.tableView.model().data(upper_left_index).toString()) == "trik")
-
-
-def test_add_new_outcome():
-    meta, app = _setup_app()
-    data_model = _gen_some_data()
-    test_model = ma_data_table_model.DatasetModel(dataset=data_model)
-    meta.tableView.setModel(test_model)
-    new_outcome_name = u"test outcome"
-    new_outcome_type = "binary"
-    meta._add_new_outcome(new_outcome_name, new_outcome_type)
-    outcome_names = meta.model.dataset.get_outcome_names()
-    assert(new_outcome_name in outcome_names)
-    
-def test_remove_outcome():
-    meta, app = _setup_app()
-    data_model = _gen_some_data()
-    test_model = ma_data_table_model.DatasetModel(dataset=data_model)
-    meta.tableView.setModel(test_model)
-    new_outcome_name = u"test outcome"
-    new_outcome_type = "binary"
-    meta._add_new_outcome(new_outcome_name, new_outcome_type)
-    # note that we test the adding functionality elsewhere
-    meta.model.dataset.remove_outcome(new_outcome_name)
-    outcome_names = meta.model.dataset.get_outcome_names()
-    assert (new_outcome_name not in outcome_names)
-    
-def paste_from_excel_test():
-    meta, app = _setup_app()
-
-    #set up the tableview model with a blank model
-    test_model = ma_data_table_model.DatasetModel()
-    meta.tableView.setModel(test_model)
-    upper_left_index = meta.tableView.model().createIndex(0, 1)
-    # copied from an Excel spreadsheet
-    copied_str = """a	1993
-b	1785
-"""
-    clipboard = QApplication.clipboard()
-    clipboard.setText(QString(copied_str))
-    meta.tableView.paste_from_clipboard(upper_left_index)
-
-    #
-    # now make sure the content is there
-    content = [["a", "1993"], ["b", "1785"]]
-    for row in range(len(content)):
-        for col in range(len(content[row])):
-            # the plus one offsets the first column, which is the include/
-            # exclude checkbox
-            cur_index = meta.tableView.model().createIndex(row, col+1)
-            cur_val = str(meta.tableView.model().data(cur_index).toString())
-            should_be = content[row][col]
-            print "cur val is %s; it should be %s" % (cur_val, should_be)
-            assert(cur_val == should_be)
-
-
-
-
-    
-#
-# to launch:
-#   >python meta_form.py
-#
-#if __name__ == "__main__":
-#    start()
-
-
-            
 

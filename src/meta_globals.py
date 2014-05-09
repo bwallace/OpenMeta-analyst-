@@ -13,9 +13,12 @@
 # TODO: move functions out of here and just have this be constants w/o imports
 
 import os
-import meta_py_r
 
-from PyQt4.Qt import QColor, QUndoCommand
+from PyQt4 import QtCore, QtGui
+from PyQt4.Qt import *
+
+APPLICATION_NAME = "OpenMetaAnalyst"
+ORGANIZATION_NAME = "CEBM"
 
 # number of digits to display
 NUM_DIGITS = 3
@@ -28,6 +31,9 @@ CALC_NUM_DIGITS = 4
 
 # completely made up. need an actual versioning system.
 VERSION = .005 
+
+DISABLE_NETWORK_STUFF = True # disable this until we can package jags, rjags, getmc
+DEFAULT_DATASET_NAME = unicode("untitled_dataset", "utf-8")
 
 ## For now we're going to hardcode which metrics are available.
 # In the future, we may want to pull these out dynamically from 
@@ -121,14 +127,11 @@ BASE_PATH = str(os.path.abspath(os.getcwd()))
 #def get_BASE_PATH():
 #    BASE_PATH = str(os.path.abspath(os.getcwd())) # where temporary R output should go
 
-# this is the (local) path to a (pickled) dictionary containing
-# user preferences
-PREFS_PATH = "user_prefs.dict"
 
 # this is a useful function sometimes.
 none_to_str = lambda x: "" if x is None else x
 
-HELP_URL = "http://www.cebm.brown.edu/open_meta"
+HELP_URL = "http://www.cebm.brown.edu/static/oma/doc/OpenMA_help.html"
 
 # for diagnostic data -- this dictionary maps
 # the mteric names as they appear in the UI/ure
@@ -141,8 +144,6 @@ DIAG_METRIC_NAMES_D = {"sens":["Sens"],
                       }
 
 DIAG_FIELDS_TO_RAW_INDICES = {"TP":0, "FN":1, "FP":2, "TN":3}
-
-PATH_TO_HELP = "http://tuftscaes.org/open_meta/help/openMA_help.html"#os.path.join("doc", "openMA_help.html")
 
 # list of methods with no forest plot parameters
 METHODS_WITH_NO_FOREST_PLOT = ["diagnostic.hsroc", "diagnostic.bivariate.ml"]
@@ -191,17 +192,17 @@ def check_plot_bound(bound):
     except:
         return False
 
-def _is_a_float(s):
+def is_a_float(s):
     try:
         float(s)
         return True
     except:
         return False
 
-def _is_empty(s):
+def is_empty(s):
     return s is None or s == ""
     
-def _is_an_int(s):
+def is_an_int(s):
     try:
         int(s)
         return True
@@ -286,3 +287,5 @@ def tabulate(lists, sep=" | ", return_col_widths=False, align=[]):
     if return_col_widths:
         return (out_str, max_lengths)
     return out_str
+
+

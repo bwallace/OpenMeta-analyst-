@@ -1,5 +1,4 @@
 from PyQt4.Qt import *
-import pdb
 
 import forms.ui_cov_subgroup_dlg
 from meta_globals import FACTOR

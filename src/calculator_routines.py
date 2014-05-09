@@ -13,13 +13,12 @@
 from PyQt4.Qt import *
 from functools import partial
 
-import meta_globals
 from meta_globals import *
-from meta_globals import _is_a_float, _is_empty
+import meta_py_r
 
 def between_bounds(est=None, low=None, high=None):
     def my_lt(a,b):
-        if _is_a_float(a) and _is_a_float(b):
+        if is_a_float(a) and is_a_float(b):
             return float(a) < float(b)
         else:
             return None
@@ -420,7 +419,7 @@ def evaluate(new_text, ma_unit, curr_effect, group_str, conv_to_disp_scale, ci_p
     is_between_bounds = partial(between_bounds, est=d_est, low=d_lower, high=d_upper)
     ###### ERROR CHECKING CODE#####
         # Make sure entered value is numeric and between the appropriate bounds
-    if not _is_a_float(new_text) :
+    if not is_a_float(new_text) :
         QMessageBox.warning(parent, "whoops", "Must be numeric!")
         raise Exception("error")
     if not opt_cmp_fn: # est, lower, upper

@@ -2,7 +2,6 @@ from PyQt4.Qt import *
 import forms.ui_network_view
 import edit_list_models
 import meta_py_r
-import pdb
 
 PageSize = (500, 300)
 

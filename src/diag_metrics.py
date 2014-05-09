@@ -1,5 +1,4 @@
 from PyQt4.Qt import *
-import pdb
 
 import forms.ui_diagnostic_metrics
 import ma_specs

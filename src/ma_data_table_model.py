@@ -17,14 +17,11 @@ from PyQt4 import QtCore
 from PyQt4.QtCore import QAbstractTableModel, QModelIndex, QString, QVariant, SIGNAL
 from PyQt4.QtGui import QIcon
 
-#from PyQt4.QtCore import pyqtRemoveInputHook
-#import pdb
-
 # home-grown
 from ma_dataset import Dataset,Outcome,Study,Covariate
-import meta_globals
 from meta_globals import *
 import calculator_routines as calc_fncs
+import meta_py_r
 
 # number of (empty) rows in the spreadsheet to show
 # following the last study.
@@ -65,7 +62,7 @@ class DatasetModel(QAbstractTableModel):
     def __init__(self, filename=QString(), dataset=None, add_blank_study=True):
         super(DatasetModel, self).__init__()
         
-        self.conf_level = self.set_conf_level(meta_globals.DEFAULT_CONF_LEVEL)
+        self.conf_level = self.set_conf_level(DEFAULT_CONF_LEVEL)
 
         self.dataset = dataset
         if dataset is None:
@@ -384,11 +381,11 @@ class DatasetModel(QAbstractTableModel):
         if s.trimmed() == "" or s is None:
             return True, None
 
-        if not meta_globals._is_a_float(s):
+        if not is_a_float(s):
             return False, "Raw data needs to be numeric."
 
         if data_type in (BINARY, DIAGNOSTIC):
-            if not meta_globals._is_an_int(s):
+            if not is_an_int(s):
                 return False, "Expecting count data -- you provided a float (?)"
             if int(s) < 0:
                 return False, "Counts cannot be negative."
@@ -400,12 +397,12 @@ class DatasetModel(QAbstractTableModel):
         if data_type == BINARY:
             if col in [3,5]: # col is TxA or TxB
                 N_samples = self.data(self.index(row, col+1)).toString() # string representation of N_samples
-                if meta_globals._is_an_int(N_samples):
+                if is_an_int(N_samples):
                     if int(s) > int(N_samples): #uh oh
                         return False, msg
             elif col in [4,6]: # col is N_A or N_B
                 N_events = self.data(self.index(row, col-1)).toString()
-                if meta_globals._is_an_int(N_events):
+                if is_an_int(N_events):
                     if int(s) < int(N_events):
                         return False, msg
             
@@ -423,7 +420,7 @@ class DatasetModel(QAbstractTableModel):
     def _verify_outcome_data(self, s, col, row, data_type):
         outcome_subtype = self.dataset.get_outcome_subtype(self.current_outcome)
         
-        if not meta_globals._is_a_float(s):
+        if not is_a_float(s):
             return False, "Outcomes need to be numeric, you crazy person"
 
         ma_unit = self.get_current_ma_unit_for_study(row)
@@ -458,7 +455,7 @@ class DatasetModel(QAbstractTableModel):
         # if there is, we don't allow entry of outcomes
         raw_data = self.get_cur_raw_data_for_study(row)
     
-        if not all([meta_globals._is_empty(s_i) for s_i in raw_data]):
+        if not all([is_empty(s_i) for s_i in raw_data]):
             # fix for issue #180 
             # sort of hacky. we check here to see if the outcome
             # in fact was "changed", by which we mean the value
@@ -522,7 +519,7 @@ class DatasetModel(QAbstractTableModel):
         if s.trimmed() == '':
             return True, None
 
-        if not meta_globals._is_an_int(s):
+        if not is_an_int(s):
             return False, "Years need to be integers."
 
         return True, None
@@ -1448,7 +1445,7 @@ class DatasetModel(QAbstractTableModel):
         d["current_effect"] = effect
         d["study_auto_added"] = False # hmm ?
         
-        d["conf_level"] = meta_globals.DEFAULT_CONF_LEVEL
+        d["conf_level"] = DEFAULT_CONF_LEVEL
         
         return d
 
@@ -1483,7 +1480,7 @@ class DatasetModel(QAbstractTableModel):
                 exec("self.%s = val" % key)
         
         if "conf_level" not in state_dict.keys():
-            self.set_conf_level(meta_globals.DEFAULT_CONF_LEVEL)
+            self.set_conf_level(DEFAULT_CONF_LEVEL)
         
         self.reset()
 
@@ -1498,7 +1495,7 @@ class DatasetModel(QAbstractTableModel):
     
         empty = True
         for x in raw_data:
-            if x not in meta_globals.EMPTY_VALS:
+            if x not in EMPTY_VALS:
                 empty = False
 
         return not empty      
