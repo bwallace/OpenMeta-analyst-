@@ -80,17 +80,6 @@ class RlibLoader:
 install this package and then re-start OpenMeta." % name)
 #################### END OF R Library Loader ####################
 
-        
-try:
-    if not execute_r_string("file.exists('./.r_tmp')")[0]:
-        print("creating tmp R directory...")
-        execute_r_string("dir.create('./r_tmp')")
-        print("success -- temporary results will be written to ./r_tmp")
-except:
-    raise Exception, "unable to create temporary directory for R results! make sure you have sufficient permissions."
-
-
-
 def RfunctionCaller(function):
     def _RfunctionCaller(*args, **kw):
         print("Using rpy2 interface to R to call %s" % function.func_name)
