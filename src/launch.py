@@ -13,6 +13,7 @@ SPLASH_DISPLAY_TIME = 0 # TODO: change to 5 seconds in production version
 def load_R_libraries(app, splash=None):
     ''' Loads the R libraries while updating the splash screen'''
     
+    meta_py_r.get_R_libpaths() # print the lib paths
     rloader = meta_py_r.RlibLoader()
     
     splash.showMessage("Loading R libraries\n..")

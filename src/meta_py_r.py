@@ -87,6 +87,15 @@ def RfunctionCaller(function):
         return res
     return _RfunctionCaller
 
+def get_R_libpaths():
+    ''' Returns the libpaths that R looks at, sanity check to make sure it sees the right paths '''
+    
+    libpaths = execute_r_string(".libPaths()")
+    print("R Lib paths:")
+    for i, path in enumerate(libpaths):
+        print("%d: %s" % (i,path))
+    return list(libpaths)
+
 @RfunctionCaller
 def reset_Rs_working_dir():
     ''' resets R's working directory to the the application base_path, not to r_tmp!'''
