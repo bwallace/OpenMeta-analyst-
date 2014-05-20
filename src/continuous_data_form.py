@@ -28,10 +28,7 @@ from functools import partial
 import calculator_routines as calc_fncs
 
 import meta_py_r
-import meta_globals
-#from meta_globals import *
-from meta_globals import (CONTINUOUS_ONE_ARM_METRICS,CONTINUOUS_TWO_ARM_METRICS,
-                          _is_empty)
+from meta_globals import *
 import forms.ui_continuous_data_form
 import forms.ui_choose_back_calc_result_form
 
@@ -194,13 +191,13 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
 
         calc_fncs.block_signals(self.entry_widgets, True)
         try:
-            if val_str == "est" and not _is_empty(new_text):
+            if val_str == "est" and not is_empty(new_text):
                 display_scale_val = get_disp_scale_val_if_valid(ci_param='est')
-            elif val_str == "lower" and not _is_empty(new_text):
+            elif val_str == "lower" and not is_empty(new_text):
                 display_scale_val = get_disp_scale_val_if_valid(ci_param='low')
-            elif val_str == "upper" and not _is_empty(new_text):
+            elif val_str == "upper" and not is_empty(new_text):
                 display_scale_val = get_disp_scale_val_if_valid(ci_param='high')
-            elif val_str == "correlation_pre_post" and not _is_empty(new_text):
+            elif val_str == "correlation_pre_post" and not is_empty(new_text):
                 get_disp_scale_val_if_valid(opt_cmp_fn = lambda x: -1<=float(x)<=1,
                                             opt_cmp_msg="Correlation must be between -1 and +1")
         except:
@@ -252,7 +249,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         
         # If we got to this point it means everything is ok so far
         try:
-            if display_scale_val not in meta_globals.EMPTY_VALS:
+            if display_scale_val not in EMPTY_VALS:
                 display_scale_val = float(display_scale_val)
             else:
                 display_scale_val = None
@@ -358,7 +355,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
         if celldata_string.trimmed() == "" or celldata_string is None:
             return None
 
-        if not meta_globals._is_a_float(celldata_string):
+        if not is_a_float(celldata_string):
             return "Raw data needs to be numeric."
 
         if cell_header in ['n','sd','se','var','pval'] and float(celldata_string) < 0:
@@ -420,13 +417,13 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
             table = self.simple_table
         
         row,col = row_index, var_index    
-        if meta_globals.is_NaN(val): # get out quick
+        if is_NaN(val): # get out quick
             print "%s is not a number" % val
             return
         
         try:
             table.blockSignals(True)
-            str_val = "" if val in meta_globals.EMPTY_VALS else str(float(val))
+            str_val = "" if val in EMPTY_VALS else str(float(val))
             if table.item(row, col) is None:
                 table.setItem(row, col, QTableWidgetItem(str_val))
             else:
@@ -674,7 +671,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
                  
     def float_to_str(self, float_val):
         float_str = ""
-        if not meta_globals.is_NaN(float_val):
+        if not is_NaN(float_val):
             # TODO note the hard-coded number of digits here
             float_str = str(round(float_val, 4))
         return float_str     
@@ -897,7 +894,7 @@ class ContinuousDataForm(QDialog, forms.ui_continuous_data_form.Ui_ContinuousDat
                 if var_name not in ["n","sd","mean"]:
                     continue
                 val = group1_data[var_name] if row == 0 else group2_data[var_name]
-                if var_name == 'n' and val not in meta_globals.EMPTY_VALS: 
+                if var_name == 'n' and val not in EMPTY_VALS: 
                     val = int(round(val)) # convert float to integer
                 self._set_val(row, var_index, val, self.simple_table)
         

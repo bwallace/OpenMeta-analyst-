@@ -9,7 +9,6 @@
 #  outcome data                                               #
 ###############################################################
 
-#import pdb
 import copy
 from functools import partial
 
@@ -17,9 +16,7 @@ from PyQt4.Qt import *
 from PyQt4.QtGui import *
 
 import meta_py_r
-import meta_globals
-from meta_globals import (BINARY_ONE_ARM_METRICS, BINARY_TWO_ARM_METRICS,
-                          _is_empty, EMPTY_VALS)
+from meta_globals import *
 import calculator_routines as calc_fncs
 
 import forms.ui_binary_data_form
@@ -141,7 +138,7 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
                                  int(round(imputed["op2"]["d"])),
                                  ))
             def new_item_available(old,new):
-                isBlank = lambda x: x in meta_globals.EMPTY_VALS
+                isBlank = lambda x: x in EMPTY_VALS
                 no_longer_blank = isBlank(old) and not isBlank(new)
                 return no_longer_blank
             comparison0 = [new_item_available(old_data[i], new_data[0][i]) for i in range(len(old_data))]
@@ -337,11 +334,11 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
         
         calc_fncs.block_signals(self.entry_widgets, True)
         try:
-            if val_str == "est" and not _is_empty(new_text):
+            if val_str == "est" and not is_empty(new_text):
                 display_scale_val = get_disp_scale_val_if_valid(ci_param='est')
-            elif val_str == "lower" and not _is_empty(new_text):
+            elif val_str == "lower" and not is_empty(new_text):
                 display_scale_val = get_disp_scale_val_if_valid(ci_param='low')
-            elif val_str == "upper" and not _is_empty(new_text):
+            elif val_str == "upper" and not is_empty(new_text):
                 display_scale_val = get_disp_scale_val_if_valid(ci_param='high')
         except Exception:
             calc_fncs.block_signals(self.entry_widgets, False)
@@ -385,7 +382,7 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
         
         # If we got to this point it means everything is ok so far
         try:
-            if display_scale_val not in meta_globals.EMPTY_VALS:
+            if display_scale_val not in EMPTY_VALS:
                 display_scale_val = float(display_scale_val)
             else:
                 display_scale_val = None
@@ -444,10 +441,10 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
         if celldata_string.trimmed() == "" or celldata_string is None:
             return None
 
-        if not meta_globals._is_a_float(celldata_string):
+        if not is_a_float(celldata_string):
             return "Raw data needs to be numeric."
 
-        if not meta_globals._is_an_int(celldata_string):
+        if not is_an_int(celldata_string):
             return "Expecting count data -- you provided a float (?)"
 
         if int(celldata_string) < 0:
@@ -574,7 +571,7 @@ class BinaryDataForm2(QDialog, forms.ui_binary_data_form.Ui_BinaryDataForm):
         self.raw_data_table.blockSignals(False)  
         
     def _set_val(self, row, col, val):
-        if meta_globals.is_NaN(val):  # get out quick
+        if is_NaN(val):  # get out quick
             print "%s is not a number" % val
             return
         

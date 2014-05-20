@@ -82,6 +82,3 @@ cd ../../../../OpenMeta-analyst-/
 # Copy pango and font config files to build directory
 cp src/building/building_in_mac/config_files/* ../frozen/OpenMetaAnalyst.app/Contents/MacOS/
 
-###########################################
-# Make r_tmp folder in same directory as the app
-mkdir ../frozen/r_tmp

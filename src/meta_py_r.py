@@ -12,15 +12,11 @@
 #                                                                           #
 #############################################################################
 
-###################### STANDARD IMPORT SECTION ###############################
 print("Entering meta_py_r for import probably")
 import math
 import os
-import meta_globals
-from meta_globals import tabulate
-
-import pdb
-from PyQt4.QtCore import pyqtRemoveInputHook
+from meta_globals import *
+from settings import *
 
 print("the path: %s" % os.getenv("PATH"))
 
@@ -41,7 +37,6 @@ except Exception, e:
 print("importing rpy2.robjects")
 import rpy2.robjects
 print("succesfully imported rpy2.robjects")
-#################### END NORMAL PYTHON IMPORTS ################################
 
 def execute_r_string(r_str):
     
@@ -85,17 +80,6 @@ class RlibLoader:
 install this package and then re-start OpenMeta." % name)
 #################### END OF R Library Loader ####################
 
-        
-try:
-    if not execute_r_string("file.exists('./.r_tmp')")[0]:
-        print("creating tmp R directory...")
-        execute_r_string("dir.create('./r_tmp')")
-        print("success -- temporary results will be written to ./r_tmp")
-except:
-    raise Exception, "unable to create temporary directory for R results! make sure you have sufficient permissions."
-
-
-
 def RfunctionCaller(function):
     def _RfunctionCaller(*args, **kw):
         print("Using rpy2 interface to R to call %s" % function.func_name)
@@ -103,16 +87,30 @@ def RfunctionCaller(function):
         return res
     return _RfunctionCaller
 
+def get_R_libpaths():
+    ''' Returns the libpaths that R looks at, sanity check to make sure it sees the right paths '''
+    
+    libpaths = execute_r_string(".libPaths()")
+    print("R Lib paths:")
+    for i, path in enumerate(libpaths):
+        print("%d: %s" % (i,path))
+    return list(libpaths)
+
 @RfunctionCaller
 def reset_Rs_working_dir():
+    ''' resets R's working directory to the the application base_path, not to r_tmp!'''
     print("resetting R working dir")
 
     # Fix paths issue in windows
-    r_str = "setwd('%s')" % meta_globals.BASE_PATH
-    r_str = r_str.replace("\\","\\\\")
+    base_path = get_base_path()
+    base_path = to_posix_path(base_path)
 
+    print("Trying to set base_path to %s" % base_path)
+    r_str = "setwd('%s')" % base_path
     # Executing r call with escaped backslashes
-    ro.r(r_str) 
+    ro.r(r_str)
+
+    print("Set R's working directory to %s" % base_path)
 
 @RfunctionCaller
 def impute_diag_data(diag_data_dict):
@@ -546,7 +544,7 @@ def ma_dataset_to_simple_continuous_robj(table_model, var_name="tmp_obj",
 
     # first try and construct an object with raw data -- note that if
     # we're using a one-armed metric for cont. data, we just use y/SE
-    if (not table_model.current_effect in meta_globals.ONE_ARM_METRICS) and \
+    if (not table_model.current_effect in ONE_ARM_METRICS) and \
                          table_model.included_studies_have_raw_data():
         print "we have raw data... parsing, parsing, parsing"
             
@@ -648,7 +646,7 @@ def ma_dataset_to_simple_binary_robj(table_model, var_name="tmp_obj",
         # now, for group 2; we only set up the string
         # for group two if we have a two-arm metric
         g2O1_str, g2O2_str = "0", "0" # the 0s are just to satisfy R; not used
-        if table_model.current_effect in meta_globals.TWO_ARM_METRICS:  
+        if table_model.current_effect in TWO_ARM_METRICS:  
             g2_events = _get_col(raw_data, 2)
             g2O1_str = ", ".join(_to_strs(g2_events))
 
@@ -698,8 +696,6 @@ def ma_dataset_to_simple_network(table_model,
                                  network_path='./r_tmp/network.png'):
     ''' This converts a DatasetModel to an mtc.network R object as described
     in the getmc documentation for mtc.network'''
-    
-    BINARY, CONTINUOUS = meta_globals.BINARY, meta_globals.CONTINUOUS
     
     if data_type not in [BINARY, CONTINUOUS]:
         raise ValueError("Given data type: '%s' is unknown." % str(data_type))
@@ -781,7 +777,7 @@ def _data_blank_or_none(*args):
         return True
     
     for x in args:
-        if x in meta_globals.EMPTY_VALS:
+        if x in EMPTY_VALS:
             return True
     return False
 
@@ -929,7 +925,7 @@ def cov_to_str(cov, study_ids, dataset, \
     cov_values = []
    
     for study_id in study_ids:
-        if cov.data_type == meta_globals.CONTINUOUS:
+        if cov.data_type == CONTINUOUS:
             if cov_value_d.has_key(study_id):
                 cov_values.append("%s" % cov_value_d[study_id])
             else:
@@ -1231,7 +1227,7 @@ def _gen_cov_vals_obj_str(cov, study_ids, dataset):
 
     r_str = "new('CovariateValues', cov.name='%s', cov.vals=%s, \
                     cov.type='%s', ref.var='%s')" % \
-                (cov.name, values_str, meta_globals.TYPE_TO_STR_DICT[cov.data_type], ref_var)
+                (cov.name, values_str, TYPE_TO_STR_DICT[cov.data_type], ref_var)
     return r_str
 
 

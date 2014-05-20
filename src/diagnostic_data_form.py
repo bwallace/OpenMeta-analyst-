@@ -11,17 +11,13 @@
 #
 ##################################################
 
-
-import pdb
 import copy
 from functools import partial
 
 from PyQt4.Qt import *
 
 import meta_py_r
-import meta_globals
-from meta_globals import (_is_a_float, _is_empty, DIAGNOSTIC_METRICS,
-                          DIAG_FIELDS_TO_RAW_INDICES,EMPTY_VALS)
+from meta_globals import *
 import calculator_routines as calc_fncs
 from forms.ui_diagnostic_data_form import Ui_DiagnosticDataForm
 
@@ -156,10 +152,10 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         if celldata_string.trimmed() == "" or celldata_string is None:
             return None
 
-        if not meta_globals._is_a_float(celldata_string):
+        if not is_a_float(celldata_string):
             return "Raw data needs to be numeric."
 
-        if not meta_globals._is_an_int(celldata_string):
+        if not is_an_int(celldata_string):
             return "Expecting count data -- you provided a float (?)"
 
         if int(celldata_string) < 0:
@@ -180,10 +176,10 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
     def _is_txt_box_invalid(self, txt_box):
         val = txt_box.text()
         empty = val in EMPTY_VALS
-        return meta_globals.is_NaN(val) or empty or (not _is_a_float(val))
+        return is_NaN(val) or empty or (not is_a_float(val))
     
     def _set_val(self, row, col, val):
-        if meta_globals.is_NaN(val): # get out quick
+        if is_NaN(val): # get out quick
             print "%s is not a number" % val
             return
         
@@ -392,7 +388,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
                 
                 # TODO: ENC
                 self.ma_unit.tx_groups[self.group_str].raw_data[raw_data_index] =\
-                    None if not _is_a_float(imputed_dict[field]) else float(imputed_dict[field])
+                    None if not is_a_float(imputed_dict[field]) else float(imputed_dict[field])
     
     def _update_ma_unit(self):
         '''Copy data from data table to the MA_unit'''
@@ -429,13 +425,13 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         
         calc_fncs.block_signals(self.entry_widgets, True)
         try:
-            if val_str == "est" and not _is_empty(new_text):
+            if val_str == "est" and not is_empty(new_text):
                 display_scale_val = get_disp_scale_val_if_valid(ci_param='est')
-            elif val_str == "lower" and not _is_empty(new_text):
+            elif val_str == "lower" and not is_empty(new_text):
                 display_scale_val = get_disp_scale_val_if_valid(ci_param='low')
-            elif val_str == "upper" and not _is_empty(new_text):
+            elif val_str == "upper" and not is_empty(new_text):
                 display_scale_val = get_disp_scale_val_if_valid(ci_param='high')
-            elif val_str == "prevalence" and not _is_empty(new_text):
+            elif val_str == "prevalence" and not is_empty(new_text):
                 get_disp_scale_val_if_valid(opt_cmp_fn = lambda x: 0 <= float(x) <= 1,
                                             opt_cmp_msg="Prevalence must be between 0 and 1.")
         except:
@@ -483,7 +479,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
         
         # If we got to this point it means everything is ok so far        
         try:
-            if display_scale_val not in meta_globals.EMPTY_VALS:
+            if display_scale_val not in EMPTY_VALS:
                 display_scale_val = float(display_scale_val)
             else:
                 display_scale_val = None
@@ -661,10 +657,10 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
                         pass
             
             x = self.getTotalSubjects()
-            d["total"] = float(x) if _is_a_float(x) else None
+            d["total"] = float(x) if is_a_float(x) else None
 
             x = self.prevalence_txt_box.text()
-            d["prev"] = float(x) if _is_a_float(x) else None
+            d["prev"] = float(x) if is_a_float(x) else None
 
             d["conf.level"] = self.global_conf_level
     
@@ -683,7 +679,7 @@ class DiagnosticDataForm(QDialog, Ui_DiagnosticDataForm):
                         self._get_int(1,0),
                         self._get_int(1,1),
                         )
-            isBlank = lambda x: x in meta_globals.EMPTY_VALS
+            isBlank = lambda x: x in EMPTY_VALS
             new_item_available = lambda old, new: isBlank(old) and not isBlank(new)
             comparison = [new_item_available(old_data[i], new_data[i]) for i in range(len(new_data))]
             print("Comparison:", comparison)

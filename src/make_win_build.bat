@@ -5,7 +5,7 @@ cd dist
 
 REM Copy R in to executable
 mkdir R_dist
-cp -rv "C:\Program Files\R\R-3.0.2" R_dist
+cp -rv "C:\Program Files\R\R-3.0.2\." R_dist
 
 REM Copy over sample data
 cp -rv ../../sample_data .

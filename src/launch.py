@@ -1,13 +1,11 @@
+import sys, time
 from PyQt4 import QtGui
-#from PyQt4.Qt import *
-from PyQt4.Qt import QPixmap, QSplashScreen, QThread
-import sys
-#import pdb
-#import forms.icons_rc
-import time
+from PyQt4.Qt import *
+
 import meta_py_r
 import meta_form
-
+import meta_globals
+import settings
 from meta_form import DISABLE_NETWORK_STUFF
 
 SPLASH_DISPLAY_TIME = 0 # TODO: change to 5 seconds in production version
@@ -15,6 +13,7 @@ SPLASH_DISPLAY_TIME = 0 # TODO: change to 5 seconds in production version
 def load_R_libraries(app, splash=None):
     ''' Loads the R libraries while updating the splash screen'''
     
+    meta_py_r.get_R_libpaths() # print the lib paths
     rloader = meta_py_r.RlibLoader()
     
     splash.showMessage("Loading R libraries\n..")
@@ -43,6 +42,9 @@ def load_R_libraries(app, splash=None):
 
 def start():
     app = QtGui.QApplication(sys.argv)
+    app.setApplicationName(meta_globals.APPLICATION_NAME)
+    app.setOrganizationName(meta_globals.ORGANIZATION_NAME)
+    settings.setup_directories()
     
     splash_pixmap = QPixmap(":/misc/splash.png")
     splash = QSplashScreen(splash_pixmap)

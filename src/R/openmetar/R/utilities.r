@@ -137,7 +137,8 @@ create.summary.disp <- function(om.data, params, res, model.title) {
     scale.str <- get.scale(params)
     tau2 <- sprintf(digits.str, res$tau2)
     degf <- res$k - 1
-    I2 <- round(res$I2, digits=params$digits)
+	if (!is.null(res$I2))
+    	I2 <- round(res$I2, digits=params$digits)
     QLabel =  paste("Q(df=", degf, ")", sep="")
     # Set n, the vector of numbers of studies, for PFT metric.
     if (params$measure=="PFT" && length(om.data@g1O1) > 0 && length(om.data@g1O2) > 0) {
@@ -173,8 +174,8 @@ create.summary.disp <- function(om.data, params, res, model.title) {
    
     
     if (res$method=="FE") {
-        het.col.labels <- c(QLabel, "Het. p-Value", "I^2")
-        het.col.vals <-  c(QE, QEp, I2)
+        het.col.labels <- c(QLabel, "Het. p-Value")
+        het.col.vals <-  c(QE, QEp)
         het.array <- rbind(het.col.labels, het.col.vals)
     } else {    
         het.col.labels <- c("tau^2", QLabel, "Het. p-Value", "I^2")

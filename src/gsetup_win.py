@@ -16,4 +16,5 @@ import py2exe
 
 ##path_to_launch_file = os.path.join("src","launch.py")
 
-setup(windows=[{"script": 'launch.py'}])
+#setup(windows=[{"script": 'launch.py'}])
+setup(windows=[{"script": 'win_prelaunch.py'}])
