@@ -218,12 +218,17 @@ binary.fixed.inv.var <- function(binary.data, params){
         plot.data <- create.plot.data.binary(binary.data, params, res)
         changed.params <- plot.data$changed.params
         # list of changed params values
-        params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
-        changed.params <- c(changed.params, params.changed.in.forest.plot)
-        params[names(changed.params)] <- changed.params
-        # update params values
-        forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
-        #
+		
+		
+		forest.plot.params.path <- ""
+		if (is.null(params$supress.output) || !params$supress.output) {
+            params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
+            changed.params <- c(changed.params, params.changed.in.forest.plot)
+            params[names(changed.params)] <- changed.params
+            # update params values
+            forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
+		}
+        
         # Now we package the results in a dictionary (technically, a named 
         # vector). In particular, there are two fields that must be returned; 
         # a dictionary of images (mapping titles to image paths) and a list of texts
@@ -331,14 +336,21 @@ binary.fixed.mh <- function(binary.data, params){
         forest.path <- paste(params$fp_outpath, sep="")
         plot.data <- create.plot.data.binary(binary.data, params, res)
         changed.params <- plot.data$changed.params
-        # list of changed params values
-        params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
-        changed.params <- c(changed.params, params.changed.in.forest.plot)
-        params[names(changed.params)] <- changed.params
-        # dump the forest plot params to disk; return path to
-        # this .Rdata for later use
-        forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
-        #
+		
+		forest.plot.params.path <- ""
+		if (is.null(params$supress.output) || !params$supress.output) {
+	        # list of changed params values
+	        params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
+	        changed.params <- c(changed.params, params.changed.in.forest.plot)
+	        params[names(changed.params)] <- changed.params
+	        # dump the forest plot params to disk; return path to
+	        # this .Rdata for later use
+	        forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
+		}
+        
+		
+		
+		
         # Now we package the results in a dictionary (technically, a named 
         # vector). In particular, there are two fields that must be returned; 
         # a dictionary of images (mapping titles to image paths) and a list of texts
@@ -486,14 +498,20 @@ binary.fixed.peto <- function(binary.data, params) {
         forest.path <- paste(params$fp_outpath, sep="")
         plot.data <- create.plot.data.binary(binary.data, params, res)
         changed.params <- plot.data$changed.params
-        # list of changed params values
-        params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
-        changed.params <- c(changed.params, params.changed.in.forest.plot)
-        params[names(changed.params)] <- changed.params
-        # dump the forest plot params to disk; return path to
-        # this .Rdata for later use
-        forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
-        #
+		
+		forest.plot.params.path <- ""
+		if (is.null(params$supress.output) || !params$supress.output) {
+	        # list of changed params values
+	        params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
+	        changed.params <- c(changed.params, params.changed.in.forest.plot)
+	        params[names(changed.params)] <- changed.params
+	        # dump the forest plot params to disk; return path to
+	        # this .Rdata for later use
+	        forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
+		}
+        
+		
+		
         # Now we package the results in a dictionary (technically, a named 
         # vector). In particular, there are two fields that must be returned; 
         # a dictionary of images (mapping titles to image paths) and a list of texts
@@ -625,18 +643,23 @@ binary.random <- function(binary.data, params) {
         summary.disp <- create.summary.disp(binary.data, params, res, model.title)
         #
         # generate forest plot 
-        #
+        
         forest.path <- paste(params$fp_outpath, sep="")
         plot.data <- create.plot.data.binary(binary.data, params, res)
         changed.params <- plot.data$changed.params
-        # list of changed params values
-        params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
-        changed.params <- c(changed.params, params.changed.in.forest.plot)
-        params[names(changed.params)] <- changed.params
-        # dump the forest plot params to disk; return path to
-        # this .Rdata for later use
-        forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
-        #
+		
+		forest.plot.params.path <- ""
+		if (is.null(params$supress.output) || !params$supress.output) {
+	        # list of changed params values
+	        params.changed.in.forest.plot <- forest.plot(forest.data=plot.data, outpath=forest.path)
+	        changed.params <- c(changed.params, params.changed.in.forest.plot)
+	        params[names(changed.params)] <- changed.params
+	        # dump the forest plot params to disk; return path to
+	        # this .Rdata for later use
+	        forest.plot.params.path <- save.data(binary.data, res, params, plot.data)
+		}
+        
+		
         # Now we package the results in a dictionary (technically, a named 
         # vector). In particular, there are two fields that must be returned; 
         # a dictionary of images (mapping titles to image paths) and a list of texts

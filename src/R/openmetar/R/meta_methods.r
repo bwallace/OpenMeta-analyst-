@@ -28,8 +28,9 @@ cum.ma.binary <- function(fname, binary.data, params){
     
     params.tmp <- params
     # These temporarily turn off creating plots and writing results to file
-    params.tmp$create.plot <- FALSE
-    params.tmp$write.to.file <- FALSE
+    #params.tmp$create.plot <- FALSE
+    #params.tmp$write.to.file <- FALSE
+	params.tmp$supress.output <- TRUE
     res <- eval(call(fname, binary.data, params.tmp))
     res.overall <- eval(call(paste(fname, ".overall", sep=""), res))
     # parse out the overall estimate
@@ -508,8 +509,9 @@ loo.ma.binary <- function(fname, binary.data, params){
     loo.results <- array(list(NULL), dim=c(length(binary.data@study.names)))
     params.tmp <- params
     
-    params.tmp$create.plot <- FALSE
-    params.tmp$write.to.file <- FALSE
+    #params.tmp$create.plot <- FALSE
+    #params.tmp$write.to.file <- FALSE
+	params.tmp$supress.output <- TRUE
     # don't create plots when calling individual binary methods
     res <- eval(call(fname, binary.data, params.tmp))
     res.overall <- eval(call(paste(fname, ".overall", sep=""), res))
@@ -612,8 +614,9 @@ cum.ma.continuous <- function(fname, cont.data, params){
     if (!("ContinuousData" %in% class(cont.data))) stop("Continuous data expected.")
     
     params.tmp <- params
-    params.tmp$create.plot <- FALSE
-    params.tmp$write.to.file <- FALSE
+    #params.tmp$create.plot <- FALSE
+    #params.tmp$write.to.file <- FALSE
+	params.tmp$supress.output <- TRUE
     res <- eval(call(fname, cont.data, params.tmp))
     res.overall <- eval(call(paste(fname, ".overall", sep=""), res))
     # parse out the overall estimate
@@ -886,8 +889,9 @@ loo.ma.continuous <- function(fname, cont.data, params){
     
     loo.results <- array(list(NULL), dim=c(length(cont.data@study.names)))
     params.tmp <- params
-    params.tmp$create.plot <- FALSE
-    params.tmp$write.to.file <- FALSE
+    #params.tmp$create.plot <- FALSE
+    #params.tmp$write.to.file <- FALSE
+	params.tmp$supress.output <- TRUE
     res <- eval(call(fname, cont.data, params.tmp))
     res.overall <- eval(call(paste(fname, ".overall", sep=""), res))
     N <- length(cont.data@study.names)
@@ -998,8 +1002,9 @@ subgroup.ma.binary <- function(fname, binary.data, params){
     selected.cov <- get.cov(binary.data, cov.name)
     cov.vals <- selected.cov@cov.vals
     params.tmp <- params
-    params.tmp$create.plot <- FALSE
-    params.tmp$write.to.file <- FALSE
+    #params.tmp$create.plot <- FALSE
+    #params.tmp$write.to.file <- FALSE
+	params.tmp$supress.output <- TRUE
     subgroup.list <- unique(cov.vals)
     grouped.data <- array(list(NULL),c(length(subgroup.list)+1))
     subgroup.results <- array(list(NULL), c(length(subgroup.list)+1))
@@ -1105,8 +1110,9 @@ subgroup.ma.continuous <- function(fname, cont.data, params){
     cov.name <- as.character(params$cov_name)
     selected.cov <- get.cov(cont.data, cov.name)
     cov.vals <- selected.cov@cov.vals
-    params$create.plot <- FALSE
-    params.tmp$write.to.file <- FALSE
+    #params$create.plot <- FALSE
+    #params.tmp$write.to.file <- FALSE
+	params.tmp$supress.output <- TRUE
     subgroup.list <- unique(cov.vals)
     grouped.data <- array(list(NULL),c(length(subgroup.list)+1))
     subgroup.results <- array(list(NULL), c(length(subgroup.list)+1))
