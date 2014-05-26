@@ -1392,17 +1392,23 @@ draw.normal.CI <- function(LL, ES, UL, size) {
 
   if ((convertX(unit(UL, "native"), "npc", valueOnly=TRUE) > 1)  &&  (convertX(unit(LL, "native"), "npc", valueOnly=TRUE) >= 0)) {
     # this line is too long on the right - draw a right arrow from LL to 1 (in approriate coords.) 
-    grid.arrows(x=unit(c(LL, 1), c("native", "npc")), length=unit(0.05, "inches"))                 
+    #grid.arrows(x=unit(c(LL, 1), c("native", "npc")), length=unit(0.05, "inches"))
+	grid.lines(x=unit(c(LL, 1), c("native", "npc")), arrow=arrow(length=unit(0.05, "inches")), y=0.5)
+	
   }
   else if ((convertX(unit(UL, "native"), "npc", valueOnly=TRUE) <= 1)  &&  (convertX(unit(LL, "native"), "npc", valueOnly=TRUE) < 0)) {
     # this line is too long on the left - draw a left arrow from UL to 0 (in approriate coords.)
-    grid.arrows(x=unit(c(UL, 0), c("native", "npc")),
-                length=unit(0.05, "inches"))
+    #grid.arrows(x=unit(c(UL, 0), c("native", "npc")), length=unit(0.05, "inches"))
+	grid.lines(x=unit(c(UL, 0), c("native", "npc")), arrow=arrow(length=unit(0.05, "inches")), y=0.5)
+	
   }
   else if ((convertX(unit(UL, "native"), "npc", valueOnly=TRUE) > 1)   &&  (convertX(unit(LL, "native"), "npc", valueOnly=TRUE) < 0)) {
     # this line is too long on both sides - draw a left arrow from ES to 0 and a right arrow from ES to 1 (in approriate coords.)
-    grid.arrows(x=unit(c(ES, 0), c("native", "npc")), length=unit(0.05, "inches")) 
-    grid.arrows(x=unit(c(ES, 1), c("native", "npc")), length=unit(0.05, "inches"))              
+    #grid.arrows(x=unit(c(ES, 0), c("native", "npc")), length=unit(0.05, "inches"))
+	grid.lines(x=unit(c(ES, 0), c("native", "npc")), arrow=arrow(length=unit(0.05, "inches")), y=0.5)
+    #grid.arrows(x=unit(c(ES, 1), c("native", "npc")), length=unit(0.05, "inches"))
+	grid.lines(x=unit(c(ES, 1), c("native", "npc")), arrow=arrow(length=unit(0.05, "inches")), y=0.5)
+	
   }
   else {
     # this line is too short - draw white if totally inside rect
@@ -1446,17 +1452,21 @@ draw.summary.CI.no.scaled.diamond <- function(LL, ES, UL, size, color, diam.heig
                y=unit(0.5 + c(0, 0.5*diam.height, 0, -0.5*diam.height), "npc"), gp=gpar(fill=color))
   if ((convertX(unit(UL, "native"), "npc", valueOnly=TRUE) > 1)  &&  (convertX(unit(LL, "native"), "npc", valueOnly=TRUE) >= 0)) {
     # this line is too long on the right - draw a right arrow from LL to 1 (in approriate coords.) 
-    grid.arrows(x=unit(c(LL, 1), c("native", "npc")), length=unit(0.05, "inches"))                 
+    #grid.arrows(x=unit(c(LL, 1), c("native", "npc")), length=unit(0.05, "inches"))
+	grid.lines(x=unit(c(LL, 1), c("native", "npc")), arrow=arrow(length=unit(0.05, "inches")), y=0.5)
   }
   else if ((convertX(unit(UL, "native"), "npc", valueOnly=TRUE) <= 1)  &&  (convertX(unit(LL, "native"), "npc", valueOnly=TRUE) < 0)) {
     # this line is too long on the left - draw a left arrow from UL to 0 (in approriate coords.)
-    grid.arrows(x=unit(c(UL, 0), c("native", "npc")),
-                length=unit(0.05, "inches"))
+    #grid.arrows(x=unit(c(UL, 0), c("native", "npc")), length=unit(0.05, "inches"))
+	grid.lines(x=unit(c(UL, 0), c("native", "npc")), arrow=arrow(length=unit(0.05, "inches")), y=0.5)
   }
   else if ((convertX(unit(UL, "native"), "npc", valueOnly=TRUE) > 1)   &&  (convertX(unit(LL, "native"), "npc", valueOnly=TRUE) < 0)){
     # this line is too long on both sides - draw a left arrow from ES to 0 and a right arrow from ES to 1 (in approriate coords.)
-    grid.arrows(x=unit(c(ES, 0), c("native", "npc")), length=unit(0.05, "inches")) 
-    grid.arrows(x=unit(c(ES, 1), c("native", "npc")), length=unit(0.05, "inches"))              
+    #grid.arrows(x=unit(c(ES, 0), c("native", "npc")), length=unit(0.05, "inches"))
+	grid.lines(x=unit(c(ES, 0), c("native", "npc")), arrow=arrow(length=unit(0.05, "inches")), y=0.5)
+	
+    #grid.arrows(x=unit(c(ES, 1), c("native", "npc")), length=unit(0.05, "inches"))
+	grid.lines(x=unit(c(ES, 1), c("native", "npc")), arrow=arrow(length=unit(0.05, "inches")), y=0.5)
   }
   else {
     # this line is too short - draw white if totally inside rect

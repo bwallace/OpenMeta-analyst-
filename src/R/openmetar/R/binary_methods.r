@@ -37,9 +37,9 @@ compute.bin.point.estimates <- function(binary.data, params) {
 
 binary.transform.f <- function(metric.str){
     display.scale <- function(x, ...){
-		
-		extra.args <- list(...)
-		
+        
+        extra.args <- list(...)
+        
         if (metric.str %in% binary.log.metrics){
             exp(x)
         } else if (metric.str %in% binary.logit.metrics){
@@ -47,7 +47,7 @@ binary.transform.f <- function(metric.str){
         } else if (metric.str %in% binary.arcsine.metrics){
             invarcsine.sqrt(x)
         } else if (metric.str %in% binary.freeman_tukey.metrics){
-			  ni <- extra.args[['ni']]
+              ni <- extra.args[['ni']]
               if (length(x)==1) {
                    # If x has length 1, use harmonic mean inverse transform, which takes the harmonic mean of n as second arg. 
                    # If n also has length 1, this is the same as trans.ipft(x,n).
@@ -63,8 +63,8 @@ binary.transform.f <- function(metric.str){
 
     
     calc.scale <- function(x, ...){
-		
-		extra.args <- list(...)
+        
+        extra.args <- list(...)
         if (metric.str %in% binary.log.metrics){
             log(x)
         } else if (metric.str %in% binary.logit.metrics){
@@ -72,7 +72,7 @@ binary.transform.f <- function(metric.str){
         } else if (metric.str %in% binary.arcsine.metrics){
             arcsine.sqrt(x) 
         } else if (metric.str %in% binary.freeman_tukey.metrics){
-			ni <- extra.args[['ni']]
+            ni <- extra.args[['ni']]
           if (length(x)==1) {
              transf.pft(x, ni)
           }
@@ -110,7 +110,7 @@ get.res.for.one.binary.study <- function(binary.data, params) {
 }
 
 #convert.res.conf.level(data) {
-##	;
+##    ;
 ##}
 
 
@@ -193,15 +193,16 @@ write.bin.study.data.to.file <- function(binary.data, params, res, data.outpath)
 binary.fixed.inv.var <- function(binary.data, params){
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data)))
-		stop("Binary data expected.")
-	
+        stop("Binary data expected.")
+    
     results <- NULL
-	input.params <- params
-	
+    input.params <- params
+    
     if (length(binary.data@g1O1) == 1 || length(binary.data@y) == 1){
         res <- get.res.for.one.binary.study(binary.data, params)
         # Package res for use by overall method.
-        results <- list("Summary"=res)
+        results <- list("Summary"=res,
+                        "res"=res)
     } else {
         # call out to the metafor package
         res<-rma.uni(yi=binary.data@y, sei=binary.data@SE, slab=binary.data@study.names,
@@ -229,24 +230,24 @@ binary.fixed.inv.var <- function(binary.data, params){
         # (mapping titles to pretty-printed text). In this case we have only one 
         # of each. 
         #  
-		
+        
         plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
         images <- c("Forest Plot"=forest.path)
         plot.names <- c("forest plot"="forest_plot")
         pure.res$weights <- weights(res)
         results <- list("input_data"=binary.data,
-						"input_params"=input.params,
-						"images"=images,
-				        "Summary"=capture.output.and.collapse(summary.disp),
+                        "input_params"=input.params,
+                        "images"=images,
+                        "Summary"=capture.output.and.collapse(summary.disp),
                         "plot_names"=plot.names, 
                         "plot_params_paths"=plot.params.paths,
                         "res"=pure.res,
-						"res.info"=binary.fixed.inv.var.value.info(),
+                        "res.info"=binary.fixed.inv.var.value.info(),
                         "weights"=weights(res))
-	}
-	
-	references <- "this is a placeholder for binary fixed effect inv var reference"
-	results[["References"]] <- references
+    }
+    
+    references <- "this is a placeholder for binary fixed effect inv var reference"
+    results[["References"]] <- references
     results
 }
 
@@ -255,7 +256,7 @@ binary.fixed.inv.var.value.info <- function() {
 }
 
 binary.fixed.inv.var.is.feasible.for.funnel <- function() {
-	TRUE
+    TRUE
 }
                                 
 binary.fixed.inv.var.parameters <- function(){
@@ -263,9 +264,9 @@ binary.fixed.inv.var.parameters <- function(){
     apply_adjustment_to = c("only0", "all")
     
     params <- list("conf.level"="float",
-			       "digits"="int", 
+                   "digits"="int", 
                    "adjust"="float",
-				   "to"=apply_adjustment_to)
+                   "to"=apply_adjustment_to)
     
     # default values
     defaults <- list("conf.level"=95, "digits"=3, "adjust"=.5, "to"="only0")
@@ -289,33 +290,34 @@ binary.fixed.inv.var.pretty.names <- function() {
 
 binary.fixed.inv.var.overall <- function(results) {
     # this parses out the overall from the computed result
-    res <- results$Summary
+    res <- results$res
 }
 
 ############################################
 #  binary fixed effects -- mantel haenszel #
 ############################################
-binary.fixed.mh <- function(binary.data, params){	
+binary.fixed.mh <- function(binary.data, params){    
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data)))
-		stop("Binary data expected.")  
-	
+        stop("Binary data expected.")  
+    
     results <- NULL
-	input.params <- params
-	
+    input.params <- params
+    
     if (length(binary.data@g1O1) == 1 || length(binary.data@y) == 1){
         res <- get.res.for.one.binary.study(binary.data, params)
          # Package res for use by overall method.
-        results <- list("Summary"=res)
+        results <- list("Summary"=res, # shouldn't assume this is any more than a string
+                        "res"=res) # actual metafor output
     } else {
         res<-rma.mh(ai=binary.data@g1O1, bi=binary.data@g1O2, 
                     ci=binary.data@g2O1, di=binary.data@g2O2,
-					slab=binary.data@study.names,
+                    slab=binary.data@study.names,
                     level=params$conf.level,
-					digits=params$digits,
-					measure=params$measure,
+                    digits=params$digits,
+                    measure=params$measure,
                     add=c(params$adjust, 0),
-					to=c(as.character(params$to), "none"))
+                    to=c(as.character(params$to), "none"))
         pure.res <- res
         if (is.null(binary.data@y) || is.null(binary.data@SE)) {
             # compute point estimates for plot.data in case they are missing
@@ -349,21 +351,21 @@ binary.fixed.mh <- function(binary.data, params){
         plot.names <- c("forest plot"="forest_plot")
         pure.res$weights <- weights(res)
         results <- list("input_data"=binary.data,
-						"input_params"=input.params,
-						"images"=images,
+                        "input_params"=input.params,
+                        "images"=images,
                         "Summary"=capture.output.and.collapse(summary.disp), 
                         "plot_names"=plot.names,
                         "plot_params_paths"=plot.params.paths,
                         "res"=pure.res,
-						"res.info"=binary.fixed.mh.value.info(),
+                        "res.info"=binary.fixed.mh.value.info(),
                         "weights"=weights(res))
             
            
     }
-	
-	references <- "Mantel, N., & Haenszel, W. (1959) Statistical aspects of the analysis of data from retrospective studies of disease. Journal of the National Cancer Institute, 22, 719-748."
-	results[["References"]] = references
-	
+    
+    references <- "Mantel, N., & Haenszel, W. (1959) Statistical aspects of the analysis of data from retrospective studies of disease. Journal of the National Cancer Institute, 22, 719-748."
+    results[["References"]] = references
+    
     results
 }
 
@@ -386,9 +388,9 @@ binary.fixed.mh.value.info <- function() {
         yi       = list(type="vector", description='the vector of outcomes'),
         vi       = list(type="vector", description='the corresponding sample variances'),
         fit.stats= list(type="data.frame", description='a list with the log-likelihood, deviance, AIC, BIC, and AICc values under the unrestricted and restricted likelihood.'),
-	
-		# not part of rma.mh default output
-		weights = list(type="vector", description="weights in % given to the observed effects")
+    
+        # not part of rma.mh default output
+        weights = list(type="vector", description="weights in % given to the observed effects")
 )
 }
                                 
@@ -431,37 +433,38 @@ binary.fixed.mh.is.feasible <- function(binary.data, metric){
 }
 
 binary.fixed.mh.is.feasible.for.funnel <- function() {
-	FALSE
+    FALSE
 }
 
 binary.fixed.mh.overall <- function(results) {
     # this parses out the overall from the computed result
-    res <- results$Summary
+    res <- results$res
 }
                                                                                                                          
 ##################################################
 #       binary fixed effects -- Peto             #
 ##################################################
-binary.fixed.peto <- function(binary.data, params) {	
+binary.fixed.peto <- function(binary.data, params) {    
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data)))
-		stop("Binary data expected.") 
-	
-	input.params <- params
+        stop("Binary data expected.") 
+    
+    input.params <- params
     
     if (length(binary.data@g1O1) == 1) {
         res <- get.res.for.one.binary.study(binary.data, params)
          # Package res for use by overall method.
-        results <- list("Summary"=res)
+        results <- list("Summary"=res,
+                        "res"=res)
     } else {
-   	    res <- rma.peto(ai=binary.data@g1O1, bi=binary.data@g1O2, 
+           res <- rma.peto(ai=binary.data@g1O1, bi=binary.data@g1O2, 
                         ci=binary.data@g2O1, di=binary.data@g2O2,
-						slab=binary.data@study.names,
+                        slab=binary.data@study.names,
                         level=params$conf.level,
-						digits=params$digits,
-						add=c(params$adjust,params$adjust),
-						to=c(as.character(params$to), as.character(params$to)),
-						drop00 = FALSE)  # needed in metafor 1.8, unknown in 1.6
+                        digits=params$digits,
+                        add=c(params$adjust,params$adjust),
+                        to=c(as.character(params$to), as.character(params$to)),
+                        drop00 = FALSE)  # needed in metafor 1.8, unknown in 1.6
         pure.res <- res
         # Corrected values for y and SE
         binary.data@y <- res$yi
@@ -502,18 +505,18 @@ binary.fixed.peto <- function(binary.data, params) {
         plot.names <- c("forest plot"="forest_plot")
         pure.res$weights <- weights(res)
         results <- list("input_data"=binary.data,
-						"input_params"=input.params,
-						"images"=images,
-				        "Summary"=capture.output.and.collapse(summary.disp),
+                        "input_params"=input.params,
+                        "images"=images,
+                        "Summary"=capture.output.and.collapse(summary.disp),
                         "plot_names"=plot.names,
-						"plot_params_paths"=plot.params.paths,
+                        "plot_params_paths"=plot.params.paths,
                         "res"=pure.res, # if res is here, res.info must be too
-						"res.info"=binary.fixed.peto.value.info(),
+                        "res.info"=binary.fixed.peto.value.info(),
                         "weights"=weights(res))
     }
-	
-	references <- "Fixed Peto: Yusuf, S., Peto, R., Lewis, J., Collins, R., & Sleight, P. (1985). Beta blockade during and after myocardial infarction: An overview of the randomized trials. Progress in Cardiovascular Disease, 27, 335-371."
-	results[["References"]] <- references
+    
+    references <- "Fixed Peto: Yusuf, S., Peto, R., Lewis, J., Collins, R., & Sleight, P. (1985). Beta blockade during and after myocardial infarction: An overview of the randomized trials. Progress in Cardiovascular Disease, 27, 335-371."
+    results[["References"]] <- references
     results
 }
 
@@ -531,9 +534,9 @@ binary.fixed.peto.value.info <- function() {
             yi       = list(type="vector", description='the vector of outcomes'),
             vi       = list(type="vector", description='the corresponding sample variances'),
             fit.stats= list(type="data.frame", description='a list with the log-likelihood, deviance, AIC, BIC, and AICc values under the unrestricted and restricted likelihood.'),
-			
-			# not part of rma.peto output
-			weights = list(type="vector", description="weights in % given to the observed effects")
+            
+            # not part of rma.peto output
+            weights = list(type="vector", description="weights in % given to the observed effects")
     )
 }
                               
@@ -575,19 +578,19 @@ binary.fixed.peto.is.feasible <- function(binary.data, metric){
 }
 
 binary.fixed.peto.is.feasible.for.funnel <- function() {
-	FALSE
+    FALSE
 }
 
 binary.fixed.peto.overall <- function(results) {
     # this parses out the overall from the computed result
-    res <- results$Summary
+    res <- results$res
 }
 
 
 ##################################
 #  binary random effects         #
 ##################################
-binary.random <- function(binary.data, params) {	
+binary.random <- function(binary.data, params) {    
     # assert that the argument is the correct type
     if (!("BinaryData" %in% class(binary.data))) stop("Binary data expected.")
     
@@ -597,16 +600,17 @@ binary.random <- function(binary.data, params) {
     if (length(binary.data@g1O1) == 1 || length(binary.data@y) == 1){
         res <- get.res.for.one.binary.study(binary.data, params)
          # Package res for use by overall method.
-        results <- list("Summary"=res)
+        results <- list("Summary"=res,
+                        "res"=res)
     } else {     
         # call out to the metafor package
         res<-rma.uni(yi=binary.data@y, sei=binary.data@SE, 
                      slab=binary.data@study.names,
                      method=params$rm.method, level=params$conf.level,
                      digits=params$digits,
-					 add=c(params$adjust,params$adjust),
-					 to=as.character(params$to))
-					 ##drop00 = FALSE)  # needed in metafor 1.8, unknown in 1.6
+                     add=c(params$adjust,params$adjust),
+                     to=as.character(params$to))
+                     ##drop00 = FALSE)  # needed in metafor 1.8, unknown in 1.6
         pure.res <- res # store res before it gets messed with
         if (is.null(binary.data@y) || is.null(binary.data@SE)) {
             # compute point estimates for plot.data in case they are missing
@@ -616,7 +620,7 @@ binary.random <- function(binary.data, params) {
         #
         metric.name <- pretty.metric.name(as.character(params$measure))
         model.title <- paste("Binary Random-Effects Model\n\nMetric: ", metric.name, sep="")
-		
+        
         # Create results display tables
         summary.disp <- create.summary.disp(binary.data, params, res, model.title)
         #
@@ -638,7 +642,7 @@ binary.random <- function(binary.data, params) {
         # a dictionary of images (mapping titles to image paths) and a list of texts
         # (mapping titles to pretty-printed text). In this case we have only one 
         # of each. 
-        #		
+        #        
         plot.params.paths <- c("Forest Plot"=forest.plot.params.path)
         images <- c("Forest Plot"=forest.path)
         plot.names <- c("forest plot"="forest_plot")
@@ -646,16 +650,16 @@ binary.random <- function(binary.data, params) {
         results <- list("input_data"=binary.data, # the data that was given to the routine in the first place
                         "input_params"=input.params,
                         "images"=images,
-				        "Summary"=capture.output.and.collapse(summary.disp),
+                        "Summary"=capture.output.and.collapse(summary.disp),
                         "plot_names"=plot.names,
-						"plot_params_paths"=plot.params.paths,
+                        "plot_params_paths"=plot.params.paths,
                         "res"=pure.res, # the results directly from metafor in order to extract values of interests
-						"res.info"=binary.random.value.info(),
-						"weights"=weights(res))
+                        "res.info"=binary.random.value.info(),
+                        "weights"=weights(res))
     }
-	
-	references <- "this is a placeholder for binary random reference"
-	results[["References"]] <- references
+    
+    references <- "this is a placeholder for binary random reference"
+    results[["References"]] <- references
     results
 }
 
@@ -665,7 +669,7 @@ binary.random.value.info <- function() {
 }
 
 binary.random.is.feasible.for.funnel <- function () {
-	TRUE
+    TRUE
 }
 
 
@@ -684,15 +688,15 @@ binary.random.parameters <- function(){
 }
 
 binary.random.pretty.names <- function() {
-	# sort of redundant to have both this and rm_method_ls but whatever for now...
-	rm_method_names <- list(
-			HE="Hedges-Olkin",
-			DL = "DerSimonian-Laird",
-			SJ = "Sidik-Jonkman",
-			ML = "Maximum Likelihood",
-			REML = "Restricted Maximum Likelihood", 
-			EB = "Empirical Bayes")
-	
+    # sort of redundant to have both this and rm_method_ls but whatever for now...
+    rm_method_names <- list(
+            HE="Hedges-Olkin",
+            DL = "DerSimonian-Laird",
+            SJ = "Sidik-Jonkman",
+            ML = "Maximum Likelihood",
+            REML = "Restricted Maximum Likelihood", 
+            EB = "Empirical Bayes")
+    
     pretty.names <- list("pretty.name"="Binary Random-Effects", 
                          "description" = "Performs random-effects meta-analysis.",
                          "rm.method"=list("pretty.name"="Random-Effects method", "description"="Method for estimating between-studies heterogeneity", "rm.method.names"=rm_method_names),                      
@@ -707,5 +711,5 @@ binary.random.pretty.names <- function() {
 
 binary.random.overall <- function(results) {
     # this parses out the overall from the computed result
-    res <- results$Summary
+    res <- results$res
 }

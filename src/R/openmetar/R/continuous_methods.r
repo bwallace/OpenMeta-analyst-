@@ -154,7 +154,8 @@ continuous.fixed <- function(cont.data, params){
         # handle the case where only one study was passed in
         res <- get.res.for.one.cont.study(cont.data, params)   
          # Package res for use by overall method.
-        results <- list("Summary"=res)
+        results <- list("Summary"=res,
+				        "res"=res)
     }
     else {
         res<-rma.uni(yi=cont.data@y, sei=cont.data@SE, 
@@ -238,7 +239,7 @@ continuous.fixed.pretty.names <- function() {
 
 continuous.fixed.overall <- function(results){
     # this parses out the overall from the computed result
-    res <- results$Summary
+    res <- results$res
 }
 
 ###############################
@@ -256,7 +257,8 @@ continuous.random <- function(cont.data, params){
         # handle the case where only one study was passed in
         res <- get.res.for.one.cont.study(cont.data, params)   
          # Package res for use by overall method.
-        results <- list("Summary"=res)
+        results <- list("Summary"=res,
+				        "res"=res)
     }
     else{
         res<-rma.uni(yi=cont.data@y, sei=cont.data@SE, 
@@ -360,7 +362,7 @@ continuous.random.pretty.names <- function() {
 
 continuous.random.overall <- function(results){
     # this parses out the overall from the computed result
-    res <- results$Summary
+    res <- results$res
 }
 
 continuous.fixed.is.feasible.for.funnel <- function () {
