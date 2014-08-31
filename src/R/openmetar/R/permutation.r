@@ -28,7 +28,7 @@
 ############################################################################
 permuted.ma <- function(
 	# meta-analysis parameters
-	data, mods, method, intercept=TRUE, level=95, digits=4, knha=FALSE,
+	data, method, intercept=TRUE, level=95, digits=4, knha=FALSE, weighted=TRUE,
 	# Permutation parameters
 	exact=FALSE, iter=1000, retpermdist=FALSE) {
 	
@@ -39,19 +39,23 @@ permuted.ma <- function(
 		method=method,
 		knha=knha,
 		level=level,
-		digits=digits)
+		digits=digits,
+		weighted=weighted)
 
 	perm.res <- permutest(ma.res, exact=exact, iter=iter,
-              retpermdist=FALSE, digits=digts)
-	summary <- paste(capture.output(res), collapse="\n")
+              retpermdist=FALSE, digits=digits)
+	summary <- paste(capture.output(perm.res), collapse="\n")
 
 	results <- list(
-		"Summary"=Summary)
+		"Summary"=summary,
+		"res"=perm.res,
+		"res.info"=permutest.value.info(retpermdist, meta.reg.mode=FALSE)
+		)
 }
 
 permuted.meta.reg <- function (
-	# meta-analysis parameters
-	data, method, intercept=TRUE, level=95, digits=4, knha=FALSE, btt=NULL,
+	# meta-regresion parameters
+	data, method, mods, intercept=TRUE, level=95, digits=4, knha=FALSE, btt=NULL,
 	# Permutation parameters
 	exact=FALSE, iter=1000, retpermdist=FALSE) {
 
@@ -60,21 +64,30 @@ permuted.meta.reg <- function (
 	# obtain regression result rma.uni
 	reg.res <- regression.wrapper(data, mods.str, method, level, digits, btt)
 
-	perm.res <- permutest(ma.res, exact=exact, iter=iter,
-              retpermdist=FALSE, digits=digts)
-	summary <- paste(capture.output(res), collapse="\n")
+	perm.res <- permutest(reg.res, exact=exact, iter=iter,
+              retpermdist=retpermdist, digits=digits)
+	summary <- paste(capture.output(perm.res), collapse="\n")
 
 	results <- list(
-		"Summary"=Summary)
+		"Summary"=summary,
+		"res"=perm.res,
+		"res.info"=permutest.value.info(retpermdist)
+		)
 }
 
-
-
-
-
-
-
-
-
-
+permutest.value.info <- function(retpermdist, meta.reg.mode=TRUE) {
+	info = list(
+			pval = list(type="vector", description='p-value(s) based on the permutation test.'),
+			QMp = list(type="vector", description='p-value for the omnibus test of coefficients based on the permutation test.')
+	)
+	
+	if (retpermdist && meta.reg.mode) {
+		additional.info = list(
+				zval.perm = list(type="data.frame", description='values of the test statistics of the coefficients under the various permutations'),
+				QM.perm = list(type="vector", description='values of the test statistic for the omnibus test of coefficients under the various permutations')
+		)
+		info = c(info, additional.info)
+	}
+	return(info)
+}
 
