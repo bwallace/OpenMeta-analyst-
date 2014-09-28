@@ -44,9 +44,9 @@ sys.path = sys.path[:4]
 ####
 # 8/21/12 -- TEMPORARY -- need to add this back!
 #print "\n\nok, mac user -- I'm setting your R path temporarily (this console only).\n\ns"
-os.environ["R"] = os.path.join(DIR_NAME, "R_dist", "3.1.0", "bin")
+os.environ["R"] = os.path.join(DIR_NAME, "R_dist", "3.1", "bin")
 
-os.environ["R_HOME"] = os.path.join(DIR_NAME, "R_dist", "3.1.0")
+os.environ["R_HOME"] = os.path.join(DIR_NAME, "R_dist", "3.1")
 
 os.environ["R_INTERACTIVE_DEVICE"] = "pdf"
 os.environ["R_DEFAULT_DEVICE"] = "pdf"   
