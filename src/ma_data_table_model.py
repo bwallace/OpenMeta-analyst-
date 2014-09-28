@@ -652,9 +652,8 @@ class DatasetModel(QAbstractTableModel):
                     calc_scale_val = None
                     print("Input value is %s" % str(display_scale_val))
 
-                    # Will be binary or continuous
-                    e1, n1, e2, n2 = self.get_cur_raw_data_for_study(study_index=row)
                     if self.current_effect == "PFT":
+                        e1, n1, e2, n2 = self.get_cur_raw_data_for_study(study_index=row)
                         calc_scale_val = self._get_calc_scale_value(display_scale_val,
                                                                     data_type=current_data_type,
                                                                     effect=self.current_effect,n1=n1)
