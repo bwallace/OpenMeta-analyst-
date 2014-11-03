@@ -1253,7 +1253,7 @@ reg.output.helper <- function(theData, rma.results, model.formula, digits=5) {
 	# apparently, anova or lm requires rma.results to be global
 	rma.results <<- rma.results
 	# get model sums of squares from lm based on metafor's tau
-	effects.results <- anova(lm(model.formula, weight=1/(vi+rma.results$tau), data=theData))
+	effects.results <- anova(lm(model.formula, weight=1/(vi+rma.results$tau2), data=theData))
 
 	# get summary of the Overall Model	
 	printModelSummary <- function(ANOVA = effects.results) {
