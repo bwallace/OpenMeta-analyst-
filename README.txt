@@ -23,9 +23,9 @@ Next, you'll need to build and install the openmetar packages and altered HSROC 
     > sudo R CMD INSTALL HSROC_2.0.5.tar.gz
     > sudo R CMD INSTALL openmetar_1.0.tar.gz
 
-On this branch, we have moved to R 3.0.1!
+On this branch, we have moved to R 3.1!
 
-Once R is setup for OpenMeta, you'll need to install Python (we use 2.7) and the necessary libraries. You'll need PyQT (and QT: see http://www.riverbankcomputing.co.uk/software/pyqt/intro) installed -- we use PyQt 4.9; your mileage may vary with other versions. 
+Once R is setup for OpenMeta, you'll need to install Python (we use 2.7) and the necessary libraries. You'll need PyQT (and QT: see http://www.riverbankcomputing.co.uk/software/pyqt/intro) installed -- we use PyQt 4.10; your mileage may vary with other versions. 
 
 Next, install rpy2 (rpy.sourceforge.net/rpy2.html) in Python. Verify that all is well by executing:
 
@@ -44,7 +44,7 @@ For running nosetests:
 these should be run from within the src folder:
 nosetests -v test_meta_analysis.py
 
-important dependency versions:
-R      : 3.0.1 (2013-05-16) -- "Good Sport"
-metafor: 1.6.0
-pyqt4  : 4.10.1
+(important)? dependency versions:
+R      : 3.X
+metafor: 1.6.0ish
+pyqt4  : 4.10ish
