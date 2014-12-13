@@ -30,7 +30,7 @@ options = {
         'iconfile': os.path.abspath(os.path.join('images','meta.icns'))
     },
     'bdist_dmg': {
-        'volume_label': 'testApp',
+        'volume_label': 'OpenMetaAnalyst',
         #'applications-shortcut': True,
     }
 }
