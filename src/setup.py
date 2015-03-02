@@ -45,7 +45,7 @@ executables = [
 ]
 
 setup(name='OpenMetaAnalyst',
-      version='0.1412',
+      version='0.1503',
       description='Intuitive open-source meta-analysis',
       options=options,
       executables=executables
