@@ -137,8 +137,9 @@ create.summary.disp <- function(om.data, params, res, model.title) {
   scale.str <- get.scale(params)
   tau2 <- sprintf(digits.str, res$tau2)
   degf <- res$k - 1
-  if (!is.null(res$I2))
+  if (!is.null(res$I2)) {
     I2 <- round(res$I2, digits=params$digits)
+  }
   QLabel =  paste("Q(df=", degf, ")", sep="")
   # Set n, the vector of numbers of studies, for PFT metric.
   if (params$measure=="PFT" && length(om.data@g1O1) > 0 && length(om.data@g1O2) > 0) {
@@ -474,13 +475,15 @@ create.subgroup.display <- function(res, study.names, params, model.title, data.
     se.disp <- sprintf(digits.str, se)
     if (!is.null(res[[count]]$QE)) {
       degf <- res[[count]]$k - 1
-      I2 <- max(0, (res[[count]]$QE - degf)/res[[count]]$QE)
-      I2 <- paste(100 * round(I2, digits = 2), "%")
       QE <- sprintf(digits.str, res[[count]]$QE)
       QE <- paste(QE, " (", degf,")", sep="")
     } else {
-      I2 <- "NA"
       QE <- "NA"
+    }
+    if (!is.null(res[[count]]$I2)) {
+        I2 <- paste(round(res[[count]]$I2, digits = 2), "%")
+    } else {
+        I2 <- "NA"
     }
     if (!is.null(res[[count]]$QEp)) {
       QEp <- round.display(x=res[[count]]$QEp, digits=params$digits)
