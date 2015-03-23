@@ -57,7 +57,10 @@ permuted.meta.reg <- function (
 	# meta-regresion parameters
 	data, method, mods, intercept=TRUE, level=95, digits=4, knha=FALSE, btt=NULL,
 	# Permutation parameters
-	exact=FALSE, iter=1000, retpermdist=FALSE) {
+	exact=FALSE, iter=1000, retpermdist=FALSE,
+	# Other parameters
+	include.meta.reg.summary=TRUE # show regular meta regression results too in output
+	) {
 
 	mods.str <- make.mods.str(mods)
 	
@@ -69,10 +72,29 @@ permuted.meta.reg <- function (
 	summary <- paste(capture.output(perm.res), collapse="\n")
 
 	results <- list(
-		"Summary"=summary,
+		"Permuted Meta-Regression Summary"=summary,
 		"res"=perm.res,
 		"res.info"=permutest.value.info(retpermdist)
 		)
+
+	if (include.meta.reg.summary) {
+		meta.reg.result <- g.meta.regression(
+			data=data,
+			mods=mods,
+			method=method,
+			level=level,
+			digits=digits,
+			measure=NULL,
+			btt=btt,
+			make.coeff.forest.plot=FALSE,
+			exclude.intercept=FALSE, # For coefficient forest plot
+			disable.plots=TRUE
+		)
+
+		results <- c(list('Standard Meta Regression Summary'=meta.reg.result$Summary), results)
+	}
+
+	results
 }
 
 permutest.value.info <- function(retpermdist, meta.reg.mode=TRUE) {
