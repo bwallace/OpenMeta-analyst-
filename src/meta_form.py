@@ -951,8 +951,13 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
 
         # if no file path is provided, prompt the user.
         if file_path is None:
-            file_path = unicode(QFileDialog.getOpenFileName(self, "OpenMeta[analyst] - Open File",
-                                                              ".", "open meta files (*.oma)"))
+            file_path = QFileDialog.getOpenFileName(
+                parent=self,
+                caption=QString("OpenMeta[analyst] - Open File"),
+                directory=".",
+                filter="open meta files (*.oma)")
+            file_path = unicode(file_path.toUtf8(),'utf8')
+
             # if the user didn't select anything, we return false.                                  
             if file_path == "":
                 return False                                               
@@ -1214,9 +1219,14 @@ class MetaForm(QtGui.QMainWindow, ui_meta.Ui_MainWindow):
                 out_f = unicode(self.out_path)
             else:
                 out_f = os.path.join(docs_path, self.model.get_name())
-            
-            out_f = unicode(QFileDialog.getSaveFileName(parent=self, caption="OpenMeta[analyst] - Save File",
-                                                        directory=out_f, filter="open meta files: (.oma)"))
+
+            out_f = QFileDialog.getSaveFileName(
+                parent=self,
+                caption="OpenMeta[analyst] - Save File",
+                directory=out_f,
+                filter="open meta files: (.oma)",
+            )
+            out_f = unicode(out_f.toUtf8(),'utf8')
             if out_f == "" or out_f == None:
                 return None
             else:
