@@ -21,7 +21,8 @@ gimpute.bin.data <- function(bin.data) {
 	# treated events, treated total, control events, and control total, respectively
 	#
 	# There will be two sets of possible results for each parameter since the solution involves a quadratic
-	
+	#
+	# est, lower, upper assumed to be symmetric eg. in the log OR scale vs untransformed OR
 	metric <- as.character(bin.data[["metric"]])
 	est    <- bin.data[["estimate"]]
 	lower  <- bin.data[["lower"]]
