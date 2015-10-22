@@ -63,6 +63,15 @@ def get_setting_type(field):
     return type(DEFAULT_SETTINGS[field])
 
 def get_setting(field):
+    try:
+        return _get_setting_helper(field)
+    except Exception as e:
+        print "Exception while trying to access setting '%s', resetting settings to defaults" % field
+        reset_settings()
+        return _get_setting_helper(field)
+    return _get_setting_helper(field)
+
+def _get_setting_helper(field):
     settings = QSettings()
 
     # see if we need to store the value in a special way
@@ -73,7 +82,8 @@ def get_setting(field):
         indexes = list(settings.childKeys())
         foo_list = []
         for i in indexes:
-            value = str(settings.value(i).toString())
+            value = settings.value(i).toString().toUtf8() # byte array encoded in utf-8
+            value = unicode(value, 'utf8')
             foo_list.append(value)
         settings.endGroup()
         setting_value = foo_list
@@ -84,6 +94,8 @@ def get_setting(field):
         setting_value = settings.value(field).toBool()
     elif value_type == str:
         setting_value = settings.value(field).toString()
+    elif value_type == unicode:
+        settings.setValue(field, value)
     elif value_type == int:
         setting_value = settings.value(field).toInt()[0]
     elif value_type == QColor:
@@ -131,6 +143,7 @@ def reset_settings():
 
     for field, value in DEFAULT_SETTINGS.items():
         update_setting(field, value)
+    save_settings()
 
 def add_file_to_recent_files(fpath):
     # add a new file to the front of the deque

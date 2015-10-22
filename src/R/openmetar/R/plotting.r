@@ -57,12 +57,14 @@ create.plot.data.generic <- function(om.data, params, res, selected.cov=NULL){
     degf <- res$k - 1
     QLabel =  paste("Q(df=", degf, ")", sep="")
     if (!is.null(res$QE)) {
-      I2 <- max(0, (res$QE - degf)/res$QE)
-      I2 <- paste(100 * round(I2, digits = 2), "%", sep="")
       QE <- sprintf(digits.str, res$QE)
     } else {
-      I2 <- "NA"
       QE <- "NA"
+    }
+    if (!is.null(res$I2)) {
+        I2 <- paste(round(res$I2, digits = 2), "%")
+    } else {
+        I2 <- "NA"
     }
     if (!is.null(res$QEp)) {
       if (res$QEp < 10^(-params$digits)) {
@@ -422,12 +424,14 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, 
          # heterogeneity data
         degf <- cur.res$k - 1
         if (!is.null(cur.res$QE)) {
-            I2 <- max(0, (cur.res$QE - degf)/cur.res$QE)
-            I2 <- paste(100 * round(I2, digits = 2), "%", sep="")
             QE <- sprintf(digits.str, cur.res$QE)
         } else {
-            I2 <- "NA"
             QE <- "NA"
+        }
+        if (!is.null(cur.res$I2)) {
+            I2 <- paste(round(cur.res$I2, digits = 2), "%")
+        } else {
+            I2 <- "NA"
         }
         if (!is.null(cur.res$QEp)) {
             QEp <- sprintf(digits.str, cur.res$QEp)
@@ -450,12 +454,14 @@ create.subgroup.plot.data.generic <- function(subgroup.data, params, data.type, 
      # heterogeneity data
     degf <- cur.res$k - 1
     if (!is.null(cur.res$QE)) {
-        I2 <- max(0, (cur.res$QE - degf)/cur.res$QE)
-        I2 <- paste(100 * round(I2, digits = 2), "%", sep="")
         QE <- sprintf(digits.str, cur.res$QE)
     } else {
-        I2 <- "NA"
         QE <- "NA"
+    }
+    if (!is.null(cur.res$I2)) {
+        I2 <- paste(round(cur.res$I2, digits = 2), "%")
+    } else {
+        I2 <- "NA"
     }
     if (!is.null(cur.res$QEp)) {
         QEp <- sprintf(digits.str, cur.res$QEp)

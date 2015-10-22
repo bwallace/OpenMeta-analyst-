@@ -333,8 +333,9 @@ coded.cat.mod.level <- function(lvl, l.mod) {
 
 
 
-g.meta.regression <- function(data, mods, method, level, digits, measure, btt=NULL,
-		make.coeff.forest.plot=FALSE, exclude.intercept=FALSE)# For coefficient forest plot
+g.meta.regression <- function(data, mods, method, level, digits, measure,
+	btt=NULL, make.coeff.forest.plot=FALSE, exclude.intercept=FALSE, # For coefficient forest plot
+	disable.plots = FALSE)
 {
 	# This is s a thin wrapper to metafor's meta regression functionality
 	# in order to let R do the dummy coding for us
@@ -361,9 +362,9 @@ g.meta.regression <- function(data, mods, method, level, digits, measure, btt=NU
 	# Add residuals to additional values output
 	residuals <- rstandard(res, digits=digits) # is a dataframe
 	residuals$slab <- data$slab
-	res_and_residuals <- res
-	res_and_residuals$residuals <- residuals
-	res_and_residuals.info <- c(rma.uni.value.info(),
+	res.and.residuals <- res
+	res.and.residuals$residuals <- residuals
+	res.and.residuals.info <- c(rma.uni.value.info(),
 			                    list(residuals=list(type="blob", description="Standardized residuals for fitted models")))
 	
 	Summary <- paste(capture.output(res), collapse="\n")  # convert print output to a string
@@ -395,8 +396,8 @@ g.meta.regression <- function(data, mods, method, level, digits, measure, btt=NU
 			"Summary"=Summary,
 			#"plot_names"=plot.names,
 			#"plot_params_paths"=plot.params.paths,
-			"res"=res_and_residuals, #res,
-			"res.info"=res_and_residuals.info)# rma.uni.value.info())
+			"res"=res.and.residuals, #res,
+			"res.info"=res.and.residuals.info)# rma.uni.value.info())
 	
 	########################################################################
 
@@ -404,7 +405,7 @@ g.meta.regression <- function(data, mods, method, level, digits, measure, btt=NU
 	plot.names <- c()
 	plot.params.paths <- c()
 	# 1 continuous covariate, no categorical covariates
-	if (is.single.numeric.covariate(mods)) {
+	if (is.single.numeric.covariate(mods) && !disable.plots) {
 		# if only 1 continuous covariate, create reg. plot
 		betas <- res$b
 		fitted.line <- list(intercept=betas[1], slope=betas[2])
@@ -444,7 +445,7 @@ g.meta.regression <- function(data, mods, method, level, digits, measure, btt=NU
 	
 	coeff.forest.plot.path <- paste("r_tmp/", "bforestplot_", as.character(as.numeric(Sys.time())), sep = "")
 	
-	if (make.coeff.forest.plot) {
+	if (make.coeff.forest.plot && !disable.plots) {
 		forest.plot.of.regression.coefficients(as.vector(res$b), res$ci.lb, res$ci.ub, labels=rownames(res$b), exclude.intercept=exclude.intercept, filepath=coeff.forest.plot.path)
 		images <- c(images, "Forest Plot of Coefficients"=paste(coeff.forest.plot.path,".png",sep=""))
 		plot.names <- c(plot.names, "coeff.forest.plot"="coeff.forest.plot")

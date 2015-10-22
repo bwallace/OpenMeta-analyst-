@@ -64,17 +64,22 @@ class WelcomePage(QWizardPage, forms.ui_welcome_page.Ui_WizardPage):
         
         # we use the sender method to see which menu item was
         # triggered
-        dataset_path = QObject.sender(self).text()
+        dataset_path = QObject.sender(self).text() # is a qstring
+        dataset_path = unicode(dataset_path.toUtf8(),'utf8')
         self.selected_dataset = dataset_path
         self.wizard().set_selected_dataset(self.selected_dataset)
         self.wizard().accept()
         
     def open_dataset(self):
         self.wizard().set_wizard_path("open")
-        
-        self.selected_dataset = unicode(QFileDialog.getOpenFileName(self,
-                                    "OpenMeta[analyst] - Open File", ".", 
-                                    "open meta files (*.oma)"))
+
+        self.selected_dataset = QFileDialog.getOpenFileName(
+            parent=self,
+            caption=QString("OpenMeta[analyst] - Open File"),
+            directory=".",
+            filter="open meta files (*.oma)")
+        self.selected_dataset = unicode(self.selected_dataset.toUtf8(),'utf8')
+
         if self.selected_dataset != '':
             self.wizard().set_selected_dataset(self.selected_dataset)
             self.wizard().accept()
@@ -270,7 +275,13 @@ class CsvImportPage(QWizardPage, forms.ui_csv_import_page.Ui_WizardPage):
         self.imported_data_ok = True
         
     def _select_file(self):
-        self.file_path = unicode(QFileDialog.getOpenFileName(self, "OpenMeta[analyst] - Import CSV", ".", "csv files (*.csv)"))
+        self.file_path = QFileDialog.getOpenFileName(
+            parent=self,
+            caption=QString("OpenMeta[analyst] - Import CSV"),
+            directory=".",
+            filter="csv files (*.csv)")
+        self.file_path = unicode(self.file_path.toUtf8(),'utf8')
+
         if self.file_path:
             self.file_path_lbl.setText(QString(self.file_path))
         
@@ -440,7 +451,7 @@ class CsvImportPage(QWizardPage, forms.ui_csv_import_page.Ui_WizardPage):
             print(str(row))
 
     def _get_filepath(self):
-        return str(self.file_path)
+        return self.file_path
     def _isFromExcel(self):
         return self.from_excel_chkbx.isChecked()
     def _hasHeaders(self):
