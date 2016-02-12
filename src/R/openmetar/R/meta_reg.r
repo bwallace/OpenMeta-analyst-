@@ -37,8 +37,7 @@ regression.wrapper <- function(data, mods.str, method, level, digits, btt=NULL) 
 		call_str <- sprintf("rma.uni(yi,vi, mods=%s, data=data, method=\"%s\", level=%f, digits=%d)", mods.str, method, level, digits)
 				
 	}
-	#printf(sprintf("Call str: %s\n", call_str))
-	cat(call_str,"\n")
+
 	expr<-parse(text=call_str) # convert to expression
 	res <- eval(expr) # evaluate expression
 	res
@@ -77,7 +76,7 @@ make.mods.str <-function(mods) {
 		mods.str <- "~ 1"
 	}
 	
-	cat(mods.str,"\n")
+	#cat(mods.str,"\n")
 	mods.str
 }
 
@@ -333,9 +332,17 @@ coded.cat.mod.level <- function(lvl, l.mod) {
 
 
 
-g.meta.regression <- function(data, mods, method, level, digits, measure,
-	btt=NULL, make.coeff.forest.plot=FALSE, exclude.intercept=FALSE, # For coefficient forest plot
-	disable.plots = FALSE)
+g.meta.regression <- function(
+  data,
+  mods,
+  method,
+  level,
+  digits,
+  measure,
+  btt=NULL,
+  make.coeff.forest.plot=FALSE,
+  exclude.intercept=FALSE, # For coefficient forest plot
+  disable.plots = FALSE)
 {
 	# This is s a thin wrapper to metafor's meta regression functionality
 	# in order to let R do the dummy coding for us

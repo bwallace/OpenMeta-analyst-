@@ -9,7 +9,7 @@ get.mult.from.conf.level <- function() {
 
 set.global.conf.level <- function(conf.level) {
 	CONF.LEVEL.GLOBAL <<- conf.level
-	cat("R: Confidence level is now", CONF.LEVEL.GLOBAL)
+	#cat("R: Confidence level is now", CONF.LEVEL.GLOBAL)
 	return(CONF.LEVEL.GLOBAL)
 }
 
