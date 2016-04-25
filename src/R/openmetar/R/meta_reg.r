@@ -725,6 +725,7 @@ g.bootstrap.meta.regression.cond.means <- function(
 			res.tmp <- tryCatch({
 						regression.wrapper(data[indices,], mods.str, method, level, digits,btt)
 					}, error = function(e) {
+						print("FAILURE FAILURE FAILURE")
 						failures <<- failures + 1
 						indices <- sample.int(nrow(data), size=length(indices), replace=TRUE)
 						cat("Error in regression wrapper: ",e$message,"\n")
@@ -733,8 +734,10 @@ g.bootstrap.meta.regression.cond.means <- function(
 			# Everything worked alright
 			ok <- TRUE
 		} # end while
+
 		tmp.betas <- A %*% res.tmp$b
 		tmp.betas[,1]
+
 	}
 	
 	subset.ok <- function(data, indices) {
@@ -742,7 +745,10 @@ g.bootstrap.meta.regression.cond.means <- function(
 		data.subset = data[indices,]
 		
 		for (mod in mods[["categorical"]]) {
-			n.levels <- length(unique(data[[mod]]))
+			# issue #205 (OpenMEE) -- to be changed data to data.subset
+			# here to make sure all levels are present in 
+			# the sample
+			n.levels <- length(unique(data.subset[[mod]]))
 			if (n.levels != cat.mods.level.counts[[mod]]) {
 				return(FALSE)
 			}
