@@ -251,8 +251,9 @@ binary.fixed.inv.var <- function(binary.data, params){
                         "weights"=weights(res))
     }
     
-    references <- "this is a placeholder for binary fixed effect inv var reference"
-    results[["References"]] <- references
+    #references <- "this is a placeholder for binary fixed effect inv var reference"
+    #references <- ""
+    #results[["References"]] <- references
     results
 }
 
@@ -681,8 +682,9 @@ binary.random <- function(binary.data, params) {
                         "weights"=weights(res))
     }
     
-    references <- "this is a placeholder for binary random reference"
-    results[["References"]] <- references
+    #references <- "this is a placeholder for binary random reference"
+    #references <- ""
+    #results[["References"]] <- references
     results
 }
 

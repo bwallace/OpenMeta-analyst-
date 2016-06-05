@@ -217,8 +217,9 @@ continuous.fixed <- function(cont.data, params){
           "weights"=weights(res))
   }
 	
-	references <- "Fixed Effects Inverse Variance: this is a placeholder for continuous fixed reference"
-	results[["References"]] <- references
+  # removing 
+	#references <- "" #"Fixed Effects Inverse Variance: this is a placeholder for continuous fixed reference"
+	#results[["References"]] <- references
 	
   results
 }
@@ -324,8 +325,9 @@ continuous.random <- function(cont.data, params) {
       "weights"=weights(res))
   }
 	
-	references <- "this is a placeholder for continuous random reference"
-	results[["References"]] <- references
+  # possible reference below; for now just removing the 'references' section. we may want to revisit this at some point.
+	#references <- "Random effects: DerSimonian and Laird. Meta-analysis in clinical trials. Controlled Clinical Trials. 7(3) (1986): 177-188."
+	#results[["References"]] <- references
 	
   results
 }
