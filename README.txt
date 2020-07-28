@@ -6,7 +6,7 @@
 
 To run OpenMetaAnalyst from source, you'll need to install the corresponding dependencies. If you're interested in simply running the program (i.e., not from source) consider grabbing a binary build (for Windows and Mac OS X) from: 
 
-    http://www.cebm.brown.edu/open_meta
+    http://www.cebm.brown.edu/openmeta
 
 Otherwise, you'll need to install the necessary R packages. 
 First install the dependencies:
